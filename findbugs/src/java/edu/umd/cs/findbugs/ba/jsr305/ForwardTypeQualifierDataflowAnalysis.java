@@ -161,6 +161,9 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
         }
 
         XMethod calledXMethod = XFactory.createXMethod(inv, cpg);
+        if (TypeQualifierDataflowAnalysis.isIdentifyFunctionForTypeQualifiers(calledXMethod))
+            return;
+
         if (calledXMethod.isResolved()) {
             TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(calledXMethod,
                     typeQualifierValue);

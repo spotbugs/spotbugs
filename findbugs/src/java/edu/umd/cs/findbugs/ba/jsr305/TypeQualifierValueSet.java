@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 /**
  * Set of ValueNumbers and their corresponding FlowValues.
- * 
+ *
  * @author David Hovemeyer
  */
 public class TypeQualifierValueSet {
@@ -73,8 +73,22 @@ public class TypeQualifierValueSet {
         }
     }
 
-    private void setValue(ValueNumber vn, FlowValue flowValue) {
+     private void setValue(ValueNumber vn, FlowValue flowValue) {
         valueMap.put(vn, flowValue);
+    }
+
+    static <K, V> void copyMapValue(Map<K, V> map, K from, K to) {
+        if (!map.containsKey(from))
+            return;
+        map.put(to, map.get(from));
+    }
+
+    void copyInfo(ValueNumber from, ValueNumber to) {
+        if (state == State.TOP)
+            return;
+        copyMapValue(valueMap, from, to);
+        copyMapValue(whereAlways, from, to);
+        copyMapValue(whereNever, from, to);
     }
 
     private static void addSourceSinkInfo(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap, ValueNumber vn,
@@ -229,7 +243,7 @@ public class TypeQualifierValueSet {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -247,7 +261,7 @@ public class TypeQualifierValueSet {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override

@@ -26,7 +26,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis;
@@ -35,6 +37,7 @@ import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
@@ -42,10 +45,20 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
  * Abstract base class for type qualifier dataflow analyses.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnalysis<TypeQualifierValueSet> {
+
+    static boolean isIdentifyFunctionForTypeQualifiers(XMethod m) {
+        String className = m.getClassName();
+        String methodName = m.getName();
+        if (className.equals("java.lang.Integer") && (methodName.equals("intValue") || methodName.equals("valueOf")))
+            return true;
+        return false;
+
+    }
+
     static final boolean DEBUG_VERBOSE = SystemProperties.getBoolean("ctq.dataflow.debug.verbose");
 
     protected final XMethod xmethod;
@@ -62,7 +75,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 
     /**
      * Constructor.
-     * 
+     *
      * @param xmethod
      *            XMethod object containing information about the method being
      *            analyzed
@@ -87,7 +100,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#initEntryFact(java.lang.Object)
      */
@@ -97,7 +110,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#isFactValid(java.lang
      * .Object)
@@ -109,7 +122,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#copy(java.lang.Object,
      * java.lang.Object)
      */
@@ -119,7 +132,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#createFact()
      */
     public TypeQualifierValueSet createFact() {
@@ -128,7 +141,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#isTop(java.lang.Object)
      */
     public boolean isTop(TypeQualifierValueSet fact) {
@@ -137,7 +150,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#makeFactTop(java.lang.Object)
      */
@@ -147,7 +160,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(java.lang.Object,
      * edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
      */
@@ -168,7 +181,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#same(java.lang.Object,
      * java.lang.Object)
      */
@@ -178,7 +191,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.BasicAbstractDataflowAnalysis#edgeTransfer(edu
      * .umd.cs.findbugs.ba.Edge, java.lang.Object)
@@ -226,7 +239,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 
     /**
      * This method must be called before the dataflow analysis is executed.
-     * 
+     *
      * @throws DataflowAnalysisException
      */
     public abstract void registerSourceSinkLocations() throws DataflowAnalysisException;
@@ -243,7 +256,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
     /**
      * Get the set of SourceSinkInfo objects representing sources/sinks at a
      * given Location.
-     * 
+     *
      * @param location
      *            a Location
      * @return Set of SourceSinkInfo objects representing sources/sinks at the
@@ -256,7 +269,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transferInstruction(org
      * .apache.bcel.generic.InstructionHandle,
@@ -268,12 +281,26 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
         if (!fact.isValid()) {
             return;
         }
+        Location location = new Location(handle, basicBlock);
+
+        Instruction i = handle.getInstruction();
+        if (i instanceof InvokeInstruction) {
+            InvokeInstruction ii = (InvokeInstruction) i;
+            XMethod m = XFactory.createXMethod(ii, cpg);
+            if (TypeQualifierDataflowAnalysis.isIdentifyFunctionForTypeQualifiers(m)) {
+                ValueNumberFrame vnaFrameAtLocation = vnaDataflow.getFactAtLocation(location);
+                ValueNumberFrame vnaFrameAfterInstruction = vnaDataflow.getFactAfterLocation(location);
+                ValueNumber in = vnaFrameAtLocation.getStackValue(0);
+                ValueNumber out = vnaFrameAfterInstruction.getStackValue(0);
+                fact.copyInfo(in, out);
+                return;
+            }
+        }
 
         // This is a simple process.
         // Check to see if there are any sources/sinks at this location,
         // and if so, model them.
 
-        Location location = new Location(handle, basicBlock);
         Set<SourceSinkInfo> sourceSinkSet = sourceSinkMap.get(location);
         if (sourceSinkSet != null) {
             if (DEBUG_VERBOSE) {

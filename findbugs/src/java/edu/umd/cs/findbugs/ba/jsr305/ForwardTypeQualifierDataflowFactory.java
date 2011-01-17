@@ -30,6 +30,7 @@ import org.apache.bcel.generic.RETURN;
 import org.apache.bcel.generic.ReturnInstruction;
 
 import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Location;
@@ -45,7 +46,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 /**
  * Factory for producing ForwardTypeQualifierDataflow objects for various kinds
  * of type qualifiers.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ForwardTypeQualifierDataflowFactory extends
@@ -53,7 +54,7 @@ public class ForwardTypeQualifierDataflowFactory extends
 
     /**
      * Constructor.
-     * 
+     *
      * @param methodDescriptor
      *            MethodDescriptor of method being analyzed
      */
@@ -63,7 +64,7 @@ public class ForwardTypeQualifierDataflowFactory extends
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowFactory#getDataflow
      * (edu.umd.cs.findbugs.ba.DepthFirstSearch, edu.umd.cs.findbugs.ba.XMethod,
@@ -83,7 +84,9 @@ public class ForwardTypeQualifierDataflowFactory extends
 
         ForwardTypeQualifierDataflow dataflow = new ForwardTypeQualifierDataflow(cfg, analysis);
         dataflow.execute();
-
+        if (ClassContext.DUMP_DATAFLOW_ANALYSIS) {
+            dataflow.dumpDataflow(analysis);
+        }
         return dataflow;
     }
 

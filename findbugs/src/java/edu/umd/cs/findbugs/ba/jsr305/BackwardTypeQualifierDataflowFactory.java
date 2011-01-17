@@ -25,6 +25,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -38,7 +39,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 /**
  * Factory for BackwardTypeQualifierDataflow objects for given type qualifier
  * values.
- * 
+ *
  * @author David Hovemeyer
  */
 public class BackwardTypeQualifierDataflowFactory extends
@@ -46,7 +47,7 @@ public class BackwardTypeQualifierDataflowFactory extends
 
     /**
      * Constructor.
-     * 
+     *
      * @param methodDescriptor
      *            MethodDescriptor of the method for which we want to create
      *            BackwardTypeQualifierDataflow objects
@@ -57,7 +58,7 @@ public class BackwardTypeQualifierDataflowFactory extends
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowFactory#getDataflow
      * (edu.umd.cs.findbugs.ba.DepthFirstSearch, edu.umd.cs.findbugs.ba.XMethod,
@@ -89,7 +90,9 @@ public class BackwardTypeQualifierDataflowFactory extends
         BackwardTypeQualifierDataflow dataflow = new BackwardTypeQualifierDataflow(cfg, analysis);
 
         dataflow.execute();
-
+        if (ClassContext.DUMP_DATAFLOW_ANALYSIS) {
+            dataflow.dumpDataflow(analysis);
+        }
         return dataflow;
     }
 

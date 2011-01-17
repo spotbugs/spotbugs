@@ -53,7 +53,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 
 /**
  * Backwards type qualifier dataflow analysis.
- * 
+ *
  * @author David Hovemeyer
  */
 public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowAnalysis {
@@ -67,7 +67,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 
     /**
      * Constructor.
-     * 
+     *
      * @param dfs
      *            DepthFirstSearch on the analyzed method
      * @param rdfs
@@ -101,7 +101,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowAnalysis#edgeTransfer
      * (edu.umd.cs.findbugs.ba.Edge,
@@ -118,7 +118,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transferInstruction(org
      * .apache.bcel.generic.InstructionHandle,
@@ -156,7 +156,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#getBlockOrder(edu.umd.cs.findbugs
      * .ba.CFG)
@@ -167,7 +167,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#isForwards()
      */
     public boolean isForwards() {
@@ -176,7 +176,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowAnalysis#
      * registerSourceSinkLocations()
      */
@@ -257,6 +257,9 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
             return;
         }
 
+        if (TypeQualifierDataflowAnalysis.isIdentifyFunctionForTypeQualifiers(calledMethod))
+            return;
+       
         for (int param = 0; param < calledMethod.getNumParams(); param++) {
             TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(calledMethod, param,
                     typeQualifierValue);
@@ -288,7 +291,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowAnalysis#
      * propagateAcrossPhiNode
      * (edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValueSet,
