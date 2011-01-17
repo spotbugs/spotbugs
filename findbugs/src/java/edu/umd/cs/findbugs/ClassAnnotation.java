@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * A BugAnnotation object specifying a Java class involved in the bug.
- * 
+ *
  * @author David Hovemeyer
  * @see BugAnnotation
  * @see BugInstance
@@ -53,9 +53,12 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 
     public static final String ANNOTATION_ROLE = "CLASS_ANNOTATION";
 
+    public static final String TYPE_QUALIFIER_ROLE = "CLASS_TYPE_QUALIFIER";
+
+
     /**
      * Constructor.
-     * 
+     *
      * @param className
      *            the name of the class
      */
@@ -74,7 +77,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 
     /**
      * Factory method to create a ClassAnnotation from a ClassDescriptor.
-     * 
+     *
      * @param classDescriptor
      *            the ClassDescriptor
      * @return the ClassAnnotation
@@ -137,7 +140,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.PackageMemberAnnotation#getSourceLines()
      */
     @Override

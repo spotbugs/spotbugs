@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.Priorities;
@@ -76,7 +77,7 @@ import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Check JSR-305 type qualifiers.
- * 
+ *
  * @author David Hovemeyer
  */
 public class CheckTypeQualifiers extends CFGDetector {
@@ -102,7 +103,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.bcel.CFGDetector#visitClass(edu.umd.cs.findbugs.classfile
      * .ClassDescriptor)
@@ -129,7 +130,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.bcel.CFGDetector#visitMethodCFG(edu.umd.cs.findbugs
      * .classfile.MethodDescriptor, edu.umd.cs.findbugs.ba.CFG)
@@ -179,7 +180,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 
     /**
      * Check a specific TypeQualifierValue on a method.
-     * 
+     *
      * @param methodDescriptor
      *            MethodDescriptor of method
      * @param cfg
@@ -501,17 +502,21 @@ public class CheckTypeQualifiers extends CFGDetector {
     }
 
     private void annotateWarningWithTypeQualifier(BugInstance warning, TypeQualifierValue typeQualifierValue) {
-        StringBuilder buf = new StringBuilder();
-        buf.append("@");
-        buf.append(typeQualifierValue.typeQualifier.getDottedClassName());
-        if (TypeQualifierValue.hasMultipleVariants(typeQualifierValue)) {
+         if (TypeQualifierValue.hasMultipleVariants(typeQualifierValue)) {
+             StringBuilder buf = new StringBuilder();
+             buf.append("@");
+             buf.append(typeQualifierValue.typeQualifier.getDottedClassName());
+
             // When there are multiple variants, qualify the type
             // qualifier with the value indicating which variant.
             buf.append("(");
             buf.append(typeQualifierValue.value);
             buf.append(")");
+            warning.addString(buf.toString()).describe(StringAnnotation.TYPE_QUALIFIER_ROLE);
+        } else {
+            warning.addClass(typeQualifierValue.typeQualifier).describe(ClassAnnotation.TYPE_QUALIFIER_ROLE);
         }
-        warning.addString(buf.toString()).describe(StringAnnotation.TYPE_QUALIFIER_ROLE);
+
     }
 
     private void annotateWarningWithSourceSinkInfo(BugInstance warning, MethodDescriptor methodDescriptor, ValueNumber vn,
