@@ -47,6 +47,7 @@ import org.apache.bcel.classfile.ParameterAnnotations;
 import org.apache.bcel.classfile.StackMapTable;
 import org.apache.bcel.classfile.StackMapTableEntry;
 
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -353,6 +354,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
         superclassName = dottedSuperclassName.replace('.', '/');
 
         ClassDescriptor cDesc = DescriptorFactory.createClassDescriptor(className);
+        if (!FindBugs.noAnalysis)
         try {
             thisClassInfo = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, cDesc);
         } catch (CheckedAnalysisException e) {
