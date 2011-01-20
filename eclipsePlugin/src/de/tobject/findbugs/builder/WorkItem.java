@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -304,12 +305,15 @@ public class WorkItem {
     }
 
     /**
-     * @param srcPath
+     * @param srcPath may be null
      * @param outLocations
      *            key is the source root, value is output folder
-     * @return source root folder matching (parent of) given path
+     * @return source root folder matching (parent of) given path, or null
      */
-    private IPath getMatchingSourceRoot(IPath srcPath, Map<IPath, IPath> outLocations) {
+    private @Nullable IPath getMatchingSourceRoot(@Nullable IPath srcPath, Map<IPath, IPath> outLocations) {
+        if(srcPath == null) {
+            return null;
+        }
         Set<Entry<IPath, IPath>> outEntries = outLocations.entrySet();
         IPath result = null;
         int maxSegments = 0;
