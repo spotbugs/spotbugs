@@ -25,6 +25,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -56,12 +58,15 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.TreeModel;
@@ -306,7 +311,7 @@ public class PreferencesFrame extends FBDialog {
             String id = plugin.getPluginId();
             if (text == null)
                 text = id;
-            URL url = plugin.getPluginLoader().getURL();
+            final URL url = plugin.getPluginLoader().getURL();
             String pluginUrlStr = url.toExternalForm();
             if ("file".equals(url.getProtocol())) {
                 try {
@@ -320,6 +325,18 @@ public class PreferencesFrame extends FBDialog {
 
             boolean enabled = isEnabled(currentProject, plugin);
             final JCheckBox checkBox = new JCheckBox(text, enabled);
+            checkBox.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    if (SwingUtilities.isRightMouseButton(e)) {
+                        JPopupMenu menu = new JPopupMenu();
+                        JMenuItem item = new JMenuItem("Uninstall " + plugin.getShortDescription() + "...");
+                        item.addActionListener(new UninstallClickListener(plugin, url));
+                        menu.add(item);
+                        menu.show(checkBox, e.getX(), e.getY());
+                    }
+                }
+            });
             checkBox.setVerticalTextPosition(SwingConstants.TOP);
             String longText = plugin.getDetailedDescription();
             if (longText != null)
@@ -615,5 +632,55 @@ public class PreferencesFrame extends FBDialog {
         }
 
         filterCheckBoxList.setListData(boxes.toArray(new MatchBox[boxes.size()]));
+    }
+
+    private class UninstallClickListener implements ActionListener {
+        private final Plugin plugin;
+        private final URL url;
+
+        public UninstallClickListener(Plugin plugin, URL url) {
+            this.plugin = plugin;
+            this.url = url;
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            int result = JOptionPane.showOptionDialog(PreferencesFrame.this,
+                    "Are you sure you want to uninstall " + plugin.getShortDescription() + "?" +
+                            "\n\nNo files will be deleted from your computer.", "",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                    new Object[]{"Uninstall", "Cancel"}, "Cancel");
+            if (result == 0) {
+                if (!GUISaveState.getInstance().removeCustomPlugin(url)) {
+                    if ("file".equals(url.getProtocol())) {
+                        String path = url.toExternalForm();
+                        try {
+                            path = new File(URLDecoder.decode(url.getPath(), "UTF-8")).getAbsolutePath();
+                        } catch (UnsupportedEncodingException ex) {
+                        }
+                        try {
+                            StringSelection contents = new StringSelection(path);
+                            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(contents, contents);
+                        } catch (Exception e1) {
+                        }
+                        JOptionPane.showMessageDialog(PreferencesFrame.this,
+                                "The plugin could not be uninstalled automatically.\n\n" +
+                                        "You can try to delete this plugin manually: \n"
+                                        + path + "\n\n(This path has been copied to your clipboard)",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(PreferencesFrame.this,
+                                "This plugin is not actually in the list of plugins...\n" +
+                                        "Not sure what to do...\n "
+                                        + url.toExternalForm()
+                                        + "\n\nPlugin URL's:\n" +
+                                        GUISaveState.getInstance().getCustomPlugins(),
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(PreferencesFrame.this,
+                            "Changes will take effect after you restart FindBugs.");
+                }
+            }
+        }
     }
 }

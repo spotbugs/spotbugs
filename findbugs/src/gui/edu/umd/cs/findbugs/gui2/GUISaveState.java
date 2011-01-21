@@ -547,6 +547,10 @@ public class GUISaveState {
         return disabledPlugins;
     }
 
+    public boolean removeCustomPlugin(URL pluginId) {
+        return customPlugins.remove(pluginId);
+    }
+
     SorterTableColumnModel getStarterTable() {
         if (starterTable != null)
             return starterTable;
