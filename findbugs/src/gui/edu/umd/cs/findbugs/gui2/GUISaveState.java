@@ -131,8 +131,8 @@ public class GUISaveState {
 
     private int packagePrefixSegments;
 
-    private List<String> enabledPlugins;
-    private List<String> disabledPlugins;
+    private List<String> enabledPlugins = new ArrayList<String>();
+    private List<String> disabledPlugins = new ArrayList<String>();
     private LinkedHashSet<URL> customPlugins = new LinkedHashSet<URL>();
 
     private static String[] generateSorterKeys(int numSorters) {
@@ -528,6 +528,10 @@ public class GUISaveState {
     public void setPluginsEnabled(List<String> enabledPlugins, List<String> disabledPlugins) {
         this.enabledPlugins = enabledPlugins;
         this.disabledPlugins = disabledPlugins;
+    }
+
+    public void setPluginEnabled(String url) {
+        this.enabledPlugins.add(url);
     }
 
     public List<String> getEnabledPlugins() {

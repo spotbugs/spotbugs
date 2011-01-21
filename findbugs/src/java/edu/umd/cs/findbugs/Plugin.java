@@ -504,6 +504,9 @@ public boolean isCorePlugin() {
         return getPluginLoader().getClassLoader();
     }
 
+    /**
+     * Loads the given plugin and enables it for the given project.
+     */
     public static Plugin loadCustomPlugin(File f, @CheckForNull Project project)
             throws PluginException {
         URL urlString;
@@ -515,6 +518,9 @@ public boolean isCorePlugin() {
         return loadCustomPlugin(urlString, project);
     }
 
+    /**
+     * Loads the given plugin and enables it for the given project.
+     */
     public static Plugin loadCustomPlugin(URL urlString, @CheckForNull Project project) throws PluginException {
         Plugin plugin = addCustomPlugin(urlString);
         if (project != null) {

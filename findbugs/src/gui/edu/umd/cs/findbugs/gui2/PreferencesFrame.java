@@ -36,8 +36,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -246,9 +248,16 @@ public class PreferencesFrame extends FBDialog {
                 if (retvalue == JFileChooser.APPROVE_OPTION) {
                     File f = chooser.getSelectedFile();
                     try {
-                        Plugin.loadCustomPlugin(f, PreferencesFrame.this.getCurrentProject());
-                        GUISaveState.getInstance().addCustomPlugin(f.toURI().toURL());
-                        GUISaveState.getInstance().save();
+                        // load and enable for project (if loaded)
+                        Plugin plugin = Plugin.loadCustomPlugin(f, PreferencesFrame.this.getCurrentProject());
+
+                        GUISaveState guiSaveState = GUISaveState.getInstance();
+                        URL url = f.toURI().toURL();
+                        // add to FBGUI custom plugins list
+                        guiSaveState.addCustomPlugin(url);
+                        // add to list of enabled plugins
+                        guiSaveState.setPluginEnabled(plugin.getPluginId());
+                        guiSaveState.save();
                         pluginsAdded = true;
                         rebuildPluginCheckboxes();
 
@@ -297,16 +306,24 @@ public class PreferencesFrame extends FBDialog {
             String id = plugin.getPluginId();
             if (text == null)
                 text = id;
-            String pluginUrl = plugin.getPluginLoader().getURL().toExternalForm();
+            URL url = plugin.getPluginLoader().getURL();
+            String pluginUrlStr = url.toExternalForm();
+            if ("file".equals(url.getProtocol())) {
+                try {
+                    pluginUrlStr = new File(URLDecoder.decode(url.getPath(), "UTF-8")).getAbsolutePath();
+                } catch (UnsupportedEncodingException e) {
+
+                }
+            }
             text = String.format("<html>%s<br><font style='font-weight:normal;font-style:italic'>%s",
-                    text, pluginUrl);
+                    text, pluginUrlStr);
 
             boolean enabled = isEnabled(currentProject, plugin);
             final JCheckBox checkBox = new JCheckBox(text, enabled);
             checkBox.setVerticalTextPosition(SwingConstants.TOP);
             String longText = plugin.getDetailedDescription();
             if (longText != null)
-                checkBox.setToolTipText("<html>" + longText +"</html>");
+                checkBox.setToolTipText("<html>" + longText + "</html>");
             pluginEnabledStatus.put(plugin, enabled);
             checkBox.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
