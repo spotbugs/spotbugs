@@ -1302,7 +1302,6 @@ java.lang.management.PlatformComponent$7,getMXBeans,()Ljava/util/List;,1|true
 java.lang.management.PlatformComponent$8,getMXBeans,()Ljava/util/List;,1|true
 java.lang.management.PlatformComponent$9,getMXBeans,()Ljava/util/List;,1|true
 java.lang.management.ThreadInfo,toString,()Ljava/lang/String;,1|true
-java.lang.reflect.AccessibleObject,getAnnotation,(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;,1|true
 java.lang.reflect.AccessibleObject,getAnnotations,()[Ljava/lang/annotation/Annotation;,1|true
 java.lang.reflect.AccessibleObject,getDeclaredAnnotations,()[Ljava/lang/annotation/Annotation;,1|true
 java.lang.reflect.Constructor,getExceptionTypes,()[Ljava/lang/Class;,1|true
