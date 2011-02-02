@@ -262,6 +262,7 @@ public class PreferencesFrame extends FBDialog {
                         guiSaveState.addCustomPlugin(url);
                         // add to list of enabled plugins
                         guiSaveState.setPluginEnabled(plugin.getPluginId());
+                        plugin.setGloballyEnabled(true);
                         guiSaveState.save();
                         pluginsAdded = true;
                         rebuildPluginCheckboxes();

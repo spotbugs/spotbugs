@@ -250,8 +250,8 @@ public class GUISaveState {
             }
         }
 
-        newInstance.enabledPlugins = Arrays.asList(p.get(ENABLED_PLUGINS, "").split(","));
-        newInstance.disabledPlugins = Arrays.asList(p.get(DISABLED_PLUGINS, "").split(","));
+        newInstance.enabledPlugins = new ArrayList<String>(Arrays.asList(p.get(ENABLED_PLUGINS, "").split(",")));
+        newInstance.disabledPlugins = new ArrayList<String>(Arrays.asList(p.get(DISABLED_PLUGINS, "").split(",")));
 
         instance = newInstance;
     }
@@ -526,8 +526,8 @@ public class GUISaveState {
     }
 
     public void setPluginsEnabled(List<String> enabledPlugins, List<String> disabledPlugins) {
-        this.enabledPlugins = enabledPlugins;
-        this.disabledPlugins = disabledPlugins;
+        this.enabledPlugins = new ArrayList<String>(enabledPlugins);
+        this.disabledPlugins = new ArrayList<String>(disabledPlugins);
     }
 
     public void setPluginEnabled(String url) {
