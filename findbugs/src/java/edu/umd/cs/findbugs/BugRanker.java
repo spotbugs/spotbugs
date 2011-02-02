@@ -104,11 +104,16 @@ public class BugRanker {
 
         void storeAdjustment(String key, String value) {
             for (String k : key.split(",")) {
-                int v = Integer.parseInt(value);
                 char firstChar = value.charAt(0);
+                if (firstChar == '+')
+                    value = value.substring(1);
+                    
+                int v = Integer.parseInt(value);
                 adjustment.put(k, v);
-                if (firstChar == '+' || firstChar == '-')
+                if (firstChar == '+' || firstChar == '-') 
                     isRelative.add(k);
+             
+                
             }
         }
     }
@@ -205,7 +210,7 @@ public class BugRanker {
                 if (!b.bugCategories.isRelative(category))
                     return rank;
             }
-        return 20;
+        return rank;
     }
 
 

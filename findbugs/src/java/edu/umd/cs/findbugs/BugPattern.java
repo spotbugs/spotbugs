@@ -117,21 +117,21 @@ public class BugPattern implements Comparable<BugPattern> {
                     + "</p>");
 
     /**
-     * Get the type (species).
+     * Get the BugPattern
      */
     public String getType() {
         return type;
     }
 
     /**
-     * Get the abbreviation or "bug code".
+     * Get the BugKind
      */
     public String getAbbrev() {
         return abbrev;
     }
 
     /**
-     * Get the category.
+     * Get the BugCategory
      */
     public String getCategory() {
         return category;
