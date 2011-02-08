@@ -291,6 +291,8 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 
     private static class BugPropertySheetPage extends TabbedPropertySheetPage {
 
+        private boolean isDisposed;
+
         static ITabbedPropertySheetPageContributor contributor = new ITabbedPropertySheetPageContributor() {
             public String getContributorId() {
                 return FindbugsPlugin.TREE_VIEW_ID;
@@ -303,6 +305,9 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 
         @Override
         public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+            if(isDisposed) {
+                return;
+            }
             // adapt text selection in java editor to FB marker
             if (part instanceof ITextEditor && selection instanceof ITextSelection) {
                 IMarker marker = MarkerUtil.getMarkerFromEditor((ITextSelection) selection, (ITextEditor) part);
@@ -313,6 +318,12 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
                 }
             }
             super.selectionChanged(part, selection);
+        }
+
+        @Override
+        public void dispose() {
+            isDisposed = true;
+            super.dispose();
         }
     }
 
