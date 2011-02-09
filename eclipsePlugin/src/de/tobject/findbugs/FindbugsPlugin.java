@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -265,6 +266,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         if(DEBUG) {
             dumpClassLoader(FindbugsPlugin.class);
             dumpClassLoader(Plugin.class);
+            System.out.println("applyCustomDetectors - going to add " + detectorPaths.size() + " plugin urls...");
+            for (String url : detectorPaths) {
+                System.out.println("\t" + url);
+            }
         }
         for (String path : detectorPaths) {
             URL url;
@@ -296,9 +301,21 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             }
         }
 
-        for(Plugin fbPlugin : Plugin.getAllPlugins()) {
+        Collection<Plugin> allPlugins = Plugin.getAllPlugins();
+        for(Plugin fbPlugin : allPlugins) {
             if (!fbPlugin.isInitialPlugin()) {
                 fbPlugin.setGloballyEnabled(enabled.contains(fbPlugin));
+            }
+        }
+        if(DEBUG) {
+            System.out.println("applyCustomDetectors - there was " + detectorPaths.size() + " extra FB plugin urls with "
+                    + enabled.size() + " valid FB plugins and " + allPlugins.size() + " total plugins registered by FB.");
+            for (Plugin fbPlugin : allPlugins) {
+                if (fbPlugin.isGloballyEnabled()) {
+                    System.out.println("IS  enabled:\t" + fbPlugin.getPluginId());
+                } else {
+                    System.out.println("NOT enabled:\t" + fbPlugin.getPluginId());
+                }
             }
         }
         DetectorFactoryCollection.resetInstance();
