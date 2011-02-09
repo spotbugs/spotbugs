@@ -84,6 +84,10 @@ Export-Package: edu.umd.cs.findbugs,
  org.apache.bcel.verifier.exc,
  org.apache.bcel.verifier.statics,
  org.apache.bcel.verifier.structurals,
- org.dom4j
+ org.dom4j,
+ org.objectweb.asm,
+ org.objectweb.asm.commons,
+ org.objectweb.asm.signature,
+ org.objectweb.asm.tree
 Require-Bundle: org.apache.ant
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
