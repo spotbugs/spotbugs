@@ -176,6 +176,9 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 
         initPreferencesStore(project);
 
+        // initially trigger load of all custom FB plugins if not yet loaded
+        FindbugsPlugin.applyCustomDetectors(false);
+
         createGlobalElements(parent);
 
         createConfigurationTabFolder(parent);
