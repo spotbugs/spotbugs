@@ -32,6 +32,7 @@ import java.util.List;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
@@ -51,9 +52,9 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
  * back into sync if the tree is rebuilt, say by sorting the column headers, it
  * probably means that resetData needs to be called on the model after doing one
  * of its operations.
- * 
+ *
  * @author Dan
- * 
+ *
  */
 public class BugSet implements Iterable<BugLeafNode> {
 
@@ -81,7 +82,7 @@ public class BugSet implements Iterable<BugLeafNode> {
 
     /**
      * Gets all the string values out of the bugs in the set
-     * 
+     *
      * @param s
      *            The Sortables you want all values for
      * @return all values of the sortable passed in that occur in this bugset,
@@ -95,7 +96,7 @@ public class BugSet implements Iterable<BugLeafNode> {
      * Creates a filterable dataset from the set passed in. The first time this
      * is used is from outside to create the main data list After that BugSet
      * will create new smaller filtered sets and store them using this method.
-     * 
+     *
      * @param filteredSet
      */
     BugSet(Collection<? extends BugLeafNode> filteredSet) {
@@ -115,7 +116,7 @@ public class BugSet implements Iterable<BugLeafNode> {
     /**
      * Sets the BugSet passed in to be the mainBugSet, this should always match
      * up with the data set in the BugTreeModel
-     * 
+     *
      * @param bs
      */
     static void setAsRootAndCache(BugSet bs) {
@@ -186,7 +187,7 @@ public class BugSet implements Iterable<BugLeafNode> {
 
     /**
      * Copy constructor, also used to make sure things are recalculated
-     * 
+     *
      * @param copySet
      */
     // Note: THIS CLEARS THE CACHES OF DONE SETS!
@@ -200,15 +201,15 @@ public class BugSet implements Iterable<BugLeafNode> {
     /**
      * A String pair has a key and a value. The key is the general category ie:
      * Type The value is the value ie: Malicious Code.
-     * 
+     *
      * Query looks through a BugLeafNode set with a keyValuePair to see which
      * BugLeafNodes inside match the value under the category of key.
-     * 
+     *
      * passing in a key of Abbrev and a value of MS should return a new BugSet
      * with all the Mutable Static bugs in the current set Note also: This query
      * will only be performed once, and then stored and reused if the same query
      * is used again.
-     * 
+     *
      * @param keyValuePair
      * @return
      */
@@ -235,7 +236,7 @@ public class BugSet implements Iterable<BugLeafNode> {
 
         final List<Sortables> order = MainFrame.getInstance().getSorter().getOrderAfterDivider();
 
-        Collections.sort(mainList, new Comparator<BugLeafNode>() {
+        Comparator<BugLeafNode> comparator = new Comparator<BugLeafNode>() {
             int compare(int one, int two) {
                 if (one > two)
                     return 1;
@@ -276,13 +277,29 @@ public class BugSet implements Iterable<BugLeafNode> {
                 return result;
 
             }
-        });
+        };
+        Collections.sort(mainList, comparator);
+
+        if (SystemProperties.ASSERTIONS_ENABLED)
+          for(int i = 0; i < mainList.size(); i++) {
+              BugLeafNode nodeI = mainList.get(i);
+
+              for(int j = i+1; j < mainList.size(); j++) {
+                BugLeafNode nodeJ = mainList.get(j);
+                if (comparator.compare(nodeI, nodeJ) > 0)
+                    throw new AssertionError(
+                            String.format("bug list isn't consistently sorted (%d:%s) vs. (%d:%s)",
+                                    i, nodeI.getBug().getInstanceHash(), j, nodeJ.getBug().getInstanceHash()));
+              }}
+
+
+
     }
 
     /**
-     * 
+     *
      * Contains takes a key/value pair
-     * 
+     *
      * @param keyValuePair
      * @return true if a bug leaf from filterNoCache() matches the pair
      */

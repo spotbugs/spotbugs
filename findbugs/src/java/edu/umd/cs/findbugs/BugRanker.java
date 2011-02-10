@@ -55,7 +55,7 @@ import edu.umd.cs.findbugs.util.Util;
  *
  * For core bug detectors, the bug ranker search order is:
  * <ul>
- * <li>global bug ranker
+ * <li>global adjustment bug ranker
  * <li>core bug ranker
  * </ul>
  *
