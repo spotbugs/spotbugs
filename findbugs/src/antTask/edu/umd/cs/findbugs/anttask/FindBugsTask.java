@@ -657,7 +657,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
         if (effort != null) {
             addArg("-effort:" + effort);
         }
-        if (maxRank < 20) {
+        if (maxRank > 0 && maxRank < 20) {
             addArg("-maxRank ");
             addArg(Integer.toString(maxRank));
         }
