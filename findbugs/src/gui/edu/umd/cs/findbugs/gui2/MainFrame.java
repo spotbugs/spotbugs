@@ -28,10 +28,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Locale;
-import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
-import java.util.ResourceBundle;
 import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -146,8 +143,6 @@ public class MainFrame extends FBFrame implements LogSync {
     private final CommentsArea comments;
 
     private JLabel statusBarLabel = new JLabel();
-
-    private JLabel signedInLabel;
 
     private JTextField sourceSearchTextField = new JTextField(SEARCH_TEXT_FIELD_SIZE);
 
@@ -361,41 +356,14 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     private String updateCloudSigninStatus(String msg) {
-        boolean showLoggedInStatus = false;
         if (getBugCollection() != null) {
             Cloud cloud = getBugCollection().getCloud();
             if (cloud != null) {
                 String pluginMsg = cloud.getStatusMsg();
                 if (pluginMsg != null && pluginMsg.length() > 1)
                     msg = join(msg, pluginMsg);
-
-                SigninState state = cloud.getSigninState();
-                String userStr = cloud.getUser() != null ? " - " + cloud.getUser() : "";
-                signedInLabel.setText("<html>" + cloud.getCloudName() + ":<br>" + state.toString() + userStr);
-                ResourceBundle bundle = ResourceBundle.getBundle(Cloud.class.getName(), Locale.getDefault());
-                String tooltip;
-                try {
-                    tooltip = bundle.getString("tooltip." + state.name());
-                } catch (MissingResourceException e) {
-                    tooltip = "";
-                }
-                signedInLabel.setToolTipText(tooltip);
-                if (state == SigninState.SIGNING_IN) {
-                    signedInLabel.setIcon(null);
-                    showLoggedInStatus = true;
-                } else if (state == SigninState.SIGNED_IN) {
-                    signedInLabel.setIcon(signedInIcon);
-                    showLoggedInStatus = true;
-                } else if (state == SigninState.SIGNIN_FAILED) {
-                    signedInLabel.setIcon(warningIcon);
-                    showLoggedInStatus = true;
-                } else if (state == SigninState.SIGNED_OUT || state == SigninState.UNAUTHENTICATED) {
-                    signedInLabel.setIcon(null);
-                    showLoggedInStatus = true;
-                }
             }
         }
-        signedInLabel.setVisible(showLoggedInStatus);
         return msg;
     }
 
@@ -1040,20 +1008,12 @@ public class MainFrame extends FBFrame implements LogSync {
         return summaryTopPanel;
     }
 
-    public JLabel getSignedInLabel() {
-        return signedInLabel;
-    }
-
     public void setSignedInIcon(ImageIcon signedInIcon) {
         this.signedInIcon = signedInIcon;
     }
 
     public void setSummaryTopPanel(JPanel summaryTopPanel) {
         this.summaryTopPanel = summaryTopPanel;
-    }
-
-    public void setSignedInLabel(JLabel signedInLabel) {
-        this.signedInLabel = signedInLabel;
     }
 
     public void setWarningIcon(ImageIcon warningIcon) {
@@ -1140,7 +1100,8 @@ public class MainFrame extends FBFrame implements LogSync {
         }
 
         public void registerCloud(Project project, BugCollection collection, Cloud plugin) {
-            assert collection.getCloud() == plugin;
+//            assert collection.getCloud() == plugin
+//                    : collection.getCloud().getCloudName() + " vs " + plugin.getCloudName();
             if (MainFrame.this.bugCollection == collection) {
                 plugin.addListener(userAnnotationListener);
                 plugin.addStatusListener(cloudStatusListener);

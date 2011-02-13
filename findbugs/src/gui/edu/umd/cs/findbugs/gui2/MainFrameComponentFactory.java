@@ -28,15 +28,12 @@ import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JToolTip;
@@ -45,8 +42,6 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.plaf.FontUIResource;
@@ -109,61 +104,8 @@ public class MainFrameComponentFactory implements Serializable {
             mainFrame.setSignedInIcon(null);
             mainFrame.setWarningIcon(null);
         }
-        mainFrame.setSignedInLabel(new JLabel());
-        mainFrame.getSignedInLabel().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        mainFrame.getSignedInLabel().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                JPopupMenu menu = new JPopupMenu();
-                Cloud.SigninState signinState = mainFrame.getBugCollection().getCloud().getSigninState();
-                boolean isSignedIn = signinState == Cloud.SigninState.SIGNED_IN;
-                final JCheckBoxMenuItem signInAuto = new JCheckBoxMenuItem("Sign in automatically");
-                signInAuto.setToolTipText("Saves your Cloud session for the next time you run FindBugs. "
-                        + "No personal information or passwords are saved.");
-                signInAuto.setSelected(mainFrame.getBugCollection().getCloud().isSavingSignInInformationEnabled());
-                signInAuto.setEnabled(isSignedIn);
-                signInAuto.addChangeListener(new ChangeListener() {
-                    public void stateChanged(ChangeEvent e) {
-                        boolean checked = signInAuto.isSelected();
-                        if (checked != mainFrame.getBugCollection().getCloud().isSavingSignInInformationEnabled()) {
-                            System.out.println("checked: " + checked);
-                            mainFrame.getBugCollection().getCloud().setSaveSignInInformation(checked);
-                        }
-                    }
-                });
-                menu.add(signInAuto);
-
-                switch (signinState) {
-                case SIGNED_OUT:
-                case UNAUTHENTICATED:
-                case SIGNIN_FAILED:
-                    menu.add(new AbstractAction("Sign in") {
-                        public void actionPerformed(ActionEvent e) {
-                            try {
-                                mainFrame.getBugCollection().getCloud().signIn();
-                            } catch (IOException e1) {
-                                mainFrame.getGuiCallback().showMessageDialog(
-                                        "Sign-in error: " + e1.getClass().getSimpleName() + ": " + e1.getMessage());
-                                LOGGER.log(Level.SEVERE, "Could not sign in", e1);
-                            }
-                        }
-                    });
-                    break;
-                default:
-                    menu.add(new AbstractAction("Sign out") {
-                        public void actionPerformed(ActionEvent e) {
-                            mainFrame.getBugCollection().getCloud().signOut();
-                        }
-                    }).setEnabled(isSignedIn);
-                }
-                menu.show(e.getComponent(), e.getX(), e.getY());
-            }
-        });
         constraints.anchor = GridBagConstraints.EAST;
         constraints.insets = new Insets(0, 5, 0, 5);
-        statusBar.add(mainFrame.getSignedInLabel(), constraints.clone());
-
-        mainFrame.getSignedInLabel().setVisible(false);
 
         JLabel logoLabel = new JLabel();
 

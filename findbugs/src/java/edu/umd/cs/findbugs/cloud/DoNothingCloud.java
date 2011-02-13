@@ -28,7 +28,7 @@ public class DoNothingCloud implements Cloud {
     private BugCollection bugCollection;
 
     private static CloudPlugin getFallbackPlugin() {
-        return new CloudPluginBuilder().setCloudid("DoNothingCloud").setDescription("Do Nothing Cloud")
+        return new CloudPluginBuilder().setCloudid("edu.umd.cs.findbugs.cloud.doNothingCloud").setDescription("Do Nothing Cloud")
                 .setDetails("No comments will be stored.")
                 .setClassLoader(BugCollectionStorageCloud.class.getClassLoader())
                 .setCloudClass(BugCollectionStorageCloud.class)

@@ -96,6 +96,7 @@ public class SplitLayout implements FindBugsLayoutManager {
         topLeftSPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, frame.mainFrameTree.bugListPanel(),
                 frame.createCommentsInputPanel());
         topLeftSPane.setOneTouchExpandable(true);
+        topLeftSPane.setContinuousLayout(true);
         topLeftSPane.setDividerLocation(GUISaveState.getInstance().getSplitTreeComments());
         removeSplitPaneBorders(topLeftSPane);
 
@@ -120,12 +121,14 @@ public class SplitLayout implements FindBugsLayoutManager {
         sourcePanel.add(frame.createSourceSearchPanel(), BorderLayout.SOUTH);
         topSPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, topLeftSPane, sourcePanel);
         topSPane.setOneTouchExpandable(true);
+        topSPane.setContinuousLayout(true);
         topSPane.setDividerLocation(GUISaveState.getInstance().getSplitTop());
         removeSplitPaneBorders(topSPane);
 
         summarySPane = frame.summaryTab();
         mainSPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topSPane, summarySPane);
         mainSPane.setOneTouchExpandable(true);
+        mainSPane.setContinuousLayout(true);
         mainSPane.setDividerLocation(GUISaveState.getInstance().getSplitMain());
         removeSplitPaneBorders(mainSPane);
 

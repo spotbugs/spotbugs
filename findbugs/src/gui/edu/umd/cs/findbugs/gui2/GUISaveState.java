@@ -81,7 +81,7 @@ public class GUISaveState {
     private static final String SPLIT_MAIN = "MainSplit";
     private static final String SPLIT_TREE_COMMENTS = "TreeCommentsSplit";
     private static final String SPLIT_TOP = "TopSplit";
-    private static final String SPLIT_SUMMARY = "SummarySplit";
+    private static final String SPLIT_SUMMARY_NEW = "SummarySplitNew";
     private static final String TAB_SIZE = "TabSize";
     private static final String FONT_SIZE = "FontSize";
     private static final String PACKAGE_PREFIX_SEGEMENTS = "PackagePrefixSegments";
@@ -233,7 +233,7 @@ public class GUISaveState {
         newInstance.extendedWindowState = p.getInt(EXTENDED_WINDOW_STATE, Frame.NORMAL);
 
         newInstance.splitMain = p.getInt(SPLIT_MAIN, 400);
-        newInstance.splitSummary = p.getInt(SPLIT_SUMMARY, 85);
+        newInstance.splitSummary = p.getInt(SPLIT_SUMMARY_NEW, 400);
         newInstance.splitTop = p.getInt(SPLIT_TOP, -1);
         newInstance.splitTreeComments = p.getInt(SPLIT_TREE_COMMENTS, 250);
         newInstance.packagePrefixSegments = p.getInt(PACKAGE_PREFIX_SEGEMENTS, 3);
@@ -402,7 +402,7 @@ public class GUISaveState {
         p.putInt(EXTENDED_WINDOW_STATE, extendedWindowState);
 
         p.putInt(SPLIT_MAIN, splitMain);
-        p.putInt(SPLIT_SUMMARY, splitSummary);
+        p.putDouble(SPLIT_SUMMARY_NEW, splitSummary);
         p.putInt(SPLIT_TOP, splitTop);
         p.putInt(SPLIT_TREE_COMMENTS, splitTreeComments);
         p.putInt(PACKAGE_PREFIX_SEGEMENTS, packagePrefixSegments);

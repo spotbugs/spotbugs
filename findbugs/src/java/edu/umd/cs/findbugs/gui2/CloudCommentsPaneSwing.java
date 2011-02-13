@@ -15,26 +15,14 @@ public class CloudCommentsPaneSwing extends CloudCommentsPane {
 
     @Override
     protected void setupLinksOrButtons() {
-        _addCommentLink = new JButton("Add comment...");
-        ((JButton)_addCommentLink).addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                addCommentClicked();
-            }
-        });
-        _signInOutLink = new JButton("Sign in");
-        ((JButton)_signInOutLink).addActionListener(new ActionListener() {
+        signInOutLink = new JButton("Sign in");
+        ((JButton)signInOutLink).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 signInOrOutClicked();
             }
         });
-        _changeLink = new JButton("Change...");
-        ((JButton)_changeLink).addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                changeClicked();
-            }
-        });
-        _cancelLink = new JButton("Cancel");
-        ((JButton)_cancelLink).addActionListener(new ActionListener() {
+        cancelLink = new JButton("Cancel");
+        ((JButton) cancelLink).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 cancelClicked();
             }
@@ -51,8 +39,11 @@ public class CloudCommentsPaneSwing extends CloudCommentsPane {
         JPopupMenu popup = new JPopupMenu();
         for (int i = 0; i < plugins.size(); i++) {
             final CloudPlugin plugin = plugins.get(i);
-            boolean selected = _bugCollection.getCloud().getPlugin().getId().equals(plugin.getId());
+            String id = _bugCollection.getCloud().getPlugin().getId();
+            String thisid = plugin.getId();
+            boolean selected = id.equals(thisid);
             JRadioButtonMenuItem item = new JRadioButtonMenuItem(descriptions.get(i), selected);
+            item.setToolTipText(plugin.getDetails());
             item.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     changeCloud(plugin.getId());
@@ -60,11 +51,12 @@ public class CloudCommentsPaneSwing extends CloudCommentsPane {
             });
             popup.add(item);
         }
-        popup.show(_changeLink, 0, _changeLink.getHeight() + 5);
+        popup.show(signInOutLink, 0, signInOutLink.getHeight() + 5);
     }
 
     @Override
     protected void setSignInOutText(String buttonText) {
-        ((JButton)_signInOutLink).setText(StringUtils.capitalize(buttonText));
+        ((JButton) signInOutLink).setText(StringUtils.capitalize(buttonText));
     }
+
 }
