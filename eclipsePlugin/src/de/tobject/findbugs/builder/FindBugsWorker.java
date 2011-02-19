@@ -82,6 +82,21 @@ public class FindBugsWorker {
 
     private StopTimer st;
 
+    private final IResource resource;
+
+    public FindBugsWorker(IResource resource, IProgressMonitor monitor) throws CoreException {
+        super();
+        this.resource = resource;
+        this.project = resource.getProject();
+        this.javaProject = JavaCore.create(project);
+        if (javaProject == null || !javaProject.exists() || !javaProject.getProject().isOpen()) {
+            throw new CoreException(FindbugsPlugin.createErrorStatus("Java project is not open or does not exist: " + project,
+                    null));
+        }
+        this.monitor = monitor;
+        this.userPrefs = FindbugsPlugin.getUserPreferences(project);
+    }
+
     /**
      * Creates a new worker.
      *
@@ -94,15 +109,7 @@ public class FindBugsWorker {
      *             or is not open
      */
     public FindBugsWorker(IProject project, IProgressMonitor monitor) throws CoreException {
-        super();
-        this.project = project;
-        this.javaProject = JavaCore.create(project);
-        if (javaProject == null || !javaProject.exists() || !javaProject.getProject().isOpen()) {
-            throw new CoreException(FindbugsPlugin.createErrorStatus("Java project is not open or does not exist: " + project,
-                    null));
-        }
-        this.monitor = monitor;
-        this.userPrefs = FindbugsPlugin.getUserPreferences(project);
+        this((IResource)project, monitor);
     }
 
     /**
@@ -332,7 +339,7 @@ public class FindBugsWorker {
 
         // will store bugs as markers in Eclipse workspace
         st.newPoint("createMarkers");
-        MarkerUtil.createMarkers(javaProject, newBugCollection, monitor);
+        MarkerUtil.createMarkers(javaProject, newBugCollection, resource, monitor);
     }
 
     private SortedBugCollection mergeBugCollections(SortedBugCollection firstCollection, SortedBugCollection secondCollection,

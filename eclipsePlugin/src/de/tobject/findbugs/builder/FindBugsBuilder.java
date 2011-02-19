@@ -24,19 +24,21 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
+import de.tobject.findbugs.FindBugsJob;
 import de.tobject.findbugs.FindbugsPlugin;
 
 /**
  * The <code>FindBugsBuilder</code> performs a FindBugs run on a subset of the
  * current project. It will either check all classes in a project or just the
  * ones just having been modified.
- * 
+ *
  * @author Peter Friese
  * @version 1.0
  * @since 25.9.2003
@@ -49,7 +51,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 
     /**
      * Run the builder.
-     * 
+     *
      * @see IncrementalProjectBuilder#build
      */
     @SuppressWarnings("unchecked")
@@ -90,7 +92,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
     /**
      * Performs the build process. This method gets all files in the current
      * project and has a <code>FindBugsVisitor</code> run on them.
-     * 
+     *
      * @param args
      *            A <code>Map</code> containing additional build parameters.
      * @param monitor
@@ -104,7 +106,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
     private void doBuild(final Map<?, ?> args, final IProgressMonitor monitor, int kind) throws CoreException {
         boolean incremental = (kind != IncrementalProjectBuilder.FULL_BUILD);
         IProject project = getProject();
-        FindBugsWorker worker = new FindBugsWorker(project, monitor);
+        IResource resource = project;
         List<WorkItem> files;
         if (incremental) {
             IResourceDelta resourceDelta = getDelta(project);
@@ -138,13 +140,50 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
                                                 + files);
                     }
                     return;
+                } else if(files.size() == 1){
+                    IResource corespondingResource = files.get(0).getCorespondingResource();
+                    if(corespondingResource != null) {
+                        resource = corespondingResource;
+                    }
                 }
             }
         } else {
             files = new ArrayList<WorkItem>();
             files.add(new WorkItem(project));
         }
-        worker.work(files);
+
+        work(resource, files);
+    }
+
+    /**
+     * Run a FindBugs analysis on the given resource as build job BUT not
+     * delaying the current Java build
+     *
+     * @param part
+     *
+     * @param resources
+     *            The resource to run the analysis on.
+     */
+    protected void work(final IResource resource, final List<WorkItem> resources) {
+        FindBugsJob runFindBugs = new StartedFromBuilderJob("Finding bugs in " + resource.getName() + "...", resource, resources);
+        runFindBugs.scheduleAsSystem();
+    }
+
+    private final static class StartedFromBuilderJob extends FindBugsJob {
+        private final List<WorkItem> resources;
+        private final IResource resource;
+
+        private StartedFromBuilderJob(String name, IResource resource, List<WorkItem> resources) {
+            super(name, resource);
+            this.resources = resources;
+            this.resource = resource;
+        }
+
+        @Override
+        protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
+            FindBugsWorker worker = new FindBugsWorker(resource, monitor);
+            worker.work(resources);
+        }
     }
 
     private boolean isConfigUnchanged(IResourceDelta resourceDelta) {

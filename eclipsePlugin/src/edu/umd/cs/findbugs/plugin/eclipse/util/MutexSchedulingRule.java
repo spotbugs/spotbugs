@@ -18,44 +18,46 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.util;
 
-import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 
 import de.tobject.findbugs.FindbugsPlugin;
 
 /**
- * a simple scheduling rule for mutually exclusivity, more-or-less copied from:
+ * A complicated scheduling rule for mutually exclusivity, derived from:
  * http://help.eclipse.org/help30/topic/org.eclipse.platform.doc.isv/guide/
  * runtime_jobs_rules.htm
+ *
+ * This rule takes the available cores into account and also allows to run
+ * FB independently on different resources (if there are enough cores available)
  */
 public class MutexSchedulingRule implements ISchedulingRule {
 
     // enable multicore
-    private static final boolean MULTICORE = Runtime.getRuntime().availableProcessors() > 1;
-
     private static final int MAX_JOBS = Runtime.getRuntime().availableProcessors();
+    private static final boolean MULTICORE = MAX_JOBS > 1;
 
-    private final IProject project;
+    private final IResource resource;
 
-    public MutexSchedulingRule(IProject project) {
+    public MutexSchedulingRule(IResource resource) {
         super();
-        this.project = project;
+        this.resource = resource;
     }
 
     public boolean isConflicting(ISchedulingRule rule) {
-        if (rule instanceof MutexSchedulingRule) {
-            if (project == null) {
-                // we don't know the project, so better to say we have conflict
-                return true;
-            }
-            MutexSchedulingRule mRule = (MutexSchedulingRule) rule;
-            if (MULTICORE) {
-                return mRule.project.equals(project) || tooManyJobsThere();
-            }
+        if (!(rule instanceof MutexSchedulingRule)) {
+            return false;
+        }
+        MutexSchedulingRule mRule = (MutexSchedulingRule) rule;
+        if (resource == null || mRule.resource == null) {
+            // we don't know the resource, so better to say we have conflict
             return true;
         }
-        return false;
+        if (MULTICORE) {
+            return resource.contains(mRule.resource) || tooManyJobsThere();
+        }
+        return true;
     }
 
     private static boolean tooManyJobsThere() {
@@ -64,15 +66,18 @@ public class MutexSchedulingRule implements ISchedulingRule {
         for (Job job : fbJobs) {
             if (job.getState() == Job.RUNNING) {
                 runningCount++;
+                // TODO made this condition configurable
+                if( runningCount > MAX_JOBS) {
+                    return true;
+                }
             }
         }
-        // TODO made this condition configurable
-        return runningCount > MAX_JOBS;
+        return false;
     }
 
     public boolean contains(ISchedulingRule rule) {
-        if (rule instanceof IProject && project != null) {
-            return project.equals(rule);
+        if (rule instanceof IResource && resource != null) {
+            return resource.contains(rule);
         }
         return isConflicting(rule);
         /*
@@ -84,7 +89,7 @@ public class MutexSchedulingRule implements ISchedulingRule {
 
     @Override
     public String toString() {
-        return "MutexSchedulingRule, project: " + project;
+        return "MutexSchedulingRule, resource: " + resource;
     }
 
 }

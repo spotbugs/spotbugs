@@ -18,7 +18,7 @@
  */
 package de.tobject.findbugs;
 
-import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -33,9 +33,9 @@ import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
  */
 public abstract class FindBugsJob extends Job {
 
-    public FindBugsJob(String name, IProject project) {
+    public FindBugsJob(String name, IResource resource) {
         super(name);
-        setRule(new MutexSchedulingRule(project));
+        setRule(new MutexSchedulingRule(resource));
     }
 
     @Override
@@ -46,6 +46,13 @@ public abstract class FindBugsJob extends Job {
     public void scheduleInteractive() {
         setUser(true);
         setPriority(Job.INTERACTIVE);
+        schedule();
+    }
+
+    public void scheduleAsSystem() {
+        setUser(false);
+        setSystem(true);
+        setPriority(Job.BUILD);
         schedule();
     }
 

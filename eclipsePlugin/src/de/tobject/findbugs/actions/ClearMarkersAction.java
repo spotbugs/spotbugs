@@ -21,7 +21,7 @@ package de.tobject.findbugs.actions;
 
 import java.util.List;
 
-import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
@@ -33,7 +33,7 @@ import de.tobject.findbugs.builder.WorkItem;
 
 /**
  * Remove all bug markers for the given selection.
- * 
+ *
  * @author Peter Friese
  * @author Phil Crosby
  * @author Andrei Loskutov
@@ -47,8 +47,8 @@ public class ClearMarkersAction extends FindBugsAction {
      * displaying a progress monitor.
      */
     @Override
-    protected void work(final IWorkbenchPart part, IProject project, final List<WorkItem> resources) {
-        FindBugsJob clearMarkersJob = new ClearMarkersJob(project, resources);
+    protected void work(final IWorkbenchPart part, IResource resource, final List<WorkItem> resources) {
+        FindBugsJob clearMarkersJob = new ClearMarkersJob(resource, resources);
         clearMarkersJob.addJobChangeListener(new JobChangeAdapter() {
             @Override
             public void done(IJobChangeEvent event) {
@@ -62,8 +62,8 @@ public class ClearMarkersAction extends FindBugsAction {
 final class ClearMarkersJob extends FindBugsJob {
     private final List<WorkItem> resources;
 
-    ClearMarkersJob(IProject project, List<WorkItem> resources) {
-        super("Removing FindBugs markers", project);
+    ClearMarkersJob(IResource resource, List<WorkItem> resources) {
+        super("Removing FindBugs markers", resource);
         this.resources = resources;
     }
 

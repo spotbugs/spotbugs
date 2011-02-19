@@ -62,7 +62,7 @@ import de.tobject.findbugs.view.FindBugsPerspectiveFactory;
 
 /**
  * Run FindBugs on the currently selected element(s) in the package explorer.
- * 
+ *
  * @author Peter Friese
  * @author Phil Crosby
  * @author Andrei Loskutov
@@ -154,14 +154,14 @@ public class FindBugsAction implements IObjectActionDelegate {
     /**
      * Run a FindBugs analysis on the given resource, displaying a progress
      * monitor.
-     * 
+     *
      * @param part
-     * 
+     *
      * @param resources
      *            The resource to run the analysis on.
      */
-    protected void work(IWorkbenchPart part, final IProject project, final List<WorkItem> resources) {
-        FindBugsJob runFindBugs = new StartedFromViewJob("Finding bugs in " + project.getName() + "...", project, resources, part);
+    protected void work(IWorkbenchPart part, final IResource resource, final List<WorkItem> resources) {
+        FindBugsJob runFindBugs = new StartedFromViewJob("Finding bugs in " + resource.getName() + "...", resource, resources, part);
         runFindBugs.scheduleInteractive();
     }
 
@@ -247,20 +247,20 @@ public class FindBugsAction implements IObjectActionDelegate {
     private final static class StartedFromViewJob extends FindBugsJob {
         private final List<WorkItem> resources;
 
-        private final IProject project;
+        private final IResource resource;
 
         private final IWorkbenchPart targetPart;
 
-        private StartedFromViewJob(String name, IProject project, List<WorkItem> resources, IWorkbenchPart targetPart) {
-            super(name, project);
+        private StartedFromViewJob(String name, IResource resource, List<WorkItem> resources, IWorkbenchPart targetPart) {
+            super(name, resource);
             this.resources = resources;
-            this.project = project;
+            this.resource = resource;
             this.targetPart = targetPart;
         }
 
         @Override
         protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
-            FindBugsWorker worker = new FindBugsWorker(project, monitor);
+            FindBugsWorker worker = new FindBugsWorker(resource, monitor);
 
             worker.work(resources);
 
@@ -273,7 +273,7 @@ public class FindBugsAction implements IObjectActionDelegate {
             if (isFindBugsPerspectiveActive(targetPart)) {
                 return;
             }
-            final IMarker[] allMarkers = MarkerUtil.getAllMarkers(project);
+            final IMarker[] allMarkers = MarkerUtil.getAllMarkers(resource);
             if (allMarkers.length == 0) {
                 return;
             }

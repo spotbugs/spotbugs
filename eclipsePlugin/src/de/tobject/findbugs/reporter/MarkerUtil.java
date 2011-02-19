@@ -36,10 +36,12 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
@@ -110,7 +112,7 @@ public final class MarkerUtil {
      *            the project
      * @param monitor
      */
-    public static void createMarkers(IJavaProject javaProject, BugCollection theCollection, IProgressMonitor monitor) {
+    public static void createMarkers(IJavaProject javaProject, BugCollection theCollection, ISchedulingRule rule, IProgressMonitor monitor) {
         if (monitor.isCanceled()) {
             return;
         }
@@ -121,11 +123,8 @@ public final class MarkerUtil {
         IProject project = javaProject.getProject();
         try {
             project.getWorkspace().run(new MarkerReporter(bugParameters, theCollection, project), // action
-                    project, // scheduling rule (null if there are no scheduling
-                             // restrictions)
-                    0, // flags (could specify IWorkspace.AVOID_UPDATE)
-                    monitor); // progress monitor (null if progress reporting is
-                              // not desired)
+                    rule,
+                    IWorkspace.AVOID_UPDATE,  monitor);
         } catch (CoreException e) {
             FindbugsPlugin.getDefault().logException(e, "Core exception on add marker");
         }
@@ -549,7 +548,7 @@ public final class MarkerUtil {
                 // Remove old markers
                 project.deleteMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);
                 // Display warnings
-                createMarkers(javaProject, bugs, monitor);
+                createMarkers(javaProject, bugs, project, monitor);
             }
         };
         job.scheduleInteractive();
