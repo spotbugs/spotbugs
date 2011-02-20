@@ -1294,6 +1294,19 @@
          </enablement>
       </consolePageParticipant>
    </extension>
+   <extension
+         point="org.eclipse.ui.themes">
+      <fontDefinition
+            categoryId="findBugsEclipsePlugin.theme"
+            defaultsTo="org.eclipse.jface.textfont"
+            id="findBugsEclipsePlugin.consoleFont"
+            label="FindBugs Console">
+      </fontDefinition>
+      <themeElementCategory
+            id="findBugsEclipsePlugin.theme"
+            label="FindBugs">
+      </themeElementCategory>
+   </extension>
 
 <!-- uncommented until we define our own context
     <extension

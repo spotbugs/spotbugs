@@ -20,6 +20,10 @@ package de.tobject.findbugs.view;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
@@ -31,12 +35,13 @@ import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.IConsolePageParticipant;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.part.IPageBookViewPage;
+import org.eclipse.ui.themes.ITheme;
 
 /**
  * @author Andrei
  */
-public class FindBugsConsole extends MessageConsole {
-
+public class FindBugsConsole extends MessageConsole implements IPropertyChangeListener {
+    private static final String CONSOLE_FONT = "findBugsEclipsePlugin.consoleFont";
     static FindBugsConsole console;
 
     boolean disposed;
@@ -59,13 +64,36 @@ public class FindBugsConsole extends MessageConsole {
 
     private FindBugsConsole(String name, ImageDescriptor imageDescriptor, boolean autoLifecycle) {
         super(name, imageDescriptor, autoLifecycle);
+
+    }
+
+    public void propertyChange(PropertyChangeEvent event) {
+        if (CONSOLE_FONT.equals(event.getProperty())) {
+            setConsoleFont();
+        }
     }
 
     @Override
     protected void dispose() {
         if (!disposed) {
             disposed = true;
+            ITheme theme = PlatformUI.getWorkbench().getThemeManager().getCurrentTheme();
+            theme.removePropertyChangeListener(this);
             super.dispose();
+        }
+    }
+
+    private void setConsoleFont() {
+        if (Display.getCurrent() == null) {
+            PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+                public void run() {
+                	setConsoleFont();
+                }
+            });
+        } else {
+            ITheme theme = PlatformUI.getWorkbench().getThemeManager().getCurrentTheme();
+            Font font = theme.getFontRegistry().get(CONSOLE_FONT);
+            console.setFont(font);
         }
     }
 
@@ -93,6 +121,9 @@ public class FindBugsConsole extends MessageConsole {
         if (!exists) {
             manager.addConsoles(new IConsole[] { console });
         }
+        ITheme theme = PlatformUI.getWorkbench().getThemeManager().getCurrentTheme();
+        theme.addPropertyChangeListener(console);
+        console.setConsoleFont();
         manager.showConsoleView(console);
         return console;
     }
