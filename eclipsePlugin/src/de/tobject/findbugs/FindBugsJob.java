@@ -25,6 +25,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 
 import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
 
@@ -32,10 +34,42 @@ import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
  * @author Andrei
  */
 public abstract class FindBugsJob extends Job {
+    static {
+        // see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=298795
+        // we must run this stupid code in the UI thread
+        Display.getDefault().asyncExec(new Runnable() {
+            public void run() {
+                PlatformUI.getWorkbench().getProgressService().registerIconForFamily(
+                        FindbugsPlugin.getDefault().getImageDescriptor("runFindbugs.png"),
+                        FindbugsPlugin.class);
+            }
+        });
+    }
+
+    private final IResource resource;
+
+    public static void cancelSimilarJobs(FindBugsJob job) {
+        if(job.getResource() == null) {
+            return;
+        }
+        Job[] jobs = Job.getJobManager().find(FindbugsPlugin.class);
+        for (Job job2 : jobs) {
+            if(job.getResource().equals(((FindBugsJob)job2).getResource())){
+                if(job2.getState() != Job.RUNNING) {
+                    job2.cancel();
+                }
+            }
+        }
+    }
 
     public FindBugsJob(String name, IResource resource) {
         super(name);
+        this.resource = resource;
         setRule(new MutexSchedulingRule(resource));
+    }
+
+    public IResource getResource() {
+        return resource;
     }
 
     @Override
@@ -51,7 +85,6 @@ public abstract class FindBugsJob extends Job {
 
     public void scheduleAsSystem() {
         setUser(false);
-        setSystem(true);
         setPriority(Job.BUILD);
         schedule();
     }
