@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -89,7 +90,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.Detector#report()
      */
     public void report() {
@@ -254,7 +255,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
                                     isRetained = true;
                                     break;
                                 }
-                            if (countOtherCalls && !isRetained) {
+                            if (countOtherCalls && !isRetained && SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors")) {
                                 int priority = LOW_PRIORITY;
                                 if (!isImmediateNullTest && !isIgnored) {
                                     TypeDataflow typeAnalysis = classContext.getTypeDataflow(method);

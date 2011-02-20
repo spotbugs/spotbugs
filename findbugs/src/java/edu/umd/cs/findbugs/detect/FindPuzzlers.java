@@ -41,6 +41,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StringAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -142,7 +143,8 @@ public class FindPuzzlers extends OpcodeStackDetector {
                    || (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) && getNameConstantOperand().equals("addAll") && getSigConstantOperand().equals("(Ljava/util/Collection;)Z")) {
             OpcodeStack.Item top = stack.getStackItem(0);
             XMethod returnValueOf = top.getReturnValueOf();
-            if (returnValueOf != null && returnValueOf.getName().equals("entrySet")) {
+            if (returnValueOf != null && returnValueOf.getName().equals("entrySet")
+                    && SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors")) {
                 String name = returnValueOf.getClassName();
                 int priority = Priorities.LOW_PRIORITY;
                 if (name.equals("java.util.Map"))
@@ -546,8 +548,9 @@ public class FindPuzzlers extends OpcodeStackDetector {
             }
             if (constant instanceof Number && (seen == LAND || value.getSpecialKind() == OpcodeStack.Item.RESULT_OF_L2I)) {
                 long constantValue = ((Number) constant).longValue();
-                if (constantValue == 0xEFFFFFFFL || constantValue == 0xEFFFFFFFFFFFFFFFL || seen == IAND
-                        && constantValue == 0xEFFFFFFF)
+                if (SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors") &&
+                        (constantValue == 0xEFFFFFFFL || constantValue == 0xEFFFFFFFFFFFFFFFL || seen == IAND
+                        && constantValue == 0xEFFFFFFF))
                     bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", seen == LAND ? HIGH_PRIORITY : NORMAL_PRIORITY)
                             .addClassAndMethod(this).addString("Possible failed attempt to mask lower 31 bits of an int")
                             .addValueSource(value, this), this);

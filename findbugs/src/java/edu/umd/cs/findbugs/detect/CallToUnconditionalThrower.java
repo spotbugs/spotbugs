@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -64,7 +65,7 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.Detector#report()
      */
     public void report() {
@@ -136,7 +137,7 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
                 analysisContext.getLookupFailureCallback().reportMissingClass(e);
             }
             boolean newResult = foundThrower && !foundNonThrower;
-            if (newResult)
+            if (newResult && SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors"))
                 bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.NORMAL_PRIORITY)
                         .addClassAndMethod(classContext.getJavaClass(), method)
                         .addString("Call to method that always throws Exception").addMethod(primaryXMethod)

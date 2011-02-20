@@ -95,7 +95,7 @@ public class SystemProperties {
     /**
      * This method is public to allow clients to set system properties via any
      * {@link URL}
-     * 
+     *
      * @param url
      *            an url to load system properties from, may be nullerrorMsg
      */
@@ -117,7 +117,14 @@ public class SystemProperties {
     /**
      * Get boolean property, returning false if a security manager prevents us
      * from accessing system properties
-     * 
+     * <p>
+     * (incomplete) list of known system properties
+     * <ul>
+     * <li>
+     * "report_TESTING_pattern_in_standard_detectors" - default is false
+     * </li>
+     * </ul>
+     *
      * @return true if the property exists and is set to true
      */
     public static boolean getBoolean(String name) {

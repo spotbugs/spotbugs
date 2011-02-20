@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StringAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
@@ -87,28 +88,28 @@ public class CrossSiteScripting extends OpcodeStackDetector {
             stack.replaceTop(replaceTop);
             replaceTop = null;
         }
-        
+
         OpcodeStack.Item oldTop = top;
         top = null;
         if (seen == INVOKESPECIAL) {
             String calledClassName = getClassConstantOperand();
             String calledMethodName = getNameConstantOperand();
             String calledMethodSig = getSigConstantOperand();
-            
-            if (calledClassName.startsWith("java/io/File") 
+
+            if (calledClassName.startsWith("java/io/File")
                     && calledMethodSig.equals("(Ljava/lang/String;)V")) {
                 OpcodeStack.Item path = stack.getStackItem(0);
-                if (isTainted(path)) {
+                if (isTainted(path) && SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors")) {
                     annotateAndReport(new BugInstance(this, "TESTING", taintPriority(path))
                           .addClassAndMethod(this).addCalledMethod(this)
                           .addString("Path manipulation"),
                             path);
                 }
-                
+
             }
-           
-            
-            
+
+
+
             if (calledClassName.equals("javax/servlet/http/Cookie") && calledMethodName.equals("<init>")
                     && calledMethodSig.equals("(Ljava/lang/String;Ljava/lang/String;)V")) {
                 OpcodeStack.Item value = stack.getStackItem(0);
@@ -187,8 +188,8 @@ public class CrossSiteScripting extends OpcodeStackDetector {
                             new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_JSP_WRITER", Priorities.NORMAL_PRIORITY)
                                     .addClassAndMethod(this),
                             oldTop);
-            } else if (calledClassName.startsWith("java/io/") && calledClassName.endsWith("Writer") 
-                    && (calledMethodName.startsWith("print") || calledMethodName.startsWith("write")) 
+            } else if (calledClassName.startsWith("java/io/") && calledClassName.endsWith("Writer")
+                    && (calledMethodName.startsWith("print") || calledMethodName.startsWith("write"))
                     && (calledMethodSig.equals("(Ljava/lang/Object;)V") || calledMethodSig.equals("(Ljava/lang/String;)V"))) {
                 OpcodeStack.Item writing = stack.getStackItem(0);
                 OpcodeStack.Item writingTo = stack.getStackItem(1);
@@ -224,6 +225,6 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 
     }
 
-   
+
 
 }
