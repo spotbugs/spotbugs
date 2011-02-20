@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ConstantPoolGen;
 
@@ -188,6 +190,42 @@ public class AnalysisCache implements IAnalysisCache {
 
     public void purgeClassAnalysis(Class<?> analysisClass) {
         classAnalysisMap.remove(analysisClass);
+    }
+
+    /**
+     * Cleans up all cached data
+     */
+    public void dispose(){
+        classAnalysisMap.clear();
+        classAnalysisEngineMap.clear();
+        analysisLocals.clear();
+        databaseFactoryMap.clear();
+        databaseMap.clear();
+        methodAnalysisEngineMap.clear();
+    }
+
+    /**
+     * @param analysisClass non null analysis type
+     * @return map with analysis data for given type, can be null
+     */
+    public @CheckForNull Map<ClassDescriptor, Object> getClassAnalysis(Class<?> analysisClass) {
+        return classAnalysisMap.get(analysisClass);
+    }
+
+    /**
+     * Adds the data for given analysis type from given map to the cache
+     * @param analysisClass non null analysis type
+     * @param map non null, pre-filled map with analysis data for given type
+     */
+    public <E> void reuseClassAnalysis(Class<E> analysisClass, Map<ClassDescriptor, Object> map) {
+        Map<ClassDescriptor, Object> myMap = classAnalysisMap.get(analysisClass);
+        if (myMap != null) {
+            myMap.putAll(map);
+        } else {
+            myMap = createMap((Map)classAnalysisEngineMap, analysisClass);
+            myMap.putAll(map);
+            classAnalysisMap.put(analysisClass, myMap);
+        }
     }
 
     /*
@@ -408,22 +446,29 @@ public class AnalysisCache implements IAnalysisCache {
             final Map<Class<?>, ? extends IAnalysisEngine<DescriptorType, E>> engineMap, final Class<E> analysisClass) {
         Map<DescriptorType, Object> descriptorMap = analysisClassToDescriptorMapMap.get(analysisClass);
         if (descriptorMap == null) {
-            // Create a MapCache that allows the analysis engine to
-            // decide that analysis results should be retained indefinitely.
-            IAnalysisEngine<DescriptorType, E> engine = engineMap.get(analysisClass);
-            if (analysisClass.equals(JavaClass.class)) {
-                descriptorMap = new MapCache<DescriptorType, Object>(MAX_JAVACLASS_RESULTS_TO_CACHE);
-            } else if (analysisClass.equals(ConstantPoolGen.class)) {
-                descriptorMap = new MapCache<DescriptorType, Object>(MAX_CONSTANT_POOL_GEN_RESULTS_TO_CACHE);
-            } else if (analysisClass.equals(ClassContext.class)) {
-                descriptorMap = new MapCache<DescriptorType, Object>(10);
-            } else if (engine instanceof IClassAnalysisEngine && ((IClassAnalysisEngine) engine).canRecompute()) {
-                descriptorMap = new MapCache<DescriptorType, Object>(MAX_CLASS_RESULTS_TO_CACHE);
-            } else {
-                descriptorMap = new HashMap<DescriptorType, Object>();
-            }
-
+            descriptorMap = createMap(engineMap, analysisClass);
             analysisClassToDescriptorMapMap.put(analysisClass, descriptorMap);
+        }
+        return descriptorMap;
+    }
+
+    private static <DescriptorType, E> Map<DescriptorType, Object> createMap(
+            final Map<Class<?>, ? extends IAnalysisEngine<DescriptorType, E>> engineMap,
+                    final Class<E> analysisClass) {
+        Map<DescriptorType, Object> descriptorMap;
+        // Create a MapCache that allows the analysis engine to
+        // decide that analysis results should be retained indefinitely.
+        IAnalysisEngine<DescriptorType, E> engine = engineMap.get(analysisClass);
+        if (analysisClass.equals(JavaClass.class)) {
+            descriptorMap = new MapCache<DescriptorType, Object>(MAX_JAVACLASS_RESULTS_TO_CACHE);
+        } else if (analysisClass.equals(ConstantPoolGen.class)) {
+            descriptorMap = new MapCache<DescriptorType, Object>(MAX_CONSTANT_POOL_GEN_RESULTS_TO_CACHE);
+        } else if (analysisClass.equals(ClassContext.class)) {
+            descriptorMap = new MapCache<DescriptorType, Object>(10);
+        } else if (engine instanceof IClassAnalysisEngine && ((IClassAnalysisEngine) engine).canRecompute()) {
+            descriptorMap = new MapCache<DescriptorType, Object>(MAX_CLASS_RESULTS_TO_CACHE);
+        } else {
+            descriptorMap = new HashMap<DescriptorType, Object>();
         }
         return descriptorMap;
     }

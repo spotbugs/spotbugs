@@ -514,6 +514,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
             // By default, don't run FindBugs automatically
             chkEnableFindBugs.setSelection(false);
             chkRunAtFullBuild.setEnabled(false);
+            FindBugsPreferenceInitializer.restoreDefaults(projectStore);
         } else {
             FindBugsPreferenceInitializer.restoreDefaults(workspaceStore);
         }

@@ -60,6 +60,10 @@ public class WorkspaceSettingsTab extends Composite {
 
     private Button optimizeClasspath;
 
+    private Button cacheClassData;
+
+    private Button runAsExtraJob;
+
     public WorkspaceSettingsTab(TabFolder tabFolder, final FindbugsPropertyPage page, int style) {
         super(tabFolder, style);
         this.page = page;
@@ -73,7 +77,19 @@ public class WorkspaceSettingsTab extends Composite {
         optimizeClasspath = new Button(this, SWT.CHECK);
         optimizeClasspath.setSelection(store.getBoolean(FindBugsConstants.KEY_SHORT_CLASSPATH));
         optimizeClasspath.setText("Use short classpath for Eclipse plugins (experimental)");
-        if(page.getProject() != null) {
+        optimizeClasspath.setToolTipText("Skip some extra PDE generated entries");
+
+        cacheClassData = new Button(this, SWT.CHECK);
+        cacheClassData.setSelection(store.getBoolean(FindBugsConstants.KEY_CACHE_CLASS_DATA));
+        cacheClassData.setText("Cache .class data (useful for slow file system && lot of RAM) (experimental)");
+        cacheClassData.setToolTipText("Cache .class data for FB analysis on same project");
+
+        runAsExtraJob = new Button(this, SWT.CHECK);
+        runAsExtraJob.setSelection(store.getBoolean(FindBugsConstants.KEY_RUN_ANALYSIS_AS_EXTRA_JOB));
+        runAsExtraJob.setText("Run FB analysis as extra job (independent from build job) (experimental)");
+        runAsExtraJob.setToolTipText("Should improve user experience especially for the incremented compile");
+
+        if(!isWorkspaceSettings()) {
             return;
         }
         ManagePathsWidget pathsWidget = new ManagePathsWidget(this);
@@ -128,8 +144,10 @@ public class WorkspaceSettingsTab extends Composite {
     }
 
     public void refreshUI(UserPreferences prefs) {
-            optimizeClasspath.setSelection(store.getBoolean(FindBugsConstants.KEY_SHORT_CLASSPATH));
-        if(page.getProject() != null) {
+        optimizeClasspath.setSelection(store.getBoolean(FindBugsConstants.KEY_SHORT_CLASSPATH));
+        cacheClassData.setSelection(store.getBoolean(FindBugsConstants.KEY_CACHE_CLASS_DATA));
+        runAsExtraJob.setSelection(store.getBoolean(FindBugsConstants.KEY_RUN_ANALYSIS_AS_EXTRA_JOB));
+        if(!isWorkspaceSettings()) {
             return;
         }
         confirmSwitch.setSelection(store.getBoolean(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH));
@@ -139,18 +157,27 @@ public class WorkspaceSettingsTab extends Composite {
         detectorProvider.refresh();
     }
 
+    /**
+     * @return
+     */
+    private boolean isWorkspaceSettings() {
+        return page.getProject() == null;
+    }
+
     public void performOK() {
-        if(optimizeClasspath != null) {
-            boolean shortClassPath = optimizeClasspath.getSelection();
-            store.setValue(FindBugsConstants.KEY_SHORT_CLASSPATH, shortClassPath);
-        } else {
-            final SortedSet<String> detectorPaths = PrefsUtil.readDetectorPaths(store);
-            if (detectorPaths.isEmpty() && !DetectorFactoryCollection.isLoaded()) {
-                return;
-            }
-            FindbugsPlugin.applyCustomDetectors(true);
-            pluginsChanged = true;
+        store.setValue(FindBugsConstants.KEY_SHORT_CLASSPATH, optimizeClasspath.getSelection());
+        store.setValue(FindBugsConstants.KEY_CACHE_CLASS_DATA, cacheClassData.getSelection());
+        store.setValue(FindBugsConstants.KEY_RUN_ANALYSIS_AS_EXTRA_JOB, runAsExtraJob.getSelection());
+        if(!isWorkspaceSettings()) {
+            return;
         }
+
+        final SortedSet<String> detectorPaths = PrefsUtil.readDetectorPaths(store);
+        if (detectorPaths.isEmpty() && !DetectorFactoryCollection.isLoaded()) {
+            return;
+        }
+        FindbugsPlugin.applyCustomDetectors(true);
+        pluginsChanged = true;
     }
 
     public boolean arePluginsChanged() {

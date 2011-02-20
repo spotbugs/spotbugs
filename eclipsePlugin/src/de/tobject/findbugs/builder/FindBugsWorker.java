@@ -41,11 +41,13 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.tobject.findbugs.EclipseGuiCallback;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.io.IO;
 import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.util.Util.StopTimer;
@@ -83,6 +85,7 @@ public class FindBugsWorker {
     private StopTimer st;
 
     private final IResource resource;
+
 
     public FindBugsWorker(IResource resource, IProgressMonitor monitor) throws CoreException {
         super();
@@ -181,8 +184,10 @@ public class FindBugsWorker {
         }
 
         st.newPoint("configureProps");
+        IPreferenceStore store = FindbugsPlugin.getPluginPreferences(project);
+        boolean cacheClassData = store.getBoolean(FindBugsConstants.KEY_CACHE_CLASS_DATA);
 
-        final FindBugs2 findBugs = new FindBugs2();
+        final FindBugs2 findBugs = cacheClassData? new FindBugs2Eclipse(project) : new FindBugs2();
         findBugs.setNoClassOk(true);
         findBugs.setProject(findBugsProject);
         findBugs.setBugReporter(bugReporter);
@@ -200,6 +205,10 @@ public class FindBugsWorker {
         configureExtendedProps(userPrefs.getExcludeFilterFiles(), findBugs, false, false);
         configureExtendedProps(userPrefs.getExcludeBugsFiles(), findBugs, false, true);
 
+        if(cacheClassData) {
+            FindBugs2Eclipse.checkClassPathChanges(findBugs.getProject().getAuxClasspathEntryList(), project);
+        }
+
         st.newPoint("runFindBugs");
 
         runFindBugs(findBugs);
@@ -212,6 +221,8 @@ public class FindBugsWorker {
         st = null;
         monitor.done();
     }
+
+
 
     private void configureSourceDirectories(Project findBugsProject, Map<IPath, IPath> outLocations) {
         Set<IPath> srcDirs = outLocations.keySet();
@@ -274,8 +285,8 @@ public class FindBugsWorker {
      * @param fbProject
      */
     private void collectClassFiles(List<WorkItem> resources, Map<IPath, IPath> outLocations, Project fbProject) {
-        for (WorkItem resource : resources) {
-            resource.addFilesToProject(fbProject, outLocations);
+        for (WorkItem workItem : resources) {
+            workItem.addFilesToProject(fbProject, outLocations);
         }
     }
 

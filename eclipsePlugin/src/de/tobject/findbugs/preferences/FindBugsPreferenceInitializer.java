@@ -22,6 +22,9 @@ import static de.tobject.findbugs.preferences.FindBugsConstants.ASK_ABOUT_PERSPE
 import static de.tobject.findbugs.preferences.FindBugsConstants.DISABLED_CATEGORIES;
 import static de.tobject.findbugs.preferences.FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD;
 import static de.tobject.findbugs.preferences.FindBugsConstants.EXPORT_SORT_ORDER;
+import static de.tobject.findbugs.preferences.FindBugsConstants.KEY_CACHE_CLASS_DATA;
+import static de.tobject.findbugs.preferences.FindBugsConstants.KEY_RUN_ANALYSIS_AS_EXTRA_JOB;
+import static de.tobject.findbugs.preferences.FindBugsConstants.KEY_SHORT_CLASSPATH;
 import static de.tobject.findbugs.preferences.FindBugsConstants.ORDER_BY_NAME;
 import static de.tobject.findbugs.preferences.FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY;
 import static de.tobject.findbugs.preferences.FindBugsConstants.PRIO_LOW_MARKER_SEVERITY;
@@ -51,6 +54,10 @@ public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer
         IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
         store.setDefault(EXPORT_SORT_ORDER, ORDER_BY_NAME);
         store.setDefault(DONT_REMIND_ABOUT_FULL_BUILD, false);
+
+        store.setDefault(KEY_CACHE_CLASS_DATA, false);
+        store.setDefault(KEY_RUN_ANALYSIS_AS_EXTRA_JOB, false);
+        store.setDefault(KEY_SHORT_CLASSPATH, false);
 
         store.setDefault(DISABLED_CATEGORIES, "EXPERIMENTAL,I18N,MALICIOUS_CODE,SECURITY");
         store.setDefault(RUN_ANALYSIS_AUTOMATICALLY, false);
@@ -98,6 +105,10 @@ public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer
         store.setToDefault(PRIO_LOW_MARKER_SEVERITY);
         store.setToDefault(PRIO_NORMAL_MARKER_SEVERITY);
         store.setToDefault(PRIO_HIGH_MARKER_SEVERITY);
+
+        store.setToDefault(KEY_CACHE_CLASS_DATA);
+        store.setToDefault(KEY_RUN_ANALYSIS_AS_EXTRA_JOB);
+        store.setToDefault(KEY_SHORT_CLASSPATH);
     }
 
 }

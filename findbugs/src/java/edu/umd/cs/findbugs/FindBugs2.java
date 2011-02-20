@@ -209,7 +209,7 @@ public class FindBugs2 implements IFindBugsEngine {
             createClassPath();
 
             // The analysis cache object
-            createAnalysisCache();
+            analysisCache = createAnalysisCache();
 
             progress.reportNumberOfArchives(project.getFileCount() + project.getNumAuxClasspathEntries());
             profiler.start(this.getClass());
@@ -296,20 +296,27 @@ public class FindBugs2 implements IFindBugsEngine {
             }
             throw e;
         } finally {
-            DescriptorFactory.clearInstance();
-            ObjectTypeFactory.clearInstance();
-            TypeQualifierApplications.clearInstance();
-            TypeQualifierAnnotation.clearInstance();
-            TypeQualifierValue.clearInstance();
-            // Make sure the codebases on the classpath are closed
-            AnalysisContext.removeCurrentAnalysisContext();
-            Global.removeAnalysisCacheForCurrentThread();
-            MethodInfo.clearCaches();
-            if (classPath != null) {
-                classPath.close();
-            }
+            clearCaches();
             profiler.end(this.getClass());
             profiler.report();
+        }
+    }
+
+    /**
+     * Protected to allow Eclipse plugin remember some cache data for later reuse
+     */
+    protected void clearCaches() {
+        DescriptorFactory.clearInstance();
+        ObjectTypeFactory.clearInstance();
+        TypeQualifierApplications.clearInstance();
+        TypeQualifierAnnotation.clearInstance();
+        TypeQualifierValue.clearInstance();
+        // Make sure the codebases on the classpath are closed
+        AnalysisContext.removeCurrentAnalysisContext();
+        Global.removeAnalysisCacheForCurrentThread();
+        MethodInfo.clearCaches();
+        if (classPath != null) {
+            classPath.close();
         }
     }
 
@@ -630,13 +637,16 @@ public class FindBugs2 implements IFindBugsEngine {
     }
 
     /**
-     * Create the analysis cache object.
+     * Create the analysis cache object and register it for current execution thread.
+     * <p>
+     * This method is protected to allow clients override it and possibly reuse
+     * some previous analysis data (for Eclipse interactive re-build)
      *
      * @throws IOException
      *             if error occurs registering analysis engines in a plugin
      */
-    private void createAnalysisCache() throws IOException {
-        analysisCache = ClassFactory.instance().createAnalysisCache(classPath, bugReporter);
+    protected IAnalysisCache createAnalysisCache() throws IOException {
+        IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(classPath, bugReporter);
 
         // Register the "built-in" analysis engines
         registerBuiltInAnalysisEngines(analysisCache);
@@ -648,6 +658,7 @@ public class FindBugs2 implements IFindBugsEngine {
         analysisCache.eagerlyPutDatabase(DetectorFactoryCollection.class, detectorFactoryCollection);
 
         Global.setAnalysisCacheForCurrentThread(analysisCache);
+        return analysisCache;
     }
 
     /**

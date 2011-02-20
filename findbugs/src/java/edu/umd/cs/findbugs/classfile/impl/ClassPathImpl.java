@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
@@ -33,7 +34,7 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
  * Implementation of IClassPath.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassPathImpl implements IClassPath {
@@ -66,7 +67,7 @@ public class ClassPathImpl implements IClassPath {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IClassPath#addCodeBase(edu.umd.cs.findbugs
      * .classfile.ICodeBase)
@@ -84,7 +85,7 @@ public class ClassPathImpl implements IClassPath {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.IClassPath#appCodeBaseIterator()
      */
     public Iterator<? extends ICodeBase> appCodeBaseIterator() {
@@ -93,7 +94,7 @@ public class ClassPathImpl implements IClassPath {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.IClassPath#auxCodeBaseIterator()
      */
     public Iterator<? extends ICodeBase> auxCodeBaseIterator() {
@@ -102,7 +103,7 @@ public class ClassPathImpl implements IClassPath {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.IClassPath#close()
      */
     public void close() {
@@ -117,9 +118,22 @@ public class ClassPathImpl implements IClassPath {
         codeBaseEntryMap.clear();
     }
 
+    public Map<String, ICodeBaseEntry> getApplicationCodebaseEntries() {
+        Map<String, ICodeBaseEntry> appEntries = new HashMap<String, ICodeBaseEntry>();
+        Iterator<Entry<String, ICodeBaseEntry>> iterator = codeBaseEntryMap.entrySet().iterator();
+        while(iterator.hasNext()) {
+            Entry<String, ICodeBaseEntry> entry = iterator.next();
+            ICodeBaseEntry codeBaseEntry = entry.getValue();
+            if(codeBaseEntry.getCodeBase().isApplicationCodeBase()) {
+                appEntries.put(entry.getKey(), codeBaseEntry);
+            }
+        }
+        return appEntries;
+    }
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IClassPath#lookupResource(java.lang.String)
      */
@@ -153,7 +167,7 @@ public class ClassPathImpl implements IClassPath {
 
     /**
      * Search list of codebases for named resource.
-     * 
+     *
      * @param codeBaseList
      *            list of codebases to search
      * @param resourceName
@@ -174,7 +188,7 @@ public class ClassPathImpl implements IClassPath {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IClassPath#mapResourceNameToCodeBaseEntry
      * (java.lang.String, edu.umd.cs.findbugs.classfile.ICodeBaseEntry)

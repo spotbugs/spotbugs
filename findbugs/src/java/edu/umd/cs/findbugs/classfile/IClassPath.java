@@ -20,11 +20,12 @@
 package edu.umd.cs.findbugs.classfile;
 
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * A classpath from which resources (classes and other files) may be loaded.
  * Essentially, this is just a list of codebases.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface IClassPath {
@@ -32,7 +33,7 @@ public interface IClassPath {
      * Add a codebase. The object will be interrogated to determine whether it
      * is an application codebase or an auxiliary codebase. Application
      * codebases must be scannable.
-     * 
+     *
      * @param codeBase
      *            the codebase to add
      */
@@ -40,21 +41,21 @@ public interface IClassPath {
 
     /**
      * Return an iterator over the application codebases.
-     * 
+     *
      * @return iterator over the application codebases
      */
     public Iterator<? extends ICodeBase> appCodeBaseIterator();
 
     /**
      * Return an iterator over the auxiliary codebases.
-     * 
+     *
      * @return iterator over the auxiliary codebases
      */
     public Iterator<? extends ICodeBase> auxCodeBaseIterator();
 
     /**
      * Lookup a resource by name.
-     * 
+     *
      * @param resourceName
      *            name of the resource to look up
      * @return ICodeBaseEntry representing the resource
@@ -67,7 +68,7 @@ public interface IClassPath {
      * Add a resource name to codebase entry mapping. Once this is done, future
      * lookups of this resource will automatically resolve to the given codebase
      * entry.
-     * 
+     *
      * @param resourceName
      *            the resource name to map
      * @param codeBaseEntry
@@ -80,5 +81,12 @@ public interface IClassPath {
      * be done once the client is finished with the classpath.
      */
     public void close();
+
+    /**
+     * Returns all of the application code base entries that are part of this class path.
+     *
+     * @return map where the key is slashed (VM) class name with ".class" suffix
+     */
+    public Map<String, ICodeBaseEntry> getApplicationCodebaseEntries();
 
 }

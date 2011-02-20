@@ -30,9 +30,11 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.tobject.findbugs.FindBugsJob;
 import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.preferences.FindBugsConstants;
 
 /**
  * The <code>FindBugsBuilder</code> performs a FindBugs run on a subset of the
@@ -54,12 +56,13 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
      *
      * @see IncrementalProjectBuilder#build
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     @Override
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
         monitor.subTask("Running FindBugs...");
         switch (kind) {
         case IncrementalProjectBuilder.FULL_BUILD: {
+            FindBugs2Eclipse.cleanBuild(getProject());
             if (FindbugsPlugin.getUserPreferences(getProject()).isRunAtFullBuild()) {
                 if (DEBUG) {
                     System.out.println("FULL BUILD");
@@ -152,7 +155,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
             files.add(new WorkItem(project));
         }
 
-        work(resource, files);
+        work(resource, files, monitor);
     }
 
     /**
@@ -163,26 +166,19 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
      *
      * @param resources
      *            The resource to run the analysis on.
+     * @param monitor
      */
-    protected void work(final IResource resource, final List<WorkItem> resources) {
-        FindBugsJob runFindBugs = new StartedFromBuilderJob("Finding bugs in " + resource.getName() + "...", resource, resources);
-        runFindBugs.scheduleAsSystem();
-    }
-
-    private final static class StartedFromBuilderJob extends FindBugsJob {
-        private final List<WorkItem> resources;
-        private final IResource resource;
-
-        private StartedFromBuilderJob(String name, IResource resource, List<WorkItem> resources) {
-            super(name, resource);
-            this.resources = resources;
-            this.resource = resource;
-        }
-
-        @Override
-        protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
-            FindBugsWorker worker = new FindBugsWorker(resource, monitor);
-            worker.work(resources);
+    protected void work(final IResource resource, final List<WorkItem> resources, IProgressMonitor monitor) {
+        IPreferenceStore store = FindbugsPlugin.getPluginPreferences(getProject());
+        boolean runAsJob = store.getBoolean(FindBugsConstants.KEY_RUN_ANALYSIS_AS_EXTRA_JOB);
+        FindBugsJob fbJob = new StartedFromBuilderJob("Finding bugs in " + resource.getName() + "...", resource, resources);
+        if(runAsJob) {
+            // run asynchronously, so there might be more similar jobs waiting to run
+            FindBugsJob.cancelSimilarJobs(fbJob);
+            fbJob.scheduleAsSystem();
+        } else {
+            // run synchronously (in same thread)
+            fbJob.run(monitor);
         }
     }
 
@@ -191,5 +187,20 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
                 && resourceDelta.findMember(new Path(".classpath")) == null
                 && resourceDelta.findMember(FindbugsPlugin.DEPRECATED_PREFS_PATH) == null
                 && resourceDelta.findMember(FindbugsPlugin.DEFAULT_PREFS_PATH) == null;
+    }
+
+    private final static class StartedFromBuilderJob extends FindBugsJob {
+        private final List<WorkItem> resources;
+
+        private StartedFromBuilderJob(String name, IResource resource, List<WorkItem> resources) {
+            super(name, resource);
+            this.resources = resources;
+        }
+
+        @Override
+        protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
+            FindBugsWorker worker = new FindBugsWorker(getResource(), monitor);
+            worker.work(resources);
+        }
     }
 }
