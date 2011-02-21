@@ -134,6 +134,10 @@ public class Profiler implements XMLWriteable {
             totalSquareMicroseconds.addAndGet(microseconds * microseconds);
         }
 
+        public long getTotalTime() {
+            return totalTime.get();
+        }
+
         /**
          * @param xmlOutput
          * @throws IOException
@@ -363,7 +367,7 @@ public class Profiler implements XMLWriteable {
         startTimes.clear();
     }
 
-    Profile getProfile(Class<?> c) {
+    public Profile getProfile(Class<?> c) {
         Profile result = profile.get(c);
         if (result == null) {
             AnalysisContext.logError("Unexpected null profile for " + c.getName(), new NullPointerException());
@@ -377,7 +381,7 @@ public class Profiler implements XMLWriteable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.xml.XMLWriteable#writeXML(edu.umd.cs.findbugs.xml
      * .XMLOutput)
