@@ -187,7 +187,7 @@ public class FindBugsWorker {
         IPreferenceStore store = FindbugsPlugin.getPluginPreferences(project);
         boolean cacheClassData = store.getBoolean(FindBugsConstants.KEY_CACHE_CLASS_DATA);
 
-        final FindBugs2 findBugs = cacheClassData? new FindBugs2Eclipse(project) : new FindBugs2();
+        final FindBugs2 findBugs = new FindBugs2Eclipse(project, cacheClassData, bugReporter);
         findBugs.setNoClassOk(true);
         findBugs.setProject(findBugsProject);
         findBugs.setBugReporter(bugReporter);
