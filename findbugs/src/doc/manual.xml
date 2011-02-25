@@ -1943,6 +1943,22 @@ In other words, each of the children must be true for the predicate to be true.
    <literal>Method</literal> elements in an <literal>Or</literal> clause in order to match either method.
    </para></listitem>
  </varlistentry>
+ <varlistentry>
+   <term><literal>&lt;And&gt;</literal></term>
+    <listitem><para>
+   This element combines <literal>Match</literal> clauses which both must evaluate to true.  I.e., you can put
+   <literal>Bug</literal> and <literal>Priority</literal> elements in an <literal>And</literal> clause in order
+   to match specific bugs with given priority only.
+   </para></listitem>
+ </varlistentry>
+ <varlistentry>
+   <term><literal>&lt;Not&gt;</literal></term>
+    <listitem><para>
+   This element inverts the included child <literal>Match</literal>. I.e., you can put a
+   <literal>Bug</literal> element in a <literal>Not</literal> clause in order to match any bug
+   excluding the given one.
+   </para></listitem>
+ </varlistentry>
 </variablelist>
 
 </sect1>
