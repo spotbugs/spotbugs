@@ -87,6 +87,10 @@ public abstract class CompoundMatcher implements Matcher {
         buf.setLength(buf.length() - 1);
         return buf.toString();
     }
+
+    public int maxChildren() {
+        return Integer.MAX_VALUE;
+    }
 }
 
 // vim:ts=4

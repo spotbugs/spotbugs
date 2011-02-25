@@ -19,12 +19,18 @@
 
 package edu.umd.cs.findbugs;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableSet;
+
 import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -48,6 +54,7 @@ import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.filter.LocalMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.filter.MethodMatcher;
+import edu.umd.cs.findbugs.filter.NotMatcher;
 import edu.umd.cs.findbugs.filter.OrMatcher;
 import edu.umd.cs.findbugs.filter.PriorityMatcher;
 import edu.umd.cs.findbugs.filter.RankMatcher;
@@ -344,8 +351,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                         bugCollection.getProjectStats().addClass(className, sourceFile, isInterface, size);
                     }
 
-                } else if (isTopLevelFilter(outerElement) || outerElement.equals("Match") || outerElement.equals("And")
-                        || outerElement.equals("Or")) {
+                } else if (isTopLevelFilter(outerElement) || isCompoundElementTag(outerElement)) {
                     parseMatcher(qName, attributes);
                 } else if (outerElement.equals("ClassFeatures")) {
                     if (qName.equals(ClassFeatureSet.ELEMENT_NAME)) {
@@ -405,6 +411,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         elementStack.add(qName);
     }
 
+    private boolean isCompoundElementTag(String qName) {
+        return outerElementTags .contains(qName);
+    }
+
     private boolean isTopLevelFilter(String qName) {
         return qName.equals(FIND_BUGS_FILTER) || qName.equals("SuppressionFilter");
     }
@@ -438,6 +448,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     }
 
     boolean nextMatchedIsDisabled;
+    private final Set outerElementTags = unmodifiableSet(new HashSet(asList("And", "Match", "Or", "Not")));;
 
     private void parseMatcher(String qName, Attributes attributes) throws SAXException {
         if (DEBUG)
@@ -496,6 +507,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 else if (classMatch != null)
                     addMatcher(new ClassMatcher(classMatch));
             }
+        } else if(qName.equals("Not")) {
+        	NotMatcher matcher = new NotMatcher();
+        	pushCompoundMatcherAsChild(matcher);
         }
         nextMatchedIsDisabled = false;
     }
@@ -674,7 +688,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         } else if (elementStack.size() > 1) {
             String outerElement = elementStack.get(elementStack.size() - 2);
 
-            if (qName.equals("Or") || qName.equals("And") || qName.equals("Match") || isTopLevelFilter(qName)) {
+            if (isTopLevelFilter(qName) || isCompoundElementTag(qName)) {
                 if (DEBUG)
                     System.out.println("  ending " + elementStack + " " + qName + " " + matcherStack);
 
