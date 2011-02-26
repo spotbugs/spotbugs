@@ -82,10 +82,10 @@
   </BugCategory>
 
   <BugCategory category="BAD_PRACTICE">
-    <Description>間違ったプラクティス</Description>
+    <Description>バッドプラクティス</Description>
     <Abbreviation>B</Abbreviation>
-    <Details>推奨されている、あるいは必須のコーディングプラクティスの違反です。たとえば、hashCode と equals の問題、cloneable イディオム、捨てられた例外、Serializable の問題、finalize の誤用など。
-      いくつかのグループは、間違ったプラクティスを気にしないかもしれないが、我々は正確な解析をしようと努力します。
+    <Details>推奨されている必須のコーディングプラクティスの違反です。たとえば、hashCode と equals の問題、cloneable イディオム、捨てられた例外、Serializable の問題、finalize の誤用など。
+      いくつかのグループは、バッドプラクティスを気にしないかもしれないが、我々は正確な解析をしようと努力します。
     </Details>
   </BugCategory>
 
@@ -100,7 +100,7 @@
   </BugCategory>
 
   <BugCategory category="PERFORMANCE">
-    <Description>効率</Description>
+    <Description>性能</Description>
     <Abbreviation>P</Abbreviation>
     <Details>必ずしも間違っているというわけではなくて、効率が悪いかもしれないコード</Details>
   </BugCategory>
@@ -479,7 +479,7 @@ null かもしれない値が null でない値だけが使われるべき文脈
     <Details>
 <![CDATA[
 <p>
-このディテクタは、無名内部クラスに定義されたメソッドで、スーパークラスのメソッドをオーバーライドすることを意図しているのに、実際はオーバーライドになっていないメソッドを探します。
+このディテクタは、無名内部クラスに定義されたメソッドで、スーパークラスのメソッドをオーバーライドすることを意図していますが、実際はオーバーライドになっていないメソッドを探します。
 </p>
 ]]>
     </Details>
@@ -590,7 +590,7 @@ null かもしれない値が null でない値だけが使われるべき文脈
     <Details>
 <![CDATA[
 <p>
-このディテクタは、 OpenJDK 1.6の下では異なる振る舞いをするコードを探します。OpenJDK 1.6では、<code>Logger</code> を保持するのに弱参照が使われます。
+このディテクタは、 OpenJDK 1.6の下で異なる振る舞いをするコードを探します。OpenJDK 1.6では、<code>Logger</code> を保持するのに弱参照が使われます。
 </p>
 ]]>
     </Details>
@@ -755,7 +755,7 @@ null の参照解除のためのノイズが多いディテクタです。コー
     <Details>
 <![CDATA[
 <p>
-このディテクタは、例外をキャッチしているのに、何もしていないコードを探します。
+このディテクタは、例外をキャッチしているのに何もしていないコードを探します。
 </p>
 ]]>
     </Details>
@@ -1146,7 +1146,7 @@ null の参照解除のためのノイズが多いディテクタです。コー
 中速ディテクタです。
 </p>
 <p>
-このディテクタを使用するために、補助クラスパスに <code>java.util.concurrent</code> パッケージ  (または、パッケージ自体の解析) が必要であることに注意してください。
+このディテクタを使用するために、補助クラスパスに <code>java.util.concurrent</code> パッケージ  (またはパッケージ自体の解析) が必要であることに注意してください。
 </p>
 ]]>
     </Details>
@@ -1438,7 +1438,7 @@ null の参照解除のためのノイズが多いディテクタです。コー
 <![CDATA[
 <p>
 このディテクタは、計算結果が静的に知られている値を計算するために <code>java.lang.Math</code> の static メソッドを呼び出すコードを探します。
-その代わりに、定数を使用する方がより高速で、ときにはより正確です。
+その代わりに定数を使用する方がより高速で、ときにはより正確です。
 </p>
 ]]>
     </Details>
@@ -1818,8 +1818,8 @@ null の参照解除のためのノイズが多いディテクタです。コー
     <Details>
 <![CDATA[
 <p>
-このディテクタは、ユーザのデフォルトプラットホームエンコーディングを使用して、バイトから String (または、String からバイト) に変換するメソッドの呼び出しをチェックします。
-これは、アプリケーションの振る舞いがプラットホーム間で異なる原因となる可能性があります。
+このディテクタは、ユーザのデフォルトプラットホームエンコーディングを使用して、バイトから String (またはString からバイト) に変換するメソッドの呼び出しをチェックします。
+これは、アプリケーションの振る舞いがプラットホーム間で異なる原因となります。
  </p>
 ]]>
     </Details>
@@ -1914,7 +1914,7 @@ null の参照解除のためのノイズが多いディテクタです。コー
     <Details>
 <![CDATA[
 <p>
-この呼び出しは、どんなオブジェクトも EasyMock メソッドに渡さないので何もしません。
+この呼び出しはどんなオブジェクトも EasyMock メソッドに渡さないので何もしません。
 </p>
 ]]>
     </Details>
@@ -2082,7 +2082,7 @@ XSS に関して心配しているなら商用の静的解析ツールかペン�
 
   <BugPattern type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD">
     <ShortDescription>Swing メソッドは AWT イベントディスパッチスレッドから呼び出す必要がある</ShortDescription>
-    <LongDescription>Swing メソッドの呼び出しは、AWT イベントディスパッチスレッドで実行される必要があります。{1}</LongDescription>
+    <LongDescription>Swing メソッドの呼び出しは AWT イベントディスパッチスレッドで実行される必要があります。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -2091,7 +2091,7 @@ XSS に関して心配しているなら商用の静的解析ツールかペン�
 ピアの作成で、システムはイベントディスパッチスレッドを作成します。
 これが問題になることがあります。なぜなら <code>pack</code> メソッドと <code>validate</code> メソッドがまだ処理中でもイベントディスパッチスレッドがリスナに通知できるからです。
 この状況は、2つのスレッドが Swing コンポーネントにアクセスする可能性があり、デッドロックや、その他のスレッドに関する問題になる可能性がある重大な欠陥です。
-<code>pack</code> メソッドの呼び出しは、コンポーネントを実体化させます。実体化しているときに、イベントディスパッチスレッドがリスナへの通知を開始する可能性があります。
+<code>pack</code> メソッドの呼び出しはコンポーネントを実体化させます。実体化しているときに、イベントディスパッチスレッドがリスナへの通知を開始する可能性があります。
 </p>
 
 ]]>
@@ -2192,7 +2192,7 @@ null 値が返されるなら <code>NullPointerException</code> が発生する�
 
   <BugPattern type="NP_SYNC_AND_NULL_CHECK_FIELD">
     <ShortDescription>同じフィールドでの同期化と null チェック</ShortDescription>
-    <LongDescription>フィールド {2.givenClass} は、同期化して、 null チェックしています。{1}</LongDescription>
+    <LongDescription>フィールド {2.givenClass} は、同期化して  null チェックしています。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -2276,7 +2276,7 @@ null のフィールドを同期化すると <code>NullPointerException</code> �
 <p>
 警告が記録されたのに FindBugs はこのバグパターンの説明を見つけることができなかったので警告について説明できません。
 これは FindBugs かその設定のバグの場合だけで発生させるべきです。
-または、解析プラグインを使用して生成されるなら、プラグインは現在ロードされていません。
+または解析プラグインを使用して生成されるなら、プラグインは現在ロードされていません。
 </p>
 ]]>
     </Details>
@@ -2339,11 +2339,11 @@ null のフィールドを同期化すると <code>NullPointerException</code> �
 
   <BugPattern type="CN_IDIOM">
     <ShortDescription>Cloneable を実装したクラスが clone メソッドを定義していないか、使用していない</ShortDescription>
-    <LongDescription>クラス {0} は、Cloneable を実装しているのに、clone メソッドを定義していないか、使用していません。</LongDescription>
+    <LongDescription>クラス {0} は、Cloneable を実装しているのに clone メソッドを定義していないか使用していません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このクラスは <code>Cloneable</code> を実装しているのに、<code>clone</code> メソッドを定義していないか、使用していません。
+このクラスは <code>Cloneable</code> を実装しているのに <code>clone</code> メソッドを定義していないか使用していません。
 </p>
 ]]>
     </Details>
@@ -2351,12 +2351,12 @@ null のフィールドを同期化すると <code>NullPointerException</code> �
 
   <BugPattern type="CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE">
     <ShortDescription>Cloneable を実装していないクラスが clone メソッドを定義している</ShortDescription>
-    <LongDescription>{0} は、Cloneable を実装していないのに、clone メソッドを定義しています。</LongDescription>
+    <LongDescription>{0} は、Cloneable を実装していないのに clone メソッドを定義しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このクラスは、<code>Cloneable</code> を実装していないのに、<code>clone</code> メソッドを定義しています。
-これが OK であるいくつかの状況があるが (たとえば、サブクラスのクローンの実装を自分自身で制御したい場合です)、意図したことなのか確認してください。
+このクラスは、<code>Cloneable</code> を実装していないのに <code>clone</code> メソッドを定義しています。
+これが OK であるいくつかの状況がありますが (たとえば、サブクラスのクローンの実装を自分自身で制御したい場合です)、意図したことなのか確認してください。
 </p>
 ]]>
     </Details>
@@ -2381,7 +2381,7 @@ null のフィールドを同期化すると <code>NullPointerException</code> �
 
   <BugPattern type="NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER">
     <ShortDescription>Java の後のバージョンのキーワードである識別子を使用している</ShortDescription>
-    <LongDescription>{1} は、変数名に {2} を使用しているが、Java の後のバージョンのキーワードです。</LongDescription>
+    <LongDescription>{1} は、変数名に {2} を使用していますが、Java の後のバージョンのキーワードです。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -2412,8 +2412,7 @@ null のフィールドを同期化すると <code>NullPointerException</code> �
 <![CDATA[
 <p>
 このメソッドは、例外を捨てているかもしれません。
-通常、キャッチした例外は何らかの方法で処理されるか報告されるべきです。
-あるいは、メソッドからスローされるべきです。
+通常、キャッチした例外は何らかの方法で処理、または報告するべきです、あるいはメソッドからスローするべきです。
 </p>
 ]]>
     </Details>
@@ -2426,8 +2425,7 @@ null のフィールドを同期化すると <code>NullPointerException</code> �
 <![CDATA[
 <p>
 このメソッドは例外を無視しているかもしれません。
-通常、例外は何らかの方法で処理されるか報告されるべきです。
-あるいは、メソッドからスローされるべきです。
+通常、例外は何らかの方法で処理、または報告するべきです、あるいはメソッドからスローするべきです。
 </p>
 ]]>
     </Details>
@@ -2435,7 +2433,7 @@ null のフィールドを同期化すると <code>NullPointerException</code> �
 
   <BugPattern type="DP_DO_INSIDE_DO_PRIVILEGED">
     <ShortDescription>doPrivileged ブロック内で呼び出すべきメソッド</ShortDescription>
-    <LongDescription>{2} の呼び出しは、doPrivileged ブロックの中から呼び出すべきです。{1}</LongDescription>
+    <LongDescription>{2} の呼び出しは doPrivileged ブロックの中から呼び出すべきです。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -2491,7 +2489,7 @@ Immutable アノテーションのルールは、すべてのフィールドを 
 <![CDATA[
 <p>
 Threadオブジェクトが Runnable が期待されているメソッドへのパラメータとして渡されています。
-これはかなり異常で、論理エラー、または、予想外の振る舞いの原因になることを示しています。
+これはかなり異常で、論理エラーを示すか、予想外の振る舞いの原因になるかもしれません。
 </p>
 ]]>
     </Details>
@@ -2506,7 +2504,7 @@ Threadオブジェクトが Runnable が期待されているメソッドへの�
 このメソッドまたはフィールドは、URL の <code>Map</code> か <code>Set</code> を使用しています。
 URL の <code>equals</code> と <code>hashCode</code> は、ドメイン名の解決を行うので、ひどい性能になる可能性があります。<br>
 詳細は、<a href="http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html">http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html</a> を参照してください。<br>
-その代わりに、<code>java.net.URI</code> を使うことをを検討してください。
+その代わりに <code>java.net.URI</code> を使うことをを検討してください。
 </p>
 ]]>
     </Details>
@@ -2514,13 +2512,13 @@ URL の <code>equals</code> と <code>hashCode</code> は、ドメイン名の�
 
   <BugPattern type="DMI_BLOCKING_METHODS_ON_URL">
     <ShortDescription>URL の equals メソッドと hashCode メソッドはブロックする</ShortDescription>
-    <LongDescription>{2} の呼び出しは、ドメイン名解決のためにブロックします。{1}</LongDescription>
+    <LongDescription>{2} の呼び出しはドメイン名解決のためにブロックします。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 URL の <code>quals</code> メソッドと <code>hashCode</code> メソッドは、ドメイン名の解決を行うので、ひどい性能になる可能性があります。<br>
 詳細は、<a href="http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html">http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html</a> を参照してください。<br>
-その代わりに、<code>java.net.URI</code> を使うことを検討してください。
+その代わりに <code>java.net.URI</code> を使うことを検討してください。
 </p>
 ]]>
     </Details>
@@ -2545,9 +2543,9 @@ URL の <code>quals</code> メソッドと <code>hashCode</code> メソッドは
 <![CDATA[
 <p>
 <code>System.exit(...)</code> を呼び出すことは、Java 仮想マシン全体をシャットダウンさせてしまいます。
-それが適切な場合にだけ、使用すべきです。
-<code>System.exit(...)</code> の呼び出しは、コードが他のコードによって呼び出されることを困難か不可能にします。
-その代わりに、RuntimeException をスローすることを検討してください。
+それが適切な場合にだけ使用するべきです。
+<code>System.exit(...)</code> の呼び出しはコードが他のコードによって呼び出されることを困難か不可能にします。
+その代わりに RuntimeException をスローすることを検討してください。
 </p>
 ]]>
     </Details>
@@ -2625,13 +2623,13 @@ Javaは、同一の文字列定数が同じ <code>String</code> オブジェク�
 
   <BugPattern type="DM_BOOLEAN_CTOR">
     <ShortDescription>効率が悪い Boolean コンストラクタを呼び出しているメソッド</ShortDescription>
-    <LongDescription>{1} は、効率が悪い Boolean コンストラクタを呼び出しています。その代わりに、Boolean.valueOf(...) を使用してください。</LongDescription>
+    <LongDescription>{1} は、効率が悪い Boolean コンストラクタを呼び出しています。その代わりに Boolean.valueOf(...) を使用してください。</LongDescription>
     <Details>
 <![CDATA[
 <p>
 <code>java.lang.Boolean</code> の新しいインスタンスを作成するとメモリを浪費します。
 <code>Boolean</code> オブジェクトは不変で、2つの有用な値 (<code>Boolean.TRUE</code> と <code>Boolean.FALSE</code>) があります。
-その代わりに、<code>Boolean</code> オブジェクトを作成するために、<code>Boolean.valueOf</code> メソッド、または、J2SE 5.0のオートボクシングを使用してください。
+その代わりに <code>Boolean</code> オブジェクトを作成するために、<code>Boolean.valueOf</code> メソッド (または J2SE 5.0 のオートボクシング) を使用してください。
 </p>
 ]]>
     </Details>
@@ -2639,7 +2637,7 @@ Javaは、同一の文字列定数が同じ <code>String</code> オブジェク�
 
   <BugPattern type="DM_NUMBER_CTOR">
     <ShortDescription>効率が悪い Number コンストラクタを呼び出しているメソッド</ShortDescription>
-    <LongDescription>{1} は、効率が悪い {2} コンストラクタを呼び出しています。その代わりに、{3} を使用してください。</LongDescription>
+    <LongDescription>{1} は、効率が悪い {2} コンストラクタを呼び出しています。その代わりに {3} を使用してください。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -2660,7 +2658,7 @@ Javaは、同一の文字列定数が同じ <code>String</code> オブジェク�
   </BugPattern>
   <BugPattern type="DM_FP_NUMBER_CTOR">
     <ShortDescription>効率が悪い浮動小数点 Number コンストラクタを呼び出しているメソッド</ShortDescription>
-    <LongDescription>{1} は、効率が悪い {2} コンストラクタを呼び出しています。その代わりに、{3} を使用してください。</LongDescription>
+    <LongDescription>{1} は、効率が悪い {2} コンストラクタを呼び出しています。その代わりに {3} を使用してください。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -2778,7 +2776,7 @@ JLS セクション15.25を参照してください。
 <![CDATA[
 <p>
 このメソッドは、<code>java.util.concurrent.locks.Condition</code> オブジェクトで <code>wait</code> メソッドを呼び出しています。
-<code>Condition</code> オブジェクトを待機させるためには、<code>Condition</code> インタフェースで定義された <code>await</code> メソッドを使用するべきです。
+<code>Condition</code> オブジェクトを待機させるためには <code>Condition</code> インタフェースで定義された <code>await</code> メソッドを使用するべきです。
 </p>
 ]]>
     </Details>
@@ -2786,12 +2784,12 @@ JLS セクション15.25を参照してください。
 
   <BugPattern type="RV_01_TO_INT">
     <ShortDescription>0から1の乱数値は整数値0に丸められる</ShortDescription>
-    <LongDescription>{1} は、0から1の乱数値を生成しているが、整数値0に丸められます。</LongDescription>
+    <LongDescription>{1} は、0から1の乱数値を生成していますが、整数値0に丸められます。</LongDescription>
     <Details>
 <![CDATA[
 <p>
 0から1の乱数値は整数値0に丸められます。
-おそらく整数に丸められる前に何か他のことによって乱数値を倍数にしたかった、あるいは、<code>Random.nextInt(n)</code> メソッドを使いたかったのでしょう。
+おそらく整数に丸められる前に何か他のことによって乱数値を倍数にしたかったか、または <code>Random.nextInt(n)</code> メソッドを使いたかったのでしょう。
 </p>
 ]]>
     </Details>
@@ -2815,12 +2813,12 @@ JLS セクション15.25を参照してください。
 
   <BugPattern type="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE">
     <ShortDescription>SQL の Statement の  execute メソッドに定数でない文字列を渡している</ShortDescription>
-    <LongDescription>{1} は、SQL の Statement の execute メソッドに、定数でない文字列を渡しています。</LongDescription>
+    <LongDescription>{1} は、SQL の Statement の execute メソッドに定数でない文字列を渡しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
 このメソッドは、動的に生成されるように思われる文字列で、 SQL の <code>Statement</code> の <code>execute</code> メソッドを呼び出しています。
-その代わりに、<code>PreparedStatement</code> を使うことを検討してください。
+その代わりに <code>PreparedStatement</code> を使うことを検討してください。
 効率的で、SQL インジェクション攻撃に強いです。
 </p>
 ]]>
@@ -2846,7 +2844,7 @@ JLS セクション15.25を参照してください。
     <Details>
 <![CDATA[
 <p>
-このメソッドは、スレッドを作成しているのに、<code>Thread</code> クラスから派生した <code>run</code> メソッドも指定していないし、<code>Runnable</code> オブジェクトも渡していません。
+このメソッドは、スレッドを作成しているのに <code>Thread</code> クラスから派生した <code>run</code> メソッドも指定していないし、<code>Runnable</code> オブジェクトも渡していません。
 このスレッドは、時間の無駄です。
 </p>
 ]]>
@@ -2970,7 +2968,7 @@ JLS セクション15.25を参照してください。
 参照によってつながった複数のオブジェクトがファイナライズ可能になると、Java 仮想マシンはすべてのオブジェクトの <code>finalize</code> メソッドを呼び出します。
 おそらく、異なるスレッドで同時にです。
 したがって、クラス <i>X</i> の <code>finalize</code> メソッドの中から <i>X</i> によって参照されているオブジェクトの <code>finalize</code> メソッドを呼び出すのは、とりわけ間違った考えです。
-なぜなら、オブジェクトがすでに別々のスレッドによってファイナライズされているかもしれないからです。 
+なぜなら、オブジェクトがすでに別のスレッドによってファイナライズされているかもしれないからです。 
 </p>
 ]]>
     </Details>
@@ -3010,7 +3008,7 @@ public boolean equals(Object o) {
 <p>
 このクラスは列挙を定義していて、列挙の等価性はオブジェクト同一性を使用して定義されています。
 列挙値のために共変な <code>equals</code> メソッドを定義することは、非常に間違ったプラクティスです。
-2つの異なる列挙値が正常な <code>equals</code> メソッドでは「等価ではない」と判定されるのに共変な <code>equals</code> メソッドでは「等価」と判定されるからです。
+2つの異なる列挙値が通常の <code>equals</code> メソッドでは「等価ではない」と判定され、共変な <code>equals</code> メソッドでは「等価」と判定されるからです。
 共変な <code>equals</code> メソッドを定義しないでください。
 </p>
 ]]>
@@ -3023,7 +3021,7 @@ public boolean equals(Object o) {
     <Details>
 <![CDATA[
 <p>
-このクラスは、共変な <code>equals</code> メソッドを定義しているのに、<code>java.lang.Object</code> クラスの <code>equals(Object)</code> メソッドを継承しています。
+このクラスは、共変な <code>equals</code> メソッドを定義していますが、 <code>equals(Object)</code> メソッドは <code>java.lang.Object</code> クラスから継承しています。
 クラスは、<code>boolean equals(Object)</code> メソッドを定義するべきです。
 </p>
 ]]>
@@ -3036,7 +3034,7 @@ public boolean equals(Object o) {
     <Details>
 <![CDATA[
 <p>
-このクラスは、<code>equals</code> メソッドを定義しているのに、<code>java.lang.Object</code> クラスで定義された <code>equals(Object)</code> メソッドをオーバーライドしていません。
+このクラスは、<code>equals</code> メソッドを定義していますが、<code>java.lang.Object</code> クラスの <code>equals(Object)</code> メソッドをオーバーライドしていません。
 クラスは、<code>boolean equals(Object)</code> メソッドを定義するべきです。
   </p>
 ]]>
@@ -3048,7 +3046,7 @@ public boolean equals(Object o) {
     <Details>
 <![CDATA[
 <p>
-このクラスは、<code>equals</code> メソッドを定義しているのに、<code>java.lang.Object</code> クラスで定義された <code>equals(Object)</code> メソッドをオーバーライドしていません。
+このクラスは、<code>equals</code> メソッドを定義していますが、<code>java.lang.Object</code> クラスの <code>equals(Object)</code> メソッドをオーバーライドしていません。
 その代わりに、スーパークラスから <code>equals(Object)</code> メソッドを継承して、<code>boolean equals(Object)</code> メソッドを定義するべきです。
 </p>
 ]]>
@@ -3061,7 +3059,7 @@ public boolean equals(Object o) {
     <Details>
 <![CDATA[
 <p>
-このクラスは、<code>equals</code> メソッドを定義しているクラスを拡張してフィールドを追加しているのに、<code>equals</code> メソッドを定義していません。
+このクラスは、<code>equals</code> メソッドを定義しているクラスを拡張してフィールドを追加しているのに <code>equals</code> メソッドを定義していません。
 したがって、このクラスのインスタンスの等価性は、サブクラスと追加されたフィールドの同一性を無視します。
 これが意図したことで、しかも、<code>equals</code> メソッドをオーバーライドする必要がないことを確実にしてください。
 たとえ <code>equals</code> メソッドをオーバーライドする必要がないとしても、サブクラスのための <code>equals</code> メソッドが <code>super.equals(o)</code> を呼び出して結果を返すという事実を実証するために、いずれにしろ、<code>equals</code> メソッドをオーバーライドすることを検討してください。
@@ -3072,12 +3070,12 @@ public boolean equals(Object o) {
 
   <BugPattern type="EQ_SELF_NO_OBJECT">
     <ShortDescription>共変な equals メソッドの定義</ShortDescription>
-    <LongDescription>{0} は、equals({0.givenClass}) メソッドを定義していて、equals(Object) は定義していません。</LongDescription>
+    <LongDescription>{0} は、equals({0.givenClass}) メソッドを定義しているのに equals(Object) を定義していません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
 このクラスは、共変な <code>equals</code> メソッドを定義しています。
-<code>java.lang.Object</code> の <code>equals</code> メソッドを正しくオーバーライドするためには、<code>equals</code> メソッドのパラメータの型は、<code>java.lang.Object</code> でなければなりません。
+<code>java.lang.Object</code> の <code>equals</code> メソッドを正しくオーバーライドするためには <code>equals</code> メソッドのパラメータの型は、<code>java.lang.Object</code> でなければなりません。
 </p>
 ]]>
     </Details>
@@ -3085,7 +3083,7 @@ public boolean equals(Object o) {
 
   <BugPattern type="EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC">
     <ShortDescription>equals メソッドはスーパークラスの equals メソッドをオーバーライドしているが、対称的ではないかもしれない</ShortDescription>
-    <LongDescription>{1.class} は、{2.class.givenClass} で equals メソッドをオーバーラドしているが、対称的ではないかもしれません。</LongDescription>
+    <LongDescription>{1.class} は、{2.class.givenClass} で equals メソッドをオーバーラドしていますが、対称的ではないかもしれません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3105,7 +3103,7 @@ public boolean equals(Object o) {
     <Details>
 <![CDATA[
 <p>
-このクラスは、サブクラスによって継承されるなら、壊れるだろう <code>equlas</code> メソッドがあります。
+このクラスは、サブクラスによって継承されるなら、壊れる <code>equlas</code> メソッドがあります。
 <code>equals</code> メソッドは、クラスリテラルを引数のクラスと比較しています (たとえば、<code>Foo</code> クラスで、<code>Foo.class == o.getClass()</code> のような判定を行っています)。
 それは、<code>this.getClass() == o.getClass()</code> の方がより良いです。
 </p>
@@ -3119,7 +3117,7 @@ public boolean equals(Object o) {
     <Details>
 <![CDATA[
 <p>
-このクラスの <code>equals</code> メソッドは、引数の型が <code>this</code> オブジェクトの型と互換性があるこをチェックするために、我々が認識しているパターンを何もしていません。
+このクラスの <code>equals</code> メソッドは、引数の型が <code>this</code> オブジェクトの型と互換性があるこをチェックするために、我々が認識しているパターンで何もしていません。
 このコードは何も間違っていないかもしれませんが、レビューする価値があります。
 </p>
 ]]>
@@ -3146,7 +3144,7 @@ public boolean equals(Object o) {
     <Details>
 <![CDATA[
 <p>
-このクラスでは、常に true を返す <code>equals<code> メソッドを定義しています。
+このクラスは、常に true を返す <code>equals</code> メソッドを定義しています。
 これは想像力に富むが、あまり良い方法とはいえません。さらに、<code>equals</code> メソッドが対称的ではないことを意味します。
 </p>
 ]]>
@@ -3227,7 +3225,7 @@ JDK はこのバグを解決してサイズを1MB減らすことができまし�
 <![CDATA[
 <p>
 このクラスは、共変な <code>compareTo</code> メソッドを定義しています。
-<code>Comparable</code> インタフェースの <code>compareTo</code> メソッドを正しく実装するためには、<code>compareTo</code> メソッドのパラメータの型は、<code>java.lang.Object</code> でなければなりません。
+<code>Comparable</code> インタフェースの <code>compareTo</code> メソッドを正しく実装するためには <code>compareTo</code> メソッドのパラメータの型は、<code>java.lang.Object</code> でなければなりません。
 </p>
 ]]>
     </Details>
@@ -3239,8 +3237,8 @@ JDK はこのバグを解決してサイズを1MB減らすことができまし�
     <Details>
 <![CDATA[
 <p>
-メソッド、フィールド、クラスは、ハッシュ可能なクラスが必要な文脈でハッシュ化できないクラスが使用される総称的なシグネチャを宣言しています。
-クラスは、<code>equals</code> メソッドを宣言しているのに、<code>hashCode</code> メソッドは <code>java.lang.Object</code> から継承しています。
+メソッド、フィールド、クラスは、ハッシュ可能なクラスが必要な文脈で、ハッシュ化できないクラスが使用される総称的なシグネチャを宣言しています。
+クラスは、<code>equals</code> メソッドを宣言していますが、<code>hashCode</code> メソッドは <code>java.lang.Object</code> から継承しています。
 これは「等価なオブジェクトは等価なハッシュコードを保持する必要がある」という <code>hashCode</code> メソッドの汎用規約に従っていないので、ハッシュ化できません。
 </p>
 ]]>
@@ -3252,7 +3250,7 @@ JDK はこのバグを解決してサイズを1MB減らすことができまし�
     <Details>
 <![CDATA[
 <p>
-このクラスは、<code>equals(Object)</code> メソッドを定義しているのに、<code>hashCode</code> メソッドを定義していません。
+このクラスは、<code>equals(Object)</code> メソッドを定義しているのに <code>hashCode</code> メソッドを定義していません。
 これは「等価なオブジェクトは等価なハッシュコードを保持する必要がある」という <code>hashCode</code> メソッドの汎用規約に従っていません。
 このクラスのインスタンスはハッシュデータ構造で使われています。最重要問題を修正する必要があります。
 </p>
@@ -3261,12 +3259,12 @@ JDK はこのバグを解決してサイズを1MB減らすことができまし�
   </BugPattern>
 
   <BugPattern type="HE_HASHCODE_USE_OBJECT_EQUALS">
-    <ShortDescription>hashCode メソッドを定義しているのに Object.equals() を使用しているクラス</ShortDescription>
-    <LongDescription>{0} は、hashCode メソッドを定義しているのに、Object.equals() を使用しています。</LongDescription>
+    <ShortDescription>hashCode メソッドを定義して Object.equals() を使用しているクラス</ShortDescription>
+    <LongDescription>{0} は、hashCode メソッドを定義して、Object.equals() を使用しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このクラスは <code>hashCode</code> メソッドを定義しているのに、<code>java.lang.Object</code> の <code>equals</code> メソッド (オブジェクトの参照比較で等価性を判定します) を継承しています。
+このクラスは、<code>hashCode</code> メソッドを定義していますが、 <code>equals</code> メソッドは <code>java.lang.Object</code> から継承しています (オブジェクトの参照比較で等価性を判定します)。
 これは「等価なオブジェクトは等価なハッシュコードを保持する必要がある」という <code>hashCode</code> メソッドの汎用規約に従っているかもしれませんが、
 おそらく、<code>hashCode</code> メソッドをオーバーライドすることによって意図したことではないと思われます
 (<code>hashCode</code> メソッドをオーバーライドすることは、オブジェクトの同一性が単純な参照等価性よりも複雑な規約に基づくことを意味します)。
@@ -3286,12 +3284,12 @@ public int hashCode() {
   </BugPattern>
 
   <BugPattern type="EQ_COMPARETO_USE_OBJECT_EQUALS">
-    <ShortDescription>compareTo(...) メソッドを定義しているのに Object.equals() を使用しているクラス</ShortDescription>
-    <LongDescription>{0} は、{1.givenClass} を定義しているのに、Object.equals() を使用しています。</LongDescription>
+    <ShortDescription>compareTo(...) メソッドを定義して Object.equals() を使用しているクラス</ShortDescription>
+    <LongDescription>{0} は、{1.givenClass} を定義して、Object.equals() を使用しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このクラスは、<code>compareTo(...)</code> メソッドを定義しているのに、<code>equals()</code> は <code>java.lang.Object</code> から継承しています。
+このクラスは、<code>compareTo(...)</code> メソッドを定義していますが、<code>equals</code> メソッドは <code>java.lang.Object</code> から継承しています。
 通常、<code>equals</code> メソッドが true を返す場合に限り、<code>compareTo</code> メソッドは0を返すべきです。
 これが違反されるなら奇妙で予測できない失敗が PriorityQueue などのクラスで発生します。
 J2SE 5.0では、<code>PriorityQueue.remove()</code> は <code>compareTo</code> メソッドを使用しますが、Java SE 6では、<code>equals</code> メソッドを使用します。
@@ -3300,7 +3298,7 @@ Comparable インタフェースの compareTo メソッドの JavaDoc を以下�
 </p>
 <blockquote><p>
 必須というわけではありませんが、<code>(x.compareTo(y)==0) == (x.equals(y))</code> であることが強く推奨されます。
-通常、<code>Comparable</code> インタフェースを実装しているクラスで、この条件に違反するクラスはすべて、明確にこの事実を示す必要があります。
+通常、<code>Comparable</code> インタフェースを実装しているクラスで、この条件に違反するクラスは明確にこの事実を示す必要があります。
 「注:このクラスは <code>equals</code> と一貫性のない自然順序付けを持ちます」などと明示することをお勧めします。
 </p></blockquote>
 ]]>
@@ -3309,11 +3307,11 @@ Comparable インタフェースの compareTo メソッドの JavaDoc を以下�
 
   <BugPattern type="HE_HASHCODE_NO_EQUALS">
     <ShortDescription>hashCode メソッドを定義しているのに equals メソッドは定義していないクラス</ShortDescription>
-    <LongDescription>{0} は、hashCode メソッドを定義しているのに、equals メソッドは定義していません。</LongDescription>
+    <LongDescription>{0} は、hashCode メソッドを定義しているのに equals メソッドは定義していません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このクラスは、<code>hashCode</code> メソッドを定義しているのに、 <code>equals</code> メソッドは定義していません。
+このクラスは、<code>hashCode</code> メソッドを定義しているのに <code>equals</code> メソッドは定義していません。
 これは「等価なオブジェクトは等価なハッシュコードを保持する必要がある」という <code>hashCode</code> メソッドの汎用規約に違反するかもしれません。
 </p>
 ]]>
@@ -3321,12 +3319,12 @@ Comparable インタフェースの compareTo メソッドの JavaDoc を以下�
   </BugPattern>
 
   <BugPattern type="HE_EQUALS_USE_HASHCODE">
-    <ShortDescription>equals メソッドを定義しているのに Object.hashCode() を使用しているクラス</ShortDescription>
-    <LongDescription>{0} は、equals メソッドを定義しているのに、Object.hashCode() を使用しています。</LongDescription>
+    <ShortDescription>equals メソッドを定義して Object.hashCode() を使用しているクラス</ShortDescription>
+    <LongDescription>{0} は、equals メソッドを定義して、Object.hashCode() を使用しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このクラスは、<code>equals(Object)</code> をオーバーライドしているのに、<code>hashCode</code> メソッドはオーバーライドしないで、<code>java.lang.Object</code> から <code>hashCode</code> メソッドを継承しています (同一性ハッシュコード (Java 仮想マシンによってオブジェクトに代入された任意の値) を返します)。
+このクラスは、<code>equals(Object)</code> をオーバーライドしているのに <code>hashCode</code> メソッドは <code>java.lang.Object</code> から継承しています (同一性ハッシュコード (Java 仮想マシンによってオブジェクトに代入された任意の値) を返します)。
 したがって、「等価なオブジェクトは等価なハッシュコードを保持する必要がある」という <code>hashCode</code> メソッドの汎用規約に違反するかもしれません。
 </p>
 <p>
@@ -3343,8 +3341,8 @@ public int hashCode() {
   </BugPattern>
 
   <BugPattern type="HE_INHERITS_EQUALS_USE_HASHCODE">
-    <ShortDescription>equals メソッドを継承しているのに Object.hashCode() を使用しているクラス</ShortDescription>
-    <LongDescription>{0} は、equals メソッドを継承しているのに、Object.hashCode() を使用しています。</LongDescription>
+    <ShortDescription>equals メソッドを継承して Object.hashCode() を使用しているクラス</ShortDescription>
+    <LongDescription>{0} は、equals メソッドを継承して、Object.hashCode() を使用しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3359,11 +3357,11 @@ public int hashCode() {
   </BugPattern>
   <BugPattern type="HE_EQUALS_NO_HASHCODE">
     <ShortDescription>equals メソッドは定義しているのに hashCode メソッドは定義していないクラス</ShortDescription>
-    <LongDescription>{0} は、equals メソッドを定義しているのに、hashCode メソッドは定義していません。</LongDescription>
+    <LongDescription>{0} は、equals メソッドを定義しているのに hashCode メソッドは定義していません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このクラスは、<code>equals(Object)</code> メソッドをオーバーライドしているのに、<code>hashCode</code> メソッドはオーバーライドしていません。
+このクラスは、<code>equals(Object)</code> メソッドをオーバーライドしているのに <code>hashCode</code> メソッドはオーバーライドしていません。
 したがって、「等価なオブジェクトは等価なハッシュコードを保持する必要がある」という <code>hashCode</code> メソッドの汎用規約に違反するかもしれません。
 </p>
 ]]>
@@ -3376,7 +3374,7 @@ public int hashCode() {
 <![CDATA[
 <p>
 このクラスは、共変な <code>equals</code> メソッドを定義しています。
-<code>java.lang.Object</code> の <code>equals</code> メソッドを正しくオーバーライドするためには、<code>equals</code> メソッドのパラメータの型は、<code>java.lang.Object</code> でなければなりません。
+<code>java.lang.Object</code> の <code>equals</code> メソッドを正しくオーバーライドするためには <code>equals</code> メソッドのパラメータの型は、<code>java.lang.Object</code> でなければなりません。
 </p>
 ]]>
     </Details>
@@ -3390,7 +3388,7 @@ public int hashCode() {
 <p>
 このコードは、参照等価性のために == や != を使用して <code>java.lang.String</code> オブジェクトを比較しています。
 両方の文字列がソースファイルの定数か、<code>String.intern()</code> を使用して正準化されていない限り、同じ文字列は2つの異なる String オブジェクトによって表されるかもしれません。
-その代わりに、<code>equals(Object)</code> メソッドを使うことを検討してください。
+その代わりに <code>equals(Object)</code> メソッドを使うことを検討してください。
 </p>
 ]]>
     </Details>
@@ -3403,8 +3401,8 @@ public int hashCode() {
 <![CDATA[
 <p>
 このコードは、参照等価性のために == や != を使用して <code>java.lang.String</code> パラメータを比較しています。
-文字列定数または正準化された文字列だけをメソッドに渡すことを呼び出し元に要求することは、必要以上に脆弱で、測定可能な性能の向上をもたらしません。
-その代わりに、<code>equals(Object)</code> メソッドを使うことを検討してください。
+文字列定数または正準化された文字列だけをメソッドに渡すことを呼び出し元に要求することは必要以上に脆弱で、測定可能な性能の向上をもたらしません。
+その代わりに <code>equals(Object)</code> メソッドを使うことを検討してください。
 </p>
 ]]>
     </Details>
@@ -3417,7 +3415,7 @@ public int hashCode() {
 <![CDATA[
 <p>
 このクラスは、共変な <code>compareTo</code> メソッドを定義しています。
-<code>Comparable</code> インタフェースの <code>compareTo</code> メソッドを正しく実装するたには、<code>compareTo</code> メソッドのパラメータの型は、<code>java.lang.Object</code> でなければなりません。
+<code>Comparable</code> インタフェースの <code>compareTo</code> メソッドを正しく実装するためには <code>compareTo</code> メソッドのパラメータの型は、<code>java.lang.Object</code> でなければなりません。
 </p>
 ]]>
     </Details>
@@ -3486,8 +3484,8 @@ Web サーバは、通常サーブレットや JSP クラスのインスタン�
     <Details>
 <![CDATA[
 <p>
-<code>notify</code> メソッドまたは <code>notifyAll</code> メソッドへの呼び出しは、可変オブジェクト状態にどんな (明らかな) 付随的な変更ももたらされませんでした。
-通常、別のスレッドが期待しているいくつか条件が真になったので、モニタで <code>notify</code> メソッドが呼び出されます。
+<code>notify</code> メソッドまたは <code>notifyAll</code> メソッドへの呼び出しは可変オブジェクト状態にどんな (明らかな) 付随的な変更ももたらされませんでした。
+通常、別のスレッドが期待しているいくつかの条件が真になったので、モニタで <code>notify</code> メソッドが呼び出されます。
 しかしながら、意味がある条件のために、両方のスレッドに見えるヒープオブジェクトを含まなければなりません。
 </p>
 <p>
@@ -3741,7 +3739,7 @@ get メソッドは同期化するべきです。
     <Details>
 <![CDATA[
 <p>
-クラスは、初期化中にサブクラスを積極的に使用しています。サブクラスはこの時点ではまだ初期化されていません。<br>
+クラスは、初期化中にサブクラスを積極的に使用しています。サブクラスはこの時点では、まだ初期化されていません。<br>
 たとえば、以下のコードにおいて、<code>foo</code> は null です。
 </p>
 <blockquote><pre>
@@ -3930,8 +3928,7 @@ synchronized() {
     <Details>
 <![CDATA[
 <p>
-このメソッドは、フィールドの同時更新に対して同期化でガードしようとしているが、
-フィールドをガードするとフィールドではなく、参照されたオブジェクトのロックを獲得します。
+このメソッドは、フィールドの同時更新に対して同期化でガードしようとしていますが、フィールドをガードするとフィールドではなく、参照されたオブジェクトのロックを獲得します。
 これはあなたが必要とする相互排除を提供しないかもしれません。
 そして、他のスレッドは (他の目的のための) 参照されたオブジェクトのロックを獲得するかもしれません。<br>
 このパターンの例は以下のようになります。
@@ -3972,7 +3969,7 @@ private Long getNotificationSequenceNumber() {
 <p>
 インタフェースに定義された final static フィールドは、配列や Hashtable などの可変オブジェクトを参照しています。
 この可変オブジェクトは、悪意のあるコードや別のパッケージからの事故によって変更される可能性があります。
-これを解決するために、フィールドはクラスへ移動する必要があり、脆弱性を回避するためにパッケージプロテクテッドにします。
+これを解決するために、フィールドはクラスへ移動する必要があり、脆弱性を回避するためにパッケージプロテクテッドにすべきです。
 </p>
 ]]>
     </Details>
@@ -4077,7 +4074,7 @@ Java の仕様上は継承したメソッドを呼び出しますが、これは
     <Details>
 <![CDATA[
 <p>
-このクラスには、そのスーパークラスと同一の単純名があるが、スーパークラスは異なるパッケージです (たとえば、<code>alpha.Foo</code> が <code>beta.Foo</code> を拡張します)。
+このクラスには、そのスーパークラスと同一の単純名がありますが、スーパークラスは異なるパッケージです (たとえば、<code>alpha.Foo</code> が <code>beta.Foo</code> を拡張します)。
 これは非常に紛らわしく、参照関係を解決するために import 文を見なければならなかったり、スーパークラスに存在するメソッドを誤ってオーバーライドしてしまったりする状況を作り出します。
 </p>
 ]]>
@@ -4090,7 +4087,7 @@ Java の仕様上は継承したメソッドを呼び出しますが、これは
     <Details>
 <![CDATA[
 <p>
-このクラスまたはインタフェースには、実装された/拡張されたインタフェースと同一の単純名があるが、インタフェースは異なるパッケージです (たとえば、<code>alpha.Foo</code> が <code>beta.Foo</code> を継承しているような状況です)。
+このクラスまたはインタフェースには、実装された/拡張されたインタフェースと同一の単純名がありますが、インタフェースは異なるパッケージです (たとえば、<code>alpha.Foo</code> が <code>beta.Foo</code> を継承しているような状況です)。
 これは非常に紛らわしく、参照関係を解決するために import 文を見なければならなかったり、スーパークラスに存在するメソッドを誤ってオーバーライドしてしまったりする状況を作り出します。
 </p>
 ]]>
@@ -4137,7 +4134,7 @@ final でないフィールドの名前は、最初の文字は小文字にし�
 
   <BugPattern type="NM_VERY_CONFUSING">
     <ShortDescription>非常に紛らわしい名前のメソッド</ShortDescription>
-    <LongDescription>{1} と {3} のメソッドは、非常に紛らわしいです。</LongDescription>
+    <LongDescription>{1} と {3} は、非常に紛らわしいです。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4215,7 +4212,7 @@ public class B extends A {
 }
 </pre></blockquote>
 <p>
-クラス <code>B</code> 定義される <code>f(Foo)</code> メソッドは、クラス <code>A</code> の <code>f(Foo)</code> メソッドをオーバーライドしません。
+クラス <code>B</code> で定義された <code>f(Foo)</code> メソッドは、クラス <code>A</code> の <code>f(Foo)</code> メソッドをオーバーライドしません。
 これは引数の型 <code>Foo</code> が違うパッケージだからです。
 </p>
 <p>
@@ -4229,7 +4226,7 @@ public class B extends A {
 
   <BugPattern type="NM_CONFUSING">
     <ShortDescription>紛らわしい名前のメソッド</ShortDescription>
-    <LongDescription>{1} と {3} のメソッドは、紛らわしいです。</LongDescription>
+    <LongDescription>{1} と {3} は、紛らわしいです。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4297,7 +4294,7 @@ public class B extends A {
     <Details>
 <![CDATA[
 <p>
-このクラスは、Exception から派生されていないのに、クラス名が「Exception」で終わっています。
+このクラスは、例外クラスから派生されていないのにクラス名が「Exception」で終わっています。
 これは、このクラスのユーザに紛らわしいです。
 </p>
 ]]>
@@ -4310,7 +4307,7 @@ public class B extends A {
     <Details>
 <![CDATA[
 <p>
-このメソッドは、複数バイトを返す可能性がある <code>java.io.InputStream.read()</code> (あるいはそのバリエーション) の戻り値を無視しています。
+このメソッドは、複数バイトを返す可能性がある <code>java.io.InputStream.read()</code> (またはそのバリエーション) の戻り値を無視しています。
 戻り値がチェックされないと呼び出し元は要求したバイト数よりも少ないバイト数を読み出した場合、正しく処理できません。
 これは潜在的なバグです。
 多くのプログラムで、入力ストリームからの読み出しは、要求した完全なデータ量を読み出しますが、散発的に失敗することがあります。
@@ -4341,7 +4338,7 @@ public class B extends A {
     <Details>
 <![CDATA[
 <p>
-<code>readResolve</code> メソッドが直列化機構で認識されるためには、static メソッドとして宣言してはいけません。
+<code>readResolve</code> メソッドが直列化機構で認識されるためにはstatic メソッドとして宣言してはいけません。
 </p>
 ]]>
     </Details>
@@ -4366,19 +4363,19 @@ public class B extends A {
     <Details>
 <![CDATA[
 <p>
-<code>readResolve</code> メソッドが直列化機構で認識されるためには、戻り値の型が <code>Object</code> で宣言されなければなりません。 
+<code>readResolve</code> メソッドが直列化機構で認識されるためには戻り値の型が <code>Object</code> で宣言されなければなりません。 
 </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS">
     <ShortDescription>Serializable でないクラスの transient フィールド</ShortDescription>
-    <LongDescription>{1.givenClass} は、transient なのに、{0} は Serializable ではありません。</LongDescription>
+    <LongDescription>{1.givenClass} は、transient ですが、{0} は Serializable ではありません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-フィールドは、transient と宣言しているが、クラスは直列化可能ではないので、まったく効果がありません。
-これはクラスが transient だったときの名残か、あるいは、直列化機構を誤解しているのかもしれません。 
+フィールドは、transient と宣言していますが、クラスは直列化可能ではないので、まったく効果がありません。
+これはクラスが transient だったときの名残かもしれません、あるいは直列化機構を誤解しているのかもしれません。 
 </p>
 ]]>
     </Details>
@@ -4413,7 +4410,7 @@ public class B extends A {
 
   <BugPattern type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION">
     <ShortDescription>Externalizable なクラスが引数なしコンストラクタを定義していない</ShortDescription>
-    <LongDescription>{0} は、Externalizable なのに、引数なしコンストラクタを定義していません。</LongDescription>
+    <LongDescription>{0} は、Externalizable を実装しているのに引数なしコンストラクタを定義していません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4427,11 +4424,11 @@ Externalizable オブジェクトが直列化復元されるときは、最初�
 
   <BugPattern type="SE_NO_SUITABLE_CONSTRUCTOR">
     <ShortDescription>Serializable なクラスのスーパークラスで、引数なしコンストラクタを定義していない</ShortDescription>
-    <LongDescription>{0} は、Serializable なのに、そのスーパークラスはアクセス可能な引数なしコンストラクタを定義していません。</LongDescription>
+    <LongDescription>{0} は、Serializable を実装していますが、そのスーパークラスはアクセス可能な引数なしコンストラクタを定義していません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このクラスは <code>Serializable</code> インタフェースを実装しているのに、そのスーパークラスは そうしていません。
+このクラスは <code>Serializable</code> インタフェースを実装していますが、そのスーパークラスは実装していません。
 そのようなオブジェクトが直列化復元されるとき、スーパークラスのフィールドはスーパークラスの引数なしコンストラクタを呼び出すことによって初期化される必要があります。
 スーパークラスには引数なしコンストラクタがないので、直列化と直列化復元は実行時に失敗します。
 </p>
@@ -4441,11 +4438,11 @@ Externalizable オブジェクトが直列化復元されるときは、最初�
 
   <BugPattern type="SE_NO_SERIALVERSIONID">
     <ShortDescription>Serializable なクラスが serialVersionUID を定義していない</ShortDescription>
-    <LongDescription>{0} は、Serializable なのに、serialVersionUID は定義していません。</LongDescription>
+    <LongDescription>{0} は、Serializable を実装しているのに serialVersionUID は定義していません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このクラスは <code>Serializable</code> インタフェースを実装しているのに、<code>serialVersionUID</code> フィールドは定義していません。
+このクラスは <code>Serializable</code> インタフェースを実装しているのに <code>serialVersionUID</code> フィールドを定義していません。
 .class オブジェクトへの参照を追加するのと同じくらい簡単な変更でクラスに合成フィールドを追加します。
 それは、残念ながら暗黙の serialVersionUID を変えます (たとえば、<code>String.class</code> への参照を追加すると、<code>class$java$lang$String</code> という static フィールドを生成します)。
 また、バイトコードコンパイラへの異なるソースコードは、クラスオブジェクトまたは内部クラスに参照のために生成される合成変数のために、異なる命名規則を使用するかもしれません。
@@ -4457,7 +4454,7 @@ Externalizable オブジェクトが直列化復元されるときは、最初�
 
   <BugPattern type="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE">
     <ShortDescription>Comparator は Serializable を実装していない</ShortDescription>
-    <LongDescription>{0} は、Comparator を実装しているのに、Serializable は実装していません。</LongDescription>
+    <LongDescription>{0} は、Comparator を実装しているのに Serializable を実装していません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4510,11 +4507,11 @@ Externalizable オブジェクトが直列化復元されるときは、最初�
 
   <BugPattern type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW">
     <ShortDescription>スローする switch 文のフォールスルーのために格納が無効になっている</ShortDescription>
-    <LongDescription>前の case からの値 {2.givenClass} がスローする switch 文のフォールスルーのためにここで失われています。</LongDescription>
+    <LongDescription>前の case からの値 {2.givenClass} が、スローする switch 文のフォールスルーのためにここで失われています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-前の case で格納された値が例外がスローされる場所で switch 文のフォールスルーのためにここで失われています。
+前の case で格納された値が例外がスローされる場所で、switch 文のフォールスルーのためにここで失われています。
 前の case の終わりに break または return を置くのを忘れた可能性があります。
 </p>
 ]]>
@@ -4522,8 +4519,8 @@ Externalizable オブジェクトが直列化復元されるときは、最初�
   </BugPattern>
 
   <BugPattern type="WS_WRITEOBJECT_SYNC">
-    <ShortDescription>writeObject メソッドは同期化しているのに、その他のメソッドは同期化していないクラス</ShortDescription>
-    <LongDescription>{0} の writeObject メソッドは同期化しているのに、その他のメソッドは同期化していません。</LongDescription>
+    <ShortDescription>writeObject メソッドは同期化しているがその他のメソッドは同期化していないクラス</ShortDescription>
+    <LongDescription>{0} の writeObject メソッドは同期化していますが、その他のメソッドは同期化していません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4706,7 +4703,7 @@ static フィールドにすることを検討してください。
 <![CDATA[
 <p>
 このフィールドは決して使用されません。
-フィールドは、public または、protected なので、たぶん、それは解析の一部として見えないクラスで使用されることを意図しています。
+フィールドは、public か protected なので、たぶん、それは解析の一部として見えないクラスで使用されることを意図しています。
 そうでなければ、クラスから除去することを検討してください。
 </p>
 ]]>
@@ -4720,7 +4717,7 @@ static フィールドにすることを検討してください。
 <![CDATA[
 <p>
 このフィールドは決して読み出されません。
-フィールドは、public または、protected なので、たぶん、それは解析の一部として見えないクラスで使用されることを意図しています。
+フィールドは、public か protected なので、たぶん、それは解析の一部として見えないクラスで使用されることを意図しています。
 そうでなければ、クラスから除去することを検討してください。
 </p>
 ]]>
@@ -4799,7 +4796,7 @@ static フィールドにすることを検討してください。
 <![CDATA[
 <p>
 ここで参照されている変数は、以前に null なのかチェックしているため  null であることがわかっています。
-これは有効かもしれないし、間違いかもしれません (たぶん、異なる変数を参照することを意図していたか、あるいは、以前の null チェックで、 null でないのか確かめるべきでした)。
+これは有効かもしれないし、間違いかもしれません (たぶん、異なる変数を参照することを意図してました、あるいは以前の null チェックで、 null でないのか確かめるべきでした)。
 </p>
 ]]>
     </Details>
@@ -4878,7 +4875,7 @@ static フィールドにすることを検討してください。
     <Details>
 <![CDATA[
 <p>
-このクラスは内部クラスなのに、それを作成したオブジェクトへの埋め込まれた参照を使用していません。
+このクラスは内部クラスなのにそれを作成したオブジェクトへの埋め込まれた参照を使用していません。
 この参照はより大きなクラスのインスタンスを作成して、必要以上に長い間作成オブジェクトへの参照を存続しておくかもしれません。
 できれば、クラスは static にすべきです。
 </p>
@@ -4906,7 +4903,7 @@ static フィールドにすることを検討してください。
     <Details>
 <![CDATA[
 <p>
-このクラスは内部クラスなのに、それを作成したオブジェクトへの埋め込まれた参照を使用していません。
+このクラスは内部クラスなのにそれを作成したオブジェクトへの埋め込まれた参照を使用していません。
 この参照はより大きなクラスのインスタンスを作成して、必要以上に長く作成オブジェクトへの参照を存続しておくかもしれません。
 できれば、クラスは static 内部クラスにすべきです。
 無名内部クラスは static にできないので、名前付き内部クラスにリファクタリングする必要があります。
@@ -4921,7 +4918,7 @@ static フィールドにすることを検討してください。
     <Details>
 <![CDATA[
 <p>
-このクラスは内部クラスなのに、それを作成したオブジェクトへの埋め込まれた参照を使用していません。
+このクラスは内部クラスなのにそれを作成したオブジェクトへの埋め込まれた参照を使用していません。
 この参照はより大きなクラスのインスタンスを作成して、必要以上に長く作成オブジェクトへの参照を存続しておくかもしれません。
 できれば、クラスは static 内部クラスにすべきです。
 外部オブジェクトへの参照が内部クラスのインスタンスを構築する間必要なので内部クラスのコンストラクタに外部インスタンスへの参照を渡すようにリファクタリングする必要があります。
@@ -4949,7 +4946,7 @@ static フィールドにすることを検討してください。
     <Details>
 <![CDATA[
 <p>
-このメソッドは、ループの中にない <code>java.util.concurrent.await()</code> (あるいはそのバリエーション) を呼び出しています。
+このメソッドは、ループの中にない <code>java.util.concurrent.await()</code> (またはそのバリエーション) を呼び出しています。
 オブジェクトが複数の条件のために使われるなら、呼び出し元が待機するつもりだった条件は実際には発生しないかもしれません。
 </p>
 ]]>
@@ -5013,7 +5010,7 @@ String dateString = getHeaderField(name);
 dateString.trim();
 </pre></blockquote>
 <p>
-プログラマは <code>trim</code> メソッドが <code>dateString</code> によって参照される String オブジェクトが更新されると思っています。
+プログラマは、<code>trim</code> メソッドが <code>dateString</code> によって参照される String オブジェクトが更新されると思っています。
 しかし、String オブジェクトは不変で、<code>trim</code> メソッドが新しい String オブジェクトを返すのに無視しています。
 このコードは、以下のように修正するべきです。
 </p>
@@ -5031,7 +5028,7 @@ dateString = dateString.trim();
     <Details>
 <![CDATA[
 <p>
-このメソッドはチェックされていない値を返しています。
+このメソッドは、チェックされていない値を返しています。
 戻り値は異常か予想外の実行結果を示す可能性があるのでチェックするべきです。
 たとえば、<code>File.delete()</code> はファイルをうまく削除できなかったなら、例外をスローするのではなく false を返します。
 結果をチェックしないなら例外的戻り値を返すメソッドの呼び出しで予想外の振る舞いの合図に気づきません。
@@ -5046,7 +5043,7 @@ dateString = dateString.trim();
     <Details>
 <![CDATA[
 <p>
-このコードでは、例外 (またはエラー) オブジェクトを作成しているのに、何もしていません。<br>
+このコードは、例外 (またはエラー) オブジェクトを作成しているのに何もしていません。<br>
 たとえば、以下のようなコードです。
 </p>
 <blockquote><pre>
@@ -5168,7 +5165,7 @@ switch 文の default が多くの場合実行不可能なので FindBugs が例
     <Details>
 <![CDATA[
 <p>
-そこで、分岐または文が実行されるなら null 値が利用されて <code>NullPointerException</code> が発生します。
+そこで分岐または文が実行されるなら null 値が利用されて <code>NullPointerException</code> が発生します。
 もちろん、問題は分岐または文が実行不可能で、<code>NullPointerException</code> が決して発生する可能性がないということかもしれません。
 それを決めるのは FindBugs の能力を超えています。
 </p>
@@ -5182,7 +5179,7 @@ switch 文の default が多くの場合実行不可能なので FindBugs が例
     <Details>
 <![CDATA[
 <p>
-そこで、分岐または文が実行されるなら null 値が利用されて <code>NullPointerException</code> が発生します。
+そこで分岐または文が実行されるなら null 値が利用されて <code>NullPointerException</code> が発生します。
 もちろん、問題は分岐または文が実行不可能で、<code>NullPointerException</code> が決して発生する可能性がないということかもしれません。
 それを決めるのは FindBugs の能力を超えています。
 この値がすでに null であることを検査されたという事実からこれは確かな可能性です。
@@ -5227,8 +5224,8 @@ switch 文の default が多くの場合実行不可能なので FindBugs が例
     <Details>
 <![CDATA[
 <p>
-おそらく null 値が、null 値を許容しないメソッドパラメータに渡されています。
-パラメータは、常に非 null であるべきパラメータとしてアノテーションが付けられていたか、または、解析が常に null 値を利用すると示していました。
+おそらく、 null 値を許容しないメソッドパラメータに  null 値を渡しています。
+パラメータは、常に非 null であるべきパラメータとしてアノテーションが付けられていたか、または解析が常に null 値を利用すると示していました。
 </p>
 ]]>
     </Details>
@@ -5240,8 +5237,8 @@ switch 文の default が多くの場合実行不可能なので FindBugs が例
     <Details>
       <![CDATA[
 <p>
-おそらく null 値が、すべての知られているターゲットメソッドが非 null であることを要求する呼び出し場所で渡されています。
-パラメータは、常に非 null であるべきパラメータとしてアノテーションが付けられていたか、または、解析が常に null 値を利用すると示していました。
+おそらく、すべての知られているターゲットメソッドが非 null であることを要求する呼び出し場所で null 値を渡しています。
+パラメータは、常に非 null であるべきパラメータとしてアノテーションが付けられていたか、または解析が常に null 値を利用すると示していました。
 </p>
       ]]>
     </Details>
@@ -5253,8 +5250,8 @@ switch 文の default が多くの場合実行不可能なので FindBugs が例
     <Details>
       <![CDATA[
 <p>
-このメソッド呼び出しは、非 null メソッドパラメータに対して null 値を渡しています。
-パラメータは、常に非 null であるべきパラメータとしてアノテーションが付けられていたか、または、解析が常に null 値を利用すると示していました。
+このメソッド呼び出しは非 null メソッドパラメータに対して null 値を渡しています。
+パラメータは、常に非 null であるべきパラメータとしてアノテーションが付けられていたか、または解析が常に null 値を利用すると示していました。
 </p>
       ]]>
     </Details>
@@ -5267,7 +5264,7 @@ switch 文の default が多くの場合実行不可能なので FindBugs が例
       <![CDATA[
 <p>
 このメソッドは、非 null でなければならないメソッドのパラメータとして、null 値を渡しています。
-このパラメータは、@Nonnull として明示的にアノテーションが付けられていたか、または、解析が常に null 値を利用すると示していました。
+このパラメータは、@Nonnull として明示的にアノテーションが付けられていたか、または解析が常に null 値を利用すると示していました。
 </p>
       ]]>
     </Details>
@@ -5279,7 +5276,7 @@ switch 文の default が多くの場合実行不可能なので FindBugs が例
     <Details>
 <![CDATA[
 <p>
-このメソッドは、null 値を返すかもしれないのに、メソッド (またはスーパークラスのメソッド) の戻り値に @NonNull が宣言されています。
+このメソッドは、null 値を返すかもしれないのにメソッド (またはスーパークラスのメソッド) の戻り値に @NonNull が宣言されています。
 </p>
 ]]>
     </Details>
@@ -5292,7 +5289,7 @@ switch 文の default が多くの場合実行不可能なので FindBugs が例
       <![CDATA[
 <p>
 この <code>clone</code> メソッドはいくつかの条件で null を返すと思われます。
-しかし <code>clone</code> メソッドは決して null を返すのは許されません。
+しかし、<code>clone</code> メソッドは決して null を返すのは許されません。
 この経路が到達できないことを確信しているなら、その代わりに <code>AssertionError</code> をスローしてください。
 </p>
       ]]>
@@ -5318,7 +5315,7 @@ null ではなく空の文字列またはいくつかの他の適切な文字列
     <Details>
 <![CDATA[
 <p>
-そこで、文または分岐が実行されるなら、ここで値が null であり、null 値を利用する (フォワードパスで実行時例外を伴うこと以外は) ことが保証されています。
+そこで文または分岐が実行されるなら、ここで値が null であり、null 値を利用する (フォワードパスで実行時例外を伴うこと以外は) ことが保証されています。
 </p>
 ]]>
     </Details>
@@ -5330,7 +5327,7 @@ null ではなく空の文字列またはいくつかの他の適切な文字列
     <Details>
 <![CDATA[
 <p>
-そこで、例外経路上の文または分岐が実行されるなら、ここで値が null であり、null 値を利用する (フォワードパスで実行時例外を伴うこと以外は) ことが保証されています。
+そこで例外経路上の文または分岐が実行されるなら、ここで値が null であり、null 値を利用する (フォワードパスで実行時例外を伴うこと以外は) ことが保証されています。
 </p>
 ]]>
     </Details>
@@ -5354,7 +5351,7 @@ null ではなく空の文字列またはいくつかの他の適切な文字列
     <Details>
 <![CDATA[
 <p>
-このメソッドは、入出力ストリームオブジェクトを作成しているのに、どんなフィールドにも代入していないし、クローズするかもしれない別のメソッドにも渡していないし、戻り値にしてもいません。そして、メソッドからのすべての経路でクローズするように見えません。
+このメソッドは、入出力ストリームオブジェクトを作成しているのにどんなフィールドにも代入していないし、クローズするかもしれない別のメソッドにも渡していないし、戻り値にしてもいません。そして、メソッドからのすべての経路でクローズするように見えません。
 これは、ファイルディスクリプタリークになるかもしれません。
 ストリームがクローズされることを確実にするために <code>finally</code> ブロックを使うことは、通常良い考えです。
 </p>
@@ -5368,7 +5365,7 @@ null ではなく空の文字列またはいくつかの他の適切な文字列
     <Details>
 <![CDATA[
 <p>
-このメソッドは、入出力ストリームオブジェクトを作成しているのに、どんなフィールドにも代入していないし、クローズするかもしれない別のメソッドにも渡していないし、戻り値にしてもいません。そして、メソッドからのすべての可能性がある例外経路でクローズするように見えません。
+このメソッドは、入出力ストリームオブジェクトを作成しているのにどんなフィールドにも代入していないし、クローズするかもしれない別のメソッドにも渡していないし、戻り値にしてもいません。そして、メソッドからのすべての可能性がある例外経路でクローズするように見えません。
 これはファイルディスクリプターリークになるかもしれません。
 ストリームがクローズされることを確実にするために <code>finally</code> ブロックを使うことは、通常良い考えです。
 </p>
@@ -5434,7 +5431,7 @@ if (argv.length == 1);
 <p>
 ここで値が null なのかチェックしていますが、すでに利用されていたので null である可能性はありません。
 それが null なら以前の利用で <code>NullPointerException</code> が発生していたでしょう。
-基本的に、この値が null であることを許されるのかどうかに関係なく、このコードと前の null 値の利用は一致しません。
+基本的に、この値が null であることを許すのかどうかに関係なく、このコードと前の null 値の利用は一致しません。
 チェックは冗長か、または前の null 値の利用は誤りです。
 </p>
 ]]>
@@ -5516,7 +5513,7 @@ of defensive programming.</p>
     <Details>
 <![CDATA[
 <p>
-このメソッドは、JSR-166(<code>java.util.concurrent</code>) のロックを獲得しているのに、メソッドからのすべての経路で解除していません。
+このメソッドは、JSR-166(<code>java.util.concurrent</code>) のロックを獲得しているのにメソッドからのすべての経路で解除していません。
 通常、JSR-166のロックを使用するための正しいイディオムは以下のようになります。
 </p>
 <blockquote><pre>
@@ -5527,7 +5524,7 @@ try {
 } finally {
     l.unlock();
 }
-</pre><blockquote>
+</pre></blockquote>
 ]]>
     </Details>
   </BugPattern>
@@ -5538,7 +5535,7 @@ try {
     <Details>
 <![CDATA[
 <p>
-このメソッドは、JSR-166(<code>java.util.concurrent</code>) のロックを獲得しているのに、メソッドからのすべての例外経路で解除していません。
+このメソッドは、JSR-166(<code>java.util.concurrent</code>) のロックを獲得しているのにメソッドからのすべての例外経路で解除していません。
 通常、JSR-166のロックを使用するための正しいイディオムは以下のようになります。
 </p>
 <blockquote><pre>
@@ -5549,7 +5546,7 @@ try {
 } finally {
     l.unlock();
 }
-</pre><blockquote>
+</pre></blockquote>
 ]]>
     </Details>
   </BugPattern>
@@ -5562,8 +5559,8 @@ try {
 <p>
 このメソッドは、 == または != 演算子を使用して2つの参照値を比較しています。
 この型のインスタンスを比較する正しい方法は、通常 <code>equals</code> メソッドです。
-等価で識別可能なインスタンスを作成する可能性があるが、異なるオブジェクトなので == で比較しないでください。
-参照によって通常比較されるべきではないクラスの例は、<code>java.lang.Integer</code> 、<code>java.lang.Float</code> などです。
+等価で識別可能なインスタンスを作成する可能性がありますが、異なるオブジェクトなので == で比較しないでください。
+参照によって通常比較されるべきでないクラスの例は、<code>java.lang.Integer</code> 、<code>java.lang.Float</code> などです。
 </p>
 ]]>
     </Details>
@@ -5577,7 +5574,7 @@ try {
 <p>
 このメソッドは、 == または != 演算子を使用して定数と比較しています。
 この型のインスタンスを比較する正しい方法は、通常 <code>equals</code> メソッドです。
-等価で識別可能なインスタンスを作成する可能性があるが、異なるオブジェクトなので == で比較しないでください。
+等価で識別可能なインスタンスを作成する可能性がありますが、異なるオブジェクトなので == で比較しないでください。
 参照によって通常比較されるべきではないクラスの例は、<code>java.lang.Integer</code> 、<code>java.lang.Float</code> などです。
 </p>
 ]]>
@@ -5621,7 +5618,7 @@ try {
 <p>
 このメソッドは、共通のサブクラスがない異なるクラス型の2つのオブジェクト参照で <code>equals(Object)</code> メソッドを呼び出しています。
 したがって、比較されている2つのオブジェクトは実行時に同じクラスのメンバである可能性が低いです (いくつかのアプリケーションクラスが解析できなかったか、動的クラスローディングが実行時に起こることができた場合を除く)。
-<code>equals</code> メソッドの規約によると、異なるクラスのオブジェクトは、不等であるとして常に比較するべきです。
+<code>equals</code> メソッドの規約によると、異なるクラスのオブジェクトは常に等しくないとして比較するべきです。
 したがって、<code>java.lang.Object.equals(Object)</code> によって定義される規約によれば、この比較の結果は実行時に常に false になります。
 </p>
 ]]>
@@ -5637,7 +5634,7 @@ try {
 このメソッドは、どちらも他方のサブタイプでない無関係なインタフェース型の2つの参照で <code>equals(Object)</code> メソッドを呼び出しています。
 そして、両方のインタフェースを実装する既知の非抽象クラスがありません。
 したがって、比較されている2つのオブジェクトは実行時に同じクラスのメンバである可能性が低いです (いくつかのアプリケーションクラスが解析できなかったか、動的クラスローディングが実行時に起こることができた場合を除く)。
-<code>equals</code> メソッドの規約によると、異なるクラスのオブジェクトは、不等であるとして常に比較するべきです。
+<code>equals</code> メソッドの規約によると、異なるクラスのオブジェクトは常に等しくないとして比較するべきです。
 したがって、<code>java.lang.Object.equals(Object)</code> によって定義される規約によれば、この比較の結果は実行時に常に false になります。
 </p>
 ]]>
@@ -5653,7 +5650,7 @@ try {
 このメソッドは、一方がクラスで他方がインタフェースである2つの参照で <code>equals(Object)</code> メソッドを呼び出しています。
 クラスは、そのクラスの非抽象サブクラスも含めてインタフェースを実装していません。
 したがって、比較されている2つのオブジェクトは実行時に同じクラスのメンバである可能性が低いです (いくつかのアプリケーションクラスが解析できなかったか、動的クラスローディングが実行時に起こることができた場合を除く)。
-<code>equals</code> メソッドの規約によると、異なるクラスのオブジェクトは、不等であるとして常に比較するべきです。
+<code>equals</code> メソッドの規約によると、異なるクラスのオブジェクトは常に等しくないとして比較するべきです。
 したがって、<code>java.lang.Object.equals(Object)</code> によって定義される規約によれば、この比較の結果は実行時に常に false になります。
 </p>
       ]]>
@@ -5701,7 +5698,7 @@ try {
 
   <BugPattern type="SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD">
     <ShortDescription>フィールドへの代入ではなくローカル変数への自己代入</ShortDescription>
-    <LongDescription>フィールドへの代入ではなく {2} の自己代入です。{1}</LongDescription>
+    <LongDescription>フィールドへの代入ではなく、{2} の自己代入です。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -5870,7 +5867,7 @@ public void foo() {
 <![CDATA[
 <p>
 <code>Double.longBitsToDouble()</code> の呼び出しで、32ビット int 値が引数として渡されています。
-これはほぼ間違いなく意図したことではなく、意図した結果を得る可能性が低いです。 
+これはほぼ間違いなく意図したことではありませんし、意図した結果を与えることはほとんどありません。 
 </p>
 ]]>
     </Details>
@@ -5883,13 +5880,13 @@ public void foo() {
 <![CDATA[
 <p>
 このコードは、<code>java.util.Random</code> オブジェクトを作成して1つの乱数を生成するために使用して捨てています。
-これはあまり良くない質の乱数を作り出し、効率が悪いです。
+これはあまり良くない品質の乱数を作り出し、効率が悪いです。
 できれば、<code>Random</code> オブジェクトを1つだけ作成して保存されるようにコードを書き直してください。
 そして、新しい乱数が必要なたびに既存の <code>Random</code> オブジェクトでメソッドを呼び出してください。
 </p>
 <p>
 生成された乱数が推測可能でないことが重要なら、乱数ごとに新しい <code>Random</code> オブジェクトを作成してはいけません (値はあまりに簡単に推測可能です)。
-その代わりに、<code>java.security.SecureRandom</code> の使用を強く検討するべきです (そして、必要とされる乱数ごとに新しい <code>SecureRandom</code> のオブジェクトを作成することを回避します)。 
+その代わりに <code>java.security.SecureRandom</code> の使用を強く検討するべきです (そして、必要とされる乱数ごとに新しい <code>SecureRandom</code> のオブジェクトを作成することを回避します)。 
 </p>
 ]]>
     </Details>
@@ -5933,7 +5930,7 @@ public void foo() {
 <p>
 このコードは符号付き整数の乱数を生成して別の値を法とする剰余を計算しています。
 乱数が負かもしれないので、剰余演算の結果も負かもしれません。これが意図したことであることを確実にしてください。
-その代わりに、<code>Random.nextInt(int)</code> の使用を強く検討してください。
+その代わりに <code>Random.nextInt(int)</code> の使用を強く検討してください。
 </p>
 ]]>
     </Details>
@@ -5976,8 +5973,8 @@ public void foo() {
     <Details>
 <![CDATA[
 <p>
-符号付バイトのとりうる値の範囲は、-128〜127です。その範囲外で符号付バイトを値と比較することは無意味で間違っていそうです。
-符号付きバイト <code>b</code> を範囲が0〜255の符号なしバイトに変換するには <code>0xff &amp; b</code> を使用してください。 
+符号付バイトのとりうる値の範囲は-128～127です。その範囲外で符号付バイトを値と比較することは無意味で間違っていそうです。
+符号付きバイト <code>b</code> を範囲が0～255の符号なしバイトに変換するには <code>0xff &amp; b</code> を使用してください。 
 </p>
 ]]>
     </Details>
@@ -6086,12 +6083,12 @@ for(int i = 0; i &lt; 4; i++)
 
   <BugPattern type="BIT_AND">
     <ShortDescription>互換性のないビットマスク</ShortDescription>
-    <LongDescription>(e &amp; {2} == {3}) の互換性のないビットマスクは、定数の結果をもたらします。{1}</LongDescription>
+    <LongDescription>(e &amp; {2} == {3}) の互換性のないビットマスクは、一定の結果をもたらします。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 このメソッドは、<i>(e &amp; C)</i> 形式の式を <i>D</i> と比較しています。
-定数 <i>C</i> の特定の値と <i>D</i> のために、常に不等であることを比較するでしょう。論理エラーかタイプミスかもしれません。
+定数 <i>C</i> と <i>D</i> の特定の値と常に等しくないことを比較します。論理エラーかタイプミスかもしれません。
 </p>
 
 ]]>
@@ -6148,12 +6145,12 @@ Boris Bokowski
 
   <BugPattern type="BIT_IOR">
     <ShortDescription>互換性のないビットマスク</ShortDescription>
-    <LongDescription>(e | {2} == {3}) の互換性のないビットマスクは、定数の結果をもたらします。{1}</LongDescription>
+    <LongDescription>(e | {2} == {3}) の互換性のないビットマスクは、一定の結果をもたらします。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 このメソッドは、<code>(e | C)</code> 形式の式を <code>D</code> と比較しています。
-定数 <i>C</i> の特定の値と <i>D</i> のために、常に不等であることを比較するでしょう。論理エラーかタイプミスかもしれません。
+定数 <i>C</i> と <i>D</i> の特定の値と常に等しくないことを比較します。論理エラーかタイプミスかもしれません。
 </p>
 <p>
 典型的に、このバグは、ビットセットで帰属関係のテストを実行したいコードで発生します。
@@ -6232,7 +6229,7 @@ For more information, see the
 
   <BugPattern type="JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT">
     <ShortDescription>util.concurrent 抽象でモニタスタイルの wait メソッドを使用している</ShortDescription>
-    <LongDescription>{3.name} ではなく {2.name} を呼び出している。{1}</LongDescription>
+    <LongDescription>{3.name} ではなく {2.name} を呼び出しています。{1}</LongDescription>
 <Details>
 <![CDATA[
 <p>
@@ -6250,7 +6247,7 @@ For more information, see the
     <Details>
 <![CDATA[
 <p>
-このメソッドは、java.util.concurrent パッケージのクラス (または、サブクラス) のインスタンスで同期化しています。
+このメソッドは、java.util.concurrent パッケージのクラス (またはサブクラス) のインスタンスで同期化しています。
 これらのクラスのインスタンスは、<code>synchronized</code> の使用とは違う互換性のないそれら自身の同時制御メカニズムを持っています。
 </p>
 ]]>
@@ -6291,8 +6288,7 @@ For more information, see the
     <Details>
 <![CDATA[
 <p>
-このメソッドは、データベースリソース (たとえば、データベースコネクションや行セット) を作成しているのに、
-どんなフィールドにも代入していないし、他のメソッドにも渡していないし、戻り値にもしていません。
+このメソッドは、データベースリソース (たとえば、データベースコネクションや行セット) を作成しているのにどんなフィールドにも代入していないし、他のメソッドにも渡していないし、戻り値にもしていません。
 そして、メソッドからのすべての経路でオブジェクトをクローズするように見えません。
 メソッドからのすべての経路でデータベースリソースのクローズ失敗は良くない性能になるかもしれません。
 データベースとの通信で問題があるアプリケーションの原因になる可能性があります。
@@ -6307,8 +6303,7 @@ For more information, see the
     <Details>
 <![CDATA[
 <p>
-このメソッドは、データベースリソース (たとえば、データベースコネクションや行セット) を作成しているのに、
-どんなフィールドにも代入していないし、他のメソッドにも渡していないし、戻り値にもしていません。
+このメソッドは、データベースリソース (たとえば、データベースコネクションや行セット) を作成しているのにどんなフィールドにも代入していないし、他のメソッドにも渡していないし、戻り値にもしていません。
 そして、メソッドからのすべての例外経路でオブジェクトをクローズするように見えません。
 メソッドからのすべての経路でデータベースリソースのクローズ失敗は良くない性能になるかもしれません。
 データベースとの通信で問題があるアプリケーションの原因になる可能性があります。
@@ -6368,7 +6363,7 @@ String s = buf.toString();
 
   <BugPattern type="IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD">
     <ShortDescription>run メソッドでの JUnit アサーションは JUnit によって通知されない</ShortDescription>
-    <LongDescription>{1} での JUnit アサーションは、JUnit によって通知されません。</LongDescription>
+    <LongDescription>{1} での JUnit アサーションは JUnit によって通知されません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6476,7 +6471,7 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
 
   <BugPattern type="SQL_BAD_RESULTSET_ACCESS">
     <ShortDescription>インデックスが0で ResultSet にアクセスしようとしているメソッド</ShortDescription>
-    <LongDescription>メソッド {1} は、インデックスが0で、ResultSet にアクセスしようとしています。</LongDescription>
+    <LongDescription>メソッド {1} は、インデックスが0で ResultSet にアクセスしようとしています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6489,7 +6484,7 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
 
   <BugPattern type="SQL_BAD_PREPARED_STATEMENT_ACCESS">
     <ShortDescription>インデックスが0で PreparedStatement にアクセスしようとしているメソッド</ShortDescription>
-    <LongDescription>メソッド {1} は、インデックスが0で、PreparedStatement にアクセスしようとしています。</LongDescription>
+    <LongDescription>メソッド {1} は、インデックスが0で PreparedStatement にアクセスしようとしています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6532,9 +6527,9 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
 <![CDATA[
 <p>
 このメソッドは、配列と配列であると思われない参照を比較するために <code>.equals(Object o)</code> を呼び出しています。
-比較されているものが違う型なら不等であることが保証されているので、比較はほぼ間違いなく誤りです。
+比較されているものが違う型なら、等しくないことが保証されているので、比較はほぼ間違いなく誤りです。
 たとえそれらが両方とも配列であるとしても、配列の <code>equals</code> メソッドは2つの配列が同じオブジェクトであると決定するだけです。
-配列のコンテンツを比較するためには、<code>java.util.Arrays.equals(Object[], Object[])</code> を使用してください。 
+配列のコンテンツを比較するためには <code>java.util.Arrays.equals(Object[], Object[])</code> を使用してください。 
 </p>
 ]]>
     </Details>
@@ -6542,13 +6537,13 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
 
   <BugPattern type="EC_BAD_ARRAY_COMPARE">
     <ShortDescription>配列の equals メソッド呼び出しは == と等価である</ShortDescription>
-    <LongDescription>{2.simpleClass} を比較するために .equals を使用しているが、== と等価です。{1}</LongDescription>
+    <LongDescription>{2.simpleClass} を比較するために .equals を使用していますが、== と等価です。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 このメソッドは、配列で <code>.equals(Object o)</code> を呼び出しています。
 配列は、<code>Object</code> の <code>equals</code> メソッドをオーバーライドしないので、配列で <code>equals</code> メソッドを呼び出すことはアドレスを比較することと同じです。
-配列のコンテンツを比較するためには、<code>java.util.Arrays.equals(Object[], Object[])</code> を使用してください。
+配列のコンテンツを比較するためには <code>java.util.Arrays.equals(Object[], Object[])</code> を使用してください。
 配列のアドレスを比較するために、明示的に、<code>==</code> を使用して参照等価性をチェックすることは、それほど紛らわしくないでしょう。
 </p>
 ]]>
@@ -6612,7 +6607,7 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
     <Details>
 <![CDATA[
 <p>
-この命令は、ローカル変数に値を代入しているのに、値は読み出されないか以降の命令でも使われません。
+この命令は、ローカル変数に値を代入しているのに値は読み出されないか以降の命令でも使われません。
 多くの場合、計算された値が決して使われないので、これは誤りを示します。
 フィールドがローカル変数と同じ名前です。そうではなく、フィールドに代入するつもりでしたか？
 </p>
@@ -6626,7 +6621,7 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
     <Details>
 <![CDATA[
 <p>
-この命令はローカル変数に値を代入しているのに、値は読み出されないか以降の命令でも使われません。
+この命令はローカル変数に値を代入しているのに値は読み出されないか以降の命令でも使われません。
 多くの場合、計算された値が決して使われないので、これは誤りを示します。
 </p>
 <p>
@@ -6656,10 +6651,10 @@ FindBugs は、バイトコードベースのツールなので誤検出をな�
     <Details>
 <![CDATA[
 <p>
-この命令は変数にクラスリテラルを代入しているのに、決して使われません。<br>
+この命令は変数にクラスリテラルを代入しているのに決して使われません。<br>
 <a href="//java.sun.com/j2se/1.5.0/compatibility.html#literal">The behavior of this differs in Java 1.4 and in Java 5</a><br>
 J2SE 1.4 およびそれ以前のバージョンでは、<code>Foo.class</code> への参照は <code>Foo</code> のためのスタティックイニシャライザがすでに実行されていないなら実行することを強制します。
-J2SE 5.0では、そうしません。
+J2SE 5.0ではそうしません。
 </p>
 <p>
 より多くの詳細と例と J2SE 5.0のクラスの強制的な初期化の方法の提案は Sun の<a href="//java.sun.com/j2se/1.5.0/compatibility.html#literal">article on Java SE compatibility</a> を参照してください。
@@ -6674,7 +6669,7 @@ J2SE 5.0では、そうしません。
     <Details>
 <![CDATA[
 <p>
-このコードはローカル変数に null を代入しているのに、代入された値は読み出されていません。
+このコードはローカル変数に null を代入しているのに代入された値は読み出されていません。
 この代入はガベージコレクタを手伝うために導入されたのかもしれませんが、Java SE 6ではもはや必要とされないか有用ではありません。
 </p>
 ]]>
@@ -6739,8 +6734,7 @@ Map の entrySet イテレータを使用した方が <code>Map.get(key)</code> 
     <Details>
 <![CDATA[
 <p>
-このメソッドは、例外オブジェクトをキャッチする try-catch ブロックを使用しているのに、
-例外は try ブロックの中でスローされません。また、実行時例外は明示的にキャッチされません。
+このメソッドは、例外オブジェクトをキャッチする try-catch ブロックを使用しているのに例外は try ブロックの中でスローされません。また、実行時例外は明示的にキャッチされません。
 それぞれの catch ブロックが同一である多くの例外型をキャッチすることの短縮形として <code>try { ... } catch (Exception e) { something }</code> を使用することが共通のバグパターンです。
 しかし、この構文は誤って実行時例外も同様にキャッチするので、潜在的なバグを隠します。
 </p>
@@ -6757,7 +6751,7 @@ Map の entrySet イテレータを使用した方が <code>Map.get(key)</code> 
 このコードは、浮動小数点が特別な非数値と等価であるか確かめています (たとえば、<code>if (x == Double.NaN)</code>)。
 しかしながら、<code>NaN</code> の特別な意味のため、値は <code>NaN</code> と等価ではありません。
 したがって、<code>x == Double.NaN</code> は常に false と評価します。
-<code>x</code> という値が特別な非数値であるかどうか確かめるためには、<code>Double.isNaN(x)</code> を使用します (あるいは、<code>x</code> が浮動小数点精度であるなら <code>Float.isNaN(x)</code>)。
+<code>x</code> という値が特別な非数値であるかどうか確かめるためには <code>Double.isNaN(x)</code> を使用します (あるいは、<code>x</code> が浮動小数点精度であるなら <code>Float.isNaN(x)</code>)。
 </p>
 ]]>
     </Details>
@@ -6960,7 +6954,7 @@ long を使用して乗算をすれば、結果がオーバーフローすると
 long convertDaysToMilliseconds(int days) { return 1000L*3600*24*days; } 
 </pre></blockquote>
 <p>
-または、
+または
 </p>
 <blockquote><pre>
 static final long MILLISECONDS_PER_DAY = 24L*3600*1000;
@@ -6977,7 +6971,7 @@ long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; }
 <![CDATA[
 <p>
 このコードは、32ビット int 値を64ビット long 値に変換して、絶対時間値を必要とするメソッドパラメータに渡しています。
-絶対時間値は、「エポック」（すなわち、1970年1月1日、00:00:00 GMT）としてわかっている標準的な基準時間からミリ秒の数です。<br>
+絶対時間値は、「エポック」（すなわち、1970年1月1日、00:00:00 GMT）としてわかっている標準的な基準時間からのミリ秒数です。<br>
 たとえば、次のメソッド（Date にエポックから秒を変換することを意図した）は、ひどく壊れています。
 </p>
 <blockquote><pre>
@@ -7126,8 +7120,8 @@ double value2 =  x / (double) y;
     <Details>
 <![CDATA[
 <p>
-Boolean型でない引数を %b 書式指示子でフォーマットしています。これは例外をスローしません。
-その代わりに、null でない値では true 、null では false を出力します。
+Boolean 型でない引数を %b 書式指示子でフォーマットしています。これは例外をスローしません。
+その代わりに null でない値では true 、null では false を出力します。
 書式文字列のこの機能は奇妙で意図したことではないかもしれません。
 </p>
 ]]>
@@ -7177,7 +7171,7 @@ printf スタイルの書式文字列が必要なときに、MessageFormat の�
   </BugPattern>
 
   <BugPattern type="VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED">
-    <ShortDescription>書式文字列で実際に使われるより多くの引数が渡されている</ShortDescription>
+    <ShortDescription>書式文字列で実際に使われるより、多くの引数が渡されている</ShortDescription>
     <LongDescription>書式文字列 {3} によって呼び出されている書式文字列メソッド {2} は、書式指示子の数が {4} なのに 引数の数は {5} です。{1}</LongDescription>
     <Details>
 <![CDATA[
@@ -7421,7 +7415,7 @@ an indication of some misunderstanding or some other logic error.
     <Details>
 <![CDATA[
 <p>
-String メソッドが呼び出されています。そして、"." が引数として正規表現とるパラメータに渡されています。
+String メソッドが呼び出されていて、"." が引数として正規表現を取るパラメータに渡されています。
 これは、意図したことですか?
 たとえば、<code>s.replaceAll(".", "/")</code> はあらゆる文字が "/" 文字に置き換えられた文字列を返します。
 また、<code>s.split(".")</code> は常に長さが0の String の配列を返します。
@@ -7531,7 +7525,7 @@ String メソッドが呼び出されています。そして、"." が引数と
     <Details>
 <![CDATA[
 <p>
-このコードは、配列で <code>toString</code> メソッドを呼び出しているが、「[C@16f0472」のようなかなり役に立たない結果を生成します。
+このコードは、配列で <code>toString</code> メソッドを呼び出しています。「[C@16f0472」のようなかなり役に立たない結果を生成します。
 配列のコンテンツを与え、読める文字列に変換するために、<code>Arrays.toString()</code> を使うことを検討してください。<br>
 『Programming Puzzlers』の第3章、パズル12を参照してください。
 </p>
@@ -7545,7 +7539,7 @@ String メソッドが呼び出されています。そして、"." が引数と
     <Details>
 <![CDATA[
 <p>
-このコードは、無名の配列で <code>toString</code> メソッドを呼び出しているが、「[C@16f0472」のようなかなり役に立たない結果を生成します。
+このコードは、無名の配列で <code>toString</code> メソッドを呼び出しています。「[C@16f0472」のようなかなり役に立たない結果を生成します。
 配列のコンテンツを与え、読める文字列に変換するために、<code>Arrays.toString()</code> を使うことを検討してください。<br>
 『Programming Puzzlers』の第3章、パズル12を参照してください。
 </p>
@@ -7580,7 +7574,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
     <Details>
 <![CDATA[
 <p>
-このコードは、<code>x % 2 == 1</code> を使用して値が負数なのか確かめているが、負数 (たとえば、<code>(-5) % 2 == -1</code>) なので機能しません。
+このコードは、<code>x % 2 == 1</code> を使用して値が負数なのか確かめていますが、負数 (たとえば、<code>(-5) % 2 == -1</code>) なので機能しません。
 奇数チェックを意図しているなら、<code>x &amp; 1 == 1</code> または <code>x % 2 != 0</code> を使うことを検討してください。
 </p>
 ]]>
@@ -7617,7 +7611,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
     <Details>
 <![CDATA[
 <p>
-このコードは、文字列で <code>substring(0)</code> を呼び出しているが、元の値を返します。
+このコードは、文字列で <code>substring(0)</code> を呼び出していますが、元の値を返します。
 </p>
 ]]>
     </Details>
@@ -7629,9 +7623,9 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
     <Details>
 <![CDATA[
 <p>
-<code>hasNext</code> メソッドは、<code>next</code> メソッドを呼び出します。
-<code>hasNext</code> メソッドがイテレータの状態を変更すると思われないので、ほぼ確実に間違っています。
-<code>next</code> メソッドがイテレータの状態を変更すると思われます。 
+<code>hasNext</code> メソッドは、<code>next</code> メソッドを呼び出しています。
+<code>hasNext</code> メソッドは、イテレータの状態を変更することになっていないので、ほぼ確実に間違っています。
+<code>next</code> メソッドがイテレータの状態を変更することになっています。
 </p>
 ]]>
     </Details>
@@ -7644,7 +7638,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
 <![CDATA[
 <p>
 このメソッドは、ロックを保持して、<code>Thread.sleep()</code> を呼び出しています。
-これは、結果としてひどい性能とスケーラビリティになるかもしれません。あるいは、他のスレッドがロックを獲得するために待機しているかもしれないので、デッドロックになるかもしれません。
+他のスレッドがロックを獲得するために待機しているかもしれないので、ひどい性能とスケーラビリティ、またはデッドロックになるかもしれません。
 ロックで <code>wait</code> メソッドを呼び出すことはかなり良い考えで、ロックを解除して他のスレッドが実行するのを許可します。
 </p>
 ]]>
@@ -7683,7 +7677,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
     <Details>
 <![CDATA[
 <p>
-この内部クラスのメソッドは、所有クラスの private メンバー変数への読み書き、または、所有クラスの private メソッドを呼び出しています。
+この内部クラスのメソッドは、所有クラスの private メンバー変数への読み書きか、所有クラスの private メソッドを呼び出しています。
 コンパイラはこの private メンバーにアクセスするために特別なメソッドを生成しなければなりないので、効率を悪化させる原因になります。
 メンバー変数またはメソッドの保護を緩和することは、コンパイラが通常のアクセスとして扱うのを許可します。
 </p>
@@ -7739,11 +7733,11 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
 
   <BugPattern type="CI_CONFUSED_INHERITANCE">
     <ShortDescription>final なクラスが protected フィールドを宣言している</ShortDescription>
-    <LongDescription>クラス {0} は、final なのに、 protected フィールド {1} を宣言しています。</LongDescription>
+    <LongDescription>クラス {0} は、final なのに protected フィールド {1} が宣言されています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このクラスは、final と宣言されているのに、フィールドは protected と宣言されています。
+このクラスは、final と宣言されていますが、フィールドは protected と宣言されています。
 クラスは fainal なので派生できません。、protected の使用は紛らわしいです。 
 フィールドのためのアクセス修飾子は、フィールドの真の用途を表すため、 private か public に変更するべきです。
 </p>
@@ -7795,16 +7789,16 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
     <Details>
 <![CDATA[
 <p>
-総称型コレクションメソッドへの呼び出しには、コレクションのパラメータとは互換性のないクラスの引数があります (すなわち、引数の型は総称型引数に対応するスーパタイプでもサブタイプでもありません)。
-したがって、コレクションにはここで使われるメソッド引数に等価であるどんなオブジェクトもなさそうです。
+総称型コレクションメソッドへの呼び出しにコレクションのパラメータとは互換性のないクラスの引数があります (すなわち、引数の型は総称型引数に対応するスーパタイプでもサブタイプでもありません)。
+したがって、コレクションにはここで使用されたメソッド引数と等価であるどんなオブジェクトも含まれていません。
 たぶん、間違った値がメソッドに渡されています。
 通常、2つの無関係なクラスのインスタンスは等価ではありません。
 たとえば、<code>Foo</code> と <code>Bar</code> クラスがサブタイプによって関係がないなら、<code>Foo</code> のインスタンスは <code>Bar</code> のインスタンスと等価のはずがありません。
-その他の問題で、対称的でない <code>equals</code> メソッドになる可能性が高いです。
+その他の問題で、対称的ではない <code>equals</code> メソッドになる可能性が高いです。
 たとえば、<code>Foo</code> が <code>String</code> と等価であるように <code>Foo</code> クラスを定義するなら、<code>String</code> は <code>String</code> だけと等価であるので、<code>equals</code> メソッドは対称的ではありません。
 </p>
 <p>
-まれに、非対称 <code>equals</code> メソッドを定義して、まだ何とかそれらのコードを機能させています。
+まれに、非対称 <code>equals</code> メソッドを定義して、まだ、何とかそれらのコードを機能させています。
 APIのどれも文書化していないし、保証もしていないが通常の場合は  <code>Collection&lt;String&gt;</code> に <code>Foo</code> があるかどうか調べたいなら、
 引数の <code>equals</code> メソッド (たとえば、<code>Foo</code>クラスの <code>equals</code> メソッド) を使用して等価性をチェックします。
 </p>
@@ -7818,7 +7812,7 @@ APIのどれも文書化していないし、保証もしていないが通常�
     <Details>
 <![CDATA[
 <p>
-この総称型コレクションメソッドへの呼び出しは、コレクションに自分自身が含まれている (たとえば、<code>s.contains(s)</code> が true だとして) 場合にだけ意味があります。
+この総称型コレクションメソッドへの呼び出しはコレクションに自分自身が含まれている (たとえば、<code>s.contains(s)</code> が true だとして) 場合にだけ意味があります。
 これは true である可能性が低くて、もし true なら問題の原因になります (たとえば、無限再帰になっているハッシュコードの計算)。
 間違ったパラメータが渡されている可能性が高いです。
 </p>
@@ -7832,9 +7826,9 @@ APIのどれも文書化していないし、保証もしていないが通常�
     <Details>
 <![CDATA[
 <p>
-この呼び出しは、意味がありません。
+この呼び出しは意味がありません。
 どんなコレクション <code>c</code> も <code>c.containsAll(c)</code> を呼び出すことは常に true であるべきです。
-そして、<code>c.retainAll(c)</code> は効果があるべきではありません。
+そして、<code>c.retainAll(c)</code> は効果があるはずがありません。
 </p>
      ]]>
     </Details>
@@ -7847,7 +7841,7 @@ APIのどれも文書化していないし、保証もしていないが通常�
 <![CDATA[
 <p>
 コレクション <code>c</code> からすべての要素を除去したいなら、<code>c.removeAll(c)</code> ではなく <code>c.clear</code> を使用してください。
-コレクションを消去するために <code>c.removeAll(c)</code> を呼び出すことは、それほど明確ではなく、タイプミスからの誤りに影響されやすく、効率的ではなく、いくつかのコレクションでは <code>ConcurrentModificationException</code> をスローするかもしれません。
+コレクションを消去するために <code>c.removeAll(c)</code> を呼び出すことは、それほど明確ではなく、タイプミスからの誤りに影響されやすく、効率的ではなく、いくつかのコレクションでは、<code>ConcurrentModificationException</code> をスローするかもしれません。
 </p>
 ]]>
     </Details>
@@ -7959,7 +7953,7 @@ public @NonNegative Integer example(@Negative Integer value) {
     <Details>
 <![CDATA[
 <p>
-型修飾子によって示される値のインスタンスでははない可能性としてアノテーションが付けられた値です。
+型修飾子によって示される値のインスタンスではない可能性としてアノテーションが付けられた値です。
 値はその型修飾子によって示された要求方法で使うことが保証されています。
 </p>
 ]]>
@@ -7994,7 +7988,7 @@ public @NonNegative Integer example(@Negative Integer value) {
 
   <BugPattern type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK">
     <ShortDescription>明示的なアノテーションの使用に一貫性がない</ShortDescription>
-    <LongDescription>値は、常に {2} を必要としているが、明示的に {2} に関する不明なアノテーションが付けられています。</LongDescription>
+    <LongDescription>値は、常に {2} を必要としていますが、明示的に {2} に関する不明なアノテーションが付けられています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -8057,7 +8051,7 @@ String constructComponentName() {
         return base + nameCounter++;
     }
 }
-</pre><blockquote>
+</pre></blockquote>
 <p>
 Jason Mehrens によって寄贈されたバグパターン
 </p>
@@ -8071,7 +8065,7 @@ Jason Mehrens によって寄贈されたバグパターン
     <Details>
 <![CDATA[
 <p>
-このメソッドは、ストリーム、データベースオブジェクト、あるいは、明示的にクリーンアップ操作を必要としている他のリソースのクリーンアップ (クローズする、処分する) に失敗するかもしれません。
+このメソッドは、ストリーム、データベースオブジェクト、または明示的にクリーンアップ操作を必要としている他のリソースのクリーンアップ (クローズする、処分する) に失敗するかもしれません。
 </p>   
 <p>
 通常、メソッドがストリープや他のリソースを開いたなら、メソッドはストリームやリソースがメソッドが戻る前にクリーンアップされることを確認するために、try/finally ブロックを使用するべきです。
@@ -8178,7 +8172,7 @@ Ulf Ochsenfahrt と Eric Fellheimer
 <![CDATA[
 <p>
 このコードには、並行抽象化 （たとえば、並行ハッシュマップ） の呼び出しシーケンスがあります。
-これらの呼び出しは、原子的に実行されません。
+これらの呼び出しは原子的に実行されません。
 </p>
 ]]>
     </Details>
@@ -8190,8 +8184,8 @@ Ulf Ochsenfahrt と Eric Fellheimer
     <Details>
 <![CDATA[
 <p>
-デフォルトプラットホームエンコーディングが適切であると仮定する、バイトから String (または、String からバイト) に変換するメソッドの呼び出しを発見しました。
-これは、アプリケーションの振る舞いがプラットホーム間で異なる原因となります。
+バイトから String (またはStringからバイト) への変換で、デフォルトプラットホームエンコーディングが適切であると仮定するメソッドの呼び出しを発見しました。
+これは、アプリケーションの振る舞いがプラットホーム間で異なる原因となります。代替 API を使用して、明示的に文字セット名または Charset オブジェクトを指定して下さい。
 </p>
 ]]>
     </Details>
@@ -8240,7 +8234,7 @@ Ulf Ochsenfahrt と Eric Fellheimer
   <BugCode abbrev="It">イテレータの間違った定義</BugCode>
   <BugCode abbrev="SnVI">Version ID のない直列化可能クラス</BugCode>
   <BugCode abbrev="Se">直列化可能クラスの間違った定義</BugCode>
-  <BugCode abbrev="WS">writeObject() は同期化しているのに、その他のメソッドは同期化していない</BugCode>
+  <BugCode abbrev="WS">writeObject() は同期化しているが、その他のメソッドは同期化していない</BugCode>
   <BugCode abbrev="RS">readObject() を同期化している</BugCode>
   <BugCode abbrev="SC">Thread.start() を呼び出すコンストラクタ</BugCode>
   <BugCode abbrev="MS">可変 static フィールド</BugCode>
