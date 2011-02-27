@@ -838,48 +838,56 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         UnconditionalValueDerefSet originalFact = fact;
         fact = duplicateFact(fact);
 
-        if (blockValueNumberFrame.isValid() && targetValueNumberFrame.isValid()
-                && blockValueNumberFrame.getNumSlots() == targetValueNumberFrame.getNumSlots()) {
-            if (DEBUG) {
-                System.out.println("** Valid VNA frames for " + edge);
-                System.out.println("** Block : " + blockValueNumberFrame);
-                System.out.println("** Target: " + targetValueNumberFrame);
-            }
+        if (blockValueNumberFrame.isValid() && targetValueNumberFrame.isValid()) {
+            int slots = 0;
+            if (targetValueNumberFrame.getNumSlots() == blockValueNumberFrame.getNumSlots())
+                slots = targetValueNumberFrame.getNumSlots();
+            else if (targetValueNumberFrame.getNumLocals() == blockValueNumberFrame.getNumLocals())
+                slots = targetValueNumberFrame.getNumLocals();
 
-            for (int i = 0; i < blockValueNumberFrame.getNumSlots(); i++) {
-                ValueNumber blockVN = blockValueNumberFrame.getValue(i);
-                ValueNumber targetVN = targetValueNumberFrame.getValue(i);
-                if (blockVN.equals(targetVN))
-                    continue;
-                fact.clearDerefSet(blockVN);
-                if (originalFact.isUnconditionallyDereferenced(targetVN))
-                    fact.setDerefSet(blockVN, originalFact.getUnconditionalDerefLocationSet(targetVN));
+            if (slots > 0) {
+                if (DEBUG) {
+                    System.out.println("** Valid VNA frames for " + edge);
+                    System.out.println("** Block : " + blockValueNumberFrame);
+                    System.out.println("** Target: " + targetValueNumberFrame);
+                }
 
-            } // for all slots
+                for (int i = 0; i < slots; i++) {
+                    ValueNumber blockVN = blockValueNumberFrame.getValue(i);
+                    ValueNumber targetVN = targetValueNumberFrame.getValue(i);
+                    if (blockVN.equals(targetVN))
+                        continue;
+                    fact.clearDerefSet(blockVN);
+                    if (originalFact.isUnconditionallyDereferenced(targetVN))
+                        fact.setDerefSet(blockVN, originalFact.getUnconditionalDerefLocationSet(targetVN));
 
-            for (ValueNumber blockVN : blockValueNumberFrame.valueNumbersForLoads()) {
-                AvailableLoad load = blockValueNumberFrame.getLoad(blockVN);
-                if (load == null)
-                    continue;
-                ValueNumber[] targetVNs = targetValueNumberFrame.getAvailableLoad(load);
-                if (targetVNs != null)
-                    for (ValueNumber targetVN : targetVNs)
-                        if (targetVN.hasFlag(ValueNumber.PHI_NODE) && fact.isUnconditionallyDereferenced(targetVN)
-                                && !fact.isUnconditionallyDereferenced(blockVN)) {
-                            // Block VN is also dereferenced unconditionally.
-                            AvailableLoad targetLoad = targetValueNumberFrame.getLoad(targetVN);
-                            if (!load.equals(targetLoad))
-                                continue;
-                            if (DEBUG) {
-                                System.out.println("** Copy vn derefs for " + load + " from " + targetVN + " --> " + blockVN);
-                                System.out.println("** block phi for " + System.identityHashCode(blockValueNumberFrame) + " is "
-                                        + blockValueNumberFrame.phiNodeForLoads);
-                                System.out.println("** target phi for " + System.identityHashCode(targetValueNumberFrame)
-                                        + " is " + targetValueNumberFrame.phiNodeForLoads);
+                } // for all slots
+
+                for (ValueNumber blockVN : blockValueNumberFrame.valueNumbersForLoads()) {
+                    AvailableLoad load = blockValueNumberFrame.getLoad(blockVN);
+                    if (load == null)
+                        continue;
+                    ValueNumber[] targetVNs = targetValueNumberFrame.getAvailableLoad(load);
+                    if (targetVNs != null)
+                        for (ValueNumber targetVN : targetVNs)
+                            if (targetVN.hasFlag(ValueNumber.PHI_NODE) && fact.isUnconditionallyDereferenced(targetVN)
+                                    && !fact.isUnconditionallyDereferenced(blockVN)) {
+                                // Block VN is also dereferenced
+                                // unconditionally.
+                                AvailableLoad targetLoad = targetValueNumberFrame.getLoad(targetVN);
+                                if (!load.equals(targetLoad))
+                                    continue;
+                                if (DEBUG) {
+                                    System.out.println("** Copy vn derefs for " + load + " from " + targetVN + " --> " + blockVN);
+                                    System.out.println("** block phi for " + System.identityHashCode(blockValueNumberFrame)
+                                            + " is " + blockValueNumberFrame.phiNodeForLoads);
+                                    System.out.println("** target phi for " + System.identityHashCode(targetValueNumberFrame)
+                                            + " is " + targetValueNumberFrame.phiNodeForLoads);
+                                }
+                                fact.setDerefSet(blockVN, fact.getUnconditionalDerefLocationSet(targetVN));
+
                             }
-                            fact.setDerefSet(blockVN, fact.getUnconditionalDerefLocationSet(targetVN));
-
-                        }
+                }
 
             }
         }
@@ -952,8 +960,8 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         boolean isExceptionEdge = edge.isExceptionEdge();
         if (isExceptionEdge) {
             if (DEBUG)
-                System.out.println("Ignoring " + edge);
-            return true;
+                System.out.println("NOT Ignoring " + edge);
+            return true; // false
         }
         if (edge.getType() != EdgeTypes.FALL_THROUGH_EDGE)
             return false;

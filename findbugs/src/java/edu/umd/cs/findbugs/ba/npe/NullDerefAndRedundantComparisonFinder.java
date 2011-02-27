@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -236,7 +237,8 @@ public class NullDerefAndRedundantComparisonFinder {
         Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap = new HashMap<ValueNumber, NullValueUnconditionalDeref>();
 
         // Check every location
-        for (Iterator<Location> i = classContext.getCFG(method).locationIterator(); i.hasNext();) {
+        CFG cfg = classContext.getCFG(method);
+        for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
 
             if (DEBUG_DEREFS) {
@@ -279,28 +281,39 @@ public class NullDerefAndRedundantComparisonFinder {
         Map<ValueNumber, SortedSet<Location>> bugEdgeLocationMap = new HashMap<ValueNumber, SortedSet<Location>>();
 
         // Check every non-exception control edge
-        for (Iterator<Edge> i = classContext.getCFG(method).edgeIterator(); i.hasNext();) {
+        for (Iterator<Edge> i = cfg.edgeIterator(); i.hasNext();) {
             Edge edge = i.next();
 
             if (edge.isExceptionEdge()) {
-                continue;
+                if (DEBUG_DEREFS) {
+                    System.out.println("On exception edge " + edge.formatAsString(false));
+                }
+
+                // continue;
             }
 
             if (DEBUG_DEREFS) {
                 System.out.println("On edge " + edge.formatAsString(false));
             }
 
-            ValueNumberFrame vnaFact = vnaDataflow.getResultFact(edge.getSource());
+            BasicBlock source = edge.getSource();
+            BasicBlock target = edge.getTarget();
+            ValueNumberFrame vnaFact = vnaDataflow.getResultFact(source);
             ValueNumberFrame vnaEdgeFact = vnaDataflow.getFactOnEdge(edge);
-            ValueNumberFrame vnaTargetFact = vnaDataflow.getStartFact(edge.getTarget());
-
+            ValueNumberFrame vnaTargetFact = vnaDataflow.getStartFact(target);
             IsNullValueFrame invFact = invDataflow.getFactAtMidEdge(edge);
 
-            IsNullValueFrame invSourceFact = invDataflow.getResultFact(edge.getSource());
-            IsNullValueFrame invTargetFact = invDataflow.getStartFact(edge.getTarget());
-            UnconditionalValueDerefSet uvdSourceFact = uvdDataflow.getStartFact(edge.getSource());
-            UnconditionalValueDerefSet uvdTargetFact = uvdDataflow.getResultFact(edge.getTarget());
-            Location location = Location.getLastLocation(edge.getSource());
+            IsNullValueFrame invSourceFact = invDataflow.getResultFact(source);
+            IsNullValueFrame invTargetFact = invDataflow.getStartFact(target);
+            UnconditionalValueDerefSet uvdSourceFact = uvdDataflow.getStartFact(source);
+            UnconditionalValueDerefSet uvdTargetFact = uvdDataflow.getResultFact(target);
+            Location location = null;
+            if (edge.isExceptionEdge()) {
+                BasicBlock b = cfg.getSuccessorWithEdgeType(source, EdgeTypes.FALL_THROUGH_EDGE);
+                if (b != null)
+                    location = new Location(source.getExceptionThrower(), b);
+            } else
+                location = Location.getLastLocation(source);
 
             UnconditionalValueDerefSet uvdFact = uvdDataflow.getFactOnEdge(edge);
             // UnconditionalValueDerefSet uvdFact =
@@ -493,13 +506,19 @@ public class NullDerefAndRedundantComparisonFinder {
         }
 
         // Make sure the frames contain meaningful information
-        if (!vnaFrame.isValid() || !invFrame.isValid() || vnaFrame.getNumSlots() != invFrame.getNumSlots()) {
+        if (!vnaFrame.isValid() || !invFrame.isValid()  || vnaFrame.getNumLocals() != invFrame.getNumLocals()
+                || derefSet.isEmpty()) {
             return;
         }
-        if (derefSet.isEmpty())
-            return;
+
+        int slots;
+        if (vnaFrame.getNumSlots() == invFrame.getNumSlots())
+            slots = vnaFrame.getNumSlots();
+        else
+            slots = vnaFrame.getNumLocals();
+
         // See if there are any definitely-null values in the frame
-        for (int j = 0; j < invFrame.getNumSlots(); j++) {
+        for (int j = 0; j < slots; j++) {
             IsNullValue isNullValue = invFrame.getValue(j);
             ValueNumber valueNumber = vnaFrame.getValue(j);
             if ((isNullValue.isDefinitelyNull() || isNullValue.isNullOnSomePath() && isNullValue.isReturnValue())
