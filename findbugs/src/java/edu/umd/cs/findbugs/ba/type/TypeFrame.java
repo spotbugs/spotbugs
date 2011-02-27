@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.ba.Frame;
 /**
  * A specialization of {@link Frame} for determining the types of values in the
  * Java stack frame (locals and operand stack).
- * 
+ *
  * @author David Hovemeyer
  * @see Frame
  * @see TypeAnalysis
@@ -47,7 +47,7 @@ public class TypeFrame extends Frame<Type> {
 
     /**
      * Set whether or not a type in a given slot is exact.
-     * 
+     *
      * @param slot
      *            the slot
      * @param isExact
@@ -60,7 +60,7 @@ public class TypeFrame extends Frame<Type> {
 
     /**
      * Get whether or not a type in a given slot is exact.
-     * 
+     *
      * @param slot
      *            the slot
      * @return true if the slot contains an exact type, false if just an upper
@@ -97,7 +97,7 @@ public class TypeFrame extends Frame<Type> {
 
     @Override
     protected String valueToString(Type value) {
-        return value.toString() + ",";
+        return String.valueOf(value) + ",";
     }
 
     /**
@@ -150,7 +150,7 @@ public class TypeFrame extends Frame<Type> {
 
     /**
      * Pop a value off of the Java operand stack.
-     * 
+     *
      * @return the value that was popped
      * @throws DataflowAnalysisException
      *             if the Java operand stack is empty
