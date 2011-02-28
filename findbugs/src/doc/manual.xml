@@ -2172,7 +2172,7 @@ as expected.
 </para>
 
 <para>
-    10. Match bugs on fieds or methods with specific signatures
+    10. Match bugs on fields or methods with specific signatures
 <programlisting>
 <![CDATA[
     <!-- match System.exit(...) usage warnings in void main(String[]) methods in all classes -->
@@ -2187,7 +2187,27 @@ as expected.
     </Match>
 ]]>
 </programlisting>
+</para>
 
+
+<para>
+	11. Match bugs using the Not filter operator
+<programlisting>
+<![CDATA[
+<!-- ignore all bugs in test classes, except for those bugs specifically relating to JUnit tests -->
+<!-- i.e. filter bug if ( classIsJUnitTest && ! bugIsRelatedToJUnit ) -->
+<Match>
+  <!-- the Match filter is equivalent to a logical 'And' -->
+  
+  <Class name="~.*\.*Test" />
+  <!-- test classes are suffixed by 'Test' -->
+  
+  <Not>
+  	<Bug code="IJU" /> <!-- 'IJU' is the code for bugs related to JUnit test code -->
+  </Not>
+</Match>
+]]>
+</programlisting>
 </para>
 
 </sect1>
@@ -2230,6 +2250,15 @@ as expected.
        <Bug pattern="DLS_DEAD_LOCAL_STORE" />
        <Priority value="2" />
      </Match>
+     
+     <!-- All bugs in test classes, except for JUnit-specific bugs -->
+     <Match>
+	  <Class name="~.*\.*Test" />
+	  <Not>
+	  	<Bug code="IJU" />
+	  </Not>
+	 </Match>
+	
 </FindBugsFilter>
 ]]>
 </programlisting>
