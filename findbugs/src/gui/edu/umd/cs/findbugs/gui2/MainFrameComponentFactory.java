@@ -11,6 +11,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -448,7 +449,10 @@ public class MainFrameComponentFactory implements Serializable {
             mainFrame.mainFrameTree.setBugPopupMenu(mainFrame.mainFrameTree.createBugPopupMenu());
             mainFrame.mainFrameTree.setBranchPopupMenu(mainFrame.mainFrameTree.createBranchPopUpMenu());
             mainFrame.updateStatusBar();
-            mainFrame.setBounds(GUISaveState.getInstance().getFrameBounds());
+            Rectangle bounds = GUISaveState.getInstance().getFrameBounds();
+            if (bounds != null)
+                mainFrame.setBounds(bounds);
+            
             mainFrame.setExtendedState(GUISaveState.getInstance().getExtendedWindowState());
             Toolkit.getDefaultToolkit().setDynamicLayout(true);
             mainFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
