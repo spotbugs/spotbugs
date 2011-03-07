@@ -113,7 +113,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
         if (m == null)
             return false;
         Object value = right.getConstant();
-        if (!(value instanceof Integer) && ((Integer) value).intValue() == 0)
+        if (!(value instanceof Integer) || ((Integer) value).intValue() == 0)
             return false;
         if (m.isStatic() || !m.isPublic())
             return false;
