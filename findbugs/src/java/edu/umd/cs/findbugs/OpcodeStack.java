@@ -1870,7 +1870,14 @@ public class OpcodeStack implements Constants2 {
      * @return
      */
     private int constantToInt(Item it) {
-        return ((Number) it.getConstant()).intValue();
+        Object constant = it.getConstant();
+        if (constant instanceof Number) {
+            return ((Number) constant).intValue();
+        }
+        if (constant instanceof Character) {
+            return ((Character) constant).charValue();
+        }
+        throw new IllegalArgumentException(String.valueOf(constant));
     }
 
     /**
