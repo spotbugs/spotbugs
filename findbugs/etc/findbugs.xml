@@ -494,7 +494,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue" speed="fast"
                     reports="RV_CHECK_FOR_POSITIVE_INDEXOF,RV_DONT_JUST_NULL_CHECK_READLINE"/>
           <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck" speed="fast"
-                    reports="RV_RETURN_VALUE_IGNORED,RV_RETURN_VALUE_IGNORED_BAD_PRACTICE,RV_EXCEPTION_NOT_THROWN"/>
+                    reports="RV_RETURN_VALUE_IGNORED,RV_RETURN_VALUE_IGNORED_BAD_PRACTICE,RV_EXCEPTION_NOT_THROWN,RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE"/>
           <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble" speed="fast"
                     reports="ICAST_IDIV_CAST_TO_DOUBLE,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL,ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindBadCast2" speed="fast"
@@ -859,6 +859,7 @@
           <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"
                     category="BAD_PRACTICE" cweid="253"/>
           <BugPattern abbrev="RV" type="RV_EXCEPTION_NOT_THROWN" category="CORRECTNESS"/>
+          <BugPattern abbrev="RV" type="RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE" category="CORRECTNESS"/>
           <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED2" category="CORRECTNESS"/>
           <BugPattern abbrev="RV" type="RV_CHECK_FOR_POSITIVE_INDEXOF" category="STYLE"/>
           <BugPattern abbrev="RV" type="RV_DONT_JUST_NULL_CHECK_READLINE" category="STYLE"/>

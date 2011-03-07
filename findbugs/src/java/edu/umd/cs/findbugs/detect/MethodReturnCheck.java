@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.UseAnnotationDatabase;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CheckReturnAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.CheckReturnValueAnnotation;
@@ -45,7 +46,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * Look for calls to methods where the return value is erroneously ignored. This
  * detector is meant as a simpler and faster replacement for
  * BCPMethodReturnCheck.
- * 
+ *
  * @author David Hovemeyer
  */
 public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotationDatabase {
@@ -106,11 +107,44 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
         bugAccumulator.reportAccumulatedBugs();
     }
 
+    private boolean badUseOfCompareResult(Item left, Item right) {
+        XMethod m = left.getReturnValueOf();
+
+        if (m == null)
+            return false;
+        Object value = right.getConstant();
+        if (!(value instanceof Integer) && ((Integer) value).intValue() == 0)
+            return false;
+        if (m.isStatic() || !m.isPublic())
+            return false;
+
+        if (m.getName().equals("compareTo") && m.getSignature().equals("(Ljava/lang/Object;)I"))
+            return true;
+        if (m.getName().equals("compare") && m.getSignature().equals("(Ljava/lang/Object;Ljava/lang/Object;)I"))
+            return true;
+
+        return false;
+
+    }
     @Override
     public void sawOpcode(int seen) {
 
         if (DEBUG)
             System.out.printf("%3d %10s %3s %s%n", getPC(), OPCODE_NAMES[seen], state, stack);
+
+        switch (seen) {
+        case Constants.IF_ICMPEQ:
+        case Constants.IF_ICMPNE:
+            OpcodeStack.Item left = stack.getStackItem(1);
+            OpcodeStack.Item right = stack.getStackItem(0);
+            if (badUseOfCompareResult(left, right))
+
+                bugAccumulator.accumulateBug(new BugInstance(this, "RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE", NORMAL_PRIORITY)
+                        .addClassAndMethod(this).addMethod(left.getReturnValueOf()).describe(MethodAnnotation.METHOD_CALLED).addValueSource(right, this), this);
+            else if (badUseOfCompareResult(right, left))
+                bugAccumulator.accumulateBug(new BugInstance(this, "RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE", NORMAL_PRIORITY)
+                        .addClassAndMethod(this).addMethod(right.getReturnValueOf()).describe(MethodAnnotation.METHOD_CALLED).addValueSource(left, this), this);
+        }
 
         checkForInitWithoutCopyOnStack: if (seen == INVOKESPECIAL && getNameConstantOperand().equals("<init>")) {
             int arguments = PreorderVisitor.getNumberArguments(getSigConstantOperand());
