@@ -236,10 +236,12 @@ public class DroppedException extends PreorderVisitor implements Detector {
                 }
             }
 
-            if (end - start >= 5 && drops && !c.equals("java.lang.InterruptedException")
+            if (end - start >= 4 && drops && !c.equals("java.lang.InterruptedException")
                     && !c.equals("java.lang.CloneNotSupportedException")) {
                 int priority = NORMAL_PRIORITY;
                 if (exitInTryBlock)
+                    priority++;
+                if (end - start == 4)
                     priority++;
                 SourceLineAnnotation srcLine = SourceLineAnnotation.fromVisitedInstruction(this.classContext, this, handled);
                 if (srcLine != null && LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS) {
