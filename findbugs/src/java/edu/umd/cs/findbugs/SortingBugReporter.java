@@ -50,7 +50,7 @@ public class SortingBugReporter extends TextUIBugReporter {
             printBug(bugInstance);
         }
 
-        outputStream.flush();
+        outputStream.close();
     }
 
     public @Nonnull

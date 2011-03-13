@@ -119,7 +119,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
     }
 
     public void finish() {
-        outputStream.flush();
+        outputStream.close();
     }
 
     public @CheckForNull

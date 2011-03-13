@@ -48,7 +48,8 @@ public class XMLBugReporter extends BugCollectionBugReporter {
             if (cloud != null)
                 cloud.bugsPopulated();
             getBugCollection().writeXML(outputStream);
-            outputStream.flush();
+            outputStream.close();
+            System.out.println("Closed");
         } catch (IOException e) {
             throw new FatalException("Error writing XML output: " + e.getMessage(), e);
         }

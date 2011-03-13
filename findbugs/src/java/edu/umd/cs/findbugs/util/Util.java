@@ -313,13 +313,22 @@ public class Util {
         e.initCause(cause);
         return e;
     }
-
-    public static String getFileExtension(File f) {
-        String name = f.getName();
+    private static String getFileExtension(String name) {
         int lastDot = name.lastIndexOf('.');
         if (lastDot == -1)
             return "";
-        return name.substring(lastDot + 1).toLowerCase();
+        return name.substring(lastDot + 1);
+    }
+
+    public static String getFileExtension(File f) {
+        return getFileExtension(f.getName().toLowerCase());
+    }
+    public static String getFileExtensionIgnoringGz(File f) {
+
+        String name = f.getName().toLowerCase();
+        if (name.endsWith(".gz"))
+            name = name.substring(0,name.length()-3);
+       return getFileExtension(name);
     }
 
     public static void throwIOException(String msg, Throwable cause) throws IOException {

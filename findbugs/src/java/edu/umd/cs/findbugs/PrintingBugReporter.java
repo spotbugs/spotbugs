@@ -58,7 +58,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
     }
 
     public void finish() {
-        outputStream.flush();
+        outputStream.close();
     }
 
     class PrintingCommandLine extends CommandLine {

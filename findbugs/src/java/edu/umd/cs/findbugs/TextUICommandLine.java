@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -34,6 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.zip.GZIPOutputStream;
+
+import javax.annotation.CheckForNull;
 
 import org.dom4j.DocumentException;
 
@@ -346,6 +350,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         }
     }
 
+    protected @CheckForNull File outputFile;
     @SuppressWarnings("DM_EXIT")
     @Override
     protected void handleOptionWithArgument(String option, String argument) throws IOException {
@@ -355,13 +360,20 @@ public class TextUICommandLine extends FindBugsCommandLine {
             System.out.println("option " + option + " is " + argument);
         }
         if (option.equals("-outputFile") || option.equals("-output")) {
-            File outputFile = new File(argument);
-            String extension = Util.getFileExtension(outputFile);
+            if (outputFile != null)
+                throw new IllegalArgumentException("output set twice; to " + outputFile + " and to " + argument);
+            outputFile = new File(argument);
+
+            String fileName = outputFile.getName();
+            String extension = Util.getFileExtensionIgnoringGz(outputFile);
             if (bugReporterType == PRINTING_REPORTER && (extension.equals("xml") || extension.equals("fba")))
                 bugReporterType = XML_REPORTER;
 
             try {
-                outputStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
+                OutputStream oStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+                if (fileName.endsWith(".gz"))
+                    oStream = new GZIPOutputStream(oStream);
+                outputStream = new PrintStream(oStream);
             } catch (IOException e) {
                 System.err.println("Couldn't open " + outputFile + " for output: " + e.toString());
                 System.exit(1);
