@@ -49,7 +49,7 @@ public class XMLBugReporter extends BugCollectionBugReporter {
                 cloud.bugsPopulated();
             getBugCollection().writeXML(outputStream);
             outputStream.close();
-            System.out.println("Closed");
+
         } catch (IOException e) {
             throw new FatalException("Error writing XML output: " + e.getMessage(), e);
         }
