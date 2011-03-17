@@ -54,7 +54,8 @@ public abstract class FindBugsJob extends Job {
         }
         Job[] jobs = Job.getJobManager().find(FindbugsPlugin.class);
         for (Job job2 : jobs) {
-            if(job.getResource().equals(((FindBugsJob)job2).getResource())){
+            if (job2 instanceof FindBugsJob
+                    && job.getResource().equals(((FindBugsJob)job2).getResource())) {
                 if(job2.getState() != Job.RUNNING) {
                     job2.cancel();
                 }
