@@ -1,0 +1,27 @@
+syntax: regexp
+^bin$
+
+syntax: regexp
+^@dot$
+
+syntax: regexp
+^.*/build/.*$
+
+
+syntax: regexp
+^.*\.class$
+
+syntax: regexp
+^.*/bin_eclipse/.*$
+
+syntax: regexp
+^.*/classesEclipse/.*$
+
+syntax: regexp
+^.*/de.loskutov.FileSync.prefs$
+
+syntax: regexp
+^eclipsePlugin/local.properties$
+
+syntax: regexp
+^findbugs/local.properties$
