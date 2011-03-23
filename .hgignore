@@ -25,3 +25,21 @@ syntax: regexp
 
 syntax: regexp
 ^findbugs/local.properties$
+
+syntax: regexp
+^eclipsePlugin/lib$
+
+syntax: regexp
+^findbugs/lib/annotations\.jar$
+
+syntax: regexp
+^findbugs/lib/findbugs-ant\.jar$
+
+syntax: regexp
+^findbugs/lib/findbugs\.jar$
+
+syntax: regexp
+^findbugs/src/doc/allBugDescriptions\.html$
+
+syntax: regexp
+^findbugs/src/doc/bugDescriptions\.html$
