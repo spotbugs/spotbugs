@@ -224,50 +224,55 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
                 Set<XMethod> targetSet = Hierarchy2.resolveMethodCallTargets(obj, typeFrame, cpg);
 
-                // Check to see if this method is in either database
-                for (XMethod calledMethod : targetSet) {
-                    IsNullValue pushValue;
-                    if (IsNullValueAnalysis.DEBUG)
-                        System.out.println("Check " + calledMethod + " for null return...");
-                    NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase()
-                            .getResolvedAnnotation(calledMethod, false);
-                    Boolean alwaysNonNull = AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase()
-                            .getProperty(calledMethod.getMethodDescriptor());
-                    if (annotation == NullnessAnnotation.CHECK_FOR_NULL) {
-                        if (IsNullValueAnalysis.DEBUG) {
-                            System.out.println("Null value returned from " + calledMethod);
-                        }
-                        pushValue = IsNullValue.nullOnSimplePathValue().markInformationAsComingFromReturnValueOfMethod(
-                                calledMethod);
-                    } else if (annotation == NullnessAnnotation.NULLABLE) {
-                        pushValue = IsNullValue.nonReportingNotNullValue();
-                    } else if (annotation == NullnessAnnotation.NONNULL
-                            || (alwaysNonNull != null && alwaysNonNull.booleanValue())) {
-                        // Method is declared NOT to return null
-                        if (IsNullValueAnalysis.DEBUG) {
-                            System.out.println("NonNull value return from " + calledMethod);
-                        }
-                        pushValue = IsNullValue.nonNullValue().markInformationAsComingFromReturnValueOfMethod(calledMethod);
-
-                    } else {
-                        pushValue = IsNullValue.nonReportingNotNullValue();
-                    }
+                if (targetSet.isEmpty()) {
+                    XMethod calledMethod = XFactory.createXMethod(obj, getCPG());
+                    result = getReturnValueNullness(calledMethod);
+                } else for (XMethod calledMethod : targetSet) {
+                    IsNullValue pushValue = getReturnValueNullness(calledMethod);
                     if (result == null)
                         result = pushValue;
                     else
                         result = IsNullValue.merge(result, pushValue);
-
                 }
             } catch (DataflowAnalysisException e) {
                 result = IsNullValue.nonReportingNotNullValue();
             } catch (ClassNotFoundException e) {
                 result = IsNullValue.nonReportingNotNullValue();
             }
-
             modelInstruction(obj, getNumWordsConsumed(obj), getNumWordsProduced(obj), result);
             newValueOnTOS();
         }
 
+    }
+
+    public IsNullValue getReturnValueNullness(XMethod calledMethod) {
+        IsNullValue pushValue;
+        if (IsNullValueAnalysis.DEBUG)
+            System.out.println("Check " + calledMethod + " for null return...");
+        NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase()
+                .getResolvedAnnotation(calledMethod, false);
+        Boolean alwaysNonNull = AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase()
+                .getProperty(calledMethod.getMethodDescriptor());
+        if (annotation == NullnessAnnotation.CHECK_FOR_NULL) {
+            if (IsNullValueAnalysis.DEBUG) {
+                System.out.println("Null value returned from " + calledMethod);
+            }
+            pushValue = IsNullValue.nullOnSimplePathValue().markInformationAsComingFromReturnValueOfMethod(
+                    calledMethod);
+        } else if (annotation == NullnessAnnotation.NULLABLE) {
+            pushValue = IsNullValue.nonReportingNotNullValue();
+        } else if (annotation == NullnessAnnotation.NONNULL
+                || (alwaysNonNull != null && alwaysNonNull.booleanValue())) {
+            // Method is declared NOT to return null
+            if (IsNullValueAnalysis.DEBUG) {
+                System.out.println("NonNull value return from " + calledMethod);
+            }
+            pushValue = IsNullValue.nonNullValue().markInformationAsComingFromReturnValueOfMethod(calledMethod);
+
+        } else {
+            pushValue = IsNullValue.nonReportingNotNullValue();
+        }
+        return pushValue;
     }
 
     /**
