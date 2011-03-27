@@ -2,6 +2,9 @@ package sfBugs;
 
 import javax.imageio.IIOException;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.Priority;
+
 public class Bug3204236 {
 
     Integer j; // to check that findbugs is running
@@ -10,6 +13,7 @@ public class Bug3204236 {
         throw new IIOException("message");
     }
 
+    @ExpectWarning(value="DE")
     void g() {
         try {
             f();
