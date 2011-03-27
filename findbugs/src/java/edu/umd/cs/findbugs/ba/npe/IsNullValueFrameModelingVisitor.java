@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -56,6 +57,7 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefAnalysis;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysisFeatures;
@@ -89,7 +91,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor#analyzeInstruction
      * (org.apache.bcel.generic.Instruction)
@@ -168,7 +170,6 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
      * information following a call to a likely exception thrower or assertion.
      */
     private void handleInvoke(InvokeInstruction obj) {
-        Type callType = obj.getLoadClassType(getCPG());
         Type returnType = obj.getReturnType(getCPG());
 
         Location location = getLocation();
@@ -207,9 +208,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
             } catch (DataflowAnalysisException e) {
                 AnalysisContext.logError("Error looking up nonnull parameters for invoked method", e);
             }
-        boolean stringMethodCall = callType.equals(Type.STRING) && returnType.equals(Type.STRING);
-
-        // Determine if we are going to model the return value of this call.
+       // Determine if we are going to model the return value of this call.
         boolean modelCallReturnValue = MODEL_NONNULL_RETURN && returnType instanceof ReferenceType;
 
         if (!modelCallReturnValue) {
@@ -218,39 +217,54 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
         } else {
             // Special case: some special value is pushed on the stack for the
             // return value
-            IsNullValue pushValue = null;
-            if (false && stringMethodCall) {
-                // String methods always return a non-null value
-                pushValue = IsNullValue.nonNullValue();
-            } else {
-                // Check to see if this method is in either database
-                XMethod calledMethod = XFactory.createXMethod(obj, getCPG());
-                if (IsNullValueAnalysis.DEBUG)
-                    System.out.println("Check " + calledMethod + " for null return...");
-                NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase()
-                        .getResolvedAnnotation(calledMethod, false);
-                Boolean alwaysNonNull = AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase()
-                        .getProperty(calledMethod.getMethodDescriptor());
-                if (annotation == NullnessAnnotation.CHECK_FOR_NULL) {
-                    if (IsNullValueAnalysis.DEBUG) {
-                        System.out.println("Null value returned from " + calledMethod);
-                    }
-                    pushValue = IsNullValue.nullOnSimplePathValue().markInformationAsComingFromReturnValueOfMethod(calledMethod);
-                } else if (annotation == NullnessAnnotation.NULLABLE) {
-                    pushValue = IsNullValue.nonReportingNotNullValue();
-                } else if (annotation == NullnessAnnotation.NONNULL || (alwaysNonNull != null && alwaysNonNull.booleanValue())) {
-                    // Method is declared NOT to return null
-                    if (IsNullValueAnalysis.DEBUG) {
-                        System.out.println("NonNull value return from " + calledMethod);
-                    }
-                    pushValue = IsNullValue.nonNullValue().markInformationAsComingFromReturnValueOfMethod(calledMethod);
+            IsNullValue result = null;
+            TypeFrame typeFrame;
+            try {
+                typeFrame = typeDataflow.getFactAtLocation(location);
 
-                } else {
-                    pushValue = IsNullValue.nonReportingNotNullValue();
+                Set<XMethod> targetSet = Hierarchy2.resolveMethodCallTargets(obj, typeFrame, cpg);
+
+                // Check to see if this method is in either database
+                for (XMethod calledMethod : targetSet) {
+                    IsNullValue pushValue;
+                    if (IsNullValueAnalysis.DEBUG)
+                        System.out.println("Check " + calledMethod + " for null return...");
+                    NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase()
+                            .getResolvedAnnotation(calledMethod, false);
+                    Boolean alwaysNonNull = AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase()
+                            .getProperty(calledMethod.getMethodDescriptor());
+                    if (annotation == NullnessAnnotation.CHECK_FOR_NULL) {
+                        if (IsNullValueAnalysis.DEBUG) {
+                            System.out.println("Null value returned from " + calledMethod);
+                        }
+                        pushValue = IsNullValue.nullOnSimplePathValue().markInformationAsComingFromReturnValueOfMethod(
+                                calledMethod);
+                    } else if (annotation == NullnessAnnotation.NULLABLE) {
+                        pushValue = IsNullValue.nonReportingNotNullValue();
+                    } else if (annotation == NullnessAnnotation.NONNULL
+                            || (alwaysNonNull != null && alwaysNonNull.booleanValue())) {
+                        // Method is declared NOT to return null
+                        if (IsNullValueAnalysis.DEBUG) {
+                            System.out.println("NonNull value return from " + calledMethod);
+                        }
+                        pushValue = IsNullValue.nonNullValue().markInformationAsComingFromReturnValueOfMethod(calledMethod);
+
+                    } else {
+                        pushValue = IsNullValue.nonReportingNotNullValue();
+                    }
+                    if (result == null)
+                        result = pushValue;
+                    else
+                        result = IsNullValue.merge(result, pushValue);
+
                 }
+            } catch (DataflowAnalysisException e) {
+                result = IsNullValue.nonReportingNotNullValue();
+            } catch (ClassNotFoundException e) {
+                result = IsNullValue.nonReportingNotNullValue();
             }
 
-            modelInstruction(obj, getNumWordsConsumed(obj), getNumWordsProduced(obj), pushValue);
+            modelInstruction(obj, getNumWordsConsumed(obj), getNumWordsProduced(obj), result);
             newValueOnTOS();
         }
 
@@ -343,7 +357,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor#visitGETSTATIC(org
      * .apache.bcel.generic.GETSTATIC)
@@ -394,7 +408,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
      * the instruction and return true. Otherwise, do nothing and return false.
      * Should only be used for instructions that produce a single value on the
      * top of the stack.
-     * 
+     *
      * @param obj
      *            the Instruction the instruction
      * @return true if the instruction produced a known value and was modeled,
