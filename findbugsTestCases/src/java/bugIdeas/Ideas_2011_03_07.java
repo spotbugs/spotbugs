@@ -1,6 +1,7 @@
 package bugIdeas;
 
 import java.util.Comparator;
+import java.util.Map;
 
 public class Ideas_2011_03_07 {
 
@@ -34,5 +35,13 @@ public class Ideas_2011_03_07 {
         else
             System.out.println("x == y");
     }
+
+    boolean oops(Map<String, Integer> m, StringBuffer sb) {
+        return m.containsKey(sb);
+    }
+    boolean oops0(Map<String, Integer> m, StringBuffer sb) {
+        return m.get(sb) != null;
+    }
+
 
 }
