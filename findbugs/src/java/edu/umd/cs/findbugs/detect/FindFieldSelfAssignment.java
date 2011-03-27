@@ -69,12 +69,12 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
 
                 LocalVariableAnnotation possibleMatch = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(),
                         getMethod(), getNameConstantOperand(), getSigConstantOperand());
-                if (possibleMatch == null)
-                    possibleMatch = LocalVariableAnnotation.findUniqueBestMatchingParameter(getClassContext(), getMethod(),
-                            getNameConstantOperand(), getSigConstantOperand());
                 if (possibleMatch != null)
                     priority--;
-                else {
+                else 
+                    possibleMatch = LocalVariableAnnotation.findUniqueBestMatchingParameter(getClassContext(), getMethod(),
+                            getNameConstantOperand(), getSigConstantOperand());
+                if (possibleMatch == null) {
                     String signature = stack.getLVValue(registerNumber).getSignature();
                     for (int i = 0; i < stack.getNumLocalValues(); i++)
                         if (i != register) {
