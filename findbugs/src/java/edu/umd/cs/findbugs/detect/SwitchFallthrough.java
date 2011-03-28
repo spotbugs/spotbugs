@@ -149,18 +149,14 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             potentiallyDeadFieldsFromBeforeFallthrough = new HashSet<XField>(potentiallyDeadFields);
             if (!hasFallThruComment(lastPC + 1, getPC() - 1)) {
                 if (isDefaultOffset) {
-
-                SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(),
-                        this, getPC(), getPC());
+                    SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(
+                            getClassContext(), this, getPC(), getPC());
+                    foundDefault.add(sourceLineAnnotation);
                 } else {
-                    SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(),
-                            this, lastPC, getPC());
+                    SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(
+                            getClassContext(), this, lastPC, getPC());
+                    found.add(sourceLineAnnotation);
 
-                    if (sourceLineAnnotation != null) {
-                        foundDefault.add(sourceLineAnnotation);
-                    } else {
-                        found.add(sourceLineAnnotation);
-                    }
                 }
             }
 

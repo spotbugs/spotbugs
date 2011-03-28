@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs;
 import java.io.File;
 import java.io.IOException;
 
+import javax.annotation.Nonnull;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumber;
@@ -51,7 +53,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * A BugAnnotation that records a range of source lines in a class.
- * 
+ *
  * @author David Hovemeyer
  * @see BugAnnotation
  */
@@ -108,7 +110,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     /**
      * Constructor.
-     * 
+     *
      * @param className
      *            the class to which the line number(s) refer
      * @param sourceFile
@@ -148,7 +150,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     /**
      * Factory method to create an unknown source line annotation.
-     * 
+     *
      * @param className
      *            the class name
      * @param sourceFile
@@ -163,7 +165,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      * Factory method to create an unknown source line annotation. This variant
      * looks up the source filename automatically based on the class using best
      * effort.
-     * 
+     *
      * @param className
      *            the class name
      * @return the SourceLineAnnotation
@@ -175,7 +177,7 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Factory method to create an unknown source line annotation. This doesn't
      * use the analysis context.
-     * 
+     *
      * @param className
      *            the class name
      * @return the SourceLineAnnotation
@@ -187,7 +189,7 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Factory method to create an unknown source line annotation. This variant
      * is used when bytecode offsets are known, but not source lines.
-     * 
+     *
      * @param className
      *            the class name
      * @param sourceFile
@@ -203,7 +205,7 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Factory method for creating a source line annotation describing an entire
      * method.
-     * 
+     *
      * @param visitor
      *            a BetterVisitor which is visiting the method
      * @return the SourceLineAnnotation
@@ -218,7 +220,7 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Factory method for creating a source line annotation describing an entire
      * method.
-     * 
+     *
      * @param methodGen
      *            the method being visited
      * @return the SourceLineAnnotation, or null if we do not have line number
@@ -235,7 +237,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     /**
      * Create a SourceLineAnnotation covering an entire method.
-     * 
+     *
      * @param className
      *            name of the class the method is in
      * @param sourceFile
@@ -260,7 +262,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     /**
      * Create a SourceLineAnnotation covering an entire method.
-     * 
+     *
      * @param javaClass
      *            JavaClass containing the method
      * @param method
@@ -282,7 +284,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     /**
      * Create a SourceLineAnnotation covering an entire method.
-     * 
+     *
      * @param javaClass
      *            JavaClass containing the method
      * @param xmethod
@@ -301,7 +303,7 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Make a best-effort attempt to create a SourceLineAnnotation for the first
      * line of a method.
-     * 
+     *
      * @param methodDescriptor
      *            a method
      * @return SourceLineAnnotation describing the first line of the method
@@ -344,7 +346,7 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Factory method for creating a source line annotation describing the
      * source line number for the instruction being visited by given visitor.
-     * 
+     *
      * @param visitor
      *            a BetterVisitor which is visiting the method
      * @param pc
@@ -359,7 +361,7 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Factory method for creating a source line annotation describing the
      * source line number for the instruction being visited by given visitor.
-     * 
+     *
      * @param classContext
      *            the ClassContext
      * @param visitor
@@ -375,7 +377,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     /**
      * Create from Method and Location in a visited class.
-     * 
+     *
      * @param classContext
      *            ClassContext of visited class
      * @param method
@@ -390,7 +392,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     /**
      * Create from Method and InstructionHandle in a visited class.
-     * 
+     *
      * @param classContext
      *            ClassContext of visited class
      * @param method
@@ -405,7 +407,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     /**
      * Create from MethodDescriptor and Location of visited instruction.
-     * 
+     *
      * @param methodDescriptor
      *            MethodDescriptor identifying analyzed method
      * @param location
@@ -429,7 +431,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     /**
      * Create from Method and bytecode offset in a visited class.
-     * 
+     *
      * @param classContext
      *            ClassContext of visited class
      * @param method
@@ -444,7 +446,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     /**
      * Create from Method and bytecode offset in a visited class.
-     * 
+     *
      * @param jclass
      *            JavaClass of visited class
      * @param method
@@ -468,7 +470,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      * Factory method for creating a source line annotation describing the
      * source line numbers for a range of instructions in the method being
      * visited by the given visitor.
-     * 
+     *
      * @param visitor
      *            a BetterVisitor which is visiting the method
      * @param startPC
@@ -495,7 +497,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      * Factory method for creating a source line annotation describing the
      * source line numbers for a range of instructions in the method being
      * visited by the given visitor.
-     * 
+     *
      * @param classContext
      *            the ClassContext
      * @param visitor
@@ -507,7 +509,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      * @return the SourceLineAnnotation, or null if we do not have line number
      *         information for the instruction
      */
-    public static SourceLineAnnotation fromVisitedInstructionRange(ClassContext classContext, PreorderVisitor visitor,
+    public static @Nonnull SourceLineAnnotation fromVisitedInstructionRange(ClassContext classContext, PreorderVisitor visitor,
             int startPC, int endPC) {
         if (startPC > endPC)
             throw new IllegalArgumentException("Start pc " + startPC + " greater than end pc " + endPC);
@@ -535,7 +537,7 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Factory method for creating a source line annotation describing the
      * source line number for the instruction being visited by given visitor.
-     * 
+     *
      * @param visitor
      *            a DismantleBytecode visitor which is visiting the method
      * @return the SourceLineAnnotation, or null if we do not have line number
@@ -548,7 +550,7 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Factory method for creating a source line annotation describing the
      * source line number for a visited instruction.
-     * 
+     *
      * @param classContext
      *            the ClassContext
      * @param methodGen
@@ -575,7 +577,7 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Factory method for creating a source line annotation describing the
      * source line numbers for a range of instruction in a method.
-     * 
+     *
      * @param classContext
      *            theClassContext
      * @param methodGen
@@ -628,7 +630,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     /**
      * Set the source file name.
-     * 
+     *
      * @param sourceFile
      *            the source file name
      */
