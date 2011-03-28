@@ -1506,7 +1506,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
         return addMethod(MethodAnnotation.fromCalledMethod(visitor)).describe(MethodAnnotation.METHOD_CALLED);
     }
-
+    public BugInstance addCalledMethod(XMethod m) {
+        return addMethod(m).describe(MethodAnnotation.METHOD_CALLED);
+    }
     /**
      * Add a method annotation.
      *
