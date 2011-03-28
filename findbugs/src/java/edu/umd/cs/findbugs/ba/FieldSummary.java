@@ -39,7 +39,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.detect.UnreadFields;
+import edu.umd.cs.findbugs.detect.UnreadFieldsData;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -151,7 +151,7 @@ public class FieldSummary {
             return true;
         if (!AnalysisContext.currentAnalysisContext().unreadFieldsAvailable())
             return true;
-        UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
+        UnreadFieldsData unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFieldsData();
         if (unreadFields.isReflexive(field))
             return true;
         return false;

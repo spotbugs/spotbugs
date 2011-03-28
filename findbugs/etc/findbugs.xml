@@ -143,6 +143,10 @@
                               <Later class="edu.umd.cs.findbugs.detect.UnreadFields"/>
                     </SplitPass>
                     <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.ExplicitSerialization"/>
+                              <Later class="edu.umd.cs.findbugs.detect.SerializationIdiom"/>
+                    </SplitPass>
+                    <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.CalledMethods"/>
                               <Later
                                         class="edu.umd.cs.findbugs.detect.UncallableMethodOfAnonymousClass"
@@ -413,6 +417,8 @@
                     reports="SC_START_IN_CTOR"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindBadForLoop" speed="fast"
                     reports="QF_QUESTIONABLE_FOR_LOOP"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ExplicitSerialization" speed="fast"
+		reports=""/>
           <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" speed="fast"
                     reports="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD,NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD,NP_UNWRITTEN_FIELD,UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,UWF_NULL_FIELD,UWF_UNWRITTEN_FIELD,SS_SHOULD_BE_STATIC,UUF_UNUSED_FIELD,URF_UNREAD_FIELD,SIC_INNER_SHOULD_BE_STATIC,SIC_INNER_SHOULD_BE_STATIC_ANON,SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS,SIC_THREADLOCAL_DEADLY_EMBRACE,UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD,UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD,URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
           <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" speed="fast"

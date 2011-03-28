@@ -948,6 +948,15 @@ of Serializable classes.  </p>
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ExplicitSerialization" >
+    <Details>
+<![CDATA[
+<p> Looks for explicit serialization via readObject and 
+	writeObject as evidence
+that this class is, indeed, serialized. </p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" >
     <Details>
 <![CDATA[

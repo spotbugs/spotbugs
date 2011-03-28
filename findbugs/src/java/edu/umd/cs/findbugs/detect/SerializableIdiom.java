@@ -301,7 +301,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                 || sawReadResolve
                 || sawWriteObject
                 || seenTransientField
-                || AnalysisContext.currentAnalysisContext().getUnreadFields()
+                || AnalysisContext.currentAnalysisContext().getUnreadFieldsData()
                         .existsStrongEvidenceForIntendedSerialization(this.getClassDescriptor());
     }
 

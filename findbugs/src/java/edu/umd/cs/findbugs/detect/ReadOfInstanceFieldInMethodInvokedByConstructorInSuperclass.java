@@ -93,7 +93,7 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
         Set<ProgramPoint> calledFrom = fieldSummary.getCalledFromSuperConstructor(superClassDescriptor, getXMethod());
         if (calledFrom.isEmpty())
             return;
-        UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
+        UnreadFieldsData unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFieldsData();
 
         int priority;
         if (!unreadFields.isWrittenInConstructor(f))

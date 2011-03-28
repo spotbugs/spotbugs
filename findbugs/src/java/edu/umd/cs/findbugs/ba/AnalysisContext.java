@@ -55,18 +55,19 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 import edu.umd.cs.findbugs.detect.UnreadFields;
+import edu.umd.cs.findbugs.detect.UnreadFieldsData;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * A context for analysis of a complete project. This serves as the repository
  * for whole-program information and data structures.
- * 
+ *
  * <p>
  * <b>NOTE</b>: this class is slated to become obsolete. New code should use the
  * IAnalysisCache object returned by Global.getAnalysisCache() to access all
  * analysis information (global databases, class and method analyses, etc.)
  * </p>
- * 
+ *
  * @author David Hovemeyer
  * @see edu.umd.cs.findbugs.classfile.IAnalysisCache
  * @see edu.umd.cs.findbugs.classfile.Global
@@ -172,7 +173,7 @@ public abstract class AnalysisContext {
     /**
      * After a pass has been completed, allow the analysis context to update
      * information.
-     * 
+     *
      * @param pass
      *            -- the first pass is pass 0
      */
@@ -227,11 +228,14 @@ public abstract class AnalysisContext {
         this.fieldSummary = fieldSummary;
     }
 
+    final UnreadFieldsData unreadFieldsData = new UnreadFieldsData();
     UnreadFields unreadFields;
 
+    public UnreadFieldsData getUnreadFieldsData() {
+        return unreadFieldsData;
+    }
+
     public UnreadFields getUnreadFields() {
-        if (unreadFields == null)
-            throw new IllegalStateException("UnreadFields detector not set");
         return unreadFields;
     }
 
@@ -263,7 +267,7 @@ public abstract class AnalysisContext {
 
     /**
      * file a ClassNotFoundException with the lookupFailureCallback
-     * 
+     *
      * @see #getLookupFailureCallback()
      */
     static public void reportMissingClass(ClassNotFoundException e) {
@@ -383,7 +387,7 @@ public abstract class AnalysisContext {
 
     /**
      * Add an entry to the Repository's classpath.
-     * 
+     *
      * @param url
      *            the classpath entry URL
      * @throws IOException
@@ -399,7 +403,7 @@ public abstract class AnalysisContext {
 
     /**
      * Return whether or not the given class is an application class.
-     * 
+     *
      * @param cls
      *            the class to lookup
      * @return true if the class is an application class, false if not an
@@ -412,7 +416,7 @@ public abstract class AnalysisContext {
 
     /**
      * Return whether or not the given class is an application class.
-     * 
+     *
      * @param className
      *            name of a class
      * @return true if the class is an application class, false if not an
@@ -456,7 +460,7 @@ public abstract class AnalysisContext {
     /**
      * Lookup a class.
      * <em>Use this method instead of Repository.lookupClass().</em>
-     * 
+     *
      * @param className
      *            the name of the class
      * @return the JavaClass representing the class
@@ -468,7 +472,7 @@ public abstract class AnalysisContext {
     /**
      * Lookup a class.
      * <em>Use this method instead of Repository.lookupClass().</em>
-     * 
+     *
      * @param classDescriptor
      *            descriptor specifying the class to look up
      * @return the class
@@ -482,11 +486,11 @@ public abstract class AnalysisContext {
     /**
      * This is equivalent to Repository.lookupClass() or this.lookupClass(),
      * except it uses the original Repository instead of the current one.
-     * 
+     *
      * This can be important because URLClassPathRepository objects are closed
      * after an analysis, so JavaClass objects obtained from them are no good on
      * subsequent runs.
-     * 
+     *
      * @param className
      *            the name of the class
      * @return the JavaClass representing the class
@@ -506,7 +510,7 @@ public abstract class AnalysisContext {
 
     /**
      * Lookup a class's source file
-     * 
+     *
      * @param dottedClassName
      *            the name of the class
      * @return the source file for the class, or
@@ -531,7 +535,7 @@ public abstract class AnalysisContext {
 
     /**
      * Get the ClassContext for a class.
-     * 
+     *
      * @param javaClass
      *            the class
      * @return the ClassContext for that class
@@ -540,7 +544,7 @@ public abstract class AnalysisContext {
 
     /**
      * Get stats about hit rate for ClassContext cache.
-     * 
+     *
      * @return stats about hit rate for ClassContext cache
      */
     public abstract String getClassContextStats();
@@ -571,7 +575,7 @@ public abstract class AnalysisContext {
 
     /**
      * Set a boolean property.
-     * 
+     *
      * @param prop
      *            the property to set
      * @param value
@@ -583,7 +587,7 @@ public abstract class AnalysisContext {
 
     /**
      * Get a boolean property.
-     * 
+     *
      * @param prop
      *            the property
      * @return value of the property; defaults to false if the property has not
@@ -600,7 +604,7 @@ public abstract class AnalysisContext {
 
     /**
      * Set the interprocedural database input directory.
-     * 
+     *
      * @param databaseInputDir
      *            the interprocedural database input directory
      */
@@ -612,7 +616,7 @@ public abstract class AnalysisContext {
 
     /**
      * Get the interprocedural database input directory.
-     * 
+     *
      * @return the interprocedural database input directory
      */
     public final String getDatabaseInputDir() {
@@ -621,7 +625,7 @@ public abstract class AnalysisContext {
 
     /**
      * Set the interprocedural database output directory.
-     * 
+     *
      * @param databaseOutputDir
      *            the interprocedural database output directory
      */
@@ -633,7 +637,7 @@ public abstract class AnalysisContext {
 
     /**
      * Get the interprocedural database output directory.
-     * 
+     *
      * @return the interprocedural database output directory
      */
     public final String getDatabaseOutputDir() {
@@ -643,7 +647,7 @@ public abstract class AnalysisContext {
     /**
      * Get the property database recording the types of values stored into
      * fields.
-     * 
+     *
      * @return the database, or null if there is no database available
      */
     public abstract FieldStoreTypeDatabase getFieldStoreTypeDatabase();
@@ -651,7 +655,7 @@ public abstract class AnalysisContext {
     /**
      * Get the property database recording which methods unconditionally
      * dereference parameters.
-     * 
+     *
      * @return the database, or null if there is no database available
      */
     public abstract ParameterNullnessPropertyDatabase getUnconditionalDerefParamDatabase();
@@ -659,14 +663,14 @@ public abstract class AnalysisContext {
     /**
      * Get the property database recording which methods always return nonnull
      * values
-     * 
+     *
      * @return the database, or null if there is no database available
      */
     public abstract ReturnValueNullnessPropertyDatabase getReturnValueNullnessPropertyDatabase();
 
     /**
      * Load an interprocedural property database.
-     * 
+     *
      * @param <DatabaseType>
      *            actual type of the database
      * @param <KeyType>
@@ -701,7 +705,7 @@ public abstract class AnalysisContext {
 
     /**
      * Load an interprocedural property database.
-     * 
+     *
      * @param <DatabaseType>
      *            actual type of the database
      * @param <KeyType>
@@ -737,7 +741,7 @@ public abstract class AnalysisContext {
 
     /**
      * Write an interprocedural property database.
-     * 
+     *
      * @param <DatabaseType>
      *            actual type of the database
      * @param <KeyType>
@@ -768,7 +772,7 @@ public abstract class AnalysisContext {
 
     /**
      * Set the current analysis context for this thread.
-     * 
+     *
      * @param analysisContext
      *            the current analysis context for this thread
      */
@@ -791,7 +795,7 @@ public abstract class AnalysisContext {
 
     /**
      * Get Collection of all XClass objects seen so far.
-     * 
+     *
      * @return Collection of all XClass objects seen so far
      */
     public Collection<XClass> getXClassCollection() {

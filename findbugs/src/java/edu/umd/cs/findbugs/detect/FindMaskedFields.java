@@ -198,7 +198,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 
     @Override
     public void report() {
-        UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
+        UnreadFieldsData unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFieldsData();
         for (RememberedBug rb : rememberedBugs) {
             BugInstance bug = rb.bug;
             int score1 = 0;

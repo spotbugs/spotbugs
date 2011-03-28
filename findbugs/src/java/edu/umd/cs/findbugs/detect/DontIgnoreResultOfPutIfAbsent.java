@@ -145,7 +145,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
         if (type instanceof ArrayType) {
             return HIGH_PRIORITY;
         } else if (type instanceof ObjectType) {
-            UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
+            UnreadFieldsData unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFieldsData();
 
             ClassDescriptor cd = DescriptorFactory.getClassDescriptor((ObjectType) type);
             @SlashedClassName

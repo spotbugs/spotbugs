@@ -141,7 +141,7 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
             initializedFields.add(FieldAnnotation.fromReferencedField(this));
 
         else if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName())) {
-            UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
+            UnreadFieldsData unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFieldsData();
             XField xField = XFactory.createReferencedXField(this);
             FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
             int nextOpcode = 0xff & codeBytes[getPC() + 3];

@@ -29,6 +29,8 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.LineNumber;
+import org.apache.bcel.classfile.LineNumberTable;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -108,8 +110,23 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                 bugAccumulator.accumulateBug(new BugInstance(this, "SF_SWITCH_FALLTHROUGH", priority).addClassAndMethod(this), s);
         }
 
-        for (SourceLineAnnotation s : foundDefault)
+        for (SourceLineAnnotation s : foundDefault) {
+            LineNumberTable table = obj.getLineNumberTable();
+            if (table != null) {
+                int startLine = s.getStartLine();
+                int prev = Integer.MIN_VALUE;
+                for(LineNumber ln : table.getLineNumberTable()) {
+                    int thisLineNumber = ln.getLineNumber();
+                    if (thisLineNumber < startLine && thisLineNumber > prev && ln.getStartPC() < s.getStartBytecode())
+                        prev = thisLineNumber;
+                }
+                int diff = startLine - prev;
+                if (diff > 5)
+                    continue;
+            }
+
             bugAccumulator.accumulateBug(new BugInstance(this, "SF_SWITCH_NO_DEFAULT", LOW_PRIORITY).addClassAndMethod(this), s);
+        }
 
         bugAccumulator.reportAccumulatedBugs();
     }
@@ -131,10 +148,15 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             potentiallyDeadStoresFromBeforeFallthrough = (BitSet) potentiallyDeadStores.clone();
             potentiallyDeadFieldsFromBeforeFallthrough = new HashSet<XField>(potentiallyDeadFields);
             if (!hasFallThruComment(lastPC + 1, getPC() - 1)) {
+                if (isDefaultOffset) {
+
                 SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(),
-                        this, lastPC, getPC());
-                if (sourceLineAnnotation != null) {
-                    if (isDefaultOffset) {
+                        this, getPC(), getPC());
+                } else {
+                    SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(),
+                            this, lastPC, getPC());
+
+                    if (sourceLineAnnotation != null) {
                         foundDefault.add(sourceLineAnnotation);
                     } else {
                         found.add(sourceLineAnnotation);
