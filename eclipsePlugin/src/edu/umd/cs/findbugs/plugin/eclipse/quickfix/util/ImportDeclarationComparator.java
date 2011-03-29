@@ -21,9 +21,6 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix.util;
 
-import static java.lang.Integer.MAX_VALUE;
-import static java.lang.Integer.MIN_VALUE;
-
 import java.io.Serializable;
 import java.util.Comparator;
 
@@ -34,7 +31,7 @@ import org.eclipse.jdt.core.dom.Name;
  * A <CODE>Comparator</CODE> used to add imports in a sorted order. The
  * <CODE>ImportDeclaration</CODE> will be sorted according to static or not
  * static import, and then in an alphabetically order.
- * 
+ *
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @version 1.0
@@ -48,17 +45,17 @@ public class ImportDeclarationComparator<E extends ImportDeclaration> implements
             return 0;
         }
         if (o1 == null) {
-            return MAX_VALUE;
+            return 1;
         }
         if (o2 == null) {
-            return MIN_VALUE;
+            return -1;
         }
 
         if (!(o1.isStatic() ^ o2.isStatic())) {
             return compare(o1.getName(), o2.getName());
         }
 
-        return o1.isStatic() ? MIN_VALUE : MAX_VALUE;
+        return o1.isStatic() ? -1 : 1;
     }
 
     private int compare(Name o1, Name o2) {
