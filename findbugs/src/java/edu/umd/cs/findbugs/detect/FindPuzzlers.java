@@ -459,6 +459,22 @@ public class FindPuzzlers extends OpcodeStackDetector {
         }
 
         if (isTigerOrHigher) {
+            if (previousMethodInvocation != null && prevOpCode == INVOKEVIRTUAL && seen == INVOKESTATIC) {
+                String classNameForPreviousMethod = previousMethodInvocation.getClassName();
+                String classNameForThisMethod = getClassConstantOperand();
+                if (classNameForPreviousMethod.startsWith("java.lang.")
+                        && classNameForPreviousMethod.equals(classNameForThisMethod.replace('/', '.'))
+                        && previousMethodInvocation.getName().endsWith("Value")
+                        && previousMethodInvocation.getSignature().length() == 3
+                        && getNameConstantOperand().equals("valueOf")
+                        && getSigConstantOperand().charAt(1) == previousMethodInvocation.getSignature().charAt(2))
+                        bugAccumulator.accumulateBug(
+                                new BugInstance(this, "BX_UNBOXING_IMMEDIATELY_REBOXED", NORMAL_PRIORITY).addClassAndMethod(this)
+                                .addCalledMethod(this),
+                                this);
+
+            }
+
             if (previousMethodInvocation != null && prevOpCode == INVOKESPECIAL && seen == INVOKEVIRTUAL) {
                 String classNameForPreviousMethod = previousMethodInvocation.getClassName();
                 String classNameForThisMethod = getClassConstantOperand();
@@ -478,7 +494,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
                 } else
                     ternaryConversionState = 0;
 
-            } else if (false && seen == INVOKEVIRTUAL) {
+            } else if (seen == INVOKEVIRTUAL) {
                 if (getClassConstantOperand().startsWith("java/lang") && getNameConstantOperand().endsWith("Value")
                         && getSigConstantOperand().length() == 3)
                     ternaryConversionState = 1;
@@ -534,7 +550,11 @@ public class FindPuzzlers extends OpcodeStackDetector {
         else if (seen == INVOKESTATIC && getClassConstantOperand().startsWith("java/lang/")
                 && getNameConstantOperand().equals("valueOf") && getSigConstantOperand().length() == 4)
             previousMethodInvocation = XFactory.createReferencedXMethod(this);
-        else
+        else if (seen == INVOKEVIRTUAL && getClassConstantOperand().startsWith("java/lang/")
+                && getNameConstantOperand().endsWith("Value")
+                && getSigConstantOperand().length() == 3)
+            previousMethodInvocation = XFactory.createReferencedXMethod(this);
+       else
             previousMethodInvocation = null;
 
         if (seen == IAND || seen == LAND) {
@@ -573,8 +593,8 @@ public class FindPuzzlers extends OpcodeStackDetector {
             OpcodeStack.Item top = stack.getStackItem(0);
             Object o = top.getConstant();
             if (o instanceof Integer && ((Integer)o).intValue() == Integer.MIN_VALUE)
-                    bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY)
-                    .addClassAndMethod(this).addString("returning Integer.MIN_VALUE from compare/compareTo"), this);
+                    bugAccumulator.accumulateBug(new BugInstance(this, "CO_COMPARETO_RESULTS_MIN_VALUE", NORMAL_PRIORITY)
+                    .addClassAndMethod(this), this);
 
         }
         prevOpCode = seen;

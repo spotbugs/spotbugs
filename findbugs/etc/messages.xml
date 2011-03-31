@@ -2524,6 +2524,7 @@ converted to a floating point value, and boxed. See JLS Section 15.25.
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="BX_BOXING_IMMEDIATELY_UNBOXED">
     <ShortDescription>Primitive value is boxed and then immediately unboxed</ShortDescription>
     <LongDescription>Primitive value is boxed and then immediately unboxed in {1}</LongDescription>
@@ -2532,6 +2533,16 @@ converted to a floating point value, and boxed. See JLS Section 15.25.
   <p>A primitive is boxed, and then immediately unboxed. This probably is due to a manual
     boxing in a place where an unboxed value is required, thus forcing the compiler
 to immediately undo the work of the boxing.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="BX_UNBOXING_IMMEDIATELY_REBOXED">
+    <ShortDescription>Boxed value is unboxed and then immediately reboxed</ShortDescription>
+    <LongDescription>Boxed value is unboxed and then immediately reboxed in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p>A boxed value is unboxed and then immediately reboxed.
 </p>
 ]]>
     </Details>
@@ -3017,6 +3028,19 @@ that classfile. See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=
    </Details>
   </BugPattern>
 
+  <BugPattern type="CO_COMPARETO_RESULTS_MIN_VALUE">
+    <ShortDescription>compareTo()/compare() returns Integer.MIN_VALUE</ShortDescription>
+    <LongDescription>{1} returns Integer.MIN_VALUE, which can't be negated</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This compareTo or compare method returns Integer.MIN_VALUE, which is an exceptionally bad practice.
+  The only thing that matters about the return value of compareTo is the sign of the result.
+	But people will sometimes negate the return value of compareTo, expecting that this will negate
+	the sign of the result. And it will, except in the case where the value returned is Integer.MIN_VALUE.
+	So just return -1 rather than Integer.MIN_VALUE.
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="CO_SELF_NO_OBJECT">
     <ShortDescription>Covariant compareTo() method defined</ShortDescription>
     <LongDescription>{0} defines compareTo({0.givenClass}) method but not compareTo(Object)</LongDescription>
@@ -3029,6 +3053,7 @@ that classfile. See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS">
     <ShortDescription>Signature declares use of unhashable class in hashed construct</ShortDescription>
     <LongDescription>{2} doesn't define a hashCode() method but it is used in a hashed context in {1}</LongDescription>
