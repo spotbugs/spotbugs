@@ -102,10 +102,10 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
     /**
      * return the user designation E.g., "MOSTLY_HARMLESS", "CRITICAL",
      * "NOT_A_BUG", etc.
-     * 
+     *
      * Note that this is the key, suitable for writing to XML, but not for
      * showing to the user.
-     * 
+     *
      * @see I18N#getUserDesignation(String key)
      */
     @NonNull
@@ -116,13 +116,13 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
     /**
      * set the user designation E.g., "MOSTLY_HARMLESS", "CRITICAL",
      * "NOT_A_BUG", etc.
-     * 
+     *
      * If the argument is null, it will be treated as UNCLASSIFIED.
-     * 
+     *
      * Note that this is the key, suitable for writing to XML, but not what the
      * user sees. Strange things could happen if designationKey is not one of
      * the keys returned by I18N.instance().getUserDesignations().
-     * 
+     *
      * @see I18N#getUserDesignationKeys()
      */
     public void setDesignationKey(String designationKey) {
@@ -245,7 +245,7 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
     public int compareTo(BugDesignation o) {
         if (this == o)
             return 0;
-        int result = -Util.compare(this.timestamp, o.timestamp);
+        int result = Util.compare(o.timestamp, this.timestamp);
         if (result != 0)
             return result;
 

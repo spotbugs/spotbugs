@@ -47,7 +47,7 @@ import edu.umd.cs.findbugs.classfile.Global;
  * The analysis's transfer function is applied to transform the meet of the
  * results of the block's logical predecessors (the block's start facts) into
  * the block's result facts.
- * 
+ *
  * @author David Hovemeyer
  * @see CFG
  * @see DataflowAnalysis
@@ -67,7 +67,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param cfg
      *            the control flow graph
      * @param analysis
@@ -127,7 +127,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
         @Override
         public int compare(BasicBlock o1, BasicBlock o2) {
-            return -super.compare(o1, o2);
+            return super.compare(o2, o1);
         }
 
     }
@@ -407,7 +407,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
     /**
      * @param msg
      *            TODO
-     * 
+     *
      */
     private void reportAnalysis(String msg) {
         String shortAnalysisName = analysis.getClass().getName();
@@ -460,7 +460,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
      * Get dataflow fact at (just before) given Location. Note "before" is meant
      * in the logical sense, so for backward analyses, before means after the
      * location in the control flow sense.
-     * 
+     *
      * @param location
      *            the Location
      * @return the dataflow value at given Location
@@ -474,7 +474,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
      * Get the dataflow fact representing the point just after given Location.
      * Note "after" is meant in the logical sense, so for backward analyses,
      * after means before the location in the control flow sense.
-     * 
+     *
      * @param location
      *            the Location
      * @return the dataflow value after given Location
@@ -486,7 +486,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
     /**
      * Get the fact that is true on the given control edge.
-     * 
+     *
      * @param edge
      *            the edge
      * @return the fact that is true on the edge
