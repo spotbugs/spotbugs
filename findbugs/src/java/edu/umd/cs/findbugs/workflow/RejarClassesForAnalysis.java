@@ -123,12 +123,12 @@ public class RejarClassesForAnalysis {
         public String inputFileList;
 
         public String auxFileList;
-        
+
         boolean onlyAnalyze = false;
 
         RejarClassesForAnalysisCommandLine() {
             addSwitch("-analyzeOnly",  "only read the jars files and analyze them; don't produce new jar files");
-            
+
             addOption("-maxAge", "days", "maximum age in days (ignore jar files older than this)");
             addOption("-inputFileList", "filename", "text file containing names of jar files");
             addOption("-auxFileList", "filename", "text file containing names of jar files for aux class path");
@@ -326,7 +326,7 @@ public class RejarClassesForAnalysis {
             int oldSize = copied.size();
             if (processZipEntries(f, new ZipElementHandler() {
                 boolean checked = false;
-  
+
                 public void handle(ZipFile file, ZipEntry ze) throws IOException {
                     if (commandLine.skip(ze))
                         return;
@@ -387,10 +387,10 @@ public class RejarClassesForAnalysis {
 
         if (!excluded.isEmpty())
             System.out.printf("   excluded  files: %6d%n", excluded.size());
-        
+
         if (commandLine.onlyAnalyze)
             return;
-        
+
         if (numFilesToAnalyze < copied.size() || numFilesToAnalyze > commandLine.maxClasses)
             auxilaryOut = createZipFile(getNextAuxilaryFileOutput());
 
@@ -519,7 +519,7 @@ public class RejarClassesForAnalysis {
         return new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(newFile)));
     }
 
-    
+
     private boolean embeddedNameMismatch(ZipFile zipInputFile, ZipEntry ze) throws IOException {
         InputStream zipIn = zipInputFile.getInputStream(ze);
         String name = ze.getName();
@@ -536,7 +536,7 @@ public class RejarClassesForAnalysis {
         System.out.println("In " + name + " found " + className);
         return true;
     }
-    
+
     private void copyEntry(ZipFile zipInputFile, ZipEntry ze, boolean writeToAnalyzeOut, ZipOutputStream analyzeOut1,
             boolean writeToAuxilaryOut, ZipOutputStream auxilaryOut1) throws IOException {
         InputStream zipIn = zipInputFile.getInputStream(ze);
@@ -571,6 +571,14 @@ public class RejarClassesForAnalysis {
             System.out.println("not readable: '" + f + "'");
             return false;
         }
+        if (!f.canRead() || f.isDirectory()) {
+            System.out.println("not readable: '" + f + "'");
+            return false;
+        }
+        if (f.length() == 0) {
+            System.out.println("empty zip file: '" + f + "'");
+            return false;
+        }
         ZipFile zipInputFile;
         try {
             zipInputFile = new ZipFile(f);
@@ -585,16 +593,15 @@ public class RejarClassesForAnalysis {
             return false;
         } catch (IOException e) {
             System.out.println("Error processing '" + f + "'");
-            e.printStackTrace(System.out);
             return false;
         }
         return true;
 
     }
 
-    
+
     static class ClassFileNameMismatch extends IOException {
-        
+
     }
     interface ZipElementHandler {
         void handle(ZipFile file, ZipEntry ze) throws IOException;
