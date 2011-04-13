@@ -869,8 +869,8 @@ public class SourceLineAnnotation implements BugAnnotation {
                     SourceFinder mySourceFinder = project.getSourceFinder();
                     String fullPath = new File(mySourceFinder.findSourceFile(this).getFullFileName()).getCanonicalPath();
                     String myRelativeSourceBase = relativeSourceBase.get();
-                    if (fullPath.startsWith(myRelativeSourceBase))
-                        attributeList.addAttribute("relSourcepath", fullPath.substring(myRelativeSourceBase.length() + 1));
+                    if (fullPath.startsWith(myRelativeSourceBase) && fullPath.length() > myRelativeSourceBase.length())
+                           attributeList.addAttribute("relSourcepath", fullPath.substring(myRelativeSourceBase.length() + 1));
                 } catch (IOException e) {
                     assert true;
                 }
