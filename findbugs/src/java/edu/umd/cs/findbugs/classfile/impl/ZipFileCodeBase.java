@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
@@ -66,7 +68,18 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
                 throw new ZipException("Zip file isn't a normal file: " + file);
             if (file.length() == 0)
                 throw new ZipException("Zip file is empty: " + file);
+            DataInputStream in = new DataInputStream(new FileInputStream(file));
             ZipException e2 = new ZipException("Error opening zip file " + file + " of " + file.length() + " bytes");
+            try {
+                int magicBytes = in.readInt();
+                if (magicBytes != 0x504b0304)
+                    throw new ZipException(
+                            String.format("Wrong magic bytes of %x for zip file %s of %d bytes", 
+                                    magicBytes, file, file.length()));
+
+            } catch (Exception e3) {
+                assert true;
+            }
             e2.initCause(e);
             throw e2;
         }
