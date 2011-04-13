@@ -446,12 +446,22 @@ public abstract class AnalysisContext {
             ClassData classData = analysisCache.getClassAnalysis(ClassData.class, desc);
             if (classData.getData().length > 1000000)
                 return true;
+            try {
             JavaClass javaClass = classContext.getJavaClass();
             if (javaClass.getMethods().length > 1000)
                 return true;
+            } catch (RuntimeException e) {
+                AnalysisContext.logError("Error parsing class " + desc
+                        + " from " + classData.getCodeBaseEntry().getCodeBase(), e);
+                return true;
+            }
 
+        } catch (RuntimeException e) {
+            AnalysisContext.logError("Error getting class data for " + desc, e);
+            return true;
         } catch (CheckedAnalysisException e) {
-            AnalysisContext.logError("Could not get class context", e);
+            AnalysisContext.logError("Could not get class context for "  + desc, e);
+            return true;
         }
         return false;
 
