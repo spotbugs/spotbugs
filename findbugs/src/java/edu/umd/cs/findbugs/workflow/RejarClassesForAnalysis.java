@@ -300,6 +300,7 @@ public class RejarClassesForAnalysis {
         return false;
     }
 
+    boolean classFileFound;
     public void execute() throws IOException {
 
         List<String> fileList;
@@ -324,6 +325,7 @@ public class RejarClassesForAnalysis {
             }
 
             int oldSize = copied.size();
+            classFileFound = false;
             if (processZipEntries(f, new ZipElementHandler() {
                 boolean checked = false;
 
@@ -343,7 +345,10 @@ public class RejarClassesForAnalysis {
                             throw new ClassFileNameMismatch();
                         }
                     }
-                    if (copied.add(name) && commandLine.prefix.matches(dottedName)) {
+                    if (!commandLine.prefix.matches(dottedName))
+                        return;
+                    classFileFound = true;
+                    if (copied.add(name)) {
                         filesToAnalyze.add(name);
                         numFilesToAnalyze++;
                     }
@@ -356,7 +361,10 @@ public class RejarClassesForAnalysis {
 
             }) && oldSize < copied.size())
                 inputZipFiles.add(f);
-            else System.err.println("Skipping " + fInName  + ", no classes found");
+            else if (classFileFound)
+                System.err.println("Skipping " + fInName  + ", no new classes found");
+            else 
+                System.err.println("Skipping " + fInName  + ", no classes found");
         }
         for (String fInName : auxFileList) {
             File f = new File(fInName);
@@ -365,7 +373,7 @@ public class RejarClassesForAnalysis {
                 continue;
             }
             int oldSize = copied.size();
-
+            classFileFound = false;
             if (processZipEntries(f, new ZipElementHandler() {
                 public void handle(ZipFile file, ZipEntry ze) {
                     if (commandLine.skip(ze))
@@ -373,12 +381,17 @@ public class RejarClassesForAnalysis {
 
                     String name = ze.getName();
                     String dottedName = name.replace('/', '.');
-                    if (!exclude(dottedName))
+                    if (!exclude(dottedName)) {
+                        classFileFound = true;
                         copied.add(ze.getName());
+                    }
                 }
             }) && oldSize < copied.size())
                 auxZipFiles.add(f);
-            else System.err.println("Skipping aux file " + fInName  + ", no classes found");
+            else if (classFileFound)
+                System.err.println("Skipping aux file " + fInName  + ", no new classes found");
+            else 
+                System.err.println("Skipping aux file" + fInName  + ", no classes found");
         }
 
         System.out.printf("    # Zip/jar files: %2d%n", inputZipFiles.size());
