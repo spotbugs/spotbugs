@@ -356,6 +356,7 @@ public class RejarClassesForAnalysis {
 
             }) && oldSize < copied.size())
                 inputZipFiles.add(f);
+            else System.err.println("Skipping " + fInName  + ", no classes found");
         }
         for (String fInName : auxFileList) {
             File f = new File(fInName);
@@ -377,6 +378,7 @@ public class RejarClassesForAnalysis {
                 }
             }) && oldSize < copied.size())
                 auxZipFiles.add(f);
+            else System.err.println("Skipping aux file " + fInName  + ", no classes found");
         }
 
         System.out.printf("    # Zip/jar files: %2d%n", inputZipFiles.size());
@@ -397,8 +399,8 @@ public class RejarClassesForAnalysis {
         copied.clear();
 
         int count = Integer.MAX_VALUE;
-        String oldBaseClass = "xx";
-        String oldPackage = "xx";
+        String oldBaseClass = "x x";
+        String oldPackage = "x x";
         for (String path : filesToAnalyze) {
             int lastSlash = path.lastIndexOf('/');
             String packageName = lastSlash <= 0 ? "" : path.substring(0, lastSlash - 1);
