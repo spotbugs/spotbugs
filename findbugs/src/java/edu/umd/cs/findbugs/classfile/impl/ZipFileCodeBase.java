@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 
 /**
  * Implementation of ICodeBase to read from a zip file or jar file.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ZipFileCodeBase extends AbstractScannableCodeBase {
@@ -43,7 +43,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 
     /**
      * Constructor.
-     * 
+     *
      * @param codeBaseLocator
      *            the codebase locator for this codebase
      * @param file
@@ -70,16 +70,15 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
                 throw new ZipException("Zip file is empty: " + file);
             DataInputStream in = new DataInputStream(new FileInputStream(file));
             ZipException e2 = new ZipException("Error opening zip file " + file + " of " + file.length() + " bytes");
+            int magicBytes;
             try {
-                int magicBytes = in.readInt();
-                if (magicBytes != 0x504b0304)
-                    throw new ZipException(
-                            String.format("Wrong magic bytes of %x for zip file %s of %d bytes", 
-                                    magicBytes, file, file.length()));
-
-            } catch (Exception e3) {
-                assert true;
+                magicBytes = in.readInt();
+            } catch (IOException e3) {
+                throw new ZipException(String.format("Unable read first 4 bytes of zip file %s of %d bytes", file, file.length()));
             }
+            if (magicBytes != 0x504b0304)
+                throw new ZipException(String.format("Wrong magic bytes of %x for zip file %s of %d bytes", magicBytes, file,
+                        file.length()));
             e2.initCause(e);
             throw e2;
         }
@@ -87,7 +86,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
      */
@@ -123,7 +122,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
              */
             public ICodeBaseEntry next() throws InterruptedException {
@@ -157,7 +156,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
      */
     public String getPathName() {
@@ -166,7 +165,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
      */
     public void close() {
@@ -179,7 +178,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
