@@ -64,6 +64,7 @@ import edu.umd.cs.findbugs.plan.SingleDetectorFactorySelector;
 import edu.umd.cs.findbugs.plugins.DuplicatePluginIdDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.JavaWebStart;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Loader for a FindBugs plugin. A plugin is a jar file containing two metadata
@@ -1115,13 +1116,14 @@ public class PluginLoader {
      */
     static void installWebStartPlugins() {
        URL pluginListProperties = DetectorFactoryCollection.getCoreResource("pluginlist.properties");
+       BufferedReader in = null;
         if (pluginListProperties != null) {
             try {
 
                 DetectorFactoryCollection.jawsDebugMessage(pluginListProperties.toString());
                 URL base = getUrlBase(pluginListProperties);
 
-                BufferedReader in = UTF8.bufferedReader(pluginListProperties.openStream());
+                in = UTF8.bufferedReader(pluginListProperties.openStream());
                 while (true) {
                     String plugin = in.readLine();
 
@@ -1141,10 +1143,10 @@ public class PluginLoader {
                     }
 
                 }
-                in.close();
             } catch (Exception e) {
                 DetectorFactoryCollection.jawsDebugMessage("error : " + e.getMessage());
-
+            } finally {
+                Util.closeSilently(in);
             }
 
         }
