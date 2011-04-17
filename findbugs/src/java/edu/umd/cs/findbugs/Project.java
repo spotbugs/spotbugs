@@ -64,6 +64,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.charsets.UTF8;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
@@ -168,6 +169,14 @@ public class Project implements XMLWriteable {
      *            The cloudId to set.
      */
     public void setCloudId(String cloudId) {
+        if (cloudId.indexOf('.') == -1) {
+            Map<String, CloudPlugin> registeredClouds = DetectorFactoryCollection.instance().getRegisteredClouds();
+            String check = "." + cloudId;
+            for(String name : registeredClouds.keySet())
+                if (name.endsWith(check))
+                    cloudId = name;
+
+        }
         this.cloudId = cloudId;
     }
 
