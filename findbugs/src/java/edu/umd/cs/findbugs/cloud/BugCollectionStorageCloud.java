@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.BugInstance;
 
 /**
  * A basic "cloud" that stores information to the bug collection analysis XML file.
- * 
+ *
  * @author pwilliam
  */
 public class BugCollectionStorageCloud extends AbstractCloud {
@@ -154,10 +154,6 @@ public class BugCollectionStorageCloud extends AbstractCloud {
 
     public boolean isOnlineCloud() {
         return false;
-    }
-
-    public String getCloudName() {
-        return "Analysis XML File Pseudo-Cloud";
     }
 
     public void waitUntilNewIssuesUploaded() {

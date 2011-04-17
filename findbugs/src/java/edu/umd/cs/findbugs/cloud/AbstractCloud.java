@@ -793,4 +793,8 @@ public abstract class AbstractCloud implements Cloud {
         return getBugCollection().getProject().getGuiCallback();
     }
 
+    public String getCloudName() {
+        return getPlugin().getDescription();
+    }
+
 }

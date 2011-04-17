@@ -94,7 +94,7 @@ public class DBCloud extends AbstractCloud {
     static final long ONE_DAY = 24L * 60 * 60 * 1000;
 
     /**
-     * 
+     *
      */
     static final String USER_NAME = "user.name";
 
@@ -1801,10 +1801,6 @@ public class DBCloud extends AbstractCloud {
         return true;
     }
 
-    public String getCloudName() {
-        return "FindBugs SQL Cloud";
-    }
-
     @Override
     public URL fileBug(BugInstance bug) {
         return null;
@@ -1812,7 +1808,7 @@ public class DBCloud extends AbstractCloud {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.cloud.Cloud#waitUntilNewIssuesUploaded()
      */
     public void waitUntilNewIssuesUploaded() {

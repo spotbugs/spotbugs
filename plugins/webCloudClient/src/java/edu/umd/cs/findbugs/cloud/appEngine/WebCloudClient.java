@@ -115,10 +115,6 @@ public class WebCloudClient extends AbstractCloud {
 
     // ====================== initialization =====================
 
-    public String getCloudName() {
-        return getPlugin().getDescription();
-    }
-
     public void waitUntilNewIssuesUploaded() {
         try {
             newIssuesUploaded.await();
