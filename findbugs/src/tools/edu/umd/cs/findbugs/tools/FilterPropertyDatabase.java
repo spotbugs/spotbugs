@@ -8,6 +8,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.WillClose;
+
 import org.apache.bcel.Constants;
 
 import edu.umd.cs.findbugs.util.Util;
@@ -56,7 +58,7 @@ public class FilterPropertyDatabase {
      * @throws UnsupportedEncodingException
      * @throws IOException
      */
-    private static void process(InputStream inSource) throws UnsupportedEncodingException, IOException {
+    private static void process(@WillClose InputStream inSource) throws UnsupportedEncodingException, IOException {
         BufferedReader in = null;
         try {
             in = new BufferedReader(Util.getReader(inSource));

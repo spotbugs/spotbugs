@@ -333,6 +333,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
                         break;
                     addAuxClassPathEntries(s);
                 }
+                in.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -674,6 +675,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
                     break;
                 project.addFile(s);
             }
+            in.close();
         }
     }
 

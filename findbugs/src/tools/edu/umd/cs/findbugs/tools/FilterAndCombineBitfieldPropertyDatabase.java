@@ -12,6 +12,8 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.WillClose;
+
 import org.apache.bcel.Constants;
 
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -98,7 +100,7 @@ public class FilterAndCombineBitfieldPropertyDatabase {
      * @throws UnsupportedEncodingException
      * @throws IOException
      */
-    private static void process(InputStream inSource, Map<String, Integer> properties, Map<String, Integer> accessFlags)
+    private static void process(@WillClose InputStream inSource, Map<String, Integer> properties, Map<String, Integer> accessFlags)
             throws UnsupportedEncodingException, IOException {
         BufferedReader in = new BufferedReader(Util.getReader(inSource));
         Pattern p = Pattern.compile("^(([^,]+),.+),([0-9]+)\\|([0-9]+)$");

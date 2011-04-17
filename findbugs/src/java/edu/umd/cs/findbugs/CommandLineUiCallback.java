@@ -43,6 +43,7 @@ public class CommandLineUiCallback implements IGuiCallback {
 
     public CommandLineUiCallback() {
     }
+    BufferedReader br = UserTextFile.bufferedReader(System.in);
 
     public void showMessageDialogAndWait(String message) throws InterruptedException {
         System.out.println(message);
@@ -56,7 +57,6 @@ public class CommandLineUiCallback implements IGuiCallback {
         String confirmStr = "Yes (Y) or No (N)?";
 
         System.out.println(String.format("Confirmation required: %s%n\t%s%n\t%s", title, message, confirmStr));
-        BufferedReader br = UserTextFile.bufferedReader(System.in);
         String answer = null;
         while (true) {
             try {
