@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.cloud;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -93,16 +94,22 @@ public class CloudFactory {
             if (false && usedDefaultCloud)
                 bc.getProject().setCloudId(plugin.getId());
             return cloud;
+        } catch (InvocationTargetException e) {
+           return handleInitializationException(bc, plugin, e.getCause());
         } catch (Exception e) {
-            if (DEBUG) {
-                bc.getProject().getGuiCallback().showMessageDialog("failed " + e.getMessage() + e.getClass().getName());
-            }
-            LOGGER.log(Level.WARNING, "Could not load cloud plugin " + plugin, e);
-            if (SystemProperties.getBoolean("findbugs.failIfUnableToConnectToCloud"))
-                System.exit(1);
-            return getPlainCloud(bc);
+            return handleInitializationException(bc, plugin, e);
         }
 
+    }
+
+    public static Cloud handleInitializationException(BugCollection bc, CloudPlugin plugin, Throwable e) {
+        if (DEBUG) {
+            bc.getProject().getGuiCallback().showMessageDialog("failed " + e.getMessage() + e.getClass().getName());
+        }
+        LOGGER.log(Level.WARNING, "Could not load cloud plugin " + plugin, e);
+        if (SystemProperties.getBoolean("findbugs.failIfUnableToConnectToCloud"))
+            System.exit(1);
+        return getPlainCloud(bc);
     }
 
     public static void initializeCloud(BugCollection bc, Cloud cloud) throws IOException {
@@ -116,7 +123,7 @@ public class CloudFactory {
 
         if (!cloud.initialize())
             throw new IOException("Unable to connect to " + cloud.getCloudName());
-        
+
         if (DEBUG)
             callback.showMessageDialog("initialized " + cloud.getClass().getName());
     }
