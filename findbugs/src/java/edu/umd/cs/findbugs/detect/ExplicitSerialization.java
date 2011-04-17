@@ -68,10 +68,8 @@ public class ExplicitSerialization extends OpcodeStackDetector implements NonRep
             String signature = top.getSignature();
             while (signature.charAt(0) == '[')
                 signature = signature.substring(1);
-            if (signature.charAt(0) != 'L')
-                return;
             ClassDescriptor c = DescriptorFactory.createClassDescriptorFromFieldSignature(signature);
-            if (!Subtypes2.instanceOf(c, Serializable.class))
+            if (c == null || !Subtypes2.instanceOf(c, Serializable.class))
                 return;
 
             try {
