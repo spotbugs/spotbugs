@@ -193,8 +193,8 @@ public class WebCloudNameLookup implements NameLookup {
         int responseCode = connection.getResponseCode();
         if (responseCode == 200) {
             InputStream in = connection.getInputStream();
+            BufferedReader reader = UTF8.bufferedReader(in);
             try {
-                BufferedReader reader = UTF8.bufferedReader(in);
                 String status = reader.readLine();
                 sessionId = Long.parseLong(reader.readLine());
                 username = reader.readLine();
@@ -204,7 +204,7 @@ public class WebCloudNameLookup implements NameLookup {
                     return true;
                 }
             } finally {
-                in.close();
+                reader.close();
             }
 
         }
