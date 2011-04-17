@@ -887,10 +887,16 @@ public class PluginLoader {
             SAXReader reader = new SAXReader();
             try {
                 Reader stream = UTF8.bufferedReader(messageURL.openStream());
-                Document messageCollection = reader.read(stream);
+                Document messageCollection;
+                try {
+                    messageCollection = reader.read(stream);
+                } finally {
+                    stream.close();
+                }
                 messageCollectionList.add(messageCollection);
             } catch (Exception e) {
                 throw new PluginException("Couldn't parse \"" + messageURL + "\"", e);
+            } finally {
             }
 
         }
