@@ -172,9 +172,16 @@ public class Project implements XMLWriteable {
         if (cloudId.indexOf('.') == -1) {
             Map<String, CloudPlugin> registeredClouds = DetectorFactoryCollection.instance().getRegisteredClouds();
             String check = "." + cloudId;
+            int count = 0;
+            String result = cloudId;
             for(String name : registeredClouds.keySet())
-                if (name.endsWith(check))
-                    cloudId = name;
+                if (name.endsWith(check)) {
+                    count++;
+                    result = name;
+                }
+            if (count == 1)
+                cloudId = result;
+
 
         }
         this.cloudId = cloudId;
