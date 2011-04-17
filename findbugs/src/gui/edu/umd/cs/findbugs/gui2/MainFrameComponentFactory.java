@@ -121,7 +121,6 @@ public class MainFrameComponentFactory implements Serializable {
     }
 
     JSplitPane summaryTab() {
-        int fontSize = (int) Driver.getFontSize();
         mainFrame.setSummaryTopPanel(new JPanel());
         mainFrame.getSummaryTopPanel().setLayout(new GridLayout(0, 1));
         mainFrame.getSummaryTopPanel().setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
@@ -378,7 +377,7 @@ public class MainFrameComponentFactory implements Serializable {
      * return a JLabel with the annotation's toString(). If that annotation is a
      * SourceLineAnnotation or has a SourceLineAnnotation connected to it and
      * the source file is available will attach a listener to the label.
-     * 
+     *
      * @return
      */
     public Component bugSummaryComponent(String str, BugInstance bug) {
@@ -452,7 +451,7 @@ public class MainFrameComponentFactory implements Serializable {
             Rectangle bounds = GUISaveState.getInstance().getFrameBounds();
             if (bounds != null)
                 mainFrame.setBounds(bounds);
-            
+
             mainFrame.setExtendedState(GUISaveState.getInstance().getExtendedWindowState());
             Toolkit.getDefaultToolkit().setDynamicLayout(true);
             mainFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -526,9 +525,9 @@ public class MainFrameComponentFactory implements Serializable {
      * the cursor is over the label will make the label text blue and the cursor
      * the hand cursor. When clicked will take the user to the source code tab
      * and to the lines of code connected to the SourceLineAnnotation.
-     * 
+     *
      * @author Kristin Stephens
-     * 
+     *
      */
     private class BugSummaryMouseListener extends MouseAdapter {
         private final BugInstance bugInstance;
