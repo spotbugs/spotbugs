@@ -19,14 +19,9 @@ This plugin code for synchronizing with a JDBC based cloud
     </Details>
   </Plugin>
 
-
-  <Cloud id="edu.umd.cs.findbugs.cloud.db.Default" >
-	<Description>MySQL - Univ. of Maryland</Description>
-	<Details>Comments are stored in a MySQL database hosted at UMD</Details>
-    </Cloud>
-  <Cloud id="edu.umd.cs.findbugs.cloud.db.DB-UserName" >
-	<Description>MySQL - Univ. of Maryland (uses system user name)</Description>
-	<Details>Comments are stored in an SQL database; user name gotten from system properties</Details>
+  <Cloud id="edu.umd.cs.findbugs.cloud.db.Sample-SQL-cloud" >
+	<Description>Sample SQL Bug cloud</Description>
+	<Details>Comments are stored in a MySQL database at a location that must be configured</Details>
     </Cloud>
 
   </MessageCollection>
