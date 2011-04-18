@@ -57,6 +57,8 @@ public class BackdateHistoryUsingSource {
        SourceFinder sourceFinder = new SourceFinder(origCollection.getProject());
 
        Cloud cloud = origCollection.getCloud();
+       cloud.bugsPopulated();
+       cloud.waitUntilIssueDataDownloaded();
        HashSet<SourceFile> seen = new HashSet<SourceFile>();
        for(BugInstance b : origCollection) {
            SourceLineAnnotation s = b.getPrimarySourceLineAnnotation();
