@@ -111,7 +111,7 @@ public class DBCloud extends AbstractCloud {
 
         boolean inDatabase;
 
-        long firstSeen;
+        long firstSeen = bugCollection.getTimestamp();
 
         String bugLink = NONE;
 
@@ -334,6 +334,15 @@ public class DBCloud extends AbstractCloud {
         bugsPopulated();
         if (communicationInitiated.compareAndSet(false, true))
             queue.add(new PopulateBugs(true));
+    }
+
+    /**
+     * Returns true if communication has already been initiated (and perhaps completed).
+     * 
+     */
+    @Override
+	public boolean communicationInitiated() {
+    		return bugsPopulated.getCount() == 0 && communicationInitiated.get();
     }
 
     private static final long LAST_SEEN_UPDATE_WINDOW = TimeUnit.MILLISECONDS.convert(7 * 24 * 3600, TimeUnit.SECONDS);

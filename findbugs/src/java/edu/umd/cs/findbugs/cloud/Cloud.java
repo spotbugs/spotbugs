@@ -96,8 +96,13 @@ public interface Cloud {
      * Waits until all data about this bug collection has been received from the
      * cloud.
      */
-    void waitUntilIssueDataDownloaded();
+    public void waitUntilIssueDataDownloaded();
 
+    /**
+     * Returns true if communication has already been initiated (and perhaps completed).
+     * 
+     */
+    public boolean communicationInitiated();
     /**
      * Called after the bugs in the bug collection are loaded; bugs should not
      * be synchronized before this method is called

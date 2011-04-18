@@ -801,5 +801,9 @@ public abstract class AbstractCloud implements Cloud {
     public String getCloudName() {
         return getPlugin().getDescription();
     }
+    
+    public boolean communicationInitiated() {
+        return !isOnlineCloud();
+    }
 
 }

@@ -2036,33 +2036,35 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
         if (bugCollection != null) {
             Cloud cloud = bugCollection.getCloud();
-            long firstSeen = cloud.getFirstSeen(this);
-            attributeList.addAttribute("firstSeen", firstSeenXMLFormat().format(firstSeen));
-            int reviews = cloud.getNumberReviewers(this);
-            UserDesignation consensus = cloud.getConsensusDesignation(this);
-            if (!cloud.isInCloud(this)) {
-                attributeList.addAttribute("isInCloud", "false");
-            }
-            if (reviews > 0) {
-                attributeList.addAttribute("reviews", Integer.toString(reviews));
-
-                if (consensus != UserDesignation.UNCLASSIFIED)
-                    attributeList.addAttribute("consensus", consensus.toString());
-
-            }
-            if (addMessages) {
-                long age = bugCollection.getAnalysisTimestamp() - firstSeen;
-                if (age < 0)
-                    age = 0;
-                int ageInDays = (int) (age / 1000 / 3600 / 24);
-                attributeList.addAttribute("ageInDays", Integer.toString(ageInDays));
-                if (reviews > 0 && consensus != UserDesignation.UNCLASSIFIED) {
-                    if (consensus.score() < 0)
-                        attributeList.addAttribute("notAProblem", "true");
-                    if (consensus.score() > 0)
-                        attributeList.addAttribute("shouldFix", "true");
+            if (cloud.communicationInitiated()) {
+                long firstSeen = cloud.getFirstSeen(this);
+                attributeList.addAttribute("firstSeen", firstSeenXMLFormat().format(firstSeen));
+                int reviews = cloud.getNumberReviewers(this);
+                UserDesignation consensus = cloud.getConsensusDesignation(this);
+                if (!cloud.isInCloud(this)) {
+                    attributeList.addAttribute("isInCloud", "false");
                 }
+                if (reviews > 0) {
+                    attributeList.addAttribute("reviews", Integer.toString(reviews));
 
+                    if (consensus != UserDesignation.UNCLASSIFIED)
+                        attributeList.addAttribute("consensus", consensus.toString());
+
+                }
+                if (addMessages) {
+                    long age = bugCollection.getAnalysisTimestamp() - firstSeen;
+                    if (age < 0)
+                        age = 0;
+                    int ageInDays = (int) (age / 1000 / 3600 / 24);
+                    attributeList.addAttribute("ageInDays", Integer.toString(ageInDays));
+                    if (reviews > 0 && consensus != UserDesignation.UNCLASSIFIED) {
+                        if (consensus.score() < 0)
+                            attributeList.addAttribute("notAProblem", "true");
+                        if (consensus.score() > 0)
+                            attributeList.addAttribute("shouldFix", "true");
+                    }
+
+                }
             }
         }
 

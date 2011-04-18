@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -504,7 +505,8 @@ public abstract class FindBugs {
         }
     }
 
-    public final static long MINIMUM_TIMESTAMP = 1000000000000L;
+    /** Date of release of Java 1.0 */
+    public final static long MINIMUM_TIMESTAMP = new GregorianCalendar(1996, 0, 23).getTime().getTime();
 
     /**
      * @param timestamp
