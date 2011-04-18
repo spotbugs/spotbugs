@@ -711,6 +711,7 @@ public class MainFrame extends FBFrame implements LogSync {
 
     public void updateBugTree() {
         mainFrameTree.updateBugTree();
+        comments.refresh();
     }
 
     public void resetViewCache() {
