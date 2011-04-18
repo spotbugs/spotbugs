@@ -1,0 +1,11 @@
+#! /bin/sh
+
+@GET_FBHOME@
+
+@SET_DEFAULT_JAVA@
+
+fb_mainclass=edu.umd.cs.findbugs.workflow.BackdateHistoryUsingSource
+
+@WRAP_JAVA@
+
+# vim:ts=3
