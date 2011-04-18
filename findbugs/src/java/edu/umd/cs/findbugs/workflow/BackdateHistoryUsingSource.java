@@ -41,12 +41,12 @@ import edu.umd.cs.findbugs.cloud.Cloud;
 public class BackdateHistoryUsingSource {
 
 
-   private static final String USAGE = "Usage: <cmd> " + "  <bugs.xml> <out.xml>";
+   private static final String USAGE = "Usage: <cmd> " + "  <bugs.xml> [<out.xml>]";
 
    public static void main(String[] args) throws IOException, DocumentException {
        FindBugs.setNoAnalysis();
        DetectorFactoryCollection.instance();
-       if (args.length != 2) {
+       if (args.length < 1 || args.length > 2) {
            System.out.println(USAGE);
            return;
        }
@@ -77,7 +77,10 @@ public class BackdateHistoryUsingSource {
                    System.out.printf("%s %s %s\n", new Date(when), new Date(firstSeen), sourceFile.getFullFileName());
            }
        }
-       origCollection.writeXML(args[1]);
+       if (args.length > 1)
+           origCollection.writeXML(args[1]);
+       cloud.waitUntilNewIssuesUploaded();
+       cloud.shutdown();
 
    }
 }
