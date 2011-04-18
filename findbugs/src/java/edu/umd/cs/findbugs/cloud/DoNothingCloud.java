@@ -330,4 +330,11 @@ public class DoNothingCloud implements Cloud {
     public void storeUserAnnotation(BugInstance bugInstance) {
         throw new UnsupportedOperationException();
     }
+
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#communicationInitiated()
+     */
+    public boolean communicationInitiated() {
+        return false;
+    }
 }
