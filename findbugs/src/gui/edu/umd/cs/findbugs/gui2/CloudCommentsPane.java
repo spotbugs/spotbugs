@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import static edu.umd.cs.findbugs.util.Util.nullSafeEquals;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -60,6 +62,7 @@ import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
@@ -68,8 +71,6 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
-
-import static edu.umd.cs.findbugs.util.Util.nullSafeEquals;
 
 @edu.umd.cs.findbugs.annotations.SuppressWarnings({"SE_TRANSIENT_FIELD_NOT_RESTORED", "SE_BAD_FIELD", "SE_BAD_FIELD_STORE"})
 public abstract class CloudCommentsPane extends JPanel {
@@ -92,7 +93,7 @@ public abstract class CloudCommentsPane extends JPanel {
     protected JTextArea clickToAddCommentTextArea;
     private JPanel clickToAddCommentPanel;
 
-    protected SortedBugCollection _bugCollection;
+    protected BugCollection _bugCollection;
     protected BugInstance _bugInstance;
     private BugAspects _bugAspects;
 
@@ -349,6 +350,14 @@ public abstract class CloudCommentsPane extends JPanel {
         }
         return Collections.emptyList();
     }
+    private boolean hasSelectedBugs() {
+        if (_bugInstance != null)
+            return true;
+        if (_bugAspects != null) {
+            return true;
+        }
+        return false;
+    }
 
     protected void changeClicked() {
         final List<CloudPlugin> plugins = new ArrayList<CloudPlugin>();
@@ -388,22 +397,28 @@ public abstract class CloudCommentsPane extends JPanel {
         }
     }
 
-    public void setBugInstance(final SortedBugCollection bugCollection, final BugInstance bugInstance) {
-        setBugs(bugCollection, bugInstance, null);
+    public void setBugCollection(BugCollection bugCollection) {
+        updateCloudListeners(bugCollection);
+        _bugCollection = bugCollection;
+        _bugInstance = null;;
+        _bugAspects = null;
+        refresh();
+    }
+    
+    public void setBugInstance(final BugInstance bugInstance) {
+        setBugs(bugInstance, null);
     }
 
-    public void setBugAspects(SortedBugCollection bugCollection, BugAspects aspects) {
-        setBugs(bugCollection, null, aspects);
+    public void setBugAspects(BugAspects aspects) {
+        setBugs(null, aspects);
     }
 
-    private void setBugs(SortedBugCollection bugCollection, BugInstance bugInstance, BugAspects bugAspects) {
-        if (_bugCollection == bugCollection && _bugInstance == bugInstance && _bugAspects == bugAspects)
+    private void setBugs(BugInstance bugInstance, BugAspects bugAspects) {
+        if (_bugInstance == bugInstance && _bugAspects == bugAspects)
             return;
         if (!canNavigateAway())
             return;
 
-        updateCloudListeners(bugCollection);
-        _bugCollection = bugCollection;
         _bugInstance = bugInstance;
         _bugAspects = bugAspects;
         refresh();
@@ -506,7 +521,7 @@ public abstract class CloudCommentsPane extends JPanel {
         updateBugCommentsView();
     }
 
-    private void updateCloudListeners(final SortedBugCollection newBugCollection) {
+    private void updateCloudListeners(BugCollection newBugCollection) {
         boolean isNewCloud = false;
         final Cloud newCloud = newBugCollection == null ? null : newBugCollection.getCloud();
         if (_bugCollection != null) {
@@ -528,17 +543,26 @@ public abstract class CloudCommentsPane extends JPanel {
 
 
     private void updateBugCommentsView() {
+        
         List<BugInstance> bugs = getSelectedBugs();
-        if (_bugCollection == null || bugs.isEmpty()) {
+        if (_bugCollection == null) {
             signInOutLink.setVisible(false);
             cloudDetailsLabel.setText("");
             cloudReportPane.setText("");
             titleLabel.setText("<html>Comments");
             return;
-        }
-
-        setCanAddComments(_bugCollection != null && !bugs.isEmpty(), false);
+        }        
+        updateHeader();
         final Cloud cloud = _bugCollection.getCloud();
+        final CloudPlugin plugin = cloud.getPlugin();
+        String details = plugin.getDetails();
+        cloudDetailsLabel.setText(details);
+
+        if (bugs.isEmpty()) {
+            setCanAddComments(false, false);
+            return;
+        }
+        
         String report;
         if (bugs.size() > 1) {
             int count = 0;
@@ -551,23 +575,23 @@ public abstract class CloudCommentsPane extends JPanel {
             report = cloud.getCloudReport(bugs.get(0));
         }
         setCloudReportText(report);
-        final CloudPlugin plugin = cloud.getPlugin();
-        String details = plugin.getDetails();
-//        cloudDetailsLabel.setVisible(!plugin.getId().equals("edu.umd.cs.findbugs.cloud.doNothingCloud"));
-        cloudDetailsLabel.setText(details);
-        updateHeader();
         setCanAddComments(cloud.canStoreUserAnnotation(bugs.get(0)), false);
     }
 
     private void updateHeader() {
         final Cloud cloud = _bugCollection.getCloud();
         CloudPlugin plugin = cloud.getPlugin();
-        CommentInfo commentInfo = new CommentInfo().invoke();
-        boolean sameDesignation = commentInfo.isSameDesignation();
-        String designation = commentInfo.getDesignation();
-        if (!sameDesignation)
-            designation = UserDesignation.UNCLASSIFIED.name();
-        designationCombo.setSelectedIndex(I18N.instance().getUserDesignationKeys(true).indexOf(designation));
+        if (hasSelectedBugs()) {
+            CommentInfo commentInfo = new CommentInfo().invoke();
+            boolean sameDesignation = commentInfo.isSameDesignation();
+            String designation = commentInfo.getDesignation();
+            if (!sameDesignation)
+                designation = UserDesignation.UNCLASSIFIED.name();
+            designationCombo.setSelectedIndex(I18N.instance().getUserDesignationKeys(true).indexOf(designation));
+            designationCombo.setEditable(true);
+        } else {
+            designationCombo.setEditable(false);
+        }
 
         final Cloud.SigninState state = cloud.getSigninState();
         final String stateStr = state == Cloud.SigninState.NO_SIGNIN_REQUIRED ? "" : "" + state;

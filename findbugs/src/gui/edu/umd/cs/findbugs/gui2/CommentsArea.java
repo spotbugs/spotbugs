@@ -134,7 +134,7 @@ public class CommentsArea {
                 } else {
                     fileBug.setVisible(false);
                 }
-                commentsPane.setBugInstance(getBugCollection(), node.getBug());
+                commentsPane.setBugInstance( node.getBug());
             }
         });
     }
@@ -157,7 +157,7 @@ public class CommentsArea {
     }
 
     protected void updateCommentsFromNonLeafInformationFromSwingThread(BugAspects theAspects) {
-        commentsPane.setBugAspects(getBugCollection(), theAspects);
+        commentsPane.setBugAspects( theAspects);
         fileBug.setEnabled(false);
     }
 
@@ -171,6 +171,10 @@ public class CommentsArea {
         if (bugCollection == null)
             return null;
         return bugCollection.getCloud();
+    }
+    
+    public void updateBugCollection() {
+        commentsPane.setBugCollection(getBugCollection());
     }
 
     public void refresh() {

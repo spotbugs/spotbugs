@@ -487,6 +487,7 @@ public class MainFrame extends FBFrame implements LogSync {
             // setRebuilding(false);
             setProject(project);
             this.bugCollection = bugCollection;
+            comments.updateBugCollection();
             displayer.clearCache();
             if (bugCollection != null) {
                 Cloud plugin = bugCollection.getCloud();
@@ -535,7 +536,7 @@ public class MainFrame extends FBFrame implements LogSync {
             model.getOffListenerList();
             model.changeSet(bs);
             // curProject=BugLoader.getLoadedProject();
-            comments.refresh();
+            comments.updateBugCollection();
             setProjectChanged(true);
         }
         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
