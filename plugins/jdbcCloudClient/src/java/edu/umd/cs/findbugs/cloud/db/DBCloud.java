@@ -1270,6 +1270,17 @@ public class DBCloud extends AbstractCloud {
         return getBugData(b).firstSeen;
     }
 
+    @Override
+    public void addDateSeen(BugInstance b, long when) {
+        if (when <= 0) return;
+        when = sanityCheckFirstSeen(when);
+        BugData bd = getBugData(b);
+        if (bd.firstSeen < when)
+            return;
+        bd.firstSeen = when;
+        storeFirstSeen(bd);
+    }
+
     static String urlEncode(String s) {
         try {
             return URLEncoder.encode(s, "UTF-8");

@@ -27,7 +27,7 @@ import java.io.InputStream;
 /**
  * Cached data for a source file. Contains a map of line numbers to byte
  * offsets, for quick searching of source lines.
- * 
+ *
  * @author David Hovemeyer
  * @see SourceFinder
  */
@@ -101,7 +101,7 @@ public class SourceFile {
 
     /**
      * Constructor.
-     * 
+     *
      * @param dataSource
      *            the SourceFileDataSource object which will provide the data of
      *            the source file
@@ -121,7 +121,7 @@ public class SourceFile {
 
     /**
      * Get an InputStream on data.
-     * 
+     *
      * @return an InputStream on the data in the source file, starting from
      *         given offset
      */
@@ -132,7 +132,7 @@ public class SourceFile {
 
     /**
      * Get an InputStream on data starting at given offset.
-     * 
+     *
      * @param offset
      *            the start offset
      * @return an InputStream on the data in the source file, starting at the
@@ -146,7 +146,7 @@ public class SourceFile {
     /**
      * Add a source line byte offset. This method should be called for each line
      * in the source file, in order.
-     * 
+     *
      * @param offset
      *            the byte offset of the next source line
      */
@@ -166,7 +166,7 @@ public class SourceFile {
      * Get the byte offset in the data for a source line. Note that lines are
      * considered to be zero-index, so the first line in the file is numbered
      * zero.
-     * 
+     *
      * @param line
      *            the line number
      * @return the byte offset in the file's data for the line, or -1 if the
@@ -217,12 +217,16 @@ public class SourceFile {
 
     /**
      * Set the source file data.
-     * 
+     *
      * @param data
      *            the data
      */
     private void setData(byte[] data) {
         this.data = data;
+    }
+
+    public long getLastModified() {
+        return dataSource.getLastModified();
     }
 }
 

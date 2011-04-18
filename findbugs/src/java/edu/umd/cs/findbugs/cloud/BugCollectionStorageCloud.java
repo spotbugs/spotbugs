@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.cloud;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Properties;
 
 import edu.umd.cs.findbugs.BugCollection;
@@ -158,4 +159,11 @@ public class BugCollectionStorageCloud extends AbstractCloud {
 
     public void waitUntilNewIssuesUploaded() {
     }
+
+    @Override
+    public void addDateSeen(BugInstance b, long when) {
+        if (when > 0)
+          b.getXmlProps().setFirstSeen(new Date(when));
+    }
+
 }

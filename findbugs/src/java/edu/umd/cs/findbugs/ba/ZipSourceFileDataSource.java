@@ -50,6 +50,16 @@ public class ZipSourceFileDataSource implements SourceFileDataSource {
     public String getFullFileName() {
         return entryName;
     }
+
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.SourceFileDataSource#getLastModified()
+     */
+    public long getLastModified() {
+        long time = zipEntry.getTime();
+        if (time < 0)
+            return 0;
+        return time;
+    }
 }
 
 // vim:ts=4

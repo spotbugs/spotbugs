@@ -132,6 +132,7 @@ public class SourceFinder {
     private static class InMemorySourceRepository implements SourceRepository {
 
         Map<String, byte[]> contents = new HashMap<String, byte[]>();
+        Map<String, Long> lastModified = new HashMap<String, Long>();
 
         InMemorySourceRepository(@WillClose ZipInputStream in) throws IOException {
             try {
@@ -156,6 +157,7 @@ public class SourceFinder {
                         gOut.close();
                         byte data[] = out.toByteArray();
                         contents.put(name, data);
+                        lastModified.put(name, e.getTime());
                     }
                     in.closeEntry();
                 }
@@ -192,6 +194,13 @@ public class SourceFinder {
 
                 public InputStream open() throws IOException {
                     return new GZIPInputStream(new ByteArrayInputStream(contents.get(fileName)));
+                }
+
+                public long getLastModified() {
+                   Long when = lastModified.get(fileName);
+                   if (when == null || when < 0)
+                       return 0;
+                   return when;
                 }
             };
         }

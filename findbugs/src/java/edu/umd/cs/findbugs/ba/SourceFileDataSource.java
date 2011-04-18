@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 /**
  * A data source which can produce a stream for a source file.
@@ -35,6 +36,8 @@ public interface SourceFileDataSource {
      * Get the full filename of the source file.
      */
     public String getFullFileName();
+
+    public long getLastModified();
 }
 
 // vim:ts=4

@@ -617,6 +617,11 @@ public abstract class AbstractCloud implements Cloud {
         return v.getTimestamp();
     }
 
+    public void addDateSeen(BugInstance b, long when) {
+        throw new UnsupportedOperationException();
+    }
+
+
     // ==================== end of public methods ==================
 
     protected void updatedStatus() {

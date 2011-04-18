@@ -20,9 +20,11 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 /**
  * Data source for source files which are stored in the filesystem.
@@ -40,6 +42,10 @@ public class FileSourceFileDataSource implements SourceFileDataSource {
 
     public String getFullFileName() {
         return fileName;
+    }
+
+     public long getLastModified() {
+        return new File(fileName).lastModified();
     }
 }
 

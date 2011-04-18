@@ -267,6 +267,8 @@ public interface Cloud {
 
     long getFirstSeen(BugInstance b);
 
+    void addDateSeen(BugInstance b, long when);
+
     /**
      * @return {@link UserDesignation#UNCLASSIFIED} if no consensus has been reached
      */

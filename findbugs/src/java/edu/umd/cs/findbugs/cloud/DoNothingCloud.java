@@ -294,6 +294,11 @@ public class DoNothingCloud implements Cloud {
         return Math.min(fromXmlTime, computed);
     }
 
+    public void addDateSeen(BugInstance b, long when) {
+        if (when > 0)
+          b.getXmlProps().setFirstSeen(new Date(when));
+    }
+
     public long getFirstSeenFromVersion(BugInstance b) {
         long firstVersion = b.getFirstVersion();
         AppVersion v = getBugCollection().getAppVersionFromSequenceNumber(firstVersion);
