@@ -438,9 +438,9 @@ public class SortedBugCollection implements BugCollection {
 
         XMLOutput xmlOutput;
         // if (project == null) throw new NullPointerException("No project");
+        cloud.bugsPopulated();
 
         if (withMessages) {
-            Cloud cloud = getCloud();
             cloud.waitUntilIssueDataDownloaded();
             String token = SystemProperties.getProperty("findbugs.cloud.token");
             if (token != null && token.trim().length() > 0) {
