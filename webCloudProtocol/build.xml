@@ -15,6 +15,7 @@
         <javac  destdir="${classes.dir}"
                 source="1.5"
                 target="1.5"
+                includeantruntime="false"
                 debug="on">
             <src path="${src.dir}"/>
             <classpath refid="client.classpath"/>
