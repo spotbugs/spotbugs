@@ -438,6 +438,7 @@ public class SortedBugCollection implements BugCollection {
 
         XMLOutput xmlOutput;
         // if (project == null) throw new NullPointerException("No project");
+        Cloud cloud = getCloud();
         cloud.bugsPopulated();
 
         if (withMessages) {
