@@ -440,6 +440,7 @@ public class SortedBugCollection implements BugCollection {
         // if (project == null) throw new NullPointerException("No project");
         Cloud cloud = getCloud();
         cloud.bugsPopulated();
+        cloud.initiateCommunication();
 
         if (withMessages) {
             cloud.waitUntilIssueDataDownloaded();
