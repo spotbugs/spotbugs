@@ -44,6 +44,11 @@ import edu.umd.cs.findbugs.config.CommandLine;
  * @author William Pugh
  */
 public class MineBugHistory {
+    /**
+     * 
+     */
+    private static final int WIDTH = 12;
+
     static final int ADDED = 0;
 
     static final int NEWCODE = 1;
@@ -206,7 +211,7 @@ public class MineBugHistory {
             if (added == 0 && removed == 0)
                 b.append('0');
 
-            int paddingNeeded = 8 - b.length() % 8;
+            int paddingNeeded = WIDTH - b.length() % WIDTH;
             if (paddingNeeded > 0)
                 b.append("        ".substring(0, paddingNeeded));
         }
@@ -289,14 +294,14 @@ public class MineBugHistory {
         out.print(' ');
         print(formatDates ? 12 : 10, false, out, "time");
         print(1 + 7, true, out, "classes");
-        print(1 + 8, true, out, "NCSS");
-        print(1 + 8, true, out, "added");
-        print(1 + 8, true, out, "newCode");
-        print(1 + 8, true, out, "fixed");
-        print(1 + 8, true, out, "removed");
-        print(1 + 8, true, out, "retained");
-        print(1 + 8, true, out, "dead");
-        print(1 + 8, true, out, "active");
+        print(1 + WIDTH, true, out, "NCSS");
+        print(1 + WIDTH, true, out, "added");
+        print(1 + WIDTH, true, out, "newCode");
+        print(1 + WIDTH, true, out, "fixed");
+        print(1 + WIDTH, true, out, "removed");
+        print(1 + WIDTH, true, out, "retained");
+        print(1 + WIDTH, true, out, "dead");
+        print(1 + WIDTH, true, out, "active");
         out.println();
         // note: if we were allowed to depend on JDK 1.5 we could use
         // out.printf():
@@ -322,11 +327,11 @@ public class MineBugHistory {
 
             print(7, true, out, appVersion != null ? appVersion.getNumClasses() : 0);
             out.print(' ');
-            print(8, true, out, appVersion != null ? appVersion.getCodeSize() : 0);
+            print(WIDTH, true, out, appVersion != null ? appVersion.getCodeSize() : 0);
 
             for (int j = 0; j < TUPLE_SIZE; ++j) {
                 out.print(' ');
-                print(8, true, out, version.get(j));
+                print(WIDTH, true, out, version.get(j));
             }
             out.println();
         }
