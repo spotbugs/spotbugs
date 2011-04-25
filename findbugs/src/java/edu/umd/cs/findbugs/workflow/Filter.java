@@ -18,6 +18,8 @@
 
 package edu.umd.cs.findbugs.workflow;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Date;
@@ -112,6 +114,12 @@ public class Filter {
         String absentAsString;
 
         String annotation;
+
+        String hashes;
+
+        HashSet<String> hashesFromFile;
+
+        boolean hashesSpecified = false;
 
         public boolean activeSpecified = false;
 
@@ -240,6 +248,7 @@ public class Filter {
             addSwitch("-hashChanged", "recomputed instance hash is different than stored instance hash");
             addSwitch("-dontUpdateStats",
                     "used when withSource is specified to only update bugs, not the class and package stats");
+            addOption("-hashes", "hash file", "only bugs with instance hashes contained in the hash file");
 
         }
 
@@ -335,6 +344,19 @@ public class Filter {
             present = getVersionNum(collection, presentAsString, true);
             absent = getVersionNum(collection, absentAsString, true);
 
+            if (hashesSpecified) {
+                hashesFromFile = new HashSet<String>();
+                try {
+                BufferedReader in = new BufferedReader(new FileReader(hashes));
+                while (true) {
+                    String h = in.readLine();
+                    hashesFromFile.add(h);
+                }
+                } catch (IOException e) {
+                    throw new RuntimeException("Error reading hashes from " + hashes, e);
+                }
+            }
+
             long fixed = getVersionNum(collection, fixedAsString, true);
             if (fixed >= 0)
                 last = fixed - 1; // fixed means last on previous sequence (ok
@@ -367,6 +389,8 @@ public class Filter {
             if (afterAsString != null && bug.getFirstVersion() <= after)
                 return false;
             if (beforeAsString != null && bug.getFirstVersion() >= before)
+                return false;
+            if (hashesSpecified && hashesFromFile.contains(bug.getInstanceHash()))
                 return false;
             long lastSeen = bug.getLastVersion();
             if (lastSeen < 0)
