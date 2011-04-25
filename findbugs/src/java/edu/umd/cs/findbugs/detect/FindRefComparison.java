@@ -110,7 +110,7 @@ import edu.umd.cs.findbugs.util.ClassName;
  * <li>Calls to equals(Object) where the argument is a different type than the
  * receiver object</li>
  * </ul>
- * 
+ *
  * @author David Hovemeyer
  * @author Bill Pugh
  */
@@ -146,6 +146,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         invokeInstanceSet.set(Constants.INVOKEVIRTUAL);
         invokeInstanceSet.set(Constants.INVOKEINTERFACE);
         invokeInstanceSet.set(Constants.INVOKESPECIAL);
+        invokeInstanceSet.set(Constants.INVOKESTATIC);
     }
 
     /**
@@ -786,12 +787,17 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
             checkRefComparison(location, jclass, method, methodGen, visitor, typeDataflow, stringComparisonList,
                     refComparisonList);
-        } else if (invokeInstanceSet.get(opcode)) {
+        } else if (ins instanceof InvokeInstruction) {
             InvokeInstruction inv = (InvokeInstruction) ins;
             String methodName = inv.getMethodName(cpg);
             String methodSig = inv.getSignature(cpg);
-            if (isEqualsMethod(methodName, methodSig)) {
-
+            if ( methodName.equals("assertSame") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)V")) {
+                checkRefComparison(location, jclass, method, methodGen, visitor, typeDataflow, stringComparisonList,
+                        refComparisonList);
+            }
+            boolean equalsMethod = methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z")
+                    || methodName.equals("assertEquals") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)V");
+              if (equalsMethod) {
                 checkEqualsComparison(location, jclass, method, methodGen, cpg, typeDataflow);
             }
         }
@@ -837,10 +843,6 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             }
     }
 
-    private boolean isEqualsMethod(String methodName, String methodSig) {
-        return methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z");
-    }
-
     private void checkRefComparison(Location location, JavaClass jclass, Method method, MethodGen methodGen,
             RefComparisonTypeFrameModelingVisitor visitor, TypeDataflow typeDataflow,
             List<WarningWithProperties> stringComparisonList, List<WarningWithProperties> refComparisonList)
@@ -865,6 +867,16 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             if (result != IncompatibleTypes.SEEMS_OK && result != IncompatibleTypes.UNCHECKED) {
                 String sourceFile = jclass.getSourceFileName();
 
+                boolean isAssertSame = handle.getInstruction() instanceof INVOKESTATIC;
+                if (isAssertSame)
+                    bugAccumulator.accumulateBug(
+                            new BugInstance(this, "TESTING", result.getPriority())
+                            .addClassAndMethod(methodGen, sourceFile)
+                            .addString("Calling assertSame with two distinct objects")
+                            .addFoundAndExpectedType(rhsType, lhsType)
+                                    .addSomeSourceForTopTwoStackValues(classContext, method, location),
+                            SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle));
+                    else
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", result.getPriority())
                                 .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType, lhsType)
@@ -981,6 +993,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             ConstantPoolGen cpg, TypeDataflow typeDataflow) throws DataflowAnalysisException {
 
         InstructionHandle handle = location.getHandle();
+        Instruction ins = handle.getInstruction();
         InstructionHandle next = handle.getNext();
         if (next != null && next.getInstruction() instanceof INVOKESTATIC) {
             INVOKESTATIC is = (INVOKESTATIC) next.getInstruction();
@@ -1045,9 +1058,22 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         }
         IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_);
 
+        if (result == IncompatibleTypes.SEEMS_OK) return;
+
         if (result.getPriority() >= Priorities.LOW_PRIORITY) {
             comparedForEqualityInThisMethod.add(lhsType_.getSignature());
             comparedForEqualityInThisMethod.add(rhsType_.getSignature());
+        }
+        if (result.getPriority() > Priorities.LOW_PRIORITY)
+            return;
+
+        if (ins instanceof INVOKESTATIC && ((INVOKESTATIC) ins).getMethodName(cpg).equals("assertEquals")) {
+            bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", result.getPriority()).addClassAndMethod(methodGen, sourceFile)
+                    .addString("Using assertEquals for values of comparable types")
+                    .addFoundAndExpectedType(rhsType_, lhsType_)
+                    .addSomeSourceForTopTwoStackValues(classContext, method, location),
+                    SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
+            return;
         }
         if (lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType) {
             String pattern = "EC_BAD_ARRAY_COMPARE";
