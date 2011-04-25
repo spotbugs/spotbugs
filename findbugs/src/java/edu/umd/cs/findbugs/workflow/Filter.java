@@ -115,11 +115,7 @@ public class Filter {
 
         String annotation;
 
-        String hashes;
-
         HashSet<String> hashesFromFile;
-
-        boolean hashesSpecified = false;
 
         public boolean activeSpecified = false;
 
@@ -344,18 +340,7 @@ public class Filter {
             present = getVersionNum(collection, presentAsString, true);
             absent = getVersionNum(collection, absentAsString, true);
 
-            if (hashesSpecified) {
-                hashesFromFile = new HashSet<String>();
-                try {
-                BufferedReader in = new BufferedReader(new FileReader(hashes));
-                while (true) {
-                    String h = in.readLine();
-                    hashesFromFile.add(h);
-                }
-                } catch (IOException e) {
-                    throw new RuntimeException("Error reading hashes from " + hashes, e);
-                }
-            }
+
 
             long fixed = getVersionNum(collection, fixedAsString, true);
             if (fixed >= 0)
@@ -390,7 +375,7 @@ public class Filter {
                 return false;
             if (beforeAsString != null && bug.getFirstVersion() >= before)
                 return false;
-            if (hashesSpecified && hashesFromFile.contains(bug.getInstanceHash()))
+            if (hashesFromFile != null && !hashesFromFile.contains(bug.getInstanceHash()))
                 return false;
             long lastSeen = bug.getLastVersion();
             if (lastSeen < 0)
@@ -588,6 +573,19 @@ public class Filter {
             } else if (option.equals("-maxAge")) {
                 maxAge = Integer.parseInt(argument);
                 maxAgeSpecified = true;
+            } else  if (option.equals("-hashes")) {
+                    hashesFromFile = new HashSet<String>();
+                    try {
+                    BufferedReader in = new BufferedReader(new FileReader(argument));
+                    while (true) {
+                        String h = in.readLine();
+                        if (h == null)
+                            break;
+                        hashesFromFile.add(h);
+                    }
+                    } catch (IOException e) {
+                        throw new RuntimeException("Error reading hashes from " + argument, e);
+                    }
             } else
                 throw new IllegalArgumentException("can't handle command line argument of " + option);
 
