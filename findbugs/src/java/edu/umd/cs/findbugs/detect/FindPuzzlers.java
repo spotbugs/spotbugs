@@ -583,8 +583,8 @@ public class FindPuzzlers extends OpcodeStackDetector {
             XMethod m = top.getReturnValueOf();
             if (m != null) {
                 if (m.getName().equals("compareTo") || m.getName().equals("compare"))
-                    bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY)
-                    .addClassAndMethod(this).addString("Negating the result of compare/compareTo")
+                    bugAccumulator.accumulateBug(new BugInstance(this, "RV_NEGATING_RESULT_OF_COMPARETO", NORMAL_PRIORITY)
+                    .addClassAndMethod(this)
                     .addCalledMethod(m).addValueSource(top, this), this);
             }
 

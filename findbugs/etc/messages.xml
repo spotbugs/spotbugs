@@ -3028,12 +3028,28 @@ that classfile. See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=
    </Details>
   </BugPattern>
 
+  <BugPattern type="RV_NEGATING_RESULT_OF_COMPARETO">
+    <ShortDescription>Negating the result of compareTo()/compare()</ShortDescription>
+    <LongDescription>{1} negates the return value of {2}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This code negatives the return value of a compareTo or compare method.
+This is a questionable or bad programming practice, since if the return
+value is Integer.MIN_VALUE, negating the return value won't
+negate the sign of the result. You can achieve the same intended result
+by reversing the order of the operands rather than by negating the results.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="CO_COMPARETO_RESULTS_MIN_VALUE">
     <ShortDescription>compareTo()/compare() returns Integer.MIN_VALUE</ShortDescription>
     <LongDescription>{1} returns Integer.MIN_VALUE, which can't be negated</LongDescription>
     <Details>
 <![CDATA[
-  <p> This compareTo or compare method returns Integer.MIN_VALUE, which is an exceptionally bad practice.
+  <p> In some situation, this compareTo or compare method returns 
+the  constant Integer.MIN_VALUE, which is an exceptionally bad practice.
   The only thing that matters about the return value of compareTo is the sign of the result.
 	But people will sometimes negate the return value of compareTo, expecting that this will negate
 	the sign of the result. And it will, except in the case where the value returned is Integer.MIN_VALUE.
@@ -3041,6 +3057,7 @@ that classfile. See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="CO_SELF_NO_OBJECT">
     <ShortDescription>Covariant compareTo() method defined</ShortDescription>
     <LongDescription>{0} defines compareTo({0.givenClass}) method but not compareTo(Object)</LongDescription>
