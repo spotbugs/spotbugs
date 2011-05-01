@@ -208,6 +208,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
             XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, operandClass);
 
             String sig = xclass.getSourceSignature();
+            if (sig == null) 
+                return false;
 
             List<String> split = GenericUtilities.split(sig, true);
             for (String s : split) {
