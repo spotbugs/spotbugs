@@ -91,7 +91,16 @@ public class CopyBuggySource {
                 if (sourceAnnotation.isUnknown())
                     continue;
                
-                SourceFile sourceFile = sourceFinder.findSourceFile(sourceAnnotation);
+                SourceFile sourceFile;
+                try {
+                    sourceFile = sourceFinder.findSourceFile(sourceAnnotation);
+                } catch (FileNotFoundException e) {
+                    String name = sourceAnnotation.getPackageName() + "." + sourceAnnotation.getClassName();
+                    
+                    if (couldNotFind.add(name))
+                        System.out.println("Did not find " + name);
+                    continue;
+                }
                 String fullName = sourceFile.getFullFileName();
 
                 if (copied.add(fullName)) {
@@ -122,9 +131,6 @@ public class CopyBuggySource {
                         }
                         System.out.println("Copied " + dstFile);
                         copyCount++;
-                    } catch (FileNotFoundException e) {
-                        if (couldNotFind.add(dstFile.getPath()))
-                            System.out.println("Did not find " + dstFile);
                     } catch (IOException e) {
                         if (couldNotFind.add(dstFile.getPath())) {
                             System.out.println("Problem copying " + dstFile);
