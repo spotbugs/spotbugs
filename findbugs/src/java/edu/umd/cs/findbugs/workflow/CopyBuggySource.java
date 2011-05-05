@@ -37,6 +37,7 @@ import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 
 /**
@@ -89,25 +90,22 @@ public class CopyBuggySource {
                     continue;
                 if (sourceAnnotation.isUnknown())
                     continue;
-                String fullName;
+               
+                SourceFile sourceFile = sourceFinder.findSourceFile(sourceAnnotation);
+                String fullName = sourceFile.getFullFileName();
 
-                String packageName = sourceAnnotation.getPackageName();
-                String sourceFile = sourceAnnotation.getSourceFile();
-                if (packageName == "")
-                    fullName = sourceFile;
-                else
-                    fullName = packageName.replace('.', File.separatorChar) + File.separatorChar + sourceFile;
                 if (copied.add(fullName)) {
-                    File file = new File(src, fullName);
-                    if (file.exists()) {
-                        System.out.println(file + " already exists");
+                    long lastModified = sourceFile.getLastModified();
+                    File dstFile = new File(src, fullName);
+                    if (dstFile.exists()) {
+                        System.out.println(dstFile + " already exists");
                         continue;
                     }
-                    File parent = file.getParentFile();
+                    File parent = dstFile.getParentFile();
                     InputStream in = null;
                     OutputStream out = null;
                     try {
-                        in = sourceFinder.openSource(packageName, sourceFile);
+                        in = sourceFile.getInputStream();
                         if (!parent.mkdirs() && !parent.isDirectory()) {
                             String path = parent.getPath();
                             if (couldNotCreate.add(path))
@@ -115,26 +113,27 @@ public class CopyBuggySource {
                             in.close();
                             continue;
                         }
-                        out = new FileOutputStream(file);
+                        out = new FileOutputStream(dstFile);
                         while (true) {
                             int sz = in.read(buf);
                             if (sz < 0)
                                 break;
                             out.write(buf, 0, sz);
                         }
-                        System.out.println("Copied " + file);
+                        System.out.println("Copied " + dstFile);
                         copyCount++;
                     } catch (FileNotFoundException e) {
-                        if (couldNotFind.add(file.getPath()))
-                            System.out.println("Did not find " + file);
+                        if (couldNotFind.add(dstFile.getPath()))
+                            System.out.println("Did not find " + dstFile);
                     } catch (IOException e) {
-                        if (couldNotFind.add(file.getPath())) {
-                            System.out.println("Problem copying " + file);
+                        if (couldNotFind.add(dstFile.getPath())) {
+                            System.out.println("Problem copying " + dstFile);
                             e.printStackTrace(System.out);
                         }
                     } finally {
                         close(in);
                         close(out);
+                        dstFile.setLastModified(lastModified);
                     }
 
                 }
