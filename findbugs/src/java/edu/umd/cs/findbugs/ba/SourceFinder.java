@@ -430,17 +430,7 @@ public class SourceFinder {
     }
 
     public SourceFile findSourceFile(SourceLineAnnotation source) throws IOException {
-        if (source.isSourceFileKnown())
-            return findSourceFile(source.getPackageName(), source.getSourceFile());
-        String packageName = source.getPackageName();
-        String baseClassName = source.getClassName();
-        int i = baseClassName.lastIndexOf('.');
-        baseClassName = baseClassName.substring(i + 1);
-        int j = baseClassName.indexOf("$");
-        if (j >= 0)
-            baseClassName = baseClassName.substring(0, j);
-        return findSourceFile(packageName, baseClassName + ".java");
-
+        return findSourceFile(source.getPackageName(), getOrGuessSourceFile(source));
     }
 
     /**
@@ -469,11 +459,8 @@ public class SourceFinder {
         // platform that uses an
         // alternate separator, make a distinction
 
-        // Create a fully qualified source filename using the package name for
-        // both directories and zips
-        String platformName = packageName.replace('.', File.separatorChar) + (packageName.length() > 0 ? File.separator : "")
-                + fileName;
-        String canonicalName = packageName.replace('.', '/') + (packageName.length() > 0 ? "/" : "") + fileName;
+        String platformName = getPlatformName(packageName, fileName);
+        String canonicalName = getCanonicalName(packageName, fileName);
 
         // Is the file in the cache already? Always cache it with the canonical
         // name
@@ -504,18 +491,47 @@ public class SourceFinder {
         throw new FileNotFoundException("Can't find source file " + fileName);
     }
 
-    public boolean hasSourceFile(SourceLineAnnotation source) {
+    /**
+     * @param packageName
+     * @param fileName
+     * @return
+     */
+    public static String getPlatformName(String packageName, String fileName) {
+        String platformName = packageName.replace('.', File.separatorChar) + (packageName.length() > 0 ? File.separator : "")
+                + fileName;
+        return platformName;
+    }
+    
+    public static String getPlatformName(SourceLineAnnotation source) {
+        return getPlatformName(source.getPackageName(), getOrGuessSourceFile(source));
+    }
+    
+    public static String getCanonicalName(SourceLineAnnotation source) {
+        return getCanonicalName(source.getPackageName(), getOrGuessSourceFile(source));
+    }
+    /**
+     * @param packageName
+     * @param fileName
+     * @return
+     */
+    public static String getCanonicalName(String packageName, String fileName) {
+        String canonicalName = packageName.replace('.', '/') + (packageName.length() > 0 ? "/" : "") + fileName;
+        return canonicalName;
+    }
+
+    public static String getOrGuessSourceFile(SourceLineAnnotation source)  {
         if (source.isSourceFileKnown())
-            return hasSourceFile(source.getPackageName(), source.getSourceFile());
-        String packageName = source.getPackageName();
+            return source.getSourceFile();
         String baseClassName = source.getClassName();
         int i = baseClassName.lastIndexOf('.');
         baseClassName = baseClassName.substring(i + 1);
         int j = baseClassName.indexOf("$");
         if (j >= 0)
             baseClassName = baseClassName.substring(0, j);
-        return hasSourceFile(packageName, baseClassName + ".java");
-
+        return baseClassName + ".java";
+    }
+    public boolean hasSourceFile(SourceLineAnnotation source) {
+        return hasSourceFile(source.getPackageName(), getOrGuessSourceFile(source));
     }
 
     public boolean hasSourceFile(String packageName, String fileName) {
@@ -534,9 +550,8 @@ public class SourceFinder {
 
         // Create a fully qualified source filename using the package name for
         // both directories and zips
-        String platformName = packageName.replace('.', File.separatorChar) + (packageName.length() > 0 ? File.separator : "")
-                + fileName;
-        String canonicalName = packageName.replace('.', '/') + (packageName.length() > 0 ? "/" : "") + fileName;
+        String platformName = getPlatformName(packageName, fileName);
+        String canonicalName = getCanonicalName(packageName, fileName);
 
         // Is the file in the cache already? Always cache it with the canonical
         // name
@@ -562,6 +577,8 @@ public class SourceFinder {
 
         return false;
     }
+
+   
 
     /**
      * @param project

@@ -91,18 +91,18 @@ public class CopyBuggySource {
                 if (sourceAnnotation.isUnknown())
                     continue;
                
+                String fullName = SourceFinder.getPlatformName(sourceAnnotation);
+                
                 SourceFile sourceFile;
                 try {
                     sourceFile = sourceFinder.findSourceFile(sourceAnnotation);
                 } catch (FileNotFoundException e) {
-                    String name = sourceAnnotation.getPackageName() + "." + sourceAnnotation.getClassName();
                     
-                    if (couldNotFind.add(name))
-                        System.out.println("Did not find " + name);
+                    if (couldNotFind.add(fullName))
+                        System.out.println("Did not find " + fullName);
                     continue;
                 }
-                String fullName = sourceFile.getFullFileName();
-
+                
                 if (copied.add(fullName)) {
                     long lastModified = sourceFile.getLastModified();
                     File dstFile = new File(src, fullName);
