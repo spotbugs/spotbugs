@@ -161,7 +161,8 @@ public abstract class CloudCommentsPane extends JPanel {
         });
         designationCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setDesignation(userDesignationKeys.get(designationCombo.getSelectedIndex()));
+                if (!updatingHeader)
+                  setDesignation(userDesignationKeys.get(designationCombo.getSelectedIndex()));
             }
         });
 
@@ -389,6 +390,9 @@ public abstract class CloudCommentsPane extends JPanel {
             backgroundExecutor.execute(new Runnable() {
                 public void run() {
                     _bugCollection.reinitializeCloud();
+                    Cloud cloud = _bugCollection.getCloud();
+                    if (cloud != null)
+                        cloud.waitUntilIssueDataDownloaded();
                     updateCloudListeners(_bugCollection);
                     refresh();
                 }
@@ -578,6 +582,7 @@ public abstract class CloudCommentsPane extends JPanel {
         setCanAddComments(cloud.canStoreUserAnnotation(bugs.get(0)), false);
     }
 
+    private boolean updatingHeader = false;
     private void updateHeader() {
         final Cloud cloud = _bugCollection.getCloud();
         CloudPlugin plugin = cloud.getPlugin();
@@ -587,7 +592,9 @@ public abstract class CloudCommentsPane extends JPanel {
             String designation = commentInfo.getDesignation();
             if (!sameDesignation)
                 designation = UserDesignation.UNCLASSIFIED.name();
+            updatingHeader = true;
             designationCombo.setSelectedIndex(I18N.instance().getUserDesignationKeys(true).indexOf(designation));
+            updatingHeader = false;
             designationCombo.setEditable(true);
         } else {
             designationCombo.setEditable(false);
