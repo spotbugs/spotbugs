@@ -129,7 +129,7 @@ public class CopyBuggySource {
                                 break;
                             out.write(buf, 0, sz);
                         }
-                        System.out.println("Copied " + dstFile);
+                        System.out.println("Copied " + fullName);
                         copyCount++;
                     } catch (IOException e) {
                         if (couldNotFind.add(dstFile.getPath())) {
