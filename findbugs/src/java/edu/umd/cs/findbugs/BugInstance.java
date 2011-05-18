@@ -2399,6 +2399,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         this.lastVersion = lastVersion;
     }
 
+    /** Mark the bug instance is being alive (still present in the last version) */
+    public void setLive() {
+        this.lastVersion = -1;
+    }
     /**
      * @return Returns the lastVersion.
      */

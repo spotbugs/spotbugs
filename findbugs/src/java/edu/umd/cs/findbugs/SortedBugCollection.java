@@ -1217,6 +1217,7 @@ public class SortedBugCollection implements BugCollection {
 
     public void clearAppVersions() {
         appVersionList.clear();
+        sequence = 0;
     }
 
     public void trimAppVersions(long numberToRetain) {

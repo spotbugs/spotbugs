@@ -117,6 +117,10 @@ public class Filter {
 
         HashSet<String> hashesFromFile;
 
+        public boolean purgeHistorySpecified = false;
+
+        public boolean purgeHistory = false;
+        
         public boolean activeSpecified = false;
 
         public boolean active = false;
@@ -221,6 +225,8 @@ public class Filter {
             addSwitchWithOptionalExtraPart("-active", "truth", "allow only warnings alive in the last sequence number");
             addSwitch("-applySuppression", "exclude warnings that match the suppression filter");
 
+            addSwitch("-purgeHistory", "remove all version history");
+
             addSwitchWithOptionalExtraPart("-introducedByChange", "truth",
                     "allow only warnings introduced by a change of an existing class");
             addSwitchWithOptionalExtraPart("-removedByChange", "truth",
@@ -241,8 +247,7 @@ public class Filter {
             addOption("-category", "category", "allow only warnings with a category that starts with this string");
             addOption("-designation", "designation",
                     "allow only warnings with this designation (e.g., -designation SHOULD_FIX,MUST_FIX)");
-            addSwitch("-hashChanged", "recomputed instance hash is different than stored instance hash");
-            addSwitch("-dontUpdateStats",
+           addSwitch("-dontUpdateStats",
                     "used when withSource is specified to only update bugs, not the class and package stats");
             addOption("-hashes", "hash file", "only bugs with instance hashes contained in the hash file");
 
@@ -732,6 +737,15 @@ public class Filter {
             } else
                 dropped++;
 
+        if (commandLine.purgeHistorySpecified && commandLine.purgeHistory) {
+            resultCollection.clearAppVersions();
+            for (BugInstance bug : resultCollection.getCollection()) {
+                bug.setFirstVersion(0);
+                bug.setLastVersion(-1);
+            }
+                
+            
+        }
         if (verbose)
             System.out.println(passed + " warnings passed through, " + dropped + " warnings dropped");
         if (commandLine.withSourceSpecified && commandLine.withSource && !commandLine.dontUpdateStats
