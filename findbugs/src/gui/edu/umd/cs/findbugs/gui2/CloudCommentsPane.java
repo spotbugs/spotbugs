@@ -161,8 +161,11 @@ public abstract class CloudCommentsPane extends JPanel {
         });
         designationCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (!updatingHeader)
-                  setDesignation(userDesignationKeys.get(designationCombo.getSelectedIndex()));
+                if (!updatingHeader) {
+                    int selectedIndex = designationCombo.getSelectedIndex();
+                    if (selectedIndex >= 0)
+                      setDesignation(userDesignationKeys.get(selectedIndex));
+                }
             }
         });
 
