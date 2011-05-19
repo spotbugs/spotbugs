@@ -163,6 +163,9 @@ public class PDEClassPathGenerator {
 
     private static void appendBundleToClasspath(BundleDescription bd, List<String> pdeClassPath, IPath defaultOutputLocation) {
         IPluginModelBase model = PluginRegistry.findModel(bd);
+        if(model == null) {
+            return;
+        }
         ArrayList<IClasspathEntry> classpathEntries = new ArrayList<IClasspathEntry>();
         ClasspathUtilCore.addLibraries(model, classpathEntries);
 
@@ -210,6 +213,9 @@ public class PDEClassPathGenerator {
         // BundleDescription[] requires = PDEState.getDependentBundles(target);
         BundleDescription[] bundles2 = PDEState.getDependentBundlesWithFragments(bd);
         for (BundleDescription bundleDescription : bundles2) {
+            if(bundleDescription == null) {
+                continue;
+            }
             if (!bundles.contains(bundleDescription)) {
                 bundles.add(bundleDescription);
                 addDependentBundles(bundleDescription, bundles);
