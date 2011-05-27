@@ -311,14 +311,18 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
      */
     private boolean callToInvoke(int seen) {
         if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE || seen == INVOKESPECIAL)
-            return getNameConstantOperand().startsWith(EQUALS_NAME) && getSigConstantOperand().equals(EQUALS_SIGNATURE);
+            return invokesMethodWithEqualLikeName() && getSigConstantOperand().equals(EQUALS_SIGNATURE);
         if (seen == INVOKESTATIC) {
             String sig = getSigConstantOperand();
-            return getNameConstantOperand().startsWith(EQUALS_NAME) && sig.endsWith("Ljava/lang/Object;)Z");
+            return invokesMethodWithEqualLikeName() && sig.endsWith("Ljava/lang/Object;)Z");
         }
 
         return false;
 
+    }
+
+    public boolean invokesMethodWithEqualLikeName() {
+        return getNameConstantOperand().toLowerCase().indexOf(EQUALS_NAME) >= 0;
     }
 
     /**
