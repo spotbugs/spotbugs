@@ -17,6 +17,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -51,6 +52,7 @@ import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.gui2.FilterActivity.FilterActivityNotifier;
 
 public class MainFrameTree implements Serializable {
     private final MainFrame mainFrame;
@@ -191,19 +193,16 @@ public class MainFrameTree implements Serializable {
 
         filterMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                if (!mainFrame.canNavigateAway())
-                    return;
-                new NewFilterFromBug(currentSelectedBugLeaf.getBug());
+                if (!mainFrame.canNavigateAway()) { return; }
+                
+                new NewFilterFromBug(new FilterFromBugPicker(currentSelectedBugLeaf.getBug(), 
+                                                             Arrays.asList(mainFrame.getAvailableSortables())),
+                                     new ApplyNewFilter(mainFrame.getProject().getSuppressionFilter(), 
+                                                        PreferencesFrame.getInstance(), 
+                                                        new FilterActivityNotifier()));
 
                 mainFrame.setProjectChanged(true);
-                MainFrame.getInstance().getTree().setSelectionRow(0);// Selects
-                                                                     // the top
-                                                                     // of the
-                                                                     // Jtree so
-                                                                     // the
-                                                                     // CommentsArea
-                                                                     // syncs
-                                                                     // up.
+                mainFrame.getTree().setSelectionRow(0); // Selects the top of the Jtree so the CommentsArea syncs up.
             }
         });
 

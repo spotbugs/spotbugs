@@ -21,21 +21,27 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Test;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
-public class NotMatcherTest extends TestCase {
+public class NotMatcherTest {
 
     private final BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
 
-    public void testInvertsResultsFromWrappedMatcher_doesntMatchWhenWrappedDoesMatch() throws Exception {
+    @Test
+    public void invertsResultsFromWrappedMatcher_doesntMatchWhenWrappedDoesMatch() throws Exception {
         Matcher wrappedMatcher = new TestMatcher(true);
         NotMatcher notMatcher = new NotMatcher();
         notMatcher.addChild(wrappedMatcher);
@@ -43,7 +49,8 @@ public class NotMatcherTest extends TestCase {
         assertFalse(notMatcher.match(bug));
     }
 
-    public void testInvertsResultsFromWrappedMatcher_doesMatchWhenWrappedDoesnt() throws Exception {
+    @Test
+    public void invertsResultsFromWrappedMatcher_doesMatchWhenWrappedDoesnt() throws Exception {
         Matcher wrappedMatcher = new TestMatcher(false);
         NotMatcher notMatcher = new NotMatcher();
         notMatcher.addChild(wrappedMatcher);
@@ -51,7 +58,8 @@ public class NotMatcherTest extends TestCase {
         assertTrue(notMatcher.match(bug));
     }
 
-    public void testWriteXMLOutputAddsNotTagsAroundWrappedMatchersOutput() throws Exception {
+    @Test
+    public void writeXMLOutputAddsNotTagsAroundWrappedMatchersOutput() throws Exception {
         Matcher wrappedMatcher = new TestMatcher(true);
         NotMatcher notMatcher = new NotMatcher();
         notMatcher.addChild(wrappedMatcher);
@@ -64,6 +72,20 @@ public class NotMatcherTest extends TestCase {
         assertTrue(containsString("</Not>").matches(xmlOutputCreated));
     }
 
+    @Test
+    public void canReturnChildMatcher() {
+        Matcher wrappedMatcher = new TestMatcher(true);
+        NotMatcher notMatcher = new NotMatcher();
+        notMatcher.addChild(wrappedMatcher);
+        
+        assertSame("Should return child matcher.", wrappedMatcher, notMatcher.originalMatcher());
+    }
+    
+    @Test(expected=IllegalStateException.class)
+    public void throwsExceptionWhenTryingToGetNonExistentChildMatcher() {
+        new NotMatcher().originalMatcher();
+    }
+    
     private String writeXMLAndGetStringOutput(NotMatcher notMatcher) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         XMLOutput xmlOutput = new OutputStreamXMLOutput(outputStream);

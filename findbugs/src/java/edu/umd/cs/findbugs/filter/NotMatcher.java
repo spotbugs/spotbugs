@@ -22,6 +22,7 @@
 package edu.umd.cs.findbugs.filter;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -65,5 +66,14 @@ public class NotMatcher extends CompoundMatcher {
     @Override
     public void addChild(Matcher child) {
         super.addChild(child);
+    }
+    
+    public Matcher originalMatcher() {
+        Iterator<Matcher> childMatchers = childIterator();
+        if (childMatchers.hasNext()) {
+            return childMatchers.next();
+        } else {
+            throw new IllegalStateException("Tried to retrieve child matcher of empty NotMatcher");
+        }
     }
 }

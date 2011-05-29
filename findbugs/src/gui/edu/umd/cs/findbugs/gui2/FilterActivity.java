@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
  */
 public class FilterActivity {
 
-    static HashSet<FilterListener> listeners = new HashSet<FilterListener>();
+    private static final HashSet<FilterListener> listeners = new HashSet<FilterListener>();
 
     public static boolean addFilterListener(FilterListener newListener) {
         return listeners.add(newListener);
@@ -43,23 +43,29 @@ public class FilterActivity {
     }
 
     public static void notifyListeners(FilterListener.Action whatsGoingOnCode, @CheckForNull TreePath optionalPath) {
-        Collection<FilterListener> listeners = new ArrayList<FilterListener>(FilterActivity.listeners);
+        Collection<FilterListener> currentListeners = new ArrayList<FilterListener>(FilterActivity.listeners);
         switch (whatsGoingOnCode) {
         case FILTERING:
         case UNFILTERING:
-            for (FilterListener i : listeners)
+            for (FilterListener i : currentListeners)
                 i.clearCache();
             break;
         case SUPPRESSING:
-            for (FilterListener i : listeners)
+            for (FilterListener i : currentListeners)
                 i.suppressBug(optionalPath);
             break;
         case UNSUPPRESSING:
-            for (FilterListener i : listeners)
+            for (FilterListener i : currentListeners)
                 i.unsuppressBug(optionalPath);
             break;
         }
         MainFrame.getInstance().updateStatusBar();
+    }
+    
+    public static class FilterActivityNotifier {
+        public void notifyListeners(FilterListener.Action whatsGoingOnCode, TreePath optionalPath) {
+            FilterActivity.notifyListeners(whatsGoingOnCode, optionalPath);
+        }
     }
 
 }

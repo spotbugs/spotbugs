@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.filter.DesignationMatcher;
 import edu.umd.cs.findbugs.filter.FirstVersionMatcher;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.filter.NotMatcher;
 import edu.umd.cs.findbugs.filter.OrMatcher;
 import edu.umd.cs.findbugs.filter.PriorityMatcher;
 import edu.umd.cs.findbugs.filter.RankMatcher;
@@ -40,7 +41,7 @@ import edu.umd.cs.findbugs.util.NotImplementedYetException;
  * @author pugh
  */
 public class FilterFactory {
-
+    
     public static Matcher makeOrMatcher(Collection<SortableValue> sortables) {
         return makeMatcher(sortables, false);
     }
@@ -49,6 +50,16 @@ public class FilterFactory {
         return makeMatcher(sortables, true);
     }
 
+    public static Matcher invertMatcher(Matcher originalMatcher) {
+        if (originalMatcher instanceof NotMatcher) {
+            return ((NotMatcher) originalMatcher).originalMatcher();
+        }
+        
+        NotMatcher notMatcher = new NotMatcher();
+        notMatcher.addChild(originalMatcher);
+        return notMatcher;
+    }
+    
     private static Matcher makeMatcher(Collection<SortableValue> sortables, boolean andOr) {
         if (sortables.size() == 1) {
             for (SortableValue s : sortables)
@@ -149,5 +160,6 @@ public class FilterFactory {
         }
 
     }
+
 
 }
