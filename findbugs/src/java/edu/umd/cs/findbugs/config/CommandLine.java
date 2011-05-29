@@ -45,9 +45,12 @@ import edu.umd.cs.findbugs.util.Util;
  * Helper class for parsing command line arguments.
  */
 public abstract class CommandLine {
+
+    private static final String SPACES = "                    ";
+
     private List<String> optionList;
 
-    private Set<String> unlistedOptions = new HashSet<String>();
+    private Set<String> unlistedOptions;
 
     private Map<Integer, String> optionGroups;
 
@@ -62,6 +65,7 @@ public abstract class CommandLine {
     int maxWidth;
 
     public CommandLine() {
+        this.unlistedOptions = new HashSet<String>();
         this.optionList = new LinkedList<String>();
         this.optionGroups = new HashMap<Integer, String>();
         this.requiresArgumentSet = new HashSet<String>();
@@ -399,8 +403,6 @@ public abstract class CommandLine {
         out.flush();
     }
 
-    private static final String SPACES = "                    ";
-
     private static void printField(PrintStream out, String s, int width) {
         if (s.length() > width)
             throw new IllegalArgumentException();
@@ -413,5 +415,3 @@ public abstract class CommandLine {
         }
     }
 }
-
-// vim:ts=3

@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.ComponentPlugin;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.charsets.UserTextFile;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -52,11 +53,8 @@ public class SuppressionDecorator extends BugReporterDecorator {
     public SuppressionDecorator(ComponentPlugin<BugReporterDecorator> plugin, BugReporter delegate) {
         super(plugin, delegate);
         category = plugin.getProperties().getProperty("category");
-        BugCollection bugCollection = delegate.getBugCollection();
-        if (bugCollection != null) {
-            Project project = bugCollection.getProject();
-            if (project.getConfiguration().getBugCategory(category) == null)
-                throw new IllegalArgumentException("Unable to find category " + category);
+        if (DetectorFactoryCollection.instance().getBugCategory(category) == null) {
+            throw new IllegalArgumentException("Unable to find category " + category);
         }
 
         final String adjustmentSource = plugin.getProperties().getProperty("packageSource");

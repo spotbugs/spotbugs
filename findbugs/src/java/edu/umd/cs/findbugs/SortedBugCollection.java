@@ -997,7 +997,6 @@ public class SortedBugCollection implements BugCollection {
         appVersionList = new LinkedList<AppVersion>();
         releaseName = "";
         timestamp = -1L;
-        DetectorFactoryCollection.resetInstance(getProject().getConfiguration());
     }
 
     public boolean add(BugInstance bugInstance, boolean updateActiveTime) {
@@ -1019,12 +1018,10 @@ public class SortedBugCollection implements BugCollection {
     }
 
     public Iterator<BugInstance> iterator() {
-        DetectorFactoryCollection.resetInstance(getProject().getConfiguration());
         return bugSet.iterator();
     }
 
     public Collection<BugInstance> getCollection() {
-        DetectorFactoryCollection.resetInstance(getProject().getConfiguration());
         return bugSet;
     }
 

@@ -394,8 +394,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     } else if (qName.equals(Project.PLUGIN_ELEMENT_NAME)) {
                         String pluginId = getRequiredAttribute(attributes, Project.PLUGIN_ID_ATTRIBUTE_NAME, qName);
                         Boolean enabled = Boolean.valueOf(getRequiredAttribute(attributes, Project.PLUGIN_STATUS_ELEMENT_NAME, qName));
-                        Plugin plugin = Plugin.getByPluginId(pluginId);
-                        project.setPluginStatus(plugin, enabled);
+                        project.setPluginStatus(pluginId, enabled);
                     }
 
                 } else if (outerElement.equals(Project.CLOUD_ELEMENT_NAME)) {
@@ -508,8 +507,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     addMatcher(new ClassMatcher(classMatch));
             }
         } else if(qName.equals("Not")) {
-        	NotMatcher matcher = new NotMatcher();
-        	pushCompoundMatcherAsChild(matcher);
+            NotMatcher matcher = new NotMatcher();
+            pushCompoundMatcherAsChild(matcher);
         }
         nextMatchedIsDisabled = false;
     }
@@ -684,7 +683,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         } else if (nestingOfIgnoredElements > 0) {
             // ignore it
         } else if (qName.equals("Project")) {
-            project.resetConfiguration();
+            // noop
         } else if (elementStack.size() > 1) {
             String outerElement = elementStack.get(elementStack.size() - 2);
 

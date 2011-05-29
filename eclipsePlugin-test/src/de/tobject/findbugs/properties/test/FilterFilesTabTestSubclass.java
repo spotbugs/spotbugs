@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.TabFolder;
 
 import de.tobject.findbugs.properties.FilterFilesTab;
 import de.tobject.findbugs.properties.FindbugsPropertyPage;
-import de.tobject.findbugs.properties.PathElement;
+import de.tobject.findbugs.properties.IPathElement;
 
 /**
  * Test subclass of FilterFilesTab that provides methods for testing purposes.
@@ -90,7 +90,7 @@ public class FilterFilesTabTestSubclass extends FilterFilesTab {
         }
 
         public void removeAllFiles() {
-            for (PathElement pathElement : new ArrayList<PathElement>(paths)) {
+            for (IPathElement pathElement : new ArrayList<IPathElement>(paths)) {
                 remove(pathElement);
             }
         }

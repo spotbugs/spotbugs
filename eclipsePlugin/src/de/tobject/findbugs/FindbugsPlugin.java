@@ -81,7 +81,6 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.nature.FindBugsNature;
 import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.preferences.FindBugsPreferenceInitializer;
-import de.tobject.findbugs.preferences.PrefsUtil;
 import de.tobject.findbugs.properties.DetectorValidator;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.view.IMarkerSelectionHandler;
@@ -98,6 +97,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionAssociations;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionLoader;
 import edu.umd.cs.findbugs.plugins.DuplicatePluginIdDescriptor;
+
 
 /**
  * The main plugin class to be used in the desktop.
@@ -261,7 +261,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         DetectorValidator validator = new DetectorValidator();
         final SortedSet<String> detectorPaths = new TreeSet<String>();
         detectorPaths.addAll(DetectorsExtensionHelper.getContributedDetectors());
-        detectorPaths.addAll(PrefsUtil.readDetectorPaths(getDefault().getPreferenceStore()));
+        UserPreferences corePreferences = getCorePreferences(null, false);
+        detectorPaths.addAll(corePreferences.getCustomPlugins(true));
         HashSet<Plugin> enabled = new HashSet<Plugin>();
         if(DEBUG) {
             dumpClassLoader(FindbugsPlugin.class);
@@ -271,12 +272,16 @@ public class FindbugsPlugin extends AbstractUIPlugin {
                 System.out.println("\t" + url);
             }
         }
+        Set<URL> pluginsUrls = Plugin.getAllPluginsUrls();
         for (String path : detectorPaths) {
             URL url;
             try {
                 url = new File(path).toURI().toURL();
             } catch (MalformedURLException e) {
                 getDefault().logException(e, "Failed to create URL for custom detector: " + path);
+                continue;
+            }
+            if(pluginsUrls.contains(url)) {
                 continue;
             }
             IStatus status = validator.validate(path);
@@ -301,10 +306,15 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             }
         }
 
+        Set<String> disabledCustomPlugins = corePreferences.getCustomPlugins(false);
         Collection<Plugin> allPlugins = Plugin.getAllPlugins();
         for(Plugin fbPlugin : allPlugins) {
             if (!fbPlugin.isInitialPlugin()) {
                 fbPlugin.setGloballyEnabled(enabled.contains(fbPlugin));
+                URL url = fbPlugin.getPluginLoader().getURL();
+                if(url != null && disabledCustomPlugins.contains(url.getPath())) {
+                    Plugin.removeCustomPlugin(fbPlugin);
+                }
             }
         }
         if(DEBUG) {
@@ -318,7 +328,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
                 }
             }
         }
-        DetectorFactoryCollection.resetInstance();
     }
 
     @Override

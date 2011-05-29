@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
@@ -45,7 +47,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
     /**
      * Project to analyze.
      */
-    protected Project project = new Project();
+    protected Project project;
 
     /**
      * True if project was initialized by loading a project file.
@@ -56,6 +58,8 @@ public abstract class FindBugsCommandLine extends CommandLine {
      * Constructor. Adds shared options/switches.
      */
     public FindBugsCommandLine() {
+        super();
+        project = new Project();
         startOptionGroup("General FindBugs options:");
         addOption("-project", "project", "analyze given project");
         addOption("-home", "home directory", "specify FindBugs home directory");
@@ -135,13 +139,11 @@ public abstract class FindBugsCommandLine extends CommandLine {
             FindBugs.setHome(argument);
         } else if (option.equals("-pluginList")) {
             String pluginListStr = argument;
-            ArrayList<URL> pluginList = new ArrayList<URL>();
+            Map<String, Boolean> customPlugins = getProject().getConfiguration().getCustomPlugins();
             StringTokenizer tok = new StringTokenizer(pluginListStr, File.pathSeparator);
             while (tok.hasMoreTokens()) {
-                pluginList.add(new File(tok.nextToken()).toURL());
+                customPlugins.put(new File(tok.nextToken()).getAbsolutePath(), Boolean.TRUE);
             }
-
-            DetectorFactoryCollection.instance().setPluginList(pluginList.toArray(new URL[pluginList.size()]));
         } else if (option.equals("-project")) {
             loadProject(argument);
         } else {
@@ -157,7 +159,9 @@ public abstract class FindBugsCommandLine extends CommandLine {
      * @throws java.io.IOException
      */
     public void loadProject(String arg) throws IOException {
-        project = Project.readProject(arg);
+        Project newProject = Project.readProject(arg);
+        newProject.setConfiguration(project.getConfiguration());
+        project = newProject;
         projectLoadedFromFile = true;
     }
 }

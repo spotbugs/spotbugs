@@ -28,6 +28,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
@@ -199,8 +201,6 @@ public class FindBugs2 implements IFindBugsEngine {
 
         Profiler profiler = bugReporter.getProjectStats().getProfiler();
 
-        Project project = getProject();
-        project.resetConfiguration();
         try {
             // Get the class factory for creating classpath/codebase/etc.
             classFactory = ClassFactory.instance();
@@ -555,15 +555,63 @@ public class FindBugs2 implements IFindBugsEngine {
         this.analysisOptions.sourceInfoFileName = sourceInfoFile;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.IFindBugsEngine#setUserPreferences(edu.umd.cs.findbugs
-     * .config.UserPreferences)
-     */
     public void setUserPreferences(UserPreferences userPreferences) {
         this.analysisOptions.userPreferences = userPreferences;
+        // TODO should set it here too, but gui2 seems to have issues with it
+        // setAnalysisFeatureSettings(userPreferences.getAnalysisFeatureSettings());
+
+        configureFilters(userPreferences);
+    }
+
+    protected void configureFilters(UserPreferences userPreferences) {
+        Set<Entry<String, Boolean>> excludeBugFiles = userPreferences.getExcludeBugsFiles().entrySet();
+        for (Entry<String, Boolean> entry : excludeBugFiles) {
+            if (entry.getValue() == null || !entry.getValue().booleanValue()) {
+                continue;
+            }
+            try {
+                excludeBaselineBugs(entry.getKey());
+            } catch (Exception e) {
+                String message = "Unable to read filter: " + entry.getKey() + " : " + e.getMessage();
+                if (getBugReporter() != null) {
+                    getBugReporter().logError(message, e);
+                } else {
+                    throw new IllegalArgumentException(message, e);
+                }
+            }
+        }
+        Set<Entry<String, Boolean>> includeFilterFiles = userPreferences.getIncludeFilterFiles().entrySet();
+        for (Entry<String, Boolean> entry : includeFilterFiles) {
+            if (entry.getValue() == null || !entry.getValue().booleanValue()) {
+                continue;
+            }
+            try {
+                addFilter(entry.getKey(), true);
+            } catch (Exception e) {
+                String message = "Unable to read filter: " + entry.getKey() + " : " + e.getMessage();
+                if (getBugReporter() != null) {
+                    getBugReporter().logError(message, e);
+                } else {
+                    throw new IllegalArgumentException(message, e);
+                }
+            }
+        }
+        Set<Entry<String, Boolean>> excludeFilterFiles = userPreferences.getExcludeFilterFiles().entrySet();
+        for (Entry<String, Boolean> entry : excludeFilterFiles) {
+            if (entry.getValue() == null || !entry.getValue().booleanValue()) {
+                continue;
+            }
+            try {
+                addFilter(entry.getKey(), false);
+            } catch (Exception e) {
+                String message = "Unable to read filter: " + entry.getKey() + " : " + e.getMessage();
+                if (getBugReporter() != null) {
+                    getBugReporter().logError(message, e);
+                } else {
+                    throw new IllegalArgumentException(message, e);
+                }
+            }
+        }
     }
 
     /*

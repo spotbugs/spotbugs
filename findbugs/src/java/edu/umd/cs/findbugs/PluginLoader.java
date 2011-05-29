@@ -40,6 +40,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -103,23 +104,24 @@ public class PluginLoader {
 
     private final boolean corePlugin;
 
-    boolean initialPlugin, optionalPlugin;
+    boolean initialPlugin;
 
+    private boolean optionalPlugin;
 
 
     private final URL loadedFrom;
 
-    public URL getURL() {
-        return loadedFrom;
-    }
-
     private final String jarName;
 
+    private final URI loadedFromUri;
+
+    static HashSet<String> loadedPluginIds = new HashSet<String>();
     static {
         if (DEBUG) {
             System.out.println("Debugging plugin loading. FindBugs version "
                     + Version.getReleaseWithDateIfDev());
         }
+        loadInitialPlugins();
     }
 
     /**
@@ -132,13 +134,7 @@ public class PluginLoader {
      */
     @Deprecated
     public PluginLoader(URL url) throws PluginException {
-        this.classLoader = new URLClassLoader(new URL[] { url });
-        this.classLoaderForResources = classLoader;
-        loadedFrom = url;
-        jarName = getJarName(url);
-        corePlugin = false;
-
-        init();
+        this(url, toUri(url), null, false, true);
     }
 
 
@@ -153,7 +149,7 @@ public class PluginLoader {
      */
     @Deprecated
     public PluginLoader(URL url, ClassLoader parent) throws PluginException {
-        this(url, parent, false, true);
+        this(url, toUri(url), parent, false, true);
     }
 
 
@@ -162,68 +158,90 @@ public class PluginLoader {
      *
      * @param url
      *            the URL of the plugin Jar file
+     * @param uri
      * @param parent
      *            the parent classloader
      * @param isInitial TODO
      * @param optional TODO
      */
-    private PluginLoader(URL url, ClassLoader parent, boolean isInitial, boolean optional) throws PluginException {
-        this.classLoader = new URLClassLoader(new URL[] { url }, parent);
-        this.classLoaderForResources = new URLClassLoader(new URL[] { url });
+    private PluginLoader(URL url, URI uri, ClassLoader parent, boolean isInitial, boolean optional) throws PluginException {
+        classLoader = new URLClassLoader(new URL[] { url }, parent);
+        classLoaderForResources = new URLClassLoader(new URL[] { url });
         loadedFrom = url;
+        loadedFromUri = uri;
         jarName = getJarName(url);
         corePlugin = false;
-        this.initialPlugin = isInitial;
-        this.optionalPlugin = optional;
-        init();
+        initialPlugin = isInitial;
+        optionalPlugin = optional;
+        plugin = init();
+        Plugin.putPlugin(loadedFromUri, plugin);
     }
 
     /**
      * Constructor. Loads a plugin using the caller's class loader. This
      * constructor should only be used to load the "core" findbugs detectors,
      * which are built into findbugs.jar.
+     * @throws PluginException
      */
     @Deprecated
     public PluginLoader() {
-        this.classLoader = this.getClass().getClassLoader();
-        this.classLoaderForResources = classLoader;
+        classLoader = getClass().getClassLoader();
+        classLoaderForResources = classLoader;
         corePlugin = true;
         initialPlugin = true;
         optionalPlugin = false;
-        URL from = null;
 
+        loadedFrom = computeCoreUrl();
+        try {
+            loadedFromUri = loadedFrom.toURI();
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Failed to parse uri: " + loadedFrom);
+        }
+        jarName = getJarName(loadedFrom);
+    }
+
+
+    private URL computeCoreUrl() {
+        URL from;
         String findBugsClassFile = ClassName.toSlashedClassName(FindBugs.class) + ".class";
         URL me = FindBugs.class.getClassLoader().getResource(findBugsClassFile);
         if (DEBUG)
             System.out.println("FindBugs.class loaded from " + me);
-        if (me != null) {
-            try {
-                String u = me.toString();
-                if (u.startsWith("jar:") && u.endsWith("!/" + findBugsClassFile)) {
-                    u = u.substring(4, u.indexOf("!/"));
+        if(me == null) {
+            throw new IllegalStateException("Failed to load " + findBugsClassFile);
+        }
+        try {
+            String u = me.toString();
+            if (u.startsWith("jar:") && u.endsWith("!/" + findBugsClassFile)) {
+                u = u.substring(4, u.indexOf("!/"));
 
-                    from = new URL(u);
+                from = new URL(u);
 
-                } else if (u.endsWith(findBugsClassFile)) {
-                    u = u.substring(0, u.indexOf(findBugsClassFile));
-                    from = new URL(u);
-                }
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
+            } else if (u.endsWith(findBugsClassFile)) {
+                u = u.substring(0, u.indexOf(findBugsClassFile));
+                from = new URL(u);
+            } else {
+                throw new IllegalArgumentException("Unknown url shema: " + u);
             }
-            if (DEBUG)
-                System.out.println("Core class files loaded from " + from);
 
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Failed to parse url: " + me);
         }
+        if (DEBUG)
+            System.out.println("Core class files loaded from " + from);
+        return from;
+    }
 
-        loadedFrom = from;
-        if (from != null) {
-            jarName = getJarName(from);
+    public URL getURL() {
+        return loadedFrom;
+    }
+
+    private static URI toUri(URL url) throws PluginException {
+        try {
+            return url.toURI();
+        } catch (URISyntaxException e) {
+            throw new PluginException("Bad uri: " + url, e);
         }
-        else
-            jarName = null;
-        return;
     }
 
     /**
@@ -250,9 +268,9 @@ public class PluginLoader {
      * @throws PluginException
      *             if the plugin cannot be fully loaded
      */
-    public Plugin loadPlugin() throws PluginException {
+    public synchronized Plugin loadPlugin() throws PluginException {
         if (plugin == null) {
-            init();
+            plugin = init();
         }
         return plugin;
     }
@@ -328,7 +346,7 @@ public class PluginLoader {
 
         if (DEBUG) {
             System.out.println("Trying to load " + name + " using ClassLoader.getResource");
-         }
+        }
         URL url = classLoaderForResources.getResource(name);
         if (url == null)
             url = classLoaderForResources.getResource("/" + name);
@@ -391,11 +409,7 @@ public class PluginLoader {
 
     }
 
-    static HashSet<String> loadedPluginIds = new HashSet<String>();
-
-
-    @SuppressWarnings("unchecked")
-    private void init() throws PluginException {
+    private Plugin init() throws PluginException {
 
         if (DEBUG)
             System.out.println("Loading plugin from " + loadedFrom);
@@ -538,8 +552,8 @@ public class PluginLoader {
 
 
             CloudPlugin cloudPlugin = new CloudPluginBuilder().setFindbugsPluginId(pluginId).setCloudid(cloudId).setClassLoader(classLoader)
-            .setCloudClass(cloudClass).setUsernameClass(usernameClass).setHidden(hidden).setProperties(properties)
-            .setDescription(description).setDetails(details).setOnlineStorage(onlineStorage).createCloudPlugin();
+                    .setCloudClass(cloudClass).setUsernameClass(usernameClass).setHidden(hidden).setProperties(properties)
+                    .setDescription(description).setDetails(details).setOnlineStorage(onlineStorage).createCloudPlugin();
             plugin.addCloudPlugin(cloudPlugin);
 
 
@@ -815,17 +829,16 @@ public class PluginLoader {
         }
 
         // Success!
-        // Assign to the plugin field, so getPlugin() can return the
-        // new Plugin object.
-        this.plugin = plugin;
-
+        if (DEBUG)
+            System.out.println("Loaded " + plugin.getPluginId() + " from " + loadedFrom);
+        return plugin;
     }
 
     private static DetectorFactorySelector getConstraintSelector(Element constraintElement, Plugin plugin,
             String singleDetectorElementName/*
-                                             * , String
-                                             * detectorCategoryElementName
-                                             */) throws PluginException {
+             * , String
+             * detectorCategoryElementName
+             */) throws PluginException {
         Node node = constraintElement.selectSingleNode("./" + singleDetectorElementName);
         if (node != null) {
             String detectorClass = node.valueOf("@class");
@@ -868,20 +881,6 @@ public class PluginLoader {
         throw new PluginException("Invalid constraint selector node");
     }
 
-    private String lookupDetectorClass(Plugin plugin, String name) throws PluginException {
-        // If the detector name contains '.' characters, assume it is
-        // fully qualified already. Otherwise, assume it is a short
-        // name that resolves to another detector in the same plugin.
-
-        if (name.indexOf('.') < 0) {
-            DetectorFactory factory = plugin.getFactoryByShortName(name);
-            if (factory == null)
-                throw new PluginException("No detector found for short name '" + name + "'");
-            name = factory.getFullName();
-        }
-        return name;
-    }
-
     private void addCollection(List<Document> messageCollectionList, String filename) throws PluginException {
         URL messageURL = getResource(filename);
         if (messageURL != null) {
@@ -914,36 +913,12 @@ public class PluginLoader {
         throw new PluginException(missingMsg);
     }
 
-    private static @CheckForNull
-    Node findOptionalMessageNode(List<Document> messageCollectionList, String xpath) throws PluginException {
-        for (Document document : messageCollectionList) {
-            Node node = document.selectSingleNode(xpath);
-            if (node != null)
-                return node;
-        }
-        return null;
-    }
-
     private static String getChildText(Node node, String childName) throws PluginException {
         Node child = node.selectSingleNode(childName);
         if (child == null)
             throw new PluginException("Could not find child \"" + childName + "\" for node");
         return child.getText();
     }
-
-    private static @CheckForNull
-    String getOptionalChildText(Node node, String childName) {
-        Node child = node.selectSingleNode(childName);
-        if (child == null)
-            return null;
-        return child.getText();
-    }
-
-    public static Set<URI> getLoadedURIs() {
-        return Plugin.allPlugins.keySet();
-    }
-
-
 
     /**
      * @deprecated Use {@link #getPluginLoader(URL,ClassLoader,boolean,boolean)} instead
@@ -954,39 +929,24 @@ public class PluginLoader {
 
 
     public static PluginLoader getPluginLoader(URL url, ClassLoader parent, boolean isInitial, boolean optional) throws PluginException {
-
-        URI uri;
-        try {
-            uri = url.toURI();
-        } catch (URISyntaxException e) {
-           throw new PluginException("bad uri:" + url, e);
-        }
-        Plugin plugin = Plugin.allPlugins.get(uri);
+        URI uri = toUri(url);
+        Plugin plugin = Plugin.getPlugin(uri);
         if (plugin != null) {
             PluginLoader loader = plugin.getPluginLoader();
 
             assert loader.getClassLoader().getParent().equals(parent);
             return loader;
         }
-        PluginLoader loader = new PluginLoader(url, parent, isInitial, optional);
-        plugin = loader.getPlugin();
-        if (DEBUG)
-            System.out.println("Loaded " + plugin.getPluginId() + " from " + url);
-        Plugin.allPlugins.put(uri, plugin);
-        return loader;
+        return new PluginLoader(url, uri, parent, isInitial, optional);
     }
 
-
-
-    public static PluginLoader getCorePluginLoader() {
-        Plugin plugin = Plugin.allPlugins.get(null);
+    @Nonnull
+    public static synchronized PluginLoader getCorePluginLoader() {
+        Plugin plugin = Plugin.getPlugin(null);
         if (plugin != null) {
             return plugin.getPluginLoader();
         }
-        PluginLoader loader = new PluginLoader();
-        plugin = loader.getPlugin();
-        Plugin.allPlugins.put(null, plugin);
-        return loader;
+        throw new IllegalStateException("Core plugin not loaded yet!");
     }
 
 
@@ -1046,27 +1006,13 @@ public class PluginLoader {
 
     }
 
-    static {
-        loadInitialPlugins();
-    }
-
-    static void loadInitialPlugins() {
-        try {
-            Plugin plugin = Plugin.allPlugins.get(null);
-            if (plugin != null) {
-                throw new IllegalStateException("Already loaded");
-            }
-            PluginLoader loader = new PluginLoader();
-            plugin = loader.loadPlugin();
-            Plugin.allPlugins.put(null, plugin);
-        } catch (PluginException e1) {
-            throw new IllegalStateException("Unable to load core plugin", e1);
-        }
-         if (JavaWebStart.isRunningViaJavaWebstart()) {
+    static synchronized void loadInitialPlugins() {
+        loadCorePlugin();
+        if (JavaWebStart.isRunningViaJavaWebstart()) {
             installWebStartPlugins();
         } else {
-           installStandardPlugins();
-           installUserInstalledPlugins();
+            installStandardPlugins();
+            installUserInstalledPlugins();
         }
         Set<Entry<Object, Object>> entrySet = SystemProperties.getAllProperties().entrySet();
         for (Map.Entry<?, ?> e : entrySet) {
@@ -1085,7 +1031,7 @@ public class PluginLoader {
             }
         }
 
-        if (getLoadedURIs().size() > 1 && JavaWebStart.isRunningViaJavaWebstart()) {
+        if (Plugin.getAllPlugins().size() > 1 && JavaWebStart.isRunningViaJavaWebstart()) {
             // disable security manager; plugins cause problems
             // http://lopica.sourceforge.net/faq.html
             // URL policyUrl =
@@ -1096,11 +1042,22 @@ public class PluginLoader {
             } catch (Throwable e) {
                 assert true; // keep going
             }
-
         }
     }
 
-    static HashSet<URL> loaded;
+    private static void loadCorePlugin() {
+        try {
+            Plugin plugin = Plugin.getPlugin(null);
+            if (plugin != null) {
+                throw new IllegalStateException("Already loaded");
+            }
+            PluginLoader pluginLoader = new PluginLoader();
+            plugin = pluginLoader.loadPlugin();
+            Plugin.putPlugin(null, plugin);
+        } catch (PluginException e1) {
+            throw new IllegalStateException("Unable to load core plugin", e1);
+        }
+    }
 
     private static void loadInitialPlugin(URL u, boolean initial, boolean optional) {
         try {
@@ -1115,8 +1072,8 @@ public class PluginLoader {
      * @param plugins
      */
     static void installWebStartPlugins() {
-       URL pluginListProperties = DetectorFactoryCollection.getCoreResource("pluginlist.properties");
-       BufferedReader in = null;
+        URL pluginListProperties = getCoreResource("pluginlist.properties");
+        BufferedReader in = null;
         if (pluginListProperties != null) {
             try {
 
@@ -1168,14 +1125,11 @@ public class PluginLoader {
         return base;
     }
 
-
-
-
+    @Override
     public String toString() {
         if (plugin == null)
             return String.format("PluginLoader(%s)", loadedFrom);
         return String.format("PluginLoader(%s, %s)", plugin.getPluginId(), loadedFrom);
     }
-    }
+}
 
-// vim:ts=4

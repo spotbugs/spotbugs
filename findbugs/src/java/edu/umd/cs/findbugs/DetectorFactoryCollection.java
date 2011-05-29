@@ -55,9 +55,11 @@ public class DetectorFactoryCollection {
 
     private static final Logger LOGGER = Logger.getLogger(DetectorFactoryCollection.class.getName());
 
+    private static final boolean DEBUG_JAWS = SystemProperties.getBoolean("findbugs.jaws.debug");
+
     private final HashMap<String, Plugin> pluginByIdMap = new LinkedHashMap<String, Plugin>();
 
-    private static Plugin corePlugin;
+    private Plugin corePlugin;
 
     private final ArrayList<DetectorFactory> factoryList = new ArrayList<DetectorFactory>();
 
@@ -68,8 +70,6 @@ public class DetectorFactoryCollection {
     private static DetectorFactoryCollection theInstance;
 
     private static final Object lock = new Object();
-
-    private final boolean loaded = false;
 
     static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
 
@@ -105,26 +105,9 @@ public class DetectorFactoryCollection {
     }
 
     /**
-     * Set the instance that should be returned as the singleton instance.
-     *
-     * @param instance
-     *            the singleton instance to be set
-     */
-    static void setInstance(DetectorFactoryCollection instance) {
-        synchronized (lock) {
-            if (theInstance == null) {
-                throw new IllegalStateException();
-            }
-            theInstance = instance;
-        }
-    }
-
-    /**
      * Reset the factory singleton.
      * <p>
-     * <b>Implementation note:</b> This method is public only to allow Eclipse
-     * plugin install and uninstall additional bug detector packages without
-     * restarting the JVM
+     * <b>Implementation note:</b> This method is public for tests only!
      *
      * @param instance
      *            can be null
@@ -137,19 +120,9 @@ public class DetectorFactoryCollection {
         }
     }
 
-    public static void resetInstance() {
-        synchronized (lock) {
-            theInstance = new DetectorFactoryCollection();
-        }
-    }
-    public static boolean isLoaded() {
-        synchronized (lock) {
-            return theInstance != null && (theInstance).loaded;
-        }
-    }
-
     /**
-     * Get the single instance of DetectorFactoryCollection.
+     * Get the single instance of DetectorFactoryCollection, which knows each and every
+     * loaded plugin, independently of it's enablement
      */
     public static DetectorFactoryCollection instance() {
         synchronized (lock) {
@@ -245,6 +218,15 @@ public class DetectorFactoryCollection {
         factoriesByDetectorClassName.put(factory.getFullName(), factory);
     }
 
+    void unRegisterDetector(DetectorFactory factory) {
+        if (FindBugs.DEBUG)
+            System.out.println("Unregistering detector: " + factory.getFullName());
+        String detectorName = factory.getShortName();
+        factoryList.remove(factory);
+        factoriesByName.remove(detectorName);
+        factoriesByDetectorClassName.remove(factory.getFullName());
+    }
+
     private static final Pattern[] findbugsJarNames = { Pattern.compile("findbugs\\.jar$"), };
 
     /**
@@ -302,32 +284,22 @@ public class DetectorFactoryCollection {
 
     @CheckForNull
     public static URL getCoreResource(String name) {
-        URL u = PluginLoader.getCoreResource(name);
-        return u;
+        return PluginLoader.getCoreResource(name);
     }
 
     /**
+     * Load the core plugin.
      * @throws PluginException
-     *
      */
     private void loadCorePlugin() {
-        //
-        // Load the core plugin.
-        //
-        PluginLoader corePluginLoader = PluginLoader.getCorePluginLoader();
-        Plugin plugin = corePluginLoader.getPlugin();
+        Plugin plugin = PluginLoader.getCorePluginLoader().getPlugin();
         loadPlugin(plugin);
-        corePlugin = corePluginLoader.getPlugin();
+        corePlugin = plugin;
     }
-
-
-
-    final static boolean DEBUG_JAWS = SystemProperties.getBoolean("findbugs.jaws.debug");
 
     /**
      * @param message
      */
-
     public static void jawsDebugMessage(String message) {
         if (DEBUG_JAWS)
             JOptionPane.showMessageDialog(null, message);
@@ -354,7 +326,6 @@ public class DetectorFactoryCollection {
             registerDetector(factory);
         }
 
-
         for (BugCategory bugCategory : plugin.getBugCategories()) {
             registerBugCategory(bugCategory);
         }
@@ -373,6 +344,25 @@ public class DetectorFactoryCollection {
         }
     }
 
+    void unLoadPlugin(Plugin plugin)  {
+        pluginByIdMap.remove(plugin.getPluginId());
+        for (DetectorFactory factory : plugin.getDetectorFactories()) {
+            unRegisterDetector(factory);
+        }
+        for (BugCategory bugCategory : plugin.getBugCategories()) {
+            unRegisterBugCategory(bugCategory);
+        }
+        for (BugPattern bugPattern : plugin.getBugPatterns()) {
+            unRegisterBugPattern(bugPattern);
+        }
+        for (BugCode bugCode : plugin.getBugCodes()) {
+            unRegisterBugCode(bugCode);
+        }
+        for (CloudPlugin cloud : plugin.getCloudPlugins()) {
+            unRegisterCloud(cloud);
+        }
+    }
+
     public  Map<String, CloudPlugin> getRegisteredClouds() {
         return Collections.unmodifiableMap(registeredClouds);
     }
@@ -380,23 +370,13 @@ public class DetectorFactoryCollection {
     /**
      * @param cloudPlugin
      */
-      void registerCloud(CloudPlugin cloudPlugin) {
-       LOGGER.log(Level.FINE, "Registering " + cloudPlugin.getId());
-       registeredClouds.put(cloudPlugin.getId(), cloudPlugin);
+    void registerCloud(CloudPlugin cloudPlugin) {
+        LOGGER.log(Level.FINE, "Registering " + cloudPlugin.getId());
+        registeredClouds.put(cloudPlugin.getId(), cloudPlugin);
     }
-
-    /**
-     * @param array
-     */
-    public void setPluginList(URL[] array) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @param plugins
-     */
-    public void setPlugins(Plugin[] plugins) {
-        throw new UnsupportedOperationException();
+    void unRegisterCloud(CloudPlugin cloudPlugin) {
+        LOGGER.log(Level.FINE, "Unregistering " + cloudPlugin.getId());
+        registeredClouds.remove(cloudPlugin.getId());
     }
 
     /**
@@ -416,6 +396,12 @@ public class DetectorFactoryCollection {
         return true;
     }
 
+    protected boolean unRegisterBugCategory(BugCategory bc) {
+        String category = bc.getCategory();
+        categoryDescriptionMap.remove(category);
+        return true;
+    }
+
     /**
      * Register a BugPattern.
      *
@@ -426,12 +412,14 @@ public class DetectorFactoryCollection {
         bugPatternMap.put(bugPattern.getType(), bugPattern);
     }
 
+    protected void unRegisterBugPattern(BugPattern bugPattern) {
+        bugPatternMap.remove(bugPattern.getType());
+    }
+
     /**
      * Get an Iterator over all registered bug patterns.
      */
     public Iterator<BugPattern> bugPatternIterator() {
-        DetectorFactoryCollection.instance(); // ensure detectors loaded
-
         return bugPatternMap.values().iterator();
     }
 
@@ -468,6 +456,9 @@ public class DetectorFactoryCollection {
      */
     public void registerBugCode(BugCode bugCode) {
         bugCodeMap.put(bugCode.getAbbrev(), bugCode);
+    }
+    protected void unRegisterBugCode(BugCode bugCode) {
+        bugCodeMap.remove(bugCode.getAbbrev());
     }
 
     /**
@@ -521,13 +512,5 @@ public class DetectorFactoryCollection {
         return categoryDescriptionMap.values(); // backed by the Map
     }
 
-    /**
-     * @return
-     */
-    @Deprecated
-    public URL[] getPluginList() {
-        return new URL[0];
-    }
 }
 
-// vim:ts=4

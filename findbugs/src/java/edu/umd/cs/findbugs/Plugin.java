@@ -25,10 +25,12 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
@@ -40,7 +42,7 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
 
 /**
  * A FindBugs plugin. A plugin contains executable Detector classes, as well as
- * meta information decribing those detectors (such as human-readable detector
+ * meta information describing those detectors (such as human-readable detector
  * and bug descriptions).
  *
  * @see PluginLoader
@@ -67,10 +69,9 @@ public class Plugin {
     private final LinkedHashSet<BugCode> bugCodeList;
 
     private final LinkedHashSet<BugCategory> bugCategoryList;
-    private final LinkedHashSet<CloudPlugin> cloudList = new LinkedHashSet<CloudPlugin>();
+    private final LinkedHashSet<CloudPlugin> cloudList;
 
-    private final DualKeyHashMap<Class, String, ComponentPlugin> componentPlugins
-        = new DualKeyHashMap<Class, String, ComponentPlugin> ();
+    private final DualKeyHashMap<Class, String, ComponentPlugin> componentPlugins;
 
     private BugRanker bugRanker;
 
@@ -89,6 +90,11 @@ public class Plugin {
 
     static Map<URI, Plugin> allPlugins = new LinkedHashMap<URI, Plugin>();
 
+    enum EnabledState { PLUGIN_DEFAULT, ENABLED, DISABLED};
+
+    private EnabledState enabled;
+
+
     /**
      * Constructor. Creates an empty plugin object.
      *
@@ -99,10 +105,13 @@ public class Plugin {
      */
     public Plugin(String pluginId, String version, PluginLoader pluginLoader, boolean enabled) {
         this.pluginId = pluginId;
-        if (version == null)
+        if (version == null) {
             version = "";
-        else if (version.equals(USE_FINDBUGS_VERSION))
+        } else if (version.equals(USE_FINDBUGS_VERSION)) {
             version = Version.COMPUTED_RELEASE;
+        }
+        cloudList = new LinkedHashSet<CloudPlugin>();
+        componentPlugins = new DualKeyHashMap<Class, String, ComponentPlugin> ();
         this.version = version;
         this.detectorFactoryList = new ArrayList<DetectorFactory>();
         this.bugPatterns = new LinkedHashSet<BugPattern>();
@@ -112,22 +121,12 @@ public class Plugin {
         this.intraPassConstraintList = new ArrayList<DetectorOrderingConstraint>();
         this.pluginLoader = pluginLoader;
         this.enabledByDefault = enabled;
+        this.enabled = EnabledState.PLUGIN_DEFAULT;
     }
 
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + ":" + pluginId;
-    }
-
-    /**
-     * Set whether or not this Plugin is enabled.
-     *
-     * @param enabled
-     *            true if the Plugin is enabled, false if not
-     */
-    @Deprecated
-    public void setEnabled(boolean enabled) {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -334,6 +333,20 @@ public class Plugin {
         return bugCategoryList;
     }
 
+    /**
+     * @param id may be null
+     * @return return bug category with given id, may return null if the bug category is unknown
+     */
+    @CheckForNull
+    public BugCategory getBugCategory(String id) {
+        for (BugCategory bc : bugCategoryList) {
+            if(bc.getCategory().equals(id)){
+                return bc;
+            }
+        }
+        return null;
+    }
+
     public Set<CloudPlugin> getCloudPlugins() {
         return cloudList;
     }
@@ -431,7 +444,7 @@ public class Plugin {
         return componentPlugins.get(componentClass, name);
     }
 
-    public static @CheckForNull Plugin getByPluginId(String name) {
+    public static synchronized @CheckForNull Plugin getByPluginId(String name) {
         for(Plugin plugin : allPlugins.values()) {
             if (name.equals(plugin.getPluginId()) || name.equals(plugin.getShortPluginId()))
                 return plugin;
@@ -439,20 +452,45 @@ public class Plugin {
         return null;
     }
 
-    public static Collection<Plugin> getAllPlugins() {
-        return Plugin.allPlugins.values();
+    /**
+     * @return a copy of the internal plugins collection
+     */
+    public static synchronized Collection<Plugin> getAllPlugins() {
+        return new ArrayList<Plugin>(allPlugins.values());
     }
-    enum EnabledState { PLUGIN_DEFAULT, ENABLED, DISABLED};
 
+    public static synchronized Set<URL> getAllPluginsUrls() {
+        Collection<Plugin> plugins = getAllPlugins();
+        Set<URL> urls = new HashSet<URL>();
+        for (Plugin plugin : plugins) {
+            URL url = plugin.getPluginLoader().getURL();
+            if(url != null) {
+                urls.add(url);
+            }
+        }
+        return urls;
+    }
 
+    /**
+     * @return may return null
+     */
+    @CheckForNull
+    static synchronized Plugin getPlugin(URI uri) {
+        return allPlugins.get(uri);
+    }
 
-EnabledState enabled = EnabledState.PLUGIN_DEFAULT;
-public boolean isCorePlugin() {
-    return pluginLoader.isCorePlugin();
-}
-/**
- * @return
- */
+    /**
+     * @return may return null
+     */
+    @CheckForNull
+    static synchronized Plugin putPlugin(URI uri, Plugin plugin) {
+        return allPlugins.put(uri, plugin);
+    }
+
+    public boolean isCorePlugin() {
+        return pluginLoader.isCorePlugin();
+    }
+
     public boolean isGloballyEnabled() {
         if (isCorePlugin())
             return true;
@@ -477,6 +515,7 @@ public boolean isCorePlugin() {
                 throw new IllegalArgumentException("Can't disable core plugin");
             return;
         }
+        EnabledState oldState = this.enabled;
 
         if (enabled) {
             if (isEnabledByDefault())
@@ -489,7 +528,9 @@ public boolean isCorePlugin() {
             else
                 this.enabled = EnabledState.PLUGIN_DEFAULT;
         }
-
+        if(oldState != this.enabled) {
+            // TODO update detector factory collection?
+        }
     }
 
     public boolean isInitialPlugin() {
@@ -524,7 +565,7 @@ public boolean isCorePlugin() {
     public static Plugin loadCustomPlugin(URL urlString, @CheckForNull Project project) throws PluginException {
         Plugin plugin = addCustomPlugin(urlString);
         if (project != null) {
-           project.setPluginStatus(plugin, true);
+            project.setPluginStatus(plugin.getPluginId(), true);
         }
         return plugin;
     }
@@ -541,6 +582,16 @@ public boolean isCorePlugin() {
         return plugin;
     }
 
-}
+    public static synchronized void removeCustomPlugin(Plugin plugin) {
+        Set<Entry<URI, Plugin>> entrySet = Plugin.allPlugins.entrySet();
+        for (Entry<URI, Plugin> entry : entrySet) {
+            if(entry.getValue() == plugin) {
+                Plugin.allPlugins.remove(entry.getKey());
+                PluginLoader.loadedPluginIds.remove(plugin.getPluginId());
+                break;
+            }
+        }
+        DetectorFactoryCollection.instance().unLoadPlugin(plugin);
+    }
 
-// vim:ts=4
+}

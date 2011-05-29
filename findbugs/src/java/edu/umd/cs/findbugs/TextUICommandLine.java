@@ -124,8 +124,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     private Set<String> bugCategorySet = null;
 
-    private UserPreferences userPreferences;
-
     private String trainingOutputDir;
 
     private String trainingInputDir;
@@ -450,7 +448,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
                     Plugin plugin = DetectorFactoryCollection.instance().getPluginById(what);
                     if (plugin == null)
                         throw new IllegalArgumentException("Unknown plugin: " + what);
-                    plugin.setEnabled(enabled);
+                    plugin.setGloballyEnabled(enabled);
                 }
             });
         } else if (option.equals("-adjustPriority")) {
@@ -616,19 +614,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
         }
 
         findBugs.setUserPreferences(getUserPreferences());
-        for (String s : excludeBugFile)
-            try {
-                findBugs.excludeBaselineBugs(s);
-            } catch (DocumentException e) {
-                throw new IOException("Unable to read " + excludeBugFile + ":" + e.getMessage());
-            }
-        for (String s : includeFilterFile)
-            findBugs.addFilter(s, true);
-        for (String s : excludeFilterFile)
-            findBugs.addFilter(s, false);
-
-        DetectorFactoryCollection.resetInstance(project.getConfiguration());
-
         findBugs.setClassScreener(classScreener);
 
         findBugs.setRelaxedReportingMode(relaxedReportingMode);
@@ -654,8 +639,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
         findBugs.setNoClassOk(noClassOk);
 
         findBugs.setBugReporterDecorators(enabledBugReporterDecorators, disabledBugReporterDecorators);
-        if (applySuppression)
+        if (applySuppression) {
             findBugs.setApplySuppression(true);
+        }
 
         findBugs.finishSettings();
     }
@@ -683,8 +669,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
      * @return Returns the userPreferences.
      */
     private UserPreferences getUserPreferences() {
-        if (userPreferences == null)
-            userPreferences = UserPreferences.createDefaultUserPreferences();
-        return userPreferences;
+        return project.getConfiguration();
     }
 }

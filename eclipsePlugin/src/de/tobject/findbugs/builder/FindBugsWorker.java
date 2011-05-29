@@ -23,11 +23,12 @@ package de.tobject.findbugs.builder;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IProject;
@@ -55,7 +56,6 @@ import de.tobject.findbugs.view.FindBugsConsole;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugs2;
-import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -97,7 +97,8 @@ public class FindBugsWorker {
                     null));
         }
         this.monitor = monitor;
-        this.userPrefs = FindbugsPlugin.getUserPreferences(project);
+        // clone is required because we rewrite project relative references to absolute
+        this.userPrefs = (UserPreferences) FindbugsPlugin.getUserPreferences(project).clone();
     }
 
     /**
@@ -196,14 +197,14 @@ public class FindBugsWorker {
         findBugs.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
 
         // configure detectors.
+        userPrefs.setIncludeFilterFiles(relativeToAbsolute(userPrefs.getIncludeFilterFiles()));
+        userPrefs.setExcludeFilterFiles(relativeToAbsolute(userPrefs.getExcludeFilterFiles()));
+        userPrefs.setExcludeBugsFiles(relativeToAbsolute(userPrefs.getExcludeBugsFiles()));
         findBugs.setUserPreferences(userPrefs);
 
         // configure extended preferences
         findBugs.setAnalysisFeatureSettings(userPrefs.getAnalysisFeatureSettings());
         findBugs.setMergeSimilarWarnings(false);
-        configureExtendedProps(userPrefs.getIncludeFilterFiles(), findBugs, true, false);
-        configureExtendedProps(userPrefs.getExcludeFilterFiles(), findBugs, false, false);
-        configureExtendedProps(userPrefs.getExcludeBugsFiles(), findBugs, false, true);
 
         if(cacheClassData) {
             FindBugs2Eclipse.checkClassPathChanges(findBugs.getProject().getAuxClasspathEntryList(), project);
@@ -366,29 +367,22 @@ public class FindBugsWorker {
         return merged;
     }
 
-    private void configureExtendedProps(Collection<String> filterFiles, IFindBugsEngine findBugs, boolean include,
-            boolean bugsFilter) {
-        for (String filePath : filterFiles) {
+    private Map<String, Boolean> relativeToAbsolute(Map<String, Boolean> map) {
+        Map<String, Boolean> resultMap = new TreeMap<String, Boolean>();
+        for (Entry<String, Boolean> entry : map.entrySet()) {
+            if(!entry.getValue().booleanValue()) {
+                continue;
+            }
+            String filePath = entry.getKey();
             IPath path = getFilterPath(filePath, project);
             if (!path.toFile().exists()) {
                 FindbugsPlugin.getDefault().logWarning("Filter not found: " + filePath);
                 continue;
             }
             String filterName = path.toOSString();
-            try {
-                if (bugsFilter) {
-                    findBugs.excludeBaselineBugs(filterName);
-                } else {
-                    findBugs.addFilter(filterName, include);
-                }
-            } catch (RuntimeException e) {
-                FindbugsPlugin.getDefault().logException(e, "Error while loading filter \"" + filterName + "\".");
-            } catch (DocumentException e) {
-                FindbugsPlugin.getDefault().logException(e, "Error while loading excluded bugs \"" + filterName + "\".");
-            } catch (IOException e) {
-                FindbugsPlugin.getDefault().logException(e, "Error while reading filter \"" + filterName + "\".");
-            }
+            resultMap.put(filterName, Boolean.TRUE);
         }
+        return resultMap;
     }
 
     /**

@@ -20,16 +20,30 @@ package de.tobject.findbugs.properties;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 
-public final class PathElement {
+public class PathElement implements IPathElement {
 
     private final IPath path;
 
     private IStatus status;
 
+    private boolean enabled;
+
     public PathElement(IPath path, IStatus status) {
-        this.path = path;
         this.status = status;
+        String osString = path.toOSString();
+        boolean userEnabled;
+        if(!osString.contains("|")) {
+            this.path = path;
+            // old style: no enablement at all => always on
+            userEnabled = true;
+        } else {
+            String[] parts = osString.split("\\|");
+            this.path = new Path(parts[0]);
+            userEnabled = Boolean.parseBoolean(parts[1]);
+        }
+        enabled = userEnabled && this.path.toFile().exists();
     }
 
     public void setStatus(IStatus status) {
@@ -51,7 +65,7 @@ public final class PathElement {
             return true;
         }
         if (obj instanceof PathElement) {
-            return path.equals(((PathElement) obj).path);
+            return path.equals(((PathElement) obj).path) && enabled == ((PathElement) obj).enabled;
         }
         return false;
     }
@@ -59,5 +73,13 @@ public final class PathElement {
     @Override
     public int hashCode() {
         return path.hashCode();
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 }

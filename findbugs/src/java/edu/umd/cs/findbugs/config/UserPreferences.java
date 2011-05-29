@@ -42,15 +42,19 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.IFindBugsEngine;
+import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SystemProperties;
 
 /**
@@ -62,6 +66,11 @@ import edu.umd.cs.findbugs.SystemProperties;
 public class UserPreferences implements Cloneable {
 
     // Public constants
+
+    /**
+     * Separator string for values composed from a string and boolean
+     */
+    private static final String BOOL_SEPARATOR = "|";
 
     public static final String EFFORT_MIN = "min";
 
@@ -85,11 +94,13 @@ public class UserPreferences implements Cloneable {
 
     private static final String EFFORT_KEY = "effort";
 
-    private static final String INCLUDE_FILTER_KEY = "includefilter";
+    private static final String KEY_INCLUDE_FILTER = "includefilter";
 
-    private static final String EXCLUDE_FILTER_KEY = "excludefilter";
+    private static final String KEY_EXCLUDE_FILTER = "excludefilter";
 
-    private static final String EXCLUDE_BUGS_KEY = "excludebugs";
+    private static final String KEY_EXCLUDE_BUGS = "excludebugs";
+
+    private static final String KEY_PLUGIN = "plugin";
 
     // Fields
 
@@ -103,11 +114,13 @@ public class UserPreferences implements Cloneable {
 
     private String effort;
 
-    private Collection<String> includeFilterFiles;
+    private Map<String, Boolean> includeFilterFiles;
 
-    private Collection<String> excludeFilterFiles;
+    private Map<String, Boolean> excludeFilterFiles;
 
-    private Collection<String> excludeBugsFiles;
+    private Map<String, Boolean> excludeBugsFiles;
+
+    private Map<String, Boolean> customPlugins;
 
     private UserPreferences() {
         filterSettings = ProjectFilterSettings.createDefault();
@@ -115,9 +128,10 @@ public class UserPreferences implements Cloneable {
         detectorEnablementMap = new HashMap<String, Boolean>();
         runAtFullBuild = true;
         effort = EFFORT_DEFAULT;
-        includeFilterFiles = Collections.<String> emptySet();
-        excludeFilterFiles = Collections.<String> emptySet();
-        excludeBugsFiles = Collections.<String> emptySet();
+        includeFilterFiles = new TreeMap<String, Boolean>();
+        excludeFilterFiles = new TreeMap<String, Boolean>();
+        excludeBugsFiles = new TreeMap<String, Boolean>();
+        customPlugins = new TreeMap<String, Boolean>();
     }
 
     /**
@@ -188,7 +202,7 @@ public class UserPreferences implements Cloneable {
                 continue;
             }
             String detectorState = (String) e.getValue();
-            int pipePos = detectorState.indexOf("|");
+            int pipePos = detectorState.indexOf(BOOL_SEPARATOR);
             if (pipePos >= 0) {
                 String name = detectorState.substring(0, pipePos);
                 String enabled = detectorState.substring(pipePos + 1);
@@ -221,10 +235,10 @@ public class UserPreferences implements Cloneable {
             runAtFullBuild = Boolean.parseBoolean(props.getProperty(RUN_AT_FULL_BUILD));
         }
         effort = props.getProperty(EFFORT_KEY, EFFORT_DEFAULT);
-        includeFilterFiles = readFilters(props, INCLUDE_FILTER_KEY);
-        excludeFilterFiles = readFilters(props, EXCLUDE_FILTER_KEY);
-        excludeBugsFiles = readFilters(props, EXCLUDE_BUGS_KEY);
-
+        includeFilterFiles = readProperties(props, KEY_INCLUDE_FILTER);
+        excludeFilterFiles = readProperties(props, KEY_EXCLUDE_FILTER);
+        excludeBugsFiles = readProperties(props, KEY_EXCLUDE_BUGS);
+        customPlugins = readProperties(props, KEY_PLUGIN);
     }
 
     /**
@@ -262,7 +276,7 @@ public class UserPreferences implements Cloneable {
         Iterator<Entry<String, Boolean>> it = detectorEnablementMap.entrySet().iterator();
         while (it.hasNext()) {
             Entry<String, Boolean> entry = it.next();
-            props.put("detector" + entry.getKey(), entry.getKey() + "|" + String.valueOf(entry.getValue().booleanValue()));
+            props.put("detector" + entry.getKey(), entry.getKey() + BOOL_SEPARATOR + String.valueOf(entry.getValue().booleanValue()));
         }
 
         // Save ProjectFilterSettings
@@ -275,9 +289,10 @@ public class UserPreferences implements Cloneable {
         props.put(DETECTOR_THRESHOLD_KEY, String.valueOf(filterSettings.getMinPriorityAsInt()));
         props.put(RUN_AT_FULL_BUILD, String.valueOf(runAtFullBuild));
         props.setProperty(EFFORT_KEY, effort);
-        writeFilters(props, INCLUDE_FILTER_KEY, includeFilterFiles);
-        writeFilters(props, EXCLUDE_FILTER_KEY, excludeFilterFiles);
-        writeFilters(props, EXCLUDE_BUGS_KEY, excludeBugsFiles);
+        writeProperties(props, KEY_INCLUDE_FILTER, includeFilterFiles);
+        writeProperties(props, KEY_EXCLUDE_FILTER, excludeFilterFiles);
+        writeProperties(props, KEY_EXCLUDE_BUGS, excludeBugsFiles);
+        writeProperties(props, KEY_PLUGIN, customPlugins);
 
         OutputStream prefStream = null;
         try {
@@ -380,10 +395,11 @@ public class UserPreferences implements Cloneable {
     public void enableAllDetectors(boolean enable) {
         detectorEnablementMap.clear();
 
-        DetectorFactoryCollection factoryCollection = DetectorFactoryCollection.instance();
-        for (Iterator<DetectorFactory> i = factoryCollection.factoryIterator(); i.hasNext();) {
-            DetectorFactory factory = i.next();
-            detectorEnablementMap.put(factory.getShortName(), enable);
+        Collection<Plugin> allPlugins = Plugin.getAllPlugins();
+        for (Plugin plugin : allPlugins) {
+            for (DetectorFactory factory : plugin.getDetectorFactories()) {
+                detectorEnablementMap.put(factory.getShortName(), enable);
+            }
         }
     }
 
@@ -468,7 +484,8 @@ public class UserPreferences implements Cloneable {
         return runAtFullBuild == other.runAtFullBuild && recentProjectsList.equals(other.recentProjectsList)
                 && detectorEnablementMap.equals(other.detectorEnablementMap) && filterSettings.equals(other.filterSettings)
                 && effort.equals(other.effort) && includeFilterFiles.equals(other.includeFilterFiles)
-                && excludeFilterFiles.equals(other.excludeFilterFiles) && excludeBugsFiles.equals(other.excludeBugsFiles);
+                && excludeFilterFiles.equals(other.excludeFilterFiles) && excludeBugsFiles.equals(other.excludeBugsFiles)
+                && customPlugins.equals(other.customPlugins);
     }
 
     @Override
@@ -481,15 +498,15 @@ public class UserPreferences implements Cloneable {
     public Object clone() {
         try {
             UserPreferences dup = (UserPreferences) super.clone();
-
-            dup.recentProjectsList = new LinkedList<String>();
-            dup.recentProjectsList.addAll(this.recentProjectsList);
-
-            dup.detectorEnablementMap = new HashMap<String, Boolean>();
-            dup.detectorEnablementMap.putAll(this.detectorEnablementMap);
-
+            dup.recentProjectsList = new LinkedList<String>(recentProjectsList);
+            dup.detectorEnablementMap = new HashMap<String, Boolean>(detectorEnablementMap);
             dup.filterSettings = (ProjectFilterSettings) this.filterSettings.clone();
             dup.runAtFullBuild = runAtFullBuild;
+            dup.includeFilterFiles = new TreeMap<String, Boolean>(includeFilterFiles);
+            dup.excludeFilterFiles = new TreeMap<String, Boolean>(excludeFilterFiles);
+            dup.excludeBugsFiles = new TreeMap<String, Boolean>(excludeBugsFiles);
+            dup.customPlugins = new TreeMap<String, Boolean>(customPlugins);
+            dup.effort = effort;
             return dup;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
@@ -508,38 +525,99 @@ public class UserPreferences implements Cloneable {
 
     }
 
-    public Collection<String> getIncludeFilterFiles() {
+    public Map<String, Boolean> getIncludeFilterFiles() {
         return includeFilterFiles;
     }
 
-    public void setIncludeFilterFiles(Collection<String> includeFilterFiles) {
+    public void setIncludeFilterFiles(Map<String, Boolean> includeFilterFiles) {
         if (includeFilterFiles == null) {
             throw new IllegalArgumentException("includeFilterFiles may not be null.");
         }
         this.includeFilterFiles = includeFilterFiles;
     }
 
-    public Collection<String> getExcludeBugsFiles() {
+    public Map<String, Boolean> getExcludeBugsFiles() {
         return excludeBugsFiles;
     }
 
-    public void setExcludeBugsFiles(Collection<String> excludeBugsFiles) {
+    public void setExcludeBugsFiles(Map<String, Boolean> excludeBugsFiles) {
         if (excludeBugsFiles == null) {
             throw new IllegalArgumentException("excludeBugsFiles may not be null.");
         }
         this.excludeBugsFiles = excludeBugsFiles;
     }
 
-    public void setExcludeFilterFiles(Collection<String> excludeFilterFiles) {
+    public void setExcludeFilterFiles(Map<String, Boolean> excludeFilterFiles) {
         if (excludeFilterFiles == null) {
             throw new IllegalArgumentException("excludeFilterFiles may not be null.");
         }
         this.excludeFilterFiles = excludeFilterFiles;
     }
 
-    public Collection<String> getExcludeFilterFiles() {
+    public Map<String, Boolean> getExcludeFilterFiles() {
         return excludeFilterFiles;
     }
+
+    /**
+     * Additional plugins which could be used by {@link IFindBugsEngine} (if
+     * enabled), or which shouldn't be used (if disabled). If a plugin is not
+     * included in the set, it's enablement depends on it's default settings.
+     *
+     * @param customPlugins
+     *            map with additional third party plugin locations (as absolute
+     *            paths), never null, but might be empty
+     * @see Plugin#isCorePlugin()
+     * @see Plugin#isGloballyEnabled()
+     */
+    public void setCustomPlugins(Map<String, Boolean> customPlugins) {
+        if (customPlugins == null) {
+            throw new IllegalArgumentException("customPlugins may not be null.");
+        }
+        this.customPlugins = customPlugins;
+    }
+
+    /**
+     * Additional plugins which could be used by {@link IFindBugsEngine} (if
+     * enabled), or which shouldn't be used (if disabled). If a plugin is not
+     * included in the set, it's enablement depends on it's default settings.
+     *
+     * @return map with additional third party plugin locations (as absolute
+     *         paths), never null, but might be empty. A value of a particular
+     *         key can be null (same as disabled)
+     * @see Plugin#isCorePlugin()
+     * @see Plugin#isGloballyEnabled()
+     */
+    public Map<String, Boolean> getCustomPlugins() {
+        return customPlugins;
+    }
+
+    /**
+     * Additional plugins which could be used or shouldn't be used (depending on
+     * given argument) by {@link IFindBugsEngine}. If a plugin is not included
+     * in the set, it's enablement depends on it's default settings.
+     *
+     * @return set with additional third party plugin locations (as absolute
+     *         paths), never null, but might be empty
+     * @see Plugin#isCorePlugin()
+     * @see Plugin#isGloballyEnabled()
+     */
+    public Set<String> getCustomPlugins(boolean enabled){
+        Set<Entry<String, Boolean>> entrySet = customPlugins.entrySet();
+        Set<String> result = new TreeSet<String>();
+        for (Entry<String, Boolean> entry : entrySet) {
+            if(enabled) {
+                if(entry.getValue() != null && entry.getValue().booleanValue()) {
+                    result.add(entry.getKey());
+                }
+            } else {
+                if(entry.getValue() == null || !entry.getValue().booleanValue()) {
+                    result.add(entry.getKey());
+                }
+            }
+        }
+        return result;
+    }
+
 
     /**
      * Helper method to read array of strings out of the properties file, using
@@ -551,14 +629,21 @@ public class UserPreferences implements Cloneable {
      *            The key prefix of the array.
      * @return The array of Strings, or an empty array if no values exist.
      */
-    private Set<String> readFilters(Properties props, String keyPrefix) {
-        Set<String> filters = new LinkedHashSet<String>();
+    private static Map<String, Boolean> readProperties(Properties props, String keyPrefix) {
+        Map<String, Boolean> filters = new TreeMap<String, Boolean>();
         int counter = 0;
         boolean keyFound = true;
         while (keyFound) {
             String property = props.getProperty(keyPrefix + counter);
             if (property != null) {
-                filters.add(property);
+                int pipePos = property.indexOf(BOOL_SEPARATOR);
+                if (pipePos >= 0) {
+                    String name = property.substring(0, pipePos);
+                    String enabled = property.substring(pipePos + 1);
+                    filters.put(name, Boolean.valueOf(enabled));
+                } else {
+                    filters.put(property, Boolean.TRUE);
+                }
                 counter++;
             } else {
                 keyFound = false;
@@ -579,10 +664,11 @@ public class UserPreferences implements Cloneable {
      * @param filters
      *            The filters array to write to the properties.
      */
-    private void writeFilters(Properties props, String keyPrefix, Collection<String> filters) {
+    private static void writeProperties(Properties props, String keyPrefix, Map<String, Boolean> filters) {
         int counter = 0;
-        for (String s : filters) {
-            props.setProperty(keyPrefix + counter, s);
+        Set<Entry<String, Boolean>> entrySet = filters.entrySet();
+        for (Entry<String, Boolean> entry : entrySet) {
+            props.setProperty(keyPrefix + counter, entry.getKey() + BOOL_SEPARATOR + entry.getValue());
             counter++;
         }
         // remove obsolete keys from the properties file

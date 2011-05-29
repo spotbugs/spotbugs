@@ -32,6 +32,7 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.config.CommandLine;
@@ -70,7 +71,10 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
         private int summarizeMaxRank = 20;
 
+        private Project project;
+
         public PrintingCommandLine() {
+            project = new Project();
             addSwitch("-longBugCodes", "use long bug codes when generating text");
             addSwitch("-rank", "list rank when generating text");
             addOption("-maxRank", "max rank", "only list bugs of this rank or less");
@@ -83,13 +87,11 @@ public class PrintingBugReporter extends TextUIBugReporter {
             addOption("-pluginList", "jar1[" + File.pathSeparator + "jar2...]", "specify list of plugin Jar files to load");
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String,
-         * java.lang.String)
-         */
+        public @Nonnull
+        Project getProject() {
+            return project;
+        }
+
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
             if (option.equals("-longBugCodes"))
@@ -114,24 +116,15 @@ public class PrintingBugReporter extends TextUIBugReporter {
                 throw new IllegalArgumentException("Unknown option '" + option + "'");
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java
-         * .lang.String, java.lang.String)
-         */
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
             if (option.equals("-pluginList")) {
                 String pluginListStr = argument;
-                ArrayList<URL> pluginList = new ArrayList<URL>();
+                Map<String, Boolean> customPlugins = getProject().getConfiguration().getCustomPlugins();
                 StringTokenizer tok = new StringTokenizer(pluginListStr, File.pathSeparator);
                 while (tok.hasMoreTokens()) {
-                    pluginList.add(new File(tok.nextToken()).toURL());
+                    customPlugins.put(new File(tok.nextToken()).getAbsolutePath(), Boolean.TRUE);
                 }
-
-                DetectorFactoryCollection.instance().setPluginList(pluginList.toArray(new URL[pluginList.size()]));
             } else if (option.equals("-maxRank")) {
                 maxRank = Integer.parseInt(argument);
             } else if (option.equals("-summarizeMaxRank")) {
@@ -159,7 +152,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
             return;
         }
 
-        SortedBugCollection bugCollection = new SortedBugCollection();
+        SortedBugCollection bugCollection = new SortedBugCollection(commandLine.getProject());
         if (argCount < args.length)
             bugCollection.readXML(args[argCount++]);
         else

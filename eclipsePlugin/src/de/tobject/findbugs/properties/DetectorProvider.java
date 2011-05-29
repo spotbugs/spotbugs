@@ -19,38 +19,40 @@
 package de.tobject.findbugs.properties;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.tobject.findbugs.builder.FindBugsWorker;
-import de.tobject.findbugs.preferences.PrefsUtil;
+import edu.umd.cs.findbugs.config.UserPreferences;
 
 class DetectorProvider extends PathsProvider {
 
     protected DetectorProvider(CheckboxTableViewer viewer, FindbugsPropertyPage propertyPage) {
         super(viewer, propertyPage);
-        setDetectorPlugins(propertyPage.getPreferenceStore());
+        setDetectorPlugins(propertyPage.getCurrentUserPreferences());
     }
 
-    List<PathElement> getDetectorPluginFiles(IPreferenceStore prefs) {
+    List<IPathElement> getDetectorPluginFiles(UserPreferences userPreferences) {
         // TODO project is currently not supported (always null).
         IProject project = propertyPage.getProject();
-        final List<PathElement> newPaths = new ArrayList<PathElement>();
-        Collection<String> filterPaths = PrefsUtil.readDetectorPaths(prefs);
-        if (filterPaths != null) {
-            for (String path : filterPaths) {
-                IPath filterPath = FindBugsWorker.getFilterPath(path, project);
-                // if(filterPath.toFile().exists()) {
-                newPaths.add(new PathElement(filterPath, Status.OK_STATUS));
-                // }
+        final List<IPathElement> newPaths = new ArrayList<IPathElement>();
+        Map<String, Boolean> pluginPaths = userPreferences.getCustomPlugins();
+        if (pluginPaths != null) {
+            Set<Entry<String,Boolean>> entrySet = pluginPaths.entrySet();
+            for (Entry<String, Boolean> entry : entrySet) {
+                IPath pluginPath = FindBugsWorker.getFilterPath(entry.getKey(), project);
+                PathElement element = new PathElement(pluginPath, Status.OK_STATUS);
+                element.setEnabled(entry.getValue().booleanValue());
+                newPaths.add(element);
             }
         }
         return newPaths;
@@ -59,18 +61,18 @@ class DetectorProvider extends PathsProvider {
     @Override
     protected void applyToPreferences() {
         super.applyToPreferences();
-        PrefsUtil.writeDetectorPaths(propertyPage.getPreferenceStore(), pathsToStrings());
+        propertyPage.getCurrentUserPreferences().setCustomPlugins(pathsToStrings());
     }
 
-    void setDetectorPlugins(IPreferenceStore prefs) {
-        setFilters(getDetectorPluginFiles(prefs));
+    void setDetectorPlugins(UserPreferences userPreferences) {
+        setFilters(getDetectorPluginFiles(userPreferences));
     }
 
     @Override
     protected IStatus validate() {
         DetectorValidator validator = new DetectorValidator();
         IStatus bad = null;
-        for (PathElement path : paths) {
+        for (IPathElement path : paths) {
             IStatus status = validator.validate(path.getPath());
             path.setStatus(status);
             if (!status.isOK()) {

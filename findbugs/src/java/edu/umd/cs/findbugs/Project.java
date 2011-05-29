@@ -65,6 +65,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
@@ -115,45 +116,40 @@ public class Project implements XMLWriteable {
 
     private String cloudId;
 
-    private DetectorFactoryCollection configuration = DetectorFactoryCollection.instance();
+    private UserPreferences configuration;
 
-    private final Map<Plugin,Boolean> enabledPlugins = new HashMap<Plugin,Boolean>();
+    /** key is plugin id */
+    private final Map<String,Boolean> enabledPlugins;
 
 
     public boolean getPluginStatus(Plugin plugin) {
-        Boolean b = enabledPlugins.get(plugin);
-        if (b != null)
+        Boolean b = enabledPlugins.get(plugin.getPluginId());
+        if (b != null) {
             return b;
+        }
         return plugin.isGloballyEnabled();
     }
 
-    public void setPluginStatus(Plugin plugin, boolean enabled) {
-        if (plugin.isGloballyEnabled() == enabled)
-            enabledPlugins.remove(plugin);
-        else enabledPlugins.put(plugin, enabled);
+    public void setPluginStatus(String pluginId, boolean enabled) {
+        enabledPlugins.put(pluginId, enabled);
+        Plugin plugin = Plugin.getByPluginId(pluginId);
+        if(plugin == null) {
+            return;
+        }
+        if (isDefaultInitialPluginState(plugin, enabled)) {
+            enabledPlugins.remove(plugin.getPluginId());
+        }
     }
 
-    public DetectorFactoryCollection getConfiguration() {
+    public UserPreferences getConfiguration() {
         return configuration;
     }
 
-    public void resetConfiguration() {
-        Collection<Plugin> enabled = new HashSet<Plugin>();
-        for(Plugin plugin : Plugin.getAllPlugins()) {
-            Boolean b = enabledPlugins.get(plugin);
-            if (b == null)
-                b = plugin.isGloballyEnabled();
-            if (b)
-                enabled.add(plugin);
-        }
-        if (!enabled.equals(this.configuration.plugins()))
-            this.configuration = new DetectorFactoryCollection(enabled);
-        DetectorFactoryCollection.resetInstance(configuration);
-    }
-
-    public void setConfiguration(DetectorFactoryCollection configuration) {
+    /**
+     * @param configuration The configuration to set, nuon null
+     */
+    public void setConfiguration(UserPreferences configuration) {
         this.configuration = configuration;
-        DetectorFactoryCollection.resetInstance(configuration);
     }
 
     /**
@@ -222,6 +218,8 @@ public class Project implements XMLWriteable {
      * Create an anonymous project.
      */
     public Project() {
+        enabledPlugins = new HashMap<String,Boolean>();
+        configuration = UserPreferences.createDefaultUserPreferences();
         analysisTargets = new LinkedList<String>();
         srcDirList = new LinkedList<String>();
         auxClasspathEntryList = new LinkedList<String>();
@@ -889,14 +887,16 @@ public class Project implements XMLWriteable {
             xmlOutput.closeTag("SuppressionFilter");
         }
 
-        for(Map.Entry<Plugin, Boolean> e : enabledPlugins.entrySet()) {
-            Plugin plugin = e.getKey();
-            if (e.getValue() == plugin.isGloballyEnabled()
-                    && plugin.isInitialPlugin()
-                    && plugin.isEnabledByDefault() == plugin.isGloballyEnabled()) continue;
+        for(Map.Entry<String, Boolean> e : enabledPlugins.entrySet()) {
+            String pluginId = e.getKey();
+            Plugin plugin = Plugin.getByPluginId(pluginId);
+            Boolean enabled = e.getValue();
+            if (isDefaultInitialPluginState(plugin, enabled)) {
+                continue;
+            }
             XMLAttributeList pluginAttributeList = new XMLAttributeList();
             pluginAttributeList.addAttribute(PLUGIN_ID_ATTRIBUTE_NAME, plugin.getPluginId());
-            pluginAttributeList.addAttribute(PLUGIN_STATUS_ELEMENT_NAME, e.getValue().toString());
+            pluginAttributeList.addAttribute(PLUGIN_STATUS_ELEMENT_NAME, enabled.toString());
             xmlOutput.openCloseTag(PLUGIN_ELEMENT_NAME, pluginAttributeList);
         }
         if (cloudId != null) {
@@ -916,6 +916,12 @@ public class Project implements XMLWriteable {
         }
 
         xmlOutput.closeTag(BugCollection.PROJECT_ELEMENT_NAME);
+    }
+
+    private boolean isDefaultInitialPluginState(Plugin plugin, Boolean enabled) {
+        return plugin.isInitialPlugin()
+                && enabled == plugin.isGloballyEnabled()
+                && plugin.isEnabledByDefault() == plugin.isGloballyEnabled();
     }
 
     /**

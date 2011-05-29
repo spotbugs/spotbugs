@@ -18,8 +18,6 @@
  */
 package de.tobject.findbugs.properties;
 
-import java.util.SortedSet;
-
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.swt.SWT;
@@ -33,10 +31,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
-import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.preferences.FindBugsConstants;
-import de.tobject.findbugs.preferences.PrefsUtil;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
@@ -55,8 +50,6 @@ public class WorkspaceSettingsTab extends Composite {
     private final FindbugsPropertyPage page;
 
     private DetectorProvider detectorProvider;
-
-    private boolean pluginsChanged;
 
     private Button optimizeClasspath;
 
@@ -96,7 +89,7 @@ public class WorkspaceSettingsTab extends Composite {
         CheckboxTableViewer viewer = pathsWidget.createViewer("Custom Detectors",
                 "See: <a href=\"http://www.ibm.com/developerworks/library/j-findbug2/\">'Writing custom detectors'</a>"
                         + " and <a href=\"http://fb-contrib.sourceforge.net/\">fb-contrib</a>: additional bug detectors package",
-                        false); // TODO set true to enable checkbox to allow enable/disable detectors without removing them
+                        true); // set true to enable checkbox to allow enable/disable detectors without removing them
         detectorProvider = createDetectorProvider(viewer);
         pathsWidget.createButtonsArea(detectorProvider);
         detectorProvider.refresh();
@@ -153,7 +146,7 @@ public class WorkspaceSettingsTab extends Composite {
         confirmSwitch.setSelection(store.getBoolean(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH));
         switchTo.setSelection(store.getBoolean(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS));
         confirmBuild.setSelection(!store.getBoolean(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD));
-        detectorProvider.setDetectorPlugins(store);
+        detectorProvider.setDetectorPlugins(prefs);
         detectorProvider.refresh();
     }
 
@@ -171,17 +164,6 @@ public class WorkspaceSettingsTab extends Composite {
         if(!isWorkspaceSettings()) {
             return;
         }
-
-        final SortedSet<String> detectorPaths = PrefsUtil.readDetectorPaths(store);
-        if (detectorPaths.isEmpty() && !DetectorFactoryCollection.isLoaded()) {
-            return;
-        }
-        FindbugsPlugin.applyCustomDetectors(true);
-        pluginsChanged = true;
-    }
-
-    public boolean arePluginsChanged() {
-        return pluginsChanged;
     }
 
 }

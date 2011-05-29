@@ -136,12 +136,8 @@ public class DetectorsTest {
      * Loads the default detectors from findbugs.jar, to isolate the test from
      * others that use fake plugins.
      */
-    private void loadFindbugsPlugin() throws MalformedURLException {
-        File workingDir = new File(System.getProperty("user.dir"));
-        File findbugsJar = new File(workingDir.getParentFile(), "findbugs/build/lib/findbugs.jar");
-        URL[] pluginList = new URL[] { findbugsJar.toURI().toURL() };
+    private void loadFindbugsPlugin() {
         DetectorFactoryCollection dfc = new DetectorFactoryCollection();
-        // dfc.setPluginList(pluginList);
         DetectorFactoryCollection.resetInstance(dfc);
     }
 
@@ -164,7 +160,7 @@ public class DetectorsTest {
 
         engine.setBugReporter(this.bugReporter);
         UserPreferences preferences = UserPreferences.createDefaultUserPreferences();
-        DetectorFactory checkExpectedWarnings = DetectorFactoryCollection.instance().getFactory("CheckExpectedWarnings");
+        DetectorFactory checkExpectedWarnings = detectorFactoryCollection.getFactory("CheckExpectedWarnings");
         preferences.enableDetector(checkExpectedWarnings, true);
         preferences.getFilterSettings().clearAllCategories();
         this.engine.setUserPreferences(preferences);

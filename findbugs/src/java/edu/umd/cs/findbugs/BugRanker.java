@@ -107,13 +107,13 @@ public class BugRanker {
                 char firstChar = value.charAt(0);
                 if (firstChar == '+')
                     value = value.substring(1);
-                    
+
                 int v = Integer.parseInt(value);
                 adjustment.put(k, v);
-                if (firstChar == '+' || firstChar == '-') 
+                if (firstChar == '+' || firstChar == '-')
                     isRelative.add(k);
-             
-                
+
+
             }
         }
     }
@@ -216,8 +216,7 @@ public class BugRanker {
 
 
     private static BugRanker getCoreRanker() {
-        DetectorFactoryCollection factory = DetectorFactoryCollection.instance();
-        Plugin corePlugin = factory.getCorePlugin();
+        Plugin corePlugin = PluginLoader.getCorePluginLoader().getPlugin();
         return corePlugin.getBugRanker();
     }
 
@@ -255,12 +254,10 @@ public class BugRanker {
     }
 
     private static int findRankUnknownPlugin(BugPattern pattern) {
-        DetectorFactoryCollection factory = DetectorFactoryCollection.instance();
-        Plugin corePlugin = factory.getCorePlugin();
 
         List<BugRanker> rankers = new ArrayList<BugRanker>();
-        pluginLoop: for (Plugin plugin : factory.plugins()) {
-            if (plugin == corePlugin)
+        pluginLoop: for (Plugin plugin : Plugin.getAllPlugins()) {
+            if (plugin.isCorePlugin())
                 continue;
             if (false) {
                 rankers.add(plugin.getBugRanker());

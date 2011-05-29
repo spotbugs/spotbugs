@@ -18,8 +18,7 @@
  */
 package de.tobject.findbugs.test;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -33,7 +32,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * Base class for the default test scenario of the FindBugs UI tests.
- * 
+ *
  * @author Tom�s Pollak
  */
 public abstract class AbstractFindBugsTest extends AbstractPluginTest {
@@ -44,7 +43,7 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
 
     /**
      * Returns the bug file path of the test project.
-     * 
+     *
      * @return The absolute filesystem path of the bugs file.
      */
     protected String getBugsFileLocation() {
@@ -70,7 +69,7 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
 
     /**
      * Returns the filter file path of the test project.
-     * 
+     *
      * @return The absolute path of the filter file.
      */
     protected String getFilterFileLocation() {
@@ -85,7 +84,7 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
 
     /**
      * Configures the test project to use the baseline bugs file.
-     * 
+     *
      * @param b
      */
     protected void setBaselineBugsFile(boolean on) throws CoreException {
@@ -93,10 +92,12 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
         // here
         FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);
         UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
+        HashMap<String, Boolean> map = new HashMap<String, Boolean>();
         if (on) {
-            preferences.setExcludeBugsFiles(Collections.singletonList(getBugsFileLocation()));
+            map.put(getBugsFileLocation(), Boolean.TRUE);
+            preferences.setExcludeBugsFiles(map);
         } else {
-            preferences.setExcludeBugsFiles(new ArrayList<String>());
+            preferences.setExcludeBugsFiles(map);
         }
         FindbugsPlugin.saveUserPreferences(getProject(), preferences);
     }
@@ -109,10 +110,12 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
         // here
         FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);
         UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
+        HashMap<String, Boolean> map = new HashMap<String, Boolean>();
         if (on) {
-            preferences.setExcludeFilterFiles(Collections.singletonList(getFilterFileLocation()));
+            map.put(getFilterFileLocation(), Boolean.TRUE);
+            preferences.setExcludeFilterFiles(map);
         } else {
-            preferences.setExcludeFilterFiles(new ArrayList<String>());
+            preferences.setExcludeFilterFiles(new HashMap<String, Boolean>());
         }
         FindbugsPlugin.saveUserPreferences(getProject(), preferences);
     }

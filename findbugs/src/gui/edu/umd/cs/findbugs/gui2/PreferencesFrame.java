@@ -179,7 +179,7 @@ public class PreferencesFrame extends FBDialog {
             boolean enabled = entry.getValue();
             if (project != null) {
                 if (enabled != project.getPluginStatus(plugin)) {
-                    project.setPluginStatus(plugin, enabled);
+                    project.setPluginStatus(plugin.getPluginId(), enabled);
                     changed = true;
                 }
             } else {

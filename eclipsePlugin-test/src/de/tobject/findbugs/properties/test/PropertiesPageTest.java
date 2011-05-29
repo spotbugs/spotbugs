@@ -20,8 +20,8 @@ package de.tobject.findbugs.properties.test;
 
 import static org.junit.Assert.*;
 
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -433,7 +433,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
         }
     }
 
-    private void assertEmptyFilter(Collection<String> filters) {
+    private void assertEmptyFilter(Map<String, Boolean> filters) {
         assertTrue(filters.isEmpty());
     }
 
@@ -460,9 +460,9 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
         }
     }
 
-    private void assertSelectedFilter(String expectedFilter, Collection<String> actualFilters) {
+    private void assertSelectedFilter(String expectedFilter, Map<String, Boolean> actualFilters) {
         assertEquals(1, actualFilters.size());
-        assertTrue(actualFilters.contains(expectedFilter));
+        assertTrue(actualFilters.containsKey(expectedFilter));
     }
 
     private PropertiesTestDialog createAndOpenProjectPropertiesDialog(FindbugsPropertyPageTestSubclass page) {

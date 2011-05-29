@@ -19,15 +19,16 @@
 package de.tobject.findbugs.properties;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -63,7 +64,7 @@ public class FilterFilesTab extends Composite {
     static final class SelectionValidator {
         private final UserPreferences prefs;
 
-        private final Collection<String> exclFiles;
+        private final Map<String, Boolean> exclFiles;
 
         public SelectionValidator(FilterKind kind, FindbugsPropertyPage propertyPage) {
             prefs = propertyPage.getCurrentUserPreferences();
@@ -71,7 +72,7 @@ public class FilterFilesTab extends Composite {
         }
 
         public IStatus validate(String path) {
-            if (exclFiles.contains(path)) {
+            if (exclFiles.containsKey(path)) {
                 return FindbugsPlugin.createErrorStatus("Filter selected in a conflicting list", null);
             }
             return Status.OK_STATUS;
@@ -88,16 +89,16 @@ public class FilterFilesTab extends Composite {
             setFilters(propertyPage.getCurrentUserPreferences());
         }
 
-        List<PathElement> getFilterFiles(UserPreferences prefs) {
+        List<IPathElement> getFilterFiles(UserPreferences prefs) {
             IProject project = propertyPage.getProject();
-            final List<PathElement> newPaths = new ArrayList<PathElement>();
-            Collection<String> filterPaths = kind.selectedPaths(prefs);
+            final List<IPathElement> newPaths = new ArrayList<IPathElement>();
+            Map<String, Boolean> filterPaths = kind.selectedPaths(prefs);
             if (filterPaths != null) {
-                for (String path : filterPaths) {
-                    IPath filterPath = FindBugsWorker.getFilterPath(path, project);
-                    if (filterPath.toFile().exists()) {
-                        newPaths.add(new PathElement(filterPath, Status.OK_STATUS));
-                    }
+                for (Entry<String, Boolean> entry : filterPaths.entrySet()) {
+                    IPath filterPath = FindBugsWorker.getFilterPath(entry.getKey(), project);
+                    PathElement element = new PathElement(filterPath, Status.OK_STATUS);
+                    element.setEnabled(entry.getValue().booleanValue());
+                    newPaths.add(element);
                 }
             }
             return newPaths;
@@ -118,7 +119,7 @@ public class FilterFilesTab extends Composite {
             SelectionValidator validator = new SelectionValidator(kind, propertyPage);
             IStatus bad = null;
             IProject project = propertyPage.getProject();
-            for (PathElement path : paths) {
+            for (IPathElement path : paths) {
                 String filterPath = FindBugsWorker.toFilterPath(path.getPath(), project).toOSString();
                 IStatus status = validator.validate(filterPath);
                 path.setStatus(status);
@@ -162,19 +163,19 @@ public class FilterFilesTab extends Composite {
         tabDetector.setToolTipText("Configure external bug reporting filters");
 
         ManagePathsWidget incl = new ManagePathsWidget(this);
-        TableViewer viewer = incl.createViewer(getMessage(FilterKind.INCLUDE.propertyName), null);
+        CheckboxTableViewer viewer = incl.createViewer(getMessage(FilterKind.INCLUDE.propertyName), null, true);
         filterIncl = createFilterProvider(viewer, FilterKind.INCLUDE, page);
         incl.createButtonsArea(filterIncl);
 
         ManagePathsWidget excl = new ManagePathsWidget(this);
-        viewer = excl.createViewer(getMessage(FilterKind.EXCLUDE.propertyName), null);
+        viewer = excl.createViewer(getMessage(FilterKind.EXCLUDE.propertyName), null, true);
         filterExcl = createFilterProvider(viewer, FilterKind.EXCLUDE, page);
         excl.createButtonsArea(filterExcl);
 
         ManagePathsWidget excl2 = new ManagePathsWidget(this);
         viewer = excl2.createViewer(getMessage(FilterKind.EXCLUDE_BUGS.propertyName),
                 "You can include past FindBugs result XML files here to exclude those bugs from analysis. "
-                        + "<a href=\"http://findbugs.sourceforge.net/manual/filter.html\">Details...</a>");
+                        + "<a href=\"http://findbugs.sourceforge.net/manual/filter.html\">Details...</a>", true);
         filterExclBugs = createFilterProvider(viewer, FilterKind.EXCLUDE_BUGS, page);
         excl2.createButtonsArea(filterExclBugs);
 
@@ -212,58 +213,58 @@ public class FilterFilesTab extends Composite {
     public static enum FilterKind {
         INCLUDE("property.includefilter") {
             @Override
-            Collection<String> selectedPaths(UserPreferences u) {
+            Map<String, Boolean> selectedPaths(UserPreferences u) {
                 return u.getIncludeFilterFiles();
             }
 
             @Override
-            Collection<String> excludedPaths(UserPreferences u) {
-                Set<String> excl = new HashSet<String>();
-                excl.addAll(u.getExcludeFilterFiles());
-                excl.addAll(u.getExcludeBugsFiles());
+            Map<String, Boolean> excludedPaths(UserPreferences u) {
+                Map<String, Boolean> excl = new TreeMap<String, Boolean>();
+                excl.putAll(u.getExcludeFilterFiles());
+                excl.putAll(u.getExcludeBugsFiles());
                 return excl;
             }
 
             @Override
-            void setPaths(UserPreferences u, Collection<String> files) {
+            void setPaths(UserPreferences u, Map<String, Boolean> files) {
                 u.setIncludeFilterFiles(files);
             }
         },
         EXCLUDE("property.excludefilter") {
             @Override
-            Collection<String> selectedPaths(UserPreferences u) {
+            Map<String, Boolean> selectedPaths(UserPreferences u) {
                 return u.getExcludeFilterFiles();
             }
 
             @Override
-            Collection<String> excludedPaths(UserPreferences u) {
-                Set<String> excl = new HashSet<String>();
-                excl.addAll(u.getIncludeFilterFiles());
-                excl.addAll(u.getExcludeBugsFiles());
+            Map<String, Boolean> excludedPaths(UserPreferences u) {
+                Map<String, Boolean> excl = new TreeMap<String, Boolean>();
+                excl.putAll(u.getIncludeFilterFiles());
+                excl.putAll(u.getExcludeBugsFiles());
                 return excl;
             }
 
             @Override
-            void setPaths(UserPreferences u, Collection<String> files) {
+            void setPaths(UserPreferences u, Map<String, Boolean> files) {
                 u.setExcludeFilterFiles(files);
             }
         },
         EXCLUDE_BUGS("property.excludebugs") {
             @Override
-            Collection<String> selectedPaths(UserPreferences u) {
+            Map<String, Boolean> selectedPaths(UserPreferences u) {
                 return u.getExcludeBugsFiles();
             }
 
             @Override
-            Collection<String> excludedPaths(UserPreferences u) {
-                Set<String> excl = new HashSet<String>();
-                excl.addAll(u.getIncludeFilterFiles());
-                excl.addAll(u.getExcludeFilterFiles());
+            Map<String, Boolean> excludedPaths(UserPreferences u) {
+                Map<String, Boolean> excl = new TreeMap<String, Boolean>();
+                excl.putAll(u.getIncludeFilterFiles());
+                excl.putAll(u.getExcludeFilterFiles());
                 return excl;
             }
 
             @Override
-            void setPaths(UserPreferences u, Collection<String> files) {
+            void setPaths(UserPreferences u, Map<String, Boolean> files) {
                 u.setExcludeBugsFiles(files);
             }
         };
@@ -273,11 +274,11 @@ public class FilterFilesTab extends Composite {
             this.propertyName = propertyName;
         }
 
-        abstract Collection<String> selectedPaths(UserPreferences u);
+        abstract Map<String, Boolean> selectedPaths(UserPreferences u);
 
-        abstract Collection<String> excludedPaths(UserPreferences u);
+        abstract Map<String, Boolean> excludedPaths(UserPreferences u);
 
-        abstract void setPaths(UserPreferences u, Collection<String> files);
+        abstract void setPaths(UserPreferences u, Map<String, Boolean> files);
     }
 
     @Override

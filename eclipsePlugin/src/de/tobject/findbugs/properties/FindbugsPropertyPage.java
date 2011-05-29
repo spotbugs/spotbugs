@@ -539,15 +539,15 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         boolean analysisSettingsChanged = false;
         boolean reporterSettingsChanged = false;
         boolean needRedisplayMarkers = false;
-        boolean pluginsChanged = false;
         if (workspaceSettingsTab != null) {
             workspaceSettingsTab.performOK();
-            pluginsChanged = workspaceSettingsTab.arePluginsChanged();
         }
 
+        boolean pluginsChanged = false;
         // Have user preferences for project changed?
         // If so, write them to the user preferences file & re-run builder
         if (!currentUserPreferences.equals(origUserPreferences)) {
+            pluginsChanged = !currentUserPreferences.getCustomPlugins().equals(origUserPreferences.getCustomPlugins());
             // save only if we in the workspace page OR in the project page with
             // enabled
             // project settings
@@ -557,6 +557,9 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
                 } catch (CoreException e) {
                     FindbugsPlugin.getDefault().logException(e, "Could not store FindBugs preferences for project");
                 }
+            }
+            if(pluginsChanged) {
+                FindbugsPlugin.applyCustomDetectors(true);
             }
         }
 

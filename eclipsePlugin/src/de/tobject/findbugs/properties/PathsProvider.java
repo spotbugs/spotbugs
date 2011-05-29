@@ -21,8 +21,8 @@ package de.tobject.findbugs.properties;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
@@ -30,6 +30,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.ICheckStateProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -45,10 +49,11 @@ import org.eclipse.swt.widgets.Widget;
 
 import de.tobject.findbugs.builder.FindBugsWorker;
 
-abstract class PathsProvider extends SelectionAdapter implements IStructuredContentProvider {
+abstract class PathsProvider extends SelectionAdapter implements IStructuredContentProvider,
+    ICheckStateProvider {
     private static IPath lastUsedPath;
 
-    protected final List<PathElement> paths;
+    protected final List<IPathElement> paths;
 
     private final Control control;
 
@@ -60,8 +65,20 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
 
     protected PathsProvider(TableViewer viewer, FindbugsPropertyPage propertyPage) {
         this.propertyPage = propertyPage;
-        this.paths = new ArrayList<PathElement>();
+        this.paths = new ArrayList<IPathElement>();
         this.viewer = viewer;
+        if(viewer instanceof CheckboxTableViewer) {
+            CheckboxTableViewer tv = (CheckboxTableViewer) viewer;
+            tv.setCheckStateProvider(this);
+            tv.addCheckStateListener(new ICheckStateListener() {
+                public void checkStateChanged(CheckStateChangedEvent event) {
+                    boolean checked = event.getChecked();
+                    IPathElement element = (IPathElement) event.getElement();
+                    element.setEnabled(checked);
+                    handleContendChanged();
+                }
+            });
+        }
         this.control = viewer.getTable();
         listeners = new ListenerList();
         viewer.setContentProvider(this);
@@ -77,9 +94,19 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         return lastUsedPath;
     }
 
-    void setFilters(List<PathElement> filterFiles) {
+    void setFilters(List<IPathElement> filterFiles) {
         paths.clear();
         paths.addAll(filterFiles);
+        if(viewer instanceof CheckboxTableViewer) {
+            CheckboxTableViewer tv = (CheckboxTableViewer) viewer;
+            List<IPathElement> checked = new ArrayList<IPathElement>();
+            for (IPathElement pe : paths) {
+                if(pe.isEnabled()) {
+                    checked.add(pe);
+                }
+            }
+            tv.setCheckedElements(checked.toArray(new IPathElement[checked.size()]));
+        }
     }
 
     @Override
@@ -91,7 +118,7 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         } else {
             Iterator<?> selectionIter = ((IStructuredSelection) viewer.getSelection()).iterator();
             while (selectionIter.hasNext()) {
-                remove((PathElement) selectionIter.next());
+                remove((IPathElement) selectionIter.next());
             }
         }
     }
@@ -112,10 +139,7 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
             return;
         }
         addSelectedPaths(dialog);
-        applyToPreferences();
-        for (Object object : listeners.getListeners()) {
-            ((Listener) object).handleEvent(null);
-        }
+        handleContendChanged();
     }
 
     private FileDialog createFileDialog(Shell parentShell) {
@@ -171,6 +195,18 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         return paths.toArray();
     }
 
+    public boolean isChecked(Object element) {
+        if(element instanceof IPathElement) {
+            IPathElement elt = (IPathElement) element;
+            return elt.isEnabled();
+        }
+        return false;
+    }
+
+    public boolean isGrayed(Object element) {
+        return false;
+    }
+
     boolean contains(Object o) {
         return paths.contains(o);
     }
@@ -191,8 +227,12 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
 
     abstract protected IStatus validate();
 
-    public void remove(PathElement holder) {
+    public void remove(IPathElement holder) {
         paths.remove(holder);
+        handleContendChanged();
+    }
+
+    private void handleContendChanged() {
         applyToPreferences();
         for (Object object : listeners.getListeners()) {
             ((Listener) object).handleEvent(null);
@@ -206,12 +246,12 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         }
     }
 
-    protected SortedSet<String> pathsToStrings() {
+    protected Map<String, Boolean> pathsToStrings() {
         IProject project = propertyPage.getProject();
-        SortedSet<String> result = new TreeSet<String>();
-        for (PathElement path : paths) {
+        Map<String, Boolean> result = new TreeMap<String, Boolean>();
+        for (IPathElement path : paths) {
             IPath filterPath = FindBugsWorker.toFilterPath(path.getPath(), project);
-            result.add(filterPath.toPortableString());
+            result.put(filterPath.toPortableString(), Boolean.valueOf(path.isEnabled()));
         }
         return result;
     }
