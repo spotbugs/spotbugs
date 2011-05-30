@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugInstance.XmlProps;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.PackageStats;
@@ -610,11 +611,7 @@ public abstract class AbstractCloud implements Cloud {
     }
 
     public long getFirstSeen(BugInstance b) {
-        long firstVersion = b.getFirstVersion();
-        AppVersion v = getBugCollection().getAppVersionFromSequenceNumber(firstVersion);
-        if (v == null)
-            return getBugCollection().getTimestamp();
-        return v.getTimestamp();
+        return getLocalFirstSeen(b);
     }
 
     public void addDateSeen(BugInstance b, long when) {
@@ -804,6 +801,20 @@ public abstract class AbstractCloud implements Cloud {
     
     public boolean communicationInitiated() {
         return !isOnlineCloud();
+    }
+
+    public long getLocalFirstSeen(BugInstance b) {
+        long firstVersion = b.getFirstVersion();
+        AppVersion v = getBugCollection().getAppVersionFromSequenceNumber(firstVersion);
+        if (v == null)
+            return getBugCollection().getTimestamp();
+        long firstSeen = v.getTimestamp();
+        if (b.hasXmlProps()) {
+            XmlProps props = b.getXmlProps();
+            if (firstSeen > props.getFirstSeen().getTime())
+                firstSeen = props.getFirstSeen().getTime();
+        }
+        return firstSeen;
     }
 
 }
