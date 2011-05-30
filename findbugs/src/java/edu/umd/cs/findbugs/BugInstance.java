@@ -746,6 +746,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         return result;
     }
 
+    public boolean hasXmlProps() {
+        XmlProps props = xmlProps.get();
+        return props != null;
+    }
+
     public XmlProps getXmlProps() {
         XmlProps props = xmlProps.get();
         if (props != null)
