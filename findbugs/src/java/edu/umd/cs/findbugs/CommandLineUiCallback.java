@@ -65,7 +65,7 @@ public class CommandLineUiCallback implements IGuiCallback {
                 throw new IllegalArgumentException("IO error trying to read System.in!");
             }
             int response = parseAnswer(answer);
-            if (response == 0) {
+            if (response < 0) {
                 System.out.println(String.format("\t%s", confirmStr));
             } else {
                 return response;
@@ -75,7 +75,9 @@ public class CommandLineUiCallback implements IGuiCallback {
 
     private int parseAnswer(String answer) {
         if (null == answer || answer.length() == 0) {
-            return 0;
+            System.out.println("You entered an empty string");
+
+            return -1;
         }
         char option = answer.toLowerCase(Locale.ENGLISH).charAt(0);
         switch (option) {
@@ -88,6 +90,7 @@ public class CommandLineUiCallback implements IGuiCallback {
         case 'c':
             return JOptionPane.CANCEL_OPTION;
         default:
+            System.out.println("You entered '" + option +"'");
             return -1;
         }
     }
