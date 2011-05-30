@@ -108,7 +108,7 @@
                                             </ul>
                                           <li>FindBugs Eclipse plugin:</li>
                                             <ul>
-                                              <li>Major feature enhancements (thanks to Andrei Loskutov).
+                                              <li>Major feature enhancements (thanks to Andrey Loskutov).
                                               See <a href="http://andrei.gmxhome.de/findbugs/index.html">this overview</a> for more information.</li>
                                               <li>Major test improvements (thanks to Tomas Pollak).</li>
                                               <li>Fixes:</li>
@@ -177,7 +177,7 @@
 					<li>Added checks for using <code>x.removeAll(x)</code> to rather than <code>x.clear()</code>
 					to clear an array.
 					<li>Add checks for calls such as <code>x.contains(x)</code>, <code>x.remove(x)</code> and <code>x.containsAll(x)</code>.
-					<li>Improvements to Eclipse plugin (thanks to Andrei Loskutov):
+					<li>Improvements to Eclipse plugin (thanks to Andrey Loskutov):
 					<ul>
 					<li>Report separate markers for each occurrence of an issue that appears multiple times in a method
 					<li> fine tuning for reported markers: add only one marker for fields, add marker on right position 
@@ -403,13 +403,13 @@
 					      <li>[ 1899648 ] Crash on startup on Vista with Java 1.6.0_04</li>
 					    </ul>
 					    </ul>
-					  <li>FindBugs Eclipse plugin (change log by Andrei Loskutov)</li>
+					  <li>FindBugs Eclipse plugin (change log by Andrey Loskutov)</li>
 					  <ul>
-					    <li> new feature: export basic FindBugs numbers for projects via File-&gt;Export-&gt;Java-&gt;BugCounts (Andrei Loskutov) </li>
+					    <li> new feature: export basic FindBugs numbers for projects via File-&gt;Export-&gt;Java-&gt;BugCounts (Andrey Loskutov) </li>
 					    <li> new feature: jobs for different projects will be run in parallel per default if running on a
-                             multi-core PC ("fb.allowParallelBuild" system property not used anymore) (Andrei Loskutov) </li>
+                             multi-core PC ("fb.allowParallelBuild" system property not used anymore) (Andrey Loskutov) </li>
 					    <li> fixed performance slowdown in the multi-threaded build, caused by workspace operation locks during
-                             assigning marker attributes (Andrei Loskutov)</li>
+                             assigning marker attributes (Andrey Loskutov)</li>
                        </ul>
                     </ul>
 					
@@ -487,26 +487,26 @@
 					      <li>[ 1551732 ] Get erroneous DLS with while loop</li>
 					    </ul>
 					    </ul>
-					  <li>FindBugs Eclipse plugin (change log by Andrei Loskutov)</li>
+					  <li>FindBugs Eclipse plugin (change log by Andrey Loskutov)</li>
 					  <ul>
-					    <li>new feature: added Bug explorer view (replacing Bug tree view), based on Common Navigator framework (Andrei Loskutov)</li>
-					    <li>bug 1873860 fixed: empty projects are no longer shown in Bug tree view  (Andrei Loskutov)</li>
+					    <li>new feature: added Bug explorer view (replacing Bug tree view), based on Common Navigator framework (Andrey Loskutov)</li>
+					    <li>bug 1873860 fixed: empty projects are no longer shown in Bug tree view  (Andrey Loskutov)</li>
 					    <li>new feature: bug counts decorators for projects, folders and files (has to be activated
-                            via Preferences -&gt; general -&gt; appearance -&gt; label decorations)(Andrei Loskutov)</li>
+                            via Preferences -&gt; general -&gt; appearance -&gt; label decorations)(Andrey Loskutov)</li>
 					    <li>patch 1746499: better icons (Alessandro Nistico)</li>
 					    <li>patch 1893685: Find bug actions on change sets bug (Alessandro Nistico)</li>
-					    <li>fixed bug 1855384: Bug configuration is broken in Eclipse (Andrei Loskutov)</li>
-					    <li>refactored FindBugs properties page (Andrei Loskutov)</li>
-					    <li>refactored FindBugs worker/builder/run action (Andrei Loskutov)</li>
+					    <li>fixed bug 1855384: Bug configuration is broken in Eclipse (Andrey Loskutov)</li>
+					    <li>refactored FindBugs properties page (Andrey Loskutov)</li>
+					    <li>refactored FindBugs worker/builder/run action (Andrey Loskutov)</li>
 					    <li>FB detects now only bugs from classes on project's classpath (no double work on
-                            duplicated class files) (Andrei Loskutov)</li>
+                            duplicated class files) (Andrey Loskutov)</li>
 					    <li>fixed bug introduced by the bad patch for 1867951: FB cannot be executed incrementally
-                            on a folder of file (Andrei Loskutov)</li>
+                            on a folder of file (Andrey Loskutov)</li>
 					    <li>fixed job rule: now jobs for different projects may run in parallel if running on a
-                            multi-core PC and "fb.allowParallelBuild" system property is set to true (Andrei Loskutov)</li>
-					    <li>fixed FB auto-build not started if .fbprefs or .classpath was changed (Andrei Loskutov)</li>
+                            multi-core PC and "fb.allowParallelBuild" system property is set to true (Andrey Loskutov)</li>
+					    <li>fixed FB auto-build not started if .fbprefs or .classpath was changed (Andrey Loskutov)</li>
 					    <li>fixed not reporting bugs on secondary types (classes defined in java files with
- 					        different name) (Andrei Loskutov) </li>
+ 					        different name) (Andrey Loskutov) </li>
 					  </ul>
 					</ul>
 
@@ -2748,7 +2748,7 @@
 							Better suppression of false warnings in many detectors
 						</li>
 						<li>
-							Many improvements to Eclipse plugin (Andrei Loskutov, Peter
+							Many improvements to Eclipse plugin (Andrey Loskutov, Peter
 							Friese)
 						</li>
 						<li>
