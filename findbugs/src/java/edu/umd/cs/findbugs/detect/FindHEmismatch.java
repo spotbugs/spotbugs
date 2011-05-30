@@ -479,6 +479,11 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
 
         OpcodeStack.Item collection = stack.getStackItem(PreorderVisitor.getNumberArguments(getSigConstantOperand()));
         String collectionSignature = collection.getSignature();
+        if (collectionSignature.indexOf("Tree") >= 0
+                || collectionSignature.indexOf("Sorted") >= 0
+                || collectionSignature.indexOf("SkipList") >= 0 )
+            return;
+
         if (collectionSignature.indexOf("Hash") >= 0)
             priority--;
         if (!AnalysisContext.currentAnalysisContext()/* .getSubtypes() */.isApplicationClass(type))
