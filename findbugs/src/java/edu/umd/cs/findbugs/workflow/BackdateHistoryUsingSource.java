@@ -56,10 +56,7 @@ public class BackdateHistoryUsingSource {
        origCollection.readXML(args[0]);
        SourceFinder sourceFinder = new SourceFinder(origCollection.getProject());
 
-       Cloud cloud = origCollection.getCloud();
-       cloud.bugsPopulated();
-       cloud.waitUntilIssueDataDownloaded();
-       HashSet<SourceFile> seen = new HashSet<SourceFile>();
+        HashSet<SourceFile> seen = new HashSet<SourceFile>();
        for(BugInstance b : origCollection) {
            SourceLineAnnotation s = b.getPrimarySourceLineAnnotation();
            if (!s.isSourceFileKnown())
@@ -68,15 +65,18 @@ public class BackdateHistoryUsingSource {
                continue;
            SourceFile sourceFile = sourceFinder.findSourceFile(s);
            long when = sourceFile.getLastModified();
-           if (when <= 0) continue;
-           long firstSeen = cloud.getFirstSeen(b);
-           if (when < firstSeen) {
-               b.getXmlProps().setFirstSeen(new Date(when));
-               cloud.addDateSeen(b, when);
-               if (seen.add(sourceFile))
-                   System.out.printf("%s %s %s\n", new Date(when), new Date(firstSeen), sourceFile.getFullFileName());
+           if (when > 0) {
+               Date firstSeen = new Date(when);
+               b.getXmlProps().setFirstSeen(firstSeen);
+               System.out.println("Set first seen to " + firstSeen);
+               }
            }
-       }
+       Cloud cloud = origCollection.getCloud();
+       cloud.bugsPopulated();
+       cloud.signIn();
+       System.out.println(cloud.getSigninState());
+       cloud.waitUntilIssueDataDownloaded();
+
        if (args.length > 1)
            origCollection.writeXML(args[1]);
        cloud.waitUntilNewIssuesUploaded();
