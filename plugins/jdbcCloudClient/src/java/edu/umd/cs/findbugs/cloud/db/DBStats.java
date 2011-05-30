@@ -146,7 +146,7 @@ public class DBStats {
                 return true;
             if (!(obj instanceof TimeSeries))
                 return false;
-            TimeSeries other = (TimeSeries) obj;
+            TimeSeries<K, V> other = (TimeSeries) obj;
             return Util.nullSafeEquals(this.k, other.k) && Util.nullSafeEquals(this.v, other.v);
         }
 
