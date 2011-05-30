@@ -557,11 +557,11 @@ public class DBCloud extends AbstractCloud {
                         if (!bd.inDatabase) {
                             storeNewBug(b, stillPresentAt);
                         } else {
-                            long firstVersion = b.getFirstVersion();
-                            long firstSeen = bugCollection.getAppVersionFromSequenceNumber(firstVersion).getTimestamp();
-                            if (FindBugs.validTimestamp(firstSeen)
-                                    && (firstSeen < bd.firstSeen || !FindBugs.validTimestamp(bd.firstSeen))) {
-                                bd.firstSeen = firstSeen;
+                            long firstSeenLocally = getLocalFirstSeen(b);
+
+                            if (FindBugs.validTimestamp(firstSeenLocally)
+                                    && (firstSeenLocally < bd.firstSeen || !FindBugs.validTimestamp(bd.firstSeen))) {
+                                bd.firstSeen = firstSeenLocally;
                                 storeFirstSeen(bd);
                             } else if (FindBugs.validTimestamp(stillPresentAt)
                                     && stillPresentAt > bd.lastSeen + LAST_SEEN_UPDATE_WINDOW) {
@@ -645,7 +645,7 @@ public class DBCloud extends AbstractCloud {
         loadBugComponents();
         Connection c = null;
         try {
-            Class driverClass;
+            Class<?> driverClass;
             try {
                 driverClass = this.getClass().getClassLoader().loadClass(sqlDriver);
             } catch (ClassNotFoundException e) {
@@ -1207,7 +1207,8 @@ public class DBCloud extends AbstractCloud {
             if (data.lastSeen < analysisTime && FindBugs.validTimestamp(analysisTime))
                 data.lastSeen = analysisTime;
 
-            long timestamp = bugCollection.getAppVersionFromSequenceNumber(bug.getFirstVersion()).getTimestamp();
+            long timestamp = getLocalFirstSeen(bug);
+
             if (timestamp < FIRST_LIGHT)
                 timestamp = analysisTime;
             timestamp = sanityCheckFirstSeen(sanityCheckLastSeen(timestamp));
