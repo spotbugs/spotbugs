@@ -333,15 +333,11 @@ public class WebCloudClient extends AbstractCloud {
 
     static final boolean DEBUG_FIRST_SEEN = Boolean.getBoolean("debug.first.seen");
 
-    public long getLocalFirstSeen(BugInstance bug) {
-        return super.getFirstSeen(bug);
-    }
-
     @Override
     public long getFirstSeen(BugInstance b) {
 
         long firstSeenFromCloud = networkClient.getFirstSeenFromCloud(b);
-        long firstSeenLocally = super.getFirstSeen(b);
+        long firstSeenLocally = getLocalFirstSeen(b);
         long firstSeen = dateMin(firstSeenFromCloud, firstSeenLocally);
 
         if (DEBUG_FIRST_SEEN) {
@@ -627,9 +623,11 @@ public class WebCloudClient extends AbstractCloud {
         Collection<BugInstance> newBugs = bugsByHash.values();
         boolean hasTimestampsToUpdate = !networkClient.getTimestampsToUpdate().isEmpty();
         boolean hasBugsToUpload = !newBugs.isEmpty();
+        String cloudTokenProperty = getCloudTokenProperty();
         if ((hasBugsToUpload || hasTimestampsToUpdate)
-                && (getCloudTokenProperty() != null
-                || !getGuiCallback().isHeadless())) {
+                && (cloudTokenProperty != null
+                || !getGuiCallback().isHeadless()
+                || getSigninState() == SigninState.SIGNED_IN)) {
             uploadAndUpdateBugsInBackground(new ArrayList<BugInstance>(newBugs));
         } else {
             fireNewIssuesUploadedEvent();
@@ -650,13 +648,13 @@ public class WebCloudClient extends AbstractCloud {
         newIssuesUploaded.countDown();
     }
 
-    private void executeAndWaitForAll(List<Callable<Object>> tasks) throws ExecutionException, InterruptedException {
+    private <T> void executeAndWaitForAll(List<Callable<T>> tasks) throws ExecutionException, InterruptedException {
         if (backgroundExecutorService != null && backgroundExecutorService.isShutdown())
             LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown in executeAndWaitForAll");
 
         try {
-            List<Future<Object>> results = backgroundExecutorService.invokeAll(tasks);
-            for (Future<Object> result : results) {
+            List<Future<T>> results = backgroundExecutorService.invokeAll(tasks);
+            for (Future<T> result : results) {
                 result.get();
             }
 
@@ -745,7 +743,7 @@ public class WebCloudClient extends AbstractCloud {
     private void uploadAndUpdateBugsInBackground(final List<BugInstance> newBugs) {
         backgroundExecutorService.execute(new Runnable() {
             public void run() {
-                List<Callable<Object>> callables = new ArrayList<Callable<Object>>();
+                List<Callable<Void>> callables = new ArrayList<Callable<Void>>();
                 MutableCloudTask taskA = null;
                 MutableCloudTask taskB = null;
                 try {
@@ -794,4 +792,9 @@ public class WebCloudClient extends AbstractCloud {
     private <E> ListIterator<E> reverseIterator(List<E> list) {
         return list.listIterator(list.size());
     }
+
+    public void addDateSeen(BugInstance b, long when) {
+        throw new UnsupportedOperationException();
+    }
+
 }

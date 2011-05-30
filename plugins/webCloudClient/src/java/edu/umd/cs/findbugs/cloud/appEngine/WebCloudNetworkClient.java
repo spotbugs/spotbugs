@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,11 +31,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.protobuf.GeneratedMessage;
+
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.Cloud.SigninState;
 import edu.umd.cs.findbugs.cloud.MutableCloudTask;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
@@ -208,7 +211,7 @@ public class WebCloudNetworkClient {
         return timestampsToUpdate;
     }
 
-    public MutableCloudTask generateUpdateTimestampRunnables(List<Callable<Object>> callables)
+    public MutableCloudTask generateUpdateTimestampRunnables(List<Callable<Void>> callables)
             throws SignInCancelledException {
         List<String> timestamps = new ArrayList<String>(timestampsToUpdate);
         final int bugCount = timestamps.size();
@@ -291,8 +294,8 @@ public class WebCloudNetworkClient {
         for (int i = 0; i < bugCount; i += BUG_UPDATE_PARTITION_SIZE) {
             final List<BugInstance> partition = bugs.subList(i, Math.min(bugCount, i + BUG_UPLOAD_PARTITION_SIZE));
 
-            callables.add(new Callable<Object>() {
-                public Object call() throws Exception {
+            callables.add(new Callable<Void>() {
+                public Void call() throws Exception {
                     updateTimestampsNow(partition);
                     int updated = soFar.addAndGet(partition.size());
                     task.update("Updated " + updated + " of " + bugCount + " timestamps", updated * 100.0 / bugCount);
@@ -303,20 +306,20 @@ public class WebCloudNetworkClient {
         return task;
     }
 
-    public MutableCloudTask generateUploadRunnables(final List<BugInstance> newBugs, List<Callable<Object>> callables)
+    public MutableCloudTask generateUploadRunnables(final List<BugInstance> newBugs, List<Callable<Void>> callables)
             throws SignInCancelledException {
         final int bugCount = newBugs.size();
         if (bugCount == 0)
             return null;
-        if (cloudClient.getCloudTokenProperty() == null)
+        if (cloudClient.getCloudTokenProperty() == null && cloudClient.getSigninState() != SigninState.SIGNED_IN)
             cloudClient.signInIfNecessary("Some bugs were not found on the " + cloudClient.getCloudName() + ".\n"
                     + "Would you like to sign in and upload them to the Cloud?");
         final MutableCloudTask task = cloudClient.createTask("Uploading to the " + cloudClient.getCloudName());
         final AtomicInteger bugsUploaded = new AtomicInteger(0);
         for (int i = 0; i < bugCount; i += BUG_UPLOAD_PARTITION_SIZE) {
             final List<BugInstance> partition = newBugs.subList(i, Math.min(bugCount, i + BUG_UPLOAD_PARTITION_SIZE));
-            callables.add(new Callable<Object>() {
-                public Object call() throws Exception {
+            callables.add(new Callable<Void>() {
+                public Void call() throws Exception {
                     uploadNewBugsPartition(partition);
                     bugsUploaded.addAndGet(partition.size());
                     int uploaded = bugsUploaded.get();
@@ -520,7 +523,10 @@ public class WebCloudNetworkClient {
             }
 
             long firstSeen = cloudClient.getLocalFirstSeen(bugInstance);
-            if (firstSeen > 0 && firstSeen < issue.getFirstSeen())
+            long cloudFirstSeen = issue.getFirstSeen();
+            if (WebCloudClient.DEBUG_FIRST_SEEN)
+                System.out.printf("%s %s%n", new Date(firstSeen), new Date(cloudFirstSeen));
+            if (firstSeen > 0 && firstSeen < cloudFirstSeen)
                 timestampsToUpdate.add(hash);
 
             cloudClient.updateBugInstanceAndNotify(bugInstance);
@@ -561,14 +567,14 @@ public class WebCloudNetworkClient {
             builder.addIssueGroups(groupBuilder.build());
         }
         LOGGER.finer("Updating timestamps for " + bugs.size() + " bugs in " + builder.getIssueGroupsCount() + " groups");
-        RetryableConnection conn = new RetryableConnection("/update-issue-timestamps", true) {
+        RetryableConnection<Void> conn = new RetryableConnection<Void>("/update-issue-timestamps", true) {
             @Override
             public void write(OutputStream out) throws IOException {
                 builder.build().writeTo(out);
             }
 
             @Override
-            public Object finish(int responseCode, String responseMessage, InputStream response) throws IOException {
+            public Void finish(int responseCode, String responseMessage, InputStream response) throws IOException {
                 if (responseCode != 200)
                     throw new IllegalStateException("server returned error code " + responseCode + " "
                             + responseMessage);
@@ -713,7 +719,7 @@ public class WebCloudNetworkClient {
     }
 
     private void openPostUrl(String url, final GeneratedMessage uploadMsg) throws IOException {
-        RetryableConnection rc = new RetryableConnection(url, true) {
+        RetryableConnection<Void> rc = new RetryableConnection<Void>(url, true) {
             @Override
             public void write(OutputStream out) throws IOException {
                 if (uploadMsg != null) {
@@ -724,7 +730,7 @@ public class WebCloudNetworkClient {
             }
 
             @Override
-            public Object finish(int responseCode, String responseMessage, InputStream response) throws IOException {
+            public Void finish(int responseCode, String responseMessage, InputStream response) throws IOException {
                 if (responseCode != 200)
                     throw new IllegalStateException("server returned error code when opening " + url + ": "
                             + responseCode + " " + responseMessage);
