@@ -3,7 +3,7 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getMethodDeclaration;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getTypeDeclaration;
 
-import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CastExpression;
@@ -51,19 +51,17 @@ public class CreateMutableCloneResolution extends BugResolution {
         String fieldName = bug.getPrimaryField().getFieldName();
         SimpleName original = null;
 
-        Iterator<?> itr = method.getBody().statements().iterator();
+        for (Statement stmt : (List<Statement>) method.getBody().statements()) {
+            if (stmt instanceof ReturnStatement) {
+                Expression retEx = ((ReturnStatement) stmt).getExpression();
 
-        while (itr.hasNext() && original == null) {
-            Statement stmt = (Statement) itr.next();
-            if (!(stmt instanceof ReturnStatement)) {
-                continue;
-            }
-            Expression retEx = ((ReturnStatement) stmt).getExpression();
-
-            if (retEx instanceof SimpleName && ((SimpleName) retEx).getIdentifier().equals(fieldName)) {
-                original = (SimpleName) retEx;
-            } else if (retEx instanceof FieldAccess && isThisFieldAccess((FieldAccess) retEx, fieldName)) {
-                original = ((FieldAccess) retEx).getName();
+                if (retEx instanceof SimpleName && ((SimpleName) retEx).getIdentifier().equals(fieldName)) {
+                    original = (SimpleName) retEx;
+                    break;
+                } else if (retEx instanceof FieldAccess && isThisFieldAccess((FieldAccess) retEx, fieldName)) {
+                    original = ((FieldAccess) retEx).getName();
+                    break;
+                }
             }
         }
 
