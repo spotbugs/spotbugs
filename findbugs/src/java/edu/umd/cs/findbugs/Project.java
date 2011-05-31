@@ -29,11 +29,9 @@ import static edu.umd.cs.findbugs.xml.XMLOutputUtil.writeElementList;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -52,6 +50,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+
+import javax.annotation.Nullable;
 
 import org.dom4j.DocumentException;
 import org.xml.sax.InputSource;
@@ -164,8 +164,8 @@ public class Project implements XMLWriteable {
      * @param cloudId
      *            The cloudId to set.
      */
-    public void setCloudId(String cloudId) {
-        if (cloudId.indexOf('.') == -1) {
+    public void setCloudId(@Nullable String cloudId) {
+        if (cloudId != null && cloudId.indexOf('.') == -1) {
             Map<String, CloudPlugin> registeredClouds = DetectorFactoryCollection.instance().getRegisteredClouds();
             String check = "." + cloudId;
             int count = 0;
