@@ -8,8 +8,10 @@ import java.util.Iterator;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
+import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.ReturnStatement;
@@ -26,7 +28,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
 /**
  * Returning a reference to a mutable object is not recommended. The class
  * <CODE>CreateMutableCloneResolution</CODE> returns a new copy of the object.
- * 
+ *
  * @see <a
  *      href="http://findbugs.sourceforge.net/bugDescriptions.html#EI_EXPOSE_REP">EI_EXPOSE_REP</a>
  */
@@ -47,13 +49,7 @@ public class CreateMutableCloneResolution extends BugResolution {
         MethodDeclaration method = getMethodDeclaration(type, bug.getPrimaryMethod());
 
         String fieldName = bug.getPrimaryField().getFieldName();
-
-        Expression retEx = null;
-        CastExpression castRet = null;
-        Expression original = null;
-        Expression cloneField;
-        MethodInvocation cloneInvoke;
-        SimpleName cloneName;
+        SimpleName original = null;
 
         Iterator<?> itr = method.getBody().statements().iterator();
 
@@ -62,10 +58,10 @@ public class CreateMutableCloneResolution extends BugResolution {
             if (!(stmt instanceof ReturnStatement)) {
                 continue;
             }
-            retEx = ((ReturnStatement) stmt).getExpression();
+            Expression retEx = ((ReturnStatement) stmt).getExpression();
 
             if (retEx instanceof SimpleName && ((SimpleName) retEx).getIdentifier().equals(fieldName)) {
-                original = retEx;
+                original = (SimpleName) retEx;
             } else if (retEx instanceof FieldAccess && isThisFieldAccess((FieldAccess) retEx, fieldName)) {
                 original = ((FieldAccess) retEx).getName();
             }
@@ -76,22 +72,45 @@ public class CreateMutableCloneResolution extends BugResolution {
         }
 
         // set up the clone part
-        cloneInvoke = workingUnit.getAST().newMethodInvocation();
-        cloneField = (SimpleName) ASTNode.copySubtree(cloneInvoke.getAST(), original);
-        cloneName = workingUnit.getAST().newSimpleName("clone");
+        MethodInvocation cloneInvoke = invokeClone(workingUnit, original);
 
-        cloneInvoke.setExpression(cloneField);
-        cloneInvoke.setName(cloneName);
+
 
         // cast the result to the right type
-        Type retType;
-        castRet = workingUnit.getAST().newCastExpression();
-        retType = (Type) ASTNode.copySubtree(castRet.getAST(), method.getReturnType2());
+        CastExpression castRet = workingUnit.getAST().newCastExpression();
         castRet.setExpression(cloneInvoke);
+        Type retType = (Type) ASTNode.copySubtree(castRet.getAST(), method.getReturnType2());
         castRet.setType(retType);
 
-        rewrite.replace(original, castRet, null);
 
+        ConditionalExpression conditionalExpression = workingUnit.getAST().newConditionalExpression();
+        conditionalExpression.setElseExpression(castRet);
+        conditionalExpression.setThenExpression(workingUnit.getAST().newNullLiteral() );
+
+        InfixExpression nullTest = workingUnit.getAST().newInfixExpression();
+        nullTest.setOperator(InfixExpression.Operator.EQUALS);
+        nullTest.setRightOperand(workingUnit.getAST().newNullLiteral());
+        Expression initialLoad = (SimpleName) ASTNode.copySubtree(cloneInvoke.getAST(), original);
+        nullTest.setLeftOperand(initialLoad);
+
+        conditionalExpression.setExpression(nullTest);
+
+        rewrite.replace(original, conditionalExpression, null);
+
+    }
+
+    /**
+     * @param workingUnit
+     * @param original
+     * @return
+     */
+    private MethodInvocation invokeClone(CompilationUnit workingUnit, SimpleName original) {
+        MethodInvocation cloneInvoke = workingUnit.getAST().newMethodInvocation();
+        Expression cloneField = (SimpleName) ASTNode.copySubtree(cloneInvoke.getAST(), original);
+        SimpleName cloneName = workingUnit.getAST().newSimpleName("clone");
+        cloneInvoke.setExpression(cloneField);
+        cloneInvoke.setName(cloneName);
+        return cloneInvoke;
     }
 
     private boolean isThisFieldAccess(FieldAccess access, String fieldName) {
