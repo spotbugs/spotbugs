@@ -889,9 +889,9 @@ public class Project implements XMLWriteable {
 
         for(Map.Entry<String, Boolean> e : enabledPlugins.entrySet()) {
             String pluginId = e.getKey();
-            Plugin plugin = Plugin.getByPluginId(pluginId);
             Boolean enabled = e.getValue();
-            if (isDefaultInitialPluginState(plugin, enabled)) {
+            Plugin plugin = Plugin.getByPluginId(pluginId);
+            if (plugin == null || isDefaultInitialPluginState(plugin, enabled)) {
                 continue;
             }
             XMLAttributeList pluginAttributeList = new XMLAttributeList();

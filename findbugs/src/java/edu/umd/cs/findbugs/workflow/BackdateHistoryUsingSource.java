@@ -41,46 +41,45 @@ import edu.umd.cs.findbugs.cloud.Cloud;
 public class BackdateHistoryUsingSource {
 
 
-   private static final String USAGE = "Usage: <cmd> " + "  <bugs.xml> [<out.xml>]";
+    private static final String USAGE = "Usage: <cmd> " + "  <bugs.xml> [<out.xml>]";
 
-   public static void main(String[] args) throws IOException, DocumentException {
-       FindBugs.setNoAnalysis();
-       DetectorFactoryCollection.instance();
-       if (args.length < 1 || args.length > 2) {
-           System.out.println(USAGE);
-           return;
-       }
+    public static void main(String[] args) throws IOException, DocumentException {
+        FindBugs.setNoAnalysis();
+        DetectorFactoryCollection.instance();
+        if (args.length < 1 || args.length > 2) {
+            System.out.println(USAGE);
+            return;
+        }
 
-       BugCollection origCollection;
-       origCollection = new SortedBugCollection();
-       origCollection.readXML(args[0]);
-       SourceFinder sourceFinder = new SourceFinder(origCollection.getProject());
+        BugCollection origCollection;
+        origCollection = new SortedBugCollection();
+        origCollection.readXML(args[0]);
+        SourceFinder sourceFinder = new SourceFinder(origCollection.getProject());
 
-        HashSet<SourceFile> seen = new HashSet<SourceFile>();
-       for(BugInstance b : origCollection) {
-           SourceLineAnnotation s = b.getPrimarySourceLineAnnotation();
-           if (!s.isSourceFileKnown())
-               continue;
-           if (!sourceFinder.hasSourceFile(s))
-               continue;
-           SourceFile sourceFile = sourceFinder.findSourceFile(s);
-           long when = sourceFile.getLastModified();
-           if (when > 0) {
-               Date firstSeen = new Date(when);
-               b.getXmlProps().setFirstSeen(firstSeen);
-               System.out.println("Set first seen to " + firstSeen);
-               }
-           }
-       Cloud cloud = origCollection.getCloud();
-       cloud.bugsPopulated();
-       cloud.signIn();
-       System.out.println(cloud.getSigninState());
-       cloud.waitUntilIssueDataDownloaded();
+        for(BugInstance b : origCollection) {
+            SourceLineAnnotation s = b.getPrimarySourceLineAnnotation();
+            if (!s.isSourceFileKnown())
+                continue;
+            if (!sourceFinder.hasSourceFile(s))
+                continue;
+            SourceFile sourceFile = sourceFinder.findSourceFile(s);
+            long when = sourceFile.getLastModified();
+            if (when > 0) {
+                Date firstSeen = new Date(when);
+                b.getXmlProps().setFirstSeen(firstSeen);
+                System.out.println("Set first seen to " + firstSeen);
+            }
+        }
+        Cloud cloud = origCollection.getCloud();
+        cloud.bugsPopulated();
+        cloud.signIn();
+        System.out.println(cloud.getSigninState());
+        cloud.waitUntilIssueDataDownloaded();
 
-       if (args.length > 1)
-           origCollection.writeXML(args[1]);
-       cloud.waitUntilNewIssuesUploaded();
-       cloud.shutdown();
+        if (args.length > 1)
+            origCollection.writeXML(args[1]);
+        cloud.waitUntilNewIssuesUploaded();
+        cloud.shutdown();
 
-   }
+    }
 }
