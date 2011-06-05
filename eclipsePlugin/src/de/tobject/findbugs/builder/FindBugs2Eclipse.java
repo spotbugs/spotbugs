@@ -23,6 +23,7 @@ import java.io.PrintWriter;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,8 +32,16 @@ import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.console.IOConsoleOutputStream;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.view.FindBugsConsole;
 import edu.umd.cs.findbugs.FindBugs2;
@@ -65,10 +74,43 @@ public class FindBugs2Eclipse extends FindBugs2 {
 
     private final Reporter reporter;
 
+    private static IResourceChangeListener resourceListener = new IResourceChangeListener() {
+        public void resourceChanged(IResourceChangeEvent event) {
+            if(event.getSource() instanceof IProject || event.getResource() instanceof IProject) {
+                cleanBuild((IProject) event.getSource());
+            } else if(event.getDelta() != null) {
+                final Set<IProject> affectedProjects = new HashSet<IProject>();
+                IResourceDelta delta = event.getDelta();
+                try {
+                    delta.accept(new IResourceDeltaVisitor() {
+
+                        public boolean visit(IResourceDelta d1) throws CoreException {
+                            IResource resource = d1.getResource();
+                            if(resource instanceof IProject) {
+                                affectedProjects.add((IProject) resource);
+                                return false;
+                            }
+                            return true;
+                        }
+                    });
+                } catch (CoreException e) {
+                    FindbugsPlugin.getDefault().logException(e, "Error traversing resource delta");
+                }
+                for (IProject iProject : affectedProjects) {
+                    cleanBuild(iProject);
+                }
+            }
+        }
+    };
+
     public FindBugs2Eclipse(IProject project, boolean cacheClassData, Reporter bugReporter) {
         super();
         this.project = project;
         this.cacheClassData = cacheClassData;
+        if(cacheClassData) {
+            int eventMask = IResourceChangeEvent.POST_BUILD | IResourceChangeEvent.PRE_CLOSE;
+            ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener, eventMask);
+        }
         reporter = bugReporter;
     }
 
@@ -113,7 +155,6 @@ public class FindBugs2Eclipse extends FindBugs2 {
         }
     }
 
-    // TODO should add resource listener and track also "close" operation on projects
     private void postProcessCaches() {
         IClassPath classPath = analysisCache.getClassPath();
 
@@ -194,10 +235,6 @@ public class FindBugs2Eclipse extends FindBugs2 {
         } catch (IOException e) {
             // ignore
         }
-    }
-
-    public static void main(String[] args) {
-        System.out.printf("blabla %% %1$ 20.2f \n", 3345.678);
     }
 
     static class AnalysisData {
