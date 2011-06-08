@@ -180,7 +180,7 @@ public class TypeQualifierValue {
 
     private static final InheritableThreadLocal<AtomicBoolean> performingValidation
         = new InheritableThreadLocal<AtomicBoolean>() {
-        @Override protected synchronized AtomicBoolean initialValue() {
+        @Override protected AtomicBoolean initialValue() {
             return new AtomicBoolean();
         }
 
