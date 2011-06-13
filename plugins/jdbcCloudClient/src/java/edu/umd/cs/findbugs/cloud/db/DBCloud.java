@@ -1264,7 +1264,8 @@ public class DBCloud extends AbstractCloud {
     }
 
     public void signIn() {
-        throw new UnsupportedOperationException();
+        if (getSigninState() != SigninState.SIGNED_IN)
+        	throw new UnsupportedOperationException("Unable to sign in");
     }
 
     public void signOut() {
