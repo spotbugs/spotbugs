@@ -72,10 +72,13 @@ public class BackdateHistoryUsingSource {
         }
         Cloud cloud = origCollection.getCloud();
         cloud.bugsPopulated();
+        System.out.println("Sign in state: " + cloud.getSigninState());
+        
         if (cloud.getSigninState()  != Cloud.SigninState.SIGNED_IN && 
-                cloud.getSigninState()  != Cloud.SigninState.NO_SIGNIN_REQUIRED )
+                cloud.getSigninState()  != Cloud.SigninState.NO_SIGNIN_REQUIRED ) {
             cloud.signIn();
-        System.out.println(cloud.getSigninState());
+            System.out.println(cloud.getSigninState());
+        }
         cloud.waitUntilIssueDataDownloaded();
 
         if (args.length > 1)
