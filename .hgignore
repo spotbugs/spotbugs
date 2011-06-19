@@ -43,3 +43,6 @@ syntax: regexp
 
 syntax: regexp
 ^findbugs/src/doc/bugDescriptions\.html$
+
+syntax: regexp
+^\.project$
