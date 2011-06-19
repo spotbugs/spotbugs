@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 /**
  * Class to store package bug statistics.
- * 
+ *
  * @author Mike Fagan
  * @author Jay Dunning
  */
@@ -203,9 +203,9 @@ public class PackageStats implements XMLWriteable {
         ++nBugs[bug.getPriority()];
         ++nBugs[0];
 
-        ClassStats classStats = getClassStatsOrNull(source.getClassName());
-        if (classStats != null)
-            classStats.addError(bug);
+        // see bug https://sourceforge.net/tracker/index.php?func=detail&aid=3322583&group_id=96405&atid=614693
+        // always add class stats to see useful details in package stats fancy.xsl output
+        getClassStats(source.getClassName(), source.getSourceFile()).addError(bug);
     }
 
     public void addClass(String name, String sourceFile, boolean isInterface, int size) {
@@ -268,7 +268,7 @@ public class PackageStats implements XMLWriteable {
      * Add priority attributes to a started tag. Each priority at offset n,
      * where n &gt; 0, is output using attribute priority_n if the value at
      * offset n is greater than zero.
-     * 
+     *
      * @param xmlOutput
      *            an output stream for which startTag has been called but
      *            stopTag has not.
