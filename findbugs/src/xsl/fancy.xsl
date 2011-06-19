@@ -24,10 +24,10 @@
          doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
          encoding="UTF-8"/>
 
-    <!-- 
-        Parameter for specifying HTMLized sources location; if current dir, use "./" 
+    <!--
+        Parameter for specifying HTMLized sources location; if current dir, use "./"
         If not passed, no links to sources are generated.
-        because of back-compatibility reasons. 
+        because of back-compatibility reasons.
         The source filename should be package.class.java.html
         The source can have line no anchors like #11 -->
     <xsl:param name="htmlsrcpath"></xsl:param>
@@ -43,8 +43,8 @@
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
       <title>
-        FindBugs (<xsl:value-of select="/BugCollection/@version" />) 
-         Analysis for 
+        FindBugs (<xsl:value-of select="/BugCollection/@version" />)
+         Analysis for
          <xsl:choose>
             <xsl:when test='string-length(/BugCollection/Project/@projectName)>0'><xsl:value-of select="/BugCollection/Project/@projectName" /></xsl:when>
             <xsl:otherwise><xsl:value-of select="/BugCollection/Project/@filename" /></xsl:otherwise>
@@ -115,7 +115,7 @@
          // by Stephen Chapman, Felgall Pty Ltd
 
          // permission is granted to use this javascript provided that the below code is not altered
-         var DH = 0;var an = 0;var al = 0;var ai = 0;if (document.getElementById) {ai = 1; DH = 1;}else {if (document.all) {al = 1; DH = 1;} else { browserVersion = parseInt(navigator.appVersion); if (navigator.appName.indexOf('Netscape') != -1) if (browserVersion == 4) {an = 1; DH = 1;}}} 
+         var DH = 0;var an = 0;var al = 0;var ai = 0;if (document.getElementById) {ai = 1; DH = 1;}else {if (document.all) {al = 1; DH = 1;} else { browserVersion = parseInt(navigator.appVersion); if (navigator.appName.indexOf('Netscape') != -1) if (browserVersion == 4) {an = 1; DH = 1;}}}
          function fd(oi, wS) {if (ai) return wS ? document.getElementById(oi).style:document.getElementById(oi); if (al) return wS ? document.all[oi].style: document.all[oi]; if (an) return document.layers[oi];}
          function pw() {return window.innerWidth != null? window.innerWidth: document.body.clientWidth != null? document.body.clientWidth:null;}
          function mouseX(evt) {if (evt.pageX) return evt.pageX; else if (evt.clientX)return evt.clientX + (document.documentElement.scrollLeft ?  document.documentElement.scrollLeft : document.body.scrollLeft); else return null;}
@@ -310,8 +310,8 @@
    <body>
    <div id='content'>
       <h1>
-         FindBugs (<xsl:value-of select="/BugCollection/@version" />) 
-         Analysis for 
+         FindBugs (<xsl:value-of select="/BugCollection/@version" />)
+         Analysis for
          <xsl:choose>
             <xsl:when test='string-length(/BugCollection/Project/@projectName)>0'><xsl:value-of select="/BugCollection/Project/@projectName" /></xsl:when>
             <xsl:otherwise><xsl:value-of select="/BugCollection/Project/@filename" /></xsl:otherwise>
@@ -394,10 +394,10 @@
          <th>Package</th>
          <th>Code Size</th>
          <th>Bugs</th>
-         <th>Bugs p1</th>
-         <th>Bugs p2</th>
-         <th>Bugs p3</th>
-         <th>Bugs Exp.</th>
+         <th>High Prio Bugs</th>
+         <th>Medium Prio Bugs</th>
+         <th>Low Prio Bugs</th>
+         <th>Exp. Bugs</th>
          <th>Ratio</th>
       </tr>
       <tr>
@@ -493,15 +493,15 @@
    <span>
       <xsl:attribute name="class">b-1</xsl:attribute>
       &#160;&#160;
-   </span> P1
+   </span> High Prio
    <span>
       <xsl:attribute name="class">b-2</xsl:attribute>
       &#160;&#160;
-   </span> P2
+   </span> Medium Prio
    <span>
       <xsl:attribute name="class">b-3</xsl:attribute>
       &#160;&#160;
-   </span> P3
+   </span> Low Prio
    <span>
       <xsl:attribute name="class">b-4</xsl:attribute>
       &#160;&#160;
