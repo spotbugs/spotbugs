@@ -344,7 +344,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
         } else if (option.equals("-printConfiguration")) {
             printConfiguration = true;
         } else {
-            System.out.println("XXX: " + option);
+            if(DEBUG) {
+                System.out.println("XXX: " + option);
+            }
             super.handleOption(option, optionExtraPart);
         }
     }
