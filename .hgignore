@@ -46,3 +46,12 @@ syntax: regexp
 
 syntax: regexp
 ^\.project$
+
+syntax: regexp
+^findbugs/web$
+
+syntax: regexp
+^findbugs/doc$
+
+syntax: regexp
+^findbugs/bin$
