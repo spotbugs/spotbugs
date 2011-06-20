@@ -191,7 +191,7 @@ public class PackageStats implements XMLWriteable {
         return result;
     }
 
-    public ClassStats getClassStatsOrNull(String name) {
+    public @CheckForNull ClassStats getClassStatsOrNull(String name) {
         ClassStats result = packageMembers.get(name);
         return result;
     }
