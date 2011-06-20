@@ -102,6 +102,8 @@ public class PackageStats implements XMLWriteable {
         }
 
         public void writeXML(XMLOutput xmlOutput) throws IOException {
+            if (size == 0)
+                return;
             xmlOutput.startTag("ClassStats");
 
             xmlOutput.addAttribute("class", name);
@@ -237,6 +239,8 @@ public class PackageStats implements XMLWriteable {
     }
 
     public void writeXML(XMLOutput xmlOutput) throws IOException {
+        if (size == 0)
+            return;
 
         xmlOutput.startTag(ELEMENT_NAME);
 
