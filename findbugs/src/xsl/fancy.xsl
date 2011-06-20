@@ -492,19 +492,19 @@
 <xsl:template name="helpPriorities">
    <span>
       <xsl:attribute name="class">b-1</xsl:attribute>
-      &#160;&#160;
+      <xsl:text disable-output-escaping="yes">&amp;nbsp;&amp;nbsp;</xsl:text>
    </span> High Prio
    <span>
       <xsl:attribute name="class">b-2</xsl:attribute>
-      &#160;&#160;
+      <xsl:text disable-output-escaping="yes">&amp;nbsp;&amp;nbsp;</xsl:text>
    </span> Medium Prio
    <span>
       <xsl:attribute name="class">b-3</xsl:attribute>
-      &#160;&#160;
+      <xsl:text disable-output-escaping="yes">&amp;nbsp;&amp;nbsp;</xsl:text>
    </span> Low Prio
    <span>
       <xsl:attribute name="class">b-4</xsl:attribute>
-      &#160;&#160;
+      <xsl:text disable-output-escaping="yes">&amp;nbsp;&amp;nbsp;</xsl:text>
    </span> Exp.
 </xsl:template>
 
@@ -520,7 +520,7 @@
          <xsl:attribute name="onclick">showbug('b-uid-<xsl:value-of select="@instanceHash" />-<xsl:value-of select="@instanceOccurrenceNum" />','<xsl:value-of select="$which-list" />');return false;</xsl:attribute>
          <span>
             <xsl:attribute name="class">b-<xsl:value-of select="@priority"/></xsl:attribute>
-            &#160;&#160;
+            <xsl:text disable-output-escaping="yes">&amp;nbsp;&amp;nbsp;</xsl:text>
          </span>
          <span class="b-t"><xsl:value-of select="@abbrev" />: </span> <xsl:value-of select="Class/Message" />
       </a>
@@ -657,7 +657,7 @@
             <xsl:attribute name="onclick">toggle('category-<xsl:value-of select="$category" />-and-code-<xsl:value-of select="$code" />-and-bug-<xsl:value-of select="$bug" />');return false;</xsl:attribute>
             <xsl:attribute name="onmouseout">popUp(event,'tip-<xsl:value-of select="$bug" />');</xsl:attribute>
             <xsl:attribute name="onmouseover">popUp(event,'tip-<xsl:value-of select="$bug" />');</xsl:attribute>
-            <xsl:value-of select="/BugCollection/BugPattern[@category=$category and @abbrev=$code and @type=$bug]/ShortDescription" />&#160;&#160;
+            <xsl:value-of select="/BugCollection/BugPattern[@category=$category and @abbrev=$code and @type=$bug]/ShortDescription" /><xsl:text disable-output-escaping="yes">&amp;nbsp;&amp;nbsp;</xsl:text>
             (<xsl:value-of select="$bug-count" />:
             <span class='t-h'><xsl:value-of select="$bug-count-p1" />/<xsl:value-of select="$bug-count-p2" />/<xsl:value-of select="$bug-count-p3" />/<xsl:value-of select="$bug-count-p4" /></span>)
          </a>
@@ -826,7 +826,7 @@
             <xsl:attribute name="onclick">toggle('package-<xsl:value-of select="$package" />-and-class-<xsl:value-of select="$class" />-and-type-<xsl:value-of select="$type" />');return false;</xsl:attribute>
             <xsl:attribute name="onmouseout">popUp(event,'tip-<xsl:value-of select="$type" />')</xsl:attribute>
             <xsl:attribute name="onmouseover">popUp(event,'tip-<xsl:value-of select="$type" />')</xsl:attribute>
-            <xsl:value-of select="/BugCollection/BugPattern[@type=$type]/ShortDescription" />&#160;&#160;
+            <xsl:value-of select="/BugCollection/BugPattern[@type=$type]/ShortDescription" /><xsl:text disable-output-escaping="yes">&amp;nbsp;&amp;nbsp;</xsl:text>
             (<xsl:value-of select="$bug-count" />)
          </a>
       </div>
