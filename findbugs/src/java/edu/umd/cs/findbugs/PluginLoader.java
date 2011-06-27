@@ -565,8 +565,15 @@ public class PluginLoader {
             List<Node> filterNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/PluginComponent");
             for (Node filterNode : filterNodeList) {
                 String componentKindname = filterNode.valueOf("@componentKind");
+                if (componentKindname == null) throw new PluginException("Missing @componentKind for " + pluginId 
+                        + " loaded from " + loadedFrom);
                 String componentClassname = filterNode.valueOf("@componentClass");
+                if (componentClassname == null) throw new PluginException("Missing @componentClassname for " + pluginId 
+                        + " loaded from " + loadedFrom);
                 String filterId = filterNode.valueOf("@id");
+                if (filterId == null) throw new PluginException("Missing @id for " + pluginId 
+                        + " loaded from " + loadedFrom);
+              
                 try {
                     String propertiesLocation = filterNode.valueOf("@properties");
                     boolean disabled = Boolean.valueOf(filterNode.valueOf("@disabled"));
