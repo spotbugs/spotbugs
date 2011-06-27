@@ -361,7 +361,15 @@ public class PluginLoader {
         URL u = loadFromFindBugsPluginDir(name);
         if (u != null)
             return u;
-        return loadFromFindBugsEtcDir(name);
+        u = loadFromFindBugsEtcDir(name);
+        if (u != null)
+            return u;
+        u = PluginLoader.class.getResource(name);
+        if (u != null)
+            return u;
+        u = PluginLoader.class.getResource("/"+name);
+        
+        return u;
     }
 
     public static @CheckForNull
