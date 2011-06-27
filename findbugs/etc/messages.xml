@@ -6495,7 +6495,7 @@ the caller.
 
   <BugPattern type="DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD">
     <ShortDescription>Dead store to local variable that shadows field</ShortDescription>
-    <LongDescription>Dead store to {2} rather than field with same name an {1}</LongDescription>
+    <LongDescription>Dead store to {2} rather than field with same name in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7344,7 +7344,7 @@ an indication of some misunderstanding or some other logic error.
 
   <BugPattern type="BC_VACUOUS_INSTANCEOF">
     <ShortDescription>instanceof will always return true</ShortDescription>
-    <LongDescription>instanceof will always return true in {1}, since all {2} are instances of {3}</LongDescription>
+    <LongDescription>instanceof will always return true for all nonnull values in {1}, since all {2} are instances of {3}</LongDescription>
     <Details>
 <![CDATA[
 <p>
