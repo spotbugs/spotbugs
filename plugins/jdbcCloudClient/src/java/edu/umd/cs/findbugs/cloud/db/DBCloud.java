@@ -305,7 +305,7 @@ public class DBCloud extends AbstractCloud {
             if (CloudFactory.DEBUG) {
                 bugCollection.getProject().getGuiCallback().showMessageDialog(msg);
             }
-
+            signinState = SigninState.SIGNIN_FAILED;
             if (THROW_EXCEPTION_IF_CANT_CONNECT)
                 throw new RuntimeException("Unable to load database properties");
             return false;
@@ -614,6 +614,11 @@ public class DBCloud extends AbstractCloud {
     }
 
     private String getJDBCProperty(String propertyName) {
+    	String override = System.getProperty("findbugs.override-jdbc." + propertyName);
+    	if (override != null) {
+    		System.out.println("Using override value for " + propertyName + ":" + override);
+    		return override;
+    	}
         return properties.getProperty("findbugs.jdbc." + propertyName);
     }
 
@@ -635,13 +640,17 @@ public class DBCloud extends AbstractCloud {
 
     @Override
     public boolean initialize() throws IOException {
-        if (tryInitialization()) {
+    	if (CloudFactory.DEBUG) 
+    		System.out.println("Starting DBCloud initialization");
+        if (initializationIsDoomed()) {
             signinState = SigninState.SIGNIN_FAILED;
             return false;
         }
 
         signinState = SigninState.SIGNED_IN;
-
+        if (CloudFactory.DEBUG) 
+    		System.out.println("DBCloud initialization preflight checks completed");
+       
         loadBugComponents();
         Connection c = null;
         try {
@@ -676,8 +685,12 @@ public class DBCloud extends AbstractCloud {
             } else if (THROW_EXCEPTION_IF_CANT_CONNECT) {
                 throw new RuntimeException("Unable to get database results");
 
-            } else
+            } else {
+            	if (CloudFactory.DEBUG) 
+            		System.out.println("Unable to connect to database");
+            	signinState = SigninState.SIGNIN_FAILED;
                 return false;
+            }
 
         } catch (RuntimeException e) {
             displayMessage("Unable to connect to " + dbName, e);
@@ -705,7 +718,7 @@ public class DBCloud extends AbstractCloud {
         }
     }
 
-    private boolean tryInitialization() throws IOException {
+    private boolean initializationIsDoomed() throws IOException {
         if (!super.initialize())
             return true;
         if (!availableForInitialization())
