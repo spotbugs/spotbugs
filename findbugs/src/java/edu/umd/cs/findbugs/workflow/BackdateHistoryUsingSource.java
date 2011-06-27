@@ -40,7 +40,6 @@ import edu.umd.cs.findbugs.cloud.Cloud;
  */
 public class BackdateHistoryUsingSource {
 
-
     private static final String USAGE = "Usage: <cmd> " + "  <bugs.xml> [<out.xml>]";
 
     public static void main(String[] args) throws IOException, DocumentException {
@@ -56,7 +55,7 @@ public class BackdateHistoryUsingSource {
         origCollection.readXML(args[0]);
         SourceFinder sourceFinder = new SourceFinder(origCollection.getProject());
 
-        for(BugInstance b : origCollection) {
+        for (BugInstance b : origCollection) {
             SourceLineAnnotation s = b.getPrimarySourceLineAnnotation();
             if (!s.isSourceFileKnown())
                 continue;
@@ -72,13 +71,15 @@ public class BackdateHistoryUsingSource {
         }
         Cloud cloud = origCollection.getCloud();
         cloud.bugsPopulated();
-        System.out.println("Sign in state: " + cloud.getSigninState());
-        
-        if (cloud.getSigninState()  != Cloud.SigninState.SIGNED_IN && 
-                cloud.getSigninState()  != Cloud.SigninState.NO_SIGNIN_REQUIRED ) {
+        if (cloud.getSigninState() != Cloud.SigninState.SIGNED_IN
+                && cloud.getSigninState() != Cloud.SigninState.NO_SIGNIN_REQUIRED) {
             cloud.signIn();
-            System.out.println(cloud.getSigninState());
+            if (cloud.getSigninState() != Cloud.SigninState.SIGNED_IN
+                    && cloud.getSigninState() != Cloud.SigninState.NO_SIGNIN_REQUIRED) {
+                throw new IllegalStateException("Unable to sign in; state : " + cloud.getSigninState());
+            }
         }
+
         cloud.waitUntilIssueDataDownloaded();
 
         if (args.length > 1)
