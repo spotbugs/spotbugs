@@ -210,6 +210,12 @@ public class MainFrameMenu implements Serializable {
                     mainFrame.redoAnalysis();
                 }
             });
+            MainFrameHelper.attachAcceleratorKey(redoAnalysis, KeyEvent.VK_R);
+            redoAnalysis.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    mainFrame.redoAnalysis();
+                }
+            });
         }
         closeProjectItem = MainFrameHelper.newJMenuItem("menu.closeProject", "Close Project");
         closeProjectItem.addActionListener(new ActionListener() {
@@ -220,12 +226,6 @@ public class MainFrameMenu implements Serializable {
         });
         closeProjectItem.setEnabled(false);
 
-        MainFrameHelper.attachAcceleratorKey(redoAnalysis, KeyEvent.VK_R);
-        redoAnalysis.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                mainFrame.redoAnalysis();
-            }
-        });
 
         openMenuItem.setEnabled(true);
         MainFrameHelper.attachAcceleratorKey(openMenuItem, KeyEvent.VK_O);
