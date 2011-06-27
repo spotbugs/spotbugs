@@ -749,7 +749,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     }
 
     private String makeAbsolute(String possiblyRelativePath) {
-        if (possiblyRelativePath.contains("://"))
+        if (possiblyRelativePath.contains("://") || possiblyRelativePath.startsWith("http:") 
+                || possiblyRelativePath.startsWith("https:") || possiblyRelativePath.startsWith("file:"))
             return possiblyRelativePath;
         if (base == null)
             return possiblyRelativePath;
