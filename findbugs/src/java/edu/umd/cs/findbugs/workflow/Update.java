@@ -492,9 +492,11 @@ public class Update {
                     i.remove();
             }
         origCollection.setWithMessages(commandLine.withMessages);
-        if (commandLine.outputFilename != null)
+        if (commandLine.outputFilename != null) {
+            if (verbose)
+                System.out.println("Writing " + commandLine.outputFilename);
             origCollection.writeXML(commandLine.outputFilename);
-        else
+        } else
             origCollection.writeXML(System.out);
 
     }
