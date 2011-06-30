@@ -179,6 +179,35 @@ public class DefaultNullnessAnnotations {
         database.addMethodParameterAnnotation("java.util.concurrent.CyclicBarrier", "<init>", "(ILjava/lang/Runnable;)V", false,
                 1, NullnessAnnotation.CHECK_FOR_NULL);
         
+        
+
+        database.addMethodParameterAnnotation("java.util.concurrent.BrokenBarrierException", "<init>",
+                "(Ljava/lang/String;)V", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
+        database.addMethodParameterAnnotation("java.util.concurrent.CancellationException", "<init>",
+                "(Ljava/lang/String;)V", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
+
+        database.addMethodParameterAnnotation("java.util.concurrent.ExecutionException", "<init>", "(Ljava/lang/String;)V",
+                false, 0, NullnessAnnotation.CHECK_FOR_NULL);
+        database.addMethodParameterAnnotation("java.util.concurrent.ExecutionException", "<init>",
+                "(Ljava/lang/String;Ljava/lang/Throwable;)V", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
+        database.addMethodParameterAnnotation("java.util.concurrent.ExecutionException", "<init>",
+                "(Ljava/lang/String;Ljava/lang/Throwable;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
+        database.addMethodParameterAnnotation("java.util.concurrent.ExecutionException", "<init>",
+                "(Ljava/lang/Throwable;)V", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
+
+        database.addMethodParameterAnnotation("java.util.concurrent.RejectedExecutionException", "<init>",
+                "(Ljava/lang/String;)V", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
+        database.addMethodParameterAnnotation("java.util.concurrent.RejectedExecutionException", "<init>",
+                "(Ljava/lang/String;Ljava/lang/Throwable;)V", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
+        database.addMethodParameterAnnotation("java.util.concurrent.RejectedExecutionException", "<init>",
+                "(Ljava/lang/String;Ljava/lang/Throwable;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
+        database.addMethodParameterAnnotation("java.util.concurrent.RejectedExecutionException", "<init>",
+                "(Ljava/lang/Throwable;)V", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
+
+        database.addMethodParameterAnnotation("java.util.concurrent.TimeoutException", "<init>", "(Ljava/lang/String;)V",
+                false, 0, NullnessAnnotation.CHECK_FOR_NULL);
+
+        
         database.addMethodParameterAnnotation("java.util.concurrent.Executors$RunnableAdapter", "<init>",
                 "(Ljava/lang/Runnable;Ljava/lang/Object;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
         
