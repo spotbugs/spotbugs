@@ -435,7 +435,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                     continue;
 
                 Type expectedType;
-                if (typeArgument < 0)
+                if (allMethod)
                     expectedType = operand;
                 else
                     expectedType = operand.getParameterAt(typeArgument);
