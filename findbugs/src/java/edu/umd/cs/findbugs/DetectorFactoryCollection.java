@@ -148,7 +148,7 @@ public class DetectorFactoryCollection {
     }
 
     @Nonnull
-    Plugin getCorePlugin() {
+    public Plugin getCorePlugin() {
         if (corePlugin == null)
             throw new IllegalStateException("No core plugin");
         return corePlugin;
