@@ -22,12 +22,12 @@ package edu.umd.cs.findbugs.detect;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
@@ -155,6 +155,10 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         // List<E>
         addCheckedCall(List.class.getName(), "indexOf", 0);
         addCheckedCall(List.class.getName(), "lastIndexOf", 0);
+
+        // Vector<E>
+        addCheckedCall(Vector.class.getName(), "indexOf",  "(Ljava/lang/Object;I)", 0, 0);
+        addCheckedCall(Vector.class.getName(), "lastIndexOf",  "(Ljava/lang/Object;I)", 0, 0);
 
         // Map<K,V>
         addCheckedCall(Map.class.getName(), "containsKey", 0);
