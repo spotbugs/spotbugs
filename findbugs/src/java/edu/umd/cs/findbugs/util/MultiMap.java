@@ -51,6 +51,9 @@ public class MultiMap<K, V> {
         return map.keySet();
     }
 
+    public boolean containsKey(K k) {
+        return map.containsKey(k);
+    }
     public void clear() {
         map.clear();
     }

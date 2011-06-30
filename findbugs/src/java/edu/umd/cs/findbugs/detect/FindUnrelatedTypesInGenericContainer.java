@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -93,6 +94,7 @@ import edu.umd.cs.findbugs.util.MultiMap;
 
 /**
  * @author Nat Ayewah
+ * @author William Pugh
  */
 public class FindUnrelatedTypesInGenericContainer implements Detector {
 
@@ -100,6 +102,16 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("gc.debug");
 
+    static class Info {
+        public Info(ClassDescriptor interfaceForCall, int argumentIndex, int typeIndex) {
+           this.interfaceForCall = interfaceForCall;
+            this.argumentIndex = argumentIndex;
+            this.typeIndex = typeIndex;
+        }
+        final ClassDescriptor interfaceForCall;
+        final int argumentIndex;
+        final int typeIndex;
+    }
     /**
      * Map classname, methodname and signature to an int []. Each position in
      * the int [] corresponds to an argument in the methodSignature. For each
@@ -111,37 +123,69 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
      * Get the String key by calling getCollectionsMapKey()
      */
 
-    private MultiMap<String, ClassDescriptor> nameToInterfaceMap = new MultiMap<String, ClassDescriptor>(LinkedList.class);
+    private MultiMap<String, Info> callMap = new MultiMap<String, Info>(LinkedList.class);
 
-    private Map<String, Integer> nameToTypeArgumentIndex = new HashMap<String, Integer>();
-
-    private void addToCollectionsMap(@DottedClassName String className, String methodName, int argumentParameterIndex) {
+    
+    private void addCheckedCall(@DottedClassName String className, String methodName, String sig, int argumentParameterIndex, int typeParameterIndex) {
         ClassDescriptor c = DescriptorFactory.instance().getClassDescriptorForDottedClassName(className);
-        nameToInterfaceMap.add(methodName, c);
-        nameToTypeArgumentIndex.put(methodName, argumentParameterIndex);
+        String call = methodName+sig;
+        Info info = new Info(c, argumentParameterIndex, typeParameterIndex);
+        callMap.add(call, info);
     }
+         
+    private void addCheckedCall(@DottedClassName String className, String methodName, int typeParameterIndex) {
+        addCheckedCall(className, methodName, "(Ljava/lang/Object;)", 0, typeParameterIndex);
+    }
+    
 
     public FindUnrelatedTypesInGenericContainer(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
 
         // Collection<E>
-        addToCollectionsMap(Collection.class.getName(), "contains", 0);
-        addToCollectionsMap(Collection.class.getName(), "remove", 0);
-        addToCollectionsMap(Collection.class.getName(), "removeFirstOccurrence", 0);
-        addToCollectionsMap(Collection.class.getName(), "removeLastOccurrence", 0);
-        addToCollectionsMap(Collection.class.getName(), "containsAll", -1);
-        addToCollectionsMap(Collection.class.getName(), "removeAll", -1);
-        addToCollectionsMap(Collection.class.getName(), "retainAll", -1);
+        addCheckedCall(Collection.class.getName(), "contains", 0);
+        addCheckedCall(Collection.class.getName(), "remove", 0);
+        addCheckedCall(Collection.class.getName(), "containsAll", "(Ljava/util/Collection;)", 0, 0);
+        addCheckedCall(Collection.class.getName(), "removeAll", "(Ljava/util/Collection;)", 0, 0);
+        addCheckedCall(Collection.class.getName(), "retainAll", "(Ljava/util/Collection;)", 0, 0);
 
+        // Dequeue<E>
+        addCheckedCall(Deque.class.getName(), "removeFirstOccurrence", 0);
+        addCheckedCall(Deque.class.getName(), "removeLastOccurrence", 0);
+       
         // List<E>
-        addToCollectionsMap(List.class.getName(), "indexOf", 0);
-        addToCollectionsMap(List.class.getName(), "lastIndexOf", 0);
+        addCheckedCall(List.class.getName(), "indexOf", 0);
+        addCheckedCall(List.class.getName(), "lastIndexOf", 0);
 
         // Map<K,V>
-        addToCollectionsMap(Map.class.getName(), "containsKey", 0);
-        addToCollectionsMap(Map.class.getName(), "containsValue", 1);
-        addToCollectionsMap(Map.class.getName(), "get", 0);
-        addToCollectionsMap(Map.class.getName(), "remove", 0);
+        addCheckedCall(Map.class.getName(), "containsKey", 0);
+        addCheckedCall(Map.class.getName(), "containsValue", 1);
+        addCheckedCall(Map.class.getName(), "get", 0);
+        addCheckedCall(Map.class.getName(), "remove", 0);
+        
+        // Multimap<K,V>
+        addCheckedCall("com.google.common.collect.Multimap", "containsEntry", "(Ljava/lang/Object;Ljava/lang/Object;)", 0, 0);
+        addCheckedCall("com.google.common.collect.Multimap", "containsEntry", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);
+        addCheckedCall("com.google.common.collect.Multimap", "containsKey", 0);
+        addCheckedCall("com.google.common.collect.Multimap", "containsValue", 1);
+        addCheckedCall("com.google.common.collect.Multimap", "remove", "(Ljava/lang/Object;Ljava/lang/Object;)", 0, 0);
+        addCheckedCall("com.google.common.collect.Multimap", "remove", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);
+        addCheckedCall("com.google.common.collect.Multimap", "removeAll", 0);
+        
+        // Multiset<E>
+        addCheckedCall("com.google.common.collect.Multiset", "count", 0);
+        addCheckedCall("com.google.common.collect.Multiset", "remove","(Ljava/lang/Object;I)", 0, 0);
+        
+        // Table<R,C,V>
+        addCheckedCall("com.google.common.collect.Table", "contains", "(Ljava/lang/Object;Ljava/lang/Object;)", 0, 0);
+        addCheckedCall("com.google.common.collect.Table", "contains", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);
+        
+        addCheckedCall("com.google.common.collect.Table", "containsRow", 0);
+        addCheckedCall("com.google.common.collect.Table", "containsColumn", 1);
+        addCheckedCall("com.google.common.collect.Table", "containsValue", 2);
+        addCheckedCall("com.google.common.collect.Table", "get", "(Ljava/lang/Object;Ljava/lang/Object;)", 0, 0);
+        addCheckedCall("com.google.common.collect.Table", "get", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);
+        addCheckedCall("com.google.common.collect.Table", "remove", 0);
+        
     }
 
     /**
@@ -200,9 +244,22 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
     }
 
     private boolean isGenericCollection(ClassDescriptor operandClass) {
-        if (!Subtypes2.instanceOf(operandClass, "java.util.Map") && !Subtypes2.instanceOf(operandClass, "java.util.Collection"))
+        String [] baseTypes = {"java.util.Map",  "java.util.Collection",  "com.google.common.collect.Multimap", 
+                "com.google.common.collect.Table"};
+        String dottedClassName = operandClass.getDottedClassName();
+        
+        String found = null;
+        for(String c : baseTypes) {
+            if (dottedClassName.equals(c))
+                return true;
+            if (Subtypes2.instanceOf(operandClass, c)) {
+                found = c;
+                break;
+            }
+        }
+        if (found == null)
             return false;
-        if (operandClass.getClassName().startsWith("java/util"))
+        if (dottedClassName.startsWith("java.util.") || dottedClassName.startsWith("com.google.common.collect.") )
             return true;
         try {
             XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, operandClass);
@@ -271,38 +328,27 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
             XMethod invokedMethod = XFactory.createXMethod(inv, cpg);
 
             String invokedMethodName = invokedMethod.getName();
-            for (ClassDescriptor interfaceOfInterest : nameToInterfaceMap.get(invokedMethodName)) {
-
-                if (DEBUG)
-                    System.out.println("Checking call to " + interfaceOfInterest + " : " + invokedMethod);
-                String argSignature = invokedMethod.getSignature();
-                argSignature = argSignature.substring(0, argSignature.indexOf(')') + 1);
-                int pos = 0;
-                boolean allMethod = false;
-                if (!argSignature.equals("(Ljava/lang/Object;)")) {
-                    if (invokedMethodName.equals("removeAll") || invokedMethodName.equals("containsAll")
-                            || invokedMethodName.equals("retainAll")) {
-                        if (!invokedMethod.getSignature().equals("(Ljava/util/Collection;)Z"))
-                            continue;
-                        allMethod = true;
-                    } else if (invokedMethodName.endsWith("ndexOf") && invokedMethod.getClassName().equals("java.util.Vector")
-                            && argSignature.equals("(Ljava/lang/Object;I)"))
-                        pos = 1;
-                    else
-                        continue;
-                }
+            String argSignature = invokedMethod.getSignature();
+            argSignature = argSignature.substring(0, argSignature.indexOf(')') + 1);
+            String call = invokedMethodName+argSignature;
+            Collection<Info> collection = callMap.get(call);
+            if (!callMap.containsKey(call))
+                continue;
+            for(Info info : collection) {
                 Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+                if (DEBUG)
+                    System.out.println("Checking call to " + info.interfaceForCall + " : " + invokedMethod);
                 try {
-                    if (!subtypes2.isSubtype(invokedMethod.getClassDescriptor(), interfaceOfInterest))
+                    if (!subtypes2.isSubtype(invokedMethod.getClassDescriptor(), info.interfaceForCall))
                         continue;
                 } catch (ClassNotFoundException e) {
                     AnalysisContext.reportMissingClass(e);
                     continue;
                 }
-                // OK, we've found a method call of interest
+                int typeArgument = info.typeIndex;
+                int pos = info.argumentIndex;
 
-                int typeArgument = nameToTypeArgumentIndex.get(invokedMethodName);
-
+                boolean allMethod = call.endsWith("All(Ljava/util/Collection;)");
                 TypeFrame frame = typeDataflow.getFactAtLocation(location);
                 if (!frame.isValid()) {
                     // This basic block is probably dead
@@ -326,14 +372,13 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                     AnalysisContext.logError("Invalid value number frame in " + xmethod);
                     continue;
                 }
-                int numArguments = frame.getNumArguments(inv, cpg);
-
-                if (numArguments != 1 + pos)
-                    continue;
-
+                
                 int expectedParameters = 1;
-                if (interfaceOfInterest.getSimpleName().equals("Map"))
+                String simpleName = info.interfaceForCall.getSimpleName();
+                if ( simpleName.equals("Map") || simpleName.equals("Multimap"))
                     expectedParameters = 2;
+                else if (simpleName.equals("Table"))
+                    expectedParameters = 3;
 
                 // compare containers type parameters to corresponding arguments
                 SignatureParser sigParser = new SignatureParser(inv.getSignature(cpg));
@@ -408,9 +453,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                         selfOperation = true;
                 }
 
-                if (!selfOperation && matchResult == IncompatibleTypes.SEEMS_OK)
+                if (!selfOperation && ( matchResult == IncompatibleTypes.SEEMS_OK || matchResult.getPriority() == Priorities.IGNORE_PRIORITY))
                     continue;
-
+                
                 if (invokedMethodName.startsWith("contains") || invokedMethodName.equals("remove")) {
                     InstructionHandle next = handle.getNext();
                     if (next != null) {
@@ -480,36 +525,6 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                     AnalysisContext.reportMissingClass(e);
                 }
                 String bugPattern = "GC_UNRELATED_TYPES";
-                if (matchResult == IncompatibleTypes.UNCHECKED) {
-                    boolean foundMatch = false;
-
-                    for (ClassDescriptor selfInterface : nameToInterfaceMap.get(methodGen.getName())) {
-
-                        if (DEBUG)
-                            System.out.println("Checking call to " + interfaceOfInterest + " : " + invokedMethod);
-                        String selfSignature = methodGen.getSignature();
-                        argSignature = argSignature.substring(0, argSignature.indexOf(')') + 1);
-                        try {
-                            if (argSignature.equals("(Ljava/lang/Object;)")
-                                    && subtypes2.isSubtype(classContext.getClassDescriptor(), selfInterface)) {
-                                foundMatch = true;
-                                break;
-                            }
-                        } catch (ClassNotFoundException e) {
-                            AnalysisContext.reportMissingClass(e);
-                        }
-                    }
-                    if (foundMatch)
-                        continue;
-                    Instruction prevIns = handle.getPrev().getInstruction();
-                    if (prevIns instanceof InvokeInstruction) {
-                        String returnValueSig = ((InvokeInstruction) prevIns).getSignature(cpg);
-                        if (returnValueSig.endsWith(")Ljava/lang/Object;"))
-                            continue;
-                    }
-
-                    bugPattern = "GC_UNCHECKED_TYPE_IN_GENERIC_CALL";
-                }
 
                 BugInstance bug = new BugInstance(this, bugPattern, priority)
                         .addClassAndMethod(methodGen, sourceFile)
