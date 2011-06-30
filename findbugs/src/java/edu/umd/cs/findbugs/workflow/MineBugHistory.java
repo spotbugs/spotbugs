@@ -213,7 +213,7 @@ public class MineBugHistory {
 
             int paddingNeeded = WIDTH - b.length() % WIDTH;
             if (paddingNeeded > 0)
-                b.append("        ".substring(0, paddingNeeded));
+                b.append("                                                     ".substring(0, paddingNeeded));
         }
 
         out.println(b.toString());
