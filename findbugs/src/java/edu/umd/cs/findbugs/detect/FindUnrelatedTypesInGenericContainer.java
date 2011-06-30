@@ -175,6 +175,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         addCheckedCall("com.google.common.collect.Multimap", "remove", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);
         addCheckedCall("com.google.common.collect.Multimap", "removeAll", 0);
         
+        // Cache<K,V>
+        addCheckedCall("com.google.common.cache.Cache", "invalidate", 0);
+        
         // Multiset<E>
         addCheckedCall("com.google.common.collect.Multiset", "count", 0);
         addCheckedCall("com.google.common.collect.Multiset", "remove","(Ljava/lang/Object;I)", 0, 0);
@@ -335,6 +338,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
             String argSignature = invokedMethod.getSignature();
             argSignature = argSignature.substring(0, argSignature.indexOf(')') + 1);
             String call = invokedMethodName+argSignature;
+           SignatureParser sigParser = new SignatureParser(inv.getSignature(cpg));
+
             Collection<Info> collection = callMap.get(call);
             if (!callMap.containsKey(call))
                 continue;
@@ -352,6 +357,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 int typeArgument = info.typeIndex;
                 int pos = info.argumentIndex;
 
+                int stackPos = sigParser.getSlotsFromTopOfStackForParameter(pos);
+        
                 boolean allMethod = call.endsWith("All(Ljava/util/Collection;)");
                 TypeFrame frame = typeDataflow.getFactAtLocation(location);
                 if (!frame.isValid()) {
@@ -359,7 +366,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                     continue;
                 }
 
-                Type operandType = frame.getStackValue(pos);
+                
+                Type operandType = frame.getStackValue(stackPos);
                 if (operandType.equals(TopType.instance())) {
                     // unreachable
                     continue;
@@ -377,18 +385,10 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                     continue;
                 }
                 
-                int expectedParameters = 1;
-                String simpleName = info.interfaceForCall.getSimpleName();
-                if ( simpleName.equals("Map") || simpleName.equals("Multimap"))
-                    expectedParameters = 2;
-                else if (simpleName.equals("Table"))
-                    expectedParameters = 3;
-
-                // compare containers type parameters to corresponding arguments
-                SignatureParser sigParser = new SignatureParser(inv.getSignature(cpg));
-
+              
+               
                 ValueNumber objectVN = vnFrame.getInstance(ins, cpg);
-                ValueNumber argVN = vnFrame.getArgument(inv, cpg, 0, sigParser);
+                ValueNumber argVN = vnFrame.getStackValue(stackPos);
 
                 if (objectVN.equals(argVN)) {
                     String bugPattern = "DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES";
@@ -429,6 +429,13 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
                 GenericObjectType operand = (GenericObjectType) objectType;
 
+                int expectedParameters = 1;
+                String simpleName = info.interfaceForCall.getSimpleName();
+                if ( simpleName.equals("Map") || simpleName.equals("Multimap"))
+                    expectedParameters = 2;
+                else if (simpleName.equals("Table"))
+                    expectedParameters = 3;
+
                 // ... containers
                 if (!operand.hasParameters())
                     continue;
@@ -443,7 +450,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                     expectedType = operand;
                 else
                     expectedType = operand.getParameterAt(typeArgument);
-                Type actualType = frame.getArgument(inv, cpg, 0, sigParser);
+                Type actualType = frame.getStackValue(stackPos);
 
                 IncompatibleTypes matchResult = compareTypes(expectedType, actualType, allMethod);
 
