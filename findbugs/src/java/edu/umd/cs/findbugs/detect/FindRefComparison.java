@@ -789,6 +789,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                     refComparisonList);
         } else if (ins instanceof InvokeInstruction) {
             InvokeInstruction inv = (InvokeInstruction) ins;
+            @DottedClassName String className = inv.getClassName(cpg);
             String methodName = inv.getMethodName(cpg);
             String methodSig = inv.getSignature(cpg);
             if ( methodName.equals("assertSame") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)V")) {
@@ -796,7 +797,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                         refComparisonList);
             }
             boolean equalsMethod = methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z")
-                    || methodName.equals("assertEquals") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)V");
+                    || methodName.equals("assertEquals") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)V")
+                    || methodName.equals("equal") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)Z")
+                       && className.equals("com.google.common.base.Objects");
+                       
               if (equalsMethod) {
                 checkEqualsComparison(location, jclass, method, methodGen, cpg, typeDataflow);
             }
