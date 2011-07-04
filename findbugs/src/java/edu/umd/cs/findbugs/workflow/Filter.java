@@ -71,7 +71,7 @@ public class Filter {
          */
         public static final long MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000L;
 
-        Pattern className, bugPattern;
+        Pattern classPattern, bugPattern, callsPattern;
 
         public boolean notSpecified = false;
 
@@ -243,6 +243,8 @@ public class Filter {
             addSwitchWithOptionalExtraPart("-shouldFix", "truth", "Only issues with a consensus view that they should be fixed");
 
             addOption("-class", "pattern", "allow only bugs whose primary class name matches this pattern");
+            addOption("-calls", "pattern", "allow only bugs that involve a call to a method that matches this pattern (matches with method class or name)");
+            
             addOption("-bugPattern", "pattern", "allow only bugs whose type matches this pattern");
             addOption("-category", "category", "allow only warnings with a category that starts with this string");
             addOption("-designation", "designation",
@@ -416,8 +418,15 @@ public class Filter {
 
             if (bugPattern != null && !bugPattern.matcher(bug.getType()).find())
                 return false;
-            if (className != null && !className.matcher(bug.getPrimaryClass().getClassName()).find())
+            if (classPattern != null && !classPattern.matcher(bug.getPrimaryClass().getClassName()).find())
                 return false;
+            if (callsPattern != null) {
+                MethodAnnotation m = bug.getAnnotationWithRole(MethodAnnotation.class, MethodAnnotation.METHOD_CALLED);
+                if (m == null) 
+                    return false;
+                if (!callsPattern.matcher(m.getClassName()).find()  && !callsPattern.matcher(m.getMethodName()).find())
+                    return false;
+            }
 
             if (maybeMutatedAsString != null && !(atMutationPoint(bug) && mutationPoints.contains(getBugLocation(bug))))
                 return false;
@@ -552,7 +561,9 @@ public class Filter {
             else if (option.equals("-designation"))
                 addDesignationKey(argument);
             else if (option.equals("-class"))
-                className = Pattern.compile(argument.replace(',', '|'));
+                classPattern = Pattern.compile(argument.replace(',', '|'));
+            else if (option.equals("-calls"))
+                callsPattern = Pattern.compile(argument.replace(',', '|'));
             else if (option.equals("-bugPattern"))
                 bugPattern = Pattern.compile(argument);
             else if (option.equals("-annotation"))
@@ -682,8 +693,8 @@ public class Filter {
         commandLine.adjustFilter(project, resultCollection);
         ProjectStats projectStats = resultCollection.getProjectStats();
         projectStats.clearBugCounts();
-        if (commandLine.className != null) {
-            projectStats.purgeClassesThatDontMatch(commandLine.className);
+        if (commandLine.classPattern != null) {
+            projectStats.purgeClassesThatDontMatch(commandLine.classPattern);
         }
         sourceSearcher = new SourceSearcher(project);
 

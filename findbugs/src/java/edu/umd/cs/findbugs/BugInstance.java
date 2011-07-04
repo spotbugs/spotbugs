@@ -42,6 +42,16 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.Nonnull;
 
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.Type;
+import org.objectweb.asm.tree.ClassNode;
+
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
@@ -74,15 +84,6 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.Type;
-import org.objectweb.asm.tree.ClassNode;
 
 /**
  * An instance of a bug pattern. A BugInstance consists of several parts:
@@ -558,6 +559,20 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      */
     public List<? extends BugAnnotation> getAnnotations() {
         return annotationList;
+    }
+    
+    /** Get the first bug annotation with the specified class and role; return null if no
+     * such annotation exists;
+     * @param role
+     * @return
+     */
+    public @CheckForNull <A extends BugAnnotation> A getAnnotationWithRole(Class<A> c, String role) {
+        for(BugAnnotation a : annotationList) {
+            if (c.isInstance(a) && Util.nullSafeEquals(role, a.getDescription()))
+                return c.cast(a);
+        }
+        return null;
+        
     }
 
     /**

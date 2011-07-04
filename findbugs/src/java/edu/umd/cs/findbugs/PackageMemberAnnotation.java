@@ -81,7 +81,7 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
     }
 
     /**
-     * Get the class name.
+     * Get the dotted class name.
      */
     public final @DottedClassName
     String getClassName() {
@@ -89,7 +89,7 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
     }
 
     /**
-     * Get the class name.
+     * Get the class descriptor.
      */
     public final ClassDescriptor getClassDescriptor() {
         return DescriptorFactory.instance().getClassDescriptorForDottedClassName(className);
