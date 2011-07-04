@@ -12,6 +12,9 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 public class Guava {
 
     
@@ -53,7 +56,8 @@ public class Guava {
         }
         
     }
-    public static void testMultmap(Multimap<String, Integer> mm) {
+    @ExpectWarning(value="GC", num=7)
+    public static void testMultimap(Multimap<String, Integer> mm) {
         mm.containsEntry("x", "y");
         mm.containsEntry(1, 5);
         mm.containsKey(1);
@@ -61,17 +65,18 @@ public class Guava {
         mm.remove("x", "x");
         mm.remove(1, 2);
         mm.removeAll(1);
-
     }
 
-    public static void testMultmapOK(Multimap<String, Integer> mm) {
+    @NoWarning("GC")
+    public static void testMultimapOK(Multimap<String, Integer> mm) {
         mm.containsEntry("x", 1);
         mm.containsKey("x");
         mm.containsValue(1);
         mm.remove("x", 1);
         mm.removeAll("x");
     }
-    public static void testMultmapOK2(Multimap<String, Pair<Integer,Long>> mm) {
+    @NoWarning("GC")
+    public static void testMultimapOK2(Multimap<String, Pair<Integer,Long>> mm) {
         Pair<Integer, Long> p = new Pair<Integer, Long>(1, 1L);
         mm.containsEntry("x", p);
         mm.containsKey("x");
@@ -80,6 +85,7 @@ public class Guava {
         mm.removeAll("x");
     }
 
+    @ExpectWarning(value="GC", num=4)
     public static void testMultiset(Multiset<String> ms) {
         ms.contains(1);
         ms.count(1);
@@ -87,6 +93,7 @@ public class Guava {
         ms.remove(1, 2);
     }
 
+    @ExpectWarning(value="GC", num=9)
     public static void testTable(Table<String, Integer, Long> t) {
         t.contains("x", "x");
         t.contains(1, 1);
@@ -99,6 +106,7 @@ public class Guava {
         t.remove(1, 1);
     }
 
+    @ExpectWarning(value="EC", num=1)
     public static void testObjects() {
         Objects.equal("x", 1);
     }
@@ -109,6 +117,7 @@ public class Guava {
         Sets.symmetricDifference(s1, s2);
     }
 
+    @ExpectWarning(value="GC", num=2)
     public static void testIterables(Iterable<String> i, Collection<Integer> c) {
         Iterables.contains(i, 1);
         Iterables.removeAll(i, c);
@@ -117,6 +126,7 @@ public class Guava {
         Iterables.frequency(i, 1);
     }
 
+    @ExpectWarning(value="GC", num=2)
     public static void testIterators(Iterator<String> i, Collection<Integer> c) {
         Iterators.contains(i, 1);
         Iterators.removeAll(i,c);
