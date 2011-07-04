@@ -32,32 +32,15 @@ import org.apache.bcel.generic.InvokeInstruction;
  * @author David Hovemeyer
  */
 public class SignatureParser {
-    int totalArgumentSize;
+    final int totalArgumentSize;
 
-    int parameterOffset[] = null;
-
-    private void calculateOffsets() {
-        if (parameterOffset != null)
-            return;
-        ArrayList<Integer> offsets = new ArrayList<Integer>();
-        Iterator<String> i = parameterSignatureIterator();
-        totalArgumentSize = 0;
-        while (i.hasNext()) {
-            String s = i.next();
-
-            if (s.equals("D") || s.equals("J"))
-                totalArgumentSize += 2;
-            else
-                totalArgumentSize += 1;
-            offsets.add(totalArgumentSize);
-        }
-        parameterOffset = new int[offsets.size()];
-        for (int j = 0; j < offsets.size(); j++)
-            parameterOffset[j] = offsets.get(j);
+    public int getTotalArgumentSize() {
+        return totalArgumentSize;
     }
 
-    public int getSlotsFromTopOfStackForParameter(int paramNum) {
-        calculateOffsets();
+    final int parameterOffset[];
+
+     public int getSlotsFromTopOfStackForParameter(int paramNum) {
         int result = totalArgumentSize - parameterOffset[paramNum];
         return result;
     }
@@ -135,6 +118,24 @@ public class SignatureParser {
         if (!signature.startsWith("("))
             throw new IllegalArgumentException("Bad method signature: " + signature);
         this.signature = signature;
+        ArrayList<Integer> offsets = new ArrayList<Integer>();
+        Iterator<String> i = parameterSignatureIterator();
+        int totalSize = 0;
+        
+        while (i.hasNext()) {
+            String s = i.next();
+
+            if (s.equals("D") || s.equals("J"))
+                totalSize += 2;
+            else
+                totalSize += 1;
+            offsets.add(totalSize);
+        }
+        totalArgumentSize = totalSize;
+        parameterOffset = new int[offsets.size()];
+        for (int j = 0; j < offsets.size(); j++)
+            parameterOffset[j] = offsets.get(j);
+
     }
 
     /**

@@ -38,6 +38,7 @@ import org.apache.bcel.classfile.Synthetic;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -104,7 +105,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
     static class Info {
         public Info(ClassDescriptor interfaceForCall, int argumentIndex, int typeIndex) {
-           this.interfaceForCall = interfaceForCall;
+            this.interfaceForCall = interfaceForCall;
             this.argumentIndex = argumentIndex;
             this.typeIndex = typeIndex;
         }
@@ -125,18 +126,18 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
     private MultiMap<String, Info> callMap = new MultiMap<String, Info>(LinkedList.class);
 
-    
+
     private void addCheckedCall(@DottedClassName String className, String methodName, String sig, int argumentParameterIndex, int typeParameterIndex) {
         ClassDescriptor c = DescriptorFactory.instance().getClassDescriptorForDottedClassName(className);
         String call = methodName+sig;
         Info info = new Info(c, argumentParameterIndex, typeParameterIndex);
         callMap.add(call, info);
     }
-         
+
     private void addCheckedCall(@DottedClassName String className, String methodName, int typeParameterIndex) {
         addCheckedCall(className, methodName, "(Ljava/lang/Object;)", 0, typeParameterIndex);
     }
-    
+
 
     public FindUnrelatedTypesInGenericContainer(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -151,7 +152,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         // Dequeue<E>
         addCheckedCall(Deque.class.getName(), "removeFirstOccurrence", 0);
         addCheckedCall(Deque.class.getName(), "removeLastOccurrence", 0);
-       
+
         // List<E>
         addCheckedCall(List.class.getName(), "indexOf", 0);
         addCheckedCall(List.class.getName(), "lastIndexOf", 0);
@@ -165,7 +166,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         addCheckedCall(Map.class.getName(), "containsValue", 1);
         addCheckedCall(Map.class.getName(), "get", 0);
         addCheckedCall(Map.class.getName(), "remove", 0);
-        
+
         // Multimap<K,V>
         addCheckedCall("com.google.common.collect.Multimap", "containsEntry", "(Ljava/lang/Object;Ljava/lang/Object;)", 0, 0);
         addCheckedCall("com.google.common.collect.Multimap", "containsEntry", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);
@@ -174,25 +175,39 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         addCheckedCall("com.google.common.collect.Multimap", "remove", "(Ljava/lang/Object;Ljava/lang/Object;)", 0, 0);
         addCheckedCall("com.google.common.collect.Multimap", "remove", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);
         addCheckedCall("com.google.common.collect.Multimap", "removeAll", 0);
-        
+
         // Cache<K,V>
         addCheckedCall("com.google.common.cache.Cache", "invalidate", 0);
-        
+
         // Multiset<E>
         addCheckedCall("com.google.common.collect.Multiset", "count", 0);
         addCheckedCall("com.google.common.collect.Multiset", "remove","(Ljava/lang/Object;I)", 0, 0);
-        
+
         // Table<R,C,V>
         addCheckedCall("com.google.common.collect.Table", "contains", "(Ljava/lang/Object;Ljava/lang/Object;)", 0, 0);
-        addCheckedCall("com.google.common.collect.Table", "contains", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);
-        
+        addCheckedCall("com.google.common.collect.Table", "contains", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);        
         addCheckedCall("com.google.common.collect.Table", "containsRow", 0);
         addCheckedCall("com.google.common.collect.Table", "containsColumn", 1);
         addCheckedCall("com.google.common.collect.Table", "containsValue", 2);
         addCheckedCall("com.google.common.collect.Table", "get", "(Ljava/lang/Object;Ljava/lang/Object;)", 0, 0);
         addCheckedCall("com.google.common.collect.Table", "get", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);
         addCheckedCall("com.google.common.collect.Table", "remove", 0);
-        
+
+        // Iterables
+        addCheckedCall("com.google.common.collect.Iterables", "contains", "(Ljava/lang/Iterable;Ljava/lang/Object;)", 1, 0);
+        addCheckedCall("com.google.common.collect.Iterables", "removeAll", "(Ljava/lang/Iterable;Ljava/util/Collection;)", 1, 0);
+        addCheckedCall("com.google.common.collect.Iterables", "retainAll", "(Ljava/lang/Iterable;Ljava/util/Collection;)", 1, 0);
+        addCheckedCall("com.google.common.collect.Iterables", "elementsEqual", "(Ljava/lang/Iterable;Ljava/lang/Iterable;)", 1, 0);
+        addCheckedCall("com.google.common.collect.Iterables", "frequency", "(Ljava/lang/Iterable;Ljava/lang/Object;)", 1, 0);
+
+        // Iterators
+        addCheckedCall("com.google.common.collect.Iterators", "contains", "(Ljava/util/Iterator;Ljava/lang/Object;)", 1, 0);
+        addCheckedCall("com.google.common.collect.Iterators", "removeAll", "(Ljava/util/Iterator;Ljava/util/Collection;)", 1, 0);
+        addCheckedCall("com.google.common.collect.Iterators", "retainAll", "(Ljava/util/Iterator;Ljava/util/Collection;)", 1, 0);
+        addCheckedCall("com.google.common.collect.Iterators", "elementsEqual", "(Ljava/util/Iterator;Ljava/util/Iterator;)", 1, 0);
+        addCheckedCall("com.google.common.collect.Iterators", "frequency", "(Ljava/util/Iterator;Ljava/lang/Object;)", 1, 0);
+
+
     }
 
     /**
@@ -214,11 +229,11 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 assert true; // move along; nothing to see
             } catch (CFGBuilderException e) {
                 String msg = "Detector " + this.getClass().getName() + " caught exception while analyzing "
-                        + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
+                + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
                 bugReporter.logError(msg, e);
             } catch (DataflowAnalysisException e) {
                 String msg = "Detector " + this.getClass().getName() + " caught exception while analyzing "
-                        + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
+                + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
                 bugReporter.logError(msg, e);
             }
         }
@@ -230,9 +245,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
     public boolean prescreen(ClassContext classContext, Method method) {
         BitSet bytecodeSet = classContext.getBytecodeSet(method);
         return bytecodeSet != null
-                && (bytecodeSet.get(Constants.INVOKEINTERFACE) || bytecodeSet.get(Constants.INVOKEVIRTUAL)
-                        || bytecodeSet.get(Constants.INVOKESPECIAL) || bytecodeSet.get(Constants.INVOKESTATIC) || bytecodeSet
-                        .get(Constants.INVOKENONVIRTUAL));
+        && (bytecodeSet.get(Constants.INVOKEINTERFACE) || bytecodeSet.get(Constants.INVOKEVIRTUAL)
+                || bytecodeSet.get(Constants.INVOKESPECIAL) || bytecodeSet.get(Constants.INVOKESTATIC) || bytecodeSet
+                .get(Constants.INVOKENONVIRTUAL));
     }
 
     /**
@@ -251,10 +266,10 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
     }
 
     private boolean isGenericCollection(ClassDescriptor operandClass) {
-        String [] baseTypes = {"java.util.Map",  "java.util.Collection",  "com.google.common.collect.Multimap", 
-                "com.google.common.collect.Table"};
+        String [] baseTypes = {"java.util.Map",  "java.util.Collection", "java.lang.Iterable", "java.util.Iterator", "com.google.common.collect.Multimap", 
+        "com.google.common.collect.Table"};
         String dottedClassName = operandClass.getDottedClassName();
-        
+
         String found = null;
         for(String c : baseTypes) {
             if (dottedClassName.equals(c))
@@ -338,7 +353,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
             String argSignature = invokedMethod.getSignature();
             argSignature = argSignature.substring(0, argSignature.indexOf(')') + 1);
             String call = invokedMethodName+argSignature;
-           SignatureParser sigParser = new SignatureParser(inv.getSignature(cpg));
+            SignatureParser sigParser = new SignatureParser(inv.getSignature(cpg));
 
             Collection<Info> collection = callMap.get(call);
             if (!callMap.containsKey(call))
@@ -356,17 +371,24 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 }
                 int typeArgument = info.typeIndex;
                 int pos = info.argumentIndex;
-
+                
+                int lhsPos;
+                if (inv instanceof INVOKESTATIC)
+                    lhsPos = sigParser.getSlotsFromTopOfStackForParameter(0);
+                else 
+                    lhsPos = sigParser.getTotalArgumentSize();
+               
                 int stackPos = sigParser.getSlotsFromTopOfStackForParameter(pos);
-        
-                boolean allMethod = call.endsWith("All(Ljava/util/Collection;)");
+
+                boolean allMethod = call.endsWith("All(Ljava/util/Collection;)")
+                        || call.startsWith("elementsEqual");
                 TypeFrame frame = typeDataflow.getFactAtLocation(location);
                 if (!frame.isValid()) {
                     // This basic block is probably dead
                     continue;
                 }
 
-                
+
                 Type operandType = frame.getStackValue(stackPos);
                 if (operandType.equals(TopType.instance())) {
                     // unreachable
@@ -384,10 +406,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                     AnalysisContext.logError("Invalid value number frame in " + xmethod);
                     continue;
                 }
-                
-              
-               
-                ValueNumber objectVN = vnFrame.getInstance(ins, cpg);
+
+                ValueNumber objectVN = vnFrame.getStackValue(lhsPos);
                 ValueNumber argVN = vnFrame.getStackValue(stackPos);
 
                 if (objectVN.equals(argVN)) {
@@ -414,32 +434,32 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                     }
                     accumulator.accumulateBug(
                             new BugInstance(this, bugPattern, priority)
-                                    .addClassAndMethod(methodGen, sourceFile)
-                                    .addCalledMethod(methodGen, (InvokeInstruction) ins)
-                                    .addOptionalAnnotation(
-                                            ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, objectVN,
-                                                    vnFrame, "INVOKED_ON")), SourceLineAnnotation.fromVisitedInstruction(
-                                    classContext, methodGen, sourceFile, handle));
+                            .addClassAndMethod(methodGen, sourceFile)
+                            .addCalledMethod(methodGen, (InvokeInstruction) ins)
+                            .addOptionalAnnotation(
+                                    ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, objectVN,
+                                            vnFrame, "INVOKED_ON")), SourceLineAnnotation.fromVisitedInstruction(
+                                                    classContext, methodGen, sourceFile, handle));
                 }
 
                 // Only consider generic...
-                Type objectType = frame.getInstance(inv, cpg);
+                Type objectType = frame.getStackValue(lhsPos);
                 if (!(objectType instanceof GenericObjectType))
                     continue;
 
                 GenericObjectType operand = (GenericObjectType) objectType;
 
-                int expectedParameters = 1;
+                int expectedTypeParameters = 1;
                 String simpleName = info.interfaceForCall.getSimpleName();
                 if ( simpleName.equals("Map") || simpleName.equals("Multimap"))
-                    expectedParameters = 2;
+                    expectedTypeParameters = 2;
                 else if (simpleName.equals("Table"))
-                    expectedParameters = 3;
+                    expectedTypeParameters = 3;
 
                 // ... containers
                 if (!operand.hasParameters())
                     continue;
-                if (operand.getNumParameters() != expectedParameters)
+                if (operand.getNumParameters() != expectedTypeParameters)
                     continue;
                 ClassDescriptor operandClass = DescriptorFactory.getClassDescriptor(operand);
                 if (!isGenericCollection(operandClass))
@@ -466,7 +486,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
                 if (!selfOperation && ( matchResult == IncompatibleTypes.SEEMS_OK || matchResult.getPriority() == Priorities.IGNORE_PRIORITY))
                     continue;
-                
+
                 if (invokedMethodName.startsWith("contains") || invokedMethodName.equals("remove")) {
                     InstructionHandle next = handle.getNext();
                     if (next != null) {
@@ -493,7 +513,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 boolean noisy = false;
                 if (invokedMethodName.equals("get")) {
                     UnconditionalValueDerefDataflow unconditionalValueDerefDataflow = classContext
-                            .getUnconditionalValueDerefDataflow(method);
+                    .getUnconditionalValueDerefDataflow(method);
 
                     UnconditionalValueDerefSet unconditionalDeref = unconditionalValueDerefDataflow.getFactAtLocation(location);
                     ValueNumberFrame vnAfter = vnDataflow.getFactAfterLocation(location);
@@ -518,7 +538,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 else if (selfOperation)
                     priority = Priorities.HIGH_PRIORITY;
                 ClassDescriptor expectedClassDescriptor = DescriptorFactory
-                        .createClassOrObjectDescriptorFromSignature(expectedType.getSignature());
+                .createClassOrObjectDescriptorFromSignature(expectedType.getSignature());
                 ClassDescriptor actualClassDescriptor = DescriptorFactory.createClassOrObjectDescriptorFromSignature(actualType
                         .getSignature());
                 ClassSummary classSummary = AnalysisContext.currentAnalysisContext().getClassSummary();
@@ -538,15 +558,15 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 String bugPattern = "GC_UNRELATED_TYPES";
 
                 BugInstance bug = new BugInstance(this, bugPattern, priority)
-                        .addClassAndMethod(methodGen, sourceFile)
-                        .addFoundAndExpectedType(actualType, expectedType)
-                        .addCalledMethod(methodGen, (InvokeInstruction) ins)
-                        .addOptionalAnnotation(
-                                ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, objectVN, vnFrame,
-                                        "INVOKED_ON"))
-                        .addOptionalAnnotation(
-                                ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, argVN, vnFrame, "ARGUMENT"))
-                        .addEqualsMethodUsed(targets);
+                .addClassAndMethod(methodGen, sourceFile)
+                .addFoundAndExpectedType(actualType, expectedType)
+                .addCalledMethod(methodGen, (InvokeInstruction) ins)
+                .addOptionalAnnotation(
+                        ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, objectVN, vnFrame,
+                                "INVOKED_ON"))
+                                .addOptionalAnnotation(
+                                        ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, argVN, vnFrame, "ARGUMENT"))
+                                        .addEqualsMethodUsed(targets);
                 if (noisy) {
                     WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
 
@@ -665,7 +685,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
             // not true. Consider class Foo extends ArrayList<String>
             if (expectedCat == TypeCategory.PARAMETERIZED ^ argCat == TypeCategory.PARAMETERIZED) {
                 return IncompatibleTypes.SEEMS_OK; // fix this when we know what
-                                                   // we are doing here
+                // we are doing here
             }
         }
 
