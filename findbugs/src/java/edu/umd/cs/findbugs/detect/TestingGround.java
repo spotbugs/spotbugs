@@ -21,12 +21,14 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Iterator;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -54,28 +56,36 @@ public class TestingGround extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKESTATIC && getClassConstantOperand().equals("com/google/common/base/Preconditions")
-                && getNameConstantOperand().startsWith("check")) {
-            SignatureParser parser = new SignatureParser(getSigConstantOperand());
-            int count = 0;
-            for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext(); count++) {
-                String parameter = i.next();
-                if (parameter.equals("Ljava/lang/Object;")) {
-                    OpcodeStack.Item item = stack.getStackItem(parser.getNumParameters() - 1 - count);
-                    XMethod m = item.getReturnValueOf();
-                    if (m == null)
-                        continue;
-                    if (!m.getName().equals("toString"))
-                        continue;
-                    if (!m.getClassName().startsWith("java.lang.StringB"))
-                        continue;
-                    accumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this)
-                            .addCalledMethod(this), this);
-                }
+        switch (seen) {
+        case Constants.IF_ICMPEQ:
+        case Constants.IF_ICMPNE:
+            OpcodeStack.Item left = stack.getStackItem(1);
+            OpcodeStack.Item right = stack.getStackItem(0);
+            if (bad(left, right) || bad(right, left))
 
-            }
-
+                accumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this)
+                        .addValueSource(left, this).addValueSource(right, this), this);
         }
+
+    }
+
+    private boolean bad(Item left, Item right) {
+        XMethod m = left.getReturnValueOf();
+
+        if (m == null)
+            return false;
+        Object value = right.getConstant();
+        if (!(value instanceof Integer) && ((Integer) value).intValue() == 0)
+            return false;
+        if (m.isStatic() || !m.isPublic())
+            return false;
+
+        if (m.getName().equals("compareTo") && m.getSignature().equals("(Ljava/lang/Object;)I"))
+            return true;
+        if (m.getName().equals("compare") && m.getSignature().equals("(Ljava/lang/Object;Ljava/lang/Object;)I"))
+            return true;
+
+        return false;
 
     }
 

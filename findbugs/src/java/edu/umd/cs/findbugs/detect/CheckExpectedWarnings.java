@@ -180,6 +180,9 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
             }
             String expectedBugCodes = (String) expect.getValue("value");
             EnumValue wantedPriority = (EnumValue) expect.getValue("priority");
+            Integer num = (Integer) expect.getValue("num");
+            if (num == null)
+                num = 1;
             Priority minPriority = Priority.LOW;
             if (wantedPriority != null)
                 minPriority = Priority.valueOf(wantedPriority.value);
@@ -187,11 +190,13 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
             StringTokenizer tok = new StringTokenizer(expectedBugCodes, ",");
             while (tok.hasMoreTokens()) {
                 String bugCode = tok.nextToken();
+                if (!possibleBugCodes.contains(bugCode))
+                    continue;
                 Collection<SourceLineAnnotation> bugs = countWarnings(xmethod.getMethodDescriptor(), bugCode, minPriority);
-                if (expectWarnings && bugs.isEmpty() && possibleBugCodes.contains(bugCode)) {
+                if (expectWarnings && bugs.size() < num) {
                     reporter.reportBug(new BugInstance(this, "FB_MISSING_EXPECTED_WARNING", priority).addClassAndMethod(
                             xmethod.getMethodDescriptor()).addString(bugCode));
-                } else if (!expectWarnings)
+                } else if (!expectWarnings && !bugs.isEmpty() )
                     for (SourceLineAnnotation s : bugs) {
                         reporter.reportBug(new BugInstance(this, "FB_UNEXPECTED_WARNING", priority)
                                 .addClassAndMethod(xmethod.getMethodDescriptor()).addString(bugCode).add(s));

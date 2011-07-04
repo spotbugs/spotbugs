@@ -25,4 +25,6 @@ public @interface ExpectWarning {
 
     /** Want a warning at this priority or higher */
     public Priority priority() default Priority.LOW;
+
+    public int num() default 1;
 }

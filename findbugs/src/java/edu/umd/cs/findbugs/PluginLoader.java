@@ -368,7 +368,7 @@ public class PluginLoader {
         if (u != null)
             return u;
         u = PluginLoader.class.getResource("/"+name);
-        
+
         return u;
     }
 
@@ -573,22 +573,22 @@ public class PluginLoader {
             List<Node> filterNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/PluginComponent");
             for (Node filterNode : filterNodeList) {
                 String componentKindname = filterNode.valueOf("@componentKind");
-                if (componentKindname == null) throw new PluginException("Missing @componentKind for " + pluginId 
+                if (componentKindname == null) throw new PluginException("Missing @componentKind for " + pluginId
                         + " loaded from " + loadedFrom);
                 String componentClassname = filterNode.valueOf("@componentClass");
-                if (componentClassname == null) throw new PluginException("Missing @componentClassname for " + pluginId 
+                if (componentClassname == null) throw new PluginException("Missing @componentClassname for " + pluginId
                         + " loaded from " + loadedFrom);
                 String filterId = filterNode.valueOf("@id");
-                if (filterId == null) throw new PluginException("Missing @id for " + pluginId 
+                if (filterId == null) throw new PluginException("Missing @id for " + pluginId
                         + " loaded from " + loadedFrom);
-              
+
                 try {
                     String propertiesLocation = filterNode.valueOf("@properties");
                     boolean disabled = Boolean.valueOf(filterNode.valueOf("@disabled"));
 
-                    Class componentKind =  classLoader.loadClass(componentKindname);
+                    Class<?> componentKind =  classLoader.loadClass(componentKindname);
 
-                    Class componentClass = null;
+                    Class<?> componentClass = null;
                     if (!FindBugs.noAnalysis) {
                         componentClass = getClass(classLoader, componentClassname, componentKind);
                     }

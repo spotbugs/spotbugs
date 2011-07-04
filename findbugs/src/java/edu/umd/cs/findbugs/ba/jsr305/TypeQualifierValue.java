@@ -76,7 +76,7 @@ public class TypeQualifierValue {
     private final boolean isExhaustive;
 
     private final @CheckForNull
-    TypeQualifierValidator validator;
+    TypeQualifierValidator<?> validator;
 
     private final static ClassLoader validatorLoader = new ValidatorClassLoader();
 
@@ -132,7 +132,7 @@ public class TypeQualifierValue {
             SecurityManager m = System.getSecurityManager();
             if (m == null)
                 System.setSecurityManager(new ValidationSecurityManager());
-            Class c = validatorLoader.loadClass(checkerName.getDottedClassName());
+            Class<?> c = validatorLoader.loadClass(checkerName.getDottedClassName());
             if (TypeQualifierValidator.class.isAssignableFrom(c)) {
                 Class<? extends TypeQualifierValidator> checkerClass = c.asSubclass(TypeQualifierValidator.class);
                 validator = checkerClass.newInstance();

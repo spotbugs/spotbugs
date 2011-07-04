@@ -447,7 +447,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     }
 
     boolean nextMatchedIsDisabled;
-    private final Set outerElementTags = unmodifiableSet(new HashSet(asList("And", "Match", "Or", "Not")));;
+    private final Set<String> outerElementTags = unmodifiableSet(new HashSet<String>(asList("And", "Match", "Or", "Not")));;
 
     private void parseMatcher(String qName, Attributes attributes) throws SAXException {
         if (DEBUG)
@@ -749,7 +749,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     }
 
     private String makeAbsolute(String possiblyRelativePath) {
-        if (possiblyRelativePath.contains("://") || possiblyRelativePath.startsWith("http:") 
+        if (possiblyRelativePath.contains("://") || possiblyRelativePath.startsWith("http:")
                 || possiblyRelativePath.startsWith("https:") || possiblyRelativePath.startsWith("file:"))
             return possiblyRelativePath;
         if (base == null)
