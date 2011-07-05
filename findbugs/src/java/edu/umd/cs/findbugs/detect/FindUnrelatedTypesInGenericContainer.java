@@ -380,7 +380,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                
                 int stackPos = sigParser.getSlotsFromTopOfStackForParameter(pos);
 
-                boolean allMethod = call.endsWith("All(Ljava/util/Collection;)")
+                boolean allMethod = call.contains("All(Ljava/")
                         || call.startsWith("elementsEqual");
                 TypeFrame frame = typeDataflow.getFactAtLocation(location);
                 if (!frame.isValid()) {
