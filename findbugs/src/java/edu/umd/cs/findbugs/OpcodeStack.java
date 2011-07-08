@@ -2343,6 +2343,11 @@ public class OpcodeStack implements Constants2 {
             Item i = pop();
             i.setSpecialKind(Item.RANDOM_INT);
             push(i);
+        } else if (methodName.equals("size") && signature.equals("()I")) {
+            Item i = pop();
+            if (i.getSpecialKind() == Item.NOT_SPECIAL)
+                    i.setSpecialKind(Item.NON_NEGATIVE);
+            push(i);
         } else if (ClassName.isMathClass(clsName) && methodName.equals("abs")) {
             Item i = pop();
             if (i.getSpecialKind() == Item.HASHCODE_INT)
