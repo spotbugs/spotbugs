@@ -18,6 +18,7 @@
     </Details>
   </Plugin>
 
+  <!-- これを変えたら FindbugsPlugin のデフォルト ID も更新して下さい -->
   <Cloud id="edu.umd.cs.findbugs.cloud.doNothingCloud">
     <Description>(クラウド無効)</Description>
     <Details>このプラグインを用いると、コメントは無効になります。</Details>
@@ -1041,6 +1042,15 @@ null の参照解除のためのノイズが多いディテクタです。コー
 <![CDATA[
 <p>
 このディテクタは、間違った for ループを探します。
+</p>
+]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ExplicitSerialization" >
+    <Details>
+<![CDATA[
+<p>
+このディテクタは、このクラスが本当に直列化されるという証拠として readObject と writeObject を介して明示的な直列化を探します。
 </p>
 ]]>
     </Details>
@@ -2356,7 +2366,7 @@ null のフィールドを同期化すると <code>NullPointerException</code> �
 <![CDATA[
 <p>
 このクラスは、<code>Cloneable</code> を実装していないのに <code>clone</code> メソッドを定義しています。
-これが OK であるいくつかの状況がありますが (たとえば、サブクラスのクローンの実装を自分自身で制御したい場合です)、意図したことなのか確認してください。
+これが OK (たとえば、サブクラスのクローンの実装を自分自身で制御したい場合です) という状況もありますが、意図したことなのか確認してください。
 </p>
 ]]>
     </Details>
@@ -2693,8 +2703,8 @@ Javaは、同一の文字列定数が同じ <code>String</code> オブジェク�
   </BugPattern>
 
   <BugPattern type="BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR">
-    <ShortDescription>プリミティブ値が3項演算子のためにアンボクシングされて、型変換されている</ShortDescription>
-    <LongDescription>プリミティブ型の値が3項演算子のためにアンボクシングされて、型変換されています。{1}</LongDescription>
+    <ShortDescription>プリミティブ値が3項演算子のためにアンボクシングされて、型変換される</ShortDescription>
+    <LongDescription>プリミティブ型の値が3項演算子のためにアンボクシングされて、型変換されます。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -2708,12 +2718,12 @@ JLS セクション15.25を参照してください。
   </BugPattern>
 
   <BugPattern type="BX_BOXING_IMMEDIATELY_UNBOXED">
-    <ShortDescription>プリミティブ値がボクシングされて、すぐにアンボクシングされている</ShortDescription>
-    <LongDescription>プリミティブ値がボクシングされて、すぐにアンボクシングされています。{1}</LongDescription>
+    <ShortDescription>プリミティブ値がボクシングされて、すぐにアンボクシングされる</ShortDescription>
+    <LongDescription>プリミティブ値がボクシングされて、すぐにアンボクシングされます。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-プリミティブ値がボクシングされて、すぐにアンボクシングされています。
+プリミティブ値がボクシングされて、すぐにアンボクシングされます。
 おそらく、アンボクシングされた値が必要な場所で、手動でボクシングをしているためです。
 その結果、コンパイラにボクシングの機能を取り消すことを強制しています。
 </p>
@@ -2721,13 +2731,25 @@ JLS セクション15.25を参照してください。
     </Details>
   </BugPattern>
 
-  <BugPattern type="BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION">
-    <ShortDescription>プリミティブ値がプリミティブ型の型変換をするためにボクシングされて、アンボクシングされている</ShortDescription>
-    <LongDescription>プリミティブ値がプリミティブ型の型変換をするためにボクシングされて、アンボクシングされています。{1}</LongDescription>
+  <BugPattern type="BX_UNBOXING_IMMEDIATELY_REBOXED">
+    <ShortDescription>ボクシングされた値がアンボクシングされて、すぐに再ボクシングされる</ShortDescription>
+    <LongDescription>ボクシングされた値がアンボクシングされて、すぐに再ボクシングされます。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-プリミティブ値がコンストラクタでボクシングされて、すぐに違うプリミティブ型に変換されています (たとえば、<code>new Double(d).intValue()</code>)。
+ボクシングされた値がアンボクシングされて、すぐに再ボクシングされます。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION">
+    <ShortDescription>プリミティブ値がプリミティブ型の型変換をするためにボクシングされて、アンボクシングされる</ShortDescription>
+    <LongDescription>プリミティブ値がプリミティブ型の型変換をするためにボクシングされて、アンボクシングされます。{1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+プリミティブ値がコンストラクタでボクシングされて、すぐに異なるプリミティブ型に変換されます (たとえば、<code>new Double(d).intValue()</code>)。
 直接プリミティブ型の型変換を実行してください (たとえば、<code>(int) d</code>)。
 </p>
 ]]>
@@ -2980,7 +3002,7 @@ JLS セクション15.25を参照してください。
     <Details>
 <![CDATA[
 <p>
-この <code>equals</code> メソッドは、引数が互換性のない型 (すなわち、スーパタイプでもなく、<code>equals</code> メソッドを定義しているクラスのスーパータイプでもサブタイプでもないクラス) であるかチェックしています。
+この <code>equals</code> メソッドは、引数が互換性のない型 (すなわち、スーパタイプでもなく、<code>equals</code> メソッドを定義しているクラスのスーパータイプでもサブタイプでもないクラス) なのか確かめています。
 たとえば、<code>Foo</code> クラスの <code>equals</code> メソッドはそのように見えるかもしれません。
 </p>
 <blockquote><pre>
@@ -3218,6 +3240,35 @@ JDK はこのバグを解決してサイズを1MB減らすことができまし�
     </Details>
   </BugPattern>
 
+  <BugPattern type="RV_NEGATING_RESULT_OF_COMPARETO">
+    <ShortDescription>compareTo()/compare() の結果を無効にする</ShortDescription>
+    <LongDescription>{1} は、{2} の戻り値を無効にします。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このコードは、compareTo または compare メソッドの戻り値を無効にします。
+これは疑わしいか間違ったプログラミングプラクティスです、戻り値が Integer.MIN_VALUE なので、戻り値を無効にすることは結果の符号を無効にしません。
+結果を無効にするのではなくオペランドの順序を逆にすることによって、同じ意図した結果を得ることができます。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="CO_COMPARETO_RESULTS_MIN_VALUE">
+    <ShortDescription>compareTo()/compare() は Integer.MIN_VALUE を返す</ShortDescription>
+    <LongDescription>{1} は Integer.MIN_VALUE を返します。戻り値を無効にできません。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+場合によっては、この compareTo または compare メソッドは Integer.MIN_VALUE を返します。それは、非常に間違ったプラクティスです。
+compareTo メソッドの戻り値は結果の符号だけが重要なのです。
+しかし、compareTo メソッドの戻り値を無効にすることがあります。これが結果の符号を無効にすると予想します。
+戻り値が Integer.MIN_VALUE である場合を除きそうなります。Integer.MIN_VALUE よりも-1を返しなさい。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
   <BugPattern type="CO_SELF_NO_OBJECT">
     <ShortDescription>共変な compareTo メソッドの定義</ShortDescription>
     <LongDescription>{0} は、compareTo(Object) ではなく compareTo({0.givenClass}) メソッドを定義しています。</LongDescription>
@@ -3575,8 +3626,8 @@ public static メソッドは、クラスの 静的な状態の一部である�
   </BugPattern>
 
   <BugPattern type="NS_DANGEROUS_NON_SHORT_CIRCUIT">
-    <ShortDescription>潜在的な非短絡論理の危険な使い方</ShortDescription>
-    <LongDescription>潜在的な非短絡論理の危険な使い方をしています。{1}</LongDescription>
+    <ShortDescription>潜在的な非短絡論理の危険な使用</ShortDescription>
+    <LongDescription>潜在的な非短絡論理の危険な使用。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3592,8 +3643,8 @@ public static メソッドは、クラスの 静的な状態の一部である�
     </Details>
   </BugPattern>
   <BugPattern type="NS_NON_SHORT_CIRCUIT">
-    <ShortDescription>非短絡論理の疑わしい使い方</ShortDescription>
-    <LongDescription>非短絡論理の疑わしい使い方をしています。{1}</LongDescription>
+    <ShortDescription>非短絡論理の疑わしい使用</ShortDescription>
+    <LongDescription>非短絡論理の疑わしい使用。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4289,8 +4340,8 @@ public class B extends A {
   </BugPattern>
 
   <BugPattern type="NM_CLASS_NOT_EXCEPTION">
-    <ShortDescription>そのように命名されているとしても、クラスは Exception から派生されていません</ShortDescription>
-    <LongDescription>そのように命名されているとしても、クラス {0} は、Exception から派生されていません。</LongDescription>
+    <ShortDescription>例外クラスのように命名されているが、クラスは Exception から派生されていない</ShortDescription>
+    <LongDescription>例外クラスのように命名されていますが、クラス {0} は、Exception から派生されていません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4731,7 +4782,7 @@ static フィールドにすることを検討してください。
 <![CDATA[
 <p>
 本当にこの for ループが正しい変数をインクリメントしていますか？
-別の変数が for ループによって初期化されて、チェックされているように見えます。 
+別の変数が for ループによって初期化されて、チェックされるように見えます。 
 </p>
 ]]>
     </Details>
@@ -4913,8 +4964,8 @@ static フィールドにすることを検討してください。
   </BugPattern>
 
   <BugPattern type="SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS">
-    <ShortDescription>static 内部クラスにリファクタリングすることができるかもしれない</ShortDescription>
-    <LongDescription>クラス {0} は、static 内部クラスにリファクタリングすることができるかもしれません。</LongDescription>
+    <ShortDescription>static 内部クラスにリファクタリングできるかもしれない</ShortDescription>
+    <LongDescription>クラス {0} は、static 内部クラスにリファクタリングできるかもしれません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -5037,6 +5088,20 @@ dateString = dateString.trim();
     </Details>
   </BugPattern>
 
+  <BugPattern type="RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE">
+    <ShortDescription>compareTo によって返された特定の値のコードチェック</ShortDescription>
+    <LongDescription>{2.givenClass} の戻り値が {3} と等しいか確かめてください。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このコードは、compareTo か比較メソッドを呼び出して、戻り値が特定の値（例えば1または-1） なのか確かめています。
+これらのメソッドを呼び出すときは特定のゼロ以外の値ではなく、結果の符号だけをチェックするべきです。
+多数または大部分の compareTo と比較メソッドは-1、0または1を返しますが、いくつかは他の値を返します。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
   <BugPattern type="RV_EXCEPTION_NOT_THROWN">
     <ShortDescription>作成した例外をスローするのではなく捨てている</ShortDescription>
     <LongDescription>{2.givenClass} をスローしていません。{1}</LongDescription>
@@ -5179,7 +5244,7 @@ switch 文の default が多くの場合実行不可能なので FindBugs が例
     <Details>
 <![CDATA[
 <p>
-そこで分岐または文が実行されるなら null 値が利用されて <code>NullPointerException</code> が発生します。
+分岐または文が実行されるなら、null 値が利用されて <code>NullPointerException</code> が発生します。
 もちろん、問題は分岐または文が実行不可能で、<code>NullPointerException</code> が決して発生する可能性がないということかもしれません。
 それを決めるのは FindBugs の能力を超えています。
 この値がすでに null であることを検査されたという事実からこれは確かな可能性です。
@@ -5315,7 +5380,7 @@ null ではなく空の文字列またはいくつかの他の適切な文字列
     <Details>
 <![CDATA[
 <p>
-そこで文または分岐が実行されるなら、ここで値が null であり、null 値を利用する (フォワードパスで実行時例外を伴うこと以外は) ことが保証されています。
+文または分岐が実行されるなら、この時点で値は null であり、null 値を利用する (フォワードパスで実行時例外を伴うこと以外は) ことが保証されています。
 </p>
 ]]>
     </Details>
@@ -5327,7 +5392,7 @@ null ではなく空の文字列またはいくつかの他の適切な文字列
     <Details>
 <![CDATA[
 <p>
-そこで例外経路上の文または分岐が実行されるなら、ここで値が null であり、null 値を利用する (フォワードパスで実行時例外を伴うこと以外は) ことが保証されています。
+例外経路上の文または分岐が実行されるなら、この時点で値は null であり、null 値を利用する (フォワードパスで実行時例外を伴うこと以外は) ことが保証されています。
 </p>
 ]]>
     </Details>
@@ -5424,15 +5489,15 @@ if (argv.length == 1);
   </BugPattern>
 
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE">
-    <ShortDescription>すでに利用されている値の null チェック</ShortDescription>
-    <LongDescription>すでに利用されている値を {4.lineNumber} の {2.givenClass} で null チェックしています。{1}</LongDescription>
+    <ShortDescription>すでに利用していた値の null チェック</ShortDescription>
+    <LongDescription>すでに利用していた値を {4.lineNumber} の {2.givenClass} で null チェックしています。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-ここで値が null なのかチェックしていますが、すでに利用されていたので null である可能性はありません。
-それが null なら以前の利用で <code>NullPointerException</code> が発生していたでしょう。
-基本的に、この値が null であることを許すのかどうかに関係なく、このコードと前の null 値の利用は一致しません。
-チェックは冗長か、または前の null 値の利用は誤りです。
+ここで値が null なのかチェックしていますが、すでに値を利用していたので null である可能性はありません。
+値が null なら以前の利用で <code>NullPointerException</code> が発生していたでしょう。
+基本的に、この値が null であることを許すのかどうかに関係なく、このコードと以前の値の利用は一致しません。
+チェックは冗長か、または以前の値の利用は誤りです。
 </p>
 ]]>
     </Details>
@@ -5626,7 +5691,7 @@ try {
   </BugPattern>
 
   <BugPattern type="EC_UNRELATED_INTERFACES">
-    <ShortDescription>異なる型のインタフェースを比較している equals メソッドの呼び出し</ShortDescription>
+    <ShortDescription>equals メソッドを呼び出して異なる型のインタフェースを比較している</ShortDescription>
     <LongDescription>{3.simpleClass}.equals({2.simpleClass}) を呼び出しています。{1}</LongDescription>
     <Details>
 <![CDATA[
@@ -5642,7 +5707,7 @@ try {
   </BugPattern>
 
   <BugPattern type="EC_UNRELATED_CLASS_AND_INTERFACE">
-    <ShortDescription>無関係のクラスとインタフェースを比較している equals メソッドの呼び出し</ShortDescription>
+    <ShortDescription>equals メソッドを呼び出して無関係のクラスとインタフェースを比較している</ShortDescription>
     <LongDescription>{3.simpleClass}.equals({2.simpleClass}) を呼び出しています。{1}</LongDescription>
     <Details>
       <![CDATA[
@@ -6521,7 +6586,7 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
   </BugPattern>
 
   <BugPattern type="EC_ARRAY_AND_NONARRAY">
-    <ShortDescription>配列と非配列を比較するために equals メソッドを使用している</ShortDescription>
+    <ShortDescription>equals メソッドを使用して配列と非配列を比較している</ShortDescription>
     <LongDescription>{3.simpleClass}.equals({2.simpleClass}) を呼び出しています。{1}</LongDescription>
     <Details>
 <![CDATA[
@@ -6550,13 +6615,14 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
     </Details>
   </BugPattern>
   <BugPattern type="EC_INCOMPATIBLE_ARRAY_COMPARE">
-    <ShortDescription>equals(...) メソッドが互換性のない配列を比較するために使われている</ShortDescription>
+    <ShortDescription>equals(...) メソッドを使用して互換性のない配列を比較している</ShortDescription>
     <LongDescription>{2.simpleClass} と {3.simpleClass} を比較するために equals メソッドを使用しています。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 このメソッドは、互換性のない型の配列を比較するために <code>.equals(Object o)</code> を呼び出しています (たとえば、<code>String[]</code> と <code>StringBuffer[]</code>、<code>String[]</code> と <code>int[]</code>) 。
 それらは、決して等価ではありません。
+さらに、<code>equals(...)</code> が配列を比較するのに使用されるとき、それらが同じ配列であるかどうか確かめるだけで、配列のコンテンツを無視します。
 </p>
 ]]>
     </Details>
@@ -7369,7 +7435,7 @@ an indication of some misunderstanding or some other logic error.
 
   <BugPattern type="BC_VACUOUS_INSTANCEOF">
     <ShortDescription>常に true を返す instanceof</ShortDescription>
-    <LongDescription>{2} は {3} のインスタンスなので instanceof は常に true を返します。</LongDescription>
+    <LongDescription>{2} は {3} のインスタンスなので instanceof は常にすべての非 null 値に対して true を返します。</LongDescription>
     <Details>
 <![CDATA[
 <p>
