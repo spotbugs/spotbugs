@@ -7930,7 +7930,7 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
 
   <BugPattern type="TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED">
     <ShortDescription>Value annotated as carrying a type qualifier used where a value that must not carry that qualifier is required</ShortDescription>
-    <LongDescription>Value annotated as carrying type qualifier {2} used where a value that must not carry that qualifier is required</LongDescription>
+    <LongDescription>Value annotated as carrying type qualifier {2.simpleName} used where a value that must not carry that qualifier is required</LongDescription>
     <Details>
       <![CDATA[
         <p>
@@ -7964,7 +7964,7 @@ public @NonNegative Integer example(@Negative Integer value) {
 
   <BugPattern type="TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED">
     <ShortDescription>Value annotated as never carrying a type qualifier used where value carrying that qualifier is required</ShortDescription>
-    <LongDescription>Value annotated as never carrying type qualifier {2} used where value carrying that qualifier is required</LongDescription>
+    <LongDescription>Value annotated as never carrying type qualifier {2.simpleName} used where value carrying that qualifier is required</LongDescription>
     <Details>
       <![CDATA[
         <p>
@@ -7987,7 +7987,7 @@ public @NonNegative Integer example(@Negative Integer value) {
 
   <BugPattern type="TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK">
     <ShortDescription>Value that might not carry a type qualifier is always used in a way requires that type qualifier</ShortDescription>
-    <LongDescription>Value that might not carry the {2} annotation is always used in a way that requires that type qualifier</LongDescription>
+    <LongDescription>Value that might not carry the {2.simpleName} annotation is always used in a way that requires that type qualifier</LongDescription>
     <Details>
       <![CDATA[
       <p>
@@ -8000,7 +8000,7 @@ public @NonNegative Integer example(@Negative Integer value) {
   </BugPattern>
   <BugPattern type="TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK">
     <ShortDescription>Value that might carry a type qualifier is always used in a way prohibits it from having that type qualifier</ShortDescription>
-    <LongDescription>Value that might carry the {2} annotation is always used in a way that prohibits it from having that type qualifier</LongDescription>
+    <LongDescription>Value that might carry the {2.simpleName} annotation is always used in a way that prohibits it from having that type qualifier</LongDescription>
     <Details>
       <![CDATA[
       <p>
@@ -8013,8 +8013,8 @@ public @NonNegative Integer example(@Negative Integer value) {
   </BugPattern>
 
   <BugPattern type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK">
-    <ShortDescription>Explicit annotation inconsistent with use</ShortDescription>
-    <LongDescription>Value is required never be {2}, but is explicitly annotated as unknown with regards to {2}</LongDescription>
+    <ShortDescription>Value required to not have type qualifier, but marked as unknown</ShortDescription>
+    <LongDescription>Value is required never be {2.simpleName}, but is explicitly annotated as unknown with regards to {2.simpleName}</LongDescription>
     <Details>
       <![CDATA[
       <p>
@@ -8026,8 +8026,8 @@ public @NonNegative Integer example(@Negative Integer value) {
     </Details>
   </BugPattern>
   <BugPattern type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK">
-    <ShortDescription>Explicit annotation inconsistent with use</ShortDescription>
-    <LongDescription>Value is required to always be {2}, but is explicitly annotated as unknown with regards to {2}</LongDescription>
+    <ShortDescription>Value required to have type qualifier, but marked as unknown</ShortDescription>
+    <LongDescription>Value is required to always be {2.simpleName}, but is explicitly annotated as unknown with regards to {2.simpleName}</LongDescription>
     <Details>
       <![CDATA[
       <p>
