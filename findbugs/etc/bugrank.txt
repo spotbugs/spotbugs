@@ -105,7 +105,7 @@
 -2 BugKind XSS
 +5 Category CORRECTNESS
 +5 Category SECURITY
-+14 Category MT_CORRECTNESS
++12 Category MT_CORRECTNESS
 +14 Category BAD_PRACTICE
 +15 Category STYLE
 +15 Category I18N
