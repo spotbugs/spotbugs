@@ -144,9 +144,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         // Collection<E>
         addCheckedCall(Collection.class.getName(), "contains", 0);
         addCheckedCall(Collection.class.getName(), "remove", 0);
-        addCheckedCall(Collection.class.getName(), "containsAll", "(Ljava/util/Collection;)", 0, 0);
-        addCheckedCall(Collection.class.getName(), "removeAll", "(Ljava/util/Collection;)", 0, 0);
-        addCheckedCall(Collection.class.getName(), "retainAll", "(Ljava/util/Collection;)", 0, 0);
+        addCheckedCall(Collection.class.getName(), "containsAll", "(Ljava/util/Collection;)", 0, -1);
+        addCheckedCall(Collection.class.getName(), "removeAll", "(Ljava/util/Collection;)", 0, -1);
+        addCheckedCall(Collection.class.getName(), "retainAll", "(Ljava/util/Collection;)", 0, -1);
 
         // Dequeue<E>
         addCheckedCall("java.util.Deque", "removeFirstOccurrence", 0);
@@ -190,20 +190,21 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         addCheckedCall("com.google.common.collect.Table", "containsValue", 2);
         addCheckedCall("com.google.common.collect.Table", "get", "(Ljava/lang/Object;Ljava/lang/Object;)", 0, 0);
         addCheckedCall("com.google.common.collect.Table", "get", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);
-        addCheckedCall("com.google.common.collect.Table", "remove", 0);
+        addCheckedCall("com.google.common.collect.Table", "remove", "(Ljava/lang/Object;Ljava/lang/Object;)", 0, 0);
+        addCheckedCall("com.google.common.collect.Table", "remove", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);
 
         // Iterables
         addCheckedCall("com.google.common.collect.Iterables", "contains", "(Ljava/lang/Iterable;Ljava/lang/Object;)", 1, 0);
-        addCheckedCall("com.google.common.collect.Iterables", "removeAll", "(Ljava/lang/Iterable;Ljava/util/Collection;)", 1, 0);
-        addCheckedCall("com.google.common.collect.Iterables", "retainAll", "(Ljava/lang/Iterable;Ljava/util/Collection;)", 1, 0);
-        addCheckedCall("com.google.common.collect.Iterables", "elementsEqual", "(Ljava/lang/Iterable;Ljava/lang/Iterable;)", 1, 0);
+        addCheckedCall("com.google.common.collect.Iterables", "removeAll", "(Ljava/lang/Iterable;Ljava/util/Collection;)", 1, -1);
+        addCheckedCall("com.google.common.collect.Iterables", "retainAll", "(Ljava/lang/Iterable;Ljava/util/Collection;)", 1, -1);
+        addCheckedCall("com.google.common.collect.Iterables", "elementsEqual", "(Ljava/lang/Iterable;Ljava/lang/Iterable;)", 1, -1);
         addCheckedCall("com.google.common.collect.Iterables", "frequency", "(Ljava/lang/Iterable;Ljava/lang/Object;)", 1, 0);
 
         // Iterators
         addCheckedCall("com.google.common.collect.Iterators", "contains", "(Ljava/util/Iterator;Ljava/lang/Object;)", 1, 0);
-        addCheckedCall("com.google.common.collect.Iterators", "removeAll", "(Ljava/util/Iterator;Ljava/util/Collection;)", 1, 0);
-        addCheckedCall("com.google.common.collect.Iterators", "retainAll", "(Ljava/util/Iterator;Ljava/util/Collection;)", 1, 0);
-        addCheckedCall("com.google.common.collect.Iterators", "elementsEqual", "(Ljava/util/Iterator;Ljava/util/Iterator;)", 1, 0);
+        addCheckedCall("com.google.common.collect.Iterators", "removeAll", "(Ljava/util/Iterator;Ljava/util/Collection;)", 1, -1);
+        addCheckedCall("com.google.common.collect.Iterators", "retainAll", "(Ljava/util/Iterator;Ljava/util/Collection;)", 1, -1);
+        addCheckedCall("com.google.common.collect.Iterators", "elementsEqual", "(Ljava/util/Iterator;Ljava/util/Iterator;)", 1, -1);
         addCheckedCall("com.google.common.collect.Iterators", "frequency", "(Ljava/util/Iterator;Ljava/lang/Object;)", 1, 0);
 
 
@@ -368,9 +369,19 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                     AnalysisContext.reportMissingClass(e);
                     continue;
                 }
-                int typeArgument = info.typeIndex;
-                int pos = info.argumentIndex;
+                boolean allMethod;
                 
+                int typeArgument;
+                if (info.typeIndex >= 0) {
+                    allMethod = false;
+                    typeArgument = info.typeIndex; 
+                } else {
+                    allMethod = true;
+                    typeArgument = -(1+info.typeIndex); 
+                }
+                int pos = info.argumentIndex;
+               
+        
                 int lhsPos;
                 if (inv instanceof INVOKESTATIC)
                     lhsPos = sigParser.getSlotsFromTopOfStackForParameter(0);
@@ -379,8 +390,6 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                
                 int stackPos = sigParser.getSlotsFromTopOfStackForParameter(pos);
 
-                boolean allMethod = call.contains("All(Ljava/")
-                        || call.startsWith("elementsEqual");
                 TypeFrame frame = typeDataflow.getFactAtLocation(location);
                 if (!frame.isValid()) {
                     // This basic block is probably dead
