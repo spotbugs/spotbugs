@@ -79,7 +79,11 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
             addMethodAnnotation("java.io.FileWriter", "<init>", "(Ljava/lang/String;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
+            addMethodAnnotation("java.io.FileWriter", "<init>", "(Ljava/lang/String;Z)V", false,
+                    DefaultEncodingAnnotation.DEFAULT_ENCODING);
             addMethodAnnotation("java.io.FileWriter", "<init>", "(Ljava/io/File;)V", false,
+                    DefaultEncodingAnnotation.DEFAULT_ENCODING);
+            addMethodAnnotation("java.io.FileWriter", "<init>", "(Ljava/io/File;Z)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
             addMethodAnnotation("java.io.FileWriter", "<init>", "(Ljava/io/FileDescriptor;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
@@ -103,7 +107,11 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
             addMethodAnnotation("java.io.PrintWriter", "<init>", "(Ljava/lang/String;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
+            addMethodAnnotation("java.util.Scanner", "<init>", "(Ljava/io/File;)V", false,
+                    DefaultEncodingAnnotation.DEFAULT_ENCODING);
             addMethodAnnotation("java.util.Scanner", "<init>", "(Ljava/io/InputStream;)V", false,
+                    DefaultEncodingAnnotation.DEFAULT_ENCODING);
+            addMethodAnnotation("java.util.Scanner", "<init>", "(Ljava/nio/channels/ReadableByteChannel;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
             addMethodAnnotation("java.util.Formatter", "<init>", "(Ljava/lang/String;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
