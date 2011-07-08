@@ -77,6 +77,8 @@ import static edu.umd.cs.findbugs.util.Util.nullSafeEquals;
 public abstract class CloudCommentsPane extends JPanel {
 
     private static final String DEFAULT_COMMENT = "Click to add comment...";
+    private static final String DEFAULT_COMMENT_MULTI_PREFIX = "Click to add comment to all ";
+    private static final String DEFAULT_COMMENT_MULTI = DEFAULT_COMMENT_MULTI_PREFIX + "%d bugs...";
     private static final String DEFAULT_VARIOUS_COMMENTS_COMMENT = "<bugs have various comments>";
 
     private JTextArea cloudReportPane;
@@ -189,12 +191,13 @@ public abstract class CloudCommentsPane extends JPanel {
 //        commentEntryPanel.setVisible(false);
         submitCommentButton.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
+                //TODO: WHY WON'T THIS SUBMIT EMPTY COMMENT!
                 submitComment();
             }
         });
         cloudDetailsLabel.setBackground(null);
         cloudDetailsLabel.setBorder(null);
-        plainCommentFont = cloudDetailsLabel.getFont().deriveFont(Font.PLAIN);
+        plainCommentFont = commentBox.getFont().deriveFont(Font.PLAIN);
         cloudReportPane.setFont(plainCommentFont);
 //        cloudReportPane.setEditorKit(new HTMLEditorKit());
 //        ((HTMLEditorKit) cloudReportPane.getDocument()).getStyleSheet().addRule("body { font-");
@@ -204,17 +207,17 @@ public abstract class CloudCommentsPane extends JPanel {
             public void focusGained(FocusEvent e) {
                 commentBox.setForeground(null);
                 commentBox.setFont(plainCommentFont);
-                if (commentBox.getText().equals(DEFAULT_COMMENT)) {
+                if (isDefaultComment(CloudCommentsPane.this.commentBox.getText())) {
                     resetCommentBoxFont();
                     setCommentText("");
                 }
             }
 
             public void focusLost(FocusEvent e) {
-                if (commentBox.getText().equals(DEFAULT_COMMENT) || commentBox.getText().trim().equals("")) {
-                    setDefaultComment(DEFAULT_COMMENT);
+                if (isDefaultComment(CloudCommentsPane.this.commentBox.getText()) || commentBox.getText().trim().equals("")) {
+                    refresh();
                 } else if (commentBox.getText().equals(DEFAULT_VARIOUS_COMMENTS_COMMENT)) {
-                    setDefaultComment(DEFAULT_VARIOUS_COMMENTS_COMMENT);
+                    refresh();
                 } else if (commentBox.getText().equals(lastCommentText)) {
                 } else {
                     submitComment();
@@ -240,10 +243,14 @@ public abstract class CloudCommentsPane extends JPanel {
         updateBugCommentsView();
     }
 
+    private boolean isDefaultComment(String text) {
+        return text.equals(DEFAULT_COMMENT) || text.startsWith(DEFAULT_COMMENT_MULTI_PREFIX);
+    }
+
     private void updateSaveButton() {
         boolean changed = commentWasChanged();
         submitCommentButton.setEnabled(changed);
-        cancelLink.setEnabled(changed);
+        cancelLink.setEnabled(false/*changed*/);
     }
 
     private void setCommentText(String t) {
@@ -322,6 +329,7 @@ public abstract class CloudCommentsPane extends JPanel {
     }
 
     protected void commentBoxClicked() {
+        //TODO: use glass pane
         if (commentWasChanged())
             return;
         setCanAddComments(false, true);
@@ -329,7 +337,7 @@ public abstract class CloudCommentsPane extends JPanel {
         boolean sameText = commentInfo.isSameText();
         String txt = commentInfo.getTxt();
         if (!sameText)
-            txt = DEFAULT_VARIOUS_COMMENTS_COMMENT;
+            txt = "";
         if (txt == null || txt.trim().length() == 0)
             txt = "";
         resetCommentBoxFont();
@@ -346,13 +354,16 @@ public abstract class CloudCommentsPane extends JPanel {
 
     private boolean commentWasChanged() {
         String text = commentBox.getText();
-        return !text.equals(DEFAULT_COMMENT) && !text.trim().equals("")
-                && !text.equals(DEFAULT_VARIOUS_COMMENTS_COMMENT) && !text.equals(lastCommentText);
+        boolean b = !isDefaultComment(text);
+//        boolean b1 = text.trim().equals("");
+        boolean b2 = text.equals(DEFAULT_VARIOUS_COMMENTS_COMMENT);
+        boolean b3 = text.equals(lastCommentText);
+        return b && !b2 && !b3;
     }
 
     private void submitComment() {
         String comment = commentBox.getText();
-        if (comment.equals(DEFAULT_COMMENT) || comment.equals(DEFAULT_VARIOUS_COMMENTS_COMMENT))
+        if (isDefaultComment(comment) || comment.equals(DEFAULT_VARIOUS_COMMENTS_COMMENT))
             comment = "";
         final int index = designationCombo.getSelectedIndex();
         final String choice;
@@ -610,6 +621,7 @@ public abstract class CloudCommentsPane extends JPanel {
 
     private void updateBugCommentsView() {
 
+        //TODO: fix cancel button
         List<BugInstance> bugs = getSelectedBugs();
         if (_bugCollection == null) {
             signInOutLink.setVisible(false);
@@ -662,13 +674,14 @@ public abstract class CloudCommentsPane extends JPanel {
         if (!sameText) {
             txt = DEFAULT_VARIOUS_COMMENTS_COMMENT;
             setDefaultComment(txt);
-        }
-        if (txt == null || txt.trim().length() == 0) {
-            txt = DEFAULT_COMMENT;
-            setDefaultComment(txt);
         } else {
-            resetCommentBoxFont();
-            setCommentText(txt);
+            if (txt == null || txt.trim().length() == 0) {
+                txt = bugs.size() > 1 ? String.format(DEFAULT_COMMENT_MULTI, bugs.size()) : DEFAULT_COMMENT;
+                setDefaultComment(txt);
+            } else {
+                resetCommentBoxFont();
+                setCommentText(txt);
+            }
         }
 
         setCanAddComments(cloud.canStoreUserAnnotation(bugs.get(0)), false);
