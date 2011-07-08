@@ -102,12 +102,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     private final ClassScreener classScreener = new ClassScreener();
 
-    private final List<String> includeFilterFile = new LinkedList<String>();
-
-    private final List<String> excludeFilterFile = new LinkedList<String>();
-
-    private final List<String> excludeBugFile = new LinkedList<String>();
-
     private final Set<String> enabledBugReporterDecorators = new LinkedHashSet<String>();
 
     private final Set<String> disabledBugReporterDecorators = new LinkedHashSet<String>();
@@ -507,11 +501,11 @@ public class TextUICommandLine extends FindBugsCommandLine {
                     classScreener.addAllowedClass(item);
             }
         } else if (option.equals("-exclude")) {
-            excludeFilterFile.add(argument);
+            project.getConfiguration().getExcludeFilterFiles().put(argument, true);
         } else if (option.equals("-excludeBugs")) {
-            excludeBugFile.add(argument);
+            project.getConfiguration().getExcludeBugsFiles().put(argument, true);
         } else if (option.equals("-include")) {
-            includeFilterFile.add(argument);
+            project.getConfiguration().getIncludeFilterFiles().put(argument, true);
         } else if (option.equals("-auxclasspath")) {
             addAuxClassPathEntries(argument);
         } else if (option.equals("-sourcepath")) {

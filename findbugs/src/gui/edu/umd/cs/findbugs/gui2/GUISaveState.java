@@ -24,6 +24,8 @@ import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,10 +38,12 @@ import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PluginException;
 import edu.umd.cs.findbugs.SystemProperties;
-import org.apache.commons.lang.StringUtils;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 /**
  * Saves all the stuff that should be saved for each run, like recent projects,
@@ -133,7 +137,7 @@ public class GUISaveState {
 
     private List<String> enabledPlugins = new ArrayList<String>();
     private List<String> disabledPlugins = new ArrayList<String>();
-    private LinkedHashSet<URL> customPlugins = new LinkedHashSet<URL>();
+    private LinkedHashSet<URI> customPlugins = new LinkedHashSet<URI>();
 
     private static String[] generateSorterKeys(int numSorters) {
         String[] result = new String[numSorters];
@@ -238,14 +242,16 @@ public class GUISaveState {
         newInstance.splitTreeComments = p.getInt(SPLIT_TREE_COMMENTS, 250);
         newInstance.packagePrefixSegments = p.getInt(PACKAGE_PREFIX_SEGEMENTS, 3);
 
-        for (String s : p.get(CUSTOM_PLUGINS, "").split(" ")) {
+        String plugins = p.get(CUSTOM_PLUGINS, "");
+        if (plugins.length() > 0)
+            for (String s : plugins.split(" ")) {
             try {
-                URL u = new URL(s);
+                URI u = new URI(s);
                 Plugin.addCustomPlugin(u);
                 newInstance.customPlugins.add(u);
-            } catch (MalformedURLException e) {
-                assert true;
             } catch (PluginException e) {
+                assert true;
+            } catch (URISyntaxException e) {
                 assert true;
             }
         }
@@ -537,18 +543,26 @@ public class GUISaveState {
     public List<String> getEnabledPlugins() {
         return enabledPlugins;
     }
-    public Collection<URL> getCustomPlugins() {
+    public Collection<URI> getCustomPlugins() {
         return customPlugins;
     }
     public boolean addCustomPlugin(URL u) {
-        return customPlugins.add(u);
+        try {
+            return customPlugins.add(u.toURI());
+        } catch (URISyntaxException e) {
+           throw new IllegalArgumentException("Error converting to uri: " + u, e);
+        }
     }
     public List<String> getDisabledPlugins() {
         return disabledPlugins;
     }
 
     public boolean removeCustomPlugin(URL pluginId) {
-        return customPlugins.remove(pluginId);
+        try {
+            return customPlugins.remove(pluginId.toURI());
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Error converting to uri: " + pluginId, e);
+        }
     }
 
     SorterTableColumnModel getStarterTable() {

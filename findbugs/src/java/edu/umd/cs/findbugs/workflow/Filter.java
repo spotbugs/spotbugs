@@ -57,6 +57,7 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Java main application to filter/transform an XML bug collection or bug
@@ -589,19 +590,22 @@ public class Filter {
             } else if (option.equals("-maxAge")) {
                 maxAge = Integer.parseInt(argument);
                 maxAgeSpecified = true;
-            } else  if (option.equals("-hashes")) {
-                    hashesFromFile = new HashSet<String>();
-                    try {
-                    BufferedReader in = new BufferedReader(new FileReader(argument));
+            } else if (option.equals("-hashes")) {
+                hashesFromFile = new HashSet<String>();
+                BufferedReader in = null;
+                try {
+                    in = new BufferedReader(new FileReader(argument));
                     while (true) {
                         String h = in.readLine();
                         if (h == null)
                             break;
                         hashesFromFile.add(h);
                     }
-                    } catch (IOException e) {
-                        throw new RuntimeException("Error reading hashes from " + argument, e);
-                    }
+                } catch (IOException e) {
+                    throw new RuntimeException("Error reading hashes from " + argument, e);
+                } finally {
+                    Util.closeSilently(in);
+                }
             } else
                 throw new IllegalArgumentException("can't handle command line argument of " + option);
 

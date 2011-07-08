@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +36,7 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
@@ -459,16 +461,22 @@ public class Plugin {
         return new ArrayList<Plugin>(allPlugins.values());
     }
 
-    public static synchronized Set<URL> getAllPluginsUrls() {
+    public static synchronized Set<URI> getAllPluginsURIs() {
         Collection<Plugin> plugins = getAllPlugins();
-        Set<URL> urls = new HashSet<URL>();
+        Set<URI> uris = new HashSet<URI>();
         for (Plugin plugin : plugins) {
-            URL url = plugin.getPluginLoader().getURL();
-            if(url != null) {
-                urls.add(url);
+            
+            try {
+                URI uri = plugin.getPluginLoader().getURL().toURI();
+                if(uri != null) {
+                    uris.add(uri);
+                }
+            } catch (URISyntaxException e) {
+                AnalysisContext.logError("Unable to get URI", e);
             }
+           
         }
-        return urls;
+        return uris;
     }
 
     /**
@@ -573,7 +581,9 @@ public class Plugin {
     public static Plugin addCustomPlugin(URL u) throws PluginException {
         return addCustomPlugin(u, PluginLoader.class.getClassLoader());
     }
-
+    public static Plugin addCustomPlugin(URI u) throws PluginException {
+        return addCustomPlugin(u, PluginLoader.class.getClassLoader());
+    }
     public static Plugin addCustomPlugin(URL u, ClassLoader parent) throws PluginException {
         PluginLoader pluginLoader = PluginLoader.getPluginLoader(u, parent, false, true);
         Plugin plugin = pluginLoader.loadPlugin();
@@ -582,6 +592,18 @@ public class Plugin {
         return plugin;
     }
 
+    public static Plugin addCustomPlugin(URI u, ClassLoader parent) throws PluginException {
+        try {
+            PluginLoader pluginLoader = PluginLoader.getPluginLoader(u.toURL(), parent, false, true);
+
+            Plugin plugin = pluginLoader.loadPlugin();
+            // register new clouds
+            DetectorFactoryCollection.instance().loadPlugin(plugin);
+            return plugin;
+        } catch (MalformedURLException e) {
+            throw new PluginException("Unable to convert uri to url:" + u, e);
+        }
+    }
     public static synchronized void removeCustomPlugin(Plugin plugin) {
         Set<Entry<URI, Plugin>> entrySet = Plugin.allPlugins.entrySet();
         for (Entry<URI, Plugin> entry : entrySet) {

@@ -598,13 +598,15 @@ public class FindBugs2 implements IFindBugsEngine {
         }
         Set<Entry<String, Boolean>> excludeFilterFiles = userPreferences.getExcludeFilterFiles().entrySet();
         for (Entry<String, Boolean> entry : excludeFilterFiles) {
-            if (entry.getValue() == null || !entry.getValue().booleanValue()) {
+            Boolean value = entry.getValue();
+            if (value == null || !value.booleanValue()) {
                 continue;
             }
+            String excludeFilterFile = entry.getKey();
             try {
-                addFilter(entry.getKey(), false);
+                addFilter(excludeFilterFile, false);
             } catch (Exception e) {
-                String message = "Unable to read filter: " + entry.getKey() + " : " + e.getMessage();
+                String message = "Unable to read filter: " + excludeFilterFile + " : " + e.getMessage();
                 if (getBugReporter() != null) {
                     getBugReporter().logError(message, e);
                 } else {

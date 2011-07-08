@@ -129,29 +129,32 @@ public class BugRanker {
             return;
         }
         BufferedReader in = UTF8.bufferedReader(u.openStream());
-        while (true) {
-            String s = in.readLine();
-            if (s == null)
-                break;
+        try {
+            while (true) {
+                String s = in.readLine();
+                if (s == null)
+                    break;
 
-            s = s.trim();
-            if (s.length() == 0)
-                continue;
+                s = s.trim();
+                if (s.length() == 0)
+                    continue;
 
-            String parts[] = s.split(" ");
-            String rank = parts[0];
-            String kind = parts[1];
-            String what = parts[2];
-            if (kind.equals("BugPattern"))
-                bugPatterns.storeAdjustment(what, rank);
-            else if (kind.equals("BugKind"))
-                bugKinds.storeAdjustment(what, rank);
-            else if (kind.equals("Category"))
-                bugCategories.storeAdjustment(what, rank);
-            else
-                AnalysisContext.logError("Can't parse bug rank " + s);
+                String parts[] = s.split(" ");
+                String rank = parts[0];
+                String kind = parts[1];
+                String what = parts[2];
+                if (kind.equals("BugPattern"))
+                    bugPatterns.storeAdjustment(what, rank);
+                else if (kind.equals("BugKind"))
+                    bugKinds.storeAdjustment(what, rank);
+                else if (kind.equals("Category"))
+                    bugCategories.storeAdjustment(what, rank);
+                else
+                    AnalysisContext.logError("Can't parse bug rank " + s);
+            }
+        } finally {
+            Util.closeSilently(in);
         }
-        Util.closeSilently(in);
     }
 
     private final Scorer bugPatterns = new Scorer();

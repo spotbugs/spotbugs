@@ -20,8 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.apache.bcel.classfile.Method;
@@ -59,7 +58,7 @@ public class BugAccumulator {
 
         SourceLineAnnotation primarySource;
 
-        List<SourceLineAnnotation> allSource = new LinkedList<SourceLineAnnotation>();
+        LinkedHashSet<SourceLineAnnotation> allSource = new LinkedHashSet<SourceLineAnnotation>();
     }
 
     /**
