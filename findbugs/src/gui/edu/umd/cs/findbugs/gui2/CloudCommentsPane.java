@@ -19,18 +19,14 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import static edu.umd.cs.findbugs.util.Util.nullSafeEquals;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,9 +36,11 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -61,16 +59,19 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.L10N;
-import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
+
+import static edu.umd.cs.findbugs.util.Util.nullSafeEquals;
 
 @edu.umd.cs.findbugs.annotations.SuppressWarnings({"SE_TRANSIENT_FIELD_NOT_RESTORED", "SE_BAD_FIELD", "SE_BAD_FIELD_STORE"})
 public abstract class CloudCommentsPane extends JPanel {
@@ -83,27 +84,26 @@ public abstract class CloudCommentsPane extends JPanel {
     protected JComponent signInOutLink;
     private JTextArea commentBox;
     private JButton submitCommentButton;
-    private JPanel commentEntryPanel;
     private WideComboBox designationCombo;
     private JPanel mainPanel;
     private JScrollPane _cloudReportScrollPane;
     protected JLabel titleLabel;
     protected JTextArea cloudDetailsLabel;
     private JPanel dumbPanelSignInOutLink;
-    protected JTextArea clickToAddCommentTextArea;
-    private JPanel clickToAddCommentPanel;
+    private JLabel lastSavedLabel;
 
     protected BugCollection _bugCollection;
     protected BugInstance _bugInstance;
     private BugAspects _bugAspects;
 
     private boolean dontShowAnnotationConfirmation = false;
-    private boolean addingComment = false;
 
     private final Executor backgroundExecutor = Executors.newSingleThreadExecutor();
 
     private final Cloud.CloudStatusListener _cloudStatusListener = new MyCloudStatusListener();
     private Cloud lastCloud = null;
+    private Font plainCommentFont;
+    private String lastCommentText = null;
 
     public CloudCommentsPane() {
         $$$setupUI$$$();
@@ -113,13 +113,30 @@ public abstract class CloudCommentsPane extends JPanel {
         _cloudReportScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
 
 //        designationCombo.setPreferredSize(new Dimension(300, 20));
-        clickToAddCommentTextArea.addMouseListener(new MouseAdapter() {
+        commentBox.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                addCommentClicked();
+                commentBoxClicked();
             }
         });
-        clickToAddCommentPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        commentBox.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) {
+                changed();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                changed();
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                changed();
+            }
+
+            private void changed() {
+                updateSaveButton();
+            }
+        });
+        commentBox.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 
         dumbPanelSignInOutLink.setPreferredSize(null);
 
@@ -153,7 +170,7 @@ public abstract class CloudCommentsPane extends JPanel {
                 JLabel label = new JLabel(KeyEvent.getKeyModifiersText(mask) + "-" + (index + 1));
                 label.setForeground(Color.GRAY);
                 Font font = label.getFont();
-                label.setFont(font.deriveFont(font.getSize() - 2f));
+//                label.setFont(font.deriveFont(font.getSize() - 2f));
                 panel.add(label, gbc);
                 panel.setBackground(real.getBackground());
                 return panel;
@@ -164,41 +181,44 @@ public abstract class CloudCommentsPane extends JPanel {
                 if (!updatingHeader) {
                     int selectedIndex = designationCombo.getSelectedIndex();
                     if (selectedIndex >= 0)
-                      setDesignation(userDesignationKeys.get(selectedIndex));
+                        setDesignation(userDesignationKeys.get(selectedIndex));
                 }
             }
         });
 
-        commentEntryPanel.setVisible(false);
+//        commentEntryPanel.setVisible(false);
         submitCommentButton.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
-                submitClicked();
+                submitComment();
             }
         });
         cloudDetailsLabel.setBackground(null);
         cloudDetailsLabel.setBorder(null);
-        final Font font1 = cloudDetailsLabel.getFont().deriveFont(Font.PLAIN);
-        cloudReportPane.setFont(font1);
+        plainCommentFont = cloudDetailsLabel.getFont().deriveFont(Font.PLAIN);
+        cloudReportPane.setFont(plainCommentFont);
 //        cloudReportPane.setEditorKit(new HTMLEditorKit());
 //        ((HTMLEditorKit) cloudReportPane.getDocument()).getStyleSheet().addRule("body { font-");
 
+        setDefaultComment(DEFAULT_COMMENT);
         commentBox.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e) {
                 commentBox.setForeground(null);
-                commentBox.setFont(font1);
+                commentBox.setFont(plainCommentFont);
                 if (commentBox.getText().equals(DEFAULT_COMMENT)) {
-                    commentBox.setText("");
+                    resetCommentBoxFont();
+                    setCommentText("");
                 }
             }
 
             public void focusLost(FocusEvent e) {
                 if (commentBox.getText().equals(DEFAULT_COMMENT) || commentBox.getText().trim().equals("")) {
-                    commentBox.setText(DEFAULT_COMMENT);
-                    commentBox.setForeground(Color.DARK_GRAY);
-                    commentBox.setFont(font1.deriveFont(Font.ITALIC));
+                    setDefaultComment(DEFAULT_COMMENT);
+                } else if (commentBox.getText().equals(DEFAULT_VARIOUS_COMMENTS_COMMENT)) {
+                    setDefaultComment(DEFAULT_VARIOUS_COMMENTS_COMMENT);
+                } else if (commentBox.getText().equals(lastCommentText)) {
                 } else {
-                    commentBox.setFont(font1);
-                    commentBox.setForeground(null);
+                    submitComment();
+                    resetCommentBoxFont();
                 }
             }
         });
@@ -208,15 +228,39 @@ public abstract class CloudCommentsPane extends JPanel {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     cancelClicked();
                 } else if (e.getKeyCode() == KeyEvent.VK_ENTER && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
-                    submitClicked();
+                    submitComment();
                 }
             }
         });
-        submitCommentButton.setToolTipText("Submit comment [Shift+Enter]");
+        submitCommentButton.setToolTipText("Submit comment [Enter]");
         cancelLink.setToolTipText("Cancel [Esc]");
         setCanAddComments(false, false);
+        setLastSaved(0);
 
         updateBugCommentsView();
+    }
+
+    private void updateSaveButton() {
+        boolean changed = commentWasChanged();
+        submitCommentButton.setEnabled(changed);
+        cancelLink.setEnabled(changed);
+    }
+
+    private void setCommentText(String t) {
+        lastCommentText = t;
+        if (!commentBox.getText().equals(t))
+            commentBox.setText(t);
+    }
+
+    private void resetCommentBoxFont() {
+        commentBox.setFont(plainCommentFont);
+        commentBox.setForeground(null);
+    }
+
+    private void setDefaultComment(String defaultComment) {
+        setCommentText(defaultComment);
+        commentBox.setForeground(Color.DARK_GRAY);
+        commentBox.setFont(plainCommentFont.deriveFont(Font.ITALIC));
     }
 
     private void createUIComponents() {
@@ -277,7 +321,9 @@ public abstract class CloudCommentsPane extends JPanel {
         }
     }
 
-    protected void addCommentClicked() {
+    protected void commentBoxClicked() {
+        if (commentWasChanged())
+            return;
         setCanAddComments(false, true);
         CommentInfo commentInfo = new CommentInfo().invoke();
         boolean sameText = commentInfo.isSameText();
@@ -285,25 +331,26 @@ public abstract class CloudCommentsPane extends JPanel {
         if (!sameText)
             txt = DEFAULT_VARIOUS_COMMENTS_COMMENT;
         if (txt == null || txt.trim().length() == 0)
-            txt = DEFAULT_COMMENT;
-        commentBox.setText(txt);
-        commentBox.requestFocusInWindow();
-        addingComment = true;
-        invalidate();
-        validate();
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                Rectangle rect = new Rectangle(
-                        commentEntryPanel.getX() + mainPanel.getX() + getX(),
-                        commentEntryPanel.getY() + mainPanel.getY() + getY(),
-                        commentEntryPanel.getWidth(),
-                        commentEntryPanel.getHeight());
-                scrollRectToVisible(rect);
-            }
-        });
+            txt = "";
+        resetCommentBoxFont();
+        boolean sameTextInBox = commentBox.getText().equals(txt);
+        setCommentText(txt);
+        int start = commentBox.getSelectionStart();
+        int end = commentBox.getSelectionEnd();
+        if (!commentBox.hasFocus() && (!sameTextInBox || start != 0 || end != txt.length())) {
+            commentBox.setSelectionStart(0);
+            commentBox.setSelectionEnd(txt.length());
+        }
+        updateSaveButton();
     }
 
-    private void submitClicked() {
+    private boolean commentWasChanged() {
+        String text = commentBox.getText();
+        return !text.equals(DEFAULT_COMMENT) && !text.trim().equals("")
+                && !text.equals(DEFAULT_VARIOUS_COMMENTS_COMMENT) && !text.equals(lastCommentText);
+    }
+
+    private void submitComment() {
         String comment = commentBox.getText();
         if (comment.equals(DEFAULT_COMMENT) || comment.equals(DEFAULT_VARIOUS_COMMENTS_COMMENT))
             comment = "";
@@ -323,23 +370,28 @@ public abstract class CloudCommentsPane extends JPanel {
             public void execute(BugInstance bug) {
                 bug.setAnnotationText(finalComment, _bugCollection);
                 refresh();
+                setLastSaved(System.currentTimeMillis());
             }
         });
 
-        addingComment = false;
         refresh();
 
-        commentEntryPanel.setVisible(false);
         setCanAddComments(true, false);
         commentBox.requestFocus();
-        invalidate();
+    }
+
+    private void setLastSaved(long date) {
+        if (date > 0)
+            lastSavedLabel.setText("saved " + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
+                    .format(new Date(date)));
+        else
+            lastSavedLabel.setText("");
     }
 
     protected void cancelClicked() {
-        addingComment = false;
-        commentEntryPanel.setVisible(false);
+        setDefaultComment(lastCommentText);
+//        commentEntryPanel.setVisible(false);
         setCanAddComments(true, false);
-        invalidate();
     }
 
     private List<BugInstance> getSelectedBugs() {
@@ -354,6 +406,7 @@ public abstract class CloudCommentsPane extends JPanel {
         }
         return Collections.emptyList();
     }
+
     private boolean hasSelectedBugs() {
         if (_bugInstance != null)
             return true;
@@ -407,11 +460,11 @@ public abstract class CloudCommentsPane extends JPanel {
     public void setBugCollection(BugCollection bugCollection) {
         updateCloudListeners(bugCollection);
         _bugCollection = bugCollection;
-        _bugInstance = null;;
+        _bugInstance = null;
         _bugAspects = null;
         refresh();
     }
-    
+
     public void setBugInstance(final BugInstance bugInstance) {
         setBugs(bugInstance, null);
     }
@@ -466,19 +519,25 @@ public abstract class CloudCommentsPane extends JPanel {
     }
 
     public boolean canNavigateAway() {
-        if (addingComment) {
-            int result = JOptionPane.showOptionDialog(this, "You have unsaved comments.", "Unsaved Comments",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null,
-                    new String[]{"Continue Editing", "Discard"},
-                    "Continue Editing");
-            boolean discard = result == 1;
-            if (discard)
-                cancelClicked();
-            else
-                commentBox.requestFocus();
-            return discard; // return true if user clicked "Discard"
+        if (commentWasChanged()) {
+//            if (getSelectedBugs().size() > 1) {
+//                int result = JOptionPane.showOptionDialog(this, "You have unsaved comments.", "Unsaved Comments",
+//                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null,
+//                        new String[]{"Continue Editing", "Discard"},
+//                        "Continue Editing");
+//                boolean discard = result == 1;
+//                if (discard)
+//                    cancelClicked();
+//                else
+//                    commentBox.requestFocus();
+//                return discard; // return true if user clicked "Discard"
+//            } else {
+                submitComment();
+//            }
+            return true;
+        } else {
+            return true;
         }
-        return true;
     }
 
     private boolean confirmAnnotation() {
@@ -550,7 +609,7 @@ public abstract class CloudCommentsPane extends JPanel {
 
 
     private void updateBugCommentsView() {
-        
+
         List<BugInstance> bugs = getSelectedBugs();
         if (_bugCollection == null) {
             signInOutLink.setVisible(false);
@@ -558,7 +617,7 @@ public abstract class CloudCommentsPane extends JPanel {
             cloudReportPane.setText("");
             titleLabel.setText("<html>Comments");
             return;
-        }        
+        }
         updateHeader();
         final Cloud cloud = _bugCollection.getCloud();
         final CloudPlugin plugin = cloud.getPlugin();
@@ -569,23 +628,55 @@ public abstract class CloudCommentsPane extends JPanel {
             setCanAddComments(false, false);
             return;
         }
-        
+
         String report;
+        long lastSaved = -1;
         if (bugs.size() > 1) {
-            int count = 0;
+            int totalReviews = 0;
+            int bugsWithReviews = 0;
             for (BugInstance bug : bugs) {
-                count += cloud.getNumberReviewers(bug);
+                long newTs = cloud.getUserTimestamp(bug);
+                if (bug.hasSomeUserAnnotation() && newTs > 0 && (lastSaved == -1 || lastSaved < newTs)) {
+                    lastSaved = newTs;
+                }
+                int reviewers = cloud.getNumberReviewers(bug);
+                if (reviewers > 0)
+                    bugsWithReviews++;
+                totalReviews += reviewers;
             }
-            report = bugs.size() + " bugs selected\n";
-            report += count + " comment" + (count == 1 ? "" : "s");
+            report = bugs.size() + " bug" + (bugs.size() == 1 ? "" : "s") + " selected\n";
+            report += bugsWithReviews + " reviewed bug" + (bugsWithReviews == 1 ? "" : "s")
+                    + " / " + totalReviews + " total review" + (totalReviews == 1 ? "" : "s");
         } else {
-            report = cloud.getCloudReport(bugs.get(0));
+            BugInstance bug = bugs.get(0);
+            if (bug.hasSomeUserAnnotation()) {
+                lastSaved = bug.getUserTimestamp();
+            }
+            report = cloud.getCloudReport(bug);
         }
+        setLastSaved(lastSaved);
         setCloudReportText(report);
+        CommentInfo commentInfo = new CommentInfo().invoke();
+        boolean sameText = commentInfo.isSameText();
+        String txt = commentInfo.getTxt();
+        if (!sameText) {
+            txt = DEFAULT_VARIOUS_COMMENTS_COMMENT;
+            setDefaultComment(txt);
+        }
+        if (txt == null || txt.trim().length() == 0) {
+            txt = DEFAULT_COMMENT;
+            setDefaultComment(txt);
+        } else {
+            resetCommentBoxFont();
+            setCommentText(txt);
+        }
+
         setCanAddComments(cloud.canStoreUserAnnotation(bugs.get(0)), false);
+        updateSaveButton();
     }
 
     private boolean updatingHeader = false;
+
     private void updateHeader() {
         final Cloud cloud = _bugCollection.getCloud();
         CloudPlugin plugin = cloud.getPlugin();
@@ -598,9 +689,10 @@ public abstract class CloudCommentsPane extends JPanel {
             updatingHeader = true;
             designationCombo.setSelectedIndex(I18N.instance().getUserDesignationKeys(true).indexOf(designation));
             updatingHeader = false;
-            designationCombo.setEditable(true);
+            //TODO: set enabled?
+            designationCombo.setEnabled(true);
         } else {
-            designationCombo.setEditable(false);
+            designationCombo.setEnabled(false);
         }
 
         final Cloud.SigninState state = cloud.getSigninState();
@@ -636,10 +728,7 @@ public abstract class CloudCommentsPane extends JPanel {
     }
 
     private void setCanAddComments(boolean canClick, boolean canEnter) {
-        designationCombo.setVisible(canClick || canEnter);
-        clickToAddCommentPanel.setVisible(canClick);
-        commentEntryPanel.setVisible(canEnter);
-        invalidate();
+        designationCombo.setEnabled(canClick || canEnter);
     }
 
     private void setCloudReportText(final String report) {
@@ -664,58 +753,15 @@ public abstract class CloudCommentsPane extends JPanel {
         GridBagConstraints gbc;
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 6;
-        gbc.gridwidth = 2;
+        gbc.gridy = 4;
+        gbc.gridwidth = 6;
         gbc.fill = GridBagConstraints.BOTH;
         mainPanel.add(spacer1, gbc);
-        commentEntryPanel = new JPanel();
-        commentEntryPanel.setLayout(new GridBagLayout());
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 2;
-        gbc.gridheight = 2;
-        gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        mainPanel.add(commentEntryPanel, gbc);
-        commentEntryPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5), null));
-        submitCommentButton = new JButton();
-        submitCommentButton.setText("Submit");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 3;
-        gbc.gridy = 1;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        commentEntryPanel.add(submitCommentButton, gbc);
-        final JScrollPane scrollPane1 = new JScrollPane();
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 4;
-        gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
-        commentEntryPanel.add(scrollPane1, gbc);
-        scrollPane1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), null));
-        commentBox = new JTextArea();
-        commentBox.setRows(5);
-        commentBox.setText(" ");
-        scrollPane1.setViewportView(commentBox);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 3;
-        gbc.gridy = 2;
-        commentEntryPanel.add(cancelLink, gbc);
-        final JPanel spacer2 = new JPanel();
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 1;
-        gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        commentEntryPanel.add(spacer2, gbc);
         _cloudReportScrollPane = new JScrollPane();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 6;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
@@ -731,7 +777,7 @@ public abstract class CloudCommentsPane extends JPanel {
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 6;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         mainPanel.add(panel1, gbc);
@@ -790,39 +836,55 @@ public abstract class CloudCommentsPane extends JPanel {
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         panel2.add(cloudDetailsLabel, gbc);
-        clickToAddCommentPanel = new JPanel();
-        clickToAddCommentPanel.setLayout(new GridBagLayout());
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        mainPanel.add(clickToAddCommentPanel, gbc);
-        clickToAddCommentTextArea = new JTextArea();
-        clickToAddCommentTextArea.setBackground(new Color(-1));
-        clickToAddCommentTextArea.setFont(new Font(clickToAddCommentTextArea.getFont().getName(), Font.ITALIC, clickToAddCommentTextArea.getFont().getSize()));
-        clickToAddCommentTextArea.setForeground(new Color(-10066330));
-        clickToAddCommentTextArea.setMinimumSize(new Dimension(6, 40));
-        clickToAddCommentTextArea.setPreferredSize(new Dimension(128, 40));
-        clickToAddCommentTextArea.setText("Click to add comment...");
-        clickToAddCommentTextArea.setWrapStyleWord(true);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.BOTH;
-        clickToAddCommentPanel.add(clickToAddCommentTextArea, gbc);
-        designationCombo = new WideComboBox();
+        final JPanel panel3 = new JPanel();
+        panel3.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 3;
+        gbc.gridwidth = 5;
+        gbc.fill = GridBagConstraints.BOTH;
+        mainPanel.add(panel3, gbc);
+        designationCombo = new WideComboBox();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 4;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.insets = new Insets(5, 0, 0, 0);
-        mainPanel.add(designationCombo, gbc);
+        panel3.add(designationCombo, gbc);
+        final JScrollPane scrollPane1 = new JScrollPane();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 4;
+        gbc.gridheight = 4;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel3.add(scrollPane1, gbc);
+        scrollPane1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), null));
+        commentBox = new JTextArea();
+        commentBox.setRows(5);
+        commentBox.setText(" ");
+        scrollPane1.setViewportView(commentBox);
+        submitCommentButton = new JButton();
+        submitCommentButton.setText("Save");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 4;
+        gbc.gridy = 1;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        panel3.add(submitCommentButton, gbc);
+        lastSavedLabel = new JLabel();
+        lastSavedLabel.setFont(new Font(lastSavedLabel.getFont().getName(), Font.ITALIC, 9));
+        lastSavedLabel.setText("saved at");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 4;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        panel3.add(lastSavedLabel, gbc);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 5;
+        gbc.gridy = 1;
+        panel3.add(cancelLink, gbc);
     }
 
     /**

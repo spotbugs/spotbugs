@@ -777,6 +777,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         return xmlProps.get();
     }
 
+    public boolean hasSomeUserAnnotation() {
+        return !getAnnotationText().equals("")
+                || !getUserDesignationKey().equals(BugDesignation.UNCLASSIFIED);
+    }
+
     /*
      * ----------------------------------------------------------------------
      * Property accessors
