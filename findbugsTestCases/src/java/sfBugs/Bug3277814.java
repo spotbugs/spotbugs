@@ -1,10 +1,7 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
-
 public class Bug3277814 {
 
-    @ExpectWarning("NP_GUARANTEED_DEREF")
     public void test() {
         String var = "";
         int index = 2;
@@ -26,7 +23,7 @@ public class Bug3277814 {
              * be dereferenced (except on forward paths involving runtime
              * exceptions).
              */
-            throw new NullPointerException("NULL");
+            throw new RuntimeException("NULL");
         }
     }
 }
