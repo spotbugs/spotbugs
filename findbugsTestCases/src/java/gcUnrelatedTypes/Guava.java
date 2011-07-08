@@ -92,7 +92,13 @@ public class Guava {
         ms.remove(1);
         ms.remove(1, 2);
     }
-
+    @NoWarning("GC")
+    public static void testMultisetOK(Multiset<String> ms) {
+        ms.contains("x");
+        ms.count("x");
+        ms.remove("x");
+        ms.remove("x", 2);
+    }
     @ExpectWarning(value="GC", num=9)
     public static void testTable(Table<String, Integer, Long> t) {
         t.contains("x", "x");
@@ -106,10 +112,25 @@ public class Guava {
         t.remove(1, 1);
     }
 
+    @NoWarning(value="GC")
+    public static void testTableOK(Table<String, Integer, Long> t) {
+        t.contains("x", 1);
+        t.containsRow("x");
+        t.containsColumn(1);
+        t.containsValue(1L);
+        t.get("x", 1);
+        t.remove("x", 1);
+    }
+
     @ExpectWarning(value="EC", num=1)
     public static void testObjects() {
         Objects.equal("x", 1);
     }
+    @NoWarning("EC")
+    public static void testObjectsOK() {
+        Objects.equal("x", "X");
+    }
+
 
     public static void testSets(Set<String> s1, Set<Integer> s2) {
         Sets.intersection(s1, s2);
@@ -117,6 +138,11 @@ public class Guava {
         Sets.symmetricDifference(s1, s2);
     }
 
+    public static void testSetsOK(Set<String> s1, Set<String> s2) {
+        Sets.intersection(s1, s2);
+        Sets.difference(s1, s2);
+        Sets.symmetricDifference(s1, s2);
+    }
     @ExpectWarning(value="GC", num=2)
     public static void testIterables(Iterable<String> i, Collection<Integer> c) {
         Iterables.contains(i, 1);
@@ -125,7 +151,14 @@ public class Guava {
         Iterables.elementsEqual(i, c);
         Iterables.frequency(i, 1);
     }
-
+    @NoWarning("GC")
+    public static void testIterablesOK(Iterable<String> i, Collection<String> c) {
+        Iterables.contains(i, "x");
+        Iterables.removeAll(i, c);
+        Iterables.retainAll(i, c);
+        Iterables.elementsEqual(i, c);
+        Iterables.frequency(i, "x");
+    }
     @ExpectWarning(value="GC", num=2)
     public static void testIterators(Iterator<String> i, Collection<Integer> c) {
         Iterators.contains(i, 1);
@@ -133,6 +166,14 @@ public class Guava {
         Iterators.retainAll(i, c);
         Iterators.elementsEqual(i, c.iterator());
         Iterators.frequency(i, 1);
+    }
+    @NoWarning("GC")
+    public static void testIteratorsOK(Iterator<String> i, Collection<String> c) {
+        Iterators.contains(i, "x");
+        Iterators.removeAll(i,c);
+        Iterators.retainAll(i, c);
+        Iterators.elementsEqual(i, c.iterator());
+        Iterators.frequency(i, "x");
     }
 
 }
