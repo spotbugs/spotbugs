@@ -1108,8 +1108,8 @@
                     category="STYLE"/>
           <BugPattern abbrev="OBL" type="OBL_UNSATISFIED_OBLIGATION" category="EXPERIMENTAL"
                     experimental="true"/>
-          <BugPattern abbrev="FB" type="FB_UNEXPECTED_WARNING" category="EXPERIMENTAL"/>
-          <BugPattern abbrev="FB" type="FB_MISSING_EXPECTED_WARNING" category="EXPERIMENTAL"/>
+          <BugPattern abbrev="FB" type="FB_UNEXPECTED_WARNING" category="CORRECTNESS"/>
+          <BugPattern abbrev="FB" type="FB_MISSING_EXPECTED_WARNING" category="CORRECTNESS"/>
           <BugPattern abbrev="RV" type="RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED"
                     category="MT_CORRECTNESS"/>
           <BugPattern abbrev="LG" type="LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE"
