@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -150,8 +149,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         addCheckedCall(Collection.class.getName(), "retainAll", "(Ljava/util/Collection;)", 0, 0);
 
         // Dequeue<E>
-        addCheckedCall(Deque.class.getName(), "removeFirstOccurrence", 0);
-        addCheckedCall(Deque.class.getName(), "removeLastOccurrence", 0);
+        addCheckedCall("java.util.Deque", "removeFirstOccurrence", 0);
+        addCheckedCall("java.util.Deque", "removeLastOccurrence", 0);
 
         // List<E>
         addCheckedCall(List.class.getName(), "indexOf", 0);
