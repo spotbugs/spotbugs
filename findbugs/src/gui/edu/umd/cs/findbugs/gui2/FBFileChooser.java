@@ -21,10 +21,15 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 
 import edu.umd.cs.findbugs.SystemProperties;
 
@@ -37,7 +42,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 public class FBFileChooser extends JFileChooser {
 
     public FBFileChooser() {
-        super();
+        addHiddenFileCheckBox();
         assert java.awt.EventQueue.isDispatchThread();
         this.setCurrentDirectory(GUISaveState.getInstance().getStarterDirectoryForLoadBugs());
     }
@@ -125,5 +130,19 @@ public class FBFileChooser extends JFileChooser {
 
         return x;
     }
+    
+    private void addHiddenFileCheckBox() {
+        final JCheckBox showHiddenFileCheckBox = new JCheckBox("Show Hidden");
+        JPanel accessory = new JPanel();
+        accessory.setLayout(new FlowLayout());
+        accessory.add(showHiddenFileCheckBox);
 
+        setAccessory(accessory);
+
+        showHiddenFileCheckBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                setFileHidingEnabled(!showHiddenFileCheckBox.isSelected());
+            }
+        });
+    }
 }
