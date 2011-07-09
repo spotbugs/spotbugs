@@ -7,7 +7,7 @@ public class Bug3358161 {
     }
 
     public void resetAvailableList(String s, boolean b) {
-        s = "foo";
+        String t = "foo";
         setAvailableItems(s, !b);
     }
 
