@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
@@ -527,6 +528,12 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             return false;
         }
     }
+    
+    public static final Set<String> catchTypesForNull
+    = Collections.unmodifiableSet(new HashSet<String>(
+                Arrays.asList("java/lang/NullPointerException", "java/lang/RuntimeException", "java/lang/Exception")));
+        
+
 
     private boolean catchesNull(Location location) {
         int position = location.getHandle().getPosition();
@@ -534,17 +541,11 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         ConstantPool constantPool = classContext.getJavaClass().getConstantPool();
         Code code = method.getCode();
 
-        int catchSize;
-
-        catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, "java/lang/NullPointerException", position);
-        if (catchSize < Integer.MAX_VALUE)
-            return true;
-        catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, "java/lang/RuntimeException", position);
-        if (catchSize < Integer.MAX_VALUE)
-            return true;
-        catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, "java/lang/Exception", position);
-        if (catchSize < Integer.MAX_VALUE)
-            return true;
+        for (String t : catchTypesForNull) {
+            int catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, t, position);
+            if (catchSize < Integer.MAX_VALUE)
+                return true;
+        }
 
         return false;
     }

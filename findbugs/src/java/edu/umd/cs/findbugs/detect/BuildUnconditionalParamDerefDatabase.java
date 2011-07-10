@@ -24,6 +24,11 @@ import java.util.Iterator;
 
 import javax.annotation.meta.When;
 
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ReferenceType;
@@ -136,6 +141,22 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
                     if (directTypeQualifierAnnotation == null && method.getName().equals("equals")
                             && method.getSignature().equals("(Ljava/lang/Object;)Z") && !method.isStatic()) {
                         implicitNullCheckForEquals = true;
+                        Code code = method.getCode();
+                        ConstantPool cp = jclass.getConstantPool();
+                        byte codeBytes[] = code.getCode();
+                        for (CodeException e : code.getExceptionTable()) {
+                            ConstantClass cl = (ConstantClass) cp.getConstant(e.getCatchType());
+                            int endPC = e.getEndPC();
+                            int startPC = e.getStartPC();
+                            int handlerPC = e.getHandlerPC();
+                            if (startPC == 0 && endPC + 1 == handlerPC && handlerPC == codeBytes.length - 3
+                                    && (codeBytes[handlerPC + 1] & 0xff) == Constants.ICONST_0
+                                    && (codeBytes[handlerPC + 2] & 0xff) == Constants.IRETURN
+                                    && FindNullDeref.catchTypesForNull.contains(cl.getBytes(cp))) {
+                                // equals method body contained in try clause
+                                return;
+                            }
+                        }
                         directTypeQualifierAnnotation = TypeQualifierAnnotation.getValue(nonnullTypeQualifierValue, When.MAYBE);
                     }
 
