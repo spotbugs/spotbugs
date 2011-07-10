@@ -193,6 +193,13 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         addCheckedCall("com.google.common.collect.Table", "remove", "(Ljava/lang/Object;Ljava/lang/Object;)", 0, 0);
         addCheckedCall("com.google.common.collect.Table", "remove", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);
 
+        
+        // Sets
+        addCheckedCall("com.google.common.collect.Sets", "intersection", "(Ljava/util/Set;Ljava/util/Set;)", 1, -1);
+        addCheckedCall("com.google.common.collect.Sets", "difference", "(Ljava/util/Set;Ljava/util/Set;)", 1, -1);
+        addCheckedCall("com.google.common.collect.Sets", "symmetricDifference", "(Ljava/util/Set;Ljava/util/Set;)", 1, -1);
+        
+        
         // Iterables
         addCheckedCall("com.google.common.collect.Iterables", "contains", "(Ljava/lang/Iterable;Ljava/lang/Object;)", 1, 0);
         addCheckedCall("com.google.common.collect.Iterables", "removeAll", "(Ljava/lang/Iterable;Ljava/util/Collection;)", 1, -1);
@@ -435,7 +442,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
                             if (nextIns instanceof InvokeInstruction) {
                                 XMethod nextMethod = XFactory.createXMethod((InvokeInstruction) nextIns, cpg);
-                                if (nextMethod.getName().equals("assertTrue"))
+                                if (nextMethod.getName().equals("assertFalse"))
                                     continue;
                             }
                         }

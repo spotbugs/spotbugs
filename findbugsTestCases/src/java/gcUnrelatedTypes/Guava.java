@@ -126,18 +126,20 @@ public class Guava {
     public static void testObjects() {
         Objects.equal("x", 1);
     }
+    
     @NoWarning("EC")
     public static void testObjectsOK() {
         Objects.equal("x", "X");
     }
 
-
+    @ExpectWarning(value="GC", num=3)
     public static void testSets(Set<String> s1, Set<Integer> s2) {
         Sets.intersection(s1, s2);
         Sets.difference(s1, s2);
         Sets.symmetricDifference(s1, s2);
     }
 
+    @NoWarning("GC")
     public static void testSetsOK(Set<String> s1, Set<String> s2) {
         Sets.intersection(s1, s2);
         Sets.difference(s1, s2);
