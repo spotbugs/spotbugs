@@ -57,6 +57,7 @@ import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -2343,7 +2344,8 @@ public class OpcodeStack implements Constants2 {
             Item i = pop();
             i.setSpecialKind(Item.RANDOM_INT);
             push(i);
-        } else if (methodName.equals("size") && signature.equals("()I")) {
+        } else if (methodName.equals("size") && signature.equals("()I") 
+                && Subtypes2.instanceOf(ClassName.toDottedClassName(clsName), "java.util.Collection")) {
             Item i = pop();
             if (i.getSpecialKind() == Item.NOT_SPECIAL)
                     i.setSpecialKind(Item.NON_NEGATIVE);
