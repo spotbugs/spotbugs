@@ -77,6 +77,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -1106,7 +1107,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * @return this object
      */
     public BugInstance addClass(ClassNode classNode) {
-        ClassAnnotation classAnnotation = new ClassAnnotation(classNode.name);
+        String dottedClassName = ClassName.toDottedClassName(classNode.name);
+        ClassAnnotation classAnnotation = new ClassAnnotation(dottedClassName);
         add(classAnnotation);
         return this;
     }
@@ -1444,7 +1446,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      *            accessFlags for the method
      * @return this object
      */
-    public BugInstance addMethod(String className, String methodName, String methodSig, int accessFlags) {
+    public BugInstance addMethod(@SlashedClassName String className, String methodName, String methodSig, int accessFlags) {
         addMethod(MethodAnnotation.fromForeignMethod(className, methodName, methodSig, accessFlags));
         return this;
     }

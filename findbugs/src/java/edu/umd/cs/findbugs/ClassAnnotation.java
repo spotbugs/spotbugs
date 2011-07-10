@@ -62,11 +62,11 @@ public class ClassAnnotation extends PackageMemberAnnotation {
      * @param className
      *            the name of the class
      */
-    public ClassAnnotation(String className) {
+    public ClassAnnotation(@DottedClassName String className) {
         super(className, DEFAULT_ROLE);
     }
 
-    public ClassAnnotation(String className, String sourceFileName) {
+    public ClassAnnotation(@DottedClassName String className, String sourceFileName) {
         super(className, DEFAULT_ROLE, sourceFileName);
     }
 

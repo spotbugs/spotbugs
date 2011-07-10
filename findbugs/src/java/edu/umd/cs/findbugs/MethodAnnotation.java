@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -172,9 +173,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
      *            the access flags of the method
      * @return the MethodAnnotation
      */
-    public static MethodAnnotation fromForeignMethod(String className, String methodName, String methodSig, int accessFlags) {
-
-        // FIXME: would be nice to do this without using BCEL
+    public static MethodAnnotation fromForeignMethod(@SlashedClassName String className, String methodName, String methodSig, int accessFlags) {
 
         className = ClassName.toDottedClassName(className);
 
