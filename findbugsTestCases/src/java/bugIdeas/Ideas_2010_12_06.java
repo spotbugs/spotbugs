@@ -30,10 +30,9 @@ public class Ideas_2010_12_06 extends HttpServlet {
         out.close();
         r.close();
     }
-
-    @NoWarning("NP")
+    
+    @NoWarning("NP_NONNULL_PARAM_VIOLATION,NP_NULL_PARAM_DEREF_NONVIRTUAL")
     public static void main(String args[]) {
-
         Comparator<Integer> comparator = (Comparator<Integer>) null;
         ConcurrentSkipListMap<Integer, String> map = new ConcurrentSkipListMap<Integer, String>(comparator);
         for (int i = 0; i < 16; i++)
