@@ -81,11 +81,8 @@ public abstract class FieldPropertyDatabase<Property> extends PropertyDatabase<F
         writer.write(",");
         writer.write(key.getSignature());
         writer.write(",");
-        int flags = 0;
-        if (key instanceof XField) {
-            flags = ((XField) key).getAccessFlags() & 0xf;
-        } else if (key.isStatic())
-            flags = Constants.ACC_STATIC;
+        XField xField = XFactory.createXField(key);
+        int flags = xField.getAccessFlags() & 0xf;
         writer.write(String.valueOf(flags));
     }
 

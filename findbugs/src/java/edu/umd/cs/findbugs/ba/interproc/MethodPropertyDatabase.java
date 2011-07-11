@@ -68,9 +68,7 @@ public abstract class MethodPropertyDatabase<Property> extends PropertyDatabase<
         writer.write(",");
         writer.write(method.getSignature());
         writer.write(",");
-        if (method instanceof XMethod)
-            writer.write(Integer.toString(((XMethod) method).getAccessFlags() & 0xf));
-        else
-            writer.write(String.valueOf(method.isStatic() ? Constants.ACC_STATIC : 0));
+        XMethod xMethod =  XFactory.createXMethod(method);
+        writer.write(Integer.toString(xMethod.getAccessFlags() & 0xf));
     }
 }
