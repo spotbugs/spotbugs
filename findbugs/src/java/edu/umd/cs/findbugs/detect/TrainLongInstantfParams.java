@@ -91,7 +91,7 @@ public class TrainLongInstantfParams extends PreorderVisitor implements Detector
                 String name = localVariable.getName();
                 if (s.equals("J") && (name.toLowerCase().indexOf("instant") >= 0 || name.startsWith("date"))) {
 
-                    System.out.println(getFullyQualifiedMethodName() + " " + s + " " + index + " " + name);
+                    // System.out.println(getFullyQualifiedMethodName() + " " + s + " " + index + " " + name);
                     property.setParamWithProperty(parameterNumber, true);
                 }
             }
@@ -102,7 +102,7 @@ public class TrainLongInstantfParams extends PreorderVisitor implements Detector
             parameterNumber++;
         }
         if (!property.isEmpty()) {
-            System.out.println(getFullyQualifiedMethodName() + " " + property);
+            // System.out.println(getFullyQualifiedMethodName() + " " + property);
             database.setProperty(getMethodDescriptor(), property);
         }
     }
@@ -113,7 +113,7 @@ public class TrainLongInstantfParams extends PreorderVisitor implements Detector
      * @see edu.umd.cs.findbugs.Detector#report()
      */
     public void report() {
-        System.out.println(database.entrySet().size() + " methods");
+        // System.out.println(database.entrySet().size() + " methods");
         AnalysisContext.currentAnalysisContext().storePropertyDatabase(database, "longInstant.db", "long instant database");
 
     }
