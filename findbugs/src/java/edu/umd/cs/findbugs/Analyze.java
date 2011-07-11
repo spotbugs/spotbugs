@@ -13,6 +13,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public class Analyze {
     static private JavaClass serializable;
@@ -140,7 +141,7 @@ public class Analyze {
      * @return 0 - 1 value indicating probablility
      */
 
-    public static double deepInstanceOf(String x, String y) throws ClassNotFoundException {
+    public static double deepInstanceOf(@DottedClassName String x, @DottedClassName String y) throws ClassNotFoundException {
         return deepInstanceOf(AnalysisContext.currentAnalysisContext().lookupClass(x), AnalysisContext.currentAnalysisContext()
                 .lookupClass(y));
     }
