@@ -12,6 +12,7 @@ import javax.annotation.WillClose;
 
 import org.apache.bcel.Constants;
 
+import edu.umd.cs.findbugs.tools.FilterAndCombineBitfieldPropertyDatabase.Status;
 import edu.umd.cs.findbugs.util.Util;
 
 /*
@@ -63,15 +64,20 @@ public class FilterPropertyDatabase {
         try {
             in = new BufferedReader(Util.getReader(inSource));
 
-            Pattern p = Pattern.compile(",([0-9]+)\\|");
+            Pattern p = Pattern.compile("^(([^,]+),.+),([0-9]+)\\|(.+)$");
+            
             while (true) {
                 String s = in.readLine();
                 if (s == null)
                     break;
                 Matcher m = p.matcher(s);
                 if (m.find()) {
-                    int value = Integer.parseInt(m.group(1));
-                    if ((value & FLAGS) != 0)
+                    String className = m.group(2);
+                    if (FilterAndCombineBitfieldPropertyDatabase.getStatus(className) == Status.UNEXPOSED)
+                        continue;
+                    int accFlags = Integer.parseInt(m.group(3));
+                   
+                    if ((accFlags & FLAGS) != 0)
                         System.out.println(s);
                 }
 

@@ -73,7 +73,8 @@ public class FilterAndCombineBitfieldPropertyDatabase {
     static Map<String, Status> classStatus = new HashMap<String, Status>();
 
     static Status getStatus(@DottedClassName String name) {
-        if (name.startsWith("com.sun") || name.startsWith("sun") || name.startsWith("netscape"))
+        if (name.startsWith("com.sun") || name.startsWith("com.oracle") 
+                || name.startsWith("sun") || name.startsWith("netscape"))
             return Status.UNEXPOSED;
         Status result = classStatus.get(name);
         if (result != null)
