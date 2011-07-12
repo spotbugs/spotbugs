@@ -8000,7 +8000,7 @@ public @NonNegative Integer example(@Negative Integer value) {
 
   <BugPattern type="TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED">
     <ShortDescription>型修飾子を付けていない値がその修飾子が付く値を必要とする場所で使われている</ShortDescription>
-    <LongDescription>型修飾子 {2} を付けていない値がその修飾子が付く値を必要としている場所で使われています。</LongDescription>
+    <LongDescription>型修飾子 {2.simpleName} を付けていない値がその修飾子が付く値を必要としている場所で使われています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -8015,7 +8015,7 @@ public @NonNegative Integer example(@Negative Integer value) {
 
   <BugPattern type="TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK">
     <ShortDescription>型修飾子を付けていないかもしれない値がその型修飾子を必要とする方法で常に使われている</ShortDescription>
-    <LongDescription>型修飾子 {2} を付けていないかもしれない値がその型修飾子を必要とする方法で常に使われています。</LongDescription>
+    <LongDescription>型修飾子 {2.simpleName} を付けていないかもしれない値がその型修飾子を必要とする方法で常に使われています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -8028,7 +8028,7 @@ public @NonNegative Integer example(@Negative Integer value) {
 
   <BugPattern type="TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK">
     <ShortDescription>型修飾子を付けているかもしれない値がその型修飾子が禁止する方法で常に使われている</ShortDescription>
-    <LongDescription>型修飾子を付けているかもしれない値がその型修飾子が禁止する方法で値が常に使われています。</LongDescription>
+    <LongDescription>{2.simpleName} アノテーションを付けているかもしれない値がその型修飾子があるのを禁止する方法で常に使われています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -8039,8 +8039,8 @@ public @NonNegative Integer example(@Negative Integer value) {
   </BugPattern>
 
   <BugPattern type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK">
-    <ShortDescription>明示的なアノテーションの使用に一貫性がない</ShortDescription>
-    <LongDescription>値は、{2} を必要としませんが、明示的に {2} に関する不明なアノテーションが付けられています。</LongDescription>
+    <ShortDescription>値は型修飾子を必要としないが、不明としてマークされている</ShortDescription>
+    <LongDescription>値は、{2.simpleName} を必要としませんが、明示的に {2.simpleName} に関する不明としてアノテーションが付けられています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -8053,13 +8053,13 @@ public @NonNegative Integer example(@Negative Integer value) {
   </BugPattern>
 
   <BugPattern type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK">
-    <ShortDescription>明示的なアノテーションの使用に一貫性がない</ShortDescription>
-    <LongDescription>値は、常に {2} を必要としていますが、明示的に {2} に関する不明なアノテーションが付けられています。</LongDescription>
+    <ShortDescription>値は型修飾子を必要としているが、不明としてマークされている</ShortDescription>
+    <LongDescription>値は、常に {2.simpleName} を必要としていますが、明示的に {2.simpleName} に関する不明としてアノテーションが付けられています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
 値は、常に型修飾子によって示された値であることを必要とする方法で使われています。
-しかし、値はどこでその型修飾子がいるのか要求されているかわからないと述べている明示的なアノテーションがあります。
+しかし、値はどこでその型修飾子が必要なのかわからないと述べている明示的なアノテーションがあります。
 使い方かアノテーションのどちらかが間違っています。
       </p>
       ]]>
