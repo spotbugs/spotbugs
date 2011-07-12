@@ -413,6 +413,11 @@ public class OpcodeStack implements Constants2 {
             }
             if (isCouldBeZero())
                 buf.append(", cbz");
+            if (userValue != null) {
+                buf.append(", uv: ");
+                buf.append(userValue.toString());
+            }
+            
             buf.append(" >");
             return buf.toString();
         }
@@ -2950,8 +2955,10 @@ public class OpcodeStack implements Constants2 {
             Item constructed = pop();
             if (getStackDepth() > 0) {
                 Item next = getStackItem(0);
-                if (constructed.equals(next))
+                if (constructed.equals(next)) {
                     next.source = XFactory.createReferencedXMethod(dbc);
+                    next.pc = dbc.getPC();
+                }
             }
             return;
         }
