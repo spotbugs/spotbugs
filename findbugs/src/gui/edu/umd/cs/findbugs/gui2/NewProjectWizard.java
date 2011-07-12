@@ -187,7 +187,7 @@ public class NewProjectWizard extends FBDialog {
                 "http://findbugs.sourceforge.net/manual/gui.html#d0e1087");
 
         JPanel cloudPanel = new JPanel(new BorderLayout());
-        cloudPanel.add(new JLabel("Store user comments in:"), BorderLayout.NORTH);
+        cloudPanel.add(new JLabel("Store bug reviews in:"), BorderLayout.NORTH);
         cloudPanel.add(cloudSelector, BorderLayout.CENTER);
 
         wizardComponents[3] = cloudPanel;

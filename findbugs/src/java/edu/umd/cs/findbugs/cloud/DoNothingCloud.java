@@ -29,7 +29,7 @@ public class DoNothingCloud implements Cloud {
 
     private static CloudPlugin getFallbackPlugin() {
         return new CloudPluginBuilder().setCloudid("edu.umd.cs.findbugs.cloud.doNothingCloud").setDescription("Do Nothing Cloud")
-                .setDetails("No comments will be stored.")
+                .setDetails("No reviews will be stored.")
                 .setClassLoader(BugCollectionStorageCloud.class.getClassLoader())
                 .setCloudClass(BugCollectionStorageCloud.class)
                 .setUsernameClass(NoNameLookup.class)
@@ -54,7 +54,7 @@ public class DoNothingCloud implements Cloud {
     }
 
     public String getCloudName() {
-        return "(comments disabled)";
+        return "(reviews disabled)";
     }
 
     public BugCollection getBugCollection() {

@@ -13,7 +13,7 @@
     <Details>
 <![CDATA[
 <p>
-Allows storing "Cloud" bug comments alongside the bugs in the FindBugs analysis XML file.
+Allows storing "Cloud" bug reviews alongside the bugs in the FindBugs analysis XML file.
 </p>
 ]]>
     </Details>
@@ -22,7 +22,7 @@ Allows storing "Cloud" bug comments alongside the bugs in the FindBugs analysis 
 
   <Cloud id="edu.umd.cs.findbugs.cloud.bugCollectionCloud">
 	<Description>Analysis XML File Pseudo-Cloud</Description>
-	<Details>Comments are stored alongside bugs in the bug collection XML file itself</Details>
+	<Details>Reviews are stored alongside bugs in the bug collection XML file itself</Details>
 	</Cloud>
 
 

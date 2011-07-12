@@ -693,8 +693,8 @@ public class WebCloudClient extends AbstractCloud {
                 getGuiCallback().showMessageDialog(
                         "A network error occurred while checking the " + getCloudName() + " for updates.\n"
                                 + "\n"
-                                + "You have been automatically signed out of the Cloud. Any comments or \n"
-                                + "evaluations you make will only be stored on your computer if you save the\n"
+                                + "You have been automatically signed out of the Cloud. Any reviews\n"
+                                + "you add or change will only be stored on your computer if you save the\n"
                                 + "analysis via the File->Save menu.\n"
                                 + "\n"
                                 + "To sign back in, click the " + getCloudName() + " box in the lower right corner\n"

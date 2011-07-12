@@ -22,7 +22,7 @@ This plugin contains all of the standard FindBugs detectors.
   <!-- On changing this, please also update default cloud id in FindbugsPlugin -->
   <Cloud id="edu.umd.cs.findbugs.cloud.doNothingCloud">
     <Description>(cloud disabled)</Description>
-    <Details>Comments are disabled when using this plugin.</Details>
+    <Details>Bug reviews are disabled when using this plugin.</Details>
     </Cloud>
 
   <PluginComponent
