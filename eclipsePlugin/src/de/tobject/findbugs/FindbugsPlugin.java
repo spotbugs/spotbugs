@@ -25,7 +25,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
@@ -272,15 +272,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
                 System.out.println("\t" + url);
             }
         }
-        Set<URL> pluginsUrls = Plugin.getAllPluginsUrls();
+        Set<URI> pluginsUrls = Plugin.getAllPluginsURIs();
         for (String path : detectorPaths) {
-            URL url;
-            try {
-                url = new File(path).toURI().toURL();
-            } catch (MalformedURLException e) {
-                getDefault().logException(e, "Failed to create URL for custom detector: " + path);
-                continue;
-            }
+            URI url;
+                url = new File(path).toURI();
             if(pluginsUrls.contains(url)) {
                 continue;
             }
