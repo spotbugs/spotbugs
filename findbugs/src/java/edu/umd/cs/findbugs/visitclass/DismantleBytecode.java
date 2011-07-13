@@ -883,7 +883,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     public void sawLong(long seen) {
     }
 
-    public void sawBranchTo(int seen) {
+    public void sawBranchTo(int targetPC) {
     }
 
     /** return false if we should skip calling sawOpcode */
