@@ -74,11 +74,9 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
 
     private BugReporter bugReporter;
 
-    private Method method;
-
-    private List<ExceptionCaught> catchList;
-
-    private List<ExceptionThrown> throwList;
+    private List<ExceptionCaught> catchList = new ArrayList<ExceptionCaught>();
+   
+    private List<ExceptionThrown> throwList = new ArrayList<ExceptionThrown>();
 
     private BugAccumulator accumulator;
 
@@ -122,22 +120,8 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
         accumulator.reportAccumulatedBugs();
     }
 
-    @Override
-    public void visitMethod(Method method) {
-        this.method = method;
-        if (DEBUG) {
-            System.out.println("RuntimeExceptionCapture visiting " + method);
-        }
-        super.visitMethod(method);
-    }
-
-    @Override
-    public void visitCode(Code obj) {
-        catchList = new ArrayList<ExceptionCaught>();
-        throwList = new ArrayList<ExceptionThrown>();
-
-        super.visitCode(obj);
-
+   @Override
+   public void visitAfter(Code obj) {
         for (ExceptionCaught caughtException : catchList) {
             Set<String> thrownSet = new HashSet<String>();
             for (ExceptionThrown thrownException : throwList) {
@@ -177,6 +161,8 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
                 }
             }
         }
+        catchList.clear();
+        throwList.clear();
     }
 
     @Override
@@ -195,8 +181,8 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
             // is alive or dead. We rely on the fact that javac
             // always (?) emits an ASTORE instruction to save
             // the caught exception.
-            LiveLocalStoreDataflow dataflow = getClassContext().getLiveLocalStoreDataflow(this.method);
-            CFG cfg = getClassContext().getCFG(method);
+            LiveLocalStoreDataflow dataflow = getClassContext().getLiveLocalStoreDataflow(getMethod());
+            CFG cfg = getClassContext().getCFG(getMethod());
             Collection<BasicBlock> blockList = cfg.getBlocksContainingInstructionWithOffset(obj.getHandlerPC());
             for (BasicBlock block : blockList) {
                 InstructionHandle first = block.getFirstInstruction();
