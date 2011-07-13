@@ -129,11 +129,6 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
     }
 
     @Override
-    public void visitCode(Code code) {
-        super.visitCode(code);
-    }
-
-    @Override
     public void sawOpcode(int seen) {
         switch (seen) {
         case INVOKEVIRTUAL:

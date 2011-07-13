@@ -97,13 +97,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
     }
 
     @Override
-    public void visitCode(Code code) {
-        // Prescreen to find methods with POP or POP2 instructions,
-        // and at least one method invocation
-
-        if (DEBUG)
-            System.out.println("Visiting " + method);
-        super.visitCode(code);
+    public void visitAfter(Code code) {
         bugAccumulator.reportAccumulatedBugs();
     }
 

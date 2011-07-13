@@ -38,8 +38,9 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
-public class MultithreadedInstanceAccess extends BytecodeScanningDetector {
+public class MultithreadedInstanceAccess extends OpcodeStackDetector {
     private static final String STRUTS_ACTION_NAME = "org.apache.struts.action.Action";
 
     private static final String SERVLET_NAME = "javax.servlet.Servlet";
@@ -124,10 +125,11 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector {
         writingField = false;
     }
 
+    
     @Override
-    public void visitCode(Code obj) {
-        if (!getMethodName().equals("<init>") && !getMethodName().equals("init"))
-            super.visitCode(obj);
+    public boolean shouldVisitCode(Code code) {
+        return !getMethodName().equals("<init>") && !getMethodName().equals("init");
+            
     }
 
     @Override
