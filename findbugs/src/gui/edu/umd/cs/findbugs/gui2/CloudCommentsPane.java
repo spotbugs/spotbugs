@@ -279,6 +279,7 @@ public abstract class CloudCommentsPane extends JPanel {
     }
 
     private void updateSaveButton() {
+        //TODO: make it say "saved" and add "auto-save enabled" label
         boolean changed = commentWasChanged();
         submitCommentButton.setEnabled(changed);
         cancelLink.setEnabled(false/*changed*/);
@@ -394,7 +395,7 @@ public abstract class CloudCommentsPane extends JPanel {
 
     public void setDesignation(final String designationKey) {
 
-        List<BugInstance> selectedBugs = getSelectedBugs();
+//        List<BugInstance> selectedBugs = getSelectedBugs();
 //        if (selectedBugs.size() > 1)
 //            if (!confirmAnnotation(selectedBugs))
 //                return;
@@ -431,6 +432,7 @@ public abstract class CloudCommentsPane extends JPanel {
         });
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     private void submitComment(List<BugInstance> selectedBugs) {
         String comment = commentBox.getText();
         if (isDefaultComment(comment))
@@ -698,10 +700,10 @@ public abstract class CloudCommentsPane extends JPanel {
             if (bug.hasSomeUserAnnotation()) {
                 lastSaved = bug.getUserTimestamp();
             }
-            report = cloud.getCloudReport(bug);
+            report = cloud.getCloudReport(bug); //TODO: ignore my own report
         }
         setLastSaved(lastSaved);
-        setCloudReportText(report);
+        cloudReportPane.setText(report);
         CommentInfo commentInfo = new CommentInfo().invoke();
         boolean sameText = commentInfo.isSameText();
         String txt = commentInfo.getTxt();
@@ -787,10 +789,6 @@ public abstract class CloudCommentsPane extends JPanel {
         submitCommentButton.setEnabled(canClick || canEnter);
         designationCombo.setEnabled(canClick || canEnter);
         commentBox.setEnabled(canClick || canEnter);
-    }
-
-    private void setCloudReportText(final String report) {
-        cloudReportPane.setText(report);
     }
 
     protected abstract void setSignInOutText(String buttonText);
@@ -928,8 +926,10 @@ public abstract class CloudCommentsPane extends JPanel {
         panel4.add(scrollPane1, gbc);
         scrollPane1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), null));
         commentBox = new JTextArea();
+        commentBox.setLineWrap(true);
         commentBox.setRows(5);
         commentBox.setText(" ");
+        commentBox.setWrapStyleWord(true);
         scrollPane1.setViewportView(commentBox);
         submitCommentButton = new JButton();
         submitCommentButton.setText("Save");

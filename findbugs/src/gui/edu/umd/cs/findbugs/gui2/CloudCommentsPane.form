@@ -21,7 +21,9 @@
             <constraints/>
             <properties>
               <editable value="false"/>
+              <lineWrap value="true"/>
               <text value="&lt;html&gt;&#13;&#10;  &lt;head&gt;&#13;&#10;    &#13;&#10;  &lt;/head&gt;&#13;&#10;  &lt;body&gt;&#13;&#10;  &lt;/body&gt;&#13;&#10;&lt;/html&gt;&#13;&#10;"/>
+              <wrapStyleWord value="true"/>
             </properties>
           </component>
         </children>
@@ -144,8 +146,10 @@
                   <component id="a0fd8" class="javax.swing.JTextArea" binding="commentBox">
                     <constraints/>
                     <properties>
+                      <lineWrap value="true"/>
                       <rows value="5"/>
                       <text value=" "/>
+                      <wrapStyleWord value="true"/>
                     </properties>
                   </component>
                 </children>
