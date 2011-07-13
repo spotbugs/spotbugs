@@ -488,7 +488,8 @@ public abstract class CloudCommentsPane extends JPanel {
         if (_bugAspects != null) {
             List<BugInstance> set = new ArrayList<BugInstance>();
             for (BugLeafNode node : _bugAspects.getMatchingBugs(BugSet.getMainBugSet())) {
-                set.add(node.getBug());
+                if (!BugSet.suppress(node))
+                    set.add(node.getBug());
             }
             return set;
         }
