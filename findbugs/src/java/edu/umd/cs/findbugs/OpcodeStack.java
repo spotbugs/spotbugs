@@ -980,7 +980,7 @@ public class OpcodeStack implements Constants2 {
         if (jumpEntry != null) {
             setReachOnlyByBranch(false);
             List<Item> jumpStackEntry = jumpStackEntries.get(Integer.valueOf(dbc.getPC()));
-
+            
             if (DEBUG2) {
                 System.out.println("XXXXXXX " + isReachOnlyByBranch());
                 System.out.println("merging lvValues at jump target " + dbc.getPC() + " -> " + jumpEntry);
@@ -1323,6 +1323,52 @@ public class OpcodeStack implements Constants2 {
                 seenTransferOfControl = true;
                 Item right = pop();
                 Item left = pop();
+                
+                Object lConstant = left.getConstant();
+                Object rConstant = right.getConstant();
+                if (lConstant instanceof Integer && rConstant instanceof Integer) {
+                    boolean takeJump = false;
+                    boolean handled = false;
+                    int lC = ((Integer)lConstant).intValue();
+                    int rC = ((Integer)rConstant).intValue();
+                    switch(seen) {
+                    case IF_ICMPEQ:
+                        takeJump = lC == rC;
+                        handled = true;
+                        break;
+                    case IF_ICMPNE:
+                        takeJump = lC != rC;
+                        handled = true;
+                        break;
+                    case IF_ICMPGE:
+                    	 takeJump = lC >= rC;
+                         handled = true;
+                         break;
+                    case IF_ICMPGT:
+                        takeJump = lC > rC;
+                        handled = true;
+                        break;
+                    case IF_ICMPLE:
+                        takeJump = lC <= rC;
+                        handled = true;
+                        break;
+                   case IF_ICMPLT:
+                       takeJump = lC < rC;
+                       handled = true;
+                       break;
+                    }
+                    if (handled) {
+                        if (takeJump) {
+                            int branchTarget = dbc.getBranchTarget();
+                            addJumpValue(dbc.getPC(), branchTarget);
+                            setTop(true);
+                            break;
+                        } else {
+                            break;
+                        }
+                    }
+                    
+                }
                 if (right.hasConstantValue(Integer.MIN_VALUE) && left.mightRarelyBeNegative()
                         || left.hasConstantValue(Integer.MIN_VALUE) && right.mightRarelyBeNegative()) {
                     for (Item i : stack)
