@@ -202,6 +202,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
                         boolean sawSystemExit = false;
 
                         boolean sawBranch = false;
+                        
+                        boolean sawBackBranch = false;
 
                         int methodCallCount = 0;
 
@@ -222,6 +224,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
                         String accessOwner, accessName, accessDesc;
 
                         boolean accessIsStatic;
+                        
+                        HashSet<Label> labelsSeen = new HashSet<Label>();
 
                         @Override
                         public void visitLdcInsn(Object cst) {
@@ -341,14 +345,25 @@ public class ClassParserUsingASM implements ClassParserInterface {
                         @Override
                         public void visitJumpInsn(int opcode, Label label) {
                             sawBranch = true;
+                            if (labelsSeen.contains(label))
+                                sawBackBranch = true;
                             super.visitJumpInsn(opcode, label);
+
+                        }
+                        @Override
+                        public void visitLabel(Label label) {
+                            labelsSeen.add(label);
+                            super.visitLabel(label);
 
                         }
 
                         public void visitEnd() {
+                            labelsSeen.clear();
                             if (isAccessMethod && methodCallCount == 1) {
                                 mBuilder.setAccessMethodFor(accessOwner, accessName, accessDesc, accessIsStatic);
                             }
+                            if (sawBackBranch)
+                                mBuilder.setHasBackBranch();
                             boolean sawThrow = sawNormalThrow | sawUnsupportedThrow | sawStubThrow;
                             if (sawThrow && !sawReturn || sawSystemExit && !sawBranch) {
 

@@ -77,6 +77,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
         boolean usesConcurrency;
 
         boolean isStub;
+        
+        boolean hasBackBranch;
 
         int methodCallCount;
 
@@ -109,6 +111,10 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
         public void setIsStub() {
             this.isStub = true;
         }
+        
+        public void setHasBackBranch() {
+            this.hasBackBranch = true;
+        }
 
         public void setThrownExceptions(String[] exceptions) {
             this.exceptions = exceptions;
@@ -139,7 +145,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
         public MethodInfo build() {
             return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags,
-                    isUnconditionalThrower, isUnsupported, usesConcurrency, isStub, methodCallCount, exceptions, accessMethodFor,
+                    isUnconditionalThrower, isUnsupported, usesConcurrency, hasBackBranch, isStub, methodCallCount, exceptions, accessMethodFor,
                     methodAnnotations, methodParameterAnnotations);
         }
 
@@ -167,6 +173,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
     final int methodCallCount;
 
     final boolean usesConcurrency;
+    
+    final boolean hasBackBranch;
 
     final boolean isStub;
 
@@ -208,7 +216,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
      * @param isStatic
      */
     MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature,
-            int accessFlags, boolean isUnconditionalThrower, boolean isUnsupported, boolean usesConcurrency, boolean isStub,
+            int accessFlags, boolean isUnconditionalThrower, boolean isUnsupported, boolean usesConcurrency, 
+            boolean hasBackBranch, boolean isStub,
             int methodCallCount, @CheckForNull String[] exceptions, @CheckForNull MethodDescriptor accessMethodFor,
             Map<ClassDescriptor, AnnotationValue> methodAnnotations,
             Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
@@ -226,6 +235,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
         if (isUnsupported)
             unsupportedMethods.put(this, null);
         this.usesConcurrency = usesConcurrency;
+        this.hasBackBranch = hasBackBranch;
         this.isStub = isStub;
         this.methodCallCount = methodCallCount;
     }
@@ -485,6 +495,10 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
         return usesConcurrency;
     }
 
+    
+    public boolean hasBackBranch() {
+        return hasBackBranch;
+    }
     public boolean isStub() {
         return isStub;
     }

@@ -64,6 +64,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 import edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -2485,11 +2486,17 @@ public class OpcodeStack implements Constants2 {
         public static JumpInfo computeJumpInfo(JavaClass jclass, Method method, final OpcodeStack stack,
                 DismantleBytecode branchAnalysis) {
             branchAnalysis.setupVisitorForClass(jclass);
+            MethodInfo xMethod = (MethodInfo) XFactory.createXMethod(jclass, method);
             int oldCount = 0;
             while (true) {
                 stack.resetForMethodEntry0(ClassName.toSlashedClassName(jclass.getClassName()), method);
                 branchAnalysis.doVisitMethod(method);
                 int newCount = stack.jumpEntries.size();
+                if (xMethod.hasBackBranch() != stack.backwardsBranch) {
+                    AnalysisContext.logError(
+                            String.format("For %s, mismatch on existing of backedge: %s for precomputation, %s for bytecode analysis",
+                                    xMethod, xMethod.hasBackBranch(), stack.backwardsBranch));
+                }
                 if (newCount == oldCount || !stack.encountedTop || !stack.backwardsBranch)
                     break;
                 oldCount = newCount;
@@ -2583,6 +2590,11 @@ public class OpcodeStack implements Constants2 {
     private JumpInfo getJumpInfo() {
         IAnalysisCache analysisCache = Global.getAnalysisCache();
         XMethod xMethod = XFactory.createXMethod(v.getThisClass(), v.getMethod());
+        if (xMethod instanceof MethodInfo) {
+            MethodInfo mi = (MethodInfo) xMethod;
+            if (!mi.hasBackBranch())
+                return null;
+        }
         try {
             return analysisCache.getMethodAnalysis(JumpInfo.class, xMethod.getMethodDescriptor());
         } catch (CheckedAnalysisException e) {
