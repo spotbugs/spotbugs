@@ -227,6 +227,10 @@ public class DoNothingCloud implements Cloud {
         return "";
     }
 
+    public String getCloudReportWithoutMe(BugInstance b) {
+        return getCloudReport(b);
+    }
+
     public String claimedBy(BugInstance b) {
         return null;
     }

@@ -233,6 +233,8 @@ public interface Cloud {
 
     String getCloudReport(BugInstance b);
 
+    String getCloudReportWithoutMe(BugInstance b);
+
     /** Get the user who has claimed a bug; null if no one has */
     @CheckForNull
     String claimedBy(BugInstance b);

@@ -26,6 +26,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
@@ -236,6 +237,16 @@ public abstract class AbstractCloud implements Cloud {
     }
 
     public String getCloudReport(BugInstance b) {
+        return getSelectiveCloudReport(b, Collections.<String>emptySet());
+    }
+
+    public String getCloudReportWithoutMe(BugInstance b) {
+        String user = getUser();
+        Set<String> usersToExclude = user == null ? Collections.<String>emptySet() :  Collections.singleton(user);
+        return getSelectiveCloudReport(b, usersToExclude);
+    }
+
+    private String getSelectiveCloudReport(BugInstance b, Set<String> usersToExclude) {
         SimpleDateFormat format = new SimpleDateFormat("MM/dd, yyyy");
         StringBuilder builder = new StringBuilder();
         long firstSeen = getFirstSeen(b);
@@ -257,7 +268,8 @@ public abstract class AbstractCloud implements Cloud {
         }
         String me = getUser();
         for (BugDesignation d : getLatestDesignationFromEachUser(b)) {
-            if ((me != null && me.equals(d.getUser())) || canSeeCommentsByOthers) {
+            if (!usersToExclude.contains(d.getUser())
+                    && (me != null && me.equals(d.getUser()) || canSeeCommentsByOthers)) {
                 builder.append(String.format("%s@ %s: %s%n", d.getUser() == null ? "" : d.getUser() + " ",
                         format.format(new Date(d.getTimestamp())),
                         i18n.getUserDesignation(d.getDesignationKey())));

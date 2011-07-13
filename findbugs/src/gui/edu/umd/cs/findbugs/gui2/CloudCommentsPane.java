@@ -279,9 +279,11 @@ public abstract class CloudCommentsPane extends JPanel {
     }
 
     private void updateSaveButton() {
-        //TODO: make it say "saved" and add "auto-save enabled" label
         boolean changed = commentWasChanged();
         submitCommentButton.setEnabled(changed);
+        submitCommentButton.setText(changed
+                ? L10N.getLocalString("dlg.save_btn", "Save")
+                : L10N.getLocalString("dlg.saved_btn", "Saved"));
         cancelLink.setEnabled(false/*changed*/);
     }
 
@@ -480,6 +482,7 @@ public abstract class CloudCommentsPane extends JPanel {
     }
 
     private List<BugInstance> getSelectedBugs() {
+        //TODO: why is it including filtered bugs?
         if (_bugInstance != null)
             return Collections.singletonList(_bugInstance);
         if (_bugAspects != null) {
@@ -566,59 +569,11 @@ public abstract class CloudCommentsPane extends JPanel {
 
     public boolean canNavigateAway() {
         if (commentWasChanged()) {
-//            if (getSelectedBugs().size() > 1) {
-//                int result = JOptionPane.showOptionDialog(this, "You have unsaved comments.", "Unsaved Comments",
-//                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null,
-//                        new String[]{"Continue Editing", "Discard"},
-//                        "Continue Editing");
-//                boolean discard = result == 1;
-//                if (discard)
-//                    cancelClicked();
-//                else
-//                    commentBox.requestFocus();
-//                return discard; // return true if user clicked "Discard"
-//            } else {
             submitComment(getSelectedBugs());
-//            }
             return true;
         } else {
             return true;
         }
-    }
-
-    private boolean confirmAnnotation(List<BugInstance> selectedBugs) {
-
-        String[] options = {L10N.getLocalString("dlg.save_btn", "Save"),
-                L10N.getLocalString("dlg.dontsave_btn", "Don't Save"),
-                L10N.getLocalString("dlg.save_dont_ask_btn", "Save, Always")};
-        if (dontShowAnnotationConfirmation)
-            return true;
-        if (lastBugsEdited.equals(new HashSet<BugInstance>(selectedBugs)))
-            return true;
-        int choice = JOptionPane
-                .showOptionDialog(
-                        this,
-                        MessageFormat.format(L10N.getLocalString("dlg.changing_text_lbl",
-                                "This will overwrite any existing reviews of\n" +
-                                        "the {0} bugs in this folder and subfolders.\n" +
-                                        "Are you sure?"),
-                                selectedBugs.size()),
-                        L10N.getLocalString("dlg.annotation_change_ttl", "Save Reviews?"),
-                        JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-        switch (choice) {
-            case 0:
-                // don't ask for this set of bugs again
-                lastBugsEdited = new HashSet<BugInstance>(selectedBugs);
-                return true;
-            case 1:
-                return false;
-            case 2:
-                dontShowAnnotationConfirmation = true;
-                return true;
-            default:
-                return true;
-        }
-
     }
 
     protected void changeDesignationOfBugRightNow(final BugInstance bug, final String designationKey) {
@@ -694,7 +649,7 @@ public abstract class CloudCommentsPane extends JPanel {
             if (bug.hasSomeUserAnnotation()) {
                 lastSaved = bug.getUserTimestamp();
             }
-            report = cloud.getCloudReport(bug); //TODO: ignore my own report
+            report = cloud.getCloudReportWithoutMe(bug);
         }
         setLastSaved(lastSaved);
         cloudReportPane.setText(report);
@@ -812,7 +767,9 @@ public abstract class CloudCommentsPane extends JPanel {
         mainPanel.add(_cloudReportScrollPane, gbc);
         cloudReportPane = new JTextArea();
         cloudReportPane.setEditable(false);
+        cloudReportPane.setLineWrap(true);
         cloudReportPane.setText("<html>\r\n  <head>\r\n    \r\n  </head>\r\n  <body>\r\n  </body>\r\n</html>\r\n");
+        cloudReportPane.setWrapStyleWord(true);
         _cloudReportScrollPane.setViewportView(cloudReportPane);
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridBagLayout());
