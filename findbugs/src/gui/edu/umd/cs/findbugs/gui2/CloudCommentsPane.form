@@ -9,12 +9,6 @@
       <size top="3" left="3" bottom="3" right="3"/>
     </border>
     <children>
-      <vspacer id="4cae6">
-        <constraints>
-          <grid row="4" column="0" row-span="1" col-span="6" vsize-policy="6" hsize-policy="1" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-          <gridbag weightx="0.0" weighty="0.0"/>
-        </constraints>
-      </vspacer>
       <scrollpane id="f96d4" binding="_cloudReportScrollPane">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="6" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -106,65 +100,112 @@
           </component>
         </children>
       </grid>
-      <grid id="b05f2" layout-manager="GridBagLayout">
+      <grid id="2f456" layout-manager="GridBagLayout">
         <constraints>
           <grid row="3" column="1" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-          <gridbag weightx="0.0" weighty="0.0"/>
+          <gridbag weightx="1.0" weighty="1.0"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children/>
+      </grid>
+      <grid id="ab9f5" binding="cards" layout-manager="CardLayout" hgap="0" vgap="0">
+        <constraints>
+          <grid row="4" column="5" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="1.0" weighty="1.0"/>
         </constraints>
         <properties/>
         <border type="none"/>
         <children>
-          <component id="f7bc0" class="edu.umd.cs.findbugs.gui2.WideComboBox" binding="designationCombo">
+          <grid id="b05f2" layout-manager="GridBagLayout">
             <constraints>
-              <grid row="0" column="4" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
-              <gridbag top="5" left="0" bottom="0" right="0" weightx="0.0" weighty="0.0"/>
+              <card name="COMMENTS"/>
             </constraints>
             <properties/>
-          </component>
-          <scrollpane id="c66c7">
-            <constraints>
-              <grid row="0" column="0" row-span="4" col-span="4" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-              <gridbag weightx="1.0" weighty="0.0"/>
-            </constraints>
-            <properties/>
-            <border type="empty">
-              <color color="-16777216"/>
-            </border>
+            <border type="none"/>
             <children>
-              <component id="a0fd8" class="javax.swing.JTextArea" binding="commentBox">
-                <constraints/>
+              <component id="f7bc0" class="edu.umd.cs.findbugs.gui2.WideComboBox" binding="designationCombo">
+                <constraints>
+                  <grid row="0" column="4" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag top="5" left="0" bottom="0" right="0" weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties/>
+              </component>
+              <scrollpane id="c66c7">
+                <constraints>
+                  <grid row="0" column="0" row-span="4" col-span="4" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="1.0" weighty="0.0"/>
+                </constraints>
+                <properties/>
+                <border type="empty">
+                  <color color="-16777216"/>
+                </border>
+                <children>
+                  <component id="a0fd8" class="javax.swing.JTextArea" binding="commentBox">
+                    <constraints/>
+                    <properties>
+                      <rows value="5"/>
+                      <text value=" "/>
+                    </properties>
+                  </component>
+                </children>
+              </scrollpane>
+              <component id="96159" class="javax.swing.JButton" binding="submitCommentButton">
+                <constraints>
+                  <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag top="5" left="5" bottom="5" right="5" weightx="0.0" weighty="0.0"/>
+                </constraints>
                 <properties>
-                  <rows value="5"/>
-                  <text value=" "/>
+                  <text value="Save"/>
+                </properties>
+              </component>
+              <component id="53d63" class="javax.swing.JLabel" binding="lastSavedLabel">
+                <constraints>
+                  <grid row="3" column="4" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <font size="9" style="2"/>
+                  <text value="saved at"/>
+                </properties>
+              </component>
+              <component id="5d0d1" class="javax.swing.JComponent" binding="cancelLink" custom-create="true">
+                <constraints>
+                  <grid row="1" column="5" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+              </component>
+            </children>
+          </grid>
+          <grid id="a5703" layout-manager="GridBagLayout">
+            <constraints>
+              <card name="WARNING"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="99e5b" class="javax.swing.JLabel" binding="warningLabel">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag top="10" left="10" bottom="10" right="10" weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <horizontalAlignment value="0"/>
+                  <horizontalTextPosition value="0"/>
+                  <text value="&lt;HTML&gt;Multiple bugs are selected.&lt;BR&gt;Click to review them all at once."/>
+                </properties>
+              </component>
+              <component id="5b3e4" class="javax.swing.JButton" binding="bulkReviewButton" default-binding="true">
+                <constraints>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag top="10" left="10" bottom="10" right="10" weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <text value="Bulk Review"/>
                 </properties>
               </component>
             </children>
-          </scrollpane>
-          <component id="96159" class="javax.swing.JButton" binding="submitCommentButton">
-            <constraints>
-              <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-              <gridbag top="5" left="5" bottom="5" right="5" weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <text value="Save"/>
-            </properties>
-          </component>
-          <component id="53d63" class="javax.swing.JLabel" binding="lastSavedLabel">
-            <constraints>
-              <grid row="3" column="4" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-              <gridbag weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <font size="9" style="2"/>
-              <text value="saved at"/>
-            </properties>
-          </component>
-          <component id="5d0d1" class="javax.swing.JComponent" binding="cancelLink" custom-create="true">
-            <constraints>
-              <grid row="1" column="5" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-              <gridbag weightx="0.0" weighty="0.0"/>
-            </constraints>
-          </component>
+          </grid>
         </children>
       </grid>
     </children>

@@ -145,7 +145,7 @@ public class AbstractCloudTest extends TestCase {
         bug1.addClass("edu.umd.Test");
         assertEqualText(new String[] { "Code analyzed", "      1 packages", "      1 classes",
                 "      1 thousands of lines of non-commenting source statements", "", "Summary for 1 issues", "",
-                "No evaluations found", "",
+                "No reviews found", "",
                 // "No bugs filed",
                 // "",
                 "Distribution of number of reviews", "   1  with   0 reviews" }, printSummary(bug1));
@@ -159,7 +159,7 @@ public class AbstractCloudTest extends TestCase {
         assertEqualText(new String[] { "Code analyzed", "      1 packages", "      3 classes",
                 "      1 thousands of lines of non-commenting source statements", "", "Summary for 3 issues", "",
                 "People who have performed the most reviews", "rnk  num reviewer", "  1    2 user", "  2    1 user1", "",
-                "Distribution of evaluations", " num designation", "   2 I will fix", "   1 not a bug", "",
+                "Distribution of reviews", " num designation", "   2 I will fix", "   1 not a bug", "",
                 "Distribution of number of reviews", "   3  with   1 review" },
 
         printSummary(bug1, bug2, bug3));
@@ -179,7 +179,7 @@ public class AbstractCloudTest extends TestCase {
                 "      7 thousands of lines of non-commenting source statements", "", "Summary for 67 issues", "",
                 "People who have performed the most reviews", "rnk  num reviewer", "  1   11 user11", "  2   10 user10",
                 "  3    9 user9", "  4    8 user8", "  5    7 user7", "  6    6 user6", "  7    5 user5", "  8    4 user4",
-                "  9    3 user3", " 11    1 user", "Total of 12 reviewers", "", "Distribution of evaluations",
+                "  9    3 user3", " 11    1 user", "Total of 12 reviewers", "", "Distribution of reviews",
                 " num designation", "  66 I will fix", "   1 not a bug", "", "Distribution of number of reviews",
                 "  67  with   1 review" },
 
@@ -195,7 +195,7 @@ public class AbstractCloudTest extends TestCase {
         assertEqualText(new String[] { "Code analyzed", "      1 packages", "      3 classes",
                 "      1 thousands of lines of non-commenting source statements", "", "Summary for 3 issues", "",
                 "People who have performed the most reviews", "rnk  num reviewer", "  1    3 user3", "  2    2 user2",
-                "  3    1 user1", "", "Distribution of evaluations", " num designation", "   3 not a bug", "   2 I will fix",
+                "  3    1 user1", "", "Distribution of reviews", " num designation", "   3 not a bug", "   2 I will fix",
                 "   1 mostly harmless", "", "Distribution of number of reviews", "   1  with   1 review",
                 "   1  with   2 reviews", "   1  with   3 reviews" },
 

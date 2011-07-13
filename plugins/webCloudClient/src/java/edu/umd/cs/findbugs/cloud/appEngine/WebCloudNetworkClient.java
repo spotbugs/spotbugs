@@ -418,7 +418,7 @@ public class WebCloudNetworkClient {
         String designationKey = designation.getDesignationKey();
         String comment = designation.getAnnotationText();
 
-        cloudClient.signInIfNecessary("To store your evaluation on the " + cloudClient.getCloudName() + ", you must sign in first.");
+        cloudClient.signInIfNecessary("To store your reviews on the " + cloudClient.getCloudName() + ", you must sign in first.");
 
         Evaluation.Builder evalBuilder = Evaluation.newBuilder().setWhen(timestamp).setDesignation(designationKey);
         if (comment != null) {

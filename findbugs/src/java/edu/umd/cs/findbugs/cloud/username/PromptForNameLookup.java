@@ -45,9 +45,9 @@ public class PromptForNameLookup implements NameLookup {
                 .getProject()
                 .getGuiCallback()
                 .showQuestionDialog(
-                        "Name/handle/email for recording your evaluations?\n"
+                        "Name/handle/email for recording your reviews?\n"
                                 + "(sorry, no authentication or confidentiality currently provided)",
-                        "Name for recording your evaluations", findbugsUser == null ? "" : findbugsUser);
+                        "Name for recording your reviews", findbugsUser == null ? "" : findbugsUser);
         if (findbugsUser != null) {
             prefs.put(USER_NAME, findbugsUser);
             username = findbugsUser;

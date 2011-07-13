@@ -136,7 +136,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
             resp.getOutputStream().println("Error - " + msg);
             throw new IllegalStateException(e);
         }
-        String msg = "Updated " + count + " evaluations " + " (" + skipped + " skipped)";
+        String msg = "Updated " + count + " reviews " + " (" + skipped + " skipped)";
         LOGGER.info(msg);
 
         resp.setStatus(200);
@@ -321,7 +321,7 @@ public class UpdateServlet extends AbstractFlybushServlet {
             return;
         }
 
-        LOGGER.info("Evaluation from " + session.getEmail() + ": " + uploadEvalMsg.getEvaluation().getDesignation() + " - "
+        LOGGER.info("Review from " + session.getEmail() + ": " + uploadEvalMsg.getEvaluation().getDesignation() + " - "
                 + uploadEvalMsg.getEvaluation().getComment());
 
         DbEvaluation dbEvaluation = createDbEvaluation(uploadEvalMsg.getEvaluation());

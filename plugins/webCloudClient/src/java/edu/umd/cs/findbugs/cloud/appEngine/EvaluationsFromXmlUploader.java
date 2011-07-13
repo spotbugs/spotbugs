@@ -77,24 +77,24 @@ public class EvaluationsFromXmlUploader {
         String message;
         if (users.numKeys() == 1 && users.uniqueKeys().iterator().next().equals(cloud.getUser()))
             message = "The loaded XML file contains " + localAnnotations.size()
-                    + " of your evaluations that are more recent than ones stored in the cloud"
-                    + "Do you wish to upload these evaluations?";
+                    + " of your reviews that are more recent than ones stored in the cloud"
+                    + "Do you wish to upload these reviews?";
         else
             message = "The loaded XML file contains " + authorsToString(users) + "\n"
-                    + "Do you wish to upload these evaluations as your evaluations?";
+                    + "Do you wish to upload these reviews as your reviews?";
 
-        int result = cloud.getGuiCallback().showConfirmDialog(message, "Upload evaluations", "Upload", "Skip");
+        int result = cloud.getGuiCallback().showConfirmDialog(message, "Upload reviews", "Upload", "Skip");
         if (result != IGuiCallback.YES_OPTION)
             return;
         System.out.println(result);
         try {
-            cloud.signInIfNecessary("To store your evaluations on the " + cloud.getCloudName()
+            cloud.signInIfNecessary("To store your reviews on the " + cloud.getCloudName()
                     + ", you must sign in first.");
         } catch (SignInCancelledException e) {
             return;
         }
         if (cloud.getSigninState() != Cloud.SigninState.SIGNED_IN) {
-            cloud.getGuiCallback().showMessageDialog("Can't upload evaluations unless you are signed in");
+            cloud.getGuiCallback().showMessageDialog("Can't upload reviews unless you are signed in");
             return;
         }
         cloud.getBackgroundExecutor().execute(new Runnable() {
@@ -144,7 +144,7 @@ public class EvaluationsFromXmlUploader {
                 out.print(" and ");
             else if (count > 0)
                 out.print(", ");
-            out.printf("%d evaluations by %s", e.getValue(), e.getKey());
+            out.printf("%d reviews by %s", e.getValue(), e.getKey());
             count++;
         }
         out.close();

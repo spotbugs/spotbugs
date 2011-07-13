@@ -92,7 +92,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
                 "Checking FindBugs Cloud for updates", 
                 "Checking FindBugs Cloud for updates... found 1 so far...",
                 "",
-                "FindBugs Cloud: found 1 updated bug evaluations");
+                "FindBugs Cloud: found 1 updated bug reviews");
     }
 
     @SuppressWarnings("deprecation")
@@ -130,7 +130,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
                 "Checking FindBugs Cloud for updates... found 1 so far...",
                 "Checking FindBugs Cloud for updates... found 2 so far...",
                 "",
-                "FindBugs Cloud: found 2 updated bug evaluations");
+                "FindBugs Cloud: found 2 updated bug reviews");
     }
 
     @SuppressWarnings("deprecation")
@@ -240,8 +240,8 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
         cloud.expectConnection("log-in");
         cloud.expectConnection("upload-evaluation");
 
-        cloud.clickYes(".*XML.*contains.*evaluations.*upload.*");
-        CountDownLatch latch = cloud.getDialogLatch("Uploaded 1 evaluations from XML \\(0 out of date, 0 already present\\)");
+        cloud.clickYes(".*XML.*contains.*reviews.*upload.*");
+        CountDownLatch latch = cloud.getDialogLatch("Uploaded 1 reviews from XML \\(0 out of date, 0 already present\\)");
 
         // execute
         cloud.initialize();
@@ -262,7 +262,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
         cloud.expectConnection("find-issues").withResponse(createFindIssuesResponseObj(responseIssue, false));
         cloud.expectConnection("log-in");
         cloud.expectConnection("upload-evaluation");
-        cloud.clickYes(".*XML.*contains.*evaluations.*upload.*");
+        cloud.clickYes(".*XML.*contains.*reviews.*upload.*");
 
         // execute
         cloud.initialize();
@@ -348,7 +348,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
         cloud.expectConnection("log-in");
         cloud.expectConnection("upload-issues");
         cloud.expectConnection("upload-evaluation");
-        cloud.clickYes(".*XML.*contains.*evaluations.*upload.*");
+        cloud.clickYes(".*XML.*contains.*reviews.*upload.*");
 
         // execute
         cloud.initialize();
@@ -371,7 +371,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
         cloud.expectConnection("find-issues").withResponse(createFindIssuesResponseObj(responseIssue, true));
         cloud.expectConnection("log-in").withErrorCode(403);
 
-        cloud.clickYes(".*XML.*contains.*evaluations.*upload.*");
+        cloud.clickYes(".*XML.*contains.*reviews.*upload.*");
         cloud.clickYes(".*store.*sign in.*");
         CountDownLatch latch = cloud.getDialogLatch("Could not sign into.*");
 
@@ -392,7 +392,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
         cloud.expectConnection("find-issues").withResponse(createFindIssuesResponseObj(responseIssue, false));
         cloud.expectConnection("log-in");
         cloud.expectConnection("upload-evaluation").withErrorCode(403);
-        cloud.clickYes(".*XML.*contains.*evaluations.*upload.*");
+        cloud.clickYes(".*XML.*contains.*reviews.*upload.*");
         cloud.clickYes(".*store.*sign in.*");
         CountDownLatch latch = cloud.getDialogLatch("Unable to upload.*XML.*cloud.*");
 

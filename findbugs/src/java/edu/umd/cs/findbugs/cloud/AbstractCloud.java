@@ -501,12 +501,12 @@ public abstract class AbstractCloud implements Cloud {
         else
             w.printf("Summary for %d issues that are in the current view%n%n", count);
         if (evaluations.numKeys() == 0) {
-            w.println("No evaluations found");
+            w.println("No reviews found");
         } else {
             w.println("People who have performed the most reviews");
             printLeaderBoard(w, evaluations, 9, getUser(), true, "reviewer");
             w.println();
-            w.println("Distribution of evaluations");
+            w.println("Distribution of reviews");
             printLeaderBoard(w, designations, 100, " --- ", false, "designation");
         }
 

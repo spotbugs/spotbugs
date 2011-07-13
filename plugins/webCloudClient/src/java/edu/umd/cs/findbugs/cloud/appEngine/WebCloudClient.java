@@ -554,7 +554,7 @@ public class WebCloudClient extends AbstractCloud {
     private void startEvaluationCheckThread() {
         if (timer != null)
             timer.cancel();
-        timer = new Timer("App Engine Cloud evaluation updater", true);
+        timer = new Timer("App Engine Cloud review update checker", true);
         int periodMillis = EVALUATION_CHECK_SECS * 1000;
         timer.schedule(new TimerTask() {
             @Override
@@ -563,11 +563,11 @@ public class WebCloudClient extends AbstractCloud {
                     updateEvaluationsFromServer();
                     
                 } catch (ServerReturnedErrorCodeException e) {
-                    LOGGER.log(Level.WARNING, "Error during periodic evaluation check");
+                    LOGGER.log(Level.WARNING, "Error during periodic review update check");
                     LOGGER.log(Level.FINEST, "", e);
 
                 } catch (IOException e) {
-                    LOGGER.log(Level.WARNING, "Error during periodic evaluation check", e);
+                    LOGGER.log(Level.WARNING, "Error during periodic review update check", e);
                     LOGGER.log(Level.FINEST, "", e);
                 }
             }
@@ -713,7 +713,7 @@ public class WebCloudClient extends AbstractCloud {
             task.finished();
         }
         if (count > 0)
-            setStatusMsg(getCloudName() + ": found " + count + " updated bug evaluations");
+            setStatusMsg(getCloudName() + ": found " + count + " updated bug reviews");
     }
 
     private int mergeUpdatedEvaluations(RecentEvaluations evals) {

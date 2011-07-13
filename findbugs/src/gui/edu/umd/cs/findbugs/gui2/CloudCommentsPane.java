@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -38,6 +39,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -79,10 +81,11 @@ import static edu.umd.cs.findbugs.util.Util.nullSafeEquals;
 @edu.umd.cs.findbugs.annotations.SuppressWarnings({"SE_TRANSIENT_FIELD_NOT_RESTORED", "SE_BAD_FIELD", "SE_BAD_FIELD_STORE"})
 public abstract class CloudCommentsPane extends JPanel {
 
-    private static final String DEFAULT_COMMENT = "Click to add review...";
-    private static final String DEFAULT_COMMENT_MULTI_PREFIX = "Click to add review to ";
-    private static final String DEFAULT_COMMENT_MULTI = DEFAULT_COMMENT_MULTI_PREFIX + "%d bugs...";
-    private static final String DEFAULT_VARIOUS_COMMENTS_COMMENT = "Click to overwrite multiple reviews...";
+    private static final String MSG_REVIEW = L10N.getLocalString("dlg.cloud.add_review", "Click to add review...");
+    private static final String MSG_REVIEW_MULTI = L10N.getLocalString("dlg.cloud.add_review_multi",
+            "Click to add review to {0} bugs...");
+    private static final String MSG_OVERWRITE_REVIEW = L10N.getLocalString("dlg.cloud.ovwrt_review_multi",
+            "Click to overwrite {0} reviews...");
 
     private JTextArea cloudReportPane;
     protected JComponent cancelLink;
@@ -96,6 +99,9 @@ public abstract class CloudCommentsPane extends JPanel {
     protected JTextArea cloudDetailsLabel;
     private JPanel dumbPanelSignInOutLink;
     private JLabel lastSavedLabel;
+    private JPanel cards;
+    private JButton bulkReviewButton;
+    private JLabel warningLabel;
 
     protected BugCollection _bugCollection;
     protected BugInstance _bugInstance;
@@ -109,7 +115,7 @@ public abstract class CloudCommentsPane extends JPanel {
     private Cloud lastCloud = null;
     private Font plainCommentFont;
     private String lastCommentText = null;
-    private Set<BugInstance> lastConfirmed = Collections.emptySet();
+    private Set<BugInstance> lastBugsEdited = Collections.emptySet();
 
     public CloudCommentsPane() {
         $$$setupUI$$$();
@@ -159,6 +165,8 @@ public abstract class CloudCommentsPane extends JPanel {
             @Override
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 Component real = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value == null)
+                    return real;
                 if (index == -1)
                     return real;
                 JPanel panel = new JPanel(new GridBagLayout());
@@ -205,23 +213,24 @@ public abstract class CloudCommentsPane extends JPanel {
 //        cloudReportPane.setEditorKit(new HTMLEditorKit());
 //        ((HTMLEditorKit) cloudReportPane.getDocument()).getStyleSheet().addRule("body { font-");
 
-        setDefaultComment(DEFAULT_COMMENT);
+        setDefaultComment(MSG_REVIEW);
         commentBox.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e) {
                 commentBox.setForeground(null);
                 commentBox.setFont(plainCommentFont);
-                if (isDefaultComment(CloudCommentsPane.this.commentBox.getText())) {
+                if (isDefaultComment(commentBox.getText())) {
                     resetCommentBoxFont();
                     setCommentText("");
                 }
             }
 
             public void focusLost(FocusEvent e) {
-                if (isDefaultComment(CloudCommentsPane.this.commentBox.getText())) {
+                String text = commentBox.getText();
+                if (isDefaultComment(text)) {
                     refresh();
-                } else if (commentBox.getText().equals(DEFAULT_VARIOUS_COMMENTS_COMMENT)) {
-                    refresh();
-                } else if (commentBox.getText().equals(lastCommentText)) {
+                } else if (text.equals(lastCommentText)) {
+                    if (text.trim().length() == 0)
+                        refresh();
                 } else {
                     submitComment(CloudCommentsPane.this.getSelectedBugs());
                     resetCommentBoxFont();
@@ -240,6 +249,14 @@ public abstract class CloudCommentsPane extends JPanel {
         });
         submitCommentButton.setToolTipText("Submit review [Enter]");
         cancelLink.setToolTipText("Cancel [Esc]");
+
+        bulkReviewButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                CardLayout cl = (CardLayout) cards.getLayout();
+                cl.show(cards, "COMMENTS");
+            }
+        });
+
         setCanAddComments(false, false);
         setLastSaved(0);
 
@@ -247,7 +264,18 @@ public abstract class CloudCommentsPane extends JPanel {
     }
 
     private boolean isDefaultComment(String text) {
-        return text.equals(DEFAULT_COMMENT) || text.startsWith(DEFAULT_COMMENT_MULTI_PREFIX);
+        if (text.equals(MSG_REVIEW)) return true;
+        try {
+            new MessageFormat(MSG_REVIEW_MULTI).parse(text);
+            return true; // didn't throw an exception
+        } catch (ParseException e) {
+        }
+        try {
+            new MessageFormat(MSG_OVERWRITE_REVIEW).parse(text);
+            return true; // didn't throw an exception
+        } catch (ParseException e) {
+        }
+        return false;
     }
 
     private void updateSaveButton() {
@@ -334,7 +362,6 @@ public abstract class CloudCommentsPane extends JPanel {
     }
 
     protected void commentBoxClicked() {
-        //TODO: use glass pane
         if (commentWasChanged())
             return;
         setCanAddComments(false, true);
@@ -361,17 +388,16 @@ public abstract class CloudCommentsPane extends JPanel {
         String text = commentBox.getText();
         boolean b = !isDefaultComment(text);
 //        boolean b1 = text.trim().equals("");
-        boolean b2 = text.equals(DEFAULT_VARIOUS_COMMENTS_COMMENT);
         boolean b3 = text.equals(lastCommentText);
-        return b && !b2 && !b3;
+        return b && !b3;
     }
 
     public void setDesignation(final String designationKey) {
 
         List<BugInstance> selectedBugs = getSelectedBugs();
-        if (selectedBugs.size() > 1)
-            if (!confirmAnnotation(selectedBugs))
-                return;
+//        if (selectedBugs.size() > 1)
+//            if (!confirmAnnotation(selectedBugs))
+//                return;
         final AtomicBoolean stop = new AtomicBoolean(false);
         applyToBugs(false, new BugAction() {
             public void execute(BugInstance bug) {
@@ -407,19 +433,21 @@ public abstract class CloudCommentsPane extends JPanel {
 
     private void submitComment(List<BugInstance> selectedBugs) {
         String comment = commentBox.getText();
-        if (isDefaultComment(comment) || comment.equals(DEFAULT_VARIOUS_COMMENTS_COMMENT))
+        if (isDefaultComment(comment))
             comment = "";
-        final int index = designationCombo.getSelectedIndex();
-        final String choice;
-        if (index == -1) {
-            choice = UserDesignation.UNCLASSIFIED.name();
-        } else {
-            choice = I18N.instance().getUserDesignationKeys(true).get(index);
+        //        if (selectedBugs.size() > 1)
+        //            if (!confirmAnnotation(selectedBugs))
+        //                return;
+        if (designationCombo.getSelectedItem() != null) {
+            final int index = designationCombo.getSelectedIndex();
+            final String choice;
+            if (index == -1) {
+                choice = UserDesignation.UNCLASSIFIED.name();
+            } else {
+                choice = I18N.instance().getUserDesignationKeys(true).get(index);
+            }
+            setDesignation(choice);
         }
-        if (selectedBugs.size() > 1)
-            if (!confirmAnnotation(selectedBugs))
-                return;
-        setDesignation(choice);
         final String finalComment = comment;
         applyToBugs(true, new BugAction() {
             public void execute(BugInstance bug) {
@@ -563,7 +591,7 @@ public abstract class CloudCommentsPane extends JPanel {
                 L10N.getLocalString("dlg.save_dont_ask_btn", "Save, Always")};
         if (dontShowAnnotationConfirmation)
             return true;
-        if (lastConfirmed.equals(new HashSet<BugInstance>(selectedBugs)))
+        if (lastBugsEdited.equals(new HashSet<BugInstance>(selectedBugs)))
             return true;
         int choice = JOptionPane
                 .showOptionDialog(
@@ -578,7 +606,7 @@ public abstract class CloudCommentsPane extends JPanel {
         switch (choice) {
             case 0:
                 // don't ask for this set of bugs again
-                lastConfirmed = new HashSet<BugInstance>(selectedBugs);
+                lastBugsEdited = new HashSet<BugInstance>(selectedBugs);
                 return true;
             case 1:
                 return false;
@@ -677,12 +705,22 @@ public abstract class CloudCommentsPane extends JPanel {
         CommentInfo commentInfo = new CommentInfo().invoke();
         boolean sameText = commentInfo.isSameText();
         String txt = commentInfo.getTxt();
+        CardLayout cl = (CardLayout) (cards.getLayout());
+        HashSet<BugInstance> newBugSet = new HashSet<BugInstance>(bugs);
+        boolean sameBugs = newBugSet.equals(lastBugsEdited);
+        lastBugsEdited = newBugSet;
+        if (!sameBugs && bugs.size() > 1) {
+            warningLabel.setText("<HTML>" + bugs.size() + " bugs are selected.<BR>Click to review them all at once.");
+            cl.show(cards, "WARNING");
+        } else {
+            cl.show(cards, "COMMENTS");
+        }
         if (!sameText) {
-            txt = DEFAULT_VARIOUS_COMMENTS_COMMENT;
+            txt = MessageFormat.format(MSG_OVERWRITE_REVIEW, bugs.size());
             setDefaultComment(txt);
         } else {
             if (txt == null || txt.trim().length() == 0) {
-                txt = bugs.size() > 1 ? String.format(DEFAULT_COMMENT_MULTI, bugs.size()) : DEFAULT_COMMENT;
+                txt = bugs.size() > 1 ? MessageFormat.format(MSG_REVIEW_MULTI, bugs.size()) : MSG_REVIEW;
                 setDefaultComment(txt);
             } else {
                 resetCommentBoxFont();
@@ -704,7 +742,7 @@ public abstract class CloudCommentsPane extends JPanel {
             boolean sameDesignation = commentInfo.isSameDesignation();
             String designation = commentInfo.getDesignation();
             if (!sameDesignation)
-                designation = UserDesignation.UNCLASSIFIED.name();
+                designation = null;
             updatingHeader = true;
             designationCombo.setSelectedIndex(I18N.instance().getUserDesignationKeys(true).indexOf(designation));
             updatingHeader = false;
@@ -769,15 +807,8 @@ public abstract class CloudCommentsPane extends JPanel {
         mainPanel = new JPanel();
         mainPanel.setLayout(new GridBagLayout());
         mainPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3), null));
-        final JPanel spacer1 = new JPanel();
-        GridBagConstraints gbc;
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 6;
-        gbc.fill = GridBagConstraints.BOTH;
-        mainPanel.add(spacer1, gbc);
         _cloudReportScrollPane = new JScrollPane();
+        GridBagConstraints gbc;
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
@@ -862,8 +893,22 @@ public abstract class CloudCommentsPane extends JPanel {
         gbc.gridx = 1;
         gbc.gridy = 3;
         gbc.gridwidth = 5;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         mainPanel.add(panel3, gbc);
+        cards = new JPanel();
+        cards.setLayout(new CardLayout(0, 0));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 5;
+        gbc.gridy = 4;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        mainPanel.add(cards, gbc);
+        final JPanel panel4 = new JPanel();
+        panel4.setLayout(new GridBagLayout());
+        cards.add(panel4, "COMMENTS");
         designationCombo = new WideComboBox();
         gbc = new GridBagConstraints();
         gbc.gridx = 4;
@@ -871,7 +916,7 @@ public abstract class CloudCommentsPane extends JPanel {
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.insets = new Insets(5, 0, 0, 0);
-        panel3.add(designationCombo, gbc);
+        panel4.add(designationCombo, gbc);
         final JScrollPane scrollPane1 = new JScrollPane();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -880,7 +925,7 @@ public abstract class CloudCommentsPane extends JPanel {
         gbc.gridheight = 4;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
-        panel3.add(scrollPane1, gbc);
+        panel4.add(scrollPane1, gbc);
         scrollPane1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), null));
         commentBox = new JTextArea();
         commentBox.setRows(5);
@@ -892,7 +937,7 @@ public abstract class CloudCommentsPane extends JPanel {
         gbc.gridx = 4;
         gbc.gridy = 1;
         gbc.insets = new Insets(5, 5, 5, 5);
-        panel3.add(submitCommentButton, gbc);
+        panel4.add(submitCommentButton, gbc);
         lastSavedLabel = new JLabel();
         lastSavedLabel.setFont(new Font(lastSavedLabel.getFont().getName(), Font.ITALIC, 9));
         lastSavedLabel.setText("saved at");
@@ -900,11 +945,31 @@ public abstract class CloudCommentsPane extends JPanel {
         gbc.gridx = 4;
         gbc.gridy = 3;
         gbc.gridwidth = 2;
-        panel3.add(lastSavedLabel, gbc);
+        panel4.add(lastSavedLabel, gbc);
         gbc = new GridBagConstraints();
         gbc.gridx = 5;
         gbc.gridy = 1;
-        panel3.add(cancelLink, gbc);
+        panel4.add(cancelLink, gbc);
+        final JPanel panel5 = new JPanel();
+        panel5.setLayout(new GridBagLayout());
+        cards.add(panel5, "WARNING");
+        warningLabel = new JLabel();
+        warningLabel.setHorizontalAlignment(0);
+        warningLabel.setHorizontalTextPosition(0);
+        warningLabel.setText("<HTML>Multiple bugs are selected.<BR>Click to review them all at once.");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        panel5.add(warningLabel, gbc);
+        bulkReviewButton = new JButton();
+        bulkReviewButton.setText("Bulk Review");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        panel5.add(bulkReviewButton, gbc);
     }
 
     /**

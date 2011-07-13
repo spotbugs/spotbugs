@@ -120,7 +120,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         LineChart timelineChart = null;
         BarChart subpkgChart = null;
         if (evalsPerWeek.size() != 0) {
-            timelineChart = buildEvaluationTimeline("Evaluations & Issues - " + desiredPackage + " (recursive)", evalsPerWeek,
+            timelineChart = buildEvaluationTimeline("Reviews & Issues - " + desiredPackage + " (recursive)", evalsPerWeek,
                     newIssuesPerWeek);
             if (evalsByPkg.size() > 1)
                 subpkgChart = buildByPkgChart(issuesByPkg, evalsByPkg);
@@ -138,7 +138,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         page.println("<br><br>");
 
         if (timelineChart == null)
-            page.print("No evaluations for classes in " + escapeHtml(desiredPackage));
+            page.print("No reviews for classes in " + escapeHtml(desiredPackage));
         else
             showChartImg(resp, timelineChart.toURLString());
         if (subpkgChart != null)
@@ -254,7 +254,7 @@ public class ReportServlet extends AbstractFlybushServlet {
 
         LineChart chart = null;
         if (!evalsPerWeek.isEmpty())
-            chart = buildEvaluationTimeline("Evaluations over Time - " + email, evalsPerWeek, newIssuesByWeek);
+            chart = buildEvaluationTimeline("Reviews over Time - " + email, evalsPerWeek, newIssuesByWeek);
 
         resp.setStatus(200);
         ServletOutputStream page = resp.getOutputStream();
@@ -265,7 +265,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         printUserStatsSelector(req, resp, users, email);
 
         if (chart == null) {
-            page.println("Oops! No evaluations uploaded by " + escapeHtml(email));
+            page.println("Oops! No reviews uploaded by " + escapeHtml(email));
             return;
         }
         showChartImg(resp, chart.toURLString());
@@ -279,7 +279,7 @@ public class ReportServlet extends AbstractFlybushServlet {
      */
     private static void printEvalsTable(HttpServletResponse resp, List<String> table) throws IOException {
         ServletOutputStream page = resp.getOutputStream();
-        page.println("<br><br>Evaluation history:");
+        page.println("<br><br>Review history:");
         page.println("<div style='overflow:auto;height:400px;border:2px solid black'>\n"
                 + "<table cellspacing=0 border=1 cellpadding=6>\n"
                 + "<tr><th>Date (UTC)</th><th>User</th><th>Class</th><th>Designation</th><th>Comment</th></tr>");
@@ -353,9 +353,9 @@ public class ReportServlet extends AbstractFlybushServlet {
             first = false;
         }
 
-        Line evalsLine = Plots.newLine(Data.newData(evalsData), Color.LIGHTPINK, "Updated evaluations");
+        Line evalsLine = Plots.newLine(Data.newData(evalsData), Color.LIGHTPINK, "Updated reviews");
         evalsLine.setFillAreaColor(Color.LIGHTPINK);
-        Line issuesLine = Plots.newLine(Data.newData(newIssuesData), Color.ORCHID, "Initial evaluations");
+        Line issuesLine = Plots.newLine(Data.newData(newIssuesData), Color.ORCHID, "Initial reviews");
         issuesLine.setFillAreaColor(Color.ORCHID);
         LineChart chart = GCharts.newLineChart(evalsLine, issuesLine);
         chart.addXAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
@@ -496,11 +496,11 @@ public class ReportServlet extends AbstractFlybushServlet {
         BarChart histogram = GCharts.newBarChart(Plots.newBarChartPlot(Data.newData(histogramData)));
         histogram.setSize(400, 500);
         histogram.setBarWidth(BarChart.AUTO_RESIZE);
-        histogram.setTitle("Histogram: Evaluators Per Issue");
+        histogram.setTitle("Histogram: Reviewers Per Issue");
         histogram.setDataEncoding(DataEncoding.TEXT);
         histogram.addXAxisLabels(AxisLabelsFactory.newAxisLabels(barLabels));
         histogram.addYAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, maxIssues));
-        AxisLabels bigLabel = AxisLabelsFactory.newAxisLabels("No. of evaluators", 50);
+        AxisLabels bigLabel = AxisLabelsFactory.newAxisLabels("No. of reviewers", 50);
         bigLabel.setAxisStyle(AxisStyle.newAxisStyle(Color.BLACK, 12, AxisTextAlignment.CENTER));
         histogram.addXAxisLabels(bigLabel);
         return histogram;
@@ -560,7 +560,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         Line usersLine = Plots.newLine(Data.newData(userCountData), Color.LIGHTSTEELBLUE, "New users");
 
         LineChart chart = GCharts.newLineChart(evalsLine, issuesLine, usersLine);
-        chart.setTitle("New Evaluations, Issues, & Users Over Time");
+        chart.setTitle("New Reviews, Issues, & Users Over Time");
         chart.setDataEncoding(DataEncoding.TEXT);
         chart.setSize(850, 350);
 
@@ -605,10 +605,10 @@ public class ReportServlet extends AbstractFlybushServlet {
             first = false;
         }
 
-        Line evalsLine = Plots.newLine(Data.newData(evalsData), Color.LIGHTPINK, "Total Evaluations");
+        Line evalsLine = Plots.newLine(Data.newData(evalsData), Color.LIGHTPINK, "Total Reviews");
         evalsLine.setFillAreaColor(Color.LIGHTPINK);
 
-        Line issuesLine = Plots.newLine(Data.newData(issuesData), Color.ORCHID, "Total Issues Evaluated");
+        Line issuesLine = Plots.newLine(Data.newData(issuesData), Color.ORCHID, "Total Issues Reviewed");
         issuesLine.setFillAreaColor(Color.ORCHID);
 
         Line usersLine = Plots.newLine(Data.newData(usersData), Color.LIGHTSTEELBLUE, "Total Users");
@@ -718,7 +718,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         BarChart chart = GCharts.newBarChart(Plots.newBarChartPlot(Data.newData(issuesData), Color.DARKORCHID, "Issues"),
                 Plots.newBarChartPlot(Data.newData(evalsData), Color.ORCHID, "Evaluations"));
 
-        chart.setTitle("Evaluations Per Package");
+        chart.setTitle("Reviews Per Package");
         chart.setGrid(10.0 / (maxPerPkg / 100.0), 100, 4, 1);
         chart.setDataStacked(true);
         chart.addYAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
@@ -746,10 +746,10 @@ public class ReportServlet extends AbstractFlybushServlet {
 
         Collections.reverse(totals);
         Collections.reverse(issues);
-        BarChart chart = GCharts.newBarChart(Plots.newBarChartPlot(Data.newData(issues), Color.DARKORCHID, "Initial evaluation"),
-                Plots.newBarChartPlot(Data.newData(totals), Color.ORCHID, "Updated evaluation"));
+        BarChart chart = GCharts.newBarChart(Plots.newBarChartPlot(Data.newData(issues), Color.DARKORCHID, "Initial review"),
+                Plots.newBarChartPlot(Data.newData(totals), Color.ORCHID, "Updated review"));
 
-        chart.setTitle("Evaluations Per Human");
+        chart.setTitle("Reviews Per Human");
         chart.setDataStacked(true);
         chart.setGrid(20.0 / (max / 100.0), 100, 4, 1);
         chart.addYAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
