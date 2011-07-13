@@ -426,7 +426,7 @@ public abstract class CloudCommentsPane extends JPanel {
                             key = "MUST_FIX";
                     }
                 }
-                changeDesignationOfBug(bug, key);
+                changeDesignationOfBugRightNow(bug, key);
                 refresh();
             }
         });
@@ -621,17 +621,11 @@ public abstract class CloudCommentsPane extends JPanel {
 
     }
 
-    protected boolean changeDesignationOfBug(final BugInstance bug, final String designationKey) {
+    protected void changeDesignationOfBugRightNow(final BugInstance bug, final String designationKey) {
         String oldValue = bug.getUserDesignationKey();
         if (designationKey.equals(oldValue))
-            return false;
-        backgroundExecutor.execute(new Runnable() {
-            public void run() {
-                bug.setUserDesignationKey(designationKey, _bugCollection);
-                refresh();
-            }
-        });
-        return true;
+            return;
+        bug.setUserDesignationKey(designationKey, _bugCollection);
     }
 
     public void refresh() {
