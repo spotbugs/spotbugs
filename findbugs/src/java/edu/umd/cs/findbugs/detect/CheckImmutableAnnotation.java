@@ -47,7 +47,7 @@ public class CheckImmutableAnnotation extends PreorderVisitor implements Detecto
 
     @Override
     public void visit(Field obj) {
-        if (!obj.isFinal())
+        if (!obj.isFinal() && !obj.isTransient() && !obj.isVolatile())
             bugReporter.reportBug(new BugInstance(this, "JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS", NORMAL_PRIORITY).addClass(
                     this).addVisitedField(this));
     }
