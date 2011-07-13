@@ -107,8 +107,6 @@ public abstract class CloudCommentsPane extends JPanel {
     protected BugInstance _bugInstance;
     private BugAspects _bugAspects;
 
-    private boolean dontShowAnnotationConfirmation = false;
-
     private final Executor backgroundExecutor = Executors.newSingleThreadExecutor();
 
     private final Cloud.CloudStatusListener _cloudStatusListener = new MyCloudStatusListener();
@@ -116,6 +114,7 @@ public abstract class CloudCommentsPane extends JPanel {
     private Font plainCommentFont;
     private String lastCommentText = null;
     private Set<BugInstance> lastBugsEdited = Collections.emptySet();
+    private boolean clickedBulkReview = false;
 
     public CloudCommentsPane() {
         $$$setupUI$$$();
@@ -252,8 +251,8 @@ public abstract class CloudCommentsPane extends JPanel {
 
         bulkReviewButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                CardLayout cl = (CardLayout) cards.getLayout();
-                cl.show(cards, "COMMENTS");
+                clickedBulkReview = true;
+                refresh();
             }
         });
 
@@ -660,8 +659,11 @@ public abstract class CloudCommentsPane extends JPanel {
         CardLayout cl = (CardLayout) (cards.getLayout());
         HashSet<BugInstance> newBugSet = new HashSet<BugInstance>(bugs);
         boolean sameBugs = newBugSet.equals(lastBugsEdited);
-        lastBugsEdited = newBugSet;
-        if (!sameBugs && bugs.size() > 1) {
+        if (!sameBugs) {
+            lastBugsEdited = newBugSet;
+            clickedBulkReview = false;
+        }
+        if (bugs.size() > 1 && !clickedBulkReview) {
             warningLabel.setText("<HTML>" + bugs.size() + " bugs are selected.<BR>Click to review them all at once.");
             cl.show(cards, "WARNING");
         } else {
