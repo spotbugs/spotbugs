@@ -35,8 +35,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
  * @author David Hovemeyer
  */
 public class TrainUnconditionalDerefParams extends BuildUnconditionalParamDerefDatabase implements Detector, TrainingDetector {
-    private static final boolean VERBOSE_DEBUG = SystemProperties.getBoolean("upd.debug");
-
+    
     public TrainUnconditionalDerefParams(BugReporter bugReporter) {
     }
 
