@@ -139,8 +139,9 @@ public class AssertionMethods implements Constants {
                                     || methodNameLC.equals("exit") || methodNameLC.startsWith("fail")
                                     || methodNameLC.startsWith("fatal") || methodNameLC.indexOf("assert") >= 0
                                     || methodNameLC.indexOf("legal") >= 0 || methodNameLC.indexOf("error") >= 0
-                                    || methodNameLC.indexOf("abort") >= 0 || methodNameLC.indexOf("check") >= 0 || methodNameLC
-                                    .indexOf("failed") >= 0) || methodName.equals("addOrThrowException")) {
+                                    || methodNameLC.indexOf("abort") >= 0 
+                                    // || methodNameLC.indexOf("check") >= 0 
+                                    || methodNameLC.indexOf("failed") >= 0) || methodName.equals("addOrThrowException")) {
                         assertionMethodRefSet.set(i);
                         if (DEBUG) {
                             System.out.println("==> YES");
