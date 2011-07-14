@@ -68,9 +68,9 @@ public interface AnalysisFeatures {
     int SKIP_HUGE_METHODS = 3;
 
     /**
-     * Perform interative opcode stack analysis
+     * Perform interative opcode stack analysis: always enabled.
      */
-    public static final @AnalysisFeature
+    public static final @Deprecated @AnalysisFeature
     int INTERATIVE_OPCODE_STACK_ANALYSIS = 4;
 
     /**
