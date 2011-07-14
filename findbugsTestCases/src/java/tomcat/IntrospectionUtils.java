@@ -12,8 +12,6 @@ public class IntrospectionUtils {
             params[0] = param1.getClass();
         else
             params[0] = cl.loadClass(typeParam1);
-        // TODO: We should be reporting a NP error with a possible dereference
-        // in the following line
         Method m = findMethod(target.getClass(), methodN, params);
         if (m == null)
             throw new NoSuchMethodException(target.getClass().getName() + " " + methodN);

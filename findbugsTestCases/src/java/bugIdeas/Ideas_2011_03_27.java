@@ -3,10 +3,19 @@ package bugIdeas;
 public class Ideas_2011_03_27 implements Comparable<Ideas_2011_03_27>{
 
     int x;
+
+    public Ideas_2011_03_27(int x) {
+       this.x = x;
+    }
+
+
+
     @Override
     public int hashCode() {
         return x;
     }
+    
+    
 
     @Override
     public boolean equals(Object obj) {

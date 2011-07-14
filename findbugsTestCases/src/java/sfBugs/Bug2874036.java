@@ -19,4 +19,10 @@ public class Bug2874036 {
         }
         return res != null ? res : key;
     }
+    
+    public String getText2(String key) {
+        String res = rb.getString(key);
+        return res != null ? res : key;
+    }
+
 }
