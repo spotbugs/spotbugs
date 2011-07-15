@@ -62,7 +62,7 @@ import edu.umd.cs.findbugs.util.Multiset;
  */
 public abstract class AbstractCloud implements Cloud {
 
-    public static long MIN_TIMESTAMP;
+    public static long MIN_TIMESTAMP = new Date(96, 0, 23).getTime();
 
     protected static final boolean THROW_EXCEPTION_IF_CANT_CONNECT = false;
 
@@ -84,11 +84,7 @@ public abstract class AbstractCloud implements Cloud {
             }
         }
         LEADERBOARD_BLACKLIST_PATTERN = p;
-        try {
-            MIN_TIMESTAMP = DateFormat.getDateInstance(DateFormat.DEFAULT, Locale.US).parse("Jan 23, 1996").getTime();
-        } catch (ParseException e) {
-            throw new IllegalStateException(e);
-        }
+        
     }
 
     protected final CloudPlugin plugin;
