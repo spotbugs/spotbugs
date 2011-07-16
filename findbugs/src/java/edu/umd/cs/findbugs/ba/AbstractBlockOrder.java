@@ -32,9 +32,11 @@ import java.util.Iterator;
  * @see BlockOrder
  */
 public abstract class AbstractBlockOrder implements BlockOrder {
-    private ArrayList<BasicBlock> blockList;
+    private final ArrayList<BasicBlock> blockList;
+    private final Comparator<BasicBlock> comparator;
 
     public AbstractBlockOrder(CFG cfg, Comparator<BasicBlock> comparator) {
+        this.comparator = comparator;
         // Put the blocks in an array
         int numBlocks = cfg.getNumBasicBlocks(), count = 0;
         BasicBlock[] blocks = new BasicBlock[numBlocks];
@@ -54,6 +56,10 @@ public abstract class AbstractBlockOrder implements BlockOrder {
 
     public Iterator<BasicBlock> blockIterator() {
         return blockList.iterator();
+    }
+    
+    public int compare(BasicBlock b1, BasicBlock b2) {
+        return comparator.compare(b1, b2);
     }
 }
 

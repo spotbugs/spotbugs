@@ -148,6 +148,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
         boolean firstTime = true;
         do {
             change = false;
+            boolean sawBackEdge = false;
             ++numIterations;
             if (numIterations > MAX_ITERS && !DEBUG) {
                 DEBUG = true;
@@ -254,10 +255,24 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
                     while (predEdgeIter.hasNext()) {
                         Edge edge = predEdgeIter.next();
                         rawPredCount++;
-                        if (needToRecompute)
-                            continue;
+                        if (needToRecompute) {
+                            // don't need to check to see if we need to recompute.
+                            if (firstTime && !sawBackEdge) {
+                                // may need to se sawBackEdge
+                            } else {
+                                continue;
+                            }
+                           
+                        }
                         BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getTarget();
 
+                        int direction = blockOrder.compare(block, logicalPred);
+                        
+                        if (DEBUG) 
+                            debug(block, "direction " + direction + " for " + blockId(logicalPred) + "\n");
+                        if (direction < 0)
+                            sawBackEdge = true;
+                        
                         // Get the predecessor result fact
                         Fact predFact = analysis.getResultFact(logicalPred);
                         int predLastUpdated = analysis.getLastUpdateTimestamp(predFact);
@@ -390,6 +405,8 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
             }
 
             analysis.finishIteration();
+            if (!sawBackEdge) break;
+            
         } while (change);
 
         if (DEBUG) {

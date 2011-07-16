@@ -80,7 +80,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
             try {
                 ins.accept(this);
             } catch (InvalidBytecodeException e) {
-                System.out.println("Could not analyze " + ins);
+                System.out.println("Could not analyze " + ins + " frame is " + frame);
                 e.printStackTrace(System.out);
                 throw new DataflowAnalysisException("Invalid bytecode", e);
             }

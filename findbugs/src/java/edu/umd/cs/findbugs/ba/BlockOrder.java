@@ -29,6 +29,11 @@ public interface BlockOrder {
      * Return an Iterator which visits the basic blocks in order.
      */
     public Iterator<BasicBlock> blockIterator();
+    
+    /** Return relative order of blocks.
+     * If b1.compareTo(b2) < 0, then b1 should occur before b2 in iteration.
+     */
+    public int compare(BasicBlock b1, BasicBlock b2);
 }
 
 // vim:ts=4
