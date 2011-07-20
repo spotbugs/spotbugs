@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -52,6 +53,14 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
  * @author David Hovemeyer
  */
 public class Plugin {
+    
+    static final Map<String, String> globalOptions = new HashMap<String,String>();
+    static final Map<String, Plugin> globalOptionsSetter = new HashMap<String,Plugin>();
+
+    
+    public static Map<String, String>  getGlobalOptions() {
+        return Collections.unmodifiableMap(globalOptions);
+    }
 
     private static final String USE_FINDBUGS_VERSION = "USE_FINDBUGS_VERSION";
     private final String pluginId;
@@ -60,7 +69,8 @@ public class Plugin {
 
     private String provider;
 
-    private String website;
+    private URI website;
+    private @CheckForNull URI usageTracker;
 
     private String shortDescription;
     private String detailedDescription;
@@ -158,18 +168,27 @@ public class Plugin {
      *
      * @return the provider, or null if the provider was not specified
      */
-    public String getProvider() {
+    public @CheckForNull String getProvider() {
         return provider;
     }
 
+    
+    public void setUsageTracker(String tracker) throws URISyntaxException {
+        this.usageTracker = new URI(tracker);
+    }
+    
+    public @CheckForNull URI getUsageTracker() {
+        return usageTracker;
+    }
     /**
      * Set plugin website.
      *
      * @param website
      *            the plugin website
+     * @throws URISyntaxException 
      */
-    public void setWebsite(String website) {
-        this.website = website;
+    public void setWebsite(String website) throws URISyntaxException {
+        this.website = new URI(website);
     }
 
     /**
@@ -177,7 +196,13 @@ public class Plugin {
      *
      * @return the website, or null if the was not specified
      */
-    public String getWebsite() {
+    public  @CheckForNull String getWebsite() {
+        if (website == null)
+            return null;
+        return website.toASCIIString();
+    }
+    
+    public  @CheckForNull URI getWebsiteURI() {
         return website;
     }
 

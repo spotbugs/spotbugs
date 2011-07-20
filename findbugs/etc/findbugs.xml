@@ -2,7 +2,10 @@
           xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
           pluginid="edu.umd.cs.findbugs.plugins.core" defaultenabled="true"
           version="USE_FINDBUGS_VERSION"
-          provider="FindBugs project" website="http://findbugs.sourceforge.net">
+          provider="FindBugs project" website="http://findbugs.sourceforge.net"
+          usageTracker="http://foo.com"
+          >
+          
           <!--
   Plugin descriptor for FindBugs "core" plugin.
   This plugin is enabled by default.

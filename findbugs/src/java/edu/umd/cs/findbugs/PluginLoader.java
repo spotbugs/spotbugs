@@ -499,8 +499,22 @@ public class PluginLoader {
             plugin.setProvider(provider);
         String website = pluginDescriptor.valueOf("/FindbugsPlugin/@website").trim();
         if (!website.equals(""))
-            plugin.setWebsite(website);
+            try {
+                plugin.setWebsite(website);
+            } catch (URISyntaxException e1) {
+                AnalysisContext.logError("Plugin " + pluginId + " has invalid website: " + website, e1);
+            }
 
+        String usageTracker = pluginDescriptor.valueOf("/FindbugsPlugin/@usageTracker").trim();
+        if (!usageTracker.equals(""))
+            try {
+                plugin.setUsageTracker(usageTracker);
+            } catch (URISyntaxException e1) {
+                AnalysisContext.logError("Plugin " + pluginId + " has invalid usageTracker: " + website, e1);
+                
+            }
+
+        
         // Set short description, if specified
         Node pluginShortDesc = null;
         try {
@@ -522,8 +536,24 @@ public class PluginLoader {
         if (detailedDescription != null) {
             plugin.setDetailedDescription(detailedDescription.getText().trim());
         }
-
-
+        List<Node> globalOptionNodes = pluginDescriptor.selectNodes("/FindbugsPlugin/GlobalOptions/Property");
+        for(Node optionNode : globalOptionNodes) {
+            String key = optionNode.valueOf("@key");
+            String value = optionNode.getText();
+            String oldValue = Plugin.globalOptions.get(key);
+            if (oldValue != null) {
+                if (!oldValue.equals(value)) {
+                    throw new PluginException("Conflicting values for global option " + key + " from " 
+                            + pluginId + " and " + Plugin.globalOptionsSetter.get(key).getPluginId());
+                }
+                
+                
+            } else {
+                Plugin.globalOptions.put(key, value);
+                Plugin.globalOptionsSetter.put(key, plugin);
+            }
+        }
+        
         List<Node> cloudNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Cloud");
         for (Node cloudNode : cloudNodeList) {
 

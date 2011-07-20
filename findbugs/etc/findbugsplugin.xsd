@@ -145,9 +145,25 @@
             </xsd:choice>
         </xsd:sequence>
     </xsd:complexType>
+    
+    <xsd:complexType name="GlobalOptionsType">
+        <xsd:sequence>
+            <xsd:element name="Property" minOccurs="0" maxOccurs="unbounded" >
+                <xsd:complexType>
+                    <xsd:simpleContent>
+                        <xsd:extension base="xsd:string">
+                            <xsd:attribute name="key" type="xsd:string" />
+                        </xsd:extension>
+                    </xsd:simpleContent>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
 
     <xsd:complexType name="FindBugsPluginType" mixed="true">
         <xsd:sequence>
+            <xsd:element name="GlobalOptions" type="GlobalOptionsType" minOccurs="0" maxOccurs="1"/>
             <xsd:element name="Cloud" type="CloudType" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="PluginComponent" type="PluginComponentType" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="FindBugsMain" type="FindBugsMainType" minOccurs="0" maxOccurs="unbounded"/>
@@ -166,6 +182,7 @@
         <xsd:attribute name="defaultenabled" type="xsd:boolean" use="optional" />
         <xsd:attribute name="provider" type="xsd:string"/>
         <xsd:attribute name="website" type="xsd:anyURI" use="optional"/>
+        <xsd:attribute name="usageTracker" type="xsd:anyURI" use="optional"/>
     </xsd:complexType>
 
     <xsd:element name="FindbugsPlugin" type="FindBugsPluginType"/>
