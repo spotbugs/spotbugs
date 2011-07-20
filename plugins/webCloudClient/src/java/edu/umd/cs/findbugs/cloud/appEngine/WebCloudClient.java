@@ -265,6 +265,16 @@ public class WebCloudClient extends AbstractCloud {
         }
     }
 
+    /**
+     * Returns true if communication has already been initiated (and perhaps completed).
+     * 
+     */
+    @Override
+    public boolean communicationInitiated() {
+        return bugsPopulated.getCount() == 0 && communicationInitiated && networkClient.ready();
+    }
+  
+    
     // =============== accessors ===================
 
     protected WebCloudNetworkClient getNetworkClient() {
