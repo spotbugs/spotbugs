@@ -177,8 +177,6 @@ public class Project implements XMLWriteable {
                 }
             if (count == 1)
                 cloudId = result;
-
-
         }
         this.cloudId = cloudId;
     }
