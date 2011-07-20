@@ -403,7 +403,7 @@ public class MainFrameLoadSaveHelper implements Serializable {
         if (!mainFrame.canNavigateAway())
             return SaveReturn.SAVE_ERROR;
         try {
-            mainFrame.getProject().writeXML(saveFile2);
+            mainFrame.getProject().writeXML(saveFile2, mainFrame.getBugCollection());
         } catch (IOException e) {
             AnalysisContext.logError("Couldn't save FBP file to " + saveFile2, e);
             return SaveReturn.SAVE_IO_EXCEPTION;

@@ -56,6 +56,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.charsets.UTF8;
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
@@ -119,8 +120,6 @@ public class Project implements XMLWriteable {
 
     /** key is plugin id */
     private final Map<String,Boolean> enabledPlugins;
-
-    private Map<String,String> cloudDetails = new HashMap<String, String>();
 
     public boolean getPluginStatus(Plugin plugin) {
         Boolean b = enabledPlugins.get(plugin.getPluginId());
@@ -462,12 +461,6 @@ public class Project implements XMLWriteable {
         return auxClasspathEntryList;
     }
 
-    /** This is a hack to enable storing cloud details in the analysis XML, even though the Project
-     * doesn't normally know about the Cloud instance itself. */
-    public void setCloudDetail(String key, String value) {
-        cloudDetails.put(key, value);
-    }
-
     /**
      * Worklist item for finding implicit classpath entries.
      */
@@ -754,11 +747,11 @@ public class Project implements XMLWriteable {
         return project;
     }
 
-    public void writeXML(File f) throws IOException {
+    public void writeXML(File f, BugCollection bugCollection) throws IOException {
         OutputStream out = new FileOutputStream(f);
         XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
         try {
-            writeXML(xmlOutput, f);
+            writeXML(xmlOutput, f, bugCollection);
         } finally {
             xmlOutput.finish();
         }
@@ -853,10 +846,11 @@ public class Project implements XMLWriteable {
     static final String PLUGIN_STATUS_ELEMENT_NAME = "enabled";
 
     public void writeXML(XMLOutput xmlOutput) throws IOException {
-        writeXML(xmlOutput, null);
+        writeXML(xmlOutput, null, null);
     }
 
-    public void writeXML(XMLOutput xmlOutput, @CheckForNull File destination) throws IOException {
+    public void writeXML(XMLOutput xmlOutput, @CheckForNull File destination, BugCollection bugCollection) 
+            throws IOException {
         {
             XMLAttributeList attributeList = new XMLAttributeList();
 
@@ -902,16 +896,16 @@ public class Project implements XMLWriteable {
             pluginAttributeList.addAttribute(PLUGIN_STATUS_ELEMENT_NAME, enabled.toString());
             xmlOutput.openCloseTag(PLUGIN_ELEMENT_NAME, pluginAttributeList);
         }
-        if (cloudId != null || cloudDetails.get("id") != null) {
-            String id = cloudDetails.get("id");
+        Cloud cloud = bugCollection.getCloud();
+        if (cloud != null) {
+            String id = cloud.getPlugin().getId();
             if (id == null)
                 id = cloudId;
             xmlOutput.startTag(CLOUD_ELEMENT_NAME);
             xmlOutput.addAttribute(CLOUD_ID_ATTRIBUTE_NAME, id);
-            String onlineCloud = cloudDetails.get("online");
-            if (onlineCloud != null)
-                xmlOutput.addAttribute("online", onlineCloud);
-            String url = cloudDetails.get("detailsUrl");
+            boolean onlineCloud = cloud.isOnlineCloud();
+            xmlOutput.addAttribute("online", Boolean.toString(onlineCloud));
+            String url = cloud.getBugDetailsUrlTemplate();
             if (url != null)
                 xmlOutput.addAttribute("detailsUrl", url);
             xmlOutput.stopTag(false);

@@ -468,10 +468,7 @@ public class SortedBugCollection implements BugCollection {
                         .addAttribute("analysisTimestamp", String.valueOf(getAnalysisTimestamp()))
 
                         .addAttribute("release", getReleaseName()));
-        project.setCloudDetail("id", cloud.getPlugin().getId());
-        project.setCloudDetail("online", Boolean.toString(cloud.isOnlineCloud()));
-        project.setCloudDetail("detailsUrl", cloud.getBugDetailsUrlTemplate());
-        project.writeXML(xmlOutput);
+        project.writeXML(xmlOutput, null, this);
 
     }
 
