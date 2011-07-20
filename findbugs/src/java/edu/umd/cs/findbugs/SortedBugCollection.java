@@ -468,15 +468,11 @@ public class SortedBugCollection implements BugCollection {
                         .addAttribute("analysisTimestamp", String.valueOf(getAnalysisTimestamp()))
 
                         .addAttribute("release", getReleaseName()));
+        project.setCloudDetail("id", cloud.getPlugin().getId());
+        project.setCloudDetail("online", Boolean.toString(cloud.isOnlineCloud()));
+        project.setCloudDetail("detailsUrl", cloud.getBugDetailsUrlTemplate());
         project.writeXML(xmlOutput);
-        if (cloud != null) {
-            xmlOutput.startTag("CloudDetails");
-            xmlOutput.addAttribute("online", Boolean.toString(cloud.isOnlineCloud()));
-            String url = cloud.getBugDetailsUrlTemplate();
-            if (url != null)
-                xmlOutput.addAttribute("detailsUrl", url);
-            xmlOutput.stopTag(true);
-        }
+
     }
 
     // private String getQuickInstanceHash(BugInstance bugInstance) {

@@ -19,13 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableSet;
-
 import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,10 +32,6 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import edu.umd.cs.findbugs.ba.ClassHash;
 import edu.umd.cs.findbugs.filter.AndMatcher;
@@ -61,6 +53,12 @@ import edu.umd.cs.findbugs.filter.RankMatcher;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.util.MapCache;
 import edu.umd.cs.findbugs.util.Strings;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableSet;
 
 /**
  * Build a BugCollection based on SAX events. This is intended to replace the
@@ -227,12 +225,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 String projectName = getOptionalAttribute(attributes, Project.PROJECTNAME_ATTRIBUTE_NAME);
                 if (projectName != null)
                     project.setProjectName(projectName);
-            } else if (qName.equals("CloudDetails")) {
-                Map<String,String> map = new HashMap<String, String>();
-                for (int i = 0; i < attributes.getLength(); i++) {
-                    map.put(attributes.getLocalName(i), attributes.getValue(i));
-                }
-                bugCollection.setXmlCloudDetails(Collections.unmodifiableMap(map));
             } else {
                 String outerElement = elementStack.get(elementStack.size() - 1);
                 if (outerElement.equals(BUG_COLLECTION)) {
@@ -391,6 +383,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     if (qName.equals(Project.CLOUD_ELEMENT_NAME)) {
                         String cloudId = getRequiredAttribute(attributes, Project.CLOUD_ID_ATTRIBUTE_NAME, qName);
                         project.setCloudId(cloudId);
+                        Map<String,String> map = new HashMap<String, String>();
+                        for (int i = 0; i < attributes.getLength(); i++) {
+                            map.put(attributes.getLocalName(i), attributes.getValue(i));
+                        }
+                        bugCollection.setXmlCloudDetails(Collections.unmodifiableMap(map));
                     } else if (qName.equals(Project.PLUGIN_ELEMENT_NAME)) {
                         String pluginId = getRequiredAttribute(attributes, Project.PLUGIN_ID_ATTRIBUTE_NAME, qName);
                         Boolean enabled = Boolean.valueOf(getRequiredAttribute(attributes, Project.PLUGIN_STATUS_ELEMENT_NAME, qName));

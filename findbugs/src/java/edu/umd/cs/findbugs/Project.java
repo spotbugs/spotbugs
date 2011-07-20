@@ -25,8 +25,6 @@
 
 package edu.umd.cs.findbugs;
 
-import static edu.umd.cs.findbugs.xml.XMLOutputUtil.writeElementList;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -53,12 +51,6 @@ import java.util.jar.Manifest;
 
 import javax.annotation.Nullable;
 
-import org.dom4j.DocumentException;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
@@ -73,6 +65,13 @@ import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
+import org.dom4j.DocumentException;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
+import static edu.umd.cs.findbugs.xml.XMLOutputUtil.writeElementList;
 
 /**
  * A project in the GUI. This consists of some number of Jar files to analyze
@@ -121,6 +120,7 @@ public class Project implements XMLWriteable {
     /** key is plugin id */
     private final Map<String,Boolean> enabledPlugins;
 
+    private Map<String,String> cloudDetails = new HashMap<String, String>();
 
     public boolean getPluginStatus(Plugin plugin) {
         Boolean b = enabledPlugins.get(plugin.getPluginId());
@@ -155,8 +155,7 @@ public class Project implements XMLWriteable {
     /**
      * @return Returns the cloudId.
      */
-    public @CheckForNull
-    String getCloudId() {
+    public @CheckForNull String getCloudId() {
         return cloudId;
     }
 
@@ -461,6 +460,12 @@ public class Project implements XMLWriteable {
      */
     public List<String> getAuxClasspathEntryList() {
         return auxClasspathEntryList;
+    }
+
+    /** This is a hack to enable storing cloud details in the analysis XML, even though the Project
+     * doesn't normally know about the Cloud instance itself. */
+    public void setCloudDetail(String key, String value) {
+        cloudDetails.put(key, value);
     }
 
     /**
@@ -897,9 +902,18 @@ public class Project implements XMLWriteable {
             pluginAttributeList.addAttribute(PLUGIN_STATUS_ELEMENT_NAME, enabled.toString());
             xmlOutput.openCloseTag(PLUGIN_ELEMENT_NAME, pluginAttributeList);
         }
-        if (cloudId != null) {
+        if (cloudId != null || cloudDetails.get("id") != null) {
+            String id = cloudDetails.get("id");
+            if (id == null)
+                id = cloudId;
             xmlOutput.startTag(CLOUD_ELEMENT_NAME);
-            xmlOutput.addAttribute(CLOUD_ID_ATTRIBUTE_NAME, cloudId);
+            xmlOutput.addAttribute(CLOUD_ID_ATTRIBUTE_NAME, id);
+            String onlineCloud = cloudDetails.get("online");
+            if (onlineCloud != null)
+                xmlOutput.addAttribute("online", onlineCloud);
+            String url = cloudDetails.get("detailsUrl");
+            if (url != null)
+                xmlOutput.addAttribute("detailsUrl", url);
             xmlOutput.stopTag(false);
             for (Map.Entry e : cloudProperties.entrySet()) {
                 xmlOutput.startTag(CLOUD_PROPERTY_ELEMENT_NAME);
