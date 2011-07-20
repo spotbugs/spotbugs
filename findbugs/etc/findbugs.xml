@@ -10,6 +10,7 @@
           <Cloud id="edu.umd.cs.findbugs.cloud.doNothingCloud"
                     cloudClass="edu.umd.cs.findbugs.cloud.DoNothingCloud"
                     usernameClass="edu.umd.cs.findbugs.cloud.username.NoNameLookup"/>
+          
           <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SuppressI18N"
                     componentKind="edu.umd.cs.findbugs.bugReporter.BugReporterDecorator"
                     componentClass="edu.umd.cs.findbugs.bugReporter.SuppressionDecorator"
@@ -41,6 +42,40 @@
                     disabled="true">
                     <Property key="category">MALICIOUS_CODE</Property>
           </PluginComponent>
+          
+
+          <FindBugsMain cmd="addMessages" kind="poweruser" class="edu.umd.cs.findbugs.AddMessages"/>
+          <FindBugsMain cmd="analyze" analysis="true" class="edu.umd.cs.findbugs.FindBugs2"/>
+          <FindBugsMain cmd="gui" analysis="true" class="edu.umd.cs.findbugs.gui2.Driver"/>
+          <FindBugsMain cmd="list" class="edu.umd.cs.findbugs.PrintingBugReporter"/>
+          <FindBugsMain cmd="help" class="edu.umd.cs.findbugs.ShowHelp"/>
+          <FindBugsMain cmd="version" class="edu.umd.cs.findbugs.Version"/>
+          <FindBugsMain cmd="filter" class="edu.umd.cs.findbugs.workflow.Filter"/>
+          <FindBugsMain cmd="set" class="edu.umd.cs.findbugs.workflow.SetBugDatabaseInfo"/> 
+          
+          <FindBugsMain cmd="xxxx" kind="history" class="edu.umd.cs.findbugs.workflow.ListBugDatabaseInfo"/>
+          <FindBugsMain cmd="history" kind="history" class="edu.umd.cs.findbugs.workflow.MineBugHistory"/>
+          <FindBugsMain cmd="union" kind="history" class="edu.umd.cs.findbugs.workflow.UnionResults"/>
+          <FindBugsMain cmd="merge" kind="history" class="edu.umd.cs.findbugs.workflow.Update"/>
+          
+          <FindBugsMain cmd="copySource" kind="poweruser" class="edu.umd.cs.findbugs.workflow.CopyBuggySource"/>
+          <FindBugsMain cmd="rejar" kind="poweruser" class="edu.umd.cs.findbugs.workflow.RejarClassesForAnalysis"/>
+          <FindBugsMain cmd="dd" kind="poweruser" class="edu.umd.cs.findbugs.workflow.DefectDensity"/>
+          <FindBugsMain cmd="msv" kind="poweruser" class="edu.umd.cs.findbugs.workflow.MergeSummarizeAndView"/>
+          <FindBugsMain cmd="rejar" kind="poweruser" class="edu.umd.cs.findbugs.workflow.RejarClassesForAnalysis"/>
+          <FindBugsMain cmd="backdate" kind="poweruser" class="edu.umd.cs.findbugs.workflow.BackdateHistoryUsingSource"/>
+          <FindBugsMain cmd="csr" kind="poweruser" class="edu.umd.cs.findbugs.workflow.CloudSyncAndReport"/>
+          <FindBugsMain cmd="appVersion" kind="poweruser" class="edu.umd.cs.findbugs.workflow.PrintAppVersion"/>
+          
+          <FindBugsMain cmd="dbStats" kind="db" class="edu.umd.cs.findbugs.cloud.db.DBStats"/>
+          
+          <FindBugsMain cmd="dis" kind="utility" class="edu.umd.cs.findbugs.workflow.PrintClass"/>
+          <FindBugsMain cmd="xpath" kind="utility" class="edu.umd.cs.findbugs.xml.XPathFind"/>
+          
+                                                                                                                                
+          
+          
+          
           <OrderingConstraints>
                     <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.FieldItemSummary"/>
@@ -397,8 +432,6 @@
                     reports="SI_INSTANCE_BEFORE_FINALS_ASSIGNED,IC_INIT_CIRCULARITY"/>
           <Detector class="edu.umd.cs.findbugs.detect.IteratorIdioms" speed="fast"
                     reports="IT_NO_SUCH_ELEMENT"/>
-          <Detector class="edu.umd.cs.findbugs.detect.LockedFields" speed="fast" disabled="true"
-                    hidden="true" reports="IS_INCONSISTENT_SYNC"/>
           <Detector class="edu.umd.cs.findbugs.detect.PreferZeroLengthArrays" speed="fast"
                     reports="PZLA_PREFER_ZERO_LENGTH_ARRAYS"/>
           <Detector class="edu.umd.cs.findbugs.detect.SynchronizingOnContentsOfFieldToProtectField"
