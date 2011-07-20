@@ -44,7 +44,7 @@
             <zipfileset src="lib/commons-lang-2.5.jar"/>
             <zipfileset src="lib/dyuproject-openid-1.1.6.jar"/>
             <zipfileset src="lib/dyuproject-util-1.1.6.jar"/>
-            <zipfileset src="lib/guava-r05.jar"/>
+            <zipfileset src="lib/guava.jar"/>
             <zipfileset src="lib/jdo2-api-2.3-eb.jar"/>
             <zipfileset src="lib/jetty-util-6.1.19.jar"/>
             <zipfileset src="lib/servlet-api-2.5-20081211.jar"/>

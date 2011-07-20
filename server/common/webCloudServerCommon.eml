@@ -62,10 +62,10 @@
 		<srcroot url="jar://$CODE_DIR$/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar!/"/>
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/server/common/lib/charts4j-1.2.jar!/"/>
 	</lib>
-	<lib name="guava-r05.jar" scope="COMPILE">
+	<lib name="guava.jar" scope="COMPILE">
 		<srcroot url="jar://$CODE_DIR$/Libraries/guava-r05/guava-src-r05.zip!/"/>
 		<srcroot url="jar://$CODE_DIR$/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar!/"/>
-		<relative-module-cls project-related="jar://$PROJECT_DIR$/server/common/lib/guava-r05.jar!/"/>
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/server/common/lib/guava.jar!/"/>
 	</lib>
 	<lib name="commons-lang-2.5.jar" scope="COMPILE">
 		<srcroot url="jar://$CODE_DIR$/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar!/"/>

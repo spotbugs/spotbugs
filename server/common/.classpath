@@ -10,9 +10,9 @@
 	<classpathentry exported="true" kind="lib" path="lib/jdo2-api-2.3-eb.jar" sourcepath="C:/Users/Keith/Code/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar"/>
 	<classpathentry kind="lib" path="lib/junit.jar" sourcepath="C:/Users/Keith/Code/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar"/>
 	<classpathentry kind="lib" path="lib/mockito-all-1.8.2.jar" sourcepath="C:/Users/Keith/Code/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar"/>
+	<classpathentry kind="lib" path="lib/guava.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/webCloudProtocol"/>
 	<classpathentry kind="lib" path="lib/charts4j-1.2.jar" sourcepath="C:/Users/Keith/Code/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/guava-r05.jar" sourcepath="C:/Users/Keith/Code/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.5.jar" sourcepath="C:/Users/Keith/Code/Libraries/guava-r05/guava-src-r05.zip"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
