@@ -66,6 +66,13 @@
         <xsd:attribute name="disabled" type="xsd:boolean" use="optional"/>
     </xsd:complexType>
 
+    <xsd:complexType name="FindBugsMainType">
+        <xsd:attribute name="class" type="ClassType"/>
+        <xsd:attribute name="cmd" type="xsd:string"/>
+        <xsd:attribute name="kind" type="xsd:string" use="optional"/>
+        <xsd:attribute name="analysis" type="xsd:boolean" use="optional"/>
+    </xsd:complexType>
+    
     <xsd:complexType name="DetectorType">
         <xsd:attribute name="class" type="ClassType"/>
         <xsd:attribute name="speed" type="SpeedType" use="optional"/>
@@ -143,12 +150,13 @@
         <xsd:sequence>
             <xsd:element name="Cloud" type="CloudType" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="PluginComponent" type="PluginComponentType" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="FindBugsMain" type="FindBugsMainType" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element
                 name="OrderingConstraints"
                 type="OrderingConstraintListType"
                 minOccurs="0"
                 maxOccurs="1"/>
-            <xsd:element name="Detector" type="DetectorType" minOccurs="0" maxOccurs="unbounded"/>
+           <xsd:element name="Detector" type="DetectorType" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="EngineRegistrar" type="EngineRegistrarType" minOccurs="0" maxOccurs="1"/>
             <xsd:element name="BugCode" type="BugCodeType" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="BugPattern" type="BugPatternType" minOccurs="0" maxOccurs="unbounded"/>

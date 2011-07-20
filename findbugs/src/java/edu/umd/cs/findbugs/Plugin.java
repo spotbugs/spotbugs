@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -65,6 +66,7 @@ public class Plugin {
     private String detailedDescription;
 
     private final ArrayList<DetectorFactory> detectorFactoryList;
+    private final Map<String, FindBugsMain> mainPlugins;
 
     private final LinkedHashSet<BugPattern> bugPatterns;
 
@@ -121,6 +123,7 @@ public class Plugin {
         this.bugCategoryList = new LinkedHashSet<BugCategory>();
         this.interPassConstraintList = new ArrayList<DetectorOrderingConstraint>();
         this.intraPassConstraintList = new ArrayList<DetectorOrderingConstraint>();
+        this.mainPlugins = new HashMap<String, FindBugsMain>();
         this.pluginLoader = pluginLoader;
         this.enabledByDefault = enabled;
         this.enabled = EnabledState.PLUGIN_DEFAULT;
@@ -431,10 +434,20 @@ public class Plugin {
         return bugRanker;
     }
 
-    <T> void addComponentPlugin(Class<T> componentClass, ComponentPlugin<T> filter) {
-        if (!componentClass.isAssignableFrom(filter.getComponentClass()))
+    <T> void addFindBugsMain(Class<?> mainClass, String cmd, String kind, boolean analysis) throws SecurityException, NoSuchMethodException {
+        FindBugsMain main = new FindBugsMain(mainClass, cmd, kind, analysis);
+        mainPlugins.put(cmd, main);
+    }
+    
+    public @CheckForNull FindBugsMain getFindBugsMain(String cmd) {
+        return mainPlugins.get(cmd);
+        
+    }
+    
+    <T> void addComponentPlugin(Class<T> componentClass, ComponentPlugin<T> plugin) {
+        if (!componentClass.isAssignableFrom(plugin.getComponentClass()))
                 throw new IllegalArgumentException();
-        componentPlugins.put(componentClass, filter.getId(), filter);
+        componentPlugins.put(componentClass, plugin.getId(), plugin);
     }
 
     public <T> Iterable<ComponentPlugin<T>> getComponentPlugins(Class<T> componentClass) {

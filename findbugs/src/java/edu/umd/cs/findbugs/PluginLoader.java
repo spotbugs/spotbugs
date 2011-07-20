@@ -567,7 +567,7 @@ public class PluginLoader {
 
         }
 
-        // Create a DetectorFactory for all Detector nodes
+        // Create PluginComponents
         try {
 
             List<Node> filterNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/PluginComponent");
@@ -620,6 +620,32 @@ public class PluginLoader {
                             " : " + componentClassname + " implementing " + componentKindname, e);
                 }
             }
+
+            // Create FindBugsMains
+
+
+                List<Node> findBugsMainList = pluginDescriptor.selectNodes("/FindbugsPlugin/FindBugsMain");
+                for (Node main : findBugsMainList) {
+                    String className = main.valueOf("@class");
+                    if (className == null) throw new PluginException("Missing @class for FindBugsMain in plugin" + pluginId
+                            + " loaded from " + loadedFrom);
+                    String cmd = main.valueOf("@cmd");
+                    if (cmd == null) throw new PluginException("Missing @cmd for for FindBugsMain in plugin " + pluginId
+                            + " loaded from " + loadedFrom);
+                    String kind = main.valueOf("@kind");
+                    boolean analysis = Boolean.valueOf(main.valueOf("@analysis"));
+
+                    try {
+                       
+                        Class<?> mainClass =  classLoader.loadClass(className);
+                        plugin.addFindBugsMain(mainClass, cmd, kind, analysis);
+                        
+                    } catch (Exception e) {
+                        AnalysisContext.logError("Unable to load FindBugsMain " + cmd +
+                                " : " + className + " in plugin " + pluginId
+                                + " loaded from " + loadedFrom, e);
+                    }
+                }
 
             List<Node> detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
             int detectorCount = 0;
