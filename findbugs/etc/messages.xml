@@ -5908,8 +5908,9 @@ Did you mean (exp &amp; 1) or (exp % 2) instead?
     <LongDescription>Bitwise OR of signed byte value computed in {1} </LongDescription>
     <Details>
 <![CDATA[
-<p> Loads a value from a byte array and performs a bitwise OR with
-that value. Values loaded from a byte array are sign extended to 32 bits
+<p> Loads a byte value (e.g., a value loaded from a byte array or returned by a method
+with return type byte)  and performs a bitwise OR with
+that value. Byte values are sign extended to 32 bits
 before any any bitwise operations are performed on the value.
 Thus, if <code>b[0]</code> contains the value <code>0xff</code>, and
 <code>x</code> is initially 0, then the code
