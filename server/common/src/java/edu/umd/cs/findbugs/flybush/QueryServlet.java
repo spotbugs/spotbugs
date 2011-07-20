@@ -18,7 +18,6 @@ import javax.jdo.Transaction;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.apphosting.api.DeadlineExceededException;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
@@ -97,14 +96,14 @@ public class QueryServlet extends AbstractFlybushServlet {
                 Issue issueProto = buildFullIssueProto(issue, evaluationsForIssue);
                 issueProtos.addIssues(issueProto);
             }
-        } catch (DeadlineExceededException e) {
+        } catch (RuntimeException e) {
             if (issueProtos.getIssuesCount() > 0) {
-                LOGGER.log(Level.WARNING, "Deadline exceeded, returning only "
+                LOGGER.log(Level.WARNING, e.getClass().getSimpleName() + ", returning only "
                         + issueProtos.getIssuesCount() + " results", e);
                 askAgain = true;
             } else {
                 // just return 500 so the client tries again
-                throw e;
+                throw (RuntimeException) e;
             }
         }
         query.closeAll();
