@@ -201,14 +201,15 @@ public class Analyze {
         Set<ClassDescriptor> xButNotY = new HashSet<ClassDescriptor>(subtypes2.getSubtypes(xDesc));
         xButNotY.removeAll(transitiveCommonSubtypes);
         for (ClassDescriptor c : xButNotY) {
-            XClass cx;
+            
             try {
-                cx = Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
+                XClass cx = Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
+                if (!cx.isAbstract() && !cx.isInterface())
+                    return 0.7;
             } catch (CheckedAnalysisException e) {
                 continue;
             }
-            if (!cx.isAbstract() && !cx.isInterface())
-                return 0.7;
+            
         }
         return 0.99;
     }
