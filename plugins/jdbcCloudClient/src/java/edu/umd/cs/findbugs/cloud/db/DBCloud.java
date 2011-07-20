@@ -84,18 +84,12 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class DBCloud extends AbstractCloud {
 
-    /**
-     *
-     */
     public static final String FINDBUGS_USER_PROPERTY = "findbugsUser";
 
     static final long FIRST_LIGHT = FindBugs.MINIMUM_TIMESTAMP;
 
     static final long ONE_DAY = 24L * 60 * 60 * 1000;
 
-    /**
-     *
-     */
     static final String USER_NAME = "user.name";
 
     private SigninState signinState = SigninState.SIGNING_IN;
