@@ -5182,6 +5182,9 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
               value that is guaranteed to be dereferenced
               (except on forward paths involving runtime exceptions).
               </p>
+		<p>Note that a check such as 
+			<code>if (x == null) throw new NullPointerException();</code
+			is treated as a dereference of <code>x</code>.
           ]]>
       </Details>
   </BugPattern>
