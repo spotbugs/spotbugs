@@ -2789,7 +2789,7 @@ on objects referenced by X, because they may already be getting finalized in a s
   </BugPattern>
 
   <BugPattern type="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS">
-    <ShortDescription>Equals checks for noncompatible operand</ShortDescription>
+    <ShortDescription>Equals checks for incompatible operand</ShortDescription>
     <LongDescription>{1} checks for operand being a {2.givenClass} </LongDescription>
     <Details>
 <![CDATA[
@@ -8315,7 +8315,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="RCN">Redundant comparison to null</BugCode>
   <BugCode abbrev="UL">Lock not released on all paths</BugCode>
   <BugCode abbrev="RC">Questionable use of reference equality rather than calling equals</BugCode>
-  <BugCode abbrev="EC">Comparing incompatable types for equality</BugCode>
+  <BugCode abbrev="EC">Comparing incompatible types for equality</BugCode>
   <BugCode abbrev="MWN">Mismatched wait() or notify()</BugCode>
   <BugCode abbrev="SA">Useless self-operation</BugCode>
   <BugCode abbrev="INT">Suspicious integer expression</BugCode>
