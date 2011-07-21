@@ -1,0 +1,64 @@
+<html>
+<head>
+<title>FindBugs sourceInfo file</title>
+<link rel="stylesheet" type="text/css" href="findbugs.css">
+</head>
+<body>
+
+<table width="100%"><tr>
+
+@HTML_SIDEBAR@
+
+<td align="left" valign="top">
+
+<h1>FindBugs sourceInfo file</h1>
+
+<p>The FindBugs analysis engine can be invoked with an optional sourceInfo
+file. This file gives line number ranges for classes, files and methods. This
+information is an alternative to getting line number information 
+from the classfiles for methods. Since classfiles only contain line number 
+information 
+for methods, without a sourceInfo file we can't provide line numbers for fields,
+and for classes we just use the line numbers of the methods in the class.
+
+<p>The first line of the file should be
+<pre>
+sourceInfo version 1.0
+</pre>
+
+<p>Following that are a series of lines, each describing a class, field, or method.  For each, a starting and ending line number is provided. For example, the following sourceInfo file:
+<pre>
+sourceInfo version 1.0
+a.C,3,8
+a.C,x,4,4
+a.C,y,4,4
+a.C,<init>()V,8,8
+a.C,f(I)I,5,5
+a.C,g(Ljava/lang/Object;)I,6,7
+</pre>
+provides the following information about the class a.C:
+<ul>
+<li> fields x and y are both declared on line 4.
+<li> the method <code>int f(int)</code> is defined on line 5.
+<li> the method <code>int g(Object)</code> is defined on lines 6-7.
+<li> the void constructor for a.C is defined on line 8.
+</ul>
+The classnames should be the same format as used by Class.getName(): 
+packages are separated by ., inner class names are separated by $.
+Thus, if the class a.C had an inner class X and it was onb lines 10-15 of the file, the sourceInfo file might contain:
+
+<pre>
+a.C$X,10,15
+</pre>
+
+
+</table>
+
+@HTML_FOOTER@
+
+</td>
+
+</tr></table>
+
+</body>
+</html>
