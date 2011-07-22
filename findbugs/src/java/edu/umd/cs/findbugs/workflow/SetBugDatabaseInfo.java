@@ -196,11 +196,16 @@ public class SetBugDatabaseInfo {
             project.getFileList().clear();
             project.getAuxClasspathEntryList().clear();
         }
-        if (commandLine.cloudId != null)
+        boolean reinitializeCloud = false;
+        if (commandLine.cloudId != null) {
             project.setCloudId(commandLine.cloudId);
+            reinitializeCloud = true;
+        }
         for (Map.Entry<String, String> e : commandLine.cloudProperties.entrySet()) {
             project.getCloudProperties().setProperty(e.getKey(), e.getValue());
+            reinitializeCloud = true;
         }
+           
         if (commandLine.resetSource)
             project.getSourceDirList().clear();
         for (String source : commandLine.sourcePaths)
@@ -276,6 +281,9 @@ public class SetBugDatabaseInfo {
             }
 
         }
+        
+        if (reinitializeCloud)
+            origCollection.clearCloud();
         // OK, now we know all the missing source files
         // we also know all the .java files in the directories we were pointed
         // to

@@ -51,6 +51,36 @@ public class CloudFactory {
     private static final Logger LOGGER = Logger.getLogger(CloudFactory.class.getName());
 
     public static Cloud createCloudWithoutInitializing(BugCollection bc) {
+        CloudPlugin plugin = getCloudPlugin(bc);
+        if (plugin == null) {
+            LOGGER.log(Level.FINE, "default cloud " + DEFAULT_CLOUD + " not registered");
+            return getPlainCloud(bc);
+        }
+        LOGGER.log(Level.FINE, "Using cloud plugin " + plugin.getId());
+
+        try {
+            Class<? extends Cloud> cloudClass = plugin.getCloudClass();
+            Properties properties = bc.getProject().getCloudProperties();
+            Constructor<? extends Cloud> constructor = cloudClass.getConstructor(CloudPlugin.class, BugCollection.class,
+                    Properties.class);
+            Cloud cloud = constructor.newInstance(plugin, bc, properties);
+            if (DEBUG)
+                bc.getProject().getGuiCallback().showMessageDialog("constructed " + cloud.getClass().getName());
+            LOGGER.log(Level.FINE, "constructed cloud plugin " + plugin.getId());
+            return cloud;
+        } catch (InvocationTargetException e) {
+           return handleInitializationException(bc, plugin, e.getCause());
+        } catch (Exception e) {
+            return handleInitializationException(bc, plugin, e);
+        }
+
+    }
+
+    /**
+     * @param bc
+     * @return
+     */
+    public static CloudPlugin getCloudPlugin(BugCollection bc) {
         CloudPlugin plugin = null;
         String cloudId = bc.getProject().getCloudId();
         if (cloudId != null) {
@@ -66,40 +96,13 @@ public class CloudFactory {
                 plugin = null; // use default cloud below
             }
         }
-        boolean usedDefaultCloud = false;
         if (plugin == null) {
             if (DEFAULT_CLOUD != null)
                 LOGGER.log(Level.FINE, "Trying default cloud " + DEFAULT_CLOUD);
             cloudId = DEFAULT_CLOUD;
             plugin = DetectorFactoryCollection.instance().getRegisteredClouds().get(cloudId);
-            usedDefaultCloud = true;
-            if (plugin == null) {
-                LOGGER.log(Level.FINE, "default cloud " + DEFAULT_CLOUD + " not registered");
-
-                return getPlainCloud(bc);
-            }
-
-        }
-        LOGGER.log(Level.FINE, "Using cloud plugin " + plugin.getId());
-
-        try {
-            Class<? extends Cloud> cloudClass = plugin.getCloudClass();
-            Properties properties = bc.getProject().getCloudProperties();
-            Constructor<? extends Cloud> constructor = cloudClass.getConstructor(CloudPlugin.class, BugCollection.class,
-                    Properties.class);
-            Cloud cloud = constructor.newInstance(plugin, bc, properties);
-            if (DEBUG)
-                bc.getProject().getGuiCallback().showMessageDialog("constructed " + cloud.getClass().getName());
-            LOGGER.log(Level.FINE, "constructed cloud plugin " + plugin.getId());
-            if (false && usedDefaultCloud)
-                bc.getProject().setCloudId(plugin.getId());
-            return cloud;
-        } catch (InvocationTargetException e) {
-           return handleInitializationException(bc, plugin, e.getCause());
-        } catch (Exception e) {
-            return handleInitializationException(bc, plugin, e);
-        }
-
+             }
+        return plugin;
     }
 
     public static Cloud handleInitializationException(BugCollection bc, CloudPlugin plugin, Throwable e) {

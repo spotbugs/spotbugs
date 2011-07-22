@@ -57,6 +57,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
@@ -896,16 +897,16 @@ public class Project implements XMLWriteable {
             pluginAttributeList.addAttribute(PLUGIN_STATUS_ELEMENT_NAME, enabled.toString());
             xmlOutput.openCloseTag(PLUGIN_ELEMENT_NAME, pluginAttributeList);
         }
-        Cloud cloud = bugCollection.getCloud();
-        if (cloud != null) {
-            String id = cloud.getPlugin().getId();
+        CloudPlugin cloudPlugin = CloudFactory.getCloudPlugin(bugCollection);
+        if (cloudPlugin != null) {
+            String id = cloudPlugin.getId();
             if (id == null)
                 id = cloudId;
             xmlOutput.startTag(CLOUD_ELEMENT_NAME);
             xmlOutput.addAttribute(CLOUD_ID_ATTRIBUTE_NAME, id);
-            boolean onlineCloud = cloud.isOnlineCloud();
+            boolean onlineCloud = cloudPlugin.isOnline();
             xmlOutput.addAttribute("online", Boolean.toString(onlineCloud));
-            String url = cloud.getBugDetailsUrlTemplate();
+            String url = cloudPlugin.getProperties().getProperty("detailsUrl");
             if (url != null)
                 xmlOutput.addAttribute("detailsUrl", url);
             xmlOutput.stopTag(false);

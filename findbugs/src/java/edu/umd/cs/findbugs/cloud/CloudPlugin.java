@@ -99,5 +99,9 @@ public class CloudPlugin {
     public String toString() {
         return getDescription();
     }
+    
+    public boolean isOnline() {
+        return OnlineCloud.class.isAssignableFrom(cloudClass);
+    }
 
 }

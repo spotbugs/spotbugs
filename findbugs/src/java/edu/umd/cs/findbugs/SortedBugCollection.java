@@ -66,6 +66,7 @@ import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.util.Util;
@@ -187,8 +188,8 @@ public class SortedBugCollection implements BugCollection {
      *            the Collection of BugInstances to add
      */
     public void addAll(Collection<BugInstance> collection) {
-        for (BugInstance aCollection : collection) {
-            add(aCollection);
+        for (BugInstance bug : collection) {
+            add(bug);
         }
     }
 
@@ -217,7 +218,8 @@ public class SortedBugCollection implements BugCollection {
      *         BugInstance was already in the BugCollection
      */
     public boolean add(BugInstance bugInstance) {
-        return add(bugInstance, true);
+        return add(bugInstance, 
+        		bugInstance.getFirstVersion() == 0L && bugInstance.getLastVersion() == 0L);
     }
 
     /**
@@ -438,11 +440,11 @@ public class SortedBugCollection implements BugCollection {
 
         XMLOutput xmlOutput;
         // if (project == null) throw new NullPointerException("No project");
-        Cloud cloud = getCloud();
-        cloud.bugsPopulated();
-
+        
 
         if (withMessages) {
+            Cloud cloud = getCloud();
+            cloud.bugsPopulated();
             cloud.initiateCommunication();
             cloud.waitUntilIssueDataDownloaded();
             String token = SystemProperties.getProperty("findbugs.cloud.token");
@@ -1400,6 +1402,16 @@ public class SortedBugCollection implements BugCollection {
             assert true;
         }
         return in;
+    }
+
+    public void clearCloud() {
+        Cloud oldCloud = cloud;
+        IGuiCallback callback = project.getGuiCallback();
+        if (oldCloud != null) {
+            callback.unregisterCloud(project, this, oldCloud);
+            oldCloud.shutdown();
+        }
+        cloud = null;
     }
 
     /*

@@ -3,16 +3,15 @@
           pluginid="edu.umd.cs.findbugs.plugins.jdbcCloud" defaultenabled="true"
           provider="FindBugs project" website="http://findbugs.sourceforge.net">
 
-          <Cloud id="edu.umd.cs.findbugs.cloud.db.Sample-SQL-cloud"
+          <Cloud id="com.google.findbugs.InternalGoogleCloud"
                     cloudClass="edu.umd.cs.findbugs.cloud.db.DBCloud"
                     usernameClass="edu.umd.cs.findbugs.cloud.username.LocalNameLookup"
-                    hidden="true"
                     >
-                    <Property key="findbugs.jdbc.dbDriver">com.mysql.jdbc.Driver</Property>
-                    <Property key="findbugs.jdbc.dbUrl">jdbc:mysql://localhost/findbugs</Property>
-                    <Property key="findbugs.jdbc.dbName">SQL FindBugs cloud on localhost</Property>
-                    <Property key="findbugs.jdbc.dbUser">root</Property>
-                    <Property key="findbugs.jdbc.dbPassword"></Property>
+		<Property key="findbugs.jdbc.dbUrl">jdbc:mysql://bugbot-mhdb.corp.google.com/bugbot</Property>
+		<Property key="findbugs.jdbc.dbDriver">com.mysql.jdbc.Driver</Property>
+		<Property key="findbugs.jdbc.dbName">Google FindBugs database</Property>
+		<Property key="findbugs.jdbc.dbUser">bugbot-usr</Property>
+		<Property key="findbugs.jdbc.dbPassword">sKF9EycI</Property>
           </Cloud>
 
 
