@@ -73,6 +73,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.OnlineCloud;
 import edu.umd.cs.findbugs.cloud.BugFilingCommentHelper;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
@@ -82,7 +83,7 @@ import edu.umd.cs.findbugs.util.Util;
 /**
  * @author pwilliam
  */
-public class DBCloud extends AbstractCloud {
+public class DBCloud extends AbstractCloud implements OnlineCloud {
 
     public static final String FINDBUGS_USER_PROPERTY = "findbugsUser";
 
