@@ -99,7 +99,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
             if (calledClassName.startsWith("java/io/File")
                     && calledMethodSig.equals("(Ljava/lang/String;)V")) {
                 OpcodeStack.Item path = stack.getStackItem(0);
-                if (isTainted(path) && SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors")) {
+                if (isTainted(path)) {
                     annotateAndReport(new BugInstance(this, "TESTING", taintPriority(path))
                           .addClassAndMethod(this).addCalledMethod(this)
                           .addString("Path manipulation"),
