@@ -350,6 +350,8 @@ public class DBCloud extends AbstractCloud {
     }
 
     static boolean invocationRecorded;
+    
+    static final boolean LOG_BUG_UPLOADS = SystemProperties.getBoolean("cloud.buguploads.log");
 
     class PopulateBugs implements Update {
         /**
@@ -550,11 +552,16 @@ public class DBCloud extends AbstractCloud {
                         BugData bd = getBugData(b.getInstanceHash());
                         if (!bd.inDatabase) {
                             storeNewBug(b, stillPresentAt);
+                            if (LOG_BUG_UPLOADS) 
+                            	System.out.printf("NEW %tD: %s%n", new Date(getLocalFirstSeen(b)), b.getMessage());
                         } else {
                             long firstSeenLocally = getLocalFirstSeen(b);
 
                             if (FindBugs.validTimestamp(firstSeenLocally)
                                     && (firstSeenLocally < bd.firstSeen || !FindBugs.validTimestamp(bd.firstSeen))) {
+                                if (LOG_BUG_UPLOADS) 
+                                	System.out.printf("BACKDATED %tD -> %tD: %s%n", new Date(bd.firstSeen), new Date(firstSeenLocally), b.getMessage());
+               
                                 bd.firstSeen = firstSeenLocally;
                                 storeFirstSeen(bd);
                             } else if (FindBugs.validTimestamp(stillPresentAt)
