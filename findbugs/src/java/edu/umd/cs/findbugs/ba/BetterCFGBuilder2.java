@@ -37,6 +37,8 @@ import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ExceptionThrower;
 import org.apache.bcel.generic.GETSTATIC;
+import org.apache.bcel.generic.GOTO;
+import org.apache.bcel.generic.ICONST;
 import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.IFNULL;
 import org.apache.bcel.generic.IF_ACMPEQ;
@@ -73,10 +75,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("cfgbuilder.debug");
 
-    // TODO: don't forget to change BasicBlock so ATHROW is considered to have a
-    // null check
-
-    /*
+     /*
      * ----------------------------------------------------------------------
      * Helper classes
      * ----------------------------------------------------------------------
@@ -613,6 +612,31 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                     head.swapInstruction(consumed == 1 ? new POP() : new POP2());
                 }
 
+            }
+            if (i instanceof IFNULL || i instanceof IFNONNULL) {
+                IfInstruction ii = (IfInstruction) i;
+                InstructionHandle target = ii.getTarget();
+                InstructionHandle next1 = head.getNext(); // ICONST
+                InstructionHandle next2 = next1.getNext(); // GOTO
+                InstructionHandle next3 = next2.getNext(); // ICONST
+                InstructionHandle next4 = next3.getNext();
+                if (target.equals(next3) && next1.getInstruction() instanceof ICONST && next2.getInstruction() instanceof GOTO
+                        && next3.getInstruction() instanceof ICONST) {
+                    int c1 = ((ICONST) next1.getInstruction()).getValue().intValue();
+                    GOTO g = (GOTO) next2.getInstruction();
+                    int c2 = ((ICONST) next3.getInstruction()).getValue().intValue();
+                    if (g.getTarget().equals(next4) && (c1 == 1 && c2 == 0 || c1 == 0 && c2 == 1)) {
+                        boolean nullIsTrue = i instanceof IFNULL && c2 == 1 || i instanceof IFNONNULL && c2 == 0;
+                        if (false) {
+                            if (nullIsTrue)
+                                System.out.println("Found NULL2Z instruction");
+                            else
+                                System.out.println("Found NONNULL2Z instruction");
+                        }
+                    }                                            
+                }
+              
+                
             }
             if (i instanceof ACONST_NULL) {
                 InstructionHandle next = head.getNext();
