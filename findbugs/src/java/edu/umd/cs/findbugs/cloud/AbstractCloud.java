@@ -581,10 +581,6 @@ public abstract class AbstractCloud implements Cloud {
         return true;
     }
 
-    public String getBugDetailsUrlTemplate() {
-        return null;
-    }
-
     public boolean canStoreUserAnnotation(BugInstance bugInstance) {
         return true;
     }

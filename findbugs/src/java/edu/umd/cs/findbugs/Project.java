@@ -906,7 +906,7 @@ public class Project implements XMLWriteable {
             xmlOutput.addAttribute(CLOUD_ID_ATTRIBUTE_NAME, id);
             boolean onlineCloud = cloudPlugin.isOnline();
             xmlOutput.addAttribute("online", Boolean.toString(onlineCloud));
-            String url = cloudPlugin.getProperties().getProperty("detailsUrl");
+            String url = cloudPlugin.getProperties().getProperty("cloud.detailsUrl");
             if (url != null)
                 xmlOutput.addAttribute("detailsUrl", url);
             xmlOutput.stopTag(false);

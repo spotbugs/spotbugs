@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.BugFiler;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.MutableCloudTask;
+import edu.umd.cs.findbugs.cloud.OnlineCloud;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
@@ -51,7 +52,7 @@ import edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup;
 import edu.umd.cs.findbugs.util.Util;
 
 @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
-public class WebCloudClient extends AbstractCloud {
+public class WebCloudClient extends AbstractCloud implements OnlineCloud {
 
     private static final Logger LOGGER = Logger.getLogger(WebCloudClient.class.getPackage().getName());
 
@@ -505,11 +506,6 @@ public class WebCloudClient extends AbstractCloud {
 
     public boolean isOnlineCloud() {
         return true;
-    }
-
-    public String getBugDetailsUrlTemplate() {
-        String host = networkClient.getHost();
-        return host == null ? null : host + "/issues/%s?embed";
     }
 
     // ============================== misc =====================================

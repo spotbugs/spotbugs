@@ -179,10 +179,6 @@ public interface Cloud {
 
     boolean isOnlineCloud();
 
-    /** Returns a URL like http://mycloud.com/issues?issue=%s
-     * where %s is to be replaced with the bug instance hash */
-    @CheckForNull String getBugDetailsUrlTemplate();
-
     /** has the user said they will fix this bug */
     boolean getIWillFix(BugInstance b);
 

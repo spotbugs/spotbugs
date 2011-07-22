@@ -167,10 +167,6 @@ public class DoNothingCloud implements Cloud {
         return "true".equals(bugCollection.getXmlCloudDetails().get("online"));
     }
 
-    public String getBugDetailsUrlTemplate() {
-        return bugCollection.getXmlCloudDetails().get("detailsUrl");
-    }
-
     public boolean getIWillFix(BugInstance b) {
         return false;
     }

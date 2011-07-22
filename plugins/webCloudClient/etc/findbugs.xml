@@ -18,12 +18,14 @@
          disabled="true" onlineStorage="true"
 	>
        <Property key="webcloud.host">http://theflybush.appspot.com</Property>
+       <Property key="cloud.detailsUrl">http://theflybush-cloud.appspot.com/issues/%s?embed</Property>
 </Cloud>
   <Cloud id="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"				
 	 cloudClass="edu.umd.cs.findbugs.cloud.appEngine.WebCloudClient"
 	 usernameClass="edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup" onlineStorage="true"
 	>
        <Property key="webcloud.host">http://findbugs-cloud.appspot.com</Property>
+       <Property key="cloud.detailsUrl">http://findbugs-cloud.appspot.com/issues/%s?embed</Property>
 </Cloud>
 
 </FindbugsPlugin>
