@@ -117,16 +117,6 @@ public class ValueNumber implements Comparable<ValueNumber> {
         return flags;
     }
 
-    @Deprecated
-    public void setFlags(int flags) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Deprecated
-    public void setFlag(int flag) {
-        throw new UnsupportedOperationException();
-    }
-
     public boolean hasFlag(int flag) {
         return (flags & flag) == flag;
     }
