@@ -27,6 +27,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import org.dom4j.Document;
@@ -368,12 +370,13 @@ public interface BugCollection extends Iterable<BugInstance> {
     /**
      * Get the instance of user annotation plugin
      *
-     * @return user annotation plugin OR null, if there is no annotation plugin
-     *         installed
+     * @return user annotation plugin 
      */
-    public Cloud getCloud();
+    public @Nonnull Cloud getCloud();
+    
+    public @CheckForNull Cloud getCloudLazily();
 
-    public Cloud reinitializeCloud();
+    public @Nonnull Cloud reinitializeCloud();
 
     void setXmlCloudDetails(Map<String, String> map);
 

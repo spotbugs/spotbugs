@@ -2062,8 +2062,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             attributeList.addAttribute("removedByChange", "true");
 
         if (bugCollection != null) {
-            Cloud cloud = bugCollection.getCloud();
-            if (cloud.communicationInitiated()) {
+            Cloud cloud = bugCollection.getCloudLazily();
+            if (cloud != null && cloud.communicationInitiated()) {
                 long firstSeen = cloud.getFirstSeen(this);
                 attributeList.addAttribute("firstSeen", firstSeenXMLFormat().format(firstSeen));
                 int reviews = cloud.getNumberReviewers(this);

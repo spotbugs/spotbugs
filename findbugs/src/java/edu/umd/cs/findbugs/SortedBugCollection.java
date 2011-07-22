@@ -138,6 +138,11 @@ public class SortedBugCollection implements BugCollection {
     public Project getProject() {
         return project;
     }
+    
+    public @CheckForNull Cloud getCloudLazily() {
+        return cloud;
+    }
+        
 
     public @Nonnull Cloud getCloud() {
         if (shouldNotUsePlugin) {
