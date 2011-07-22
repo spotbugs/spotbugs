@@ -287,7 +287,8 @@ public class ViewFilter {
 
     enum FirstSeenFilter implements ViewFilterEnum {
         LAST_DAY(1, "Last day"), LAST_3_DAYS(3, "Last 3 days"), LAST_WEEK(7, "Last week"), LAST_MONTH(30, "Last month"), LAST_THREE_MONTHS(
-                91, "Last 90 days"), ALL(Integer.MAX_VALUE, "All time") {
+                91, "Last 90 days"), LAST_YEAR(
+                        365, "Last year"), ALL(Integer.MAX_VALUE, "All time") {
             @Override
             public boolean show(MainFrame mf, BugInstance b) {
                 return true;
