@@ -79,7 +79,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("cfgbuilder.debug");
 
-     /*
+    /*
      * ----------------------------------------------------------------------
      * Helper classes
      * ----------------------------------------------------------------------
@@ -602,8 +602,15 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
     public void optimize(InstructionList instructionList) {
         InstructionHandle head = instructionList.getStart();
+        if (methodGen.getName().equals("logOpportuntiesViewed")) {
+            System.out.println("Found it");
+        }
+
         while (head != null) {
             Instruction i = head.getInstruction();
+            if (methodGen.getName().equals("logOpportuntiesViewed")) {
+                System.out.println(head);
+            }
 
 
             if (i instanceof IfInstruction) {
@@ -622,36 +629,38 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                 IfInstruction ii = (IfInstruction) i;
                 InstructionHandle target = ii.getTarget();
                 InstructionHandle next1 = head.getNext(); // ICONST
-                if (next1 == null || !(next1.getInstruction() instanceof ICONST)) break;
-                InstructionHandle next2 = next1.getNext(); // GOTO
-                if (next2 == null) break;
-                InstructionHandle next3 = next2.getNext(); // ICONST
-                if (next3== null) break;
-                InstructionHandle next4 = next3.getNext();
-                if (next4 == null) break;
-                if (target.equals(next3)  && next2.getInstruction() instanceof GOTO
-                        && next3.getInstruction() instanceof ICONST && next1.getTargeters().length == 0
-                        && next2.getTargeters().length == 0 && next3.getTargeters().length == 1
-                        && next4.getTargeters().length == 1) {
-                    int c1 = ((ICONST) next1.getInstruction()).getValue().intValue();
-                    GOTO g = (GOTO) next2.getInstruction();
-                    int c2 = ((ICONST) next3.getInstruction()).getValue().intValue();
-                    if (g.getTarget().equals(next4) && (c1 == 1 && c2 == 0 || c1 == 0 && c2 == 1)) {
-                        boolean nullIsTrue = i instanceof IFNULL && c2 == 1 || i instanceof IFNONNULL && c2 == 0;
+                if (next1 == null) break;
+                if (next1.getInstruction() instanceof ICONST) {
+                    InstructionHandle next2 = next1.getNext(); // GOTO
+                    if (next2 == null) break;
+                    InstructionHandle next3 = next2.getNext(); // ICONST
+                    if (next3== null) break;
+                    InstructionHandle next4 = next3.getNext();
+                    if (next4 == null) break;
+                    if (target.equals(next3)  && next2.getInstruction() instanceof GOTO
+                            && next3.getInstruction() instanceof ICONST && next1.getTargeters().length == 0
+                            && next2.getTargeters().length == 0 && next3.getTargeters().length == 1
+                            && next4.getTargeters().length == 1) {
+                        int c1 = ((ICONST) next1.getInstruction()).getValue().intValue();
+                        GOTO g = (GOTO) next2.getInstruction();
+                        int c2 = ((ICONST) next3.getInstruction()).getValue().intValue();
+                        if (g.getTarget().equals(next4) && (c1 == 1 && c2 == 0 || c1 == 0 && c2 == 1)) {
+                            boolean nullIsTrue = i instanceof IFNULL && c2 == 1 || i instanceof IFNONNULL && c2 == 0;
 
-                        if (nullIsTrue) {
-                            // System.out.println("Found NULL2Z instruction");
-                            head.swapInstruction(new NULL2Z());
+                            if (nullIsTrue) {
+                                // System.out.println("Found NULL2Z instruction");
+                                head.swapInstruction(new NULL2Z());
 
-                        } else {
-                            // System.out.println("Found NONNULL2Z instruction");
-                            head.swapInstruction(new NONNULL2Z());
+                            } else {
+                                // System.out.println("Found NONNULL2Z instruction");
+                                head.swapInstruction(new NONNULL2Z());
+                            }
+                            next3.removeAllTargeters();
+                            next4.removeAllTargeters();
+                            next1.swapInstruction(new NOP());
+                            next2.swapInstruction(new NOP());
+                            next3.swapInstruction(new NOP());
                         }
-                        next3.removeAllTargeters();
-                        next4.removeAllTargeters();
-                        next1.swapInstruction(new NOP());
-                        next2.swapInstruction(new NOP());
-                        next3.swapInstruction(new NOP());
                     }
                 }
 
@@ -704,10 +713,10 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
         if (VERIFY_INTEGRITY)
             cfg.checkIntegrity();
-        
+
         if (true) {
             cfg.checkIntegrity();
-            
+
         }
     }
 
