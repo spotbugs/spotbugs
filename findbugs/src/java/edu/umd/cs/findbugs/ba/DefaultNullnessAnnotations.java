@@ -377,14 +377,27 @@ public class DefaultNullnessAnnotations {
                 false, 0, NullnessAnnotation.NONNULL);
 
         database.addMethodParameterAnnotation("java.text.DateFormat", "parse",
-                "(Ljava/lang/String;Ljava/text/ParsePosition;)Ljava/util/Date;", true, 0, NullnessAnnotation.NONNULL);
-        database.addMethodParameterAnnotation("java.text.DateFormat", "parse", "(Ljava/lang/String;)Ljava/util/Date;", true, 0,
+                "(Ljava/lang/String;Ljava/text/ParsePosition;)Ljava/util/Date;", false, 0, NullnessAnnotation.NONNULL);
+        database.addMethodParameterAnnotation("java.text.DateFormat", "parse", "(Ljava/lang/String;)Ljava/util/Date;", false, 0,
                 NullnessAnnotation.NONNULL);
 
         // addMethodAnnotation("java.util.Queue", "poll",
         // "()Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
         database.addMethodAnnotation("java.io.BufferedReader", "readLine", "()Ljava/lang/String;", false,
                 NullnessAnnotation.CHECK_FOR_NULL);
+        
+        database.addMethodParameterAnnotation("com.google.common.base.Preconditions","checkNotNull","(Ljava/lang/Object;)Ljava/lang/Object;",
+                false, 0, NullnessAnnotation.NONNULL);
+        database.addMethodParameterAnnotation("com.google.common.base.Preconditions","checkNotNull","(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                false, 0, NullnessAnnotation.NONNULL);
+        database.addMethodParameterAnnotation("com.google.common.base.Preconditions","checkNotNull","(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;",
+                false, 0, NullnessAnnotation.NONNULL);
+        database.addMethodAnnotation("com.google.common.base.Preconditions","checkNotNull","(Ljava/lang/Object;)Ljava/lang/Object;",
+                false, NullnessAnnotation.NONNULL);
+        database.addMethodAnnotation("com.google.common.base.Preconditions","checkNotNull","(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                false, NullnessAnnotation.NONNULL);
+        database.addMethodAnnotation("com.google.common.base.Preconditions","checkNotNull","(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;",
+                false, NullnessAnnotation.NONNULL);
 
         AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(missingClassWarningsSuppressed);
 

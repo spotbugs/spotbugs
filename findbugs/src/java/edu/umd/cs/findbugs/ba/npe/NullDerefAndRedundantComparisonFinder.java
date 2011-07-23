@@ -66,6 +66,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
+import edu.umd.cs.findbugs.bcel.generic.NullnessConversationInstruction;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.log.Profiler;
@@ -516,6 +517,33 @@ public class NullDerefAndRedundantComparisonFinder {
             slots = vnaFrame.getNumSlots();
         else
             slots = vnaFrame.getNumLocals();
+        
+        InstructionHandle handle = thisLocation.getHandle();
+        if (false && handle != null && handle.getInstruction() instanceof NullnessConversationInstruction) {
+            try {
+                IsNullValue isNullValue = invFrame.getStackValue(0);
+                ValueNumber valueNumber = vnaFrame.getStackValue(0);
+                if (!isNullValue.isDefinitelyNotNull() && !isNullValue.isDefinitelyNull() && derefSet.isUnconditionallyDereferenced(valueNumber)) {
+                    Location where = thisLocation;
+                    SortedSet<Location> doomedAt = knownNullAndDoomedAt.get(valueNumber);
+                    if (doomedAt == null)
+                        knownNullAndDoomedAt.put(valueNumber, doomedAt = new TreeSet<Location>());
+                    doomedAt.add(thisLocation);
+                    NullValueUnconditionalDeref nullValueUnconditionalDeref = nullValueGuaranteedDerefMap.get(valueNumber);
+                    if (nullValueUnconditionalDeref != null) {
+                        Set<Location> derefLocationSet = nullValueUnconditionalDeref.getDerefLocationSet();
+                        if (derefLocationSet.size() == 1)
+                            where = derefLocationSet.iterator().next();
+                    }
+                    noteUnconditionallyDereferencedNullValue(where, knownNullAndDoomedAt, nullValueGuaranteedDerefMap, derefSet,
+                            isNullValue, valueNumber);
+                }
+            } catch (DataflowAnalysisException e) {
+                AnalysisContext.logError("huh", e);
+            }
+            
+            
+        }
 
         // See if there are any definitely-null values in the frame
         for (int j = 0; j < slots; j++) {

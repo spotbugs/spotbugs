@@ -114,6 +114,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
+import edu.umd.cs.findbugs.bcel.generic.NullnessConversationInstruction;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -349,10 +350,11 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                     if (ins instanceof InvokeInstruction) {
                         examineCallSite(location, cpg, typeDataflow);
                     } else if (methodAnnotation == NullnessAnnotation.NONNULL && ins.getOpcode() == Constants.ARETURN) {
-
                         examineReturnInstruction(location);
                     } else if (ins instanceof PUTFIELD) {
                         examinePutfieldInstruction(location, (PUTFIELD) ins, cpg);
+                    } else if (ins instanceof NullnessConversationInstruction) {
+                        examineNullnessConversationInstruction(location, (NullnessConversationInstruction) ins, cpg);
                     }
                 } catch (ClassNotFoundException e) {
                     bugReporter.reportMissingClass(e);
@@ -428,6 +430,10 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
     }
 
+    private void examineNullnessConversationInstruction(Location location, NullnessConversationInstruction ins, ConstantPoolGen cpg)
+        throws DataflowAnalysisException, CFGBuilderException {
+
+    }
     private void examinePutfieldInstruction(Location location, PUTFIELD ins, ConstantPoolGen cpg)
             throws DataflowAnalysisException, CFGBuilderException {
 
@@ -502,7 +508,6 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
     private boolean hasManyPreceedingNullTests(int pc) {
         int ifNullTests = 0;
-        int ifNonnullTests = 0;
         BitSet seen = new BitSet();
         try {
             for (Iterator<Location> i = classContext.getCFG(method).locationIterator(); i.hasNext();) {
@@ -511,15 +516,12 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                 if (pc2 >= pc || pc2 < pc - 30)
                     continue;
                 Instruction ins = loc.getHandle().getInstruction();
-                if (ins instanceof IFNONNULL && !seen.get(pc2)) {
-                    ifNonnullTests++;
-                    seen.set(pc2);
-                } else if (ins instanceof IFNULL && !seen.get(pc2)) {
+                if ((ins instanceof IFNONNULL || ins instanceof IFNULL || ins instanceof NullnessConversationInstruction) && !seen.get(pc2)) {
                     ifNullTests++;
                     seen.set(pc2);
                 }
             }
-            boolean result = ifNullTests + ifNonnullTests > 2;
+            boolean result = ifNullTests > 2;
 
             // System.out.println("Preceeding null tests " + ifNullTests + " " +
             // ifNonnullTests + " " + result);

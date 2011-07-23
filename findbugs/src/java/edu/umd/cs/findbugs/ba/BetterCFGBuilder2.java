@@ -50,6 +50,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.InstructionTargeter;
 import org.apache.bcel.generic.JsrInstruction;
+import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.MONITOREXIT;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NEW;
@@ -62,6 +63,9 @@ import org.apache.bcel.generic.ReturnInstruction;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import edu.umd.cs.findbugs.bcel.generic.NONNULL2Z;
+import edu.umd.cs.findbugs.bcel.generic.NULL2Z;
+import edu.umd.cs.findbugs.visitclass.PrintClass;
 
 /**
  * A CFGBuilder that really tries to construct accurate control flow graphs. The
@@ -601,6 +605,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         while (head != null) {
             Instruction i = head.getInstruction();
 
+
             if (i instanceof IfInstruction) {
                 IfInstruction ii = (IfInstruction) i;
                 InstructionHandle target = ii.getTarget();
@@ -617,26 +622,39 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                 IfInstruction ii = (IfInstruction) i;
                 InstructionHandle target = ii.getTarget();
                 InstructionHandle next1 = head.getNext(); // ICONST
+                if (next1 == null || !(next1.getInstruction() instanceof ICONST)) break;
                 InstructionHandle next2 = next1.getNext(); // GOTO
+                if (next2 == null) break;
                 InstructionHandle next3 = next2.getNext(); // ICONST
+                if (next3== null) break;
                 InstructionHandle next4 = next3.getNext();
-                if (target.equals(next3) && next1.getInstruction() instanceof ICONST && next2.getInstruction() instanceof GOTO
-                        && next3.getInstruction() instanceof ICONST) {
+                if (next4 == null) break;
+                if (target.equals(next3)  && next2.getInstruction() instanceof GOTO
+                        && next3.getInstruction() instanceof ICONST && next1.getTargeters().length == 0
+                        && next2.getTargeters().length == 0 && next3.getTargeters().length == 1
+                        && next4.getTargeters().length == 1) {
                     int c1 = ((ICONST) next1.getInstruction()).getValue().intValue();
                     GOTO g = (GOTO) next2.getInstruction();
                     int c2 = ((ICONST) next3.getInstruction()).getValue().intValue();
                     if (g.getTarget().equals(next4) && (c1 == 1 && c2 == 0 || c1 == 0 && c2 == 1)) {
                         boolean nullIsTrue = i instanceof IFNULL && c2 == 1 || i instanceof IFNONNULL && c2 == 0;
-                        if (false) {
-                            if (nullIsTrue)
-                                System.out.println("Found NULL2Z instruction");
-                            else
-                                System.out.println("Found NONNULL2Z instruction");
+
+                        if (nullIsTrue) {
+                            // System.out.println("Found NULL2Z instruction");
+                            head.swapInstruction(new NULL2Z());
+
+                        } else {
+                            // System.out.println("Found NONNULL2Z instruction");
+                            head.swapInstruction(new NONNULL2Z());
                         }
-                    }                                            
+                        next3.removeAllTargeters();
+                        next4.removeAllTargeters();
+                        next1.swapInstruction(new NOP());
+                        next2.swapInstruction(new NOP());
+                        next3.swapInstruction(new NOP());
+                    }
                 }
-              
-                
+
             }
             if (i instanceof ACONST_NULL) {
                 InstructionHandle next = head.getNext();
@@ -686,6 +704,11 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
         if (VERIFY_INTEGRITY)
             cfg.checkIntegrity();
+        
+        if (true) {
+            cfg.checkIntegrity();
+            
+        }
     }
 
     public CFG getCFG() {
@@ -880,9 +903,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
             return false;
         if (ins instanceof INSTANCEOF)
             return false;
-        // if (ins instanceof INVOKESTATIC) return false;
-        // if (ins instanceof MONITORENTER) return false;
         if (ins instanceof MONITOREXIT)
+            return false;
+        if (ins instanceof LDC)
             return false;
         return true;
 
