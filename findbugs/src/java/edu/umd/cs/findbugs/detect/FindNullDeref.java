@@ -353,8 +353,6 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                         examineReturnInstruction(location);
                     } else if (ins instanceof PUTFIELD) {
                         examinePutfieldInstruction(location, (PUTFIELD) ins, cpg);
-                    } else if (ins instanceof NullnessConversationInstruction) {
-                        examineNullnessConversationInstruction(location, (NullnessConversationInstruction) ins, cpg);
                     }
                 } catch (ClassNotFoundException e) {
                     bugReporter.reportMissingClass(e);
@@ -430,10 +428,6 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
     }
 
-    private void examineNullnessConversationInstruction(Location location, NullnessConversationInstruction ins, ConstantPoolGen cpg)
-        throws DataflowAnalysisException, CFGBuilderException {
-
-    }
     private void examinePutfieldInstruction(Location location, PUTFIELD ins, ConstantPoolGen cpg)
             throws DataflowAnalysisException, CFGBuilderException {
 
@@ -1204,6 +1198,37 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         return result;
     }
 
+    boolean callToAssertionMethod(Location loc) {
+        
+        InstructionHandle h = loc.getHandle();
+        int firstPos = h.getPosition();
+        
+        LineNumberTable ln = method.getLineNumberTable();
+        int firstLine = ln == null ? -1 : ln.getSourceLine(firstPos);
+         
+        while (h != null) {
+            int pos = h.getPosition();
+            
+            if (ln == null) {
+                if (pos > firstPos + 15)
+                    break;
+            } else {
+                int line = ln.getSourceLine(pos);
+                if (line != firstLine)
+                    break;
+            }
+            Instruction i = h.getInstruction();
+            if (i instanceof InvokeInstruction) {
+                InvokeInstruction ii = (InvokeInstruction) i;
+                String name = ii.getMethodName(classContext.getConstantPoolGen());
+                if (name.startsWith("check") || name.startsWith("assert"))
+                    return true;
+            }
+            h = h.getNext();
+        }
+        
+        return false;
+    }
     /*
      * (non-Javadoc)
      *
@@ -1236,6 +1261,14 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             bugType = "NP_NULL_ON_SOME_PATH";
         else
             bugType = "NP_NULL_ON_SOME_PATH_EXCEPTION";
+        
+        boolean allCallToAssertionMethod = !doomedLocations.isEmpty();
+        for(Location loc : doomedLocations) {
+            if (!callToAssertionMethod(loc))
+                allCallToAssertionMethod = false;
+        }
+        if (allCallToAssertionMethod)
+            return;
 
         // Add Locations in the set of locations at least one of which
         // is guaranteed to be dereferenced
