@@ -602,16 +602,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
     public void optimize(InstructionList instructionList) {
         InstructionHandle head = instructionList.getStart();
-        if (methodGen.getName().equals("logOpportuntiesViewed")) {
-            System.out.println("Found it");
-        }
-
+ 
         while (head != null) {
             Instruction i = head.getInstruction();
-            if (methodGen.getName().equals("logOpportuntiesViewed")) {
-                System.out.println(head);
-            }
-
 
             if (i instanceof IfInstruction) {
                 IfInstruction ii = (IfInstruction) i;
