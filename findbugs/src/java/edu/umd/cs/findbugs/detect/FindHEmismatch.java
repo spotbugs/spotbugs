@@ -318,7 +318,20 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         compareToObjectMethod = null;
         hashCodeMethod = null;
         equalsOtherClass = null;
+        isApplicationClass = AnalysisContext.currentAnalysisContext().isApplicationClass(obj);
     }
+    
+    @Override
+    public boolean shouldVisitCode(Code obj) {
+        if (isApplicationClass)
+            return true;
+        String name = getMethod().getName();
+        if (name.equals("hashCode") || name.equals("equals"))
+            return true;
+        return false;
+        
+    }
+    boolean isApplicationClass;
 
     public static int opcode(byte code[], int offset) {
         return code[offset] & 0xff;
@@ -475,6 +488,9 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         }
         if (type == null)
             return;
+        String typeName = type.getClassName();
+        if (typeName.startsWith("java.lang"))
+            return;
         int priority = NORMAL_PRIORITY;
 
         OpcodeStack.Item collection = stack.getStackItem(PreorderVisitor.getNumberArguments(getSigConstantOperand()));
@@ -523,9 +539,14 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
 
     @Override
     public void visit(Signature obj) {
+        if (!isApplicationClass)
+            return;
+
         String sig = obj.getSignature();
         String className = findHashedClassInSignature(sig);
         if (className == null)
+            return;
+        if (className.startsWith("java.lang"))
             return;
         JavaClass type = null;
 
