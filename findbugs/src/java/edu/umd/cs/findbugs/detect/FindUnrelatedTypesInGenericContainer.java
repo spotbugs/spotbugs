@@ -486,6 +486,15 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 else
                     expectedType = operand.getParameterAt(typeArgument);
                 Type actualType = frame.getStackValue(stackPos);
+                Type equalsType = actualType;
+                if (allMethod) {
+                    if (!(actualType instanceof GenericObjectType)) {
+                        AnalysisContext.logError("In FindUnrelatedTypesInGenericTypes, handling "+operand+".xxxAll(" + actualType + ") method, expected argument to be parameterized");
+                        continue;
+                    }
+                    equalsType = ((GenericObjectType)actualType).getParameterAt(typeArgument);
+                }
+                    
 
                 IncompatibleTypes matchResult = compareTypes(expectedType, actualType, allMethod);
 
@@ -554,7 +563,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                     priority = Priorities.HIGH_PRIORITY;
                 ClassDescriptor expectedClassDescriptor = DescriptorFactory
                 .createClassOrObjectDescriptorFromSignature(expectedType.getSignature());
-                ClassDescriptor actualClassDescriptor = DescriptorFactory.createClassOrObjectDescriptorFromSignature(actualType
+                ClassDescriptor actualClassDescriptor = DescriptorFactory.createClassOrObjectDescriptorFromSignature(equalsType
                         .getSignature());
                 ClassSummary classSummary = AnalysisContext.currentAnalysisContext().getClassSummary();
                 Set<XMethod> targets = null;
