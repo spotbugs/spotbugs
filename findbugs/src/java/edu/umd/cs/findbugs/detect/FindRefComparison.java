@@ -948,8 +948,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
         String sourceFile = jclass.getSourceFileName();
         BugInstance instance = new BugInstance(this, bugPattern, BASE_ES_PRIORITY).addClassAndMethod(methodGen, sourceFile)
-                .addType("Ljava/lang/String;").describe(TypeAnnotation.FOUND_ROLE);
-        // .addSomeSourceForTopTwoStackValues(classContext, method, location);
+                .addType("Ljava/lang/String;").describe(TypeAnnotation.FOUND_ROLE).addSomeSourceForTopTwoStackValues(classContext, method, location);
         SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
                 sourceFile, location.getHandle());
         if (sourceLineAnnotation != null) {
