@@ -22,6 +22,9 @@ package edu.umd.cs.findbugs.ba;
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.*;
 
+import edu.umd.cs.findbugs.bcel.generic.NONNULL2Z;
+import edu.umd.cs.findbugs.bcel.generic.NULL2Z;
+
 /**
  * A common base class for frame modeling visitors. This class provides a
  * default implementation which copies values between frame slots whenever
@@ -185,7 +188,19 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
     public void visitIfInstruction(IfInstruction obj) {
     }
 
-    public void visitConversionInstruction(ConversionInstruction obj) {
+    /** To allow for calls to visitNULL2Z and visitNONNULL2Z, this method is made final. 
+     * If you want to override it, override visitConversionInstruction2 instead.
+     */
+    public final void visitConversionInstruction(ConversionInstruction obj) {
+        visitConversionInstruction2(obj);
+        if (obj instanceof NULL2Z)
+            visitNULL2Z((NULL2Z) obj);
+        else if (obj instanceof NONNULL2Z)
+            visitNONNULL2Z((NONNULL2Z) obj);
+    }
+
+    public final void visitConversionInstruction2(ConversionInstruction obj) {
+
     }
 
     public void visitPopInstruction(PopInstruction obj) {
@@ -770,6 +785,15 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
         handleNormalInstruction(obj);
     }
 
+  
+    public void visitNULL2Z(NULL2Z obj) {
+        handleNormalInstruction(obj);
+    }
+    
+    public void visitNONNULL2Z(NONNULL2Z obj) {
+        handleNormalInstruction(obj);
+    }
+    
     public void visitI2S(I2S obj) {
         handleNormalInstruction(obj);
     }
