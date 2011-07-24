@@ -47,6 +47,10 @@ public abstract class NullnessConversationInstruction extends ConversionInstruct
         return 1;
     }
     
+    @Override
+    public int hashCode() {
+        return this.getClass().hashCode();
+    }
     /**
      * Call corresponding visitor method(s). The order is:
      * Call visitor methods of implemented interfaces first, then

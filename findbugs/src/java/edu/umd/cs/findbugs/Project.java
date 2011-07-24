@@ -748,7 +748,7 @@ public class Project implements XMLWriteable {
         return project;
     }
 
-    public void writeXML(File f, BugCollection bugCollection) throws IOException {
+    public void writeXML(File f, @CheckForNull BugCollection bugCollection) throws IOException {
         OutputStream out = new FileOutputStream(f);
         XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
         try {
@@ -850,7 +850,7 @@ public class Project implements XMLWriteable {
         writeXML(xmlOutput, null, null);
     }
 
-    public void writeXML(XMLOutput xmlOutput, @CheckForNull File destination, BugCollection bugCollection) 
+    public void writeXML(XMLOutput xmlOutput, @CheckForNull File destination, @CheckForNull BugCollection bugCollection) 
             throws IOException {
         {
             XMLAttributeList attributeList = new XMLAttributeList();
