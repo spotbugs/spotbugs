@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.flybush.DbClientVersionStats;
 import edu.umd.cs.findbugs.flybush.DbEvaluation;
 import edu.umd.cs.findbugs.flybush.DbInvocation;
 import edu.umd.cs.findbugs.flybush.DbIssue;
+import edu.umd.cs.findbugs.flybush.DbUsageEntry;
 import edu.umd.cs.findbugs.flybush.DbUser;
 import edu.umd.cs.findbugs.flybush.PersistenceHelper;
 
@@ -57,6 +58,11 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
 
     public Class<AppEngineSqlCloudSession> getSqlCloudSessionClass() {
         return AppEngineSqlCloudSession.class;
+    }
+
+    @Override
+    public DbUsageEntry createDbUsageEntry() {
+        return new AppEngineDbUsageEntry();
     }
 
     public int clearAllData() {
@@ -97,6 +103,11 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
 
     public Class<? extends DbClientVersionStats> getDbClientVersionStatsClass() {
         return AppEngineDbClientVersionStats.class;
+    }
+
+    @Override
+    public Class<? extends DbUsageEntry> getDbUsageEntryClass() {
+        return AppEngineDbUsageEntry.class;
     }
 
     public <E> E getObjectById(PersistenceManager pm, Class<? extends E> cls, Object key) {

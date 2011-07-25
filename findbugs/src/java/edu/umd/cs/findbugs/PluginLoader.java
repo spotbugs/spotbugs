@@ -32,6 +32,7 @@ import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -41,12 +42,6 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.Node;
-import org.dom4j.io.SAXReader;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
@@ -66,6 +61,11 @@ import edu.umd.cs.findbugs.plugins.DuplicatePluginIdDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.JavaWebStart;
 import edu.umd.cs.findbugs.util.Util;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.Node;
+import org.dom4j.io.SAXReader;
 
 /**
  * Loader for a FindBugs plugin. A plugin is a jar file containing two metadata
@@ -898,6 +898,8 @@ public class PluginLoader {
         } catch (IOException e) {
             throw new PluginException("Couldn't parse \"" + BugRanker.FILENAME + "\"", e);
         }
+
+        new UsageTracker().trackUsage(plugin.getUsageTracker(), Collections.singleton(plugin));
 
         // Success!
         if (DEBUG)

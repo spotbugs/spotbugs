@@ -18,6 +18,7 @@ public abstract class PersistenceHelper {
     public abstract DbIssue createDbIssue();
     public abstract DbEvaluation createDbEvaluation();
     public abstract DbClientVersionStats createDbClientVersionStats(String application, String version, long dayStart);
+    public abstract DbUsageEntry createDbUsageEntry();
 
     public abstract Class<? extends DbUser> getDbUserClass();
     public abstract Class<? extends SqlCloudSession> getSqlCloudSessionClass();
@@ -25,6 +26,7 @@ public abstract class PersistenceHelper {
     public abstract Class<? extends DbIssue> getDbIssueClass();
     public abstract Class<? extends DbEvaluation> getDbEvaluationClass();
     public abstract Class<? extends DbClientVersionStats> getDbClientVersionStatsClass();
+    public abstract Class<? extends DbUsageEntry> getDbUsageEntryClass();
 
     public String getDbUserClassname() {
         return getDbUserClass().getName();
@@ -44,6 +46,9 @@ public abstract class PersistenceHelper {
     public String getDbClientVersionStatsClassname() {
         return getDbClientVersionStatsClass().getName();
     }
+    public String getDbUsageEntryClassname() {
+        return getDbUsageEntryClass().getName();
+    }
 
     public abstract int clearAllData();
 
@@ -58,4 +63,5 @@ public abstract class PersistenceHelper {
     public abstract boolean convertToNewCommentStyle(DbEvaluation eval);
 
     public abstract boolean shouldRecordClientStats(String ip, String appName, String appVer, long midnightToday);
+
 }

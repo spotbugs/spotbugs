@@ -3,7 +3,7 @@
           pluginid="edu.umd.cs.findbugs.plugins.core" defaultenabled="true"
           version="USE_FINDBUGS_VERSION"
           provider="FindBugs project" website="http://findbugs.sourceforge.net"
-          usageTracker="http://foo.com"
+          usageTracker="http://findbugs-cloud.appspot.com/track"
           >
           
           <!--

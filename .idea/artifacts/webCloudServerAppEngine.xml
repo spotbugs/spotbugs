@@ -17,7 +17,6 @@
           <element id="library" level="module" name="mockito-all-1.8.2.jar" module-name="webCloudServerCommon" />
           <element id="library" level="module" name="protobuf-java-2.3.0.jar" module-name="webCloudProtocol" />
           <element id="library" level="module" name="commons-lang-2.5.jar" module-name="webCloudServerCommon" />
-          <element id="library" level="module" name="guava-r05.jar" module-name="webCloudServerCommon" />
           <element id="library" level="module" name="charts4j-1.2.jar" module-name="webCloudServerCommon" />
           <element id="file-copy" path="$PROJECT_DIR$/server/appengine/lib/appengine-api-1.0-sdk-1.3.4.jar" />
           <element id="file-copy" path="$PROJECT_DIR$/server/appengine/lib/jetty-util-6.1.19.jar" />
@@ -32,6 +31,7 @@
           <element id="file-copy" path="$PROJECT_DIR$/server/appengine/lib/dyuproject-openid-1.1.6.jar" />
           <element id="file-copy" path="$PROJECT_DIR$/server/appengine/lib/appengine-api-labs.jar" />
           <element id="file-copy" path="$PROJECT_DIR$/server/appengine/lib/datanucleus-appengine-1.0.7.final.jar" />
+          <element id="library" level="module" name="guava.jar" module-name="webCloudServerCommon" />
         </element>
       </element>
       <element id="javaee-facet-resources" facet="webCloudServerAppEngine/web/Web" />

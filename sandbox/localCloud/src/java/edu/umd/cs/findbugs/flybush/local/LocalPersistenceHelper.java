@@ -17,6 +17,7 @@ import edu.umd.cs.findbugs.flybush.DbClientVersionStats;
 import edu.umd.cs.findbugs.flybush.DbEvaluation;
 import edu.umd.cs.findbugs.flybush.DbInvocation;
 import edu.umd.cs.findbugs.flybush.DbIssue;
+import edu.umd.cs.findbugs.flybush.DbUsageEntry;
 import edu.umd.cs.findbugs.flybush.DbUser;
 import edu.umd.cs.findbugs.flybush.PersistenceHelper;
 import edu.umd.cs.findbugs.flybush.SqlCloudSession;
@@ -71,6 +72,11 @@ public class LocalPersistenceHelper extends PersistenceHelper {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public DbUsageEntry createDbUsageEntry() {
+        throw new UnsupportedOperationException();
+    }
+
     public Class<? extends DbUser> getDbUserClass() {
         return LocalDbUser.class;
     }
@@ -93,6 +99,11 @@ public class LocalPersistenceHelper extends PersistenceHelper {
 
     @Override
     public Class<? extends DbClientVersionStats> getDbClientVersionStatsClass() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Class<? extends DbUsageEntry> getDbUsageEntryClass() {
         throw new UnsupportedOperationException();
     }
 
