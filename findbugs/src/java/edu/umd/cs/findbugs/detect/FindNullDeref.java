@@ -68,6 +68,7 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.UseAnnotationDatabase;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Priority;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -378,7 +379,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         // it is the fault of the method, not the caller.
         if (methodName.equals("equals") && signature.equals("(Ljava/lang/Object;)Z"))
             return;
-
+        
+    
         int returnTypeStart = signature.indexOf(')');
         if (returnTypeStart < 0)
             return;
@@ -392,6 +394,49 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         IsNullValueFrame frame = classContext.getIsNullValueDataflow(method).getFactAtLocation(location);
         if (!frame.isValid())
             return;
+        
+        String className = invokeInstruction.getClassName(cpg);
+        if (methodName.equals("checkNotNull") 
+                && className.equals("com.google.common.base.Preconditions")) {
+            SignatureParser sigParser = new SignatureParser(signature);
+            int numParameters = sigParser.getNumParameters();
+            IsNullValue value = frame.getArgument(invokeInstruction, cpg, 0, sigParser);
+            if (value.isDefinitelyNotNull()) {
+                TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
+                int priority = NORMAL_PRIORITY;
+                String pattern = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE";
+                ValueNumberFrame vnFrame = vnaDataflow.getFactAtLocation(location);
+                ValueNumber valueNumber = vnFrame.getArgument(invokeInstruction, cpg, 0, sigParser);
+                org.apache.bcel.generic.Type typeOfFirstArgument = typeFrame.getArgument(invokeInstruction, cpg, 0, sigParser);
+                String signature2 = typeOfFirstArgument.getSignature();
+                boolean constantStringForFirstArgument = signature2.equals("Ljava/lang/String;")
+                        && valueNumber.hasFlag(ValueNumber.CONSTANT_VALUE);
+                @CheckForNull BugAnnotation annotation = BugInstance.getSourceForStackValue(classContext, method, location, numParameters-1);
+                if (value.wouldHaveBeenAKaboom()) {
+                    pattern = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE";
+                    priority = HIGH_PRIORITY;
+                } else if (constantStringForFirstArgument) {
+                    annotation = null;
+                    priority = HIGH_PRIORITY;
+                    if (numParameters == 2) {
+                        IsNullValue secondValue = frame.getArgument(invokeInstruction, cpg, 1, sigParser);
+                        if (!secondValue.isDefinitelyNotNull()) {
+                            pattern = "DMI_ARGUMENTS_WRONG_ORDER";
+                            priority = NORMAL_PRIORITY;
+                        }
+                    }
+                }
+               
+                 BugInstance warning = new BugInstance(this, pattern, priority)
+                .addClassAndMethod(classContext.getJavaClass(), method)
+                                .addOptionalAnnotation(annotation)
+                .addCalledMethod(cpg, invokeInstruction)
+                .addSourceLine(classContext, method, location);
+
+                bugReporter.reportBug(warning);
+            }
+        }
+
         BitSet nullArgSet = frame.getArgumentSet(invokeInstruction, cpg, new DataflowValueChooser<IsNullValue>() {
             public boolean choose(IsNullValue value) {
                 // Only choose non-exception values.
@@ -776,7 +821,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
      * @throws ClassNotFoundException
      */
     private void checkNonNullParam(Location location, ConstantPoolGen cpg, TypeDataflow typeDataflow,
-            InvokeInstruction invokeInstruction, BitSet nullArgSet, BitSet definitelyNullArgSet) throws ClassNotFoundException {
+            InvokeInstruction invokeInstruction, BitSet nullArgSet, BitSet definitelyNullArgSet) {
 
         if (inExplictCatchNullBlock(location))
             return;
