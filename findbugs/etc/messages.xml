@@ -5745,6 +5745,18 @@ a logic error.  Make sure that you are comparing the right things.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="DMI_ARGUMENTS_WRONG_ORDER">
+    <ShortDescription>Reversed method arguments</ShortDescription>
+    <LongDescription>Arguments in wrong order for invocation of {2.name} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> The arguments to this method call seem to be in the wrong order.
+For example, a call <code>Preconditions.checkNotNull("message", message)</code>
+has reserved arguments: the value to be checked is the first argument.
+</p>
+]]>
+    </Details>
+  </BugPattern>
 
 
 
