@@ -2,6 +2,7 @@ package bugIdeas;
 
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Random;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
@@ -26,6 +27,10 @@ public class Ideas_2011_07_24 {
     @ExpectWarning("GC_UNRELATED_TYPES")
     static boolean test4(HashSet<Integer> s, LinkedList<String> lst) {
         return s.containsAll(lst) && lst.containsAll(s);
+    }
+    
+    static long getRandomNonnegativeLong() {
+        return Math.abs(new Random().nextLong());
     }
     
     public static void main(String args[]) {

@@ -438,8 +438,9 @@ public class DumbMethods extends OpcodeStackDetector {
 
         }
 
-        if (seen == INVOKESTATIC && ClassName.isMathClass(getClassConstantOperand()) && getNameConstantOperand().equals("abs")
-                && getSigConstantOperand().equals("(I)I")) {
+        if (seen == INVOKESTATIC && 
+                ClassName.isMathClass(getClassConstantOperand()) && getNameConstantOperand().equals("abs")
+                ) {
             OpcodeStack.Item item0 = stack.getStackItem(0);
             int special = item0.getSpecialKind();
             if (special == OpcodeStack.Item.RANDOM_INT) {

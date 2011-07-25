@@ -5780,14 +5780,14 @@ number; the values are too easily guessable. You should strongly consider using 
     </Details>
   </BugPattern>
   <BugPattern type="RV_ABSOLUTE_VALUE_OF_RANDOM_INT">
-    <ShortDescription>Bad attempt to compute absolute value of signed 32-bit random integer</ShortDescription>
-    <LongDescription>Bad attempt to compute absolute value of signed 32-bit random integer in {1}</LongDescription>
+    <ShortDescription>Bad attempt to compute absolute value of signed random integer</ShortDescription>
+    <LongDescription>Bad attempt to compute absolute value of signed random integer in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This code generates a random signed integer and then computes
 the absolute value of that random integer.  If the number returned by the random number
 generator is <code>Integer.MIN_VALUE</code>, then the result will be negative as well (since
-<code>Math.abs(Integer.MIN_VALUE) == Integer.MIN_VALUE</code>).
+<code>Math.abs(Integer.MIN_VALUE) == Integer.MIN_VALUE</code>). (Same problem arised for long values as well).
 </p>
 ]]>
     </Details>

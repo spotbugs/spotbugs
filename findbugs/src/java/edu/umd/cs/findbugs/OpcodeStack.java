@@ -2391,8 +2391,10 @@ public class OpcodeStack implements Constants2 {
             return;
         }
 
-        if ((clsName.equals("java/util/Random") || clsName.equals("java/security/SecureRandom")) && methodName.equals("nextInt")
-                && signature.equals("()I")) {
+        if ((clsName.equals("java/util/Random") || clsName.equals("java/security/SecureRandom")) && 
+                (methodName.equals("nextInt")  && signature.equals("()I")
+                        || methodName.equals("nextLong")  && signature.equals("()J"))
+                ) {
             Item i = pop();
             i.setSpecialKind(Item.RANDOM_INT);
             push(i);
