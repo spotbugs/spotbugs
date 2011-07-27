@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.management.RuntimeErrorException;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.ImageIcon;
@@ -70,7 +71,24 @@ public class SorterTableColumnModel implements TableColumnModel {
     public boolean isShown(Sortables s) {
         return shown.contains(s);
     }
+    
+    @Override
+    public String toString() {
+        return order.toString();
+    }
 
+    static boolean shownError = false;
+
+    public void check() {
+        if (order.size() == shown.size() && order.containsAll(shown))
+            return;
+        if (shownError)
+            return;
+        shownError = true;
+        MainFrame.getInstance().error("Incompatible order and shown for SorterTable: " + order + " vs. " + shown);
+        shown.clear();
+        shown.addAll(order);
+    }
     public SorterTableColumnModel(Sortables[] columnHeaders) {
 
         MainFrame mainFrame = MainFrame.getInstance();
@@ -87,6 +105,7 @@ public class SorterTableColumnModel implements TableColumnModel {
         dlsm = new DefaultListSelectionModel();
         dlsm.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         orderUpdate();
+        check();
     }
 
     /**
@@ -122,6 +141,7 @@ public class SorterTableColumnModel implements TableColumnModel {
             if (!c.isAvailable(mainFrame))
                 continue;
 
+            shown.add(c);
             TableColumn tc = makeTableColumn(x, c);
             columnList.add(tc);
             for (TableColumnModelListener l : watchers)
@@ -357,6 +377,7 @@ public class SorterTableColumnModel implements TableColumnModel {
             for (TableColumn c : columnList)
                 order.add((Sortables) c.getIdentifier());
         }
+        check();
     }
 
     public void freezeOrder() {
