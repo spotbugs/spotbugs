@@ -184,7 +184,22 @@ public class Version {
             System.out.println("eclipse.ui.version=" + COMPUTED_ECLIPSE_UI_VERSION);
             System.out.println("findbugs.website=" + WEBSITE);
             System.out.println("findbugs.downloads.website=" + DOWNLOADS_WEBSITE);
+        } else if (arg.equals("-plugins")) {
+            DetectorFactoryCollection.instance();
+            for(Plugin p : Plugin.getAllPlugins()) {
+                System.out.println("Plugin: " + p.getPluginId());
+                System.out.println("  description: " + p.getShortDescription());
+                System.out.println("     provider: " + p.getProvider());
+                String version = p.getVersion();
+                if (version != null && version.length() > 0)
+                    System.out.println("      version: " + version);
+                String website = p.getWebsite();
+                if (website != null && website.length() > 0)
+                  System.out.println("      website: " + website);
+                System.out.println();
+            }
         } else {
+            
             usage();
             System.exit(1);
         }

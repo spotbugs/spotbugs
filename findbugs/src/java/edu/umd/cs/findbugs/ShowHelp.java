@@ -28,6 +28,15 @@ public class ShowHelp {
 
         System.out.println("FindBugs version " + Version.RELEASE + ", " + Version.WEBSITE);
         showGeneralOptions();
+        
+        DetectorFactoryCollection.instance();
+        System.out.println("Command line options");
+        
+        for(Plugin p : Plugin.getAllPlugins()) 
+            for(FindBugsMain m : p.getAllFindBugsMain()) 
+                System.out.printf("fb %-12s %-12s %s%n", m.cmd, m.kind, m.description); 
+        
+        System.out.println();
         System.out.println("GUI Options:");
         FindBugsCommandLine guiCmd = new FindBugsCommandLine(true) {
         };

@@ -28,6 +28,14 @@
         <xsd:attribute name="id" type="ClassType"/>
     </xsd:complexType>
 
+    <xsd:complexType name="FindBugsMainType">
+        <xsd:sequence>
+            <xsd:element name="Description" type="xsd:string"  minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+        <xsd:attribute name="cmd" type="xsd:string"/>
+        <xsd:attribute name="class" type="ClassType"/>
+    </xsd:complexType>
+    
     <xsd:complexType name="CloudType">
         <xsd:sequence>
             <xsd:element name="Description" type="xsd:string"  minOccurs="1" maxOccurs="1"/>
@@ -70,6 +78,7 @@
     <xsd:complexType name="MessageCollectionType" mixed="true">
         <xsd:sequence>
             <xsd:element name="Plugin" type="PluginType"/>
+            <xsd:element name="FindBugsMain" type="FindBugsMainType" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="Cloud" type="CloudType" minOccurs="0" maxOccurs="unbounded"/>
                 <xsd:element name="PluginComponent" type="PluginComponentType" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="BugCategory" type="BugCategoryType" minOccurs="0" maxOccurs="unbounded"/>

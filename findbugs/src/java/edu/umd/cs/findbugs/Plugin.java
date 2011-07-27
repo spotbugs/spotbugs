@@ -459,13 +459,18 @@ public class Plugin {
         return bugRanker;
     }
 
-    <T> void addFindBugsMain(Class<?> mainClass, String cmd, String kind, boolean analysis) throws SecurityException, NoSuchMethodException {
-        FindBugsMain main = new FindBugsMain(mainClass, cmd, kind, analysis);
+    <T> void addFindBugsMain(Class<?> mainClass, String cmd, String description, String kind, boolean analysis) throws SecurityException, NoSuchMethodException {
+        FindBugsMain main = new FindBugsMain(mainClass, cmd, description, kind, analysis);
         mainPlugins.put(cmd, main);
     }
     
     public @CheckForNull FindBugsMain getFindBugsMain(String cmd) {
         return mainPlugins.get(cmd);
+        
+    }
+    
+    public Collection<FindBugsMain> getAllFindBugsMain() {
+        return mainPlugins.values();
         
     }
     

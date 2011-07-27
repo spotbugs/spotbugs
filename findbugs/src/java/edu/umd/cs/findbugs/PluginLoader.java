@@ -664,11 +664,16 @@ public class PluginLoader {
                             + " loaded from " + loadedFrom);
                     String kind = main.valueOf("@kind");
                     boolean analysis = Boolean.valueOf(main.valueOf("@analysis"));
-
+                    Element mainMessageNode = (Element) findMessageNode(messageCollectionList, 
+                            "/MessageCollection/FindBugsMain[@cmd='" + cmd 
+                            // + " and @class='" + className 
+                            +"']/Description",
+                            "Missing FindBugsMain description for cmd " + cmd);
+                    String description = mainMessageNode.getTextTrim();
                     try {
                        
                         Class<?> mainClass =  classLoader.loadClass(className);
-                        plugin.addFindBugsMain(mainClass, cmd, kind, analysis);
+                        plugin.addFindBugsMain(mainClass, cmd, description, kind, analysis);
                         
                     } catch (Exception e) {
                         AnalysisContext.logError("Unable to load FindBugsMain " + cmd +
@@ -1080,6 +1085,7 @@ public class PluginLoader {
     }
 
     static synchronized void loadInitialPlugins() {
+        System.out.println("Loading plugins");
         loadCorePlugin();
         if (JavaWebStart.isRunningViaJavaWebstart()) {
             installWebStartPlugins();
@@ -1096,6 +1102,7 @@ public class PluginLoader {
                     if (value.startsWith("file:") && !value.endsWith(".jar") && !value.endsWith("/"))
                         value += "/";
                     URL url = JavaWebStart.resolveRelativeToJnlpCodebase(value);
+                    System.out.println("Loading " + e.getKey() + " from " + url);
                     loadInitialPlugin(url, true, false);
                 } catch (MalformedURLException e1) {
                     AnalysisContext.logError(String.format("Bad URL for plugin: %s=%s", e.getKey(), e.getValue()), e1);

@@ -27,18 +27,20 @@ import java.lang.reflect.Method;
  */
 public class FindBugsMain {
     
-    public FindBugsMain(Class<?> mainClass, String cmd, String kind, boolean analysis) 
+    public FindBugsMain(Class<?> mainClass, String cmd, String description, String kind, boolean analysis) 
             throws SecurityException, NoSuchMethodException {
         this.mainClass = mainClass;
         mainMethod = mainClass.getMethod("main", String[].class);
         this.cmd = cmd;
+        this.description = description;
         this.kind = kind;
         this.analysis = analysis;
     }
     final Class<?> mainClass;
     final Method mainMethod;
-    final String cmd;
-    final String kind;
+    public final String cmd;
+    public final String description;
+    public final String kind;
     final boolean analysis;
     
     public void invoke(String [] args) throws Exception {

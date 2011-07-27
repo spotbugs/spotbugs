@@ -820,7 +820,7 @@
                     category="BAD_PRACTICE"/>
           <BugPattern abbrev="SI" type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED" category="BAD_PRACTICE"/>
           <BugPattern abbrev="It" type="IT_NO_SUCH_ELEMENT" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="IS" type="IS_INCONSISTENT_SYNC" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="IS" type="IS_INCONSISTENT_SYNC" category="MT_CORRECTNESS" deprecated="true"/>
           <BugPattern abbrev="IS" type="IS_FIELD_NOT_GUARDED" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="ML" type="ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD"
                     category="MT_CORRECTNESS"/>

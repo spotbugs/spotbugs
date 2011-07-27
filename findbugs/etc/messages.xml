@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:noNamespaceSchemaLocation="messagecollection.xsd">
-
+  xsi:noNamespaceSchemaLocation="messagecollection.xsd">
   <!--
   **********************************************************************
   Plugin information
@@ -18,47 +17,104 @@ This plugin contains all of the standard FindBugs detectors.
 ]]>
     </Details>
   </Plugin>
-
+  <FindBugsMain cmd="addMessages" class="edu.umd.cs.findbugs.AddMessages">
+    <Description>add msgs (e.g., textual descriptions of bugs) to analysis results
+		 </Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="analyze" class="edu.umd.cs.findbugs.FindBugs2">
+    <Description>Perform FindBugs Analysis</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="gui" class="edu.umd.cs.findbugs.gui2.Driver">
+    <Description>Launch FindBugs GUI</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="list" class="edu.umd.cs.findbugs.PrintingBugReporter">
+    <Description>Convert analysis results to textual form</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="help" class="edu.umd.cs.findbugs.ShowHelp">
+    <Description>Provide help for commands</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="version" class="edu.umd.cs.findbugs.Version">
+    <Description>List FindBugs version</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="filter" class="edu.umd.cs.findbugs.workflow.Filter">
+    <Description>Filter analysis results</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="set" class="edu.umd.cs.findbugs.workflow.SetBugDatabaseInfo">
+    <Description>Set project configuration/options</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="xxxx" class="edu.umd.cs.findbugs.workflow.ListBugDatabaseInfo">
+    <Description>XXXXXX</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="history" class="edu.umd.cs.findbugs.workflow.MineBugHistory">
+    <Description>List details from  multi-version analysis results</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="union" class="edu.umd.cs.findbugs.workflow.UnionResults">
+    <Description>Merge analysis results from disjoint components</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="merge" class="edu.umd.cs.findbugs.workflow.Update">
+    <Description>Combine analysis results from different versions of software to produce multi-version analysis results </Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="copySource" class="edu.umd.cs.findbugs.workflow.CopyBuggySource">
+    <Description>Copy all the source files referenced in analysis results to a src directory</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="rejar" class="edu.umd.cs.findbugs.workflow.RejarClassesForAnalysis">
+    <Description>Combine multiple jar files into jar files for analysis</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="dd" class="edu.umd.cs.findbugs.workflow.DefectDensity">
+    <Description>List the defect density by package and class</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="msv" class="edu.umd.cs.findbugs.workflow.MergeSummarizeAndView">
+    <Description>XXXXXX</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="backdate" class="edu.umd.cs.findbugs.workflow.BackdateHistoryUsingSource">
+    <Description>Use the last-modified date of source files to back date the introduction
+			of bugs</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="csr" class="edu.umd.cs.findbugs.workflow.CloudSyncAndReport">
+    <Description>XXXXXX</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="appVersion" class="edu.umd.cs.findbugs.workflow.PrintAppVersion">
+    <Description>XXXXXX</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="dbStats" class="edu.umd.cs.findbugs.cloud.db.DBStats">
+    <Description>XXXXXX</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="dis" class="edu.umd.cs.findbugs.workflow.PrintClass">
+    <Description>Disassemble a class file</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="xpath" class="edu.umd.cs.findbugs.xml.XPathFind">
+    <Description>Perform an xpath query on an XML file</Description>
+  </FindBugsMain>
   <!-- On changing this, please also update default cloud id in FindbugsPlugin -->
   <Cloud id="edu.umd.cs.findbugs.cloud.doNothingCloud">
     <Description>(cloud disabled)</Description>
     <Details>Bug reviews are disabled when using this plugin.</Details>
-    </Cloud>
-
-  <PluginComponent
-    id="edu.umd.cs.findbugs.bugReporter.SuppressMultithreaded">
+  </Cloud>
+  <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SuppressMultithreaded">
     <Description>Suppress multithreaded correctness issues</Description>
     <Details>Suppress all multithreaded correctness issues</Details>
-    </PluginComponent>
-
-  <PluginComponent
-    id="edu.umd.cs.findbugs.bugReporter.SuppressI18N">
+  </PluginComponent>
+  <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SuppressI18N">
     <Description>Suppress internationalization issues</Description>
     <Details>Suppress all internationalization issues</Details>
-    </PluginComponent>
-  <PluginComponent
-    id="edu.umd.cs.findbugs.bugReporter.SelectivelySuppressI18N">
+  </PluginComponent>
+  <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SelectivelySuppressI18N">
     <Description>Suppress internationalization issues in all but selected packages</Description>
     <Details>Suppress all internationalization issues except those specified in the i18n.properties resource</Details>
-    </PluginComponent>
-  <PluginComponent
-    id="edu.umd.cs.findbugs.bugReporter.MaxRank14">
+  </PluginComponent>
+  <PluginComponent id="edu.umd.cs.findbugs.bugReporter.MaxRank14">
     <Description>Suppress all issues with rank higher than 14</Description>
     <Details>Suppress all issues with rank higher than 14</Details>
-    </PluginComponent>
-
-  <PluginComponent
-    id="edu.umd.cs.findbugs.bugReporter.SuppressMalicious">
+  </PluginComponent>
+  <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SuppressMalicious">
     <Description>Suppress warnings about vunerabilities to malicious code</Description>
     <Details>Suppress warnings about vunerabilities to malicious code</Details>
-    </PluginComponent>
-
+  </PluginComponent>
   <!--
   **********************************************************************
   Categories (replacing the BugCategoryDescriptions.properties file)
   **********************************************************************
    -->
-
   <BugCategory category="CORRECTNESS">
     <Description>Correctness</Description>
     <Abbreviation>C</Abbreviation>
@@ -73,14 +129,12 @@ This plugin contains all of the standard FindBugs detectors.
     as a control in data mining experiments, not in finding actual bugs in software
             </Details>
   </BugCategory>
-
   <BugCategory category="SECURITY">
     <Description>Security</Description>
     <Abbreviation>S</Abbreviation>
     <Details>A use of untrusted input in a way that could create a remotely exploitable security vulnerability.
     </Details>
   </BugCategory>
-
   <BugCategory category="BAD_PRACTICE">
     <Description>Bad practice</Description>
     <Abbreviation>B</Abbreviation>
@@ -92,7 +146,6 @@ This plugin contains all of the standard FindBugs detectors.
             although some groups may
             not care about some of the bad practices.</Details>
   </BugCategory>
-
   <BugCategory category="STYLE">
     <Description>Dodgy code</Description>
     <Abbreviation>D</Abbreviation>
@@ -105,101 +158,85 @@ This plugin contains all of the standard FindBugs detectors.
             In previous versions of FindBugs, this category was known as Style.
 </Details>
   </BugCategory>
-
   <BugCategory category="PERFORMANCE">
     <Description>Performance</Description>
     <Abbreviation>P</Abbreviation>
     <Details>code that is not necessarily incorrect but may be inefficient</Details>
   </BugCategory>
-
   <BugCategory category="MALICIOUS_CODE">
     <Description>Malicious code vulnerability</Description>
     <Abbreviation>V</Abbreviation>
     <Details>code that is vulnerable to attacks from untrusted code</Details>
   </BugCategory>
-
   <BugCategory category="MT_CORRECTNESS">
     <Description>Multithreaded correctness</Description>
     <Abbreviation>M</Abbreviation>
     <Details>code flaws having to do with threads, locks, and volatiles</Details>
   </BugCategory>
-
   <BugCategory category="I18N">
     <Description>Internationalization</Description>
     <Abbreviation>I</Abbreviation>
     <Details>code flaws having to do with internationalization and locale</Details>
     <!-- DM_CONVERT_CASE is the only core bug pattern in this category -->
   </BugCategory>
-
   <BugCategory category="EXPERIMENTAL">
     <Description>Experimental</Description>
     <Abbreviation>X</Abbreviation>
     <Details>Experimental and not fully vetted bug patterns</Details>
     <!-- DM_CONVERT_CASE is the only core bug pattern in this category -->
   </BugCategory>
-
-
   <!--
   **********************************************************************
   Detectors
   **********************************************************************
    -->
-
- <Detector class="edu.umd.cs.findbugs.detect.IntCast2LongAsInstant">
-     <Details>
+  <Detector class="edu.umd.cs.findbugs.detect.IntCast2LongAsInstant">
+    <Details>
 <![CDATA[
 <p> Finds uses of 32-bit values to describe milliseconds since the epoc.
 </p>
 ]]>
      </Details>
-   </Detector>
-
- <Detector class="edu.umd.cs.findbugs.detect.TrainLongInstantfParams">
-     <Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.TrainLongInstantfParams">
+    <Details>
 <![CDATA[
 <p> Builds database of parameters that take a 64 bit value describing
 milliseconds since the epoc.</p>
 ]]>
      </Details>
-   </Detector>
-
- <Detector class="edu.umd.cs.findbugs.detect.InconsistentAnnotations">
-     <Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.InconsistentAnnotations">
+    <Details>
 <![CDATA[
 <p> This detector finds inconsistencies between type qualifiers directly
 applied to method parameters and uses of those method parameters. </p>
 ]]>
      </Details>
-   </Detector>
-
- <Detector class="edu.umd.cs.findbugs.detect.AtomicityProblem">
-     <Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.AtomicityProblem">
+    <Details>
 <![CDATA[
 <p> Finds sequences of operations (e.g., get/put) on a concurrent abstraction
     that will not be executed atomically.
     </p>
 ]]>
      </Details>
-   </Detector>
-
-
-    <Detector class="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant">
-     <Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant">
+    <Details>
 <![CDATA[
 <p> This detector looks for synchronization on a shared builtin constant (such as a String).</p>
 ]]>
      </Details>
-   </Detector>
-
-    <Detector class="edu.umd.cs.findbugs.detect.SynchronizeAndNullCheckField">
-     <Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.SynchronizeAndNullCheckField">
+    <Details>
 <![CDATA[
 <p> This detector looks for a field that is synchronized on and then null checked.</p>
 ]]>
      </Details>
-   </Detector>
-
-
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.CheckImmutableAnnotation">
     <Details>
 <![CDATA[
@@ -228,7 +265,6 @@ applied to method parameters and uses of those method parameters. </p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.BuildInterproceduralCallGraph">
     <Details>
       <![CDATA[
@@ -236,15 +272,13 @@ applied to method parameters and uses of those method parameters. </p>
       ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase">
-      <Details>
+    <Details>
           <![CDATA[
           <p>Builds the database of obligation types and methods used by the FindUnsatisfiedObligation detector.
           ]]>
       </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings">
     <Details>
 <![CDATA[
@@ -296,7 +330,6 @@ by other detectors.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue">
     <Details>
 <![CDATA[
@@ -305,8 +338,6 @@ by other detectors.</p>
 ]]>
     </Details>
   </Detector>
-
-
   <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations">
     <Details>
 <![CDATA[
@@ -324,9 +355,8 @@ literals.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FieldItemSummary">
-   <Details>
+    <Details>
       <![CDATA[
       <p>
     This detector produces summary information for what is stored
@@ -336,7 +366,7 @@ literals.
    </Details>
   </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations">
-   <Details>
+    <Details>
       <![CDATA[
       <p>
       Looks for @NonNull annotations on methods, fields, and parameters.
@@ -347,9 +377,8 @@ literals.
       ]]>
    </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs">
-   <Details>
+    <Details>
       <![CDATA[
       <p>
       Analyze all methods in the application to determine which
@@ -363,9 +392,8 @@ literals.
       ]]>
    </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.NoteNonnullReturnValues">
-   <Details>
+    <Details>
       <![CDATA[
       <p>
       Analyze all methods in the application to determine which
@@ -374,8 +402,6 @@ literals.
       ]]>
    </Details>
   </Detector>
-
-
   <Detector class="edu.umd.cs.findbugs.detect.BooleanReturnNull">
     <Details>
 <![CDATA[
@@ -384,7 +410,6 @@ literals.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue">
     <Details>
 <![CDATA[
@@ -418,15 +443,13 @@ another package. </p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop2">
-   <Details>
+    <Details>
 <![CDATA[
 <p>Looks for an infinite recursive loop. It is a slow detector.</p>
 ]]>
    </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage">
     <Details>
 <![CDATA[
@@ -434,7 +457,6 @@ another package. </p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.EmptyZipFileEntry">
     <Details>
 <![CDATA[
@@ -442,7 +464,6 @@ another package. </p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.UncallableMethodOfAnonymousClass">
     <Details>
 <![CDATA[
@@ -452,7 +473,6 @@ that are probably intended to but do not override methods in a superclass.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.DontUseEnum">
     <Details>
 <![CDATA[
@@ -460,7 +480,6 @@ that are probably intended to but do not override methods in a superclass.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.URLProblems">
     <Details>
 <![CDATA[
@@ -471,9 +490,8 @@ detector looks for places where those methods might be invoked.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FinalizerNullsFields">
-      <Details>
+    <Details>
 <![CDATA[
 <p> This detector looks for finalizers that null out fields of a class.
 This does not help the garbage collector in any way, the nulling out of fields has no effect.
@@ -481,7 +499,6 @@ This does not help the garbage collector in any way, the nulling out of fields h
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.CrossSiteScripting">
     <Details>
 <![CDATA[
@@ -489,7 +506,6 @@ This does not help the garbage collector in any way, the nulling out of fields h
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.RepeatedConditionals">
     <Details>
 <![CDATA[
@@ -497,7 +513,6 @@ This does not help the garbage collector in any way, the nulling out of fields h
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.CallToUnsupportedMethod">
     <Details>
 <![CDATA[
@@ -505,7 +520,6 @@ This does not help the garbage collector in any way, the nulling out of fields h
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FormatStringChecker">
     <Details>
 <![CDATA[
@@ -523,7 +537,6 @@ that is not compatible with the class defining the equals method.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround">
     <Details>
 <![CDATA[
@@ -532,7 +545,6 @@ Normally, this detector does nothing.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround2">
     <Details>
 <![CDATA[
@@ -541,7 +553,6 @@ Normally, this detector does nothing.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.LostLoggerDueToWeakReference">
     <Details>
 <![CDATA[
@@ -551,9 +562,6 @@ weak references are used to hold onto Loggers.
 ]]>
     </Details>
   </Detector>
-
-
-
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround2">
     <Details>
 <![CDATA[
@@ -584,8 +592,6 @@ about the validity or predictive ability of warnings, not as a way to find probl
 ]]>
     </Details>
   </Detector>
-
-
   <Detector class="edu.umd.cs.findbugs.detect.HugeSharedStringConstants">
     <Details>
 <![CDATA[
@@ -594,17 +600,13 @@ about the validity or predictive ability of warnings, not as a way to find probl
 ]]>
     </Details>
   </Detector>
-
-
-
- <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPrivileged">
+  <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPrivileged">
     <Details>
 <![CDATA[
 <p> Look for code that should be executed inside doPrivileged blocks.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.ResolveAllReferences">
     <Details>
 <![CDATA[
@@ -612,8 +614,6 @@ about the validity or predictive ability of warnings, not as a way to find probl
 ]]>
     </Details>
   </Detector>
-
-
   <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough">
     <Details>
 <![CDATA[
@@ -622,7 +622,6 @@ about the validity or predictive ability of warnings, not as a way to find probl
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment">
     <Details>
 <![CDATA[
@@ -631,7 +630,6 @@ by reading the value of the same field.  </p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindSelfComparison">
     <Details>
 <![CDATA[
@@ -639,7 +637,6 @@ by reading the value of the same field.  </p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindSelfComparison2">
     <Details>
 <![CDATA[
@@ -647,7 +644,6 @@ by reading the value of the same field.  </p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindNonShortCircuit">
     <Details>
 <![CDATA[
@@ -657,7 +653,6 @@ boolean operators (<code>|</code> and <code>&amp;</code> instead of
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException">
     <Details>
 <![CDATA[
@@ -665,7 +660,6 @@ boolean operators (<code>|</code> and <code>&amp;</code> instead of
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath">
     <Details>
 <![CDATA[
@@ -723,7 +717,6 @@ such as the no-argument String constructor.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.NumberConstructor">
     <Details>
 <![CDATA[
@@ -732,8 +725,7 @@ such as the no-argument String constructor.
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" >
+  <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck">
     <Details>
 <![CDATA[
 <p> This detector looks for instances of double checked locking.
@@ -741,8 +733,7 @@ such as the no-argument String constructor.
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" >
+  <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations">
     <Details>
 <![CDATA[
 <p> This detector looks for calls to finalize() and other finalizer-related
@@ -750,8 +741,7 @@ issues.  </p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" >
+  <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch">
     <Details>
 <![CDATA[
 <p> This detector looks for problems in the definition of the hashCode() and equals()
@@ -759,8 +749,7 @@ methods.  </p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" >
+  <Detector class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical">
     <Details>
 <![CDATA[
 <p> Looks for equals methods that override equals methods in a superclass where the equivalence relationship might not be symmetrical.
@@ -768,8 +757,7 @@ methods.  </p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" >
+  <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify">
     <Details>
 <![CDATA[
 <p> This detector looks for calls to notify() that don't seem
@@ -777,8 +765,7 @@ to modify mutable object state.  </p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef" >
+  <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef">
     <Details>
 <![CDATA[
 <p> This detector looks for methods that return mutable static data.
@@ -786,8 +773,7 @@ to modify mutable object state.  </p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" >
+  <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations">
     <Details>
 <![CDATA[
 <p> This detector looks for calls to Thread.run().  It is a fast
@@ -795,8 +781,7 @@ detector.</p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop" >
+  <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop">
     <Details>
 <![CDATA[
 <p> This detector looks for loops that spin reading from a field.
@@ -804,8 +789,7 @@ detector.</p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindTwoLockWait" >
+  <Detector class="edu.umd.cs.findbugs.detect.FindTwoLockWait">
     <Details>
 <![CDATA[
 <p> This detector looks for calls to wait() with two (or more) locks held.
@@ -813,8 +797,7 @@ It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindUnconditionalWait" >
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnconditionalWait">
     <Details>
 <![CDATA[
 <p> This detector looks for calls to wait() not in a conditional or loop.
@@ -822,8 +805,7 @@ It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindUninitializedGet" >
+  <Detector class="edu.umd.cs.findbugs.detect.FindUninitializedGet">
     <Details>
 <![CDATA[
 <p> This detector looks for reads of uninitialized fields in constructors.
@@ -831,8 +813,7 @@ It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindUnsyncGet" >
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnsyncGet">
     <Details>
 <![CDATA[
 <p> This detector looks for get and set methods where the get is unsynchronized
@@ -840,8 +821,7 @@ while the set is synchronized.  </p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.InitializationChain" >
+  <Detector class="edu.umd.cs.findbugs.detect.InitializationChain">
     <Details>
 <![CDATA[
 <p> This detector looks for potentially circular class initialization
@@ -849,8 +829,7 @@ dependencies.  </p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.IteratorIdioms" >
+  <Detector class="edu.umd.cs.findbugs.detect.IteratorIdioms">
     <Details>
 <![CDATA[
 <p> This iterator looks for problems in how Iterator classes are defined.
@@ -858,8 +837,7 @@ dependencies.  </p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.LockedFields" >
+  <Detector class="edu.umd.cs.findbugs.detect.LockedFields">
     <Details>
 <![CDATA[
 <p> This detector looks for fields that are accessed in an inconsistent manner
@@ -867,8 +845,7 @@ with respect to locking.  </p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.EqStringTest" >
+  <Detector class="edu.umd.cs.findbugs.detect.EqStringTest">
     <Details>
 <![CDATA[
 <p> This detector looks for comparisons of String objects using the == or !=
@@ -877,8 +854,7 @@ operators.
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.MutableLock" >
+  <Detector class="edu.umd.cs.findbugs.detect.MutableLock">
     <Details>
 <![CDATA[
 <p> This detector looks for synchronization on objects read from
@@ -886,8 +862,7 @@ modified fields.  </p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.SynchronizingOnContentsOfFieldToProtectField" >
+  <Detector class="edu.umd.cs.findbugs.detect.SynchronizingOnContentsOfFieldToProtectField">
     <Details>
 <![CDATA[
 <p> This detector looks for code that seems to be synchronizing on a field in order
@@ -896,8 +871,7 @@ to guard updates of that field.
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.MutableStaticFields" >
+  <Detector class="edu.umd.cs.findbugs.detect.MutableStaticFields">
     <Details>
 <![CDATA[
 <p> This detector looks for static fields that may be modified by
@@ -905,16 +879,14 @@ malicious code.  </p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.Naming" >
+  <Detector class="edu.umd.cs.findbugs.detect.Naming">
     <Details>
 <![CDATA[
 <p> This detector looks for suspiciously-named methods.  </p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" >
+  <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked">
     <Details>
 <![CDATA[
 <p> This detector looks for calls to InputStream.read() or InputStream.skip() where the
@@ -922,8 +894,7 @@ return value is ignored.  </p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.SerializableIdiom" >
+  <Detector class="edu.umd.cs.findbugs.detect.SerializableIdiom">
     <Details>
 <![CDATA[
 <p> This detector looks for potential problems in the implementation
@@ -931,16 +902,14 @@ of Serializable classes.  </p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" >
+  <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor">
     <Details>
 <![CDATA[
 <p> This detector looks for constructors that start threads.  </p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindBadForLoop" >
+  <Detector class="edu.umd.cs.findbugs.detect.FindBadForLoop">
     <Details>
 <![CDATA[
 <p> This detector looks for incorrect for loops.
@@ -948,7 +917,7 @@ of Serializable classes.  </p>
 ]]>
     </Details>
   </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.ExplicitSerialization" >
+  <Detector class="edu.umd.cs.findbugs.detect.ExplicitSerialization">
     <Details>
 <![CDATA[
 <p> Looks for explicit serialization via readObject and 
@@ -957,15 +926,14 @@ that this class is, indeed, serialized. </p>
 ]]>
     </Details>
   </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" >
+  <Detector class="edu.umd.cs.findbugs.detect.UnreadFields">
     <Details>
 <![CDATA[
 <p> This detector looks for fields whose value is never read.  </p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" >
+  <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop">
     <Details>
 <![CDATA[
 <p> This detector looks for calls to wait() that are not in a loop.
@@ -973,8 +941,7 @@ that this class is, indeed, serialized. </p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" >
+  <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck">
     <Details>
 <![CDATA[
 <p> This detector looks for calls to methods where the return value
@@ -982,7 +949,6 @@ is suspiciously ignored.  It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref">
     <Details>
 <![CDATA[
@@ -992,7 +958,6 @@ null.  It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindNullDerefsInvolvingNonShortCircuitEvaluation">
     <Details>
 <![CDATA[
@@ -1002,7 +967,6 @@ occur, and the use of non-short-circuit evaluation causes the usual techniques t
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindOpenStream">
     <Details>
 <![CDATA[
@@ -1012,7 +976,6 @@ It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.PreferZeroLengthArrays">
     <Details>
 <![CDATA[
@@ -1022,7 +985,6 @@ Returning a zero length array is generally preferred in this context to returnin
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindUselessControlFlow">
     <Details>
 <![CDATA[
@@ -1031,7 +993,6 @@ Returning a zero length array is generally preferred in this context to returnin
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock">
     <Details>
 <![CDATA[
@@ -1043,7 +1004,6 @@ in the auxiliary classpath (or be analyzing the package itself).</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison">
     <Details>
 <![CDATA[
@@ -1053,7 +1013,6 @@ where comparing reference values is generally an error.  It is a slow detector.<
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify">
     <Details>
 <![CDATA[
@@ -1064,16 +1023,14 @@ it is still under development, and produces too many false positives.</b></p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindEmptySynchronizedBlock" >
+  <Detector class="edu.umd.cs.findbugs.detect.FindEmptySynchronizedBlock">
     <Details>
 <![CDATA[
 <p> This detector looks for empty synchronized blocks.</p>
 ]]>
     </Details>
   </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync2" >
+  <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync2">
     <Details>
 <![CDATA[
 <p> This detector looks for fields that are accessed in an inconsistent manner
@@ -1081,7 +1038,6 @@ with respect to locking.  It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment2">
     <Details>
 <![CDATA[
@@ -1090,7 +1046,6 @@ with respect to locking.  It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.IncompatMask">
     <Details>
 <![CDATA[
@@ -1099,7 +1054,6 @@ with respect to locking.  It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.LazyInit">
     <Details>
 <![CDATA[
@@ -1108,7 +1062,6 @@ field is not volatile.  It is a moderately fast detector.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter">
     <Details>
 <![CDATA[
@@ -1117,7 +1070,6 @@ on JSR166 locks.  It is a moderately fast detector.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindUncalledPrivateMethods">
     <Details>
 <![CDATA[
@@ -1126,7 +1078,6 @@ on JSR166 locks.  It is a moderately fast detector.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.StringConcatenation">
     <Details>
 <![CDATA[
@@ -1135,7 +1086,6 @@ on JSR166 locks.  It is a moderately fast detector.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.InefficientToArray">
     <Details>
 <![CDATA[
@@ -1146,7 +1096,6 @@ an array argument which is zero-length.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.InvalidJUnitTest">
     <Details>
 <![CDATA[
@@ -1155,7 +1104,6 @@ an array argument which is zero-length.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.BadlyOverriddenAdapter">
     <Details>
 <![CDATA[
@@ -1164,7 +1112,6 @@ method with the wrong signature. </p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.BadResultSetAccess">
     <Details>
 <![CDATA[
@@ -1174,7 +1121,6 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.SuperfluousInstanceOf">
     <Details>
 <![CDATA[
@@ -1183,7 +1129,6 @@ can be done statically. </p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.BadAppletConstructor">
     <Details>
 <![CDATA[
@@ -1195,7 +1140,6 @@ before the init() method, these methods will fail in the constructor.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.SuspiciousThreadInterrupted">
     <Details>
 <![CDATA[
@@ -1208,9 +1152,8 @@ is always called on the current thread.
 ]]>
     </Details>
   </Detector>
-
-<Detector class="edu.umd.cs.findbugs.detect.FindSqlInjection">
-<Details>
+  <Detector class="edu.umd.cs.findbugs.detect.FindSqlInjection">
+    <Details>
 <![CDATA[
 <p>
 This detector uses data flow analysis to look for invocations of execute methods
@@ -1219,9 +1162,8 @@ on SQL statements in switch something other than a constant string is passed as 
 ]]>
     </Details>
   </Detector>
-
-<Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores">
-<Details>
+  <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores">
+    <Details>
 <![CDATA[
 <p>
 This detector looks for assignments to local variables that
@@ -1230,7 +1172,6 @@ are never subsequently read. It is a moderately fast detector.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields">
     <Details>
 <![CDATA[
@@ -1240,7 +1181,6 @@ local fields defined in methods.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.WrongMapIterator">
     <Details>
 <![CDATA[
@@ -1249,7 +1189,6 @@ a keySet iterator. </p>
 ]]>
    </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.InstantiateStaticClass">
     <Details>
 <![CDATA[
@@ -1258,24 +1197,21 @@ a keySet iterator. </p>
 ]]>
    </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture">
-     <Details>
+    <Details>
 <![CDATA[
 <p> This detector looks for catch clauses that catch Exception,
 when no code in the block throws Exception. </p>
 ]]>
      </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindFloatEquality">
-      <Details>
+    <Details>
 <![CDATA[
 <p> Looks for floating point equality expressions. A fast detector. </p>
 ]]>
       </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation">
     <Details>
 <![CDATA[
@@ -1284,7 +1220,6 @@ are not cleaned up on all paths out of a method.  This is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryMath">
     <Details>
 <![CDATA[
@@ -1294,7 +1229,6 @@ accurate, to use the constant instead.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindCircularDependencies">
     <Details>
 <![CDATA[
@@ -1302,7 +1236,6 @@ accurate, to use the constant instead.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.RedundantInterfaces">
     <Details>
 <![CDATA[
@@ -1312,7 +1245,6 @@ the subclass.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.MultithreadedInstanceAccess">
     <Details>
 <![CDATA[
@@ -1321,7 +1253,6 @@ the subclass.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.PublicSemaphores">
     <Details>
 <![CDATA[
@@ -1333,7 +1264,6 @@ havoc to the base implementation.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck">
     <Details>
 <![CDATA[
@@ -1342,7 +1272,6 @@ is suspiciously ignored.  </p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble">
     <Details>
 <![CDATA[
@@ -1354,7 +1283,6 @@ to double and then perform the division.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindBadCast2">
     <Details>
 <![CDATA[
@@ -1364,7 +1292,6 @@ This detector looks for bad casts of object references using data flow analysis.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableStoreIntoSession">
     <Details>
 <![CDATA[
@@ -1384,10 +1311,6 @@ an ObjectOutput.
 ]]>
     </Details>
   </Detector>
-
-
-
-
   <Detector class="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression">
     <Details>
 <![CDATA[
@@ -1405,9 +1328,8 @@ their work on Programming Puzzlers.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindSleepWithLockHeld">
-   <Details>
+    <Details>
       <![CDATA[
       <p>
          This detector looks for calls to Thread.sleep() made with
@@ -1416,7 +1338,6 @@ their work on Programming Puzzlers.
       ]]>
    </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.DuplicateBranches">
     <Details>
 <![CDATA[
@@ -1427,9 +1348,8 @@ for the one branch.</p><p></p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.InefficientMemberAccess">
-   <Details>
+    <Details>
 <![CDATA[
 <p> This detector looks for internal classes that write to member variables of the
 owning class, when that member variable is private. In this case, a special compiler
@@ -1439,9 +1359,8 @@ visibility to protected will allow the field to be directly written.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.XMLFactoryBypass">
-   <Details>
+    <Details>
 <![CDATA[
 <p> This detector looks for direct allocations of implementations of XML interfaces.
 This ties the code to a specific implementation, rather than using the supplied
@@ -1450,9 +1369,8 @@ factory pattern to create these objects.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.UselessSubclassMethod">
-   <Details>
+    <Details>
       <![CDATA[
       <p>
       This detector looks for subclasses that implement methods defined in the super
@@ -1463,9 +1381,8 @@ factory pattern to create these objects.</p>
       ]]>
    </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.ConfusedInheritance">
-   <Details>
+    <Details>
       <![CDATA[
       <p>
       This detector for final classes that declare protected members. As this
@@ -1479,9 +1396,8 @@ factory pattern to create these objects.</p>
       ]]>
    </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.QuestionableBooleanAssignment">
-   <Details>
+    <Details>
       <![CDATA[
       <p>
       This detector looks for simple assignments of literal boolean values to variables in
@@ -1491,9 +1407,8 @@ factory pattern to create these objects.</p>
       ]]>
    </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.TrainNullReturnValues">
-   <Details>
+    <Details>
       <![CDATA[
       <p>
       TrainNullReturnValues determines which methods may return null and saves
@@ -1507,9 +1422,8 @@ factory pattern to create these objects.</p>
       ]]>
    </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.TrainUnconditionalDerefParams">
-   <Details>
+    <Details>
       <![CDATA[
       <p>
       TrainUnconditionalParamDerefs determines which methods may
@@ -1524,9 +1438,8 @@ factory pattern to create these objects.</p>
       ]]>
    </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.TrainFieldStoreTypes">
-   <Details>
+    <Details>
       <![CDATA[
       <p>
       TrainFieldStoreTypes analyzes the types stored into fields
@@ -1539,9 +1452,8 @@ factory pattern to create these objects.</p>
       ]]>
    </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.TrainNonNullAnnotations">
-   <Details>
+    <Details>
       <![CDATA[
       <p>
       TrainNonNullAnnotations collects @NonNull and @PossiblyNull annotations
@@ -1550,16 +1462,14 @@ factory pattern to create these objects.</p>
       ]]>
    </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.CheckCalls">
-   <Details>
+    <Details>
       <![CDATA[
       <p>This detector is just for debugging method call resolution in FindBugs.
       Don't enable it.</p>
       ]]>
    </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -1567,7 +1477,6 @@ factory pattern to create these objects.</p>
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.TestASM">
     <Details>
     <![CDATA[
@@ -1578,7 +1487,6 @@ factory pattern to create these objects.</p>
     ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer">
     <Details>
     <![CDATA[
@@ -1594,17 +1502,15 @@ factory pattern to create these objects.</p>
     ]]>
     </Details>
   </Detector>
-
-<Detector class="edu.umd.cs.findbugs.detect.StaticCalendarDetector">
-<Details>
+  <Detector class="edu.umd.cs.findbugs.detect.StaticCalendarDetector">
+    <Details>
 <![CDATA[
 <p>This detector warns about static fields of type java.util.Calendar or java.text.DateFormat (and subclasses) because
  Calendars are inherently unsafe for multithreaded use.
 </p>
 ]]>
 </Details>
-</Detector>
-
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.TestDataflowAnalysis">
     <Details>
       <![CDATA[
@@ -1613,7 +1519,6 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.CheckTypeQualifiers">
     <Details>
       <![CDATA[
@@ -1622,54 +1527,50 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
- <Detector class="edu.umd.cs.findbugs.detect.AppendingToAnObjectOutputStream">
+  <Detector class="edu.umd.cs.findbugs.detect.AppendingToAnObjectOutputStream">
     <Details>
       <![CDATA[
         <p>Looks for an attempt to append to an object output stream</p>
       ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings">
-      <Details>
+    <Details>
           <![CDATA[
           <p>Checks @ExpectedWarning and @NoWarning annotations.
           This detector is used only for testing FindBugs.</p>
           ]]>
       </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.DontIgnoreResultOfPutIfAbsent">
-      <Details>
+    <Details>
           <![CDATA[
           <p>Checks that if the result of putIfAbsent is ignored,
             the value passed as the second argument is not reused. </p>
           ]]>
       </Details>
   </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass">
-      <Details>
+  <Detector
+    class="edu.umd.cs.findbugs.detect.ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass">
+    <Details>
           <![CDATA[
           <p>Checks for methods invoked from constructors for superclasses.  </p>
           ]]>
       </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.DefaultEncodingDetector">
-      <Details>
+    <Details>
 <![CDATA[
 <p> Checks for calls to methods which perform a byte to String (or String to byte) conversion using the user's default
  platform encoding. This can cause the application behaviour to vary between platforms.  </p>
 ]]>
       </Details>
   </Detector>
-
   <!--
   **********************************************************************
   BugPatterns
   **********************************************************************
    -->
-
   <BugPattern type="SKIPPED_CLASS_TOO_BIG">
     <ShortDescription>Class too big for analysis</ShortDescription>
     <LongDescription>{0} is too big for analysis</LongDescription>
@@ -1681,7 +1582,6 @@ factory pattern to create these objects.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NOISE_NULL_DEREFERENCE">
     <ShortDescription>Bogus warning about a null pointer dereference</ShortDescription>
     <LongDescription>Bogus warning about a null pointer dereference in {1}</LongDescription>
@@ -1691,7 +1591,6 @@ factory pattern to create these objects.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NOISE_METHOD_CALL">
     <ShortDescription>Bogus warning about a method call</ShortDescription>
     <LongDescription>Bogus warning about a method call {2} in {1}</LongDescription>
@@ -1701,7 +1600,6 @@ factory pattern to create these objects.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NOISE_FIELD_REFERENCE">
     <ShortDescription>Bogus warning about a field reference</ShortDescription>
     <LongDescription>Bogus warning about a reference to {2} in {1}</LongDescription>
@@ -1711,7 +1609,6 @@ factory pattern to create these objects.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NOISE_OPERATION">
     <ShortDescription>Bogus warning about an operation</ShortDescription>
     <LongDescription>Bogus warning about an operation {1}</LongDescription>
@@ -1721,9 +1618,6 @@ factory pattern to create these objects.</p>
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE">
     <ShortDescription>BigDecimal constructed from double that isn't represented precisely</ShortDescription>
     <LongDescription>BigDecimal constructed from {4} in {1}</LongDescription>
@@ -1740,7 +1634,6 @@ of the double to create the BigDecimal (e.g., BigDecimal.valueOf(0.1) gives 0.1)
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD">
     <ShortDescription>Useless/vacuous call to EasyMock method</ShortDescription>
     <LongDescription>Useless/vacuous call to {2} in {1}</LongDescription>
@@ -1752,9 +1645,6 @@ of the double to create the BigDecimal (e.g., BigDecimal.valueOf(0.1) gives 0.1)
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="DMI_SCHEDULED_THREAD_POOL_EXECUTOR_WITH_ZERO_CORE_THREADS">
     <ShortDescription>Creation of ScheduledThreadPoolExecutor with zero core threads</ShortDescription>
     <LongDescription>Creation of ScheduledThreadPoolExecutor with zero core threads in {1}</LongDescription>
@@ -1767,7 +1657,6 @@ A ScheduledThreadPoolExecutor with zero core threads will never execute anything
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR">
     <ShortDescription>Futile attempt to change max pool size of ScheduledThreadPoolExecutor</ShortDescription>
     <LongDescription>Futile attempt to change max pool size of ScheduledThreadPoolExecutor in {1}</LongDescription>
@@ -1780,7 +1669,6 @@ While ScheduledThreadPoolExecutor inherits from ThreadPoolExecutor, a few of the
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DMI_UNSUPPORTED_METHOD">
     <ShortDescription>Call to unsupported method</ShortDescription>
     <LongDescription>Call to unsupported method {2} in {1}</LongDescription>
@@ -1792,9 +1680,6 @@ While ScheduledThreadPoolExecutor inherits from ThreadPoolExecutor, a few of the
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="DMI_EMPTY_DB_PASSWORD">
     <ShortDescription>Empty database password</ShortDescription>
     <LongDescription>Empty database password in {1}</LongDescription>
@@ -1818,8 +1703,6 @@ While ScheduledThreadPoolExecutor inherits from ThreadPoolExecutor, a few of the
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="HRS_REQUEST_PARAMETER_TO_COOKIE">
     <ShortDescription>HTTP cookie formed from untrusted input</ShortDescription>
     <LongDescription>HTTP cookie formed from untrusted input in {1}</LongDescription>
@@ -1837,11 +1720,10 @@ consider using a commercial static analysis or pen-testing tool.
 ]]>
     </Details>
   </BugPattern>
-
-    <BugPattern type="HRS_REQUEST_PARAMETER_TO_HTTP_HEADER">
-        <ShortDescription>HTTP Response splitting vulnerability</ShortDescription>
-      <LongDescription>HTTP parameter directly written to HTTP header output in {1}</LongDescription>
-        <Details>
+  <BugPattern type="HRS_REQUEST_PARAMETER_TO_HTTP_HEADER">
+    <ShortDescription>HTTP Response splitting vulnerability</ShortDescription>
+    <LongDescription>HTTP parameter directly written to HTTP header output in {1}</LongDescription>
+    <Details>
             <![CDATA[
     <p>This code directly writes an HTTP parameter to an HTTP header, which allows for a HTTP response splitting
 vulnerability. See <a href="http://en.wikipedia.org/wiki/HTTP_response_splitting">http://en.wikipedia.org/wiki/HTTP_response_splitting</a>
@@ -1854,11 +1736,11 @@ consider using a commercial static analysis or pen-testing tool.
 
 ]]>
         </Details>
-    </BugPattern>
+  </BugPattern>
   <BugPattern type="XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER">
     <ShortDescription>Servlet reflected cross site scripting vulnerability</ShortDescription>
     <LongDescription>HTTP parameter written to Servlet output {1}</LongDescription>
-<Details>
+    <Details>
 <![CDATA[
     <p>This code directly writes an HTTP parameter to Servlet output, which allows for a reflected cross site scripting
 vulnerability. See <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a>
@@ -1872,11 +1754,10 @@ consider using a commercial static analysis or pen-testing tool.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="XSS_REQUEST_PARAMETER_TO_SEND_ERROR">
     <ShortDescription>Servlet reflected cross site scripting vulnerability in error page</ShortDescription>
     <LongDescription>HTTP parameter written to Servlet error page in {1}</LongDescription>
-<Details>
+    <Details>
 <![CDATA[
     <p>This code directly writes an HTTP parameter to a Server error page (using HttpServletResponse.sendError). Echoing this untrusted input allows
 for a reflected cross site scripting
@@ -1891,11 +1772,10 @@ consider using a commercial static analysis or pen-testing tool.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="XSS_REQUEST_PARAMETER_TO_JSP_WRITER">
     <ShortDescription>JSP reflected cross site scripting vulnerability</ShortDescription>
     <LongDescription>HTTP parameter directly written to JSP output, giving reflected XSS vulnerability in {1.class}</LongDescription>
-<Details>
+    <Details>
 <![CDATA[
     <p>This code directly writes an HTTP parameter to JSP output, which allows for a cross site scripting
 vulnerability. See <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a>
@@ -1908,7 +1788,6 @@ consider using a commercial static analysis or pen-testing tool.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD">
     <ShortDescription>Certain swing methods needs to be invoked in Swing thread</ShortDescription>
     <LongDescription>Call to swing method in {1} needs to be performed in Swing event thread</LongDescription>
@@ -1927,8 +1806,6 @@ visible), they could trigger listener notification on the event dispatch thread.
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="IL_INFINITE_LOOP">
     <ShortDescription>An apparent infinite loop</ShortDescription>
     <LongDescription>There is an apparent infinite loop in {1}</LongDescription>
@@ -1939,7 +1816,6 @@ throwing an exception).</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="IL_INFINITE_RECURSIVE_LOOP">
     <ShortDescription>An apparent infinite recursive loop</ShortDescription>
     <LongDescription>There is an apparent infinite recursive loop in {1}</LongDescription>
@@ -1950,8 +1826,6 @@ an infinite recursive loop that will result in a stack overflow.</p>
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="IL_CONTAINER_ADDED_TO_ITSELF">
     <ShortDescription>A collection is added to itself</ShortDescription>
     <LongDescription>A collection is added to itself in {1}</LongDescription>
@@ -1963,10 +1837,6 @@ set will throw a StackOverflowException.
 ]]>
     </Details>
   </BugPattern>
-
-
-
-
   <BugPattern type="VO_VOLATILE_REFERENCE_TO_ARRAY">
     <ShortDescription>A volatile reference to an array doesn't treat the array elements as volatile</ShortDescription>
     <LongDescription>{1} is a volatile reference to an array; the array elements are non-volatile</LongDescription>
@@ -1993,7 +1863,6 @@ increments could be lost.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="UI_INHERITANCE_UNSAFE_GETRESOURCE">
     <ShortDescription>Usage of GetResource may be unsafe if class is extended</ShortDescription>
     <LongDescription>Usage of GetResource in {1} may be unsafe if class is extended</LongDescription>
@@ -2005,12 +1874,10 @@ another package.</p>
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="NP_BOOLEAN_RETURN_NULL">
-      <ShortDescription>Method with Boolean return type returns explicit null</ShortDescription>
-      <LongDescription>{1} has Boolean return type and returns explicit null</LongDescription>
-      <Details>
+    <ShortDescription>Method with Boolean return type returns explicit null</ShortDescription>
+    <LongDescription>{1} has Boolean return type and returns explicit null</LongDescription>
+    <Details>
        <![CDATA[
        <p>
     A method that returns either Boolean.TRUE, Boolean.FALSE or null is an accident waiting to happen.
@@ -2020,13 +1887,11 @@ another package.</p>
        </p>
        ]]>
        </Details>
-       </BugPattern>
-
-
-   <BugPattern type="NP_SYNC_AND_NULL_CHECK_FIELD">
-     <ShortDescription>Synchronize and null check on the same field.</ShortDescription>
-     <LongDescription>In {1} the field {2.givenClass} is synchronized on and then checked if null.</LongDescription>
-     <Details>
+  </BugPattern>
+  <BugPattern type="NP_SYNC_AND_NULL_CHECK_FIELD">
+    <ShortDescription>Synchronize and null check on the same field.</ShortDescription>
+    <LongDescription>In {1} the field {2.givenClass} is synchronized on and then checked if null.</LongDescription>
+    <Details>
 <![CDATA[
 <p>Since the field is synchronized on, it seems not likely to be null.
 If it is null and then synchronized on a NullPointerException will be
@@ -2035,9 +1900,7 @@ another field.</p>
 
 ]]>
      </Details>
-   </BugPattern>
-
-
+  </BugPattern>
   <BugPattern type="RpC_REPEATED_CONDITIONAL_TEST">
     <ShortDescription>Repeated conditional tests</ShortDescription>
     <LongDescription>Repeated conditional test in {1}</LongDescription>
@@ -2050,8 +1913,6 @@ another field.</p>
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="TESTING">
     <ShortDescription>Testing</ShortDescription>
     <LongDescription>Test warning generated in {1}</LongDescription>
@@ -2062,8 +1923,6 @@ bug detectors.</p>
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="TESTING1">
     <ShortDescription>Testing 1 </ShortDescription>
     <LongDescription>Test warning 1 generated in {1}</LongDescription>
@@ -2074,8 +1933,6 @@ bug detectors.</p>
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="TESTING2">
     <ShortDescription>Testing 2</ShortDescription>
     <LongDescription>Test warning 2 generated in {1}</LongDescription>
@@ -2086,8 +1943,6 @@ bug detectors.</p>
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="TESTING3">
     <ShortDescription>Testing 3</ShortDescription>
     <LongDescription>Test warning 3 generated in {1}</LongDescription>
@@ -2098,8 +1953,6 @@ bug detectors.</p>
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="UNKNOWN">
     <ShortDescription>Unknown bug pattern</ShortDescription>
     <LongDescription>Unknown bug pattern BUG_PATTERN in {1}</LongDescription>
@@ -2112,7 +1965,6 @@ or perhaps if an analysis was generated using a plugin, but that plugin is not c
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY">
     <ShortDescription>Creates an empty zip file entry</ShortDescription>
     <LongDescription>Empty zip file entry created in {1}</LongDescription>
@@ -2127,7 +1979,6 @@ should be written to the ZipFile between the calls to
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="AM_CREATES_EMPTY_JAR_FILE_ENTRY">
     <ShortDescription>Creates an empty jar file entry</ShortDescription>
     <LongDescription>Empty jar file entry created in {1}</LongDescription>
@@ -2142,7 +1993,6 @@ should be written to the JarFile between the calls to
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="IMSE_DONT_CATCH_IMSE">
     <ShortDescription>Dubious catching of IllegalMonitorStateException</ShortDescription>
     <LongDescription>Dubious catching of IllegalMonitorStateException in {1}</LongDescription>
@@ -2154,8 +2004,6 @@ should be written to the JarFile between the calls to
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="FL_MATH_USING_FLOAT_PRECISION">
     <ShortDescription>Method performs math using floating point precision</ShortDescription>
     <LongDescription>{1} performs math using floating point precision</LongDescription>
@@ -2168,7 +2016,6 @@ should be written to the JarFile between the calls to
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="CN_IDIOM">
     <ShortDescription>Class implements Cloneable but does not define or use clone method</ShortDescription>
     <LongDescription>Class {0} implements Cloneable but does not define or use clone method</LongDescription>
@@ -2180,7 +2027,6 @@ should be written to the JarFile between the calls to
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE">
     <ShortDescription>Class defines clone() but doesn't implement Cloneable</ShortDescription>
     <LongDescription>{0} defines clone() but doesn't implement Cloneable</LongDescription>
@@ -2193,7 +2039,6 @@ can clone themselves), but just make sure that this is what you intended.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="CN_IDIOM_NO_SUPER_CALL">
     <ShortDescription>clone method does not call super.clone()</ShortDescription>
     <LongDescription>{1} does not call super.clone()</LongDescription>
@@ -2210,8 +2055,6 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER">
     <ShortDescription>Use of identifier that is a keyword in later versions of Java</ShortDescription>
     <LongDescription>{1} uses {2} for a variable name, which is a keyword in later versions of Java</LongDescription>
@@ -2223,7 +2066,7 @@ in order to compile it in later versions of Java.</p>
 ]]>
     </Details>
   </BugPattern>
-   <BugPattern type="NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER">
+  <BugPattern type="NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER">
     <ShortDescription>Use of identifier that is a keyword in later versions of Java</ShortDescription>
     <LongDescription>{1} conflicts with a keyword in a more recent version of Java</LongDescription>
     <Details>
@@ -2235,8 +2078,6 @@ will need to be changed in order to compile it in later versions of Java.</p>
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="DE_MIGHT_DROP">
     <ShortDescription>Method might drop exception</ShortDescription>
     <LongDescription>{1} might drop {2}</LongDescription>
@@ -2259,8 +2100,7 @@ will need to be changed in order to compile it in later versions of Java.</p>
 ]]>
     </Details>
   </BugPattern>
-
-<BugPattern type="DP_DO_INSIDE_DO_PRIVILEGED">
+  <BugPattern type="DP_DO_INSIDE_DO_PRIVILEGED">
     <ShortDescription>Method invoked that should be only be invoked inside a doPrivileged block</ShortDescription>
     <LongDescription>invocation of {2}, which should be invoked from within a doPrivileged block, in {1}</LongDescription>
     <Details>
@@ -2271,7 +2111,8 @@ will need to be changed in order to compile it in later versions of Java.</p>
 ]]>
     </Details>
   </BugPattern>
-<BugPattern type="DP_DO_INSIDE_DO_PRIVILEDGED"> <!-- misspelled for backward compatibility -->
+  <BugPattern type="DP_DO_INSIDE_DO_PRIVILEDGED">
+    <!-- misspelled for backward compatibility -->
     <ShortDescription>Method invoked that should be only be invoked inside a doPrivileged block</ShortDescription>
     <LongDescription>invocation of {2}, which should be invoked from within a doPrivileged block, in {1}</LongDescription>
     <Details>
@@ -2282,8 +2123,7 @@ will need to be changed in order to compile it in later versions of Java.</p>
 ]]>
     </Details>
   </BugPattern>
-
-<BugPattern type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED">
+  <BugPattern type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED">
     <ShortDescription>Classloaders should only be created inside doPrivileged block</ShortDescription>
     <LongDescription>{1} creates a {2} classloader, which should be performed within a doPrivileged block</LongDescription>
     <Details>
@@ -2294,7 +2134,6 @@ will need to be changed in order to compile it in later versions of Java.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS">
     <ShortDescription>Fields of immutable classes should be final</ShortDescription>
     <LongDescription>{1.givenClass} should be final since {0} is marked as Immutable.  </LongDescription>
@@ -2306,7 +2145,6 @@ that all fields are final.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED">
     <ShortDescription>Thread passed where Runnable expected</ShortDescription>
     <LongDescription>Thread passed where Runnable expected in {1}</LongDescription>
@@ -2356,8 +2194,6 @@ Consider using <code>java.net.URI</code> instead.
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="DM_EXIT">
     <ShortDescription>Method invokes System.exit(...)</ShortDescription>
     <LongDescription>{1} invokes System.exit(...), which shuts down the entire virtual machine</LongDescription>
@@ -2370,8 +2206,6 @@ Consider using <code>java.net.URI</code> instead.
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="DM_RUN_FINALIZERS_ON_EXIT">
     <ShortDescription>Method invokes dangerous method runFinalizersOnExit</ShortDescription>
     <LongDescription>{1} invokes dangerous method runFinalizersOnExit</LongDescription>
@@ -2383,7 +2217,6 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DM_STRING_CTOR">
     <ShortDescription>Method invokes inefficient new String(String) constructor</ShortDescription>
     <LongDescription>{1} invokes inefficient new String(String) constructor</LongDescription>
@@ -2396,8 +2229,6 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="DM_STRING_VOID_CTOR">
     <ShortDescription>Method invokes inefficient new String() constructor</ShortDescription>
     <LongDescription>{1} invokes inefficient new String() constructor</LongDescription>
@@ -2449,7 +2280,6 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DM_NUMBER_CTOR">
     <ShortDescription>Method invokes inefficient Number constructor; use static valueOf instead</ShortDescription>
     <LongDescription>Method {1} invokes inefficient {2} constructor; use {3} instead</LongDescription>
@@ -2490,7 +2320,6 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
       ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DM_CONVERT_CASE">
     <ShortDescription>Consider using Locale parameterized version of invoked method</ShortDescription>
     <LongDescription>Use of non-localized String.toUpperCase() or String.toLowerCase in {1}</LongDescription>
@@ -2506,8 +2335,6 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR">
     <ShortDescription>Primitive value is unboxed and coerced for ternary operator</ShortDescription>
     <LongDescription>Primitive value is unboxed and coerced for ternary operator in {1}</LongDescription>
@@ -2524,7 +2351,6 @@ converted to a floating point value, and boxed. See JLS Section 15.25.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="BX_BOXING_IMMEDIATELY_UNBOXED">
     <ShortDescription>Primitive value is boxed and then immediately unboxed</ShortDescription>
     <LongDescription>Primitive value is boxed and then immediately unboxed in {1}</LongDescription>
@@ -2547,9 +2373,6 @@ to immediately undo the work of the boxing.
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION">
     <ShortDescription>Primitive value is boxed then unboxed to perform primitive coercion</ShortDescription>
     <LongDescription>Primitive value is boxed then unboxed to perform primitive coercion in {1}</LongDescription>
@@ -2580,8 +2403,6 @@ to immediately undo the work of the boxing.
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="DM_NEW_FOR_GETCLASS">
     <ShortDescription>Method allocates an object, only to get the class object</ShortDescription>
     <LongDescription>Method {1} allocates an object, only to get the class object</LongDescription>
@@ -2592,11 +2413,10 @@ to immediately undo the work of the boxing.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DM_MONITOR_WAIT_ON_CONDITION">
-   <ShortDescription>Monitor wait() called on Condition</ShortDescription>
-   <LongDescription>Monitor wait() called on a Condition in {1}</LongDescription>
-   <Details>
+    <ShortDescription>Monitor wait() called on Condition</ShortDescription>
+    <LongDescription>Monitor wait() called on a Condition in {1}</LongDescription>
+    <Details>
       <![CDATA[
       <p>
       This method calls <code>wait()</code> on a
@@ -2607,7 +2427,6 @@ to immediately undo the work of the boxing.
       ]]>
    </Details>
   </BugPattern>
-
   <BugPattern type="RV_01_TO_INT">
     <ShortDescription>Random value from 0 to 1 is coerced to the integer 0</ShortDescription>
     <LongDescription>Method {1} uses generates a random value from 0 to 1 and then coerces that value to the integer 0</LongDescription>
@@ -2619,7 +2438,6 @@ want to multiple the random value by something else before coercing it to an int
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DM_NEXTINT_VIA_NEXTDOUBLE">
     <ShortDescription>Use the nextInt method of Random rather than nextDouble to generate a random integer</ShortDescription>
     <LongDescription>Method {1} uses the nextDouble method of Random to generate a random integer; using nextInt is more efficient</LongDescription>
@@ -2634,9 +2452,6 @@ value from -99 to 0, use <code>-r.nextInt(100)</code>.
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE">
     <ShortDescription>Nonconstant string passed to execute method on an SQL statement</ShortDescription>
     <LongDescription>Method {1} passes a nonconstant String to an execute method on an SQL statement</LongDescription>
@@ -2650,7 +2465,6 @@ SQL injection attacks.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING">
     <ShortDescription>A prepared statement is generated from a nonconstant String</ShortDescription>
     <LongDescription>A prepared statement is generated from a nonconstant String in {1} </LongDescription>
@@ -2663,7 +2477,6 @@ be used to make the prepared statement do something unexpected and undesirable.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DM_USELESS_THREAD">
     <ShortDescription>A thread was created using the default empty run method</ShortDescription>
     <LongDescription>Method {1} creates a thread using the default empty run method</LongDescription>
@@ -2675,7 +2488,6 @@ be used to make the prepared statement do something unexpected and undesirable.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DC_DOUBLECHECK">
     <ShortDescription>Possible double check of field</ShortDescription>
     <LongDescription>Possible doublecheck on {2} in {1}</LongDescription>
@@ -2689,7 +2501,6 @@ be used to make the prepared statement do something unexpected and undesirable.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="FI_FINALIZER_NULLS_FIELDS">
     <ShortDescription>Finalizer nulls fields</ShortDescription>
     <LongDescription>{3} is set to null inside finalize method in {1.class}</LongDescription>
@@ -2699,7 +2510,7 @@ be used to make the prepared statement do something unexpected and undesirable.
   and the object is going to be garbage collected anyway.
 ]]>
     </Details>
-   </BugPattern>
+  </BugPattern>
   <BugPattern type="FI_FINALIZER_ONLY_NULLS_FIELDS">
     <ShortDescription>Finalizer only nulls fields</ShortDescription>
     <LongDescription>{1} only nulls fields</LongDescription>
@@ -2710,8 +2521,7 @@ the object be garbage collected, finalized, and then garbage collected again. Yo
 method.
 ]]>
     </Details>
-   </BugPattern>
-
+  </BugPattern>
   <BugPattern type="FI_PUBLIC_SHOULD_BE_PROTECTED">
     <ShortDescription>Finalizer should be protected, not public</ShortDescription>
     <LongDescription>{1} is public; should be protected</LongDescription>
@@ -2722,7 +2532,6 @@ method.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="FI_EMPTY">
     <ShortDescription>Empty finalizer should be deleted</ShortDescription>
     <LongDescription>{1} is empty and should be deleted</LongDescription>
@@ -2733,7 +2542,6 @@ method.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="FI_NULLIFY_SUPER">
     <ShortDescription>Finalizer nullifies superclass finalizer</ShortDescription>
     <LongDescription>{1} is nullifying {2}.finalize(); is this intended?</LongDescription>
@@ -2746,7 +2554,6 @@ method.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="FI_USELESS">
     <ShortDescription>Finalizer does nothing but call superclass finalizer</ShortDescription>
     <LongDescription>{1} does nothing except call super.finalize(); delete it</LongDescription>
@@ -2758,7 +2565,6 @@ method.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="FI_MISSING_SUPER_CALL">
     <ShortDescription>Finalizer does not call superclass finalizer</ShortDescription>
     <LongDescription>{1} missing call to super.finalize(), so {2}.finalize() doesn't get called</LongDescription>
@@ -2771,7 +2577,6 @@ method.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="FI_EXPLICIT_INVOCATION">
     <ShortDescription>Explicit invocation of finalizer</ShortDescription>
     <LongDescription>explicit invocation of {2} in {1}</LongDescription>
@@ -2787,7 +2592,6 @@ on objects referenced by X, because they may already be getting finalized in a s
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS">
     <ShortDescription>Equals checks for incompatible operand</ShortDescription>
     <LongDescription>{1} checks for operand being a {2.givenClass} </LongDescription>
@@ -2936,7 +2740,6 @@ this code, but it is worth reviewing.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="EQ_COMPARING_CLASS_NAMES">
     <ShortDescription>equals method compares class names rather than class objects</ShortDescription>
     <LongDescription>{1} compares class names rather than class objects</LongDescription>
@@ -2949,7 +2752,6 @@ different class loaders. Just check to see if the class objects are the same.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="EQ_ALWAYS_TRUE">
     <ShortDescription>equals method always returns true</ShortDescription>
     <LongDescription>{1} always returns true</LongDescription>
@@ -2961,8 +2763,6 @@ Plus, it means that the equals method is not symmetric.
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="EQ_ALWAYS_FALSE">
     <ShortDescription>equals method always returns false</ShortDescription>
     <LongDescription>{1} always returns false</LongDescription>
@@ -2979,14 +2779,10 @@ public boolean equals(Object o) { return this == o; }
 ]]>
     </Details>
   </BugPattern>
-
-
-
-
   <BugPattern type="HSC_HUGE_SHARED_STRING_CONSTANT">
-   <ShortDescription>Huge string constants is duplicated across multiple class files</ShortDescription>
-   <LongDescription>{1} is initialized to a string constant {2} characters long that is duplicated in {3} other class files</LongDescription>
-   <Details>
+    <ShortDescription>Huge string constants is duplicated across multiple class files</ShortDescription>
+    <LongDescription>{1} is initialized to a string constant {2} characters long that is duplicated in {3} other class files</LongDescription>
+    <Details>
       <![CDATA[
       <p>
     A large String constant is duplicated across multiple class files.
@@ -3000,9 +2796,9 @@ that classfile. See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=
    </Details>
   </BugPattern>
   <BugPattern type="NP_ARGUMENT_MIGHT_BE_NULL">
-   <ShortDescription>Method does not check for null argument</ShortDescription>
-   <LongDescription>{1} does not check for null argument</LongDescription>
-   <Details>
+    <ShortDescription>Method does not check for null argument</ShortDescription>
+    <LongDescription>{1} does not check for null argument</LongDescription>
+    <Details>
       <![CDATA[
       <p>
     A parameter to this method has been identified as a value that should
@@ -3012,11 +2808,10 @@ that classfile. See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=
       ]]>
    </Details>
   </BugPattern>
-
   <BugPattern type="NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT">
-   <ShortDescription>equals() method does not check for null argument</ShortDescription>
-   <LongDescription>{1} does not check for null argument</LongDescription>
-   <Details>
+    <ShortDescription>equals() method does not check for null argument</ShortDescription>
+    <LongDescription>{1} does not check for null argument</LongDescription>
+    <Details>
       <![CDATA[
       <p>
       This implementation of equals(Object) violates the contract defined
@@ -3027,7 +2822,6 @@ that classfile. See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=
       ]]>
    </Details>
   </BugPattern>
-
   <BugPattern type="RV_NEGATING_RESULT_OF_COMPARETO">
     <ShortDescription>Negating the result of compareTo()/compare()</ShortDescription>
     <LongDescription>{1} negates the return value of {2}</LongDescription>
@@ -3042,7 +2836,6 @@ by reversing the order of the operands rather than by negating the results.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="CO_COMPARETO_RESULTS_MIN_VALUE">
     <ShortDescription>compareTo()/compare() returns Integer.MIN_VALUE</ShortDescription>
     <LongDescription>{1} returns Integer.MIN_VALUE, which can't be negated</LongDescription>
@@ -3057,7 +2850,6 @@ the  constant Integer.MIN_VALUE, which is an exceptionally bad practice.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="CO_SELF_NO_OBJECT">
     <ShortDescription>Covariant compareTo() method defined</ShortDescription>
     <LongDescription>{0} defines compareTo({0.givenClass}) method but not compareTo(Object)</LongDescription>
@@ -3070,7 +2862,6 @@ the  constant Integer.MIN_VALUE, which is an exceptionally bad practice.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS">
     <ShortDescription>Signature declares use of unhashable class in hashed construct</ShortDescription>
     <LongDescription>{2} doesn't define a hashCode() method but it is used in a hashed context in {1}</LongDescription>
@@ -3097,8 +2888,6 @@ fix this problem of highest importance.
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="HE_HASHCODE_USE_OBJECT_EQUALS">
     <ShortDescription>Class defines hashCode() and uses Object.equals()</ShortDescription>
     <LongDescription>{0} defines hashCode and uses Object.equals()</LongDescription>
@@ -3121,9 +2910,6 @@ the recommended <code>hashCode</code> implementation to use is:</p>
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="EQ_COMPARETO_USE_OBJECT_EQUALS">
     <ShortDescription>Class defines compareTo(...) and uses Object.equals()</ShortDescription>
     <LongDescription>{0} defines {1.givenClass} and uses Object.equals()</LongDescription>
@@ -3147,10 +2933,6 @@ is "Note: this class has a natural ordering that is inconsistent with equals."
 ]]>
     </Details>
   </BugPattern>
-
-
-
-
   <BugPattern type="HE_HASHCODE_NO_EQUALS">
     <ShortDescription>Class defines hashCode() but not equals()</ShortDescription>
     <LongDescription>{0} defines hashCode but not equals</LongDescription>
@@ -3162,7 +2944,6 @@ is "Note: this class has a natural ordering that is inconsistent with equals."
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="HE_EQUALS_USE_HASHCODE">
     <ShortDescription>Class defines equals() and uses Object.hashCode()</ShortDescription>
     <LongDescription>{0} defines equals and uses Object.hashCode()</LongDescription>
@@ -3226,7 +3007,6 @@ the recommended <code>hashCode</code> implementation to use is:</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="ES_COMPARING_STRINGS_WITH_EQ">
     <ShortDescription>Comparison of String objects using == or !=</ShortDescription>
     <LongDescription>Comparison of String objects using == or != in {1} </LongDescription>
@@ -3254,7 +3034,6 @@ using the <code>equals(Object)</code> method instead.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="CO_ABSTRACT_SELF">
     <ShortDescription>Abstract class defines covariant compareTo() method</ShortDescription>
     <LongDescription>Abstract {0} defines compareTo({0.givenClass}) method</LongDescription>
@@ -3267,8 +3046,6 @@ using the <code>equals(Object)</code> method instead.</p>
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="IS_FIELD_NOT_GUARDED">
     <ShortDescription>Field not guarded against concurrent access</ShortDescription>
     <LongDescription>{1.givenClass} not guarded against concurrent access; locked {2}% of time</LongDescription>
@@ -3278,8 +3055,7 @@ using the <code>equals(Object)</code> method instead.</p>
 but can be accessed in a way that seems to violate the annotation.</p>
 ]]>
 </Details>
-</BugPattern>
-
+  </BugPattern>
   <BugPattern type="MSF_MUTABLE_SERVLET_FIELD">
     <ShortDescription>Mutable servlet field</ShortDescription>
     <LongDescription>{1} is a mutable servlet field</LongDescription>
@@ -3294,8 +3070,6 @@ Thus, having a mutable instance field generally creates race conditions.
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="IS2_INCONSISTENT_SYNC">
     <ShortDescription>Inconsistent synchronization</ShortDescription>
     <LongDescription>Inconsistent synchronization of {1}; locked {2}% of time</LongDescription>
@@ -3474,10 +3248,6 @@ Language Specification</a> for details
 ]]>
     </Details>
   </BugPattern>
-
-
-
-
   <BugPattern type="TLW_TWO_LOCK_WAIT">
     <ShortDescription>Wait with two locks held</ShortDescription>
     <LongDescription>wait() with two locks held in {1}</LongDescription>
@@ -3494,7 +3264,8 @@ This not necessarily a bug, but is worth examining
 ]]>
     </Details>
   </BugPattern>
-   <BugPattern type="TLW_TWO_LOCK_NOTIFY" deprecated="true"> <!-- never generated -->
+  <BugPattern type="TLW_TWO_LOCK_NOTIFY" deprecated="true">
+    <!-- never generated -->
     <ShortDescription>Notify with two locks held</ShortDescription>
     <LongDescription>notify() or notifyAll*() with two locks held in {1}</LongDescription>
     <Details>
@@ -3510,7 +3281,6 @@ This not necessarily a bug, but is worth examining
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="UW_UNCOND_WAIT">
     <ShortDescription>Unconditional wait</ShortDescription>
     <LongDescription>Unconditional wait in {1}</LongDescription>
@@ -3581,7 +3351,6 @@ an uninitialized value is read for <code>value</code>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="IC_INIT_CIRCULARITY">
     <ShortDescription>Initialization circularity</ShortDescription>
     <LongDescription>Initialization circularity between {0} and {1}</LongDescription>
@@ -3593,7 +3362,6 @@ an uninitialized value is read for <code>value</code>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION">
     <ShortDescription>Superclass uses subclass during initialization</ShortDescription>
     <LongDescription>Initialization of {0} accesses class {2}, which isn't initialized yet</LongDescription>
@@ -3616,9 +3384,6 @@ public class CircularClassInitialization {
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="IT_NO_SUCH_ELEMENT">
     <ShortDescription>Iterator next() method can't throw NoSuchElementException</ShortDescription>
     <LongDescription>{1} can't throw NoSuchElementException</LongDescription>
@@ -3632,7 +3397,6 @@ public class CircularClassInitialization {
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DL_SYNCHRONIZATION_ON_SHARED_CONSTANT">
     <ShortDescription>Synchronization on interned String </ShortDescription>
     <LongDescription>Synchronization on interned String in {1}</LongDescription>
@@ -3678,7 +3442,6 @@ and possible deadlock</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE">
     <ShortDescription>Synchronization on boxed primitive values</ShortDescription>
     <LongDescription>Synchronization on {2} in {1}</LongDescription>
@@ -3707,7 +3470,6 @@ throughout the JVM, leading to very confusing behavior and potential deadlock.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE">
     <ShortDescription>Synchronization on boxed primitive</ShortDescription>
     <LongDescription>Synchronization on {2} in {1}</LongDescription>
@@ -3730,7 +3492,6 @@ and possible deadlock</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="ESync_EMPTY_SYNC">
     <ShortDescription>Empty synchronized block</ShortDescription>
     <LongDescription>Empty synchronized block in {1}</LongDescription>
@@ -3748,7 +3509,6 @@ than less contrived solutions.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="IS_INCONSISTENT_SYNC">
     <ShortDescription>Inconsistent synchronization</ShortDescription>
     <LongDescription>Inconsistent synchronization of {1}; locked {2}% of the time</LongDescription>
@@ -3776,7 +3536,6 @@ than less contrived solutions.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD">
     <ShortDescription>Synchronization on field in futile attempt to guard that field</ShortDescription>
     <LongDescription>Synchronization on {2.givenClass} in futile attempt to guard it</LongDescription>
@@ -3818,8 +3577,6 @@ threads may be synchronizing on different objects.</p>
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="MS_OOI_PKGPROTECT">
     <ShortDescription>Field should be moved out of an interface and made package protected</ShortDescription>
     <LongDescription>{1} should be moved out of an interface and made package protected</LongDescription>
@@ -3915,7 +3672,6 @@ defined in an interface references a mutable
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD">
     <ShortDescription>Ambiguous invocation of either an inherited or outer method</ShortDescription>
     <LongDescription>Ambiguous invocation of either an outer or inherited method {2} in {1}</LongDescription>
@@ -3959,7 +3715,6 @@ opportunities to accidently define methods that do not override methods in their
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NM_CLASS_NAMING_CONVENTION">
     <ShortDescription>Class names should start with an upper case letter</ShortDescription>
     <LongDescription>The class name {0} doesn't start with an upper case letter</LongDescription>
@@ -3970,7 +3725,6 @@ opportunities to accidently define methods that do not override methods in their
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NM_METHOD_NAMING_CONVENTION">
     <ShortDescription>Method names should start with a lower case letter</ShortDescription>
     <LongDescription>The method name {1} doesn't start with a lower case letter</LongDescription>
@@ -3982,7 +3736,6 @@ Methods should be verbs, in mixed case with the first letter lowercase, with the
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NM_FIELD_NAMING_CONVENTION">
     <ShortDescription>Field names should start with a lower case letter</ShortDescription>
     <LongDescription>The field name {1} doesn't start with a lower case letter</LongDescription>
@@ -3994,7 +3747,6 @@ Names of fields that are not final should be in mixed case with a lowercase firs
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NM_VERY_CONFUSING">
     <ShortDescription>Very confusing method names</ShortDescription>
     <LongDescription>VERY confusing to have methods {1} and {3}</LongDescription>
@@ -4087,8 +3839,6 @@ removing or deprecating the method with the similar but not identical signature.
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="NM_CONFUSING">
     <ShortDescription>Confusing method names</ShortDescription>
     <LongDescription>Confusing to have methods {1} and {3}</LongDescription>
@@ -4133,7 +3883,6 @@ removing or deprecating the method with the similar but not identical signature.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NM_BAD_EQUAL">
     <ShortDescription>Class defines equal(Object); should it be equals(Object)?</ShortDescription>
     <LongDescription>Class {0} defines equal(Object); should it be equals(Object)?</LongDescription>
@@ -4145,7 +3894,6 @@ which is probably what was intended.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NM_CLASS_NOT_EXCEPTION">
     <ShortDescription>Class is not derived from an Exception, even though it is named as such</ShortDescription>
     <LongDescription>Class {0} is not derived from an Exception, even though it is named as such</LongDescription>
@@ -4156,7 +3904,6 @@ be confusing to users of this class.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="RR_NOT_CHECKED">
     <ShortDescription>Method ignores results of InputStream.read()</ShortDescription>
     <LongDescription>{1} ignores result of {2}</LongDescription>
@@ -4235,7 +3982,6 @@ it may indicate a misunderstanding of how serialization works.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SE_TRANSIENT_FIELD_NOT_RESTORED">
     <ShortDescription>Transient field that isn't set by deserialization. </ShortDescription>
     <LongDescription>The field {1} is transient but isn't set by deserialization</LongDescription>
@@ -4247,7 +3993,6 @@ deserialized instance of the class.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SE_METHOD_MUST_BE_PRIVATE">
     <ShortDescription>Method must be private in order for serialization to work</ShortDescription>
     <LongDescription>The method {1.givenClass} must be private to be invoked in serialization/deserialization of {0}</LongDescription>
@@ -4259,7 +4004,6 @@ deserialized instance of the class.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION">
     <ShortDescription>Class is Externalizable but doesn't define a void constructor</ShortDescription>
     <LongDescription>{0} is Externalizable but doesn't define a void constructor</LongDescription>
@@ -4287,7 +4031,6 @@ deserialized instance of the class.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SE_NO_SERIALVERSIONID">
     <ShortDescription>Class is Serializable, but doesn't define serialVersionUID</ShortDescription>
     <LongDescription>{0} is Serializable; consider declaring a serialVersionUID</LongDescription>
@@ -4324,10 +4067,9 @@ is generally easy and good defensive programming.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SF_SWITCH_FALLTHROUGH">
-   <ShortDescription>Switch statement found where one case falls through to the next case</ShortDescription>
-   <LongDescription>Switch statement found in {1} where one case falls through to the next case</LongDescription>
+    <ShortDescription>Switch statement found where one case falls through to the next case</ShortDescription>
+    <LongDescription>Switch statement found in {1} where one case falls through to the next case</LongDescription>
     <Details>
 <![CDATA[
   <p> This method contains a switch statement where one case branch will fall through to the next case.
@@ -4336,8 +4078,8 @@ is generally easy and good defensive programming.
     </Details>
   </BugPattern>
   <BugPattern type="SF_SWITCH_NO_DEFAULT">
-   <ShortDescription>Switch statement found where default case is missing</ShortDescription>
-   <LongDescription>Switch statement found in {1} where default case is missing</LongDescription>
+    <ShortDescription>Switch statement found where default case is missing</ShortDescription>
+    <LongDescription>Switch statement found in {1} where default case is missing</LongDescription>
     <Details>
 <![CDATA[
   <p> This method contains a switch statement where default case is missing.
@@ -4346,8 +4088,8 @@ is generally easy and good defensive programming.
     </Details>
   </BugPattern>
   <BugPattern type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH">
-   <ShortDescription>Dead store due to switch statement fall through</ShortDescription>
-   <LongDescription>Value of {2.givenClass} from previous case is overwritten here due to switch statement fall through</LongDescription>
+    <ShortDescription>Dead store due to switch statement fall through</ShortDescription>
+    <LongDescription>Value of {2.givenClass} from previous case is overwritten here due to switch statement fall through</LongDescription>
     <Details>
 <![CDATA[
   <p> A value stored in the previous switch case is overwritten here due to a switch fall through. It is likely that
@@ -4356,10 +4098,9 @@ is generally easy and good defensive programming.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW">
-   <ShortDescription>Dead store due to switch statement fall through to throw</ShortDescription>
-   <LongDescription>Value of {2.givenClass} from previous case is lost here due to switch statement fall through to throw</LongDescription>
+    <ShortDescription>Dead store due to switch statement fall through to throw</ShortDescription>
+    <LongDescription>Value of {2.givenClass} from previous case is lost here due to switch statement fall through to throw</LongDescription>
     <Details>
 <![CDATA[
   <p> A value stored in the previous switch case is ignored here due to a switch fall through to a place where
@@ -4369,7 +4110,6 @@ is generally easy and good defensive programming.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="WS_WRITEOBJECT_SYNC">
     <ShortDescription>Class's writeObject() method is synchronized but nothing else is</ShortDescription>
     <LongDescription>{0}'s writeObject method is synchronized but nothing else is</LongDescription>
@@ -4394,7 +4134,6 @@ is generally easy and good defensive programming.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SE_NONSTATIC_SERIALVERSIONID">
     <ShortDescription>serialVersionUID isn't static</ShortDescription>
     <LongDescription>{1} isn't static</LongDescription>
@@ -4407,7 +4146,6 @@ is generally easy and good defensive programming.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SE_NONFINAL_SERIALVERSIONID">
     <ShortDescription>serialVersionUID isn't final</ShortDescription>
     <LongDescription>{1} isn't final</LongDescription>
@@ -4420,8 +4158,6 @@ is generally easy and good defensive programming.
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="SE_NONLONG_SERIALVERSIONID">
     <ShortDescription>serialVersionUID isn't long</ShortDescription>
     <LongDescription>{1} isn't long</LongDescription>
@@ -4434,7 +4170,6 @@ is generally easy and good defensive programming.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SE_BAD_FIELD">
     <ShortDescription>Non-transient non-serializable instance field in serializable class</ShortDescription>
     <LongDescription>Class {0} defines non-transient non-serializable instance field {1.name}</LongDescription>
@@ -4449,7 +4184,6 @@ object is stored in this field.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SE_BAD_FIELD_INNER_CLASS">
     <ShortDescription>Non-serializable class has a serializable inner class</ShortDescription>
     <LongDescription>{0} is serializable but also an inner class of a non-serializable class</LongDescription>
@@ -4479,7 +4213,6 @@ problem.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SE_BAD_FIELD_STORE">
     <ShortDescription>Non-serializable value stored into instance field of a serializable class</ShortDescription>
     <LongDescription>{2} stored into non-transient field {1.givenClass}</LongDescription>
@@ -4490,7 +4223,6 @@ of a serializable class.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SC_START_IN_CTOR">
     <ShortDescription>Constructor invokes Thread.start()</ShortDescription>
     <LongDescription>{1} invokes {2}</LongDescription>
@@ -4513,7 +4245,6 @@ of a serializable class.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="UUF_UNUSED_FIELD">
     <ShortDescription>Unused field</ShortDescription>
     <LongDescription>Unused field: {1}</LongDescription>
@@ -4523,7 +4254,6 @@ of a serializable class.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="URF_UNREAD_FIELD">
     <ShortDescription>Unread field</ShortDescription>
     <LongDescription>Unread field: {1}</LongDescription>
@@ -4533,7 +4263,6 @@ of a serializable class.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD">
     <ShortDescription>Unused public or protected field</ShortDescription>
     <LongDescription>Unused public or protected field: {1}</LongDescription>
@@ -4546,7 +4275,6 @@ consider removing it from the class.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD">
     <ShortDescription>Unread public/protected field</ShortDescription>
     <LongDescription>Unread public/protected field: {1}</LongDescription>
@@ -4559,7 +4287,6 @@ consider removing it from the class.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="QF_QUESTIONABLE_FOR_LOOP">
     <ShortDescription>Complicated, subtle or wrong increment in for-loop </ShortDescription>
     <LongDescription>Complicated, subtle or wrong increment in for-loop {1} </LongDescription>
@@ -4593,8 +4320,6 @@ value. Check for errors (should it have been initialized?), or remove it if it i
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="UWF_UNWRITTEN_FIELD">
     <ShortDescription>Unwritten field</ShortDescription>
     <LongDescription>Unwritten field: {1}</LongDescription>
@@ -4605,8 +4330,6 @@ value. Check for errors (should it have been initialized?), or remove it if it i
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD">
     <ShortDescription>Write to static field from instance method</ShortDescription>
     <LongDescription>Write to static field {2} from instance method {1}</LongDescription>
@@ -4619,7 +4342,6 @@ and generally bad practice.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NP_LOAD_OF_KNOWN_NULL_VALUE">
     <ShortDescription>Load of known null value</ShortDescription>
     <LongDescription>Load of known null value in {1}</LongDescription>
@@ -4633,7 +4355,6 @@ variable is null should have been a check to see if it was nonnull).
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NP_DEREFERENCE_OF_READLINE_VALUE">
     <ShortDescription>Dereference of the result of readLine() without nullcheck</ShortDescription>
     <LongDescription>Dereference of the result of readLine() without nullcheck in {1}</LongDescription>
@@ -4645,7 +4366,6 @@ to read, readLine() will return null and dereferencing that will generate a null
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NP_IMMEDIATE_DEREFERENCE_OF_READLINE">
     <ShortDescription>Immediate dereference of the result of readLine()</ShortDescription>
     <LongDescription>Immediate dereference of the result of readLine() in {1}</LongDescription>
@@ -4657,7 +4377,6 @@ to read, readLine() will return null and dereferencing that will generate a null
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NP_UNWRITTEN_FIELD">
     <ShortDescription>Read of unwritten field</ShortDescription>
     <LongDescription>Read of unwritten field {2.name} in {1}</LongDescription>
@@ -4670,7 +4389,6 @@ dereferencing this value will generate a null pointer exception.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD">
     <ShortDescription>Read of unwritten public or protected field</ShortDescription>
     <LongDescription>Read of unwritten public or protected field {2.name} in {1}</LongDescription>
@@ -4684,7 +4402,6 @@ dereferencing this value will generate a null pointer exception.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SIC_THREADLOCAL_DEADLY_EMBRACE">
     <ShortDescription>Deadly embrace of non-static inner class and thread local</ShortDescription>
     <LongDescription>{0} needs to be _static_ to avoid a deadly embrace with {1}</LongDescription>
@@ -4715,9 +4432,6 @@ dereferencing this value will generate a null pointer exception.
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">
     <ShortDescription>Field not initialized in constructor but dereferenced without null check</ShortDescription>
     <LongDescription>{1.givenClass} not initialized in constructor and dereferenced in {2}</LongDescription>
@@ -4732,7 +4446,6 @@ before being initialized.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SIC_INNER_SHOULD_BE_STATIC_ANON">
     <ShortDescription>Could be refactored into a named static inner class</ShortDescription>
     <LongDescription>The class {0} could be refactored into a named _static_ inner class</LongDescription>
@@ -4766,7 +4479,6 @@ inner object.&nbsp; This reference makes the instances
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="WA_NOT_IN_LOOP">
     <ShortDescription>Wait not in loop </ShortDescription>
     <LongDescription>Wait not in loop in {1}</LongDescription>
@@ -4779,7 +4491,6 @@ inner object.&nbsp; This reference makes the instances
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="WA_AWAIT_NOT_IN_LOOP">
     <ShortDescription>Condition.await() not in loop </ShortDescription>
     <LongDescription>Condition.await() not in loop in {1}</LongDescription>
@@ -4793,7 +4504,6 @@ inner object.&nbsp; This reference makes the instances
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NO_NOTIFY_NOT_NOTIFYALL">
     <ShortDescription>Using notify() rather than notifyAll()</ShortDescription>
     <LongDescription>Using notify rather than notifyAll in {1}</LongDescription>
@@ -4806,7 +4516,6 @@ inner object.&nbsp; This reference makes the instances
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="RV_CHECK_FOR_POSITIVE_INDEXOF">
     <ShortDescription>Method checks to see if result of String.indexOf is positive</ShortDescription>
     <LongDescription>{1} checks to see if result of String.indexOf is positive</LongDescription>
@@ -4819,7 +4528,6 @@ inner object.&nbsp; This reference makes the instances
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="RV_DONT_JUST_NULL_CHECK_READLINE">
     <ShortDescription>Method discards result of readLine after checking if it is nonnull</ShortDescription>
     <LongDescription>{1} discards result of readLine after checking if it is nonnull</LongDescription>
@@ -4831,8 +4539,6 @@ to use that non-null value. Calling readLine again will give you a different lin
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="RV_RETURN_VALUE_IGNORED">
     <ShortDescription>Method ignores return value</ShortDescription>
     <LongDescription>return value of {2.givenClass} ignored in {1}</LongDescription>
@@ -4877,8 +4583,6 @@ signals unexpected behavior by returning an atypical return value.
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE">
     <ShortDescription>Code checks for specific values returned by compareTo</ShortDescription>
     <LongDescription>Check to see if return value of {2.givenClass} is equal to {3}</LongDescription>
@@ -4891,7 +4595,6 @@ will return other values.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="RV_EXCEPTION_NOT_THROWN">
     <ShortDescription>Exception created and dropped rather than thrown</ShortDescription>
     <LongDescription>{2.givenClass} not thrown in {1}</LongDescription>
@@ -4915,9 +4618,6 @@ if (x &lt; 0)
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="RV_RETURN_VALUE_IGNORED2">
     <ShortDescription>Method ignores return value</ShortDescription>
     <LongDescription>return value of {2} ignored in {1}</LongDescription>
@@ -4946,7 +4646,6 @@ dateString = dateString.trim();
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NP_ALWAYS_NULL">
     <ShortDescription>Null pointer dereference</ShortDescription>
     <LongDescription>Null pointer dereference of {2.givenClass} in {1}</LongDescription>
@@ -4957,7 +4656,6 @@ dateString = dateString.trim();
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NP_CLOSING_NULL">
     <ShortDescription>close() invoked on a value that is always null</ShortDescription>
     <LongDescription>Can't close {2.givenClass} since it is always null in {1}</LongDescription>
@@ -4969,8 +4667,6 @@ something that should be closed.
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="NP_STORE_INTO_NONNULL_FIELD">
     <ShortDescription>Store of null value into field annotated NonNull</ShortDescription>
     <LongDescription>Store of null value into field {2.givenClass} annotated NonNull in {1}</LongDescription>
@@ -4995,7 +4691,6 @@ be an exception path, since the default case is often infeasible.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE">
     <ShortDescription>Parameter must be nonnull but is marked as nullable</ShortDescription>
     <LongDescription>{2} must be nonnull but is marked as nullable</LongDescription>
@@ -5022,7 +4717,6 @@ the null pointer exception can't ever be executed; deciding that is beyond the a
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE">
     <ShortDescription>Possible null pointer dereference on branch that might be infeasible</ShortDescription>
     <LongDescription>Possible null pointer dereference of {2.givenClass} on branch that might be infeasible in {1}</LongDescription>
@@ -5039,7 +4733,6 @@ this is a definite possibility.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NP_NULL_ON_SOME_PATH_EXCEPTION">
     <ShortDescription>Possible null pointer dereference in method on exception path</ShortDescription>
     <LongDescription>Possible null pointer dereference of {2.givenClass} in {1} on exception path</LongDescription>
@@ -5056,11 +4749,10 @@ be an exception path, since the default case is often infeasible.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE">
-   <ShortDescription>Possible null pointer dereference due to return value of called method</ShortDescription>
-   <LongDescription>Possible null pointer dereference in {1} due to return value of called method</LongDescription>
-   <Details>
+    <ShortDescription>Possible null pointer dereference due to return value of called method</ShortDescription>
+    <LongDescription>Possible null pointer dereference in {1} due to return value of called method</LongDescription>
+    <Details>
       <![CDATA[
 <p> The return value from a method is dereferenced without a null check,
 and the return value of that method is one that should generally be checked
@@ -5069,11 +4761,10 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
       ]]>
    </Details>
   </BugPattern>
-
   <BugPattern type="NP_NULL_PARAM_DEREF_NONVIRTUAL">
-   <ShortDescription>Non-virtual method call passes null for nonnull parameter</ShortDescription>
-   <LongDescription>Non-virtual method call in {1} passes null for nonnull parameter of {2.givenClass}</LongDescription>
-   <Details>
+    <ShortDescription>Non-virtual method call passes null for nonnull parameter</ShortDescription>
+    <LongDescription>Non-virtual method call in {1} passes null for nonnull parameter of {2.givenClass}</LongDescription>
+    <Details>
       <![CDATA[
       <p>
       A possibly-null value is passed to a nonnull method parameter.
@@ -5084,11 +4775,10 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
       ]]>
    </Details>
   </BugPattern>
-
   <BugPattern type="NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS">
-   <ShortDescription>Method call passes null for nonnull parameter</ShortDescription>
-   <LongDescription>Null passed for nonnull parameter of {2.givenClass} in {1}</LongDescription>
-   <Details>
+    <ShortDescription>Method call passes null for nonnull parameter</ShortDescription>
+    <LongDescription>Null passed for nonnull parameter of {2.givenClass} in {1}</LongDescription>
+    <Details>
       <![CDATA[
       <p>
       A possibly-null value is passed at a call site where all known
@@ -5100,11 +4790,10 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
       ]]>
    </Details>
   </BugPattern>
-
   <BugPattern type="NP_NULL_PARAM_DEREF">
-   <ShortDescription>Method call passes null for nonnull parameter</ShortDescription>
-   <LongDescription>Null passed for nonnull parameter of {2.givenClass} in {1}</LongDescription>
-   <Details>
+    <ShortDescription>Method call passes null for nonnull parameter</ShortDescription>
+    <LongDescription>Null passed for nonnull parameter of {2.givenClass} in {1}</LongDescription>
+    <Details>
       <![CDATA[
       <p>
       This method call passes a null value for a nonnull method parameter.
@@ -5115,11 +4804,10 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
       ]]>
    </Details>
   </BugPattern>
-
   <BugPattern type="NP_NONNULL_PARAM_VIOLATION">
-   <ShortDescription>Method call passes null to a nonnull parameter </ShortDescription>
-   <LongDescription>Null passed for nonnull parameter of {2.givenClass} in {1}</LongDescription>
-   <Details>
+    <ShortDescription>Method call passes null to a nonnull parameter </ShortDescription>
+    <LongDescription>Null passed for nonnull parameter of {2.givenClass} in {1}</LongDescription>
+    <Details>
       <![CDATA[
       <p>
       This method passes a null value as the parameter of a method which
@@ -5130,11 +4818,10 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
       ]]>
    </Details>
   </BugPattern>
-
   <BugPattern type="NP_NONNULL_RETURN_VIOLATION">
-   <ShortDescription>Method may return null, but is declared @NonNull</ShortDescription>
-   <LongDescription>Method {1} may return null, but is declared @NonNull</LongDescription>
-   <Details>
+    <ShortDescription>Method may return null, but is declared @NonNull</ShortDescription>
+    <LongDescription>Method {1} may return null, but is declared @NonNull</LongDescription>
+    <Details>
       <![CDATA[
       <p>
       This method may return a null value, but the method (or a superclass method
@@ -5144,9 +4831,9 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
    </Details>
   </BugPattern>
   <BugPattern type="NP_CLONE_COULD_RETURN_NULL">
-   <ShortDescription>Clone method may return null</ShortDescription>
-   <LongDescription>{1} may return null</LongDescription>
-   <Details>
+    <ShortDescription>Clone method may return null</ShortDescription>
+    <LongDescription>{1} may return null</LongDescription>
+    <Details>
       <![CDATA[
       <p>
     This clone method seems to return null in some circumstances, but clone is never
@@ -5157,9 +4844,9 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
    </Details>
   </BugPattern>
   <BugPattern type="NP_TOSTRING_COULD_RETURN_NULL">
-   <ShortDescription>toString method may return null</ShortDescription>
-   <LongDescription>{1} may return null</LongDescription>
-   <Details>
+    <ShortDescription>toString method may return null</ShortDescription>
+    <LongDescription>{1} may return null</LongDescription>
+    <Details>
       <![CDATA[
       <p>
     This toString method seems to return null in some circumstances. A liberal reading of the
@@ -5169,12 +4856,10 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
       ]]>
    </Details>
   </BugPattern>
-
-
   <BugPattern type="NP_GUARANTEED_DEREF">
-      <ShortDescription>Null value is guaranteed to be dereferenced</ShortDescription>
-      <LongDescription>{2.givenClass} could be null and is guaranteed to be dereferenced in {1}</LongDescription>
-      <Details>
+    <ShortDescription>Null value is guaranteed to be dereferenced</ShortDescription>
+    <LongDescription>{2.givenClass} could be null and is guaranteed to be dereferenced in {1}</LongDescription>
+    <Details>
           <![CDATA[
               <p>
               There is a statement or branch that if executed guarantees that
@@ -5188,11 +4873,10 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
           ]]>
       </Details>
   </BugPattern>
-
   <BugPattern type="NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH">
-      <ShortDescription>Value is null and guaranteed to be dereferenced on exception path</ShortDescription>
-      <LongDescription>{2.name} is null guaranteed to be dereferenced in {1} on exception path</LongDescription>
-      <Details>
+    <ShortDescription>Value is null and guaranteed to be dereferenced on exception path</ShortDescription>
+    <LongDescription>{2.name} is null guaranteed to be dereferenced in {1} on exception path</LongDescription>
+    <Details>
           <![CDATA[
               <p>
               There is a statement or branch on an exception path
@@ -5204,7 +4888,6 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
           ]]>
       </Details>
   </BugPattern>
-
   <BugPattern type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED">
     <ShortDescription>Static initializer creates instance before all static final fields assigned</ShortDescription>
     <LongDescription>Static initializer for {0} creates instance before all static final fields assigned</LongDescription>
@@ -5215,7 +4898,6 @@ before all of the static final fields are assigned.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="OS_OPEN_STREAM">
     <ShortDescription>Method may fail to close stream</ShortDescription>
     <LongDescription>{1} may fail to close stream</LongDescription>
@@ -5231,7 +4913,6 @@ closed.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="OS_OPEN_STREAM_EXCEPTION_PATH">
     <ShortDescription>Method may fail to close stream on exception</ShortDescription>
     <LongDescription>{1} may fail to close stream on exception</LongDescription>
@@ -5246,7 +4927,6 @@ closed.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="PZLA_PREFER_ZERO_LENGTH_ARRAYS">
     <ShortDescription>Consider returning a zero length array rather than null</ShortDescription>
     <LongDescription>Should {1} return a zero length array rather than null?</LongDescription>
@@ -5265,7 +4945,6 @@ is not a directory.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="UCF_USELESS_CONTROL_FLOW">
     <ShortDescription>Useless control flow</ShortDescription>
     <LongDescription>Useless control flow in {1}</LongDescription>
@@ -5301,7 +4980,6 @@ body of an <code>if</code> statement, e.g.:</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE">
     <ShortDescription>Nullcheck of value previously dereferenced</ShortDescription>
     <LongDescription>Nullcheck of {2.givenClass} at {4.lineNumber} of value previously dereferenced in {1}</LongDescription>
@@ -5326,9 +5004,6 @@ the constant null.</p>
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE">
     <ShortDescription>Redundant nullcheck of value known to be non-null</ShortDescription>
     <LongDescription>Redundant nullcheck of {2}, which is known to be non-null in {1}</LongDescription>
@@ -5349,8 +5024,6 @@ both be definitely null.</p>
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE">
     <ShortDescription>Redundant comparison of non-null value to null</ShortDescription>
     <LongDescription>Redundant comparison of non-null value to null in {1}</LongDescription>
@@ -5361,10 +5034,8 @@ known to be null.</p>
 ]]>
     </Details>
   </BugPattern>
-
-
-
-  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" deprecated="true">   <!-- deprecated in favor of two separate RCN_ patterns -->
+  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" deprecated="true">
+    <!-- deprecated in favor of two separate RCN_ patterns -->
     <ShortDescription>Redundant comparison to null of previously checked value</ShortDescription>
     <LongDescription>Redundant comparison to null of previously checked {2} in {1}</LongDescription>
     <Details>
@@ -5384,7 +5055,6 @@ of defensive programming.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="UL_UNRELEASED_LOCK">
     <ShortDescription>Method does not release lock on all paths</ShortDescription>
     <LongDescription>{1} does not release lock on all paths</LongDescription>
@@ -5406,7 +5076,6 @@ for using a JSR-166 lock is:
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="UL_UNRELEASED_LOCK_EXCEPTION_PATH">
     <ShortDescription>Method does not release lock on all exception paths</ShortDescription>
     <LongDescription>{1} does not release lock on all exception paths</LongDescription>
@@ -5428,7 +5097,6 @@ for using a JSR-166 lock is:
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="RC_REF_COMPARISON">
     <ShortDescription>Suspicious reference comparison</ShortDescription>
     <LongDescription>Suspicious comparison of {2} references in {1}</LongDescription>
@@ -5474,7 +5142,6 @@ than are different than you would get using <code>.equals(...)</code>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY">
     <ShortDescription>Using pointer equality to compare different types</ShortDescription>
     <LongDescription>Using pointer equality to compare a {2.givenClass} with a {3.givenClass} in {1}</LongDescription>
@@ -5506,7 +5173,6 @@ the result of this comparison will always be false at runtime.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="EC_UNRELATED_INTERFACES">
     <ShortDescription>Call to equals() comparing different interface types</ShortDescription>
     <LongDescription>Call to {3.simpleClass}.equals({2.simpleClass}) in {1}</LongDescription>
@@ -5528,11 +5194,10 @@ the result of this comparison will always be false at runtime.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="EC_UNRELATED_CLASS_AND_INTERFACE">
-   <ShortDescription>Call to equals() comparing unrelated class and interface</ShortDescription>
-   <LongDescription>Call to {3.simpleClass}.equals({2.simpleClass}) in {1}</LongDescription>
-   <Details>
+    <ShortDescription>Call to equals() comparing unrelated class and interface</ShortDescription>
+    <LongDescription>Call to {3.simpleClass}.equals({2.simpleClass}) in {1}</LongDescription>
+    <Details>
       <![CDATA[
 <p>
 This method calls equals(Object) on two references,  one of which is a class
@@ -5551,8 +5216,6 @@ the result of this comparison will always be false at runtime.
       ]]>
    </Details>
   </BugPattern>
-
-
   <BugPattern type="EC_NULL_ARG">
     <ShortDescription>Call to equals(null)</ShortDescription>
     <LongDescription>Call to equals(null) in {1}</LongDescription>
@@ -5564,7 +5227,6 @@ this call should always return <code>false</code>.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="MWN_MISMATCHED_WAIT">
     <ShortDescription>Mismatched wait()</ShortDescription>
     <LongDescription>Mismatched wait() in {1}</LongDescription>
@@ -5576,7 +5238,6 @@ an <code>IllegalMonitorStateException</code> being thrown.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="MWN_MISMATCHED_NOTIFY">
     <ShortDescription>Mismatched notify()</ShortDescription>
     <LongDescription>Mismatched notify() in {1}</LongDescription>
@@ -5588,7 +5249,6 @@ an <code>IllegalMonitorStateException</code> being thrown.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD">
     <ShortDescription>Self assignment of local rather than assignment to field</ShortDescription>
     <LongDescription>Self assignment of {2} rather than assigned to field in {1}</LongDescription>
@@ -5625,7 +5285,6 @@ Such assignments are useless, and may indicate a logic error or typo.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SA_FIELD_SELF_ASSIGNMENT">
     <ShortDescription>Self assignment of field</ShortDescription>
     <LongDescription>Self assignment of field {2.givenClass} in {1}</LongDescription>
@@ -5643,7 +5302,6 @@ Such assignments are useless, and may indicate a logic error or typo.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SA_FIELD_DOUBLE_ASSIGNMENT">
     <ShortDescription>Double assignment of field</ShortDescription>
     <LongDescription>Double assignment of field {2.givenClass} in {1}</LongDescription>
@@ -5678,7 +5336,6 @@ Such assignments are useless, and may indicate a logic error or typo.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SA_FIELD_SELF_COMPUTATION">
     <ShortDescription>Nonsensical self computation involving a field (e.g., x &amp; x)</ShortDescription>
     <LongDescription>Nonsensical self computation of {2.givenClass} with itself in {1}</LongDescription>
@@ -5707,8 +5364,6 @@ a logic error.  Double check the computation.
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="SA_FIELD_SELF_COMPARISON">
     <ShortDescription>Self comparison of field with itself</ShortDescription>
     <LongDescription>Self comparison of {2.givenClass} with itself in {1}</LongDescription>
@@ -5720,7 +5375,6 @@ a logic error.  Make sure that you are comparing the right things.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SA_LOCAL_SELF_COMPARISON">
     <ShortDescription>Self comparison of value with itself</ShortDescription>
     <LongDescription>Self comparison of {2} with itself {1}</LongDescription>
@@ -5732,7 +5386,6 @@ a logic error.  Make sure that you are comparing the right things.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT">
     <ShortDescription>Double.longBitsToDouble invoked on an int</ShortDescription>
     <LongDescription>Double.longBitsToDouble invoked on an int in {1}</LongDescription>
@@ -5757,10 +5410,6 @@ has reserved arguments: the value to be checked is the first argument.
 ]]>
     </Details>
   </BugPattern>
-
-
-
-
   <BugPattern type="DMI_RANDOM_USED_ONLY_ONCE">
     <ShortDescription>Random object created and used only once</ShortDescription>
     <LongDescription>Random object created and used only once in {1}</LongDescription>
@@ -5792,9 +5441,6 @@ generator is <code>Integer.MIN_VALUE</code>, then the result will be negative as
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="RV_ABSOLUTE_VALUE_OF_HASHCODE">
     <ShortDescription>Bad attempt to compute absolute value of signed 32-bit hashcode </ShortDescription>
     <LongDescription>Bad attempt to compute absolute value of signed 32-bit hashcode in {1}</LongDescription>
@@ -5811,9 +5457,6 @@ including "polygenelubricants" "GydZG_" and ""DESIGNING WORKHOUSES".
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="RV_REM_OF_RANDOM_INT">
     <ShortDescription>Remainder of 32-bit signed random integer</ShortDescription>
     <LongDescription>Remainder of 32-bit signed random integer computed in {1}</LongDescription>
@@ -5828,7 +5471,6 @@ consider using the Random.nextInt(int) method instead.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="RV_REM_OF_HASHCODE">
     <ShortDescription>Remainder of hashCode could be negative</ShortDescription>
     <LongDescription>Remainder of hashCode could be negative in {1}</LongDescription>
@@ -5851,8 +5493,6 @@ value of the result of the remainder operation (i.e., use
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE">
     <ShortDescription>Bad comparison of nonnegative value with negative constant</ShortDescription>
     <LongDescription>Bad comparison of nonnegative value with {2} in {1}</LongDescription>
@@ -5863,8 +5503,6 @@ value of the result of the remainder operation (i.e., use
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="INT_BAD_COMPARISON_WITH_SIGNED_BYTE">
     <ShortDescription>Bad comparison of signed byte</ShortDescription>
     <LongDescription>Bad comparison of signed byte with {2} in {1}</LongDescription>
@@ -5878,9 +5516,6 @@ use <code>0xff &amp; b</code>
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="INT_VACUOUS_BIT_OPERATION">
     <ShortDescription>Vacuous bit mask operation on integer value</ShortDescription>
     <LongDescription>Vacuous {2} operation on {3} in {1}</LongDescription>
@@ -5980,9 +5615,6 @@ for(int i = 0; i &lt; 4; i++)
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="BIT_AND">
     <ShortDescription>Incompatible bit masks</ShortDescription>
     <LongDescription>Incompatible bit masks in (e &amp; {2} == {3}) yields a constant result in {1}</LongDescription>
@@ -5995,7 +5627,6 @@ This may indicate a logic error or typo.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="BIT_SIGNED_CHECK">
     <ShortDescription>Check for sign of bitwise operation</ShortDescription>
     <LongDescription>Check for sign of bitwise operation in {1}</LongDescription>
@@ -6015,7 +5646,6 @@ to use '!= 0' instead of '&gt; 0'.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="BIT_SIGNED_CHECK_HIGH_BIT">
     <ShortDescription>Check for sign of bitwise operation</ShortDescription>
     <LongDescription>Check for sign of bitwise operation in {1}</LongDescription>
@@ -6035,9 +5665,6 @@ to use '!= 0' instead of '&gt; 0'.
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="BIT_AND_ZZ">
     <ShortDescription>Check to see if ((...) &amp; 0) == 0</ShortDescription>
     <LongDescription>Check to see if ((...) &amp; 0) == 0 in {1}</LongDescription>
@@ -6049,7 +5676,6 @@ This may indicate a logic error or typo.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="BIT_IOR">
     <ShortDescription>Incompatible bit masks</ShortDescription>
     <LongDescription>Incompatible bit masks in (e | {2} == {3}) yields constant result in {1}</LongDescription>
@@ -6066,8 +5692,8 @@ operator ("|") instead of bitwise AND ("&amp;").</p>
 ]]>
     </Details>
   </BugPattern>
-
-  <BugPattern type="LI_LAZY_INIT_INSTANCE" deprecated="true">  <!-- never generated? -->
+  <BugPattern type="LI_LAZY_INIT_INSTANCE" deprecated="true">
+    <!-- never generated? -->
     <ShortDescription>Incorrect lazy initialization of instance field</ShortDescription>
     <LongDescription>Incorrect lazy initialization of instance field {2} in {1}</LongDescription>
     <Details>
@@ -6083,7 +5709,6 @@ For more information, see the
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="LI_LAZY_INIT_STATIC">
     <ShortDescription>Incorrect lazy initialization of static field</ShortDescription>
     <LongDescription>Incorrect lazy initialization of static field {2} in {1}</LongDescription>
@@ -6118,11 +5743,10 @@ you are setting it to is fully populated/initialized.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="JLM_JSR166_LOCK_MONITORENTER">
     <ShortDescription>Synchronization performed on Lock</ShortDescription>
     <LongDescription>Synchronization performed on {2} in {1}</LongDescription>
-<Details>
+    <Details>
 <![CDATA[
 <p> This method performs synchronization an object that implements
 java.util.concurrent.locks.Lock. Such an object is locked/unlocked
@@ -6136,7 +5760,7 @@ than using the <code>synchronized (...)</code> construct.
   <BugPattern type="JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT">
     <ShortDescription>Using monitor style wait methods on util.concurrent abstraction</ShortDescription>
     <LongDescription>Calling {2.name} rather than {3.name} in {1}</LongDescription>
-<Details>
+    <Details>
 <![CDATA[
 <p> This method calls
 <code>wait()</code>,
@@ -6152,11 +5776,10 @@ your design, as other developers will find it exceptionally confusing.
 ]]>
 </Details>
   </BugPattern>
-
   <BugPattern type="JLM_JSR166_UTILCONCURRENT_MONITORENTER">
     <ShortDescription>Synchronization performed on util.concurrent instance</ShortDescription>
     <LongDescription>Synchronization performed on {2} in {1}</LongDescription>
-<Details>
+    <Details>
 <![CDATA[
 <p> This method performs synchronization an object that is an instance of
 a class from the java.util.concurrent package (or its subclasses). Instances
@@ -6166,11 +5789,10 @@ and incompatible with the use of the keyword <code>synchronized</code>.
 ]]>
 </Details>
   </BugPattern>
-
   <BugPattern type="UPM_UNCALLED_PRIVATE_METHOD">
     <ShortDescription>Private method is never called</ShortDescription>
     <LongDescription>Private method {1} is never called</LongDescription>
-<Details>
+    <Details>
 <![CDATA[
 <p> This private method is never called. Although it is
 possible that the method will be invoked through reflection,
@@ -6183,7 +5805,7 @@ removed.
   <BugPattern type="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS">
     <ShortDescription>Uncallable method defined in anonymous class</ShortDescription>
     <LongDescription>Uncallable method {1} defined in anonymous class</LongDescription>
-<Details>
+    <Details>
 <![CDATA[
 <p> This anonymous class defined a method that is not directly invoked and does not override
 a method in a superclass. Since methods in other classes cannot directly invoke methods
@@ -6195,7 +5817,6 @@ in fact, override the method it is intended to.
 ]]>
 </Details>
   </BugPattern>
-
   <BugPattern type="ODR_OPEN_DATABASE_RESOURCE">
     <ShortDescription>Method may fail to close database resource</ShortDescription>
     <LongDescription>{1} may fail to close {2.excludingPackage}</LongDescription>
@@ -6212,7 +5833,6 @@ have problems communicating with the database.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH">
     <ShortDescription>Method may fail to close database resource on exception</ShortDescription>
     <LongDescription>{1} may fail to close database resource on exception</LongDescription>
@@ -6228,7 +5848,6 @@ have problems communicating with the database.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SBSC_USE_STRINGBUFFER_CONCATENATION">
     <ShortDescription>Method concatenates strings using + in a loop</ShortDescription>
     <LongDescription>Method {1} concatenates strings using + in a loop</LongDescription>
@@ -6261,7 +5880,6 @@ a StringBuffer (or StringBuilder in Java 1.5) explicitly.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="ITA_INEFFICIENT_TO_ARRAY">
     <ShortDescription>Method uses toArray() with zero-length array argument</ShortDescription>
     <LongDescription>Method {1} uses Collection.toArray() with zero-length array argument</LongDescription>
@@ -6277,7 +5895,6 @@ directly. This avoids the need to create a second array
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD">
     <ShortDescription>JUnit assertion in run method will not be noticed by JUnit</ShortDescription>
     <LongDescription>JUnit assertion in {1} will not be noticed by JUnit</LongDescription>
@@ -6302,7 +5919,6 @@ super.setUp(), but doesn't.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="IJU_TEARDOWN_NO_SUPER">
     <ShortDescription>TestCase defines tearDown that doesn't call super.tearDown()</ShortDescription>
     <LongDescription>TestCase {0} defines tearDown that doesn't call super.tearDown()</LongDescription>
@@ -6313,7 +5929,6 @@ super.tearDown(), but doesn't.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="IJU_SUITE_NOT_STATIC">
     <ShortDescription>TestCase implements a non-static suite method </ShortDescription>
     <LongDescription>TestCase {0} implements a non-static suite method</LongDescription>
@@ -6324,7 +5939,6 @@ super.tearDown(), but doesn't.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="IJU_BAD_SUITE_METHOD">
     <ShortDescription>TestCase declares a bad suite method </ShortDescription>
     <LongDescription>Bad declaration for suite method in {0}</LongDescription>
@@ -6339,7 +5953,6 @@ or
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="IJU_NO_TESTS">
     <ShortDescription>TestCase has no tests</ShortDescription>
     <LongDescription>TestCase {0} has no tests</LongDescription>
@@ -6349,8 +5962,6 @@ or
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="BOA_BADLY_OVERRIDDEN_ADAPTER">
     <ShortDescription>Class overrides a method implemented in super class Adapter wrongly</ShortDescription>
     <LongDescription>Class {0} overrides a method {1} implemented in super class Adapter wrongly</LongDescription>
@@ -6362,8 +5973,8 @@ get called when the event occurs.</p>
 ]]>
     </Details>
   </BugPattern>
-
-  <BugPattern type="BRSA_BAD_RESULTSET_ACCESS" deprecated="true">  <!-- deprecated in favor of SQL_BAD_RESULTSET_ACCESS -->
+  <BugPattern type="BRSA_BAD_RESULTSET_ACCESS" deprecated="true">
+    <!-- deprecated in favor of SQL_BAD_RESULTSET_ACCESS -->
     <ShortDescription>Method attempts to access a result set field with index 0</ShortDescription>
     <LongDescription>Method {1} attempts to access a result set field with index 0</LongDescription>
     <Details>
@@ -6373,7 +5984,6 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SQL_BAD_RESULTSET_ACCESS">
     <ShortDescription>Method attempts to access a result set field with index 0</ShortDescription>
     <LongDescription>Method {1} attempts to access a result set field with index 0</LongDescription>
@@ -6384,7 +5994,6 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SQL_BAD_PREPARED_STATEMENT_ACCESS">
     <ShortDescription>Method attempts to access a prepared statement parameter with index 0</ShortDescription>
     <LongDescription>Method {1} attempts to access a prepared statement parameter with index 0</LongDescription>
@@ -6395,7 +6004,6 @@ parameter index is 0. As parameter indexes start at index 1, this is always a mi
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SIO_SUPERFLUOUS_INSTANCEOF">
     <ShortDescription>Unnecessary type check done using instanceof operator</ShortDescription>
     <LongDescription>Method {1} does an unnecessary type check using instanceof operator when it can be determined statically</LongDescription>
@@ -6406,7 +6014,6 @@ is of the type requested. </p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="BAC_BAD_APPLET_CONSTRUCTOR">
     <ShortDescription>Bad Applet Constructor relies on uninitialized AppletStub</ShortDescription>
     <LongDescription>Bad Applet Constructor relies on uninitialized AppletStub</LongDescription>
@@ -6420,7 +6027,6 @@ correctly.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="EC_ARRAY_AND_NONARRAY">
     <ShortDescription>equals() used to compare array and nonarray</ShortDescription>
     <LongDescription>Calling {3.simpleClass}.equals({2.simpleClass}) in {1}</LongDescription>
@@ -6466,7 +6072,6 @@ only checks to see if they are the same array, and ignores the contents of the a
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="STI_INTERRUPTED_ON_CURRENTTHREAD">
     <ShortDescription>Unneeded use of currentThread() call, to call interrupted() </ShortDescription>
     <LongDescription>Method {1} makes an unneeded call to currentThread() just to call interrupted()</LongDescription>
@@ -6479,7 +6084,6 @@ static method, is more simple and clear to use Thread.interrupted().
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="STI_INTERRUPTED_ON_UNKNOWNTHREAD">
     <ShortDescription>Static Thread.interrupted() method invoked on thread instance</ShortDescription>
     <LongDescription>{1} invokes static Thread.interrupted() method on thread instance</LongDescription>
@@ -6493,7 +6097,6 @@ object than the one the author intended.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN">
     <ShortDescription>A parameter is dead upon entry to a method but overwritten</ShortDescription>
     <LongDescription>The parameter {2} to {1} is dead upon entry but overwritten</LongDescription>
@@ -6508,7 +6111,6 @@ the caller.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD">
     <ShortDescription>Dead store to local variable that shadows field</ShortDescription>
     <LongDescription>Dead store to {2} rather than field with same name in {1}</LongDescription>
@@ -6524,7 +6126,6 @@ mean to assign to that variable instead?
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DLS_DEAD_LOCAL_STORE">
     <ShortDescription>Dead store to local variable</ShortDescription>
     <LongDescription>Dead store to {2} in {1}</LongDescription>
@@ -6544,8 +6145,6 @@ there is no easy way to eliminate these false positives.
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="DLS_DEAD_LOCAL_STORE_IN_RETURN">
     <ShortDescription>Useless assignment in return statement</ShortDescription>
     <LongDescription>Useless assignment in return from {1}</LongDescription>
@@ -6558,7 +6157,6 @@ has effect. Please verify that this statement does the right thing.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DLS_DEAD_STORE_OF_CLASS_LITERAL">
     <ShortDescription>Dead store of class literal</ShortDescription>
     <LongDescription>Dead store of {3}.class in {1}</LongDescription>
@@ -6577,7 +6175,6 @@ for more details and examples, and suggestions on how to force class initializat
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DLS_DEAD_LOCAL_STORE_OF_NULL">
     <ShortDescription>Dead store of null to local variable</ShortDescription>
     <LongDescription>Dead store of null to {2} in {1}</LongDescription>
@@ -6590,8 +6187,7 @@ as of Java SE 6.0, this is no longer needed or useful.
 ]]>
     </Details>
   </BugPattern>
-
-   <BugPattern type="MF_METHOD_MASKS_FIELD">
+  <BugPattern type="MF_METHOD_MASKS_FIELD">
     <ShortDescription>Method defines a variable that obscures a field</ShortDescription>
     <LongDescription>Method {1} defines a variable that obscures field {2.givenClass}</LongDescription>
     <Details>
@@ -6603,7 +6199,6 @@ or both.</p>
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="MF_CLASS_MASKS_FIELD">
     <ShortDescription>Class defines field that masks a superclass field</ShortDescription>
     <LongDescription>Field {1.givenClass} masks field in superclass {2.class}</LongDescription>
@@ -6616,34 +6211,31 @@ the fields when they wanted the other.</p>
 ]]>
     </Details>
   </BugPattern>
-
-    <BugPattern type="WMI_WRONG_MAP_ITERATOR">
-        <ShortDescription>Inefficient use of keySet iterator instead of entrySet iterator</ShortDescription>
-        <LongDescription>Method {1} makes inefficient use of keySet iterator instead of entrySet iterator</LongDescription>
-        <Details>
+  <BugPattern type="WMI_WRONG_MAP_ITERATOR">
+    <ShortDescription>Inefficient use of keySet iterator instead of entrySet iterator</ShortDescription>
+    <LongDescription>Method {1} makes inefficient use of keySet iterator instead of entrySet iterator</LongDescription>
+    <Details>
 <![CDATA[
 <p> This method accesses the value of a Map entry, using a key that was retrieved from
 a keySet iterator. It is more efficient to use an iterator on the entrySet of the map, to avoid the
 Map.get(key) lookup.</p>
 ]]>
         </Details>
-    </BugPattern>
-
-    <BugPattern type="ISC_INSTANTIATE_STATIC_CLASS">
-        <ShortDescription>Needless instantiation of class that only supplies static methods</ShortDescription>
-        <LongDescription>Method {1} needlessly instantiates a class that only supplies static methods</LongDescription>
-        <Details>
+  </BugPattern>
+  <BugPattern type="ISC_INSTANTIATE_STATIC_CLASS">
+    <ShortDescription>Needless instantiation of class that only supplies static methods</ShortDescription>
+    <LongDescription>Method {1} needlessly instantiates a class that only supplies static methods</LongDescription>
+    <Details>
 <![CDATA[
 <p> This class allocates an object that is based on a class that only supplies static methods. This object
 does not need to be created, just access the static methods directly using the class name as a qualifier.</p>
 ]]>
         </Details>
-    </BugPattern>
-
-   <BugPattern type="REC_CATCH_EXCEPTION">
-     <ShortDescription>Exception is caught when Exception is not thrown</ShortDescription>
-     <LongDescription>Exception is caught when Exception is not thrown in {1}</LongDescription>
-     <Details>
+  </BugPattern>
+  <BugPattern type="REC_CATCH_EXCEPTION">
+    <ShortDescription>Exception is caught when Exception is not thrown</ShortDescription>
+    <LongDescription>Exception is caught when Exception is not thrown in {1}</LongDescription>
+    <Details>
   <![CDATA[
   <p>
   This method uses a try-catch block that catches Exception objects, but Exception is not
@@ -6654,12 +6246,11 @@ does not need to be created, just access the static methods directly using the c
   </p>
   ]]>
      </Details>
-   </BugPattern>
-
-    <BugPattern type="FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER">
-     <ShortDescription>Doomed test for equality to NaN</ShortDescription>
-     <LongDescription>Doomed test for equality to NaN in {1}</LongDescription>
-     <Details>
+  </BugPattern>
+  <BugPattern type="FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER">
+    <ShortDescription>Doomed test for equality to NaN</ShortDescription>
+    <LongDescription>Doomed test for equality to NaN in {1}</LongDescription>
+    <Details>
    <![CDATA[
     <p>
     This code checks to see if a floating point value is equal to the special
@@ -6675,11 +6266,11 @@ does not need to be created, just access the static methods directly using the c
     </p>
     ]]>
      </Details>
-   </BugPattern>
-    <BugPattern type="FE_FLOATING_POINT_EQUALITY">
-     <ShortDescription>Test for floating point equality</ShortDescription>
-     <LongDescription>Test for floating point equality in {1}</LongDescription>
-     <Details>
+  </BugPattern>
+  <BugPattern type="FE_FLOATING_POINT_EQUALITY">
+    <ShortDescription>Test for floating point equality</ShortDescription>
+    <LongDescription>Test for floating point equality in {1}</LongDescription>
+    <Details>
    <![CDATA[
     <p>
     This operation compares two floating point values for equality.
@@ -6694,8 +6285,7 @@ does not need to be created, just access the static methods directly using the c
     </p>
     ]]>
      </Details>
-    </BugPattern>
-
+  </BugPattern>
   <BugPattern type="UM_UNNECESSARY_MATH">
     <ShortDescription>Method calls static Math class method on a constant value</ShortDescription>
     <LongDescription>Method calls static Math class method on a constant value</LongDescription>
@@ -6782,11 +6372,10 @@ just use the constant. Methods detected are:
 ]]>
     </Details>
   </BugPattern>
-
-    <BugPattern type="CD_CIRCULAR_DEPENDENCY">
-     <ShortDescription>Test for circular dependencies among classes</ShortDescription>
-     <LongDescription>Class {0} has a circular dependency with other classes</LongDescription>
-     <Details>
+  <BugPattern type="CD_CIRCULAR_DEPENDENCY">
+    <ShortDescription>Test for circular dependencies among classes</ShortDescription>
+    <LongDescription>Class {0} has a circular dependency with other classes</LongDescription>
+    <Details>
    <![CDATA[
     <p>
     This class has a circular dependency with other classes. This makes building these classes
@@ -6795,12 +6384,11 @@ just use the constant. Methods detected are:
     </p>
     ]]>
      </Details>
-    </BugPattern>
-
-    <BugPattern type="RI_REDUNDANT_INTERFACES">
-     <ShortDescription>Class implements same interface as superclass</ShortDescription>
-     <LongDescription>Class {0} implements same interface as superclass</LongDescription>
-     <Details>
+  </BugPattern>
+  <BugPattern type="RI_REDUNDANT_INTERFACES">
+    <ShortDescription>Class implements same interface as superclass</ShortDescription>
+    <LongDescription>Class {0} implements same interface as superclass</LongDescription>
+    <Details>
    <![CDATA[
     <p>
     This class declares that it implements an interface that is also implemented by a superclass.
@@ -6811,12 +6399,11 @@ just use the constant. Methods detected are:
     </p>
     ]]>
      </Details>
-    </BugPattern>
-
-    <BugPattern type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD">
-     <ShortDescription>Class extends Struts Action class and uses instance variables</ShortDescription>
-     <LongDescription>Class {0} extends Struts Action class and uses instance variables</LongDescription>
-     <Details>
+  </BugPattern>
+  <BugPattern type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD">
+    <ShortDescription>Class extends Struts Action class and uses instance variables</ShortDescription>
+    <LongDescription>Class {0} extends Struts Action class and uses instance variables</LongDescription>
+    <Details>
    <![CDATA[
     <p>
     This class extends from a Struts Action class, and uses an instance member variable. Since only
@@ -6827,12 +6414,11 @@ just use the constant. Methods detected are:
     </p>
     ]]>
       </Details>
-    </BugPattern>
-
-    <BugPattern type="MTIA_SUSPECT_SERVLET_INSTANCE_FIELD">
-     <ShortDescription>Class extends Servlet class and uses instance variables</ShortDescription>
-     <LongDescription>Class {0} extends Servlet class and uses instance variables</LongDescription>
-     <Details>
+  </BugPattern>
+  <BugPattern type="MTIA_SUSPECT_SERVLET_INSTANCE_FIELD">
+    <ShortDescription>Class extends Servlet class and uses instance variables</ShortDescription>
+    <LongDescription>Class {0} extends Servlet class and uses instance variables</LongDescription>
+    <Details>
    <![CDATA[
     <p>
     This class extends from a Servlet class, and uses an instance member variable. Since only
@@ -6842,12 +6428,11 @@ just use the constant. Methods detected are:
     </p>
     ]]>
       </Details>
-    </BugPattern>
-
-    <BugPattern type="PS_PUBLIC_SEMAPHORES">
-     <ShortDescription>Class exposes synchronization and semaphores in its public interface</ShortDescription>
-     <LongDescription>Class {0} exposes synchronization and semaphores in its public interface</LongDescription>
-     <Details>
+  </BugPattern>
+  <BugPattern type="PS_PUBLIC_SEMAPHORES">
+    <ShortDescription>Class exposes synchronization and semaphores in its public interface</ShortDescription>
+    <LongDescription>Class {0} exposes synchronization and semaphores in its public interface</LongDescription>
+    <Details>
    <![CDATA[
     <p>
     This class uses synchronization along with wait(), notify() or notifyAll() on itself (the this
@@ -6858,8 +6443,7 @@ just use the constant. Methods detected are:
     </p>
     ]]>
       </Details>
-    </BugPattern>
-
+  </BugPattern>
   <BugPattern type="ICAST_INTEGER_MULTIPLY_CAST_TO_LONG">
     <ShortDescription>Result of integer multiplication cast to long</ShortDescription>
     <LongDescription>Result of integer multiplication cast to long in {1}</LongDescription>
@@ -6890,7 +6474,6 @@ or
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="ICAST_INT_2_LONG_AS_INSTANT">
     <ShortDescription>int value converted to long and used as absolute time</ShortDescription>
     <LongDescription>int converted to long and passed as absolute time to {2} in {1}</LongDescription>
@@ -6922,10 +6505,6 @@ Date getDate(long seconds) { return new Date(seconds * 1000); }
 ]]>
     </Details>
   </BugPattern>
-
-
-
-
   <BugPattern type="ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND">
     <ShortDescription>int value cast to float and then passed to Math.round</ShortDescription>
     <LongDescription>int value cast to float and then passed to Math.round in {1}</LongDescription>
@@ -6945,7 +6524,6 @@ floating point arithmetic.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL">
     <ShortDescription>integral value cast to double and then passed to Math.ceil</ShortDescription>
     <LongDescription>integral value cast to double and then passed to Math.ceil in {1}</LongDescription>
@@ -6966,7 +6544,6 @@ floating point arithmetic.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="ICAST_IDIV_CAST_TO_DOUBLE">
     <ShortDescription>integral division result cast to double or float</ShortDescription>
     <LongDescription>integral division result cast to double or float in {1}</LongDescription>
@@ -6996,7 +6573,6 @@ double value2 =  x / (double) y;
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION">
     <ShortDescription>Store of non serializable object into HttpSession</ShortDescription>
     <LongDescription>Store of non serializable {2} into HttpSession in {1}</LongDescription>
@@ -7021,7 +6597,6 @@ If the object is, indeed, non-serializable, an error will result.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT">
     <ShortDescription>No previous argument for format string</ShortDescription>
     <LongDescription>No previous argument for format string argument to {2} in {1}</LongDescription>
@@ -7051,7 +6626,6 @@ This format string include a newline character (\n). In format strings, it is ge
 ]]>
      </Details>
   </BugPattern>
-
   <BugPattern type="VA_FORMAT_STRING_BAD_CONVERSION">
     <ShortDescription>The type of a supplied argument doesn't match format specifier</ShortDescription>
     <LongDescription>Argument of type {3} can't be handled by format specifier {4} in {1}</LongDescription>
@@ -7066,7 +6640,6 @@ the String "1" is incompatible with the format specifier %d.
 ]]>
      </Details>
   </BugPattern>
-
   <BugPattern type="VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN">
     <ShortDescription>Non-Boolean argument formatted using %b format specifier</ShortDescription>
     <LongDescription>Non-Boolean argument formatted using %b format specifier in {1}</LongDescription>
@@ -7080,7 +6653,6 @@ This feature of format strings is strange, and may not be what you intended.
 ]]>
      </Details>
   </BugPattern>
-
   <BugPattern type="VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY">
     <ShortDescription>Array formatted in useless way using format string</ShortDescription>
     <LongDescription>Argument of type {3} formatted in useless way in {1}</LongDescription>
@@ -7095,9 +6667,6 @@ Consider wrapping the array using <code>Arrays.asList(...)</code> before handlin
 ]]>
      </Details>
   </BugPattern>
-
-
-
   <BugPattern type="VA_FORMAT_STRING_ARG_MISMATCH">
     <ShortDescription>Number of format-string arguments does not correspond to number of placeholders</ShortDescription>
     <LongDescription>Format-string method {2} called with format string "{3}" wants {4} arguments but is given {5} in {1}</LongDescription>
@@ -7112,7 +6681,6 @@ author intended.
 ]]>
      </Details>
   </BugPattern>
-
   <BugPattern type="VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED">
     <ShortDescription>MessageFormat supplied where printf style format expected</ShortDescription>
     <LongDescription>{2} needs printf-style format but called with MessageFormat</LongDescription>
@@ -7144,7 +6712,6 @@ information that was intended to be included in the formatted string.
 ]]>
      </Details>
   </BugPattern>
-
   <BugPattern type="VA_FORMAT_STRING_ILLEGAL">
     <ShortDescription>Illegal format string</ShortDescription>
     <LongDescription>Illegal format string "{3}" in {1}</LongDescription>
@@ -7158,7 +6725,6 @@ this statement is executed.
 ]]>
      </Details>
   </BugPattern>
-
   <BugPattern type="VA_FORMAT_STRING_MISSING_ARGUMENT">
     <ShortDescription>Format string references missing argument</ShortDescription>
     <LongDescription>format string "{3}" needs argument {5} but only {6} are provided in {1}</LongDescription>
@@ -7172,7 +6738,6 @@ this statement is executed.
 ]]>
      </Details>
   </BugPattern>
-
   <BugPattern type="VA_FORMAT_STRING_BAD_ARGUMENT">
     <ShortDescription>Format string placeholder incompatible with passed argument</ShortDescription>
     <LongDescription>The placeholder {4} is incompatible with
@@ -7193,11 +6758,6 @@ this statement is executed.
 ]]>
      </Details>
   </BugPattern>
-
-
-
-
-
   <BugPattern type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG">
     <ShortDescription>Primitive array passed to function expecting a variable number of object arguments</ShortDescription>
     <LongDescription>{2} passed to varargs method {3} in {1}</LongDescription>
@@ -7223,7 +6783,6 @@ false if <code>o</code> is not the same type as <code>this</code>.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION">
     <ShortDescription>Questionable cast to abstract collection </ShortDescription>
     <LongDescription>Questionable cast from Collection to abstract class {3} in {1}</LongDescription>
@@ -7239,9 +6798,6 @@ to iterate through a collection, you don't need to cast it to a Set or List.
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY">
     <ShortDescription>Impossible cast involving primitive array</ShortDescription>
     <LongDescription>Impossible cast involving primitive array in {1}</LongDescription>
@@ -7253,7 +6809,6 @@ This cast will always throw a ClassCastException.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="BC_IMPOSSIBLE_CAST">
     <ShortDescription>Impossible cast</ShortDescription>
     <LongDescription>Impossible cast from {2} to {3} in {1}</LongDescription>
@@ -7272,7 +6827,6 @@ that a cast will always throw an exception at runtime.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="BC_IMPOSSIBLE_DOWNCAST">
     <ShortDescription>Impossible downcast</ShortDescription>
     <LongDescription>Impossible downcast from {2} to {3} in {1}</LongDescription>
@@ -7287,7 +6841,6 @@ downcast it to a subtype will always fail by throwing a ClassCastException.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY">
     <ShortDescription>Impossible downcast of toArray() result</ShortDescription>
     <LongDescription>Impossible downcast of toArray() result to {3} in {1}</LongDescription>
@@ -7316,7 +6869,6 @@ such cases, but may miss some.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="NP_NULL_INSTANCEOF">
     <ShortDescription>A known null value is checked to see if it is an instance of a type</ShortDescription>
     <LongDescription>A known null value is checked to see if it is an instance of {2} in {1}</LongDescription>
@@ -7330,7 +6882,8 @@ an indication of some misunderstanding or some other logic error.
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="BC_NULL_INSTANCEOF" deprecated="true"> <!-- deprecated in favor of NP_NULL_INSTANCEOF -->
+  <BugPattern type="BC_NULL_INSTANCEOF" deprecated="true">
+    <!-- deprecated in favor of NP_NULL_INSTANCEOF -->
     <ShortDescription>A known null value is checked to see if it is an instance of a type</ShortDescription>
     <LongDescription>A known null value is checked to see if it is an instance of {2} in {1}</LongDescription>
     <Details>
@@ -7343,7 +6896,6 @@ an indication of some misunderstanding or some other logic error.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="BC_IMPOSSIBLE_INSTANCEOF">
     <ShortDescription>instanceof will always return false</ShortDescription>
     <LongDescription>instanceof will always return false in {1}, since a {2} can't be a {3}</LongDescription>
@@ -7356,8 +6908,6 @@ an indication of some misunderstanding or some other logic error.
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="BC_VACUOUS_INSTANCEOF">
     <ShortDescription>instanceof will always return true</ShortDescription>
     <LongDescription>instanceof will always return true for all nonnull values in {1}, since all {2} are instances of {3}</LongDescription>
@@ -7373,9 +6923,6 @@ better to do a null test rather than an instanceof test.
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="BC_UNCONFIRMED_CAST">
     <ShortDescription>Unchecked/unconfirmed cast</ShortDescription>
     <LongDescription>Unchecked/unconfirmed cast from {2} to {3} in {1}</LongDescription>
@@ -7405,7 +6952,6 @@ collection class.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="RE_POSSIBLE_UNINTENDED_PATTERN">
     <ShortDescription>"." used for regular expression</ShortDescription>
     <LongDescription>"." used for regular expression in {1}</LongDescription>
@@ -7452,9 +6998,6 @@ regular expression as an escape character. Amoung other options, you can just us
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="DLS_OVERWRITTEN_INCREMENT">
     <ShortDescription>Overwritten increment</ShortDescription>
     <LongDescription>Overwritten increment in {1}</LongDescription>
@@ -7511,8 +7054,6 @@ i % 60 * 1000 is (i % 60) * 1000, not i % (60 * 1000).
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="DMI_INVOKING_HASHCODE_ON_ARRAY">
     <ShortDescription>Invocation of hashCode on an array</ShortDescription>
     <LongDescription>Invocation of hashCode on array in {1}</LongDescription>
@@ -7528,8 +7069,7 @@ use <code>java.util.Arrays.hashCode(a)</code>.
 </p>
 ]]>
     </Details>
-    </BugPattern>
-
+  </BugPattern>
   <BugPattern type="DMI_INVOKING_TOSTRING_ON_ARRAY">
     <ShortDescription>Invocation of toString on an array</ShortDescription>
     <LongDescription>Invocation of toString on {2.givenClass} in {1}</LongDescription>
@@ -7543,7 +7083,6 @@ String that gives the contents of the array. See Programming Puzzlers, chapter 3
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DMI_INVOKING_TOSTRING_ON_ANONYMOUS_ARRAY">
     <ShortDescription>Invocation of toString on an array</ShortDescription>
     <LongDescription>Invocation of toString on an array in {1}</LongDescription>
@@ -7557,8 +7096,6 @@ String that gives the contents of the array. See Programming Puzzlers, chapter 3
 ]]>
     </Details>
   </BugPattern>
-
-
   <BugPattern type="IM_AVERAGE_COMPUTATION_COULD_OVERFLOW">
     <ShortDescription>Computation of average could overflow</ShortDescription>
     <LongDescription>Computation of average could overflow in {1}</LongDescription>
@@ -7580,9 +7117,6 @@ publicized the bug pattern</a>.
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="IM_BAD_CHECK_FOR_ODD">
     <ShortDescription>Check for oddness that won't work for negative numbers </ShortDescription>
     <LongDescription>Check for oddness that won't work for negative numbers in {1}</LongDescription>
@@ -7596,9 +7130,6 @@ for oddness, consider using x &amp; 1 == 1, or x % 2 != 0.
 ]]>
     </Details>
   </BugPattern>
-
-
-
   <BugPattern type="DMI_HARDCODED_ABSOLUTE_FILENAME">
     <ShortDescription>Code contains a hard coded reference to an absolute pathname</ShortDescription>
     <LongDescription>Hard coded reference to an absolute pathname in {1}</LongDescription>
@@ -7646,11 +7177,10 @@ and the next method is supposed to change the state of the iterator.
 ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="SWL_SLEEP_WITH_LOCK_HELD">
-   <ShortDescription>Method calls Thread.sleep() with a lock held</ShortDescription>
-   <LongDescription>{1} calls Thread.sleep() with a lock held</LongDescription>
-   <Details>
+    <ShortDescription>Method calls Thread.sleep() with a lock held</ShortDescription>
+    <LongDescription>{1} calls Thread.sleep() with a lock held</LongDescription>
+    <Details>
       <![CDATA[
       <p>
       This method calls Thread.sleep() with a lock held.  This may result
@@ -7662,11 +7192,10 @@ and the next method is supposed to change the state of the iterator.
       ]]>
    </Details>
   </BugPattern>
-
   <BugPattern type="DB_DUPLICATE_BRANCHES">
-   <ShortDescription>Method uses the same code for two branches</ShortDescription>
-   <LongDescription>Method {1} uses the same code for two branches</LongDescription>
-   <Details>
+    <ShortDescription>Method uses the same code for two branches</ShortDescription>
+    <LongDescription>Method {1} uses the same code for two branches</LongDescription>
+    <Details>
       <![CDATA[
       <p>
       This method uses the same code to implement two branches of a conditional branch.
@@ -7676,9 +7205,9 @@ and the next method is supposed to change the state of the iterator.
    </Details>
   </BugPattern>
   <BugPattern type="DB_DUPLICATE_SWITCH_CLAUSES">
-   <ShortDescription>Method uses the same code for two switch clauses</ShortDescription>
-   <LongDescription>Method {1} uses the same code for two switch clauses</LongDescription>
-   <Details>
+    <ShortDescription>Method uses the same code for two switch clauses</ShortDescription>
+    <LongDescription>Method {1} uses the same code for two switch clauses</LongDescription>
+    <Details>
       <![CDATA[
       <p>
       This method uses the same code to implement two clauses of a switch statement.
@@ -7688,7 +7217,6 @@ and the next method is supposed to change the state of the iterator.
       ]]>
    </Details>
   </BugPattern>
-
   <BugPattern type="IMA_INEFFICIENT_MEMBER_ACCESS">
     <ShortDescription>Method accesses a private member variable of owning class</ShortDescription>
     <LongDescription>Method {1} accesses to a private member variable of owning class</LongDescription>
@@ -7703,7 +7231,6 @@ and the next method is supposed to change the state of the iterator.
       ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="XFB_XML_FACTORY_BYPASS">
     <ShortDescription>Method directly allocates a specific implementation of xml interfaces</ShortDescription>
     <LongDescription>Method {1} directly allocates a specific implementation of xml interfaces</LongDescription>
@@ -7724,7 +7251,6 @@ and the next method is supposed to change the state of the iterator.
       ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="USM_USELESS_SUBCLASS_METHOD">
     <ShortDescription>Method superfluously delegates to parent class method</ShortDescription>
     <LongDescription>Method {1} superfluously delegates to parent class method</LongDescription>
@@ -7737,7 +7263,6 @@ and the next method is supposed to change the state of the iterator.
       ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="USM_USELESS_ABSTRACT_METHOD">
     <ShortDescription>Abstract Method is already defined in implemented interface</ShortDescription>
     <LongDescription>Abstract Method {1} is already defined in implemented interface</LongDescription>
@@ -7750,8 +7275,7 @@ and the next method is supposed to change the state of the iterator.
       ]]>
     </Details>
   </BugPattern>
-
-    <BugPattern type="CI_CONFUSED_INHERITANCE">
+  <BugPattern type="CI_CONFUSED_INHERITANCE">
     <ShortDescription>Class is final but declares protected field</ShortDescription>
     <LongDescription>Class {0} is final but declares protected field {1}</LongDescription>
     <Details>
@@ -7765,7 +7289,6 @@ and the next method is supposed to change the state of the iterator.
       ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT">
     <ShortDescription>Method assigns boolean literal in boolean expression</ShortDescription>
     <LongDescription>Method {1} assigns boolean literal in boolean expression</LongDescription>
@@ -7791,7 +7314,6 @@ and the next method is supposed to change the state of the iterator.
       ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="GC_UNCHECKED_TYPE_IN_GENERIC_CALL">
     <ShortDescription>Unchecked type in generic call</ShortDescription>
     <LongDescription>Unchecked argument of type Object provided where type {3.givenClass} is expected in {1}</LongDescription>
@@ -7807,7 +7329,6 @@ and the next method is supposed to change the state of the iterator.
      ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="GC_UNRELATED_TYPES">
     <ShortDescription>No relationship between generic parameter and method argument</ShortDescription>
     <LongDescription>{2.givenClass} is incompatible with expected argument type {3.givenClass} in {1}</LongDescription>
@@ -7839,10 +7360,6 @@ and the next method is supposed to change the state of the iterator.
      ]]>
     </Details>
   </BugPattern>
-
-
-
-
   <BugPattern type="DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES">
     <ShortDescription>Collections should not contain themselves</ShortDescription>
     <LongDescription>Collections should not contain themselves in call to {2.givenClass}</LongDescription>
@@ -7867,7 +7384,6 @@ always be true, and <code>c.retainAll(c)</code> should have no effect.
      ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION">
     <ShortDescription>Don't use removeAll to clear a collection</ShortDescription>
     <LongDescription>removeAll used to clear a collection in {1}</LongDescription>
@@ -7881,11 +7397,10 @@ for some collections, might throw a <code>ConcurrentModificationException</code>
      ]]>
     </Details>
   </BugPattern>
-
-<BugPattern type="STCAL_STATIC_CALENDAR_INSTANCE">
-<ShortDescription>Static Calendar field</ShortDescription>
-<LongDescription>{1} is static field of type java.util.Calendar, which isn't thread safe</LongDescription>
-<Details>
+  <BugPattern type="STCAL_STATIC_CALENDAR_INSTANCE">
+    <ShortDescription>Static Calendar field</ShortDescription>
+    <LongDescription>{1} is static field of type java.util.Calendar, which isn't thread safe</LongDescription>
+    <Details>
 <![CDATA[
 <p>Even though the JavaDoc does not contain a hint about it, Calendars are inherently unsafe for multihtreaded use.
 Sharing a single instance across thread boundaries without proper synchronization will result in erratic behavior of the
@@ -7897,12 +7412,11 @@ random ArrayIndexOutOfBoundsExceptions or IndexOutOfBoundsExceptions in sun.util
 and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug #6178997</a>.</p>
 ]]>
 </Details>
-</BugPattern>
-
-<BugPattern type="STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE">
-<ShortDescription>Call to static Calendar</ShortDescription>
-<LongDescription>Call to method of static java.util.Calendar in {1}</LongDescription>
-<Details>
+  </BugPattern>
+  <BugPattern type="STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE">
+    <ShortDescription>Call to static Calendar</ShortDescription>
+    <LongDescription>Call to method of static java.util.Calendar in {1}</LongDescription>
+    <Details>
 <![CDATA[
 <p>Even though the JavaDoc does not contain a hint about it, Calendars are inherently unsafe for multihtreaded use.
 The detector has found a call to an instance of Calendar that has been obtained via a static
@@ -7911,13 +7425,11 @@ field. This looks suspicous.</p>
 and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug #6178997</a>.</p>
 ]]>
 </Details>
-</BugPattern>
-
-
-<BugPattern type="STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE">
-<ShortDescription>Static DateFormat</ShortDescription>
-<LongDescription>{1} is a static field of type java.text.DateFormat, which isn't thread safe</LongDescription>
-<Details>
+  </BugPattern>
+  <BugPattern type="STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE">
+    <ShortDescription>Static DateFormat</ShortDescription>
+    <LongDescription>{1} is a static field of type java.text.DateFormat, which isn't thread safe</LongDescription>
+    <Details>
 <![CDATA[
 <p>As the JavaDoc states, DateFormats are inherently unsafe for multithreaded use.
 Sharing a single instance across thread boundaries without proper synchronization will result in erratic behavior of the
@@ -7928,12 +7440,11 @@ application.</p>
 and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug #6178997</a>.</p>
 ]]>
 </Details>
-</BugPattern>
-
-<BugPattern type="STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE">
-<ShortDescription>Call to static DateFormat</ShortDescription>
-<LongDescription>Call to method of static java.text.DateFormat in {1}</LongDescription>
-<Details>
+  </BugPattern>
+  <BugPattern type="STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE">
+    <ShortDescription>Call to static DateFormat</ShortDescription>
+    <LongDescription>Call to method of static java.text.DateFormat in {1}</LongDescription>
+    <Details>
 <![CDATA[
 <p>As the JavaDoc states, DateFormats are inherently unsafe for multithreaded use.
 The detector has found a call to an instance of DateFormat that has been obtained via a static
@@ -7942,8 +7453,7 @@ field. This looks suspicous.</p>
 and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug #6178997</a>.</p>
 ]]>
 </Details>
-</BugPattern>
-
+  </BugPattern>
   <BugPattern type="TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED">
     <ShortDescription>Value annotated as carrying a type qualifier used where a value that must not carry that qualifier is required</ShortDescription>
     <LongDescription>Value annotated as carrying type qualifier {2.simpleName} used where a value that must not carry that qualifier is required</LongDescription>
@@ -7977,7 +7487,6 @@ public @NonNegative Integer example(@Negative Integer value) {
       ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED">
     <ShortDescription>Value annotated as never carrying a type qualifier used where value carrying that qualifier is required</ShortDescription>
     <LongDescription>Value annotated as never carrying type qualifier {2.simpleName} used where value carrying that qualifier is required</LongDescription>
@@ -8000,7 +7509,6 @@ public @NonNegative Integer example(@Negative Integer value) {
       ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK">
     <ShortDescription>Value that might not carry a type qualifier is always used in a way requires that type qualifier</ShortDescription>
     <LongDescription>Value that might not carry the {2.simpleName} annotation is always used in a way that requires that type qualifier</LongDescription>
@@ -8027,7 +7535,6 @@ public @NonNegative Integer example(@Negative Integer value) {
       ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK">
     <ShortDescription>Value required to not have type qualifier, but marked as unknown</ShortDescription>
     <LongDescription>Value is required never be {2.simpleName}, but is explicitly annotated as unknown with regards to {2.simpleName}</LongDescription>
@@ -8054,10 +7561,6 @@ public @NonNegative Integer example(@Negative Integer value) {
       ]]>
     </Details>
   </BugPattern>
-
-
-
-
   <BugPattern type="IO_APPENDING_TO_OBJECT_OUTPUT_STREAM">
     <ShortDescription>Doomed attempt to append to an object output stream</ShortDescription>
     <LongDescription>Doomed attempt to append to an object output stream in {1}</LongDescription>
@@ -8112,11 +7615,10 @@ public @NonNegative Integer example(@Negative Integer value) {
       ]]>
     </Details>
   </BugPattern>
-
   <BugPattern type="OBL_UNSATISFIED_OBLIGATION">
-      <ShortDescription>Method may fail to clean up stream or resource</ShortDescription>
-      <LongDescription>Method {1} may fail to clean up {2}</LongDescription>
-      <Details>
+    <ShortDescription>Method may fail to clean up stream or resource</ShortDescription>
+    <LongDescription>Method {1} may fail to clean up {2}</LongDescription>
+    <Details>
           <![CDATA[
           <p>
           This method may fail to clean up (close, dispose of) a stream,
@@ -8159,33 +7661,30 @@ public @NonNegative Integer example(@Negative Integer value) {
           ]]>
       </Details>
   </BugPattern>
-
   <BugPattern type="FB_UNEXPECTED_WARNING">
-      <ShortDescription>Unexpected/undesired warning from FindBugs</ShortDescription>
-      <LongDescription>Unexpected/undesired {2} FindBugs warning in {1}</LongDescription>
-      <Details>
+    <ShortDescription>Unexpected/undesired warning from FindBugs</ShortDescription>
+    <LongDescription>Unexpected/undesired {2} FindBugs warning in {1}</LongDescription>
+    <Details>
           <![CDATA[
           <p>FindBugs generated a warning that, according to a @NoWarning annotated,
             is unexpected or undesired</p>
           ]]>
       </Details>
   </BugPattern>
-
   <BugPattern type="FB_MISSING_EXPECTED_WARNING">
-      <ShortDescription>Missing expected or desired warning from FindBugs</ShortDescription>
-      <LongDescription>Missing expected or desired {2} FindBugs warning in {1}</LongDescription>
-      <Details>
+    <ShortDescription>Missing expected or desired warning from FindBugs</ShortDescription>
+    <LongDescription>Missing expected or desired {2} FindBugs warning in {1}</LongDescription>
+    <Details>
           <![CDATA[
           <p>FindBugs didn't generate generated a warning that, according to a @ExpectedWarning annotated,
             is expected or desired</p>
           ]]>
       </Details>
   </BugPattern>
-
   <BugPattern type="RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED">
-      <ShortDescription>Return value of putIfAbsent ignored, value passed to putIfAbsent reused</ShortDescription>
-      <LongDescription>Return value of putIfAbsent is ignored, but {4} is reused in {1}</LongDescription>
-      <Details>
+    <ShortDescription>Return value of putIfAbsent ignored, value passed to putIfAbsent reused</ShortDescription>
+    <LongDescription>Return value of putIfAbsent is ignored, but {4} is reused in {1}</LongDescription>
+    <Details>
           <![CDATA[
         The <code>putIfAbsent</code> method is typically used to ensure that a
         single value is associated with a given key (the first value for which put
@@ -8197,11 +7696,10 @@ public @NonNegative Integer example(@Negative Integer value) {
           ]]>
       </Details>
   </BugPattern>
-
   <BugPattern type="LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE">
-      <ShortDescription>Potential lost logger changes due to weak reference in OpenJDK</ShortDescription>
-      <LongDescription>Changes to logger could be lost in {1}</LongDescription>
-      <Details>
+    <ShortDescription>Potential lost logger changes due to weak reference in OpenJDK</ShortDescription>
+    <LongDescription>Changes to logger could be lost in {1}</LongDescription>
+    <Details>
           <![CDATA[
 <p>OpenJDK introduces a potential incompatibility.
  In particular, the java.util.logging.Logger behavior has
@@ -8233,11 +7731,10 @@ after the call to initLogging, the logger configuration is lost
           ]]>
       </Details>
   </BugPattern>
-
   <BugPattern type="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION">
-      <ShortDescription>Sequence of calls to conconcurrent abstraction may not be atomic</ShortDescription>
-      <LongDescription>Sequence of calls to {2} may not be atomic in {1}</LongDescription>
-      <Details>
+    <ShortDescription>Sequence of calls to conconcurrent abstraction may not be atomic</ShortDescription>
+    <LongDescription>Sequence of calls to {2} may not be atomic in {1}</LongDescription>
+    <Details>
           <![CDATA[
         <p>This code contains a sequence of calls to a concurrent  abstraction
             (such as a concurrent hash map).
@@ -8245,84 +7742,81 @@ after the call to initLogging, the logger configuration is lost
           ]]>
       </Details>
   </BugPattern>
-
   <BugPattern type="DM_DEFAULT_ENCODING">
-      <ShortDescription>Reliance on default encoding</ShortDescription>
-      <LongDescription>Found reliance on default encoding in {1}: {2}</LongDescription>
-      <Details>
+    <ShortDescription>Reliance on default encoding</ShortDescription>
+    <LongDescription>Found reliance on default encoding in {1}: {2}</LongDescription>
+    <Details>
 <![CDATA[
 <p> Found a call to a method which will perform a byte to String (or String to byte) conversion, and will assume that the default platform encoding is suitable. This will cause the application behaviour to vary between platforms. Use an alternative API and specify a charset name or Charset object explicitly.  </p>
 ]]>
       </Details>
   </BugPattern>
-
   <!--
   **********************************************************************
    BugCodes
   **********************************************************************
    -->
-
-  <BugCode abbrev="FS" >Format string problem</BugCode>
-  <BugCode abbrev="SKIPPED" >Analysis skipped</BugCode>
-  <BugCode abbrev="IL" >Infinite Loop</BugCode>
-  <BugCode abbrev="VO" >Use of volatile</BugCode>
-  <BugCode abbrev="UI" >Unsafe inheritance</BugCode>
-  <BugCode abbrev="FL" >Use of floating point precision</BugCode>
-  <BugCode abbrev="TEST" >Testing prototype and incomplete bug pattern</BugCode>
-  <BugCode abbrev="IMSE" >Dubious catching of IllegalMonitorStateException</BugCode>
-  <BugCode abbrev="CN" >Bad implementation of cloneable idiom</BugCode>
-  <BugCode abbrev="AT" >Possible atomicity violation</BugCode>
-  <BugCode abbrev="FI" >Incorrect use of finalizers</BugCode>
-  <BugCode abbrev="ES" >Checking String equality using == or !=</BugCode>
-  <BugCode abbrev="ML" >Synchronization on updated field (Mutable Lock)</BugCode>
-  <BugCode abbrev="UG" >Unsynchronized get method, synchronized set method</BugCode>
-  <BugCode abbrev="IO" >Input/Output problem</BugCode>
-  <BugCode abbrev="IC" >Initialization circularity</BugCode>
-  <BugCode abbrev="SI" >Suspicious static initializer</BugCode>
-  <BugCode abbrev="MSF" >Mutable servlet field</BugCode>
-  <BugCode abbrev="IS" >Inconsistent synchronization</BugCode>
-  <BugCode abbrev="Eq" >Problems with implementation of equals()</BugCode>
-  <BugCode abbrev="Co" >Problems with implementation of compareTo()</BugCode>
-  <BugCode abbrev="HE" >Equal objects must have equal hashcodes</BugCode>
-  <BugCode abbrev="AM" >API misuse</BugCode>
-  <BugCode abbrev="Dm" >Dubious method used</BugCode>
-  <BugCode abbrev="Bx" >Questionable Boxing of primitive value</BugCode>
-  <BugCode abbrev="UR" >Uninitialized read of field in constructor</BugCode>
-  <BugCode abbrev="RR" >Method ignores results of InputStream.read()</BugCode>
-  <BugCode abbrev="NN" >Naked notify</BugCode>
-  <BugCode abbrev="UW" >Unconditional wait</BugCode>
-  <BugCode abbrev="SP" >Method spins on field</BugCode>
-  <BugCode abbrev="DC" >Possible double check of field</BugCode>
-  <BugCode abbrev="Wa" >Wait not in loop</BugCode>
-  <BugCode abbrev="No" >Using notify() rather than notifyAll()</BugCode>
-  <BugCode abbrev="DE" >Dropped or ignored exception</BugCode>
-  <BugCode abbrev="Ru" >Method invokes run()</BugCode>
-  <BugCode abbrev="It" >Incorrect definition of Iterator</BugCode>
-  <BugCode abbrev="SnVI" >Serializable class with no Version ID</BugCode>
-  <BugCode abbrev="Se" >Incorrect definition of Serializable class</BugCode>
-  <BugCode abbrev="WS" >Class's writeObject() method is synchronized but nothing else is</BugCode>
-  <BugCode abbrev="RS" >Class's readObject() method is synchronized</BugCode>
-  <BugCode abbrev="SC" >Constructor invokes Thread.start()</BugCode>
-  <BugCode abbrev="MS" >Mutable static field</BugCode>
-  <BugCode abbrev="EI" >Method returning array may expose internal representation</BugCode>
-  <BugCode abbrev="Nm" >Confusing method name</BugCode>
-  <BugCode abbrev="SS" >Unread field should be static</BugCode>
-  <BugCode abbrev="UuF" >Unused field</BugCode>
-  <BugCode abbrev="UrF" >Unread field</BugCode>
-  <BugCode abbrev="UwF" >Unwritten field</BugCode>
-  <BugCode abbrev="SIC" >Inner class could be made static</BugCode>
-  <BugCode abbrev="TLW" >Wait with two locks held</BugCode>
-  <BugCode abbrev="RV" >Bad use of return value from method</BugCode>
-  <BugCode abbrev="LG" >Logger problem</BugCode>
-  <BugCode abbrev="IA" >Ambiguous invocation</BugCode>
-  <BugCode abbrev="HSC" >Huge String constants</BugCode>
-  <BugCode abbrev="HRS" >HTTP Response splitting vulnerability</BugCode>
-  <BugCode abbrev="XSS" >Cross site scripting vulnerability</BugCode>
-  <BugCode abbrev="NP" >Null pointer dereference</BugCode>
+  <BugCode abbrev="FS">Format string problem</BugCode>
+  <BugCode abbrev="SKIPPED">Analysis skipped</BugCode>
+  <BugCode abbrev="IL">Infinite Loop</BugCode>
+  <BugCode abbrev="VO">Use of volatile</BugCode>
+  <BugCode abbrev="UI">Unsafe inheritance</BugCode>
+  <BugCode abbrev="FL">Use of floating point precision</BugCode>
+  <BugCode abbrev="TEST">Testing prototype and incomplete bug pattern</BugCode>
+  <BugCode abbrev="IMSE">Dubious catching of IllegalMonitorStateException</BugCode>
+  <BugCode abbrev="CN">Bad implementation of cloneable idiom</BugCode>
+  <BugCode abbrev="AT">Possible atomicity violation</BugCode>
+  <BugCode abbrev="FI">Incorrect use of finalizers</BugCode>
+  <BugCode abbrev="ES">Checking String equality using == or !=</BugCode>
+  <BugCode abbrev="ML">Synchronization on updated field (Mutable Lock)</BugCode>
+  <BugCode abbrev="UG">Unsynchronized get method, synchronized set method</BugCode>
+  <BugCode abbrev="IO">Input/Output problem</BugCode>
+  <BugCode abbrev="IC">Initialization circularity</BugCode>
+  <BugCode abbrev="SI">Suspicious static initializer</BugCode>
+  <BugCode abbrev="MSF">Mutable servlet field</BugCode>
+  <BugCode abbrev="IS">Inconsistent synchronization</BugCode>
+  <BugCode abbrev="Eq">Problems with implementation of equals()</BugCode>
+  <BugCode abbrev="Co">Problems with implementation of compareTo()</BugCode>
+  <BugCode abbrev="HE">Equal objects must have equal hashcodes</BugCode>
+  <BugCode abbrev="AM">API misuse</BugCode>
+  <BugCode abbrev="Dm">Dubious method used</BugCode>
+  <BugCode abbrev="Bx">Questionable Boxing of primitive value</BugCode>
+  <BugCode abbrev="UR">Uninitialized read of field in constructor</BugCode>
+  <BugCode abbrev="RR">Method ignores results of InputStream.read()</BugCode>
+  <BugCode abbrev="NN">Naked notify</BugCode>
+  <BugCode abbrev="UW">Unconditional wait</BugCode>
+  <BugCode abbrev="SP">Method spins on field</BugCode>
+  <BugCode abbrev="DC">Possible double check of field</BugCode>
+  <BugCode abbrev="Wa">Wait not in loop</BugCode>
+  <BugCode abbrev="No">Using notify() rather than notifyAll()</BugCode>
+  <BugCode abbrev="DE">Dropped or ignored exception</BugCode>
+  <BugCode abbrev="Ru">Method invokes run()</BugCode>
+  <BugCode abbrev="It">Incorrect definition of Iterator</BugCode>
+  <BugCode abbrev="SnVI">Serializable class with no Version ID</BugCode>
+  <BugCode abbrev="Se">Incorrect definition of Serializable class</BugCode>
+  <BugCode abbrev="WS">Class's writeObject() method is synchronized but nothing else is</BugCode>
+  <BugCode abbrev="RS">Class's readObject() method is synchronized</BugCode>
+  <BugCode abbrev="SC">Constructor invokes Thread.start()</BugCode>
+  <BugCode abbrev="MS">Mutable static field</BugCode>
+  <BugCode abbrev="EI">Method returning array may expose internal representation</BugCode>
+  <BugCode abbrev="Nm">Confusing method name</BugCode>
+  <BugCode abbrev="SS">Unread field should be static</BugCode>
+  <BugCode abbrev="UuF">Unused field</BugCode>
+  <BugCode abbrev="UrF">Unread field</BugCode>
+  <BugCode abbrev="UwF">Unwritten field</BugCode>
+  <BugCode abbrev="SIC">Inner class could be made static</BugCode>
+  <BugCode abbrev="TLW">Wait with two locks held</BugCode>
+  <BugCode abbrev="RV">Bad use of return value from method</BugCode>
+  <BugCode abbrev="LG">Logger problem</BugCode>
+  <BugCode abbrev="IA">Ambiguous invocation</BugCode>
+  <BugCode abbrev="HSC">Huge String constants</BugCode>
+  <BugCode abbrev="HRS">HTTP Response splitting vulnerability</BugCode>
+  <BugCode abbrev="XSS">Cross site scripting vulnerability</BugCode>
+  <BugCode abbrev="NP">Null pointer dereference</BugCode>
   <BugCode abbrev="NOISE">Bogus random warning</BugCode>
-  <BugCode abbrev="RpC" >Repeated conditional test</BugCode>
+  <BugCode abbrev="RpC">Repeated conditional test</BugCode>
   <BugCode abbrev="OS">Stream not closed on all paths</BugCode>
-  <BugCode abbrev="PZLA" >Prefer zero length arrays to null to indicate no results</BugCode>
+  <BugCode abbrev="PZLA">Prefer zero length arrays to null to indicate no results</BugCode>
   <BugCode abbrev="UCF">Useless control flow</BugCode>
   <BugCode abbrev="RCN">Redundant comparison to null</BugCode>
   <BugCode abbrev="UL">Lock not released on all paths</BugCode>
@@ -8375,7 +7869,8 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="JCIP">Violation of net.jcip annotations</BugCode>
   <BugCode abbrev="USELESS_STRING">Useless/non-informative string generated</BugCode>
   <BugCode abbrev="DMI">Dubious method invocation</BugCode>
-  <BugCode abbrev="PZ">Warning inspired by Josh Bloch's and Neal Gafter's Programming Puzzlers</BugCode>
+  <BugCode abbrev="PZ">Warning inspired by Josh Bloch's and Neal Gafter's Programming
+    Puzzlers</BugCode>
   <BugCode abbrev="SWL">Sleep with lock held</BugCode>
   <BugCode abbrev="J2EE">J2EE error</BugCode>
   <BugCode abbrev="DB">Duplicate Branches</BugCode>
@@ -8391,8 +7886,6 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="TQ">Inconsistent use of type qualifier annotations</BugCode>
   <BugCode abbrev="OBL">Unsatisfied obligation to clean up stream or resource</BugCode>
   <BugCode abbrev="FB">FindBugs did not produce the expected warnings on a method</BugCode>
-  <BugCode abbrev="DL">Unintended contention or possible deadlock due to locking on shared objects</BugCode>
-  </MessageCollection>
-
-
-
+  <BugCode abbrev="DL">Unintended contention or possible deadlock due to locking on shared
+    objects</BugCode>
+</MessageCollection>
