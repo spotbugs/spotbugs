@@ -1,26 +1,16 @@
 <FindbugsPlugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   				xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
-				pluginid="edu.umd.cs.findbugs.plugins.appengine"
-                defaultenabled="true"
-                provider="FindBugs project" 
-                website="http://findbugs.sourceforge.net"
-                usageTracker="http://findbugs-cloud.appspot.com/track"
-                >
+       xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
+       pluginid="edu.umd.cs.findbugs.plugins.appengine" defaultenabled="true"
+       provider="FindBugs project" website="http://findbugs.sourceforge.net"
+       usageTracker="http://findbugs-cloud.appspot.com/track">
 
-  <Cloud id="edu.umd.cs.findbugs.cloud.appengine.theflybush"				
-	 cloudClass="edu.umd.cs.findbugs.cloud.appEngine.WebCloudClient"
-	 usernameClass="edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup"
-         disabled="true" onlineStorage="true"
-	>
-       <Property key="webcloud.host">http://theflybush.appspot.com</Property>
-       <Property key="cloud.detailsUrl">http://theflybush-cloud.appspot.com/issues/%s?embed</Property>
-</Cloud>
-  <Cloud id="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"				
-	 cloudClass="edu.umd.cs.findbugs.cloud.appEngine.WebCloudClient"
-	 usernameClass="edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup" onlineStorage="true"
-	>
-       <Property key="webcloud.host">http://findbugs-cloud.appspot.com</Property>
-       <Property key="cloud.detailsUrl">http://findbugs-cloud.appspot.com/issues/%s?embed</Property>
-</Cloud>
+       <Cloud id="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
+              cloudClass="edu.umd.cs.findbugs.cloud.appEngine.WebCloudClient"
+              usernameClass="edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup"
+              onlineStorage="true">
+              <Property key="webcloud.host">http://findbugs-cloud.appspot.com</Property>
+              <Property key="cloud.detailsUrl"
+                     >http://findbugs-cloud.appspot.com/issues/%s?embed</Property>
+       </Cloud>
 
 </FindbugsPlugin>
