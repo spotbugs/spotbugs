@@ -1,12 +1,17 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +22,9 @@ import java.util.regex.Pattern;
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
 public class UsageTracker {
     private static final Logger LOGGER = Logger.getLogger(UsageTracker.class.getName());
@@ -36,20 +44,20 @@ public class UsageTracker {
                 redirectUri = new URI(redirect);
             } catch (URISyntaxException e) {
                 String error = "Invalid usage tracking redirect URI in " + pluginName + ": " + redirect;
-                LOGGER.severe(error);
+                logError(Level.SEVERE, error);
                 throw new IllegalStateException(error);
             }
         }
 
         if (redirectUri != null) {
-            LOGGER.info("Redirecting all plugin usage tracking to " + redirectUri + " (" + pluginName + ")");
+            logError(Level.INFO, "Redirecting all plugin usage tracking to " + redirectUri + " (" + pluginName + ")");
             trackUsage(redirectUri, plugins);
         } else {
             MultiMap<URI,Plugin> pluginsByTracker = new MultiMap<URI, Plugin>(HashSet.class);
             for (Plugin plugin : plugins) {
                 URI uri = plugin.getUsageTracker();
                 if (uri == null) {
-                    LOGGER.fine("Not logging usage for " + plugin.getShortDescription()
+                    logError(Level.FINE, "Not logging usage for " + plugin.getShortDescription()
                             + " - no usageTracker attribute in plugin XML file");
                     continue;
                 }
@@ -66,13 +74,13 @@ public class UsageTracker {
         Plugin setter = Plugin.getGlobalOptionSetter(KEY_DISABLE_ALL_USAGE_TRACKING);
         String pluginName = setter == null ? "<unknown plugin>" : setter.getShortDescription();
         if ("true".equalsIgnoreCase(disable)) {
-            LOGGER.info("Skipping usage tracking due to disableAllUsageTracking=true set by "
+            logError(Level.INFO, "Skipping usage tracking due to disableAllUsageTracking=true set by "
                     + pluginName);
             return true;
         }
         if (disable != null && !"false".equalsIgnoreCase(disable)) {
             String error = "Unknown value '" + disable + "' for disableAllUsageTracking in " + pluginName;
-            LOGGER.severe(error);
+            logError(Level.SEVERE, error);
             throw new IllegalStateException(error);
         }
         return false;
@@ -80,7 +88,7 @@ public class UsageTracker {
 
     public void trackUsage(final URI trackerUrl, final Collection<Plugin> plugins) {
         if (trackerUrl == null) {
-            LOGGER.info("Not submitting usage tracking for plugins with blank URL: " + getPluginNames(plugins));
+            logError(Level.INFO, "Not submitting usage tracking for plugins with blank URL: " + getPluginNames(plugins));
             return;
         }
         final String entryPoint = getEntryPoint();
@@ -89,7 +97,7 @@ public class UsageTracker {
                 try {
                     actuallyTrackUsage(trackerUrl, plugins, entryPoint);
                 } catch (Exception e) {
-                    LOGGER.log(Level.WARNING, "Error submitting usage tracking data to " + trackerUrl, e);
+                    logError(e, "Error submitting usage tracking data to " + trackerUrl);
                 }
             }
         });
@@ -137,8 +145,90 @@ public class UsageTracker {
         out.close();
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) {
-            LOGGER.warning("Error submitting anonymous usage data to " + trackerUrl + ": "
+            logError(Level.WARNING, "Error submitting anonymous usage data to " + trackerUrl + ": "
                     + responseCode + " - " + conn.getResponseMessage());
+        }
+        parseUpdateXml(trackerUrl, plugins, conn.getInputStream());
+    }
+
+    // package-private for testing
+    @SuppressWarnings({"unchecked"})
+    void parseUpdateXml(URI trackerUrl, Collection<Plugin> plugins, InputStream inputStream) {
+        try {
+            Document doc = new SAXReader().read(inputStream);
+            List<Element> pluginEls = (List<Element>) doc.selectNodes("fb-plugin-updates/plugin");
+            for (Element pluginEl : pluginEls) {
+                String id = pluginEl.attributeValue("id");
+                for (Plugin plugin : plugins) {
+                    if (plugin.getPluginId().equals(id)) {
+                        checkPlugin(pluginEl, plugin);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logError(e, "Could not parse plugin version update for " + trackerUrl);
+        }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private void checkPlugin(Element pluginEl, Plugin plugin) throws ParseException {
+        Date max = null;
+        Element maxEl = null;
+        for (Element release : (List<Element>) pluginEl.elements("release")) {
+            Date date = parseReleaseDate(release);
+            if (max == null || date.after(max)) {
+                max = date;
+                maxEl = release;
+            }
+        }
+        if (maxEl != null) {
+            printPluginUpdateMsg(plugin, maxEl);
+        }
+    }
+
+    private void printPluginUpdateMsg(Plugin plugin, Element maxEl) throws ParseException {
+        String version = maxEl.attributeValue("version");
+        if (version.equals(plugin.getVersion()))
+            return;
+
+        String url = maxEl.attributeValue("url");
+
+        String message = maxEl.element("message").getTextTrim();
+        //TODO check jar file for release date
+        Date date = parseReleaseDate(maxEl);
+        Date releaseDate = plugin.getReleaseDate();
+        if (date.after(releaseDate)) {
+            printMessage("PLUGIN UPDATE: " + plugin.getShortDescription() + " " + version
+                    + " has been released (you have " + plugin.getVersion() + ")");
+            if (message != null && message.length() > 0)
+                printMessage("   " + message.replaceAll("\\n", "\n   "));
+            printMessage("Visit " + url + " for downloads and release notes.");
+        }
+    }
+
+
+    // protected for testing
+    protected void logError(Level level, String msg) {
+        LOGGER.log(level, msg);
+    }
+
+    // protected for testing
+    protected void logError(Exception e, String msg) {
+        LOGGER.log(Level.WARNING, msg, e);
+    }
+
+    // protected for testing
+    protected void printMessage(String message) {
+        System.err.println(message);
+    }
+
+    private Date parseReleaseDate(Element releaseEl) throws ParseException {
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm aa z");
+        String dateStr = releaseEl.attributeValue("date");
+        try {
+            return format.parse(dateStr);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error parsing " + dateStr, e);
         }
     }
 

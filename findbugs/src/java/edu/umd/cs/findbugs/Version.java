@@ -137,6 +137,13 @@ public class Version {
         }
         RELEASE = release;
         DATE = date;
+        Date parsedDate;
+        try {
+            parsedDate = DateFormat.getDateTimeInstance().parse(DATE); //TODO: this doesn't work!
+        } catch (ParseException e) {
+            parsedDate = null;
+        }
+        releaseDate = parsedDate;
     }
 
     /**
@@ -153,6 +160,7 @@ public class Version {
      * Support email.
      */
     public static final String SUPPORT_EMAIL = "http://findbugs.sourceforge.net/reportingBugs.html";
+    private static Date releaseDate;
 
     public static void registerApplication(String name, String version) {
         applicationName = name;
@@ -217,12 +225,8 @@ public class Version {
         return RELEASE;
     }
 
-    public static Date getReleaseDate() {
-        try {
-            return DateFormat.getDateTimeInstance().parse(DATE);
-        } catch (ParseException e) {
-            throw new IllegalStateException(e);
-        }
+    public static @CheckForNull Date getReleaseDate() {
+        return releaseDate;
     }
 }
 

@@ -917,7 +917,8 @@ public class PluginLoader {
         try {
             return DateFormat.getDateTimeInstance().parse(releaseDate);
         } catch (ParseException e) {
-            throw new IllegalArgumentException(e);
+            //TODO: log exception
+            return null;
         }
     }
 
