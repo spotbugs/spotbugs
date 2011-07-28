@@ -86,11 +86,14 @@ public class DetectorFactoryCollection {
     protected DetectorFactoryCollection() {
         loadCorePlugin();
         Collection<Plugin> allPlugins = Plugin.getAllPlugins();
+        List<Plugin> enabledPlugins = new ArrayList<Plugin>();
         for(Plugin plugin : allPlugins) {
-            if (plugin.isGloballyEnabled() && !plugin.isCorePlugin())
+            if (plugin.isGloballyEnabled() && !plugin.isCorePlugin()) {
                 loadPlugin(plugin);
+                enabledPlugins.add(plugin);
+            }
         }
-        usageTracker.trackUsage(combine(corePlugin, allPlugins));
+        usageTracker.trackUsage(combine(corePlugin, enabledPlugins));
     }
 
     protected DetectorFactoryCollection(Plugin onlyPlugin) {
