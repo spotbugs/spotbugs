@@ -49,6 +49,7 @@ import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -146,9 +147,11 @@ public class Project implements XMLWriteable {
     }
 
     /**
-     * @param configuration The configuration to set, nuon null
+     * @param configuration The configuration to set, non null
      */
-    public void setConfiguration(UserPreferences configuration) {
+    public void setConfiguration(@Nonnull UserPreferences configuration) {
+        if (configuration == null)
+            throw new NullPointerException();
         this.configuration = configuration;
     }
 
