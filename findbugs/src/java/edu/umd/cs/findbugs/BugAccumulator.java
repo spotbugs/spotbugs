@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
@@ -145,8 +146,10 @@ public class BugAccumulator {
             Data d = e.getValue();
             bug.setPriority(d.priority);
             bug.addSourceLine(d.primarySource);
+            HashSet<Integer> lines = new HashSet<Integer>();
+            lines.add(d.primarySource.getStartLine());
             d.allSource.remove(d.primarySource);
-            for (SourceLineAnnotation source : d.allSource) {
+            for (SourceLineAnnotation source : d.allSource)  if (lines.add(source.getStartLine())) {
                 bug.addSourceLine(source);
                 bug.describe(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE);
             }
