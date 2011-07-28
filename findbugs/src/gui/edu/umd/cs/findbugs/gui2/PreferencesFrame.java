@@ -194,8 +194,9 @@ public class PreferencesFrame extends FBDialog {
             }
         }
 
-        if (changed) {
+        if (changed && project != null) {
             MainFrame.getInstance().updateBugTree();
+            MainFrame.getInstance().setProjectChanged(true);
         }
         if (project == null) {
             GUISaveState.getInstance().setPluginsEnabled(enabledPlugins, disabledPlugins);
