@@ -66,9 +66,9 @@ public class Version {
 
     private static final String COMPUTED_ECLIPSE_DATE;
 
-    private static String applicationName = "<unknown>";
+    private static String applicationName = "";
 
-    private static String applicationVersion = "<unknown>";
+    private static String applicationVersion = "";
 
     static {
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss z, dd MMMM, yyyy");

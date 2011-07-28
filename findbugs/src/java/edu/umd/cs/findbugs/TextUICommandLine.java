@@ -30,8 +30,6 @@ import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -39,12 +37,11 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.annotation.CheckForNull;
 
-import org.dom4j.DocumentException;
-
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.util.Util;
+import org.dom4j.DocumentException;
 
 /**
  * Helper class to parse the command line and configure the IFindBugsEngine
@@ -568,7 +565,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
             try {
                 bugs.readXML(redoAnalysisFile);
             } catch (DocumentException e) {
-                throw new IOException("Unable to parse " + redoAnalysisFile, e);
+                IOException ioe = new IOException("Unable to parse " + redoAnalysisFile);
+                ioe.initCause(e);
+                throw ioe;
             }
             project = bugs.getProject().duplicate();
         }

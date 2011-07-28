@@ -66,7 +66,7 @@ public class Plugin {
         return globalOptions.get(key);
     }
 
-    public static @CheckForNull Plugin getGlobalOptionsSetter(String key) {
+    public static @CheckForNull Plugin getGlobalOptionSetter(String key) {
         return globalOptionsSetter.get(key);
     }
 
