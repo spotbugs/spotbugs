@@ -1,5 +1,7 @@
 package edu.umd.cs.findbugs.flybush.appengine;
 
+import java.util.Date;
+
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -17,6 +19,10 @@ public class AppEngineDbUsageEntry implements DbUsageEntry {
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;
 
+    @Persistent
+    private String ipAddress;
+    @Persistent
+    private String country;
     @Persistent
     private String version;
     @Persistent
@@ -37,6 +43,26 @@ public class AppEngineDbUsageEntry implements DbUsageEntry {
     private String pluginName;
     @Persistent
     private String pluginVersion;
+    @Persistent
+    private Date date;
+
+    @Override
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    @Override
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
 
     public String getVersion() {
         return version;
@@ -118,6 +144,14 @@ public class AppEngineDbUsageEntry implements DbUsageEntry {
         this.pluginVersion = pluginVersion;
     }
 
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
     @Override
     public DbUsageEntry copy() {
         AppEngineDbUsageEntry copy = new AppEngineDbUsageEntry();
@@ -131,6 +165,9 @@ public class AppEngineDbUsageEntry implements DbUsageEntry {
         copy.setPluginVersion(pluginVersion);
         copy.setUuid(uuid);
         copy.setVersion(version);
+        copy.setDate(date);
+        copy.setCountry(country);
+        copy.setIpAddress(ipAddress);
         return copy;
     }
 

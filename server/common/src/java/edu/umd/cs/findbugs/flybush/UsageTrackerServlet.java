@@ -2,6 +2,7 @@ package edu.umd.cs.findbugs.flybush;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -19,8 +20,10 @@ public class UsageTrackerServlet extends AbstractFlybushServlet {
     @Override
     protected void handlePost(PersistenceManager pm, HttpServletRequest req, HttpServletResponse resp, String uri)
             throws IOException {
-        req.getInputStream();
         final DbUsageEntry entry = persistenceHelper.createDbUsageEntry();
+        entry.setIpAddress(req.getRemoteAddr());
+        entry.setCountry(GCountryCodes.get(req.getHeader("X-AppEngine-country")));
+        entry.setDate(new Date());
         final List<List<String>> plugins = Lists.newArrayList();
         try {
             SAXParserFactory.newInstance().newSAXParser().parse(req.getInputStream(), new DefaultHandler() {

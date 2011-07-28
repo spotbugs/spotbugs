@@ -1,6 +1,12 @@
 package edu.umd.cs.findbugs.flybush;
 
+import java.util.Date;
+
 public interface DbUsageEntry {
+    String getIpAddress();
+    void setIpAddress(String ipAddress);
+    String getCountry();
+    void setCountry(String country);
     String getVersion();
     void setVersion(String version);
     String getAppName();
@@ -21,6 +27,8 @@ public interface DbUsageEntry {
     void setPluginName(String pluginName);
     String getPluginVersion();
     void setPluginVersion(String pluginVersion);
+    Date getDate();
+    void setDate(Date date);
 
     DbUsageEntry copy();
 }
