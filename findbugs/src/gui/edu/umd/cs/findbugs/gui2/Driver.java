@@ -20,10 +20,8 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.io.File;
-import java.net.URL;
 import java.util.Locale;
 
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.StartTime;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -51,6 +49,8 @@ public class Driver {
     public static void main(String[] args) throws Exception {
 
         InvocationEnvironment.set("FindBugs gui");
+        Version.registerApplication("FindBugs GUI", Version.getReleaseWithDateIfDev());
+
         if (SystemProperties.getProperty("os.name").startsWith("Mac")) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty("com.apple.mrj.application.apple.menu.about.name", "FindBugs");
@@ -90,8 +90,6 @@ public class Driver {
                 commandLine.setDocking(false);
             }
         }
-
-        Version.registerApplication("FindBugs GUI", Version.getReleaseWithDateIfDev());
 
         try {
             GUISaveState.loadInstance();

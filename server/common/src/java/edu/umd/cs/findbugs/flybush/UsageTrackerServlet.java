@@ -61,7 +61,7 @@ public class UsageTrackerServlet extends AbstractFlybushServlet {
         }
         if (entry.getVersion() == null || entry.getUuid() == null) {
             LOGGER.warning("Not logging usage data - missing information - plugin=" + entry.getPlugin());
-            setResponse(resp, 500, "Insufficient fields in posted XML - version, uuid");
+            setResponse(resp, 500, "Missing fields in posted XML - version, uuid");
             return;
         }
         try {
@@ -78,7 +78,8 @@ public class UsageTrackerServlet extends AbstractFlybushServlet {
                 pm.currentTransaction().commit();
             }
         } catch (Throwable t) {
-            pm.currentTransaction().rollback();
+            if (pm.currentTransaction().isActive())
+                pm.currentTransaction().rollback();
             throw new RuntimeException(t);
         }
     }
