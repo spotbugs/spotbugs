@@ -38,6 +38,7 @@ public class UsageTracker {
     }
 
     private void actuallyTrackUsage(URI trackerUrl, Set<Plugin> plugins, String entryPoint) throws IOException {
+        if (false) 
         System.out.println("Submitting anonymous usage tracking info to " + trackerUrl + " for " + getPluginNames(plugins));
         HttpURLConnection conn = (HttpURLConnection) trackerUrl.toURL().openConnection();
         conn.setDoInput(true);
