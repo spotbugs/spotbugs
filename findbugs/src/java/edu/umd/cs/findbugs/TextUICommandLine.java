@@ -127,6 +127,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
     private String projectName = "";
 
     private String sourceInfoFile = null;
+    
+    private String redoAnalysisFile = null;
 
     private boolean xargs = false;
 
@@ -166,6 +168,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         addSwitchWithOptionalExtraPart("-useTraining", "inputDir", "Use training data (experimental); input dir defaults to '.'");
         addOption("-sourceInfo", "filename", "Specify source info file (line numbers for fields/classes)");
         addOption("-projectName", "project name", "Descriptive name of project");
+        addOption("-reanalyze", "filename", "redo analysis in provided file");
 
         addOption("-outputFile", "filename", "Save output in named file");
         addOption("-output", "filename", "Save output in named file");
@@ -399,6 +402,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
             this.projectName = argument;
         } else if (option.equals("-release")) {
             this.releaseName = argument;
+        } else if (option.equals("-redoAnalysis")) {
+            redoAnalysisFile = argument;
         } else if (option.equals("-sourceInfo")) {
             sourceInfoFile = argument;
         } else if (option.equals("-visitors") || option.equals("-omitVisitors")) {
@@ -556,6 +561,16 @@ public class TextUICommandLine extends FindBugsCommandLine {
         // by command line parsing)
         findBugs.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
 
+        
+        if (redoAnalysisFile != null) {
+            SortedBugCollection bugs = new SortedBugCollection();
+            try {
+                bugs.readXML(redoAnalysisFile);
+            } catch (DocumentException e) {
+                throw new IOException("Unable to parse " + redoAnalysisFile, e);
+            }
+            project = bugs.getProject().duplicate();
+        }
         TextUIBugReporter textuiBugReporter;
         switch (bugReporterType) {
         case PRINTING_REPORTER:
