@@ -542,19 +542,8 @@ public class PluginLoader {
         List<Node> globalOptionNodes = pluginDescriptor.selectNodes("/FindbugsPlugin/GlobalOptions/Property");
         for(Node optionNode : globalOptionNodes) {
             String key = optionNode.valueOf("@key");
-            String value = optionNode.getText();
-            String oldValue = Plugin.globalOptions.get(key);
-            if (oldValue != null) {
-                if (!oldValue.equals(value)) {
-                    throw new PluginException("Conflicting values for global option " + key + " from " 
-                            + pluginId + " and " + Plugin.globalOptionsSetter.get(key).getPluginId());
-                }
-                
-                
-            } else {
-                Plugin.globalOptions.put(key, value);
-                Plugin.globalOptionsSetter.put(key, plugin);
-            }
+            String value = optionNode.getText().trim();
+            plugin.setMyGlobalOption(key, value);
         }
         
         List<Node> cloudNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Cloud");
@@ -587,7 +576,7 @@ public class PluginLoader {
             List<Node> propertyNodes = cloudNode.selectNodes("Property");
             for (Node node : propertyNodes) {
                 String key = node.valueOf("@key");
-                String value = node.getText();
+                String value = node.getText().trim();
                 properties.setProperty(key, value);
             }
 

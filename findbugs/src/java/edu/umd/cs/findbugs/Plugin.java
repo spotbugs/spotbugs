@@ -55,22 +55,7 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
  */
 public class Plugin {
     
-    static final Map<String, String> globalOptions = new HashMap<String,String>();
-    static final Map<String, Plugin> globalOptionsSetter = new HashMap<String,Plugin>();
-
-
-    public static Map<String, String> getGlobalOptions() {
-        return Collections.unmodifiableMap(globalOptions);
-    }
-
-    public static @CheckForNull String getGlobalOption(String key) {
-        return globalOptions.get(key);
-    }
-
-    public static @CheckForNull Plugin getGlobalOptionSetter(String key) {
-        return globalOptionsSetter.get(key);
-    }
-
+  
     private static final String USE_FINDBUGS_VERSION = "USE_FINDBUGS_VERSION";
     private final String pluginId;
 
@@ -94,6 +79,8 @@ public class Plugin {
 
     private final LinkedHashSet<BugCategory> bugCategoryList;
     private final LinkedHashSet<CloudPlugin> cloudList;
+    
+    private final HashMap<String,String> myGlobalOptions = new HashMap<String, String>();
 
     private final DualKeyHashMap<Class, String, ComponentPlugin> componentPlugins;
 
@@ -191,6 +178,14 @@ public class Plugin {
     
     public @CheckForNull URI getUsageTracker() {
         return usageTracker;
+    }
+    
+    public void setMyGlobalOption(String key, String value) {
+        myGlobalOptions.put(key, value);
+    }
+    
+    Map<String,String> getMyGlobalOptions() {
+        return Collections.unmodifiableMap(myGlobalOptions);
     }
     /**
      * Set plugin website.

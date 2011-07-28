@@ -93,11 +93,13 @@ public class DetectorFactoryCollection {
                 enabledPlugins.add(plugin);
             }
         }
+        setGlobalOptions();
         usageTracker.trackUsage(combine(corePlugin, enabledPlugins));
     }
 
     protected DetectorFactoryCollection(Plugin onlyPlugin) {
         loadPlugin(onlyPlugin);
+        setGlobalOptions();
         usageTracker.trackUsage(combine(corePlugin, Collections.singleton(onlyPlugin)));
     }
 
@@ -110,6 +112,7 @@ public class DetectorFactoryCollection {
         }
         if (FindBugs.DEBUG)
             System.out.println("}\n");
+        setGlobalOptions();
         usageTracker.trackUsage(combine(corePlugin, enabled));
     }
 
@@ -148,6 +151,39 @@ public class DetectorFactoryCollection {
         }
     }
 
+     final Map<String, String> globalOptions = new HashMap<String,String>();
+     final Map<String, Plugin> globalOptionsSetter = new HashMap<String,Plugin>();
+
+   
+     private void setGlobalOptions() {
+         for(Plugin p : plugins()) 
+             if (p.isGloballyEnabled()) 
+                 for(Map.Entry<String, String> e : p.getMyGlobalOptions().entrySet()) {
+                     String key = e.getKey();
+                     String value = e.getValue();
+                     String oldValue = globalOptions.get(key);
+                     
+                     if (oldValue != null) {
+                         if (oldValue.equals(value))
+                             continue;
+                         Plugin oldP = globalOptionsSetter.get(key);
+                         throw new RuntimeException(
+                                 "Incompatible global options for " + key + "; conflict between " + oldP.getPluginId() + " and " + p.getPluginId());
+                     }
+                     globalOptions.put(key, value);
+                     globalOptionsSetter.put(key, p);
+                 
+         }
+     }
+    public  @CheckForNull String getGlobalOption(String key) {
+        return globalOptions.get(key);
+    }
+
+    public  @CheckForNull Plugin getGlobalOptionSetter(String key) {
+        return globalOptionsSetter.get(key);
+    }
+
+    
     /**
      * Return an Iterator over all available Plugin objects.
      */

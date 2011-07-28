@@ -35,8 +35,9 @@ public class UsageTracker {
         if (trackingIsGloballyDisabled())
             return;
 
-        String redirect = Plugin.getGlobalOption(KEY_REDIRECT_ALL_USAGE_TRACKING);
-        Plugin setter = Plugin.getGlobalOptionSetter(KEY_REDIRECT_ALL_USAGE_TRACKING);
+        DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
+        String redirect = dfc.getGlobalOption(KEY_REDIRECT_ALL_USAGE_TRACKING);
+        Plugin setter = dfc.getGlobalOptionSetter(KEY_REDIRECT_ALL_USAGE_TRACKING);
         URI redirectUri = null;
         String pluginName = setter == null ? "<unknown plugin>" : setter.getShortDescription();
         if (redirect != null && !redirect.trim().equals("")) {
@@ -70,8 +71,9 @@ public class UsageTracker {
     }
 
     private boolean trackingIsGloballyDisabled() {
-        String disable = Plugin.getGlobalOption(KEY_DISABLE_ALL_USAGE_TRACKING);
-        Plugin setter = Plugin.getGlobalOptionSetter(KEY_DISABLE_ALL_USAGE_TRACKING);
+        DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
+        String disable = dfc.getGlobalOption(KEY_DISABLE_ALL_USAGE_TRACKING);
+        Plugin setter = dfc.getGlobalOptionSetter(KEY_DISABLE_ALL_USAGE_TRACKING);
         String pluginName = setter == null ? "<unknown plugin>" : setter.getShortDescription();
         if ("true".equalsIgnoreCase(disable)) {
             logError(Level.INFO, "Skipping usage tracking due to disableAllUsageTracking=true set by "
