@@ -58,8 +58,16 @@ public class Plugin {
     static final Map<String, Plugin> globalOptionsSetter = new HashMap<String,Plugin>();
 
     
-    public static Map<String, String>  getGlobalOptions() {
+    public static Map<String, String> getGlobalOptions() {
         return Collections.unmodifiableMap(globalOptions);
+    }
+
+    public static @CheckForNull String getGlobalOption(String key) {
+        return globalOptions.get(key);
+    }
+
+    public static @CheckForNull Plugin getGlobalOptionsSetter(String key) {
+        return globalOptionsSetter.get(key);
     }
 
     private static final String USE_FINDBUGS_VERSION = "USE_FINDBUGS_VERSION";

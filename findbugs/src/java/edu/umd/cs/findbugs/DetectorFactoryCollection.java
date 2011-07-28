@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -80,17 +81,21 @@ public class DetectorFactoryCollection {
     protected final HashMap<String, BugPattern> bugPatternMap = new HashMap<String, BugPattern>();
 
     protected final HashMap<String, BugCode> bugCodeMap = new HashMap<String, BugCode>();
+    private UsageTracker usageTracker = new UsageTracker();
 
     protected DetectorFactoryCollection() {
         loadCorePlugin();
-        for(Plugin plugin : Plugin.getAllPlugins()) {
+        Collection<Plugin> allPlugins = Plugin.getAllPlugins();
+        for(Plugin plugin : allPlugins) {
             if (plugin.isGloballyEnabled() && !plugin.isCorePlugin())
                 loadPlugin(plugin);
         }
+        usageTracker.trackUsage(combine(corePlugin, allPlugins));
     }
 
     protected DetectorFactoryCollection(Plugin onlyPlugin) {
         loadPlugin(onlyPlugin);
+        usageTracker.trackUsage(combine(corePlugin, Collections.singleton(onlyPlugin)));
     }
 
     protected DetectorFactoryCollection(Collection<Plugin> enabled) {
@@ -102,6 +107,13 @@ public class DetectorFactoryCollection {
         }
         if (FindBugs.DEBUG)
             System.out.println("}\n");
+        usageTracker.trackUsage(combine(corePlugin, enabled));
+    }
+
+    private Collection<Plugin> combine(Plugin corePlugin, Collection<Plugin> enabled) {
+        List<Plugin> result = new ArrayList<Plugin>(enabled);
+        result.add(corePlugin);
+        return result;
     }
 
     /**
@@ -287,19 +299,12 @@ public class DetectorFactoryCollection {
         return PluginLoader.getCoreResource(name);
     }
 
-    /**
-     * Load the core plugin.
-     * @throws PluginException
-     */
     private void loadCorePlugin() {
         Plugin plugin = PluginLoader.getCorePluginLoader().getPlugin();
         loadPlugin(plugin);
         corePlugin = plugin;
     }
 
-    /**
-     * @param message
-     */
     public static void jawsDebugMessage(String message) {
         if (DEBUG_JAWS)
             JOptionPane.showMessageDialog(null, message);

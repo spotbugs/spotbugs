@@ -32,7 +32,6 @@ import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -903,8 +902,6 @@ public class PluginLoader {
         } catch (IOException e) {
             throw new PluginException("Couldn't parse \"" + BugRanker.FILENAME + "\"", e);
         }
-
-        new UsageTracker().trackUsage(plugin.getUsageTracker(), Collections.singleton(plugin));
 
         // Success!
         if (DEBUG)

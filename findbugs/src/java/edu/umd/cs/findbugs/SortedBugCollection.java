@@ -66,7 +66,6 @@ import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.util.Util;
@@ -350,7 +349,7 @@ public class SortedBugCollection implements BugCollection {
         profiler.start(handler.getClass());
         try {
 
-            XMLReader xr = null;
+            XMLReader xr;
             try {
                 xr = XMLReaderFactory.createXMLReader();
             } catch (SAXException e) {

@@ -4,21 +4,48 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class UsageTracker {
     private static final Logger LOGGER = Logger.getLogger(UsageTracker.class.getName());
+    private static final String KEY_DISABLE_ALL_USAGE_TRACKING = "disableAllUsageTracking";
+
+    public void trackUsage(Collection<Plugin> plugins) {
+        String disable = Plugin.getGlobalOption(KEY_DISABLE_ALL_USAGE_TRACKING);
+        Plugin setter = Plugin.getGlobalOptionsSetter(KEY_DISABLE_ALL_USAGE_TRACKING);
+        if ("true".equalsIgnoreCase(disable)) {
+            LOGGER.info("Skipping usage tracking due to disableAllUsageTracking=true set by "
+                    + setter.getShortDescription() + " (" + setter.getPluginId() + ")");
+            return;
+        }
+        if (disable != null && !"false".equals(disable)) {
+            String error = "Unknown value '" + disable + "' for disableAllUsageTracking in " + setter.getShortDescription()
+                    + " (" + setter.getPluginId() + ")";
+            LOGGER.severe(error);
+            throw new IllegalStateException(error);
+        }
+
+        MultiMap<URI,Plugin> pluginsByTracker = new MultiMap<URI, Plugin>(HashSet.class);
+        for (Plugin plugin : plugins) {
+            pluginsByTracker.add(plugin.getUsageTracker(), plugin);
+        }
+        for (URI uri : pluginsByTracker.keySet()) {
+            trackUsage(uri, pluginsByTracker.get(uri));
+        }
+    }
     
-    public void trackUsage(final URI trackerUrl, final Set<Plugin> plugins) {
+    public void trackUsage(final URI trackerUrl, final Collection<Plugin> plugins) {
         if (trackerUrl == null) {
             LOGGER.info("Not submitting usage tracking for plugins with blank URL: " + getPluginNames(plugins));
             return;
@@ -37,9 +64,8 @@ public class UsageTracker {
         thread.start();
     }
 
-    private void actuallyTrackUsage(URI trackerUrl, Set<Plugin> plugins, String entryPoint) throws IOException {
-        if (false) 
-        System.out.println("Submitting anonymous usage tracking info to " + trackerUrl + " for " + getPluginNames(plugins));
+    private void actuallyTrackUsage(URI trackerUrl, Collection<Plugin> plugins, String entryPoint) throws IOException {
+//        System.out.println("Submitting anonymous usage tracking info to " + trackerUrl + " for " + getPluginNames(plugins));
         HttpURLConnection conn = (HttpURLConnection) trackerUrl.toURL().openConnection();
         conn.setDoInput(true);
         conn.setDoOutput(true);
@@ -75,7 +101,7 @@ public class UsageTracker {
         }
     }
 
-    private String getPluginNames(Set<Plugin> plugins) {
+    private String getPluginNames(Collection<Plugin> plugins) {
         String text = "";
         boolean first = true;
         for (Plugin plugin : plugins) {
