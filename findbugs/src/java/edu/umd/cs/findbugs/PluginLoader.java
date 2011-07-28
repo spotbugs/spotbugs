@@ -1085,7 +1085,6 @@ public class PluginLoader {
     }
 
     static synchronized void loadInitialPlugins() {
-        System.out.println("Loading plugins");
         loadCorePlugin();
         if (JavaWebStart.isRunningViaJavaWebstart()) {
             installWebStartPlugins();
