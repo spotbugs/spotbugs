@@ -1070,15 +1070,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         if (result.getPriority() > Priorities.LOW_PRIORITY)
             return;
 
-        if (ins instanceof INVOKESTATIC && ((INVOKESTATIC) ins).getMethodName(cpg).equals("assertEquals")) {
-            bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", result.getPriority()).addClassAndMethod(methodGen, sourceFile)
-                    .addString("Using assertEquals for values of incomparable types")
-                    .addFoundAndExpectedType(rhsType_, lhsType_)
-                    .addSomeSourceForTopTwoStackValues(classContext, method, location),
-                    SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
-            return;
-        }
-        if (lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType) {
+       if (lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType) {
             String pattern = "EC_BAD_ARRAY_COMPARE";
             IncompatibleTypes result2 = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_, true);
             if (result2 != IncompatibleTypes.SEEMS_OK)
