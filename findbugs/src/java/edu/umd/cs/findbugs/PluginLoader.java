@@ -30,8 +30,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -474,6 +477,7 @@ public class PluginLoader {
         }
 
         String version = pluginDescriptor.valueOf("/FindbugsPlugin/@version");
+        String releaseDate = pluginDescriptor.valueOf("/FindbugsPlugin/@releaseDate");
         // Load the message collections
         Locale locale = Locale.getDefault();
         String language = locale.getLanguage();
@@ -490,7 +494,7 @@ public class PluginLoader {
 
         // Create the Plugin object (but don't assign to the plugin field yet,
         // since we're still not sure if everything will load correctly)
-        Plugin plugin = new Plugin(pluginId, version, this, !optionalPlugin);
+        Plugin plugin = new Plugin(pluginId, version, parseDate(releaseDate), this, !optionalPlugin);
 
         // Set provider and website, if specified
         String provider = pluginDescriptor.valueOf("/FindbugsPlugin/@provider").trim();
@@ -907,6 +911,14 @@ public class PluginLoader {
         if (DEBUG)
             System.out.println("Loaded " + plugin.getPluginId() + " from " + loadedFrom);
         return plugin;
+    }
+
+    private Date parseDate(String releaseDate) {
+        try {
+            return DateFormat.getDateTimeInstance().parse(releaseDate);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     private static DetectorFactorySelector getConstraintSelector(Element constraintElement, Plugin plugin,

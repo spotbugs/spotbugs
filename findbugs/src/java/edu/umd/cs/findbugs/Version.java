@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -213,6 +215,14 @@ public class Version {
         if (IS_DEVELOPMENT)
             return RELEASE + " (" + DATE + ")";
         return RELEASE;
+    }
+
+    public static Date getReleaseDate() {
+        try {
+            return DateFormat.getDateTimeInstance().parse(DATE);
+        } catch (ParseException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }
 

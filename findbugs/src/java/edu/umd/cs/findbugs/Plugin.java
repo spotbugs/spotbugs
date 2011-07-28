@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -57,7 +58,7 @@ public class Plugin {
     static final Map<String, String> globalOptions = new HashMap<String,String>();
     static final Map<String, Plugin> globalOptionsSetter = new HashMap<String,Plugin>();
 
-    
+
     public static Map<String, String> getGlobalOptions() {
         return Collections.unmodifiableMap(globalOptions);
     }
@@ -74,6 +75,7 @@ public class Plugin {
     private final String pluginId;
 
     private final String version;
+    private Date releaseDate;
 
     private String provider;
 
@@ -125,16 +127,18 @@ public class Plugin {
      * @param version TODO
      * @param enabled TODO
      */
-    public Plugin(String pluginId, String version, PluginLoader pluginLoader, boolean enabled) {
+    public Plugin(String pluginId, String version, Date releaseDate, PluginLoader pluginLoader, boolean enabled) {
         this.pluginId = pluginId;
         if (version == null) {
             version = "";
         } else if (version.equals(USE_FINDBUGS_VERSION)) {
             version = Version.COMPUTED_RELEASE;
+            releaseDate = Version.getReleaseDate();
         }
         cloudList = new LinkedHashSet<CloudPlugin>();
         componentPlugins = new DualKeyHashMap<Class, String, ComponentPlugin> ();
         this.version = version;
+        this.releaseDate = releaseDate;
         this.detectorFactoryList = new ArrayList<DetectorFactory>();
         this.bugPatterns = new LinkedHashSet<BugPattern>();
         this.bugCodeList = new LinkedHashSet<BugCode>();
@@ -214,27 +218,18 @@ public class Plugin {
         return website;
     }
 
-    /** Get the version of the plugin */
     public String getVersion() {
         return version;
     }
 
-    /**
-     * Set plugin short (one-line) text description.
-     *
-     * @param shortDescription
-     *            the plugin short text description
-     */
+    public Date getReleaseDate() {
+        return releaseDate;
+    }
+
     public void setShortDescription(String shortDescription) {
         this.shortDescription = shortDescription;
     }
 
-    /**
-     * Get the plugin short (one-line) description.
-     *
-     * @return the short description, or null if the short description was not
-     *         specified
-     */
     public String getShortDescription() {
         return shortDescription;
     }
