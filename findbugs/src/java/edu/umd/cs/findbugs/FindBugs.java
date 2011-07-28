@@ -322,13 +322,14 @@ public abstract class FindBugs {
             project.addFile(argv[i]);
         commandLine.handleXArgs();
 
+       
+
+        commandLine.configureEngine(findBugs);
         if (project.getFileCount() == 0) {
             System.out.println("No files to be analyzed");
 
             showHelp(commandLine);
         }
-
-        commandLine.configureEngine(findBugs);
     }
 
     /**
