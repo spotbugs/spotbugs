@@ -201,7 +201,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
 
-        Version.registerApplication("FindBugs-Eclipse", Version.getReleaseWithDateIfDev());
+        Version.registerApplication("FindBugs-Eclipse", Version.RELEASE);
 
         // configure debugging
         configurePluginDebugOptions();
