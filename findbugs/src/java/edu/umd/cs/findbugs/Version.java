@@ -62,7 +62,7 @@ public class Version {
     /**
      * Release date.
      */
-    public static final String COMPUTED_DATE;
+    private static final String COMPUTED_DATE;
 
     public static final String DATE;
 
@@ -104,7 +104,7 @@ public class Version {
     /**
      * Version of Eclipse plugin.
      */
-    public static final String COMPUTED_ECLIPSE_UI_VERSION = RELEASE_BASE + "." + COMPUTED_ECLIPSE_DATE;
+    private static final String COMPUTED_ECLIPSE_UI_VERSION = RELEASE_BASE + "." + COMPUTED_ECLIPSE_DATE;
 
     static {
         InputStream in = null;
