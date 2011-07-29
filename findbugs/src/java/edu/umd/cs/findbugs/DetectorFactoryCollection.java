@@ -94,13 +94,13 @@ public class DetectorFactoryCollection {
             }
         }
         setGlobalOptions();
-        usageTracker.trackUsage(combine(corePlugin, enabledPlugins));
+        usageTracker.trackUsage(this, combine(corePlugin, enabledPlugins));
     }
 
     protected DetectorFactoryCollection(Plugin onlyPlugin) {
         loadPlugin(onlyPlugin);
         setGlobalOptions();
-        usageTracker.trackUsage(combine(corePlugin, Collections.singleton(onlyPlugin)));
+        usageTracker.trackUsage(this, combine(corePlugin, Collections.singleton(onlyPlugin)));
     }
 
     protected DetectorFactoryCollection(Collection<Plugin> enabled) {
@@ -113,7 +113,7 @@ public class DetectorFactoryCollection {
         if (FindBugs.DEBUG)
             System.out.println("}\n");
         setGlobalOptions();
-        usageTracker.trackUsage(combine(corePlugin, enabled));
+        usageTracker.trackUsage(this, combine(corePlugin, enabled));
     }
 
     private Collection<Plugin> combine(Plugin corePlugin, Collection<Plugin> enabled) {

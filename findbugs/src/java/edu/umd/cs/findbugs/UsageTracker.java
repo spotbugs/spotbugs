@@ -19,23 +19,23 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import edu.umd.cs.findbugs.util.MultiMap;
-import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
-import edu.umd.cs.findbugs.xml.XMLOutput;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-public class UsageTracker {
+import edu.umd.cs.findbugs.util.MultiMap;
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+
+class UsageTracker {
     private static final Logger LOGGER = Logger.getLogger(UsageTracker.class.getName());
     private static final String KEY_DISABLE_ALL_USAGE_TRACKING = "disableAllUsageTracking";
     private static final String KEY_REDIRECT_ALL_USAGE_TRACKING = "redirectAllUsageTracking";
 
-    public void trackUsage(Collection<Plugin> plugins) {
-        if (trackingIsGloballyDisabled())
+    void trackUsage(DetectorFactoryCollection dfc, Collection<Plugin> plugins) {
+        if (trackingIsGloballyDisabled(dfc))
             return;
 
-        DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
         String redirect = dfc.getGlobalOption(KEY_REDIRECT_ALL_USAGE_TRACKING);
         Plugin setter = dfc.getGlobalOptionSetter(KEY_REDIRECT_ALL_USAGE_TRACKING);
         URI redirectUri = null;
@@ -70,8 +70,7 @@ public class UsageTracker {
         }
     }
 
-    private boolean trackingIsGloballyDisabled() {
-        DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
+    private boolean trackingIsGloballyDisabled(DetectorFactoryCollection dfc) {
         String disable = dfc.getGlobalOption(KEY_DISABLE_ALL_USAGE_TRACKING);
         Plugin setter = dfc.getGlobalOptionSetter(KEY_DISABLE_ALL_USAGE_TRACKING);
         String pluginName = setter == null ? "<unknown plugin>" : setter.getShortDescription();
@@ -88,7 +87,7 @@ public class UsageTracker {
         return false;
     }
 
-    public void trackUsage(final URI trackerUrl, final Collection<Plugin> plugins) {
+    private void trackUsage(final URI trackerUrl, final Collection<Plugin> plugins) {
         if (trackerUrl == null) {
             logError(Level.INFO, "Not submitting usage tracking for plugins with blank URL: " + getPluginNames(plugins));
             return;
@@ -216,7 +215,7 @@ public class UsageTracker {
 
     // protected for testing
     protected void logError(Exception e, String msg) {
-        LOGGER.log(Level.WARNING, msg, e);
+        LOGGER.log(Level.INFO, msg, e);
     }
 
     // protected for testing
