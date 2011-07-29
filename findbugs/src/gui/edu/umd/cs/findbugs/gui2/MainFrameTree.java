@@ -453,7 +453,12 @@ public class MainFrameTree implements Serializable {
 
             public void actionPerformed(ActionEvent e) {
                 try {
-                    mainFrame.getViewFilter().setPackagesToDisplay(textFieldForPackagesToDisplay.getText());
+                    String text = textFieldForPackagesToDisplay.getText();
+                    if (text.indexOf('/') >= 0) {
+                        text = text.replace('/', '.');
+                        textFieldForPackagesToDisplay.setText(text);
+                    }
+                    mainFrame.getViewFilter().setPackagesToDisplay(text);
                     mainFrame.resetViewCache();
                 } catch (IllegalArgumentException err) {
                     JOptionPane.showMessageDialog(mainFrame, err.getMessage(), "Bad class search string",
