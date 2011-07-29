@@ -44,9 +44,7 @@ public class XMLBugReporter extends BugCollectionBugReporter {
             Project project = getProject();
             if (project == null)
                 throw new NullPointerException("No project");
-            Cloud cloud = getBugCollection().getCloud();
-            if (cloud != null)
-                cloud.bugsPopulated();
+            getBugCollection().bugsPopulated();
             getBugCollection().writeXML(outputStream);
             outputStream.close();
 

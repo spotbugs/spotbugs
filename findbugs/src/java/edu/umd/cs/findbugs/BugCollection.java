@@ -378,7 +378,10 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     public @Nonnull Cloud reinitializeCloud();
 
-    void setXmlCloudDetails(Map<String, String> map);
+    public void setXmlCloudDetails(Map<String, String> map);
 
-    Map<String, String> getXmlCloudDetails();
+    public Map<String, String> getXmlCloudDetails();
+    
+    /** Note that we are done adding bugs to this bug collection */
+    public void bugsPopulated();
 }

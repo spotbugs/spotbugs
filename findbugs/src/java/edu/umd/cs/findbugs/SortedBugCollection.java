@@ -139,6 +139,8 @@ public class SortedBugCollection implements BugCollection {
     }
     
     public @CheckForNull Cloud getCloudLazily() {
+        if (cloud != null && bugsPopulated) 
+           cloud.bugsPopulated();
         return cloud;
     }
         
@@ -161,8 +163,10 @@ public class SortedBugCollection implements BugCollection {
                             "set -D" + CloudFactory.FAIL_ON_CLOUD_ERROR_PROP + "=false", e);
                 cloud = CloudFactory.getPlainCloud(this);
             }
-
+            
         }
+        if (bugsPopulated)
+            cloud.bugsPopulated();
         return cloud;
     }
 
@@ -375,11 +379,7 @@ public class SortedBugCollection implements BugCollection {
             profiler.end(handler.getClass());
         }
         timeFinishedLoading = System.currentTimeMillis();
-        Cloud plugin = getCloud(); // initialize cloud to allow listener to be
-                                   // registered
-
-        if (plugin != null)
-            plugin.bugsPopulated();
+        bugsPopulated();
         // Presumably, project is now up-to-date
         project.setModified(false);
     }
@@ -441,7 +441,7 @@ public class SortedBugCollection implements BugCollection {
      */
     public void writeXML(@WillClose Writer out) throws IOException {
         assert project != null;
-
+        bugsPopulated();
         XMLOutput xmlOutput;
         // if (project == null) throw new NullPointerException("No project");
         
@@ -999,11 +999,15 @@ public class SortedBugCollection implements BugCollection {
     }
 
     public boolean add(BugInstance bugInstance, boolean updateActiveTime) {
+        assert !bugsPopulated;
+        if (bugsPopulated)
+            AnalysisContext.logError("Bug collection marked as populated, but bugs added", new RuntimeException());
         preciseHashOccurrenceNumbersAvailable = false;
         if (updateActiveTime) {
             bugInstance.setFirstVersion(sequence);
         }
 
+        invalidateHashes();
         return bugSet.add(bugInstance);
     }
 
@@ -1021,7 +1025,7 @@ public class SortedBugCollection implements BugCollection {
     }
 
     public Collection<BugInstance> getCollection() {
-        return bugSet;
+        return Collections.unmodifiableCollection(bugSet);
     }
 
     public void addError(String message, Throwable exception) {
@@ -1433,7 +1437,7 @@ public class SortedBugCollection implements BugCollection {
         cloud = null;
         Cloud newCloud = getCloud();
         assert newCloud == cloud;
-        if (cloud != null) {
+        if (bugsPopulated && cloud != null) {
             cloud.bugsPopulated();
             cloud.initiateCommunication();
         }
@@ -1463,6 +1467,15 @@ public class SortedBugCollection implements BugCollection {
      */
     public void setDoNotUseCloud(boolean b) {
         this.shouldNotUsePlugin = b;
+    }
+
+    boolean bugsPopulated = false;
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.BugCollection#bugsPopulated()
+     */
+    public void bugsPopulated() {
+        bugsPopulated = true;
+        
     }
 }
 
