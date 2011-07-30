@@ -404,8 +404,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
     @Override
     public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
-        consumeStack(obj);
-        pushReturnType(obj);
+        visitInvokeInstructionCommon(obj);
     }
 
     @Override
