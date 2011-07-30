@@ -27,7 +27,6 @@ import edu.umd.cs.findbugs.StartTime;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
-import edu.umd.cs.findbugs.config.InvocationEnvironment;
 
 /**
  * This is where it all begins run with -f int to set font size run with -clear
@@ -48,8 +47,7 @@ public class Driver {
 
     public static void main(String[] args) throws Exception {
 
-        InvocationEnvironment.set("FindBugs gui");
-        Version.registerApplication("FindBugs GUI", Version.getReleaseWithDateIfDev());
+       Version.registerApplication("FindBugs GUI", Version.getReleaseWithDateIfDev());
 
         if (SystemProperties.getProperty("os.name").startsWith("Mac")) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
