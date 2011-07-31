@@ -996,7 +996,6 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             ConstantPoolGen cpg, TypeDataflow typeDataflow) throws DataflowAnalysisException {
 
         InstructionHandle handle = location.getHandle();
-        Instruction ins = handle.getInstruction();
         InstructionHandle next = handle.getNext();
         if (next != null && next.getInstruction() instanceof INVOKESTATIC) {
             INVOKESTATIC is = (INVOKESTATIC) next.getInstruction();

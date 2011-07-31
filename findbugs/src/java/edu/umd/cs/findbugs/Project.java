@@ -900,7 +900,7 @@ public class Project implements XMLWriteable {
             pluginAttributeList.addAttribute(PLUGIN_STATUS_ELEMENT_NAME, enabled.toString());
             xmlOutput.openCloseTag(PLUGIN_ELEMENT_NAME, pluginAttributeList);
         }
-        CloudPlugin cloudPlugin = CloudFactory.getCloudPlugin(bugCollection);
+        CloudPlugin cloudPlugin = bugCollection == null ? null : CloudFactory.getCloudPlugin(bugCollection);
         if (cloudPlugin != null) {
             String id = cloudPlugin.getId();
             if (id == null)
@@ -922,9 +922,7 @@ public class Project implements XMLWriteable {
                 xmlOutput.closeTag(CLOUD_PROPERTY_ELEMENT_NAME);
             }
             xmlOutput.closeTag(CLOUD_ELEMENT_NAME);
-
         }
-
         xmlOutput.closeTag(BugCollection.PROJECT_ELEMENT_NAME);
     }
 

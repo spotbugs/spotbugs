@@ -96,6 +96,7 @@ public class BugInstanceTest extends TestCase {
 
         SortedBugCollection bc = new SortedBugCollection();
         bc.setWithMessages(false);
+        
 
         String output = writeXML(inst, bc);
         System.err.println(output);

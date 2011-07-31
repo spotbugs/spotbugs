@@ -390,7 +390,7 @@ public abstract class AbstractCloud implements Cloud {
 
     public boolean overallClassificationIsNotAProblem(BugInstance b) {
         UserDesignation consensusDesignation = getConsensusDesignation(b);
-        return consensusDesignation != UserDesignation.UNCLASSIFIED && consensusDesignation.score() < 0;
+        return consensusDesignation.notAProblem();
     }
 
     public double getClassificationScore(BugInstance b) {

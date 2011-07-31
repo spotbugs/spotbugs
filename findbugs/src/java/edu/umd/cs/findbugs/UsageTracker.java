@@ -122,7 +122,7 @@ class UsageTracker {
         xmlOutput.startTag("findbugs-invocation");
         xmlOutput.addAttribute("version", Version.RELEASE);
         String applicationName = Version.getApplicationName();
-        if (applicationName.equals("")) {
+        if (applicationName == null || applicationName.equals("")) {
             int lastDot = entryPoint.lastIndexOf('.');
             if (lastDot == -1)
                 applicationName = entryPoint;
@@ -130,7 +130,10 @@ class UsageTracker {
                 applicationName = entryPoint.substring(lastDot + 1);
         }
         xmlOutput.addAttribute("app-name", applicationName);
-        xmlOutput.addAttribute("app-version", Version.getApplicationVersion());
+        String applicationVersion = Version.getApplicationVersion();
+        if (applicationVersion == null)
+            applicationVersion = "";
+        xmlOutput.addAttribute("app-version", applicationVersion);
         xmlOutput.addAttribute("entry-point", entryPoint);
         xmlOutput.addAttribute("os", SystemProperties.getProperty("os.name", ""));
         xmlOutput.addAttribute("java-version", getMajorJavaVersion());

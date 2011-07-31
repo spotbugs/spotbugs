@@ -169,9 +169,13 @@ public class DetectorsTest {
         for (String s : analyzeMe)
             project.addFile(s);
 
-        project.addAuxClasspathEntry("../findbugsTestCases/lib/j2ee.jar");
         project.addAuxClasspathEntry("lib/junit.jar");
-        project.addAuxClasspathEntry("../findbugs/lib/jsr305.jar");
-        project.addAuxClasspathEntry("../findbugs/lib/annotations.jar");
+        File lib = new File("../findbugsTestCases/lib");
+         for(File f : lib.listFiles()) {
+             String path = f.getPath();
+             if (path.endsWith(".jar"))
+                 project.addAuxClasspathEntry(path);
+         }
+       
     }
 }

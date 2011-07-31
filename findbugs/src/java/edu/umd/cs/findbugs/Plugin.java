@@ -38,6 +38,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
@@ -114,7 +115,7 @@ public class Plugin {
      * @param version TODO
      * @param enabled TODO
      */
-    public Plugin(String pluginId, String version, Date releaseDate, PluginLoader pluginLoader, boolean enabled) {
+    public Plugin(String pluginId, String version, Date releaseDate, @Nonnull PluginLoader pluginLoader, boolean enabled) {
         this.pluginId = pluginId;
         if (version == null) {
             version = "";

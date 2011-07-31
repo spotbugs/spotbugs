@@ -118,7 +118,8 @@ public class DetectorFactoryCollection {
 
     private Collection<Plugin> combine(Plugin corePlugin, Collection<Plugin> enabled) {
         List<Plugin> result = new ArrayList<Plugin>(enabled);
-        result.add(corePlugin);
+        if (corePlugin != null)
+            result.add(corePlugin);
         return result;
     }
 

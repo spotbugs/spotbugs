@@ -377,6 +377,11 @@ public interface Cloud {
             return this == UserDesignation.OBSOLETE_CODE || this == UserDesignation.NEEDS_STUDY
                     || this == UserDesignation.UNCLASSIFIED;
         }
+        
+        public boolean notAProblem() {
+            return this.score() < 0;
+            
+        }
     }
 
     enum Mode {

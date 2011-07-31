@@ -111,6 +111,11 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         final ClassDescriptor interfaceForCall;
         final int argumentIndex;
         final int typeIndex;
+        
+        @Override
+        public String toString() {
+            return String.format("[%s %d %d]", interfaceForCall, argumentIndex, typeIndex);
+        }
     }
     /**
      * Map classname, methodname and signature to an int []. Each position in

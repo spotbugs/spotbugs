@@ -2079,10 +2079,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
                 }
                 if (addMessages) {
-                    long age = bugCollection.getAnalysisTimestamp() - firstSeen;
-                    if (age < 0)
-                        age = 0;
-                    int ageInDays = (int) (age / 1000 / 3600 / 24);
+                    int ageInDays = ageInDays(bugCollection, firstSeen);
                     attributeList.addAttribute("ageInDays", Integer.toString(ageInDays));
                     if (reviews > 0 && consensus != UserDesignation.UNCLASSIFIED) {
                         if (consensus.score() < 0)
@@ -2091,6 +2088,17 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
                             attributeList.addAttribute("shouldFix", "true");
                     }
 
+                }
+            } else if (hasXmlProps()) {
+                XmlProps props = getXmlProps();
+                
+                attributeList.addOptionalAttribute("firstSeen", firstSeenXMLFormat().format(props.firstSeen));
+                attributeList.addOptionalAttribute("consensus", props.consensus);               
+                attributeList.addAttribute("reviews", Integer.toString(props.reviewCount));               
+                if (addMessages) {
+                    attributeList.addAttribute("notAProblem", Boolean.toString(UserDesignation.valueOf(props.consensus).notAProblem()));
+                    int ageInDays = ageInDays(bugCollection, props.firstSeen.getTime());
+                    attributeList.addAttribute("ageInDays", Integer.toString(ageInDays));
                 }
             }
         }
@@ -2152,6 +2160,19 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         }
 
         xmlOutput.closeTag(ELEMENT_NAME);
+    }
+
+    /**
+     * @param bugCollection
+     * @param firstSeen
+     * @return
+     */
+    private int ageInDays(BugCollection bugCollection, long firstSeen) {
+        long age = bugCollection.getAnalysisTimestamp() - firstSeen;
+        if (age < 0)
+            age = 0;
+        int ageInDays = (int) (age / 1000 / 3600 / 24);
+        return ageInDays;
     }
 
     private static final String ELEMENT_NAME = "BugInstance";
