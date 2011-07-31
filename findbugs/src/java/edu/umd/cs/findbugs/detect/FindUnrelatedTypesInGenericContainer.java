@@ -509,8 +509,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 Type equalsType = actualType;
                 if (allMethod) {
                     if (!(actualType instanceof GenericObjectType)) {
-                        AnalysisContext.logError("In FindUnrelatedTypesInGenericTypes, handling "+operand+".xxxAll(" + actualType + ") method, expected argument to be parameterized");
-                        continue;
+                      continue;
                     }
                     equalsType = ((GenericObjectType)actualType).getParameterAt(typeArgument);
                 }
