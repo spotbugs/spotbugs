@@ -59,6 +59,8 @@ public class Version {
      */
     public static final int RELEASE_CANDIDATE = 0;
 
+    
+    public static final String SVN_REVISION = System.getProperty("svn.revision", "Unknown");
     /**
      * Release date.
      */
@@ -87,7 +89,7 @@ public class Version {
     public static final int PREVIEW = 0;
 
     private static final String RELEASE_SUFFIX_WORD = (RELEASE_CANDIDATE > 0 ? "rc" + RELEASE_CANDIDATE
-            : (PREVIEW > 0 ? "preview" + PREVIEW : "dev-" + COMPUTED_ECLIPSE_DATE));
+            : (PREVIEW > 0 ? "preview" + PREVIEW : "dev-" + COMPUTED_ECLIPSE_DATE + "-r" + SVN_REVISION));
 
     public static final String RELEASE_BASE = MAJOR + "." + MINOR + "." + PATCHLEVEL;
 
