@@ -16,17 +16,16 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.umd.cs.findbugs.classfile.engine.bcel;
+package edu.umd.cs.findbugs.ba.npe2;
 
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CompactLocationNumbering;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
-import edu.umd.cs.findbugs.ba.npe2.DefinitelyNullSetAnalysis;
-import edu.umd.cs.findbugs.ba.npe2.DefinitelyNullSetDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory;
 
 /**
  * Analysis engine to produce DefinitelyNullSetDataflow objects for analyzed

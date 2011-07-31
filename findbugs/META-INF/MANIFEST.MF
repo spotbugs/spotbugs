@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Main-class: edu.umd.cs.findbugs.LaunchAppropriateUI
 Bundle-ManifestVersion: 2
 Bundle-Name: findbugs
 Bundle-SymbolicName: findbugs
@@ -32,7 +33,6 @@ Export-Package: edu.umd.cs.findbugs,
  edu.umd.cs.findbugs.ba.interproc,
  edu.umd.cs.findbugs.ba.jsr305,
  edu.umd.cs.findbugs.ba.npe,
- edu.umd.cs.findbugs.ba.npe2,
  edu.umd.cs.findbugs.ba.obl,
  edu.umd.cs.findbugs.ba.type,
  edu.umd.cs.findbugs.ba.vna,

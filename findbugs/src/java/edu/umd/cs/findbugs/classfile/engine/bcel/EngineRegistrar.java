@@ -66,7 +66,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
             new ParameterSignatureListFactory(), new ConstantDataflowFactory(), new LoadDataflowFactory(),
             new StoreDataflowFactory(), new LoadedFieldSetFactory(), new LiveLocalStoreDataflowFactory(),
             new BlockTypeAnalysisFactory(), new CallListDataflowFactory(), new UnconditionalValueDerefDataflowFactory(),
-            new CompactLocationNumberingFactory(), new DefinitelyNullSetDataflowFactory(), new ReturnPathTypeDataflowFactory(),
+            new CompactLocationNumberingFactory(),  new ReturnPathTypeDataflowFactory(),
             new ForwardTypeQualifierDataflowFactoryFactory(), new BackwardTypeQualifierDataflowFactoryFactory(),
             new OpcodeStack.JumpInfoFactory(), new ObligationDataflowFactory(), };
 

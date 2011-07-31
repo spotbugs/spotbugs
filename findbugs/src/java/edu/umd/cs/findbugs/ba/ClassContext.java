@@ -54,7 +54,6 @@ import edu.umd.cs.findbugs.ba.heap.StoreDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.ReturnPathTypeDataflow;
 import edu.umd.cs.findbugs.ba.npe.UsagesRequiringNonNullValues;
-import edu.umd.cs.findbugs.ba.npe2.DefinitelyNullSetDataflow;
 import edu.umd.cs.findbugs.ba.type.ExceptionSetFactory;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.vna.LoadedFieldSet;
@@ -858,19 +857,6 @@ public class ClassContext {
         return getMethodAnalysisNoDataflowAnalysisException(CompactLocationNumbering.class, method);
     }
 
-    /**
-     * Get DefinitelyNullSetDataflow for a method.
-     * 
-     * @param method
-     *            a method
-     * @return the DefinitelyNullSetDataflow for the method
-     * @throws DataflowAnalysisException
-     * @throws CFGBuilderException
-     */
-    public DefinitelyNullSetDataflow getDefinitelyNullSetDataflow(Method method) throws CFGBuilderException,
-            DataflowAnalysisException {
-        return getMethodAnalysis(DefinitelyNullSetDataflow.class, method);
-    }
 
     /**
      * Get ReturnPathTypeDataflow for a method.
