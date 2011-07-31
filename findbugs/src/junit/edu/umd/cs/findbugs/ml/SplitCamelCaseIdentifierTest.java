@@ -2,6 +2,8 @@ package edu.umd.cs.findbugs.ml;
 
 import java.util.Collection;
 
+import edu.umd.cs.findbugs.util.SplitCamelCaseIdentifier;
+
 import junit.framework.Assert;
 import junit.framework.TestCase;
 

@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.util;
 import java.util.Collection;
 import java.util.Locale;
 
-import edu.umd.cs.findbugs.ml.SplitCamelCaseIdentifier;
 
 /**
  * A StringMatcher that checks to see if a candidate string (assumed to be a
