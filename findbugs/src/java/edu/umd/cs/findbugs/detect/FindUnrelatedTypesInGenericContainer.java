@@ -19,8 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -277,15 +279,21 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         return false;
     }
 
+    final static HashSet<String> baseGenericTypes = new HashSet<String>();
+    static {
+        baseGenericTypes.addAll(Arrays.asList(new String[] { "java.util.Map", "java.util.Collection", "java.lang.Iterable",
+                "java.util.Iterator", "com.google.common.collect.Multimap", "com.google.common.collect.Multiset",
+                "com.google.common.collect.Table" }));
+    }
+    
     private boolean isGenericCollection(ClassDescriptor operandClass) {
-        String [] baseTypes = {"java.util.Map",  "java.util.Collection", "java.lang.Iterable", "java.util.Iterator", "com.google.common.collect.Multimap", 
-        "com.google.common.collect.Table"};
         String dottedClassName = operandClass.getDottedClassName();
 
+        if (baseGenericTypes.contains(dottedClassName))
+            return true;
+        
         String found = null;
-        for(String c : baseTypes) {
-            if (dottedClassName.equals(c))
-                return true;
+        for(String c : baseGenericTypes) {
             if (Subtypes2.instanceOf(operandClass, c)) {
                 found = c;
                 break;
@@ -378,9 +386,16 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                     if (!subtypes2.isSubtype(invokedMethod.getClassDescriptor(), info.interfaceForCall))
                         continue;
                 } catch (ClassNotFoundException e) {
-                    AnalysisContext.reportMissingClass(e);
-                    continue;
+                    if (info.interfaceForCall.getClassName().equals("java/util/Collection")
+                            && invokedMethod.getClassName().equals("com.google.common.collect.Multiset")) {
+                        assert true;
+                        // we know this is OK without needing to find definition of Multiset
+                    } else {
+                        AnalysisContext.reportMissingClass(e);
+                        continue;
+                    }
                 }
+                
                 boolean allMethod;
                 
                 int typeArgument;
