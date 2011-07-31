@@ -19,11 +19,14 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.WillClose;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import edu.umd.cs.findbugs.util.MultiMap;
+import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -143,18 +146,21 @@ class UsageTracker {
 
         xmlOutput.closeTag("findbugs-invocation");
         xmlOutput.finish();
-        out.close();
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) {
             logError(Level.WARNING, "Error submitting anonymous usage data to " + trackerUrl + ": "
                     + responseCode + " - " + conn.getResponseMessage());
         }
         parseUpdateXml(trackerUrl, plugins, conn.getInputStream());
+        out.close();
+        conn.disconnect();
+        
     }
 
     // package-private for testing
     @SuppressWarnings({"unchecked"})
-    void parseUpdateXml(URI trackerUrl, Collection<Plugin> plugins, InputStream inputStream) {
+    void parseUpdateXml(URI trackerUrl, Collection<Plugin> plugins,
+            @WillClose InputStream inputStream) {
         try {
             Document doc = new SAXReader().read(inputStream);
             List<Element> pluginEls = (List<Element>) doc.selectNodes("fb-plugin-updates/plugin");
@@ -168,6 +174,8 @@ class UsageTracker {
             }
         } catch (Exception e) {
             logError(e, "Could not parse plugin version update for " + trackerUrl);
+        } finally {
+            Util.closeSilently(inputStream);
         }
     }
 
