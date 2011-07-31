@@ -360,16 +360,27 @@ public class Subtypes2 {
         assert superDesc != null;
         if (subDesc.equals(superDesc))
             return true;
-        try {
-            SupertypeQueryResults supertypeQueryResults = getSupertypeQueryResults(subDesc);
-            return supertypeQueryResults.containsType(superDesc);
-        } catch (ClassNotFoundException e) {
-            XClass xclass = AnalysisContext.currentXFactory().getXClass(subDesc);
-            if (xclass != null && superDesc.equals(xclass.getSuperclassDescriptor()))
-                return true;
-            throw e;
+        if (superDesc.getClassName().equals("java/lang/Object"))
+        	return true;
 
+        if (true) {
+        XClass xclass = AnalysisContext.currentXFactory().getXClass(subDesc);
+        if (xclass != null) {
+            ClassDescriptor xSuper = xclass.getSuperclassDescriptor();
+            if (superDesc.equals(xSuper))
+                return true;
+            ClassDescriptor[] interfaces = xclass.getInterfaceDescriptorList();
+            for (ClassDescriptor i : interfaces)
+                if (superDesc.equals(i))
+                    return true;
+            if (xSuper == null && interfaces.length == 0)
+                return false;
         }
+        }
+
+        SupertypeQueryResults supertypeQueryResults = getSupertypeQueryResults(subDesc);
+        return supertypeQueryResults.containsType(superDesc);
+
     }
 
     /**
