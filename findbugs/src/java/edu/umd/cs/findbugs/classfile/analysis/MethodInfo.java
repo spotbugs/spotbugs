@@ -234,6 +234,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
             unconditionalThrowers.put(this, null);
         if (isUnsupported)
             unsupportedMethods.put(this, null);
+        if (accessMethodFor != null)
+            MethodInfo.accessMethodFor.put(this, accessMethodFor);
         this.usesConcurrency = usesConcurrency;
         this.hasBackBranch = hasBackBranch;
         this.isStub = isStub;

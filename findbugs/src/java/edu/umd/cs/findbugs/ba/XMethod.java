@@ -89,6 +89,10 @@ public interface XMethod extends ClassMember, AnnotatedObject {
 
     public @CheckForNull
     XMethod bridgeFrom();
+    
+    public @CheckForNull
+    MethodDescriptor getAccessMethodFor();
+  
 
     /**
      * @return does this method unconditionally throw an

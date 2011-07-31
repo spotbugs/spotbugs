@@ -246,4 +246,11 @@ class UnresolvedXMethod extends AbstractMethod {
     public XMethod bridgeTo() {
         return null;
     }
+
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.XMethod#getAccessMethodFor()
+     */
+    public MethodDescriptor getAccessMethodFor() {
+        return null;
+    }
 }
