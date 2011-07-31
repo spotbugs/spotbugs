@@ -379,8 +379,10 @@ public interface Cloud {
         }
         
         public boolean notAProblem() {
-            return this.score() < 0;
-            
+            return this.score() < 0;  
+        }
+        public boolean shouldFix() {
+            return this.score() > 0;  
         }
     }
 

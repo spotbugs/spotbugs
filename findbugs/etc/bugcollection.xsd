@@ -39,6 +39,8 @@
 										</xs:element>
 									</xs:sequence>
 									<xs:attribute name="id" type="xs:string"/>
+									<xs:attribute name="online" type="xs:boolean"  use="optional"/>
+									<xs:attribute name="detailsUrl" type="xs:string"  use="optional"/>
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
@@ -197,22 +199,31 @@
 						<xs:attribute name="abbrev" type="xs:string" use="required"/>
 						<xs:attribute name="category" type="xs:string" use="required"/>
 						<xs:attribute name="uid" type="xs:unsignedLong" use="optional"/>
-						<xs:attribute name="instanceHash" type="xs:string" use="optional"/>
-						<xs:attribute name="instanceOccurrenceNum" type="xs:unsignedInt"
-							use="optional"/>
-						<xs:attribute name="instanceOccurrenceMax" type="xs:unsignedInt"
-							use="optional"/>
-						<xs:attribute name="last" type="xs:unsignedInt" use="optional"/>
-						<xs:attribute name="removedByChange" type="xs:boolean" use="optional"/>
-						<xs:attribute name="first" type="xs:unsignedInt" use="optional"/>
-						<xs:attribute name="introducedByChange" type="xs:boolean" use="optional"/>
-						<xs:attribute name="ageInDays" type="xs:unsignedInt" use="optional"/>
+						
 						<xs:attribute name="reviews" type="xs:unsignedInt" use="optional"/>
 						<xs:attribute name="firstSeen" type="xs:string" use="optional"/>
-						<xs:attribute name="rank" type="xs:unsignedInt" use="optional"/>
-						<xs:attribute name="consensus" type="xs:string" use="optional"/>
-						<xs:attribute name="notAProblem" type="xs:boolean" use="optional"/>
+					    <xs:attribute name="consensus" type="xs:string" use="optional"/>
+						<xs:attribute name="isInCloud" type="xs:boolean" use="optional"/>
+						
+						<!--  The following only appear with multi-version analysis files  -->
+						<xs:attribute name="last" type="xs:unsignedInt" use="optional"/>
+                        <xs:attribute name="removedByChange" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="first" type="xs:unsignedInt" use="optional"/>
+                        <xs:attribute name="introducedByChange" type="xs:boolean" use="optional"/>
+                        
+                        
+						<!--  The following only appear withMessages -->
 						<xs:attribute name="shouldFix" type="xs:boolean" use="optional"/>
+						<xs:attribute name="ageInDays" type="xs:unsignedInt" use="optional"/>
+                        <xs:attribute name="notAProblem" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="instanceHash" type="xs:string" use="optional"/>
+                        <xs:attribute name="instanceOccurrenceNum" type="xs:unsignedInt"
+                            use="optional"/>
+                        <xs:attribute name="instanceOccurrenceMax" type="xs:unsignedInt"
+                            use="optional"/>
+                        
+						<xs:attribute name="rank" type="xs:unsignedInt" use="optional"/>
+						
 						
 					</xs:complexType>
 				</xs:element>

@@ -2093,12 +2093,23 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
                 XmlProps props = getXmlProps();
                 
                 attributeList.addOptionalAttribute("firstSeen", firstSeenXMLFormat().format(props.firstSeen));
-                attributeList.addOptionalAttribute("consensus", props.consensus);               
-                attributeList.addAttribute("reviews", Integer.toString(props.reviewCount));               
+                if (props.reviewCount > 0) {
+                    attributeList.addOptionalAttribute("consensus", props.consensus);  
+                    attributeList.addAttribute("reviews", Integer.toString(props.reviewCount));               
+                }
+                if (!props.isInCloud())
+                    attributeList.addAttribute("isInCloud", "false");               
                 if (addMessages) {
-                    attributeList.addAttribute("notAProblem", Boolean.toString(UserDesignation.valueOf(props.consensus).notAProblem()));
-                    int ageInDays = ageInDays(bugCollection, props.firstSeen.getTime());
-                    attributeList.addAttribute("ageInDays", Integer.toString(ageInDays));
+                    UserDesignation consesus = UserDesignation.valueOf(props.consensus);
+                    if (consesus.shouldFix())
+                        attributeList.addAttribute("shouldFix", "true");
+                    else if (consesus.notAProblem())
+                        attributeList.addAttribute("notAProblem", "true");
+
+                    if (props.firstSeen != null) {
+                        int ageInDays = ageInDays(bugCollection, props.firstSeen.getTime());
+                        attributeList.addAttribute("ageInDays", Integer.toString(ageInDays));
+                    }
                 }
             }
         }
