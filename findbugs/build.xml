@@ -687,7 +687,7 @@
         </checkstyle>
     </target>
 
-    <target name="smoketest" depends="clean,scripts,findbugscheck,runjunit,validatesampleoutput"/>
+    <target name="smoketest" depends="scripts,findbugscheck,runjunit,validatesampleoutput"/>
 
 
     <!-- Get version properties.  -->
