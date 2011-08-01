@@ -245,7 +245,18 @@ public class Profiler implements XMLWriteable {
         }
 
         public int compare(Class<?> c1, Class<?> c2) {
-            return c1.getSimpleName().compareTo(c2.getSimpleName());
+            try {
+                return c1.getSimpleName().compareTo(c2.getSimpleName());
+            } catch (RuntimeException e) {
+                AnalysisContext.logError("Error comparing " + c1 + " and " + c2, e);
+                int i1 = System.identityHashCode(c1);
+                int i2 = System.identityHashCode(c2);
+                if (i1 < i2)
+                    return -1;
+                if (i1 > i2)
+                    return 1;
+                return 0;
+            }
         }
     }
 
