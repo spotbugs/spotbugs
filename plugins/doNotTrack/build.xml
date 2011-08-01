@@ -10,7 +10,9 @@
     -->
     <property file="build.properties"/>
 
+
     <property name="findbugs.home" value="${findbugsBase.dir}/findbugs"/>
+    <property name="destination.dir" value="${findbugsBase.dir}/findbugs/${plugin.dir}"/>
 
     <target name="validate">
         <xmlvalidate lenient="false" failonerror="yes">
@@ -31,7 +33,7 @@
     </target>
 
     <target name="install" depends="plugin-jar">
-        <copy todir="${findbugs.home}/optionalPlugin" file="build/doNotTrack.jar" />
+        <copy todir="${destination.dir}" file="build/doNotTrack.jar" />
     </target>
 
 
