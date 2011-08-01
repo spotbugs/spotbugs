@@ -200,6 +200,9 @@ public class IncompatibleTypes {
 
         if (actualType.equals(Type.OBJECT))
             return IncompatibleTypes.UNCHECKED;
+        
+        if (expectedType.equals(Type.OBJECT))
+            return IncompatibleTypes.SEEMS_OK;
 
         try {
 
