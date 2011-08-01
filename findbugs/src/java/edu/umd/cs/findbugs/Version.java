@@ -88,8 +88,20 @@ public class Version {
      */
     public static final int PREVIEW = 0;
 
-    private static final String RELEASE_SUFFIX_WORD = (RELEASE_CANDIDATE > 0 ? "rc" + RELEASE_CANDIDATE
-            : (PREVIEW > 0 ? "preview" + PREVIEW : "dev-" + COMPUTED_ECLIPSE_DATE + "-r" + SVN_REVISION));
+    private static final String RELEASE_SUFFIX_WORD;
+    static {
+        String suffix;
+        if (RELEASE_CANDIDATE > 0)
+            suffix = "rc" + RELEASE_CANDIDATE;
+        else if (PREVIEW > 0)
+            suffix = "preview" + PREVIEW;
+        else {
+            suffix = "dev-" + COMPUTED_ECLIPSE_DATE;
+            if (!SVN_REVISION.equals("Unknown"))
+                suffix += "-r" + SVN_REVISION;
+        }
+        RELEASE_SUFFIX_WORD = suffix;
+    }
 
     public static final String RELEASE_BASE = MAJOR + "." + MINOR + "." + PATCHLEVEL;
 
