@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:noNamespaceSchemaLocation="messagecollection.xsd">
+
+  <Plugin>
+    <ShortDescription>Disable all FindBugs usage tracking</ShortDescription>
+    <Details>
+<![CDATA[
+<p>
+Disable all FindBugs usage tracking and checks for availability of updated versions.
+</p>
+]]>
+    </Details>
+  </Plugin>
+
+  </MessageCollection>
+
+
+

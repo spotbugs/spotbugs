@@ -1,0 +1,40 @@
+<project name="webCloudClient" default="install">
+
+    <property file="local.properties"/>
+
+    <!--
+        The build.properties contains global properties, which are common for all developers.
+        Note:
+        Ant properties cannot be overriden, so if local.properties and build.properties
+        contains same keys, ant will use those from local.properties
+    -->
+    <property file="build.properties"/>
+
+    <property name="findbugs.home" value="${findbugsBase.dir}/findbugs"/>
+
+    <target name="validate">
+        <xmlvalidate lenient="false" failonerror="yes">
+            <attribute name="http://apache.org/xml/features/validation/schema" value="true"/>
+            <attribute name="http://xml.org/sax/features/namespaces" value="true"/>
+            <fileset dir="etc" includes="*.xml"/>
+        </xmlvalidate>
+    </target>
+
+    <target name="plugin-jar">
+        <jar destfile="build/doNotTrack.jar">
+            <fileset dir="etc">
+                <include name="findbugs.xml"/>
+                <include name="messages.xml"/>
+            </fileset>
+
+        </jar>
+    </target>
+
+    <target name="install" depends="plugin-jar">
+        <copy todir="${findbugs.home}/optionalPlugin" file="build/doNotTrack.jar" />
+    </target>
+
+
+</project>
+
+      
