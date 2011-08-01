@@ -277,8 +277,7 @@ public class DetectorFactoryCollection {
         factoriesByDetectorClassName.remove(factory.getFullName());
     }
 
-    private static final Pattern[] findbugsJarNames = { Pattern.compile("findbugs\\.jar$"), };
-
+   
     /**
      * See if the location of ${findbugs.home} can be inferred from the location
      * of findbugs.jar in the classpath.
@@ -286,6 +285,8 @@ public class DetectorFactoryCollection {
      * @return inferred ${findbugs.home}, or null if we can't figure it out
      */
     private static String inferFindBugsHome() {
+        Pattern[] findbugsJarNames = { Pattern.compile("findbugs\\.jar$"), };
+
         for (Pattern jarNamePattern : findbugsJarNames) {
             String findbugsJarCodeBase = ClassPathUtil.findCodeBaseInClassPath(jarNamePattern,
                     SystemProperties.getProperty("java.class.path"));
