@@ -1060,6 +1060,17 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         }
         IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_);
 
+        if (lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType) {
+            String pattern = "EC_BAD_ARRAY_COMPARE";
+            IncompatibleTypes result2 = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_, true);
+            if (result2.getPriority() <= Priorities.NORMAL_PRIORITY)
+                pattern = "EC_INCOMPATIBLE_ARRAY_COMPARE";
+            bugAccumulator.accumulateBug(new BugInstance(this, pattern, NORMAL_PRIORITY).addClassAndMethod(methodGen, sourceFile)
+                    .addFoundAndExpectedType(rhsType_, lhsType_)
+                    .addSomeSourceForTopTwoStackValues(classContext, method, location),
+                    SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
+        }
+
         if (result == IncompatibleTypes.SEEMS_OK) return;
 
         if (result.getPriority() >= Priorities.LOW_PRIORITY) {
@@ -1069,17 +1080,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         if (result.getPriority() > Priorities.LOW_PRIORITY)
             return;
 
-       if (lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType) {
-            String pattern = "EC_BAD_ARRAY_COMPARE";
-            IncompatibleTypes result2 = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_, true);
-            if (result2 != IncompatibleTypes.SEEMS_OK)
-                pattern = "EC_INCOMPATIBLE_ARRAY_COMPARE";
-            bugAccumulator.accumulateBug(new BugInstance(this, pattern, NORMAL_PRIORITY).addClassAndMethod(methodGen, sourceFile)
-                    .addFoundAndExpectedType(rhsType_, lhsType_)
-                    .addSomeSourceForTopTwoStackValues(classContext, method, location),
-                    SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
-        }
-        if (result == IncompatibleTypes.ARRAY_AND_NON_ARRAY || result == IncompatibleTypes.ARRAY_AND_OBJECT) {
+         if (result == IncompatibleTypes.ARRAY_AND_NON_ARRAY || result == IncompatibleTypes.ARRAY_AND_OBJECT) {
             String lhsSig = lhsType_.getSignature();
             String rhsSig = rhsType_.getSignature();
             boolean allOk = checkForWeirdEquals(lhsSig, rhsSig, new HashSet<XMethod>());

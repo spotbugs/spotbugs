@@ -154,8 +154,7 @@ public class DumbMethods extends OpcodeStackDetector {
         if (value == null) return;
         Constant c = getConstantPool().getConstant(value.getConstantValueIndex());
 
-        if (c instanceof ConstantLong && ((ConstantLong)c).getBytes()  == MICROS_PER_DAY_OVERFLOWED_AS_INT
-                && SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors")) {
+        if (c instanceof ConstantLong && ((ConstantLong)c).getBytes()  == MICROS_PER_DAY_OVERFLOWED_AS_INT) {
             bugReporter.reportBug( new BugInstance(this, "TESTING", HIGH_PRIORITY).addClass(this).addField(this)
             .addString("Did you mean MICROS_PER_DAY")
             .addInt(MICROS_PER_DAY_OVERFLOWED_AS_INT)
@@ -188,6 +187,7 @@ public class DumbMethods extends OpcodeStackDetector {
         freshRandomOnTos = false;
         sinceBufferedInputStreamReady = 100000;
         sawCheckForNonNegativeSignedByte = -1000;
+        sawLoadOfMinValue = false;
 
     }
 
@@ -200,6 +200,8 @@ public class DumbMethods extends OpcodeStackDetector {
     boolean freshRandomOnTos = false;
 
     boolean freshRandomOneBelowTos = false;
+    
+    boolean sawLoadOfMinValue = false;
 
 
     @Override
@@ -209,13 +211,18 @@ public class DumbMethods extends OpcodeStackDetector {
 
         if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
             Constant c = getConstantRefOperand();
-            if (SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors") &&
-                    (c instanceof ConstantInteger && ((ConstantInteger) c).getBytes() == MICROS_PER_DAY_OVERFLOWED_AS_INT
+            if ((c instanceof ConstantInteger && ((ConstantInteger) c).getBytes() == MICROS_PER_DAY_OVERFLOWED_AS_INT
                     || c instanceof ConstantLong && ((ConstantLong) c).getBytes() == MICROS_PER_DAY_OVERFLOWED_AS_INT)) {
                 BugInstance bug = new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(this)
                         .addString("Did you mean MICROS_PER_DAY").addInt(MICROS_PER_DAY_OVERFLOWED_AS_INT)
                         .describe(IntAnnotation.INT_VALUE);
                 accumulator.accumulateBug(bug, this);
+            }
+            if ((c instanceof ConstantInteger && ((ConstantInteger) c).getBytes() == Integer.MIN_VALUE
+                    || c instanceof ConstantLong && ((ConstantLong) c).getBytes() == Integer.MAX_VALUE)) {
+                sawLoadOfMinValue = true;
+                pendingAbsoluteValueBug = null;
+                pendingAbsoluteValueBugSourceLine = null;
             }
         }
 
@@ -250,7 +257,7 @@ public class DumbMethods extends OpcodeStackDetector {
                         && (returnValueOf.getClassName().equals("java.util.Date") || returnValueOf.getClassName().equals(
                                 "java.sql.Date"))) {
                     int year = (Integer) constant1;
-                    if (year > 1900 && SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors"))
+                    if (year > 1900)
                         accumulator.accumulateBug(
                                 new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(this)
                                         .addString("Comparison of getYear does understand that it returns year-1900")
@@ -438,7 +445,7 @@ public class DumbMethods extends OpcodeStackDetector {
 
         }
 
-        if (seen == INVOKESTATIC && 
+        if (!sawLoadOfMinValue && seen == INVOKESTATIC && 
                 ClassName.isMathClass(getClassConstantOperand()) && getNameConstantOperand().equals("abs")
                 ) {
             OpcodeStack.Item item0 = stack.getStackItem(0);
@@ -934,8 +941,7 @@ public class DumbMethods extends OpcodeStackDetector {
     private void checkForCompatibleLongComparison(OpcodeStack.Item left, OpcodeStack.Item right) {
         if (left.getSpecialKind() == Item.RESULT_OF_I2L && right.getConstant() != null) {
             long value = ((Number) right.getConstant()).longValue();
-            if (SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors")
-                    && (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE)) {
+            if ( (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE)) {
                 int priority  = Priorities.HIGH_PRIORITY;
                 if (value == Integer.MAX_VALUE+1 || value == Integer.MIN_VALUE -1)
                     priority = Priorities.NORMAL_PRIORITY;
