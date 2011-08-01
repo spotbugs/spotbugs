@@ -106,16 +106,28 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
 
         if (m == null)
             return false;
+        String name = m.getName();
+        
+        if (!name.startsWith("compare"))
+            return false;
+       
         Object value = right.getConstant();
         if (!(value instanceof Integer) || ((Integer) value).intValue() == 0)
             return false;
-        if (m.isStatic() || !m.isPublic())
+        if (!m.isPublic() && m.isResolved())
             return false;
-
-        if (m.getName().equals("compareTo") && m.getSignature().equals("(Ljava/lang/Object;)I"))
-            return true;
-        if (m.getName().equals("compare") && m.getSignature().equals("(Ljava/lang/Object;Ljava/lang/Object;)I"))
-            return true;
+        
+        
+        if (m.isStatic() || !m.isResolved()) {
+            if (name.equals("compare") && m.getClassName().startsWith("com.google.common.primitives."))
+                return true;
+        }
+        if (!m.isStatic() || !m.isResolved()) {
+            if (name.equals("compareTo") && m.getSignature().equals("(Ljava/lang/Object;)I"))
+                return true;
+            if (name.equals("compare") && m.getSignature().equals("(Ljava/lang/Object;Ljava/lang/Object;)I"))
+                return true;
+        }
 
         return false;
 
