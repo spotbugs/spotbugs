@@ -137,7 +137,7 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
                 analysisContext.getLookupFailureCallback().reportMissingClass(e);
             }
             boolean newResult = foundThrower && !foundNonThrower;
-            if (newResult && SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors"))
+            if (newResult)
                 bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.NORMAL_PRIORITY)
                         .addClassAndMethod(classContext.getJavaClass(), method)
                         .addString("Call to method that always throws Exception").addMethod(primaryXMethod)
