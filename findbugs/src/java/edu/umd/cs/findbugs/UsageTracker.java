@@ -96,6 +96,12 @@ class UsageTracker {
             return;
         }
         final String entryPoint = getEntryPoint();
+        if (entryPoint.contains("edu.umd.cs.findbugs.FindBugsTestCase")
+                && (trackerUrl.getScheme().equals("http") || trackerUrl.getScheme().equals("https"))) {
+            LOGGER.fine("Skipping usage tracking because we're running in FindBugsTestCase and using "
+                    + trackerUrl.getScheme());
+            return;
+        }
         Thread thread = new Thread(new Runnable() {
             public void run() {
                 try {
@@ -110,7 +116,8 @@ class UsageTracker {
     }
 
     private void actuallyTrackUsage(URI trackerUrl, Collection<Plugin> plugins, String entryPoint) throws IOException {
-//        System.out.println("Submitting anonymous usage tracking info to " + trackerUrl + " for " + getPluginNames(plugins));
+        LOGGER.fine("Submitting anonymous usage tracking info to " + trackerUrl
+                + " for " + getPluginNames(plugins));
         HttpURLConnection conn = (HttpURLConnection) trackerUrl.toURL().openConnection();
         conn.setDoInput(true);
         conn.setDoOutput(true);
@@ -209,10 +216,9 @@ class UsageTracker {
         String url = maxEl.attributeValue("url");
 
         String message = maxEl.element("message").getTextTrim();
-        //TODO check jar file for release date
         Date date = parseReleaseDate(maxEl);
         Date releaseDate = plugin.getReleaseDate();
-        if (date.after(releaseDate)) {
+        if (releaseDate == null || date.after(releaseDate)) {
             printMessage("PLUGIN UPDATE: " + plugin.getShortDescription() + " " + version
                     + " has been released (you have " + plugin.getVersion() + ")");
             if (message != null && message.length() > 0)
