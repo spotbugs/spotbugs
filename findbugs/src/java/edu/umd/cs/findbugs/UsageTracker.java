@@ -96,7 +96,8 @@ class UsageTracker {
             return;
         }
         final String entryPoint = getEntryPoint();
-        if (entryPoint.contains("edu.umd.cs.findbugs.FindBugsTestCase")
+        if ((entryPoint.contains("edu.umd.cs.findbugs.FindBugsTestCase") 
+                || entryPoint.contains("edu.umd.cs.findbugs.cloud.appEngine.AbstractWebCloudTest"))
                 && (trackerUrl.getScheme().equals("http") || trackerUrl.getScheme().equals("https"))) {
             LOGGER.fine("Skipping usage tracking because we're running in FindBugsTestCase and using "
                     + trackerUrl.getScheme());
