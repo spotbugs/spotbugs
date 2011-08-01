@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
@@ -102,7 +103,9 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         deadStore = null;
         priority = NORMAL_PRIORITY;
         fallthroughDistance = 1000;
+        enumType = null;
         super.visit(obj);
+        enumType = null;
         if (!found.isEmpty()) {
             if (found.size() >= 4 && priority == NORMAL_PRIORITY)
                 priority = LOW_PRIORITY;
@@ -131,6 +134,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         bugAccumulator.reportAccumulatedBugs();
     }
 
+    XClass enumType = null;
     @Override
     public void sawOpcode(int seen) {
         boolean isDefaultOffset = switchHdlr.getDefaultOffset() == getPC();
@@ -222,11 +226,20 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             potentiallyDeadStores.set(register);
         }
 
+        if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("ordinal") && getSigConstantOperand().equals("()I")) {
+            XClass c = getXClassOperand();
+            if (c.getSuperclassDescriptor().getClassName().equals("java/lang/Enum"))
+                enumType = c;
+            if (DEBUG) 
+                System.out.println("Saw " + enumType+".ordinal()");
+        } else if (seen != TABLESWITCH && seen != LOOKUPSWITCH && seen != IALOAD)
+            enumType = null;
+
         switch (seen) {
         case TABLESWITCH:
         case LOOKUPSWITCH:
             reachable = false;
-            switchHdlr.enterSwitch(this);
+            switchHdlr.enterSwitch(this, enumType);
             break;
 
         case ATHROW:

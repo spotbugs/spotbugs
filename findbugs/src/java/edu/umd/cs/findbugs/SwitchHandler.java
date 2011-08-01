@@ -22,6 +22,13 @@ package edu.umd.cs.findbugs;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.CheckForNull;
+
+import org.apache.bcel.Constants;
+
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 public class SwitchHandler {
@@ -30,11 +37,27 @@ public class SwitchHandler {
     public SwitchHandler() {
         switchOffsetStack = new ArrayList<SwitchDetails>();
     }
+    
+    int numEnumValues(@CheckForNull XClass c) {
+        if (c == null)
+            return -1;
+        int total = 0;
+        String enumSignature = ClassName.toSignature(c.getClassDescriptor().getClassName());
+        for(XField f : c.getXFields()) {
+            if (f.getSignature().equals(enumSignature)
+                    && f.isPublic() && f.isFinal())
+                total++;
+        }
+        return total;
+    }
 
-    public void enterSwitch(DismantleBytecode dbc) {
+    public void enterSwitch(DismantleBytecode dbc, @CheckForNull XClass enumType) {
 
-        SwitchDetails details = new SwitchDetails(dbc.getPC(), dbc.getSwitchOffsets(), dbc.getDefaultSwitchOffset());
+        assert dbc.getOpcode() == Constants.TABLESWITCH || dbc.getOpcode() == Constants.LOOKUPSWITCH;
+        int[] switchOffsets = dbc.getSwitchOffsets();
+        SwitchDetails details = new SwitchDetails(dbc.getPC(), switchOffsets, dbc.getDefaultSwitchOffset(), switchOffsets.length == numEnumValues(enumType));
 
+        
         int size = switchOffsetStack.size();
         while (--size >= 0) {
             SwitchDetails existingDetail = switchOffsetStack.get(size);
@@ -87,8 +110,10 @@ public class SwitchHandler {
         final int defaultOffset;
 
         int nextOffset;
+        
+        final boolean exhaustive;
 
-        public SwitchDetails(int pc, int[] offsets, int defOffset) {
+        public SwitchDetails(int pc, int[] offsets, int defOffset, boolean exhaustive) {
             switchPC = pc;
             int uniqueOffsets = 0;
             int lastValue = -1;
@@ -110,6 +135,7 @@ public class SwitchHandler {
             }
             defaultOffset = defOffset;
             nextOffset = 0;
+            this.exhaustive = exhaustive;
         }
 
         public int getNextSwitchOffset(int currentPC) {
@@ -123,6 +149,8 @@ public class SwitchHandler {
         }
 
         public int getDefaultOffset() {
+            if (exhaustive)
+                return Short.MIN_VALUE;
             return switchPC + defaultOffset;
         }
     }
