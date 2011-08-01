@@ -697,8 +697,7 @@
           <BugPattern abbrev="JCIP" type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS"
                     category="BAD_PRACTICE"/>
           <BugPattern abbrev="Dm" type="DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD" category="CORRECTNESS"/>
-          <BugPattern abbrev="Dm"
-                    type="DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR"
+          <BugPattern abbrev="Dm" type="DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="DMI" type="DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE"
                     category="CORRECTNESS"/>
@@ -905,7 +904,7 @@
                     category="BAD_PRACTICE" cweid="253"/>
           <BugPattern abbrev="RV" type="RV_EXCEPTION_NOT_THROWN" category="CORRECTNESS"/>
           <BugPattern abbrev="RV" type="RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE" category="CORRECTNESS"/>
-          <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED2" category="CORRECTNESS"/>
+          <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED2" category="CORRECTNESS" deprecated="true"/>
           <BugPattern abbrev="RV" type="RV_CHECK_FOR_POSITIVE_INDEXOF" category="STYLE"/>
           <BugPattern abbrev="RV" type="RV_DONT_JUST_NULL_CHECK_READLINE" category="STYLE"/>
           <BugPattern abbrev="NP" type="NP_ALWAYS_NULL" category="CORRECTNESS"/>
