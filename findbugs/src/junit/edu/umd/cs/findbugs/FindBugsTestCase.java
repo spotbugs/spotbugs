@@ -153,6 +153,8 @@ public abstract class FindBugsTestCase extends TestCase {
                     deleteAndLog(tmpfile);
                 }
                 deleteAndLog(tmpdir);
+                DetectorFactoryCollection.resetInstance(null);
+
             }
         }
 
