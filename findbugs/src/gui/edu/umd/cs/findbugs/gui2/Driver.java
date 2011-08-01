@@ -51,7 +51,7 @@ public class Driver {
        String name = "FindBugs GUI";
        if (JavaWebStart.isRunningViaJavaWebstart())
            name = "FindBugs webstart GUI";
-       Version.registerApplication(name, Version.getReleaseWithDateIfDev());
+       Version.registerApplication(name, Version.RELEASE);
 
         if (SystemProperties.getProperty("os.name").startsWith("Mac")) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
