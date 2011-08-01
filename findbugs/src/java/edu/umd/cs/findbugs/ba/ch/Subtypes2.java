@@ -361,7 +361,7 @@ public class Subtypes2 {
         if (subDesc.equals(superDesc))
             return true;
         if (superDesc.getClassName().equals("java/lang/Object"))
-        	return true;
+            return true;
 
         if (true) {
         XClass xclass = AnalysisContext.currentXFactory().getXClass(subDesc);

@@ -1341,7 +1341,7 @@ public class OpcodeStack implements Constants2 {
                         handled = true;
                         break;
                     case IF_ICMPGE:
-                    	 takeJump = lC >= rC;
+                         takeJump = lC >= rC;
                          handled = true;
                          break;
                     case IF_ICMPGT:

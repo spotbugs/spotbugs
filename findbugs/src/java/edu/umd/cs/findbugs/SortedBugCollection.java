@@ -227,7 +227,7 @@ public class SortedBugCollection implements BugCollection {
      */
     public boolean add(BugInstance bugInstance) {
         return add(bugInstance, 
-        		bugInstance.getFirstVersion() == 0L && bugInstance.getLastVersion() == 0L);
+                bugInstance.getFirstVersion() == 0L && bugInstance.getLastVersion() == 0L);
     }
 
     /**
