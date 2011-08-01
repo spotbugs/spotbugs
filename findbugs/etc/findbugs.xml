@@ -99,7 +99,7 @@
         NoteSuppressedWarnings should be run in
         an earlier pass than all reporting detectors, including those in
         other plugins.
-	-->
+    -->
                     <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
                               <LaterCategory name="reporting" spanplugins="true"/>

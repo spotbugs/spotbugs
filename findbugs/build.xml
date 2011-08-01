@@ -703,7 +703,7 @@
         classpathref="svn.classpath"/>
       <svn svnkit="false" javahl="true">
         <status path="."  revisionProperty="svnrnum"  />
-	  </svn>
+      </svn>
     </target>
 
     <target name="version0" depends="classes,get-svn-revision">
