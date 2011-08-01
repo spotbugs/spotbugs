@@ -40,7 +40,7 @@ public class LineNumberer extends JComponent
     public LineNumberer(JTextArea ta) {
         setFont( ta.getFont() );
         textArea = ta;
-		setForeground( Color.BLUE );
+        setForeground( Color.BLUE );
 
         fm = this.getFontMetrics(ta.getFont());
         setWidths();
@@ -49,13 +49,13 @@ public class LineNumberer extends JComponent
     @Override
     public void setFont(Font font)
     {
-		//ignore
+        //ignore
     }
 
     private void setWidths() {
         int width = fm.stringWidth( PROTOTYPE );
         Dimension d = getPreferredSize();
-		d.setSize(PAD + width, Integer.MAX_VALUE);
+        d.setSize(PAD + width, Integer.MAX_VALUE);
         setPreferredSize( d );
         setSize( d );
     }
@@ -64,7 +64,7 @@ public class LineNumberer extends JComponent
     @Override
     public void paintComponent(Graphics g)
     {
-		int lineHeight = fm.getHeight();
+        int lineHeight = fm.getHeight();
         int startOffset = textArea.getInsets().top + fm.getAscent();
 
         Rectangle clip = g.getClipBounds();
@@ -81,10 +81,10 @@ public class LineNumberer extends JComponent
         for (int i = beginLineNumber; i <= endLineNumber; i++)
         {
             String ln = String.valueOf(i);
-			int width = fm.stringWidth( ln );
+            int width = fm.stringWidth( ln );
             int rowWidth = getSize().width;
             g.drawString(ln, rowWidth - width - PAD, y);
             y += lineHeight;
-		}
+        }
     }
 }

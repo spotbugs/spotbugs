@@ -63,23 +63,23 @@ public class AnalysisRun {
     private FindBugsFrame frame;
     private String summary;
     private Logger logger;
-	private IFindBugsEngine findBugs;
+    private IFindBugsEngine findBugs;
     private SwingGUIBugReporter reporter;
     private HashMap<String, DefaultTreeModel> treeModelMap;
 
     /**
      * Creates a new instance of AnalysisRun.
      */
-	public AnalysisRun(Project project, FindBugsFrame frame) {
+    public AnalysisRun(Project project, FindBugsFrame frame) {
         this.frame = frame;
         this.logger = frame.getLogger();
         this.reporter = new SwingGUIBugReporter(this);
-		this.reporter.setPriorityThreshold(Detector.EXP_PRIORITY);
+        this.reporter.setPriorityThreshold(Detector.EXP_PRIORITY);
 
         // Create IFindBugsEngine
         FindBugs2 engine = new FindBugs2();
         engine.setBugReporter(reporter);
-		engine.setProject(project);
+        engine.setProject(project);
         engine.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
 
         this.findBugs = engine;
@@ -89,24 +89,24 @@ public class AnalysisRun {
     /**
      * Get the FindBugsFrame which created this analysis run.
      *
-	 * @return the FindBugsFrame
+     * @return the FindBugsFrame
      */
     public FindBugsFrame getFrame() {
         return frame;
-	}
+    }
 
     /**
      * Run the analysis.
      * This should be done in a separate thread (not the GUI event thread).
-	 * The progress callback can be used to update the user interface to
+     * The progress callback can be used to update the user interface to
      * reflect the progress of the analysis.  The GUI may cancel the analysis
      * by interrupting the analysis thread, in which case InterruptedException
      * will be thrown by this method.
-	 *
+     *
      * @param progressCallback the progress callback
      * @throws IOException          if an I/O error occurs during the analysis
      * @throws InterruptedException if the analysis thread is interrupted
-	 */
+     */
     public void execute(FindBugsProgress progressCallback) throws IOException, InterruptedException {
         findBugs.setProgressCallback(progressCallback);
 
@@ -122,24 +122,24 @@ public class AnalysisRun {
         if (!SystemProperties.getBoolean("findbugs.noSummary")) {
             // Get the summary!
             createSummary(reporter.getProjectStats());
-		}
+        }
 
     }
 
     private static final String MISSING_SUMMARY_MESSAGE =
             "<html><head><title>Could not format summary</title></head>" +
             "<body><h1>Could not format summary</h1>" +
-			"<p> Please report this failure to <a href=\"findbugs-discuss@cs.umd.edu\">" +
+            "<p> Please report this failure to <a href=\"findbugs-discuss@cs.umd.edu\">" +
             "findbugs-discuss@cs.umd.edu</a>.</body></html>";
 
     private void createSummary(ProjectStats stats) throws IOException {
         StringWriter html = new StringWriter();
         try {
-			stats.transformSummaryToHTML(html);
+            stats.transformSummaryToHTML(html);
             summary = html.toString();
         } catch (Exception e) {
             logger.logMessage(ConsoleLogger.WARNING, MessageFormat.format(L10N.getLocalString("msg.failedtotransform_txt", "Failed to transform summary: {0}"), new Object[]{e.toString()}));
-			summary = MISSING_SUMMARY_MESSAGE;
+            summary = MISSING_SUMMARY_MESSAGE;
         }
     }
 
@@ -148,7 +148,7 @@ public class AnalysisRun {
     /**
      * Load bugs from a file.
      */
-	public void loadBugsFromFile(File file) throws IOException, org.dom4j.DocumentException {
+    public void loadBugsFromFile(File file) throws IOException, org.dom4j.DocumentException {
         reporter.getBugCollection().readXML(file);
 
         // Update summary stats
@@ -158,11 +158,11 @@ public class AnalysisRun {
     /**
      * Load bugs from an InputStream.
      *
-	 * @param in the InputStream
+     * @param in the InputStream
      * @throws IOException
      * @throws DocumentException
      */
-	public void loadBugsFromInputStream(InputStream in) throws IOException, DocumentException {
+    public void loadBugsFromInputStream(InputStream in) throws IOException, DocumentException {
         reporter.getBugCollection().readXML(in);
 
         // Update summary stats
@@ -172,46 +172,46 @@ public class AnalysisRun {
     /**
      * Save bugs to a file.
      */
-	public void saveBugsToFile(File file) throws IOException {
+    public void saveBugsToFile(File file) throws IOException {
         reporter.getBugCollection().writeXML(file);
     }
 
     /**
      * Report any errors that may have occurred during analysis.
      */
-	public void reportAnalysisErrors() {
+    public void reportAnalysisErrors() {
         if (reporter.errorsOccurred()) {
             reporter.getErrorDialog().setSize(750, 520);
             reporter.getErrorDialog().setLocationRelativeTo(null); // center the dialog
-			reporter.getErrorDialog().setVisible(true);
+            reporter.getErrorDialog().setVisible(true);
         }
     }
 
     /**
      * Return the collection of BugInstances.
      */
-	public java.util.Collection<BugInstance> getBugInstances() {
+    public java.util.Collection<BugInstance> getBugInstances() {
         return reporter.getBugCollection().getCollection();
     }
 
     /**
      * Set the tree model to be used in the BugTree.
      *
-	 * @param groupByOrder the grouping order that the tree model will conform to
+     * @param groupByOrder the grouping order that the tree model will conform to
      * @param treeModel    the tree model
      */
     public void setTreeModel(String groupByOrder, DefaultTreeModel treeModel) {
-		treeModelMap.put(groupByOrder, treeModel);
+        treeModelMap.put(groupByOrder, treeModel);
     }
 
     /**
      * Get the tree model to be used in the BugTree.
      *
-	 * @param groupByOrder the grouping order that the tree model conforms to
+     * @param groupByOrder the grouping order that the tree model conforms to
      * @return the tree model
      */
     public DefaultTreeModel getTreeModel(String groupByOrder) {
-		return treeModelMap.get(groupByOrder);
+        return treeModelMap.get(groupByOrder);
     }
 
     public String getSummary() {

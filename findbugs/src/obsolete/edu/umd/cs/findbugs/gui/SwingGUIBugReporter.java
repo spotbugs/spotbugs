@@ -30,16 +30,16 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
     private final AnalysisRun analysisRun;
     private SortedBugCollection bugCollection;
     private AnalysisErrorDialog errorDialog;
-	private int errorCount;
+    private int errorCount;
 
     /**
      * Constructor.
      *
-	 * @param analysisRun
+     * @param analysisRun
      */
     public SwingGUIBugReporter(AnalysisRun analysisRun) {
         this.analysisRun = analysisRun;
-		this.bugCollection = new SortedBugCollection(getProjectStats());
+        this.bugCollection = new SortedBugCollection(getProjectStats());
     }
 
     public SortedBugCollection getBugCollection() {
@@ -60,7 +60,7 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
     @Override
     public void reportMissingClass(ClassNotFoundException ex) {
         ++errorCount;
-		super.reportMissingClass(ex);
+        super.reportMissingClass(ex);
         String message = getMissingClassName(ex);
         bugCollection.addMissingClass(message);
     }
@@ -68,7 +68,7 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
     @Override
     public void logError(String message) {
         ++errorCount;
-		analysisRun.getFrame().getLogger().logMessage(ConsoleLogger.WARNING, message);
+        analysisRun.getFrame().getLogger().logMessage(ConsoleLogger.WARNING, message);
         super.logError(message);
         bugCollection.addError(message);
     }
@@ -79,21 +79,21 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
     @Override
     public void doReportBug(edu.umd.cs.findbugs.BugInstance bugInstance) {
         checkBugInstance(bugInstance);
-		if (bugCollection.add(bugInstance))
+        if (bugCollection.add(bugInstance))
             notifyObservers(bugInstance);
     }
 
     private void createDialog() {
         if (errorDialog == null) {
             errorDialog = new AnalysisErrorDialog(analysisRun.getFrame(), true, this);
-		}
+        }
     }
 
 
     @Override
     public void reportQueuedErrors() {
         createDialog();
-		errorDialog.clear();
+        errorDialog.clear();
         super.reportQueuedErrors();
         errorDialog.finish();
     }
@@ -102,6 +102,6 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
     @Override
     protected void emitLine(String line) {
         line = line.replaceAll("\t", "  ");
-		errorDialog.addLine(line);
+        errorDialog.addLine(line);
     }
 }

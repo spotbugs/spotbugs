@@ -11,8 +11,8 @@ import org.apache.bcel.generic.Visitor;
  * 
  */
 public class NULL2Z extends NullnessConversationInstruction {
-	
-	
+
+
     public NULL2Z() {
         super(org.apache.bcel.Constants.IMPDEP1);
     }

@@ -75,7 +75,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         public void finishPerClassAnalysis() {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-					stageNameLabel.setText(L10N.getLocalString("msg.finishedanalysis_txt", "Finishing analysis"));
+                    stageNameLabel.setText(L10N.getLocalString("msg.finishedanalysis_txt", "Finishing analysis"));
                 }
             });
         }
@@ -83,39 +83,39 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         private void beginStage(final String stageName, final int goal) {
             synchronized (this) {
                 this.count = 0;
-				this.goal = goal;
+                this.goal = goal;
             }
 
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     int goal = getGoal();
-					stageNameLabel.setText(stageName);
+                    stageNameLabel.setText(stageName);
                     countValueLabel.setText("0/" + goal);
                     progressBar.setMaximum(goal);
                     progressBar.setValue(0);
-				}
+                }
             });
         }
 
         private void step() {
             synchronized (this) {
                 count++;
-			}
+            }
 
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     int count = getCount();
-					int goal = getGoal();
+                    int goal = getGoal();
                     countValueLabel.setText(count + "/" + goal);
                     progressBar.setValue(count);
                 }
-			});
+            });
         }
 
         public void predictPassCount(int[] classesPerPass) {
             // noop
         }
-		
+
         public void startArchive(String name) {
             // noop
         }
@@ -124,17 +124,17 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
     private final AnalysisRun analysisRun;
     private Thread analysisThread;
     private boolean completed;
-	private Exception fatalException;
+    private Exception fatalException;
     private int analysisPriority;
 
     /**
      * Creates new form RunAnalysisDialog
      */
-	public RunAnalysisDialog(java.awt.Frame parent, AnalysisRun analysisRun_, int analysisPriority) {
+    public RunAnalysisDialog(java.awt.Frame parent, AnalysisRun analysisRun_, int analysisPriority) {
         super(parent, true);
         initComponents();
         this.analysisRun = analysisRun_;
-		this.completed = false;
+        this.completed = false;
         this.analysisPriority = analysisPriority;
 
         // Create a progress callback to give the user feedback
@@ -144,28 +144,28 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         // This is the thread that will actually run the analysis.
         this.analysisThread = new Thread() {
             @Override
-			public void run() {
+            public void run() {
                 try {
                     analysisRun.execute(progress);
                     setCompleted(true);
-				} catch (java.io.IOException e) {
+                } catch (java.io.IOException e) {
                     setException(e);
                 } catch (InterruptedException e) {
                     // We don't need to do anything here.
-					// The completed flag is not set, so the frame
+                    // The completed flag is not set, so the frame
                     // will know that the analysis did not complete.
                 } catch (Exception e) {
                     setException(e);
-				}
+                }
 
                 // Send a message to the dialog that it should close
                 // That way, it goes away without any need for user intervention
                 SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
+                    public void run() {
                         closeDialog(new WindowEvent(RunAnalysisDialog.this, WindowEvent.WINDOW_CLOSING));
                     }
                 });
-			}
+            }
         };
     }
 
@@ -176,7 +176,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
     /**
      * The creator of the dialog may call this method to find out whether
      * or not the analysis completed normally.
-	 */
+     */
     public synchronized boolean isCompleted() {
         return completed;
     }
@@ -188,7 +188,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
     /**
      * Determine whether or not a fatal exception occurred
      * during analysis.
-	 */
+     */
     public synchronized boolean exceptionOccurred() {
         return fatalException != null;
     }
@@ -196,27 +196,27 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
     /**
      * Get the exception that abnormally terminated the analysis.
      */
-	public synchronized Exception getException() {
+    public synchronized Exception getException() {
         return fatalException;
     }
 
     /**
      * This method is called from within the constructor to
      * initialize the form.
-	 * WARNING: Do NOT modify this code. The content of this method is
+     * WARNING: Do NOT modify this code. The content of this method is
      * always regenerated by the Form Editor.
      */
     private void initComponents() {//GEN-BEGIN:initComponents
-		java.awt.GridBagConstraints gridBagConstraints;
+        java.awt.GridBagConstraints gridBagConstraints;
 
         findBugsLabel = new javax.swing.JLabel();
         countLabel = new javax.swing.JLabel();
         progressLabel = new javax.swing.JLabel();
-		progressBar = new javax.swing.JProgressBar();
+        progressBar = new javax.swing.JProgressBar();
         cancelButton = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         stageLabel = new javax.swing.JLabel();
-		stageNameLabel = new javax.swing.JLabel();
+        stageNameLabel = new javax.swing.JLabel();
         topVerticalFiller = new javax.swing.JLabel();
         bottomVerticalFiller = new javax.swing.JLabel();
         countValueLabel = new javax.swing.JLabel();
@@ -226,114 +226,114 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         setTitle("Run Analysis");
         this.setTitle(L10N.getLocalString("dlg.runanalysis_ttl", "Run Analysis"));
         addWindowListener(new java.awt.event.WindowAdapter() {
-			@Override
+            @Override
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
             }
-			@Override
+            @Override
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
             }
-		});
+        });
 
         findBugsLabel.setBackground(new java.awt.Color(0, 0, 204));
         findBugsLabel.setFont(new java.awt.Font("Dialog", 1, 24));
         findBugsLabel.setForeground(new java.awt.Color(255, 255, 255));
-		findBugsLabel.setText("Find Bugs!");
+        findBugsLabel.setText("Find Bugs!");
         findBugsLabel.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = 2;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
-		getContentPane().add(findBugsLabel, gridBagConstraints);
+        getContentPane().add(findBugsLabel, gridBagConstraints);
 
         countLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         countLabel.setText("Count:");
         countLabel.setText(L10N.getLocalString("dlg.count_lbl", "Count:"));
-		gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-		gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         getContentPane().add(countLabel, gridBagConstraints);
 
         progressLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         progressLabel.setText("Progress:");
         progressLabel.setText(L10N.getLocalString("dlg.progress_lbl", "Progress:"));
-		gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-		gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         getContentPane().add(progressLabel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         getContentPane().add(progressBar, gridBagConstraints);
 
         cancelButton.setFont(new java.awt.Font("Dialog", 0, 12));
         cancelButton.setText("Cancel");
         cancelButton.setText(L10N.getLocalString("dlg.cancel_btn", "Cancel"));
-		cancelButton.addActionListener(new java.awt.event.ActionListener() {
+        cancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelButtonActionPerformed(evt);
             }
-		});
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 8;
-		gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
         getContentPane().add(cancelButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;
-		gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(jSeparator1, gridBagConstraints);
 
         stageLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         stageLabel.setText("Stage:");
         stageLabel.setText(L10N.getLocalString("dlg.stage_lbl", "Stage:"));
-		gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-		gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         getContentPane().add(stageLabel, gridBagConstraints);
 
         stageNameLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-		gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(stageNameLabel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 6;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         gridBagConstraints.weighty = 0.5;
         getContentPane().add(topVerticalFiller, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         gridBagConstraints.weighty = 0.5;
         getContentPane().add(bottomVerticalFiller, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
-		gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         getContentPane().add(countValueLabel, gridBagConstraints);
 
@@ -347,7 +347,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         if (option == JOptionPane.YES_OPTION) {
             // All we need to do to cancel the analysis is to interrupt
             // the analysis thread.
-			analysisThread.interrupt();
+            analysisThread.interrupt();
         }
     }//GEN-LAST:event_cancelButtonActionPerformed
 
@@ -364,7 +364,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
     /**
      * Closes the dialog
      */
-	private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
+    private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
         setVisible(false);
         dispose();
     }//GEN-LAST:event_closeDialog
@@ -372,15 +372,15 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel bottomVerticalFiller;
     private javax.swing.JButton cancelButton;
-	private javax.swing.JLabel countLabel;
+    private javax.swing.JLabel countLabel;
     private javax.swing.JLabel countValueLabel;
     private javax.swing.JLabel findBugsLabel;
     private javax.swing.JSeparator jSeparator1;
-	private javax.swing.JProgressBar progressBar;
+    private javax.swing.JProgressBar progressBar;
     private javax.swing.JLabel progressLabel;
     private javax.swing.JLabel stageLabel;
     private javax.swing.JLabel stageNameLabel;
-	private javax.swing.JLabel topVerticalFiller;
+    private javax.swing.JLabel topVerticalFiller;
     // End of variables declaration//GEN-END:variables
 
 }

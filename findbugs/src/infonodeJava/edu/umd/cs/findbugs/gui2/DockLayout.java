@@ -57,24 +57,24 @@ public class DockLayout implements FindBugsLayoutManager {
     private static class DockParentListener extends DockingWindowAdapter
     {
         @Override
-		public void windowClosed(DockingWindow window)
+        public void windowClosed(DockingWindow window)
         {
             // Notify all children's listeners
             ArrayList<DockingWindow> children = new ArrayList<DockingWindow>();
-			for (int i = 0; i < window.getChildWindowCount(); i++)
+            for (int i = 0; i < window.getChildWindowCount(); i++)
                 children.add(window.getChildWindow(i));
             for (DockingWindow i : children)
                 i.close();
-		}
+        }
     }
     private class ViewMenuItem extends JCheckBoxMenuItem implements ItemListener
     {
-		private View view;
+        private View view;
 
         public ViewMenuItem(View view, String title)
         {
             super(title, true);
-			addItemListener(this);
+            addItemListener(this);
             this.view = view;
 //			view.addListener(new Listener());
         }
@@ -82,11 +82,11 @@ public class DockLayout implements FindBugsLayoutManager {
         // Menu item has been checked or unchecked
         public void itemStateChanged(ItemEvent evt)
         {
-			if (evt.getStateChange() == ItemEvent.SELECTED)
+            if (evt.getStateChange() == ItemEvent.SELECTED)
                 DockingUtil.addWindow(view, rootWindow);
             if (evt.getStateChange() == ItemEvent.DESELECTED)
                 view.close();
-		}
+        }
 
 //		private class Listener extends DockingWindowAdapter
 //		{
@@ -107,7 +107,7 @@ public class DockLayout implements FindBugsLayoutManager {
     }
     private View commentsView = null;
     final MainFrame frame;
-	private RootWindow rootWindow;
+    private RootWindow rootWindow;
     private View sourceView = null;
     private View summaryView = null;
     private TabWindow tabs = null;
@@ -115,25 +115,25 @@ public class DockLayout implements FindBugsLayoutManager {
     private View topView = null;
     private Map<View, ViewMenuItem> viewMenuItems = null;
     /**
-	 * @param frame
+     * @param frame
      */
     public DockLayout(MainFrame frame) {
         this.frame = frame;
-	}
+    }
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.gui2.LayoutManager#createWindowMenu()
      */
-	public JMenu createWindowMenu() {
+    public JMenu createWindowMenu() {
 
         viewMenuItems = new HashMap<View, ViewMenuItem>();
         viewMenuItems.put(summaryView, new ViewMenuItem(summaryView, "Bug summary"));
         viewMenuItems.put(commentsView, new ViewMenuItem(commentsView, "Comments"));
-		viewMenuItems.put(sourceView, new ViewMenuItem(sourceView, "Source code"));
+        viewMenuItems.put(sourceView, new ViewMenuItem(sourceView, "Source code"));
 
         JMenu windowMenu = new JMenu("Window");
         windowMenu.setMnemonic(KeyEvent.VK_W);
         windowMenu.add(viewMenuItems.get(summaryView));
-		windowMenu.add(viewMenuItems.get(commentsView));
+        windowMenu.add(viewMenuItems.get(commentsView));
         windowMenu.add(viewMenuItems.get(sourceView));
         return windowMenu;
     }
@@ -141,15 +141,15 @@ public class DockLayout implements FindBugsLayoutManager {
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.gui2.LayoutManager#initialize()
      */
-	public void initialize() {
+    public void initialize() {
         ViewMap viewMap = new ViewMap();
         topView = new View(L10N.getLocalString("view.bugs", "Bugs"), null, frame.bugListPanel());
         topView.getWindowProperties().setCloseEnabled(false);
-		viewMap.addView(0, topView);
+        viewMap.addView(0, topView);
         summaryView = new View(L10N.getLocalString("view.bug_summary", "Bug Summary"), null, frame.summaryTab());
         viewMap.addView(1, summaryView);
         commentsView = new View(L10N.getLocalString("view.comments", "Comments"), null, frame.createCommentsInputPanel());
-		viewMap.addView(2, commentsView);
+        viewMap.addView(2, commentsView);
         sourceView = new View(L10N.getLocalString("view.source", "Source"), null, frame.createSourceCodePanel());
         viewMap.addView(3, sourceView);
 
@@ -168,13 +168,13 @@ public class DockLayout implements FindBugsLayoutManager {
         try
         {
             rootWindow.read(new ObjectInputStream(new ByteArrayInputStream(GUISaveState.getInstance().getDockingLayout())), true);
-		}
+        }
         catch (IOException e) {}
 
         DockingWindowListener listener = new DockingWindowAdapter()
         {
             @Override
-			public void windowAdded(DockingWindow addedToWindow, DockingWindow addedWindow)
+            public void windowAdded(DockingWindow addedToWindow, DockingWindow addedWindow)
             {
                 viewMenuItems.get(addedWindow).setSelected(true);
 
@@ -184,7 +184,7 @@ public class DockLayout implements FindBugsLayoutManager {
             @Override
             public void windowClosed(DockingWindow window)
             {
-				viewMenuItems.get(window).setSelected(false);
+                viewMenuItems.get(window).setSelected(false);
             }
         };
 
@@ -195,12 +195,12 @@ public class DockLayout implements FindBugsLayoutManager {
         frame.setLayout(new BorderLayout());
         frame.add(rootWindow, BorderLayout.CENTER);
         frame.add(frame.statusBar(), BorderLayout.SOUTH);
-	}
+    }
 
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.gui2.LayoutManager#makeCommentsVisible()
      */
-	public void makeCommentsVisible() {
+    public void makeCommentsVisible() {
         commentsView.makeVisible();
 
     }
@@ -208,7 +208,7 @@ public class DockLayout implements FindBugsLayoutManager {
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.gui2.LayoutManager#makeSourceVisible()
      */
-	public void makeSourceVisible() {
+    public void makeSourceVisible() {
         sourceView.makeVisible();
 
     }
@@ -216,15 +216,15 @@ public class DockLayout implements FindBugsLayoutManager {
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.gui2.LayoutManager#saveState()
      */
-	public void saveState() {
+    public void saveState() {
         try
         {
             // FIXME this is writing the wrong array and I don't know why
-			ByteArrayOutputStream dockingLayout = new ByteArrayOutputStream();
+            ByteArrayOutputStream dockingLayout = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(dockingLayout);
             rootWindow.write(out, true);
             out.close();
-			GUISaveState.getInstance().setDockingLayout(dockingLayout.toByteArray());
+            GUISaveState.getInstance().setDockingLayout(dockingLayout.toByteArray());
         }
         catch (IOException e) {}
 
@@ -233,11 +233,11 @@ public class DockLayout implements FindBugsLayoutManager {
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.gui2.LayoutManager#setSourceTitle(java.lang.String)
      */
-	public void setSourceTitle(final String title) {
+    public void setSourceTitle(final String title) {
     sourceView.getWindowProperties().setTitleProvider(new DockingWindowTitleProvider(){
         public String getTitle(DockingWindow arg0) {
             return title;
-		}				
+        }
     });
     }
 

@@ -46,37 +46,37 @@ public class BugCellRenderer extends DefaultTreeCellRenderer {
     /**
      * Get the single instance.
      *
-	 * @return the instance
+     * @return the instance
      */
     public static BugCellRenderer instance() {
         return theInstance;
-	}
+    }
 
     private static final long serialVersionUID = 1L;
     private ImageIcon bugGroupIcon;
     private ImageIcon packageIcon;
-	private ImageIcon bugIcon;
+    private ImageIcon bugIcon;
     private ImageIcon classIcon;
     private ImageIcon methodIcon;
     private ImageIcon fieldIcon;
-	private ImageIcon sourceFileIcon;
+    private ImageIcon sourceFileIcon;
     private Object value;
 
     private BugCellRenderer() {
         ClassLoader classLoader = this.getClass().getClassLoader();
         bugGroupIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug.png"));
-		packageIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/package.png"));
+        packageIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/package.png"));
         bugIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug2.png"));
         classIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/class.png"));
         methodIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/method.png"));
-		fieldIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/field.png"));
+        fieldIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/field.png"));
         sourceFileIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/sourcefile.png"));
     }
 
     @Override
     public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
                                                   boolean expanded, boolean leaf, int row, boolean hasFocus) {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
         Object obj = node.getUserObject();
 
         this.value = obj;
@@ -86,27 +86,27 @@ public class BugCellRenderer extends DefaultTreeCellRenderer {
         // Set the icon, depending on what kind of node it is
         if (obj instanceof BugInstance) {
             setIcon(bugIcon);
-		} else if (obj instanceof ClassAnnotation) {
+        } else if (obj instanceof ClassAnnotation) {
             setIcon(classIcon);
         } else if (obj instanceof MethodAnnotation) {
             setIcon(methodIcon);
-		} else if (obj instanceof FieldAnnotation) {
+        } else if (obj instanceof FieldAnnotation) {
             setIcon(fieldIcon);
         } else if (obj instanceof SourceLineAnnotation) {
             setIcon(sourceFileIcon);
-		} else if (obj instanceof BugInstanceGroup) {
+        } else if (obj instanceof BugInstanceGroup) {
             // This is a "group" node
             BugInstanceGroup groupNode = (BugInstanceGroup) obj;
             String groupType = groupNode.getGroupType();
-			if (groupType == FindBugsFrame.GROUP_BY_CLASS) {
+            if (groupType == FindBugsFrame.GROUP_BY_CLASS) {
                 setIcon(classIcon);
             } else if (groupType == FindBugsFrame.GROUP_BY_PACKAGE) {
                 setIcon(packageIcon);
-			} else if (groupType == FindBugsFrame.GROUP_BY_BUG_TYPE) {
+            } else if (groupType == FindBugsFrame.GROUP_BY_BUG_TYPE) {
                 setIcon(bugGroupIcon);
                             } else if (groupType == FindBugsFrame.GROUP_BY_BUG_CATEGORY) {
                 setIcon(bugGroupIcon);
-			}
+            }
         } else {
             setIcon(null);
         }
@@ -117,28 +117,28 @@ public class BugCellRenderer extends DefaultTreeCellRenderer {
     @Override
     public Color getTextNonSelectionColor() {
         return getCellTextColor();
-	}
+    }
 
     private Color getCellTextColor() {
         // Based on the priority, color-code the bug instance.
         Color color = Color.BLACK;
-		if (value instanceof BugInstance) {
+        if (value instanceof BugInstance) {
             BugInstance bugInstance = (BugInstance) value;
             switch (bugInstance.getPriority()) {
             case Detector.EXP_PRIORITY:
-				color = FindBugsFrame.EXP_PRIORITY_COLOR;
+                color = FindBugsFrame.EXP_PRIORITY_COLOR;
                 break;
             case Detector.LOW_PRIORITY:
                 color = FindBugsFrame.LOW_PRIORITY_COLOR;
-				break;
+                break;
             case Detector.NORMAL_PRIORITY:
                 color = FindBugsFrame.NORMAL_PRIORITY_COLOR;
                 break;
-			case Detector.HIGH_PRIORITY:
+            case Detector.HIGH_PRIORITY:
                 color = FindBugsFrame.HIGH_PRIORITY_COLOR;
                 break;
             }
-		}
+        }
         return color;
     }
 }

@@ -41,49 +41,49 @@ public class BugInstanceGroup {
     /**
      * Creates a new instance of BugInstanceGroup.
      *
-	 * @param groupType string indicating why the bug instances in the group
+     * @param groupType string indicating why the bug instances in the group
      *                  are related
      * @param groupName name of the group (e.g., the class name if the group
      *                  is all bug instances in the same class)
-	 */
+     */
     public BugInstanceGroup(String groupType, String groupName) {
         this.groupType = groupType;
         this.groupName = groupName;
-		this.memberCount = 0;
+        this.memberCount = 0;
     }
 
     /**
      * Get the group type.
      */
-	public String getGroupType() {
+    public String getGroupType() {
         return groupType;
     }
 
     /**
      * Increment the member count (number of bug instances in this group).
      */
-	public void incrementMemberCount() {
+    public void incrementMemberCount() {
         ++memberCount;
     }
 
     /**
      * Get the member count (number of bug instances in this group).
      */
-	public int getMemberCount() {
+    public int getMemberCount() {
         return memberCount;
     }
 
     /**
      * Convert to string.
      */
-	@Override
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append(groupName);
-		buf.append(" (");
+        buf.append(" (");
         buf.append(memberCount);
         buf.append(")");
         return buf.toString();
-	}
+    }
 
 }
