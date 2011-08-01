@@ -2191,7 +2191,7 @@ as expected.
 
 
 <para>
-	11. Match bugs using the Not filter operator
+    11. Match bugs using the Not filter operator
 <programlisting>
 <![CDATA[
 <!-- ignore all bugs in test classes, except for those bugs specifically relating to JUnit tests -->
@@ -2203,7 +2203,7 @@ as expected.
   <!-- test classes are suffixed by 'Test' -->
   
   <Not>
-  	<Bug code="IJU" /> <!-- 'IJU' is the code for bugs related to JUnit test code -->
+      <Bug code="IJU" /> <!-- 'IJU' is the code for bugs related to JUnit test code -->
   </Not>
 </Match>
 ]]>
@@ -2253,12 +2253,12 @@ as expected.
      
      <!-- All bugs in test classes, except for JUnit-specific bugs -->
      <Match>
-	  <Class name="~.*\.*Test" />
-	  <Not>
-	  	<Bug code="IJU" />
+      <Class name="~.*\.*Test" />
+      <Not>
+          <Bug code="IJU" />
 	  </Not>
-	 </Match>
-	
+     </Match>
+
 </FindBugsFilter>
 ]]>
 </programlisting>
