@@ -2256,7 +2256,7 @@ as expected.
       <Class name="~.*\.*Test" />
       <Not>
           <Bug code="IJU" />
-	  </Not>
+      </Not>
      </Match>
 
 </FindBugsFilter>

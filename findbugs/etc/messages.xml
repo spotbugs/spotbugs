@@ -19,7 +19,7 @@ This plugin contains all of the standard FindBugs detectors.
   </Plugin>
   <FindBugsMain cmd="addMessages" class="edu.umd.cs.findbugs.AddMessages">
     <Description>add msgs (e.g., textual descriptions of bugs) to analysis results
-		 </Description>
+         </Description>
   </FindBugsMain>
   <FindBugsMain cmd="analyze" class="edu.umd.cs.findbugs.FindBugs2">
     <Description>Perform FindBugs Analysis</Description>
@@ -68,7 +68,7 @@ This plugin contains all of the standard FindBugs detectors.
   </FindBugsMain>
   <FindBugsMain cmd="backdate" class="edu.umd.cs.findbugs.workflow.BackdateHistoryUsingSource">
     <Description>Use the last-modified date of source files to back date the introduction
-			of bugs</Description>
+            of bugs</Description>
   </FindBugsMain>
   <FindBugsMain cmd="csr" class="edu.umd.cs.findbugs.workflow.CloudSyncAndReport">
     <Description>XXXXXX</Description>
@@ -921,7 +921,7 @@ of Serializable classes.  </p>
     <Details>
 <![CDATA[
 <p> Looks for explicit serialization via readObject and 
-	writeObject as evidence
+    writeObject as evidence
 that this class is, indeed, serialized. </p>
 ]]>
     </Details>
@@ -2844,9 +2844,9 @@ by reversing the order of the operands rather than by negating the results.
   <p> In some situation, this compareTo or compare method returns 
 the  constant Integer.MIN_VALUE, which is an exceptionally bad practice.
   The only thing that matters about the return value of compareTo is the sign of the result.
-	But people will sometimes negate the return value of compareTo, expecting that this will negate
-	the sign of the result. And it will, except in the case where the value returned is Integer.MIN_VALUE.
-	So just return -1 rather than Integer.MIN_VALUE.
+    But people will sometimes negate the return value of compareTo, expecting that this will negate
+    the sign of the result. And it will, except in the case where the value returned is Integer.MIN_VALUE.
+    So just return -1 rather than Integer.MIN_VALUE.
 ]]>
     </Details>
   </BugPattern>
@@ -4867,9 +4867,9 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
               value that is guaranteed to be dereferenced
               (except on forward paths involving runtime exceptions).
               </p>
-		<p>Note that a check such as 
-			<code>if (x == null) throw new NullPointerException();</code
-			is treated as a dereference of <code>x</code>.
+        <p>Note that a check such as
+            <code>if (x == null) throw new NullPointerException();</code
+            is treated as a dereference of <code>x</code>.
           ]]>
       </Details>
   </BugPattern>
