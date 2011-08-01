@@ -67,28 +67,37 @@ public class FixIndentation {
         }
     }
 
+    static boolean TRIM_TRAILING_WS = false;
     static String fix(String s) {
         if (s.length() == 0)
             return s;
-        if (s.trim().length() == 0)
+        if (TRIM_TRAILING_WS && s.trim().length() == 0)
             return "";
-        int spaces = 0;
         int pos = 0;
         int indentation = 0;
+        int tabs = 0;
         for (; pos < s.length(); pos++) {
             char c = s.charAt(pos);
             if (c == ' ') {
                 indentation++;
-                spaces++;
             } else if (c == '\t') {
                 indentation += 4;
+                tabs++;
             } else
                 break;
         }
 
-        if (pos >= s.length())
-            return "";
-        return SPACES.substring(0, indentation) + s.substring(pos).trim();
+        if (TRIM_TRAILING_WS || tabs > 0) {
+            if (pos >= s.length())
+                return "";
+            return SPACES.substring(0, indentation) + s.substring(pos).trim();
+
+        } else {
+            if (pos >= s.length())
+                return s;
+            return SPACES.substring(0, indentation) + s.substring(pos);
+        }
+      
 
     }
 
@@ -120,6 +129,9 @@ public class FixIndentation {
         }
         if (!anyChanges)
             return;
+        System.out.println("Updating " + fileToUpdate);
+        if (false)
+            return;
         StringReader stringReader = new StringReader(stringWriter.toString());
         Writer outFile = SourceCharset.fileWriter(fileToUpdate);
         char[] buffer = new char[1000];
@@ -133,7 +145,7 @@ public class FixIndentation {
         } finally {
             outFile.close();
         }
-        System.out.println("Updated " + fileToUpdate);
+        
     }
 
 }
