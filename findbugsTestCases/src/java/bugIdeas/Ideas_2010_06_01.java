@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class Ideas_2010_06_01<K, V> extends AbstractMap {
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
+public class Ideas_2010_06_01<K, V> extends AbstractMap<K,V> {
 
     static class NotWeird<K, V> extends AbstractMap<K, V> {
 
@@ -22,14 +24,16 @@ public class Ideas_2010_06_01<K, V> extends AbstractMap {
     }
 
     @Override
-    public Set entrySet() {
+    public Set<Map.Entry<K, V>> entrySet() {
         return Collections.emptySet();
     }
 
+    @ExpectWarning("GC")
     static Object test1(Ideas_2010_06_01<String, String> m) {
         return m.get(1);
     }
 
+    @ExpectWarning("GC")
     static Object test1a(Map<String, String> m) {
         return m.get(1);
     }
@@ -42,10 +46,12 @@ public class Ideas_2010_06_01<K, V> extends AbstractMap {
         return new HashMap<String, String>();
     }
 
+    @ExpectWarning("GC")
     static Object test2() {
         return builder().get(1);
     }
 
+    @ExpectWarning("GC")
     static Object test2a() {
         return builderA().get(1);
     }
