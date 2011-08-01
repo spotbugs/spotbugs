@@ -1,7 +1,6 @@
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 class BadEquals {
-    @ExpectWarning("EC")
     public static void main(String args[]) {
         Object o[] = new Object[args.length];
         String s[] = new String[args.length];
