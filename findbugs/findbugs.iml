@@ -47,7 +47,7 @@
           <root url="jar://$MODULE_DIR$/lib/dom4j-1.6.1.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="http://dom4j.org/apidocs/" />
+          <root url="http://dom4j.sourceforge.net/dom4j-1.6.1/apidocs/" />
         </JAVADOC>
         <SOURCES />
       </library>
