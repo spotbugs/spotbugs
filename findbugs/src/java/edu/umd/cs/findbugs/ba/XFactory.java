@@ -406,8 +406,13 @@ public class XFactory {
     }
 
     public static XMethod createReferencedXMethod(DismantleBytecode visitor) {
-        return createXMethodUsingSlashedClassName(visitor.getClassConstantOperand(), visitor.getNameConstantOperand(),
+        XMethod m = createXMethodUsingSlashedClassName(visitor.getClassConstantOperand(), visitor.getNameConstantOperand(),
                 visitor.getSigConstantOperand(), visitor.getOpcode() == Constants.INVOKESTATIC);
+        MethodDescriptor a = m.getAccessMethodFor();
+        if (a != null) {
+            m = createXMethod(a);
+        }
+        return m;
     }
 
     public static XField createXField(FieldAnnotation f) {
