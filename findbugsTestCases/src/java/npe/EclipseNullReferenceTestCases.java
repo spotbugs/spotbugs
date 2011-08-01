@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
@@ -1215,6 +1216,7 @@ public class EclipseNullReferenceTestCases {
     // test0316_if_else
     static class Report58 {
         static class X {
+            @DesireWarning("NP")
             void foo(Object o, boolean b) {
                 if (o == null || b) { /* */
                 } else { /* */
