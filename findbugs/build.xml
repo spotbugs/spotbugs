@@ -84,6 +84,7 @@
                 <pathelement location="${svnant.home}/lib/svnkit.jar"/>
                 <pathelement location="${svnant.home}/lib/ganymed.jar"/>
                 <pathelement location="${svnant.home}/lib/svnjavahl.jar"/>
+                <pathelement location="${svnant.home}/lib/jna.jar"/>
         </path>
 
 
