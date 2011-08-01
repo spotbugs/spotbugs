@@ -129,12 +129,10 @@ public class DetectorFactoryCollection {
      * <b>Implementation note:</b> This method is public for tests only!
      *
      * @param instance
-     *            can be null
+     *            use null to clear the instance
      */
-    public static void resetInstance(DetectorFactoryCollection instance) {
+    public static void resetInstance(@CheckForNull DetectorFactoryCollection instance) {
         synchronized (lock) {
-            if (instance == null)
-                throw new IllegalArgumentException();
             theInstance = instance;
         }
     }
