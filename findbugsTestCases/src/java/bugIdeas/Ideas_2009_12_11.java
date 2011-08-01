@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.DesireWarning;
+import edu.umd.cs.findbugs.annotations.Priority;
 
 public class Ideas_2009_12_11 {
 
@@ -27,19 +28,19 @@ public class Ideas_2009_12_11 {
         return Arrays.deepHashCode(data);
     }
 
-    @DesireNoWarning("EC_ARRAY_AND_NONARRAY")
+    @DesireNoWarning(value="EC_ARRAY_AND_NONARRAY", priority=Priority.MEDIUM)
     @DesireWarning("EC_INCOMPATIBLE_TYPES")
     public static void main(String args[]) {
         Ideas_2009_12_11 a = new Ideas_2009_12_11();
         Ideas_2009_12_11 b = new Ideas_2009_12_11();
         Ideas_2009_12_11 c = new Ideas_2009_12_11();
         c.data[0][0] = 1;
-        System.out.println(a.equals(b));
+        System.out.println(a.equals(b)); 
         System.out.println(a.equals(b.data));
-        System.out.println(a.equals(0));
+        System.out.println(a.equals(0)); // bad
         System.out.println(a.equals(c));
         System.out.println(a.equals(c.data));
-        System.out.println(a.equals(1));
+        System.out.println(a.equals(1)); // bad
     }
 
 }
