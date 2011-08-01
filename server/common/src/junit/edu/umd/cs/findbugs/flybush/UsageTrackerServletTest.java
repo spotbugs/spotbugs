@@ -17,7 +17,8 @@ public abstract class UsageTrackerServletTest extends AbstractFlybushServletTest
     public void testTrackSinglePlugin() throws IOException {
         executePost("/track", (
                 "<findbugs-invocation version='MINE' uuid='UUID' app-name='APPNAME' " +
-                "app-version='APPVERSION' entry-point='ENTRYPOINT' os='OS' java-version='JAVAVERSION'>" +
+                "app-version='APPVERSION' entry-point='ENTRYPOINT' os='OS' java-version='JAVAVERSION' " +
+                "language='FR' country='CA'>" +
                 "  <plugin id='PLUGIN' name='PLUGINNAME' version='PLUGINVERSION'/>" +
                 "</findbugs-invocation>").getBytes("UTF-8"));
         Query query = getPersistenceManager().newQuery("select from " + persistenceHelper.getDbUsageEntryClassname());
@@ -34,6 +35,8 @@ public abstract class UsageTrackerServletTest extends AbstractFlybushServletTest
         assertEquals("ENTRYPOINT", entry.getEntryPoint());
         assertEquals("OS", entry.getOs());
         assertEquals("JAVAVERSION", entry.getJavaVersion());
+        assertEquals("FR", entry.getLanguage());
+        assertEquals("CA", entry.getLocaleCountry());
         assertEquals(plugin, entry.getPlugin());
         assertEquals(pluginName, entry.getPluginName());
         assertEquals(pluginVersion, entry.getPluginVersion());
@@ -43,7 +46,8 @@ public abstract class UsageTrackerServletTest extends AbstractFlybushServletTest
     public void testTrackMultiplePlugins() throws IOException {
         executePost("/track", (
                 "<findbugs-invocation version='MINE' uuid='UUID' app-name='APPNAME' " +
-                "app-version='APPVERSION' entry-point='ENTRYPOINT' os='OS' java-version='JAVAVERSION'>" +
+                "app-version='APPVERSION' entry-point='ENTRYPOINT' os='OS' java-version='JAVAVERSION' " +
+                "language='FR' country='CA'>" +
                 "  <plugin id='PLUGIN1' name='PLUGINNAME1' version='PLUGINVERSION1'/>" +
                 "  <plugin id='PLUGIN2' name='PLUGINNAME2' version='PLUGINVERSION2'/>" +
                 "</findbugs-invocation>").getBytes("UTF-8"));

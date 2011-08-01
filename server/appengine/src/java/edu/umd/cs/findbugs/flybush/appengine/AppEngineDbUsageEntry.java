@@ -36,6 +36,10 @@ public class AppEngineDbUsageEntry implements DbUsageEntry {
     @Persistent
     private String javaVersion;
     @Persistent
+    private String language;
+    @Persistent
+    private String localeCountry;
+    @Persistent
     private String uuid;
     @Persistent
     private String plugin;
@@ -111,6 +115,21 @@ public class AppEngineDbUsageEntry implements DbUsageEntry {
     public void setJavaVersion(String javaVersion) {
         this.javaVersion = javaVersion;
     }
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getLocaleCountry() {
+        return localeCountry;
+    }
+
+    public void setLocaleCountry(String localeCountry) {
+        this.localeCountry = localeCountry;
+    }
 
     public String getUuid() {
         return uuid;
@@ -163,6 +182,8 @@ public class AppEngineDbUsageEntry implements DbUsageEntry {
         copy.setPlugin(plugin);
         copy.setPluginName(pluginName);
         copy.setPluginVersion(pluginVersion);
+        copy.setLanguage(language);
+        copy.setLocaleCountry(localeCountry);
         copy.setUuid(uuid);
         copy.setVersion(version);
         copy.setDate(date);
@@ -181,9 +202,6 @@ public class AppEngineDbUsageEntry implements DbUsageEntry {
                 ", os='" + os + '\'' +
                 ", javaVersion='" + javaVersion + '\'' +
                 ", uuid='" + uuid + '\'' +
-                ", plugin='" + plugin + '\'' +
-                ", pluginName='" + pluginName + '\'' +
-                ", pluginVersion='" + pluginVersion + '\'' +
                 '}';
     }
 }

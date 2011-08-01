@@ -29,6 +29,10 @@ public interface DbUsageEntry {
     void setPluginVersion(String pluginVersion);
     Date getDate();
     void setDate(Date date);
+    String getLanguage();
+    void setLanguage(String language);
+    String getLocaleCountry();
+    void setLocaleCountry(String localeCountry);
 
     DbUsageEntry copy();
 }

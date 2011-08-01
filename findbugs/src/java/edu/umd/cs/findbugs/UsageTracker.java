@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,14 +22,13 @@ import java.util.regex.Pattern;
 
 import javax.annotation.WillClose;
 
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
-
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
 class UsageTracker {
     private static final Logger LOGGER = Logger.getLogger(UsageTracker.class.getName());
@@ -137,6 +137,9 @@ class UsageTracker {
         xmlOutput.addAttribute("entry-point", entryPoint);
         xmlOutput.addAttribute("os", SystemProperties.getProperty("os.name", ""));
         xmlOutput.addAttribute("java-version", getMajorJavaVersion());
+        Locale locale = Locale.getDefault();
+        xmlOutput.addAttribute("language", locale.getLanguage());
+        xmlOutput.addAttribute("country", locale.getCountry());
         xmlOutput.addAttribute("uuid", getUuid());
         xmlOutput.stopTag(false);
         for (Plugin plugin : plugins) {

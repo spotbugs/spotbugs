@@ -32,13 +32,16 @@ public class UsageTrackerServlet extends AbstractFlybushServlet {
                     if (qName.equals("findbugs-invocation")) {
                         for (int i = 0; i < attributes.getLength(); i++) {
                             String name = attributes.getQName(i);
-                            if (name.equals("version")) entry.setVersion(attributes.getValue(i));
-                            if (name.equals("app-name")) entry.setAppName(attributes.getValue(i));
-                            if (name.equals("app-version")) entry.setAppVersion(attributes.getValue(i));
-                            if (name.equals("entry-point")) entry.setEntryPoint(attributes.getValue(i));
-                            if (name.equals("os")) entry.setOs(attributes.getValue(i));
-                            if (name.equals("java-version")) entry.setJavaVersion(attributes.getValue(i));
-                            if (name.equals("uuid")) entry.setUuid(attributes.getValue(i));
+                            String value = attributes.getValue(i);
+                            if (name.equals("version")) entry.setVersion(value);
+                            if (name.equals("app-name")) entry.setAppName(value);
+                            if (name.equals("app-version")) entry.setAppVersion(value);
+                            if (name.equals("entry-point")) entry.setEntryPoint(value);
+                            if (name.equals("os")) entry.setOs(value);
+                            if (name.equals("java-version")) entry.setJavaVersion(value);
+                            if (name.equals("language")) entry.setLanguage(value);
+                            if (name.equals("country")) entry.setLocaleCountry(value);
+                            if (name.equals("uuid")) entry.setUuid(value);
                         }
                     } else if (qName.equals("plugin")) {
 
