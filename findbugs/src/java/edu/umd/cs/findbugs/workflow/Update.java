@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.PackageStats.ClassStats;
+import edu.umd.cs.findbugs.SloppyBugComparator;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.VersionInsensitiveBugComparator;
@@ -77,6 +78,7 @@ public class Update {
 
     boolean preciseMatch = false;
 
+    boolean sloppyMatch = false;
     boolean precisePriorityMatch = false;
 
     int mostRecent = -1;
@@ -98,6 +100,7 @@ public class Update {
                     "if an issue had been detected in two versions but not in an intermediate version, record as two separate issues");
             addSwitch("-preciseMatch", "require bug patterns to match precisely");
             addSwitch("-precisePriorityMatch", "only consider two warnings to be the same if their priorities match exactly");
+            addSwitch("-sloppyMatch", "very relaxed matching of bugs");
             addOption("-output", "output file", "explicit filename for merged results (standard out used if not specified)");
             addOption("-maxRank", "max rank", "maximum rank for issues to store");
 
@@ -127,6 +130,8 @@ public class Update {
                     noResurrections = Boolean.parseBoolean(optionExtraPart);
             } else if (option.equals("-preciseMatch")) {
                 preciseMatch = true;
+            } else if (option.equals("-sloppyMatch")) {
+                sloppyMatch = true;
             } else if (option.equals("-precisePriorityMatch")) {
                 versionInsensitiveBugComparator.setComparePriorities(true);
                 fuzzyBugPatternMatcher.setComparePriorities(true);
@@ -225,7 +230,8 @@ public class Update {
         int oldBugs = 0;
         matchBugs(origCollection, newCollection);
 
-        // matchBugs(new SloppyBugComparator(), origCollection, newCollection);
+        if (sloppyMatch)
+            matchBugs(new SloppyBugComparator(), origCollection, newCollection);
 
         int newlyDeadBugs = 0;
         int persistantBugs = 0;
