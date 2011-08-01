@@ -57,7 +57,6 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.charsets.UTF8;
-import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -123,23 +122,24 @@ public class Project implements XMLWriteable {
     /** key is plugin id */
     private final Map<String,Boolean> enabledPlugins;
 
-    public boolean getPluginStatus(Plugin plugin) {
-        Boolean b = enabledPlugins.get(plugin.getPluginId());
-        if (b != null) {
-            return b;
-        }
-        return plugin.isGloballyEnabled();
+    @CheckForNull
+    public Boolean getPluginStatus(Plugin plugin) {
+        return enabledPlugins.get(plugin.getPluginId());
     }
 
     public void setPluginStatus(String pluginId, boolean enabled) {
         enabledPlugins.put(pluginId, enabled);
         Plugin plugin = Plugin.getByPluginId(pluginId);
-        if(plugin == null) {
+        if(plugin == null)
             return;
-        }
+
         if (isDefaultInitialPluginState(plugin, enabled)) {
             enabledPlugins.remove(plugin.getPluginId());
         }
+    }
+
+    public void setPluginStatusTrinary(String pluginId, Boolean enabled) {
+        enabledPlugins.put(pluginId, enabled);
     }
 
     public UserPreferences getConfiguration() {
