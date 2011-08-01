@@ -18,6 +18,75 @@
     </Details>
   </Plugin>
 
+  <FindBugsMain cmd="addMessages" class="edu.umd.cs.findbugs.AddMessages">
+    <Description>add msgs (e.g., textual descriptions of bugs) to analysis results
+		 </Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="analyze" class="edu.umd.cs.findbugs.FindBugs2">
+    <Description>Perform FindBugs Analysis</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="gui" class="edu.umd.cs.findbugs.gui2.Driver">
+    <Description>Launch FindBugs GUI</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="list" class="edu.umd.cs.findbugs.PrintingBugReporter">
+    <Description>Convert analysis results to textual form</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="help" class="edu.umd.cs.findbugs.ShowHelp">
+    <Description>Provide help for commands</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="version" class="edu.umd.cs.findbugs.Version">
+    <Description>List FindBugs version</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="filter" class="edu.umd.cs.findbugs.workflow.Filter">
+    <Description>Filter analysis results</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="set" class="edu.umd.cs.findbugs.workflow.SetBugDatabaseInfo">
+    <Description>Set project configuration/options</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="xxxx" class="edu.umd.cs.findbugs.workflow.ListBugDatabaseInfo">
+    <Description>XXXXXX</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="history" class="edu.umd.cs.findbugs.workflow.MineBugHistory">
+    <Description>List details from  multi-version analysis results</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="union" class="edu.umd.cs.findbugs.workflow.UnionResults">
+    <Description>Merge analysis results from disjoint components</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="merge" class="edu.umd.cs.findbugs.workflow.Update">
+    <Description>Combine analysis results from different versions of software to produce multi-version analysis results </Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="copySource" class="edu.umd.cs.findbugs.workflow.CopyBuggySource">
+    <Description>Copy all the source files referenced in analysis results to a src directory</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="rejar" class="edu.umd.cs.findbugs.workflow.RejarClassesForAnalysis">
+    <Description>Combine multiple jar files into jar files for analysis</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="dd" class="edu.umd.cs.findbugs.workflow.DefectDensity">
+    <Description>List the defect density by package and class</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="msv" class="edu.umd.cs.findbugs.workflow.MergeSummarizeAndView">
+    <Description>XXXXXX</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="backdate" class="edu.umd.cs.findbugs.workflow.BackdateHistoryUsingSource">
+    <Description>Use the last-modified date of source files to back date the introduction
+			of bugs</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="csr" class="edu.umd.cs.findbugs.workflow.CloudSyncAndReport">
+    <Description>XXXXXX</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="appVersion" class="edu.umd.cs.findbugs.workflow.PrintAppVersion">
+    <Description>XXXXXX</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="dbStats" class="edu.umd.cs.findbugs.cloud.db.DBStats">
+    <Description>XXXXXX</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="dis" class="edu.umd.cs.findbugs.workflow.PrintClass">
+    <Description>Disassemble a class file</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="xpath" class="edu.umd.cs.findbugs.xml.XPathFind">
+    <Description>Perform an xpath query on an XML file</Description>
+  </FindBugsMain>
+  
   <!-- これを変えたら FindbugsPlugin のデフォルト ID も更新して下さい -->
   <Cloud id="edu.umd.cs.findbugs.cloud.doNothingCloud">
     <Description>(クラウド無効)</Description>
@@ -5094,7 +5163,7 @@ dateString = dateString.trim();
     <Details>
 <![CDATA[
 <p>
-このコードは、compareTo か比較メソッドを呼び出して、戻り値が特定の値（例えば1または-1） なのか確かめています。
+このコードは、compareTo か比較メソッドを呼び出して、戻り値が特定の値（たとえば1または-1） なのか確かめています。
 これらのメソッドを呼び出すときは特定のゼロ以外の値ではなく、結果の符号だけをチェックするべきです。
 多数または大部分の compareTo と比較メソッドは-1、0または1を返しますが、いくつかは他の値を返します。
 </p>
@@ -5381,6 +5450,9 @@ null ではなく空の文字列またはいくつかの他の適切な文字列
 <![CDATA[
 <p>
 文または分岐が実行されるなら、この時点で値は null であり、null 値を利用する (フォワードパスで実行時例外を伴うこと以外は) ことが保証されています。
+</p>
+<p>
+なお、<code>if (x == null) throw new NullPointerException();</code> は <code>x</code> の参照解除として扱われることに注意して下さい。
 </p>
 ]]>
     </Details>
@@ -5938,6 +6010,19 @@ public void foo() {
     </Details>
   </BugPattern>
 
+  <BugPattern type="DMI_ARGUMENTS_WRONG_ORDER">
+    <ShortDescription>逆にされた引数</ShortDescription>
+    <LongDescription>{2.name} の呼び出しのための間違った順序の引数。{1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このメソッド呼び出しへの引数は、順序が間違っているように見えます。
+たとえば、呼び出し <code>Preconditions.checkNotNull("message", message)</code> は、引数を予約しました。チェックされる値は、第一引数です。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
   <BugPattern type="DMI_RANDOM_USED_ONLY_ONCE">
     <ShortDescription>Random オブジェクトが作成され1度しか使われない</ShortDescription>
     <LongDescription>Random オブジェクトが生成され、1度しか使われていません。{1}</LongDescription>
@@ -5959,13 +6044,14 @@ public void foo() {
 
 
   <BugPattern type="RV_ABSOLUTE_VALUE_OF_RANDOM_INT">
-    <ShortDescription>符号付き32ビット整数の乱数の絶対値を計算する間違った試み</ShortDescription>
-    <LongDescription>符号付き32ビット整数の乱数の絶対値を計算する間違った試みです。{1}</LongDescription>
+    <ShortDescription>符号付き整数の乱数の絶対値を計算する間違った試み</ShortDescription>
+    <LongDescription>符号付き整数の乱数の絶対値を計算する間違った試みです。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 このコードは、符号付き整数の乱数を生成して絶対値を計算しています。
 乱数ジェネレータで返される数が <code>Integer.MIN_VALUE</code> なら結果は同様に負です (<code>Math.abs(Integer.MIN_VALUE) == Integer.MIN_VALUE</code> なので)。 
+(同じ問題は long 値でも同様に起きます)。
 </p>
 ]]>
     </Details>
@@ -6088,8 +6174,8 @@ public void foo() {
     <Details>
 <![CDATA[
 <p>
-バイト配列から値をロードして、ビット論理和を実行しています。
-ビット演算を実行する前にバイト配列からロードされた値は32ビットまで符号拡張されます。
+ロードしたバイト値 (たとえば、バイト配列からロードされた値や戻り値がバイト型のメソッドから返された値) とビット論理和を実行しています。
+ビット演算を実行する前にバイト値は32ビットまで符号拡張されます。
 したがって、<code>b[0]</code> の値が <code>0xff</code> で、<code>x</code> の初期値が <code>0</code> だとすると、
 <code>((x &lt;&lt; 8) | b[0])</code> は、<code>0xff</code> が符号拡張で <code>0xffffffff</code> になるので、結果として <code>0xffffffff</code> が得られます。 
 </p>
@@ -8040,7 +8126,7 @@ public @NonNegative Integer example(@Negative Integer value) {
 
   <BugPattern type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK">
     <ShortDescription>値は型修飾子を必要としないが、不明としてマークされている</ShortDescription>
-    <LongDescription>値は、{2.simpleName} を必要としませんが、明示的に {2.simpleName} に関する不明としてアノテーションが付けられています。</LongDescription>
+    <LongDescription>値は、{2.simpleName} を必要としませんが、明示的に {2.simpleName} に関して不明としてアノテーションが付けられています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -8054,7 +8140,7 @@ public @NonNegative Integer example(@Negative Integer value) {
 
   <BugPattern type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK">
     <ShortDescription>値は型修飾子を必要としているが、不明としてマークされている</ShortDescription>
-    <LongDescription>値は、常に {2.simpleName} を必要としていますが、明示的に {2.simpleName} に関する不明としてアノテーションが付けられています。</LongDescription>
+    <LongDescription>値は、常に {2.simpleName} を必要としていますが、明示的に {2.simpleName} に関して不明としてアノテーションが付けられています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
