@@ -56,8 +56,6 @@ import edu.umd.cs.findbugs.util.MapCache;
  */
 @javax.annotation.ParametersAreNonnullByDefault
 public class Subtypes2 {
-    public static final boolean ENABLE_SUBTYPES2 = true;
-
     public static final boolean ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES = true; // SystemProperties.getBoolean("findbugs.subtypes2.superclass");
 
     public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.subtypes2.debug");
@@ -354,15 +352,51 @@ public class Subtypes2 {
         // OK, we've exhausted the possibilities now
         return false;
     }
-
+    ClassDescriptor prevSubDesc, prevSuperDesc;
+    boolean prevResult;
+    
     public boolean isSubtype(ClassDescriptor subDesc, ClassDescriptor superDesc) throws ClassNotFoundException {
+        if (subDesc == prevSubDesc && prevSuperDesc == superDesc)
+            return prevResult;
+        prevResult = isSubtype0(subDesc, superDesc);
+        prevSubDesc = subDesc;
+        prevSuperDesc = superDesc;
+        return prevResult;
+    }
+
+    public boolean isSubtype(ClassDescriptor subDesc, ClassDescriptor... superDesc) throws ClassNotFoundException {
+        for (ClassDescriptor s : superDesc) {
+            if (subDesc.equals(s))
+                return true;
+        }
+        XClass xclass = AnalysisContext.currentXFactory().getXClass(subDesc);
+        if (xclass != null) {
+            ClassDescriptor xSuper = xclass.getSuperclassDescriptor();
+            for (ClassDescriptor s : superDesc) {
+                if (s.equals(xSuper))
+                    return true;
+            }
+        }
+        SupertypeQueryResults supertypeQueryResults = getSupertypeQueryResults(subDesc);
+        for (ClassDescriptor s : superDesc)
+            if (supertypeQueryResults.containsType(s))
+                return true;
+        return false;
+    }
+        
+    public boolean isSubtype0(ClassDescriptor subDesc, ClassDescriptor superDesc) throws ClassNotFoundException {
         assert subDesc != null;
         assert superDesc != null;
         if (subDesc.equals(superDesc))
             return true;
-        if (superDesc.getClassName().equals("java/lang/Object"))
+        String superName = superDesc.getClassName();
+        if (superName.equals("java/lang/Object"))
             return true;
-
+        String subName = subDesc.getClassName();
+        if (subName.equals("java/lang/Object"))
+            return false;
+      
+        
         if (true) {
         XClass xclass = AnalysisContext.currentXFactory().getXClass(subDesc);
         if (xclass != null) {
@@ -370,17 +404,25 @@ public class Subtypes2 {
             if (superDesc.equals(xSuper))
                 return true;
             ClassDescriptor[] interfaces = xclass.getInterfaceDescriptorList();
-            for (ClassDescriptor i : interfaces)
+            if (interfaces.length == 0) {
+                if (xSuper == null)
+                    return false;
+                if (xSuper.getClassName().equals("java/lang/Object"))
+                    return false;
+            } else for (ClassDescriptor i : interfaces)
                 if (superDesc.equals(i))
                     return true;
-            if (xSuper == null && interfaces.length == 0)
-                return false;
         }
         }
-
+        if (false) {
+            if (subName.equals("java/lang/Error") && superName.equals("java/lang/RuntimeException")) 
+                    System.out.println("huh");
+            System.out.println("sub: " + subDesc);
+            System.out.println("SUP: " + superDesc);
+            System.out.println("CHECK: " + subDesc + " " + superDesc);
+            }
         SupertypeQueryResults supertypeQueryResults = getSupertypeQueryResults(subDesc);
         return supertypeQueryResults.containsType(superDesc);
-
     }
 
     /**
@@ -411,41 +453,7 @@ public class Subtypes2 {
         ClassDescriptor typeClassDescriptor = DescriptorFactory.getClassDescriptor(type);
         ClassDescriptor possibleSuperclassClassDescriptor = DescriptorFactory.getClassDescriptor(possibleSupertype);
 
-        // In principle, we should be able to answer no if the ObjectType
-        // objects
-        // are not equal and possibleSupertype is final.
-        // However, internally FindBugs creates special "subtypes" of
-        // java.lang.String
-        // (DynamicStringType, StaticStringType, etc.)---see FindRefComparison
-        // detector.
-        // These will end up resolving to the same ClassVertex as
-        // java.lang.String,
-        // which will Do The Right Thing.
-        if (false) {
-            ClassVertex possibleSuperclassClassVertex = resolveClassVertex(possibleSuperclassClassDescriptor);
-            if (possibleSuperclassClassVertex.isResolved() && possibleSuperclassClassVertex.getXClass().isFinal()) {
-                if (DEBUG_QUERIES) {
-                    System.out.println("  ==> no, " + possibleSuperclassClassDescriptor + " is final");
-                }
-                return false;
-            }
-        }
-
-        // Get the supertype query results
-        SupertypeQueryResults supertypeQueryResults = getSupertypeQueryResults(typeClassDescriptor);
-        if (DEBUG_QUERIES) {
-            System.out.println("  Superclass set: " + supertypeQueryResults.supertypeSet);
-        }
-
-        boolean isSubtype = supertypeQueryResults.containsType(possibleSuperclassClassDescriptor);
-        if (DEBUG_QUERIES) {
-            if (isSubtype) {
-                System.out.println("  ==> yes, " + possibleSuperclassClassDescriptor + " is in superclass set");
-            } else {
-                System.out.println("  ==> no, " + possibleSuperclassClassDescriptor + " is not in superclass set");
-            }
-        }
-        return isSubtype;
+        return isSubtype(typeClassDescriptor, possibleSuperclassClassDescriptor);
     }
 
     /**

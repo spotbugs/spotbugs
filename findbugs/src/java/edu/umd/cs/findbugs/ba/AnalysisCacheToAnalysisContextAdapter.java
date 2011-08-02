@@ -402,7 +402,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
                 AnalysisContext.logError("Unable to get XClass for " + appClass, e);
             }
 
-        if (Subtypes2.ENABLE_SUBTYPES2 && Subtypes2.DEBUG) {
+        if (true && Subtypes2.DEBUG) {
             System.out.println(getSubtypes2().getGraph().getNumVertices() + " vertices in inheritance graph");
         }
     }

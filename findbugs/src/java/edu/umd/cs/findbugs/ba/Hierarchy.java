@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * Facade for class hierarchy queries. These typically access the class
@@ -62,6 +63,10 @@ import edu.umd.cs.findbugs.classfile.Global;
 public class Hierarchy {
     protected static final boolean DEBUG_METHOD_LOOKUP = SystemProperties.getBoolean("hier.lookup.debug");
 
+    public static ClassDescriptor RUNTIME_EXCEPTION = DescriptorFactory.createClassDescriptor(RuntimeException.class);
+    public static ClassDescriptor EXCEPTION = DescriptorFactory.createClassDescriptor(Exception.class);
+    public static ClassDescriptor ERROR = DescriptorFactory.createClassDescriptor(Error.class);
+    
     /**
      * Type of java.lang.Exception.
      */
@@ -87,10 +92,9 @@ public class Hierarchy {
      * @return true if clsName is a subtype of possibleSupertypeClassName, false
      *         if not
      */
-    public static boolean isSubtype(String clsName, String possibleSupertypeClassName) throws ClassNotFoundException {
-        ObjectType cls = ObjectTypeFactory.getInstance(clsName);
-        ObjectType superCls = ObjectTypeFactory.getInstance(possibleSupertypeClassName);
-        return isSubtype(cls, superCls);
+    public static boolean isSubtype(@DottedClassName String clsName, @DottedClassName String possibleSupertypeClassName) throws ClassNotFoundException {
+        Subtypes2 subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
+        return subtypes2.isSubtype(DescriptorFactory.createClassDescriptorFromDottedClassName(clsName), DescriptorFactory.createClassDescriptorFromDottedClassName(possibleSupertypeClassName));
     }
 
     /**
@@ -103,7 +107,7 @@ public class Hierarchy {
      * @return true if t is a subtype of possibleSupertype, false if not
      */
     public static boolean isSubtype(ReferenceType t, ReferenceType possibleSupertype) throws ClassNotFoundException {
-        if (Subtypes2.ENABLE_SUBTYPES2) {
+        if (true) {
             return Global.getAnalysisCache().getDatabase(Subtypes2.class).isSubtype(t, possibleSupertype);
         } else {
             Map<ReferenceType, Boolean> subtypes = subtypeCache.get(possibleSupertype);
@@ -140,7 +144,12 @@ public class Hierarchy {
      * (RuntimeException or Error).
      */
     public static boolean isUncheckedException(ObjectType type) throws ClassNotFoundException {
-        return isSubtype(type, RUNTIME_EXCEPTION_TYPE) || isSubtype(type, ERROR_TYPE) || type.equals(Type.THROWABLE);
+        if (type.equals(Type.THROWABLE) || type.equals(RUNTIME_EXCEPTION_TYPE) || type.equals(ERROR_TYPE))
+            return true;
+        ClassDescriptor c = DescriptorFactory.getClassDescriptor(type);
+        Subtypes2 subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
+        return subtypes2.isSubtype(c, RUNTIME_EXCEPTION, ERROR);
+     
     }
 
     /**
