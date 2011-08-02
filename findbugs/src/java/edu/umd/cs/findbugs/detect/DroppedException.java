@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class DroppedException extends PreorderVisitor implements Detector {
@@ -137,12 +138,12 @@ public class DroppedException extends PreorderVisitor implements Detector {
             }
             if (handled < 5)
                 continue;
-            String c;
+            @DottedClassName String causeName;
             if (cause == 0)
-                c = "Throwable";
+                causeName = "java.lang.Throwable";
             else {
-                c = Utility.compactClassName(getConstantPool().getConstantString(cause, CONSTANT_Class), false);
-                if (!isChecked(c))
+                causeName = Utility.compactClassName(getConstantPool().getConstantString(cause, CONSTANT_Class), false);
+                if (!isChecked(causeName))
                     continue;
             }
 
@@ -236,8 +237,8 @@ public class DroppedException extends PreorderVisitor implements Detector {
                 }
             }
 
-            if (end - start >= 4 && drops && !c.equals("java.lang.InterruptedException")
-                    && !c.equals("java.lang.CloneNotSupportedException")) {
+            if (end - start >= 4 && drops && !causeName.equals("java.lang.InterruptedException")
+                    && !causeName.equals("java.lang.CloneNotSupportedException")) {
                 int priority = NORMAL_PRIORITY;
                 if (exitInTryBlock)
                     priority++;
@@ -254,8 +255,8 @@ public class DroppedException extends PreorderVisitor implements Detector {
                     if (lineNumbers == null || multiLineHandler)
                         priority += 2;
                 }
-                if (c.equals("java.lang.Error") || c.equals("java.lang.Exception") || c.equals("java.lang.Throwable")
-                        || c.equals("java.lang.RuntimeException")) {
+                if (causeName.equals("java.lang.Error") || causeName.equals("java.lang.Exception") || causeName.equals("java.lang.Throwable")
+                        || causeName.equals("java.lang.RuntimeException")) {
                     priority--;
                     if (end - start > 30)
                         priority--;
@@ -272,11 +273,11 @@ public class DroppedException extends PreorderVisitor implements Detector {
                     System.out.println("reporting warning");
                 }
 
-                String key = (exitInTryBlock ? "mightDrop," : "mightIgnore,") + getFullyQualifiedMethodName() + "," + c;
+                String key = (exitInTryBlock ? "mightDrop," : "mightIgnore,") + getFullyQualifiedMethodName() + "," + causeName;
                 if (reported.add(key)) {
                     BugInstance bugInstance = new BugInstance(this, exitInTryBlock ? "DE_MIGHT_DROP" : "DE_MIGHT_IGNORE",
                             priority).addClassAndMethod(this);
-                    bugInstance.addClass(c).describe("CLASS_EXCEPTION");
+                    bugInstance.addClass(causeName).describe("CLASS_EXCEPTION");
                     bugInstance.addSourceLine(srcLine);
                     bugReporter.reportBug(bugInstance);
                 }
