@@ -5503,6 +5503,7 @@ value of the result of the remainder operation (i.e., use
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="INT_BAD_COMPARISON_WITH_SIGNED_BYTE">
     <ShortDescription>Bad comparison of signed byte</ShortDescription>
     <LongDescription>Bad comparison of signed byte with {2} in {1}</LongDescription>
@@ -5516,6 +5517,20 @@ use <code>0xff &amp; b</code>
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="INT_BAD_COMPARISON_WITH_INT_VALUE">
+    <ShortDescription>Bad comparison of int value with long constant</ShortDescription>
+    <LongDescription>Bad comparison of int with {2} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This code compares an int value with a long constant that is outside
+the range of values that can be represented as an int value.
+This comparison is vacuous and possibily to be incorrect.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
   <BugPattern type="INT_VACUOUS_BIT_OPERATION">
     <ShortDescription>Vacuous bit mask operation on integer value</ShortDescription>
     <LongDescription>Vacuous {2} operation on {3} in {1}</LongDescription>

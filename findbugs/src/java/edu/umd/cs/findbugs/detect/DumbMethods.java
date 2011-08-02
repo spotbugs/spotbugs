@@ -948,10 +948,9 @@ public class DumbMethods extends OpcodeStackDetector {
                 int priority  = Priorities.HIGH_PRIORITY;
                 if (value == Integer.MAX_VALUE+1 || value == Integer.MIN_VALUE -1)
                     priority = Priorities.NORMAL_PRIORITY;
-                accumulator.accumulateBug(new BugInstance(this, "TESTING", priority ).addClassAndMethod(this)
-                        .addValueSource(left, this)
+                accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_INT_VALUE", priority ).addClassAndMethod(this)
                         .addString(Long.toString(value)).describe(StringAnnotation.STRING_NONSTRING_CONSTANT_ROLE)
-                        .addString("Incompatible comparison of result of I2L and long constant"), this);
+                        .addValueSource(left, this) , this);
             }
         }
     }
