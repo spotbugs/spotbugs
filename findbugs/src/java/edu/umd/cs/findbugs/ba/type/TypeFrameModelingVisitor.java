@@ -793,12 +793,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
     }
 
     private boolean isCollection(ReferenceType target) throws ClassNotFoundException {
-        if (Subtypes2.ENABLE_SUBTYPES2) {
-            Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-            return subtypes2.isSubtype(target, COLLECTION_TYPE);
-        } else {
-            return target.isAssignmentCompatibleWith(COLLECTION_TYPE);
-        }
+        Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+        return subtypes2.isSubtype(target, COLLECTION_TYPE);
     }
 
     @Override

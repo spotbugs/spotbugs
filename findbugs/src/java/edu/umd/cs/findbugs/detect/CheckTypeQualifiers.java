@@ -145,24 +145,24 @@ public class CheckTypeQualifiers extends CFGDetector {
             System.out.println("CheckTypeQualifiers: checking " + methodDescriptor.toString());
         }
 
+        Collection<TypeQualifierValue> relevantQualifiers = Analysis.getRelevantTypeQualifiers(methodDescriptor, cfg);
+        for(Iterator<TypeQualifierValue> i = relevantQualifiers.iterator(); i.hasNext();  ) {
+            if (i.next().getTypeQualifierClassDescriptor().getClassName().equals(NONNULL_ANNOTATION))
+                i.remove();
+        }
+        if (relevantQualifiers.isEmpty())
+            return;
+        if (DEBUG) {
+            System.out.println("  Relevant type qualifiers are " + relevantQualifiers);
+        }
         IAnalysisCache analysisCache = Global.getAnalysisCache();
         ForwardTypeQualifierDataflowFactory forwardDataflowFactory = analysisCache.getMethodAnalysis(
                 ForwardTypeQualifierDataflowFactory.class, methodDescriptor);
         BackwardTypeQualifierDataflowFactory backwardDataflowFactory = analysisCache.getMethodAnalysis(
                 BackwardTypeQualifierDataflowFactory.class, methodDescriptor);
-        ValueNumberDataflow vnaDataflow = analysisCache.getMethodAnalysis(ValueNumberDataflow.class, methodDescriptor);
-
-        Collection<TypeQualifierValue> relevantQualifiers = Analysis.getRelevantTypeQualifiers(methodDescriptor, cfg);
-        if (DEBUG) {
-            System.out.println("  Relevant type qualifiers are " + relevantQualifiers);
-        }
+        ValueNumberDataflow vnaDataflow = analysisCache.getMethodAnalysis(ValueNumberDataflow.class, methodDescriptor);        
 
         for (TypeQualifierValue typeQualifierValue : relevantQualifiers) {
-            if (typeQualifierValue.getTypeQualifierClassDescriptor().getClassName().equals(NONNULL_ANNOTATION)) {
-                // Checking @Nonnull annotations is the bailiwick of
-                // FindNullDeref.
-                continue;
-            }
 
             try {
                 checkQualifier(methodDescriptor, cfg, typeQualifierValue, forwardDataflowFactory, backwardDataflowFactory,
@@ -433,12 +433,12 @@ public class CheckTypeQualifiers extends CFGDetector {
         BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY).addClassAndMethod(methodDescriptor);
         annotateWarningWithTypeQualifier(warning, typeQualifierValue);
 
-        Set<SourceSinkInfo> sourceSet = (forward == FlowValue.ALWAYS) ? forwardsFact.getWhereAlways(vn) : forwardsFact
+        Set<? extends SourceSinkInfo> sourceSet = (forward == FlowValue.ALWAYS) ? forwardsFact.getWhereAlways(vn) : forwardsFact
                 .getWhereNever(vn);
         for (SourceSinkInfo source : sourceSet) {
             annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, source);
         }
-        Set<SourceSinkInfo> sinkSet = (backward == FlowValue.ALWAYS) ? backwardsFact.getWhereAlways(vn) : backwardsFact
+        Set<? extends SourceSinkInfo> sinkSet = (backward == FlowValue.ALWAYS) ? backwardsFact.getWhereAlways(vn) : backwardsFact
                 .getWhereNever(vn);
 
         Location sinkLocation = getSinkLocation(sinkSet);
@@ -492,7 +492,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 
         annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, source);
 
-        Set<SourceSinkInfo> sinkSet = (backwardsFlowValue == FlowValue.NEVER) ? backwardsFact.getWhereNever(vn) : backwardsFact
+        Set<? extends SourceSinkInfo> sinkSet = (backwardsFlowValue == FlowValue.NEVER) ? backwardsFact.getWhereNever(vn) : backwardsFact
                 .getWhereAlways(vn);
         for (SourceSinkInfo sink : sinkSet) {
             annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, sink);
@@ -576,7 +576,7 @@ public class CheckTypeQualifiers extends CFGDetector {
     }
 
     private @CheckForNull
-    Location getSinkLocation(Iterable<SourceSinkInfo> info) {
+    Location getSinkLocation(Iterable<? extends SourceSinkInfo> info) {
         for (SourceSinkInfo s : info) {
             Location l = getSinkLocation(s);
             if (l != null)

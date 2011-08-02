@@ -220,12 +220,10 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
                                                     * ClassNotFoundException
                                                     */{
         try {
-            if (Subtypes2.ENABLE_SUBTYPES2) {
+            
                 Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
                 return subtypes2.isSubtype(ref, Type.THROWABLE);
-            } else {
-                return ref.isAssignmentCompatibleWith(Type.THROWABLE);
-            }
+            
         } catch (ClassNotFoundException e) {
             // We'll just assume that it's not an exception type.
             lookupFailureCallback.reportMissingClass(e);
