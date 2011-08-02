@@ -8,12 +8,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -25,18 +27,24 @@ import javax.annotation.WillClose;
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
-import edu.umd.cs.findbugs.xml.XMLOutput;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-class UsageTracker {
+public class UsageTracker {
     private static final Logger LOGGER = Logger.getLogger(UsageTracker.class.getName());
     private static final String KEY_DISABLE_ALL_USAGE_TRACKING = "disableAllUsageTracking";
     private static final String KEY_REDIRECT_ALL_USAGE_TRACKING = "redirectAllUsageTracking";
+    
+    private final UsageTrackerCallback dfc;
+    private List<PluginUpdate> pluginUpdates = new ArrayList<PluginUpdate>();
 
-    void trackUsage(DetectorFactoryCollection dfc, Collection<Plugin> plugins) {
-        if (trackingIsGloballyDisabled(dfc))
+    public UsageTracker(UsageTrackerCallback dfc) {
+        this.dfc = dfc;
+    }
+
+    void trackUsage(Collection<Plugin> plugins) {
+        if (trackingIsGloballyDisabled())
             return;
 
         String redirect = dfc.getGlobalOption(KEY_REDIRECT_ALL_USAGE_TRACKING);
@@ -53,9 +61,11 @@ class UsageTracker {
             }
         }
 
+        final CountDownLatch latch;
         if (redirectUri != null) {
+            latch = new CountDownLatch(1);
             logError(Level.INFO, "Redirecting all plugin usage tracking to " + redirectUri + " (" + pluginName + ")");
-            trackUsage(redirectUri, plugins);
+            startUsageReportThread(redirectUri, plugins, latch);
         } else {
             MultiMap<URI,Plugin> pluginsByTracker = new MultiMap<URI, Plugin>(HashSet.class);
             for (Plugin plugin : plugins) {
@@ -67,13 +77,24 @@ class UsageTracker {
                 }
                 pluginsByTracker.add(uri, plugin);
             }
+            latch = new CountDownLatch(pluginsByTracker.keySet().size());
             for (URI uri : pluginsByTracker.keySet()) {
-                trackUsage(uri, pluginsByTracker.get(uri));
+                startUsageReportThread(uri, pluginsByTracker.get(uri), latch);
             }
         }
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    latch.await();
+                    dfc.pluginUpdateCheckComplete(pluginUpdates);
+                } catch (Exception e) {
+                }
+
+            }
+        }, "Usage tracker").start();
     }
 
-    private boolean trackingIsGloballyDisabled(DetectorFactoryCollection dfc) {
+    private boolean trackingIsGloballyDisabled() {
         String disable = dfc.getGlobalOption(KEY_DISABLE_ALL_USAGE_TRACKING);
         Plugin setter = dfc.getGlobalOptionSetter(KEY_DISABLE_ALL_USAGE_TRACKING);
         String pluginName = setter == null ? "<unknown plugin>" : setter.getShortDescription();
@@ -90,7 +111,7 @@ class UsageTracker {
         return false;
     }
 
-    private void trackUsage(final URI trackerUrl, final Collection<Plugin> plugins) {
+    private void startUsageReportThread(final URI trackerUrl, final Collection<Plugin> plugins, final CountDownLatch latch) {
         if (trackerUrl == null) {
             logError(Level.INFO, "Not submitting usage tracking for plugins with blank URL: " + getPluginNames(plugins));
             return;
@@ -107,6 +128,7 @@ class UsageTracker {
             public void run() {
                 try {
                     actuallyTrackUsage(trackerUrl, plugins, entryPoint);
+                    latch.countDown();
                 } catch (Exception e) {
                     logError(e, "Error submitting usage tracking data to " + trackerUrl);
                 }
@@ -162,7 +184,8 @@ class UsageTracker {
         xmlOutput.flush();
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) {
-            logError(SystemProperties.ASSERTIONS_ENABLED ? Level.WARNING : Level.FINE, "Error submitting anonymous usage data to " + trackerUrl + ": "
+            logError(SystemProperties.ASSERTIONS_ENABLED ? Level.WARNING : Level.FINE,
+                    "Error submitting anonymous usage data to " + trackerUrl + ": "
                     + responseCode + " - " + conn.getResponseMessage());
         }
         parseUpdateXml(trackerUrl, plugins, conn.getInputStream());
@@ -173,8 +196,7 @@ class UsageTracker {
 
     // package-private for testing
     @SuppressWarnings({"unchecked"})
-    void parseUpdateXml(URI trackerUrl, Collection<Plugin> plugins,
-            @WillClose InputStream inputStream) {
+    void parseUpdateXml(URI trackerUrl, Collection<Plugin> plugins, @WillClose InputStream inputStream) {
         try {
             Document doc = new SAXReader().read(inputStream);
             List<Element> pluginEls = (List<Element>) doc.selectNodes("fb-plugin-updates/plugin");
@@ -220,14 +242,9 @@ class UsageTracker {
         Date date = parseReleaseDate(maxEl);
         Date releaseDate = plugin.getReleaseDate();
         if (releaseDate == null || date.after(releaseDate)) {
-            printMessage("PLUGIN UPDATE: " + plugin.getShortDescription() + " " + version
-                    + " has been released (you have " + plugin.getVersion() + ")");
-            if (message != null && message.length() > 0)
-                printMessage("   " + message.replaceAll("\\n", "\n   "));
-            printMessage("Visit " + url + " for downloads and release notes.");
+            pluginUpdates.add(new PluginUpdate(plugin, version, url, message));
         }
     }
-
 
     // protected for testing
     protected void logError(Level level, String msg) {
@@ -237,11 +254,6 @@ class UsageTracker {
     // protected for testing
     protected void logError(Exception e, String msg) {
         LOGGER.log(Level.INFO, msg, e);
-    }
-
-    // protected for testing
-    protected void printMessage(String message) {
-        System.err.println(message);
     }
 
     private Date parseReleaseDate(Element releaseEl) throws ParseException {
@@ -292,5 +304,35 @@ class UsageTracker {
            return m.group();
         }
         return "";
+    }
+
+    public static class PluginUpdate {
+        private final Plugin plugin;
+        private final String version;
+        private final String url;
+        private final String message;
+
+        private PluginUpdate(Plugin plugin, String version, String url, String message) {
+            this.plugin = plugin;
+            this.version = version;
+            this.url = url;
+            this.message = message;
+        }
+
+        public Plugin getPlugin() {
+            return plugin;
+        }
+
+        public String getVersion() {
+            return version;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 }

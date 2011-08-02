@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 
 import junit.framework.TestCase;
@@ -19,15 +20,22 @@ public class UsageTrackerTest extends TestCase {
         }
     }
 
+    @SuppressWarnings({"deprecation"})
     public void testMe() throws Exception {
         final StringBuilder printed = new StringBuilder();
         final StringBuilder errors = new StringBuilder();
-        UsageTracker tracker = new UsageTracker() {
-            @Override
-            protected void printMessage(String msg) {
-                printed.append(msg).append("\n");
-                System.err.println(msg);
+        UsageTracker tracker = new UsageTracker(new UsageTrackerCallback() {
+            public void pluginUpdateCheckComplete(List<UsageTracker.PluginUpdate> updates) {
             }
+
+            public String getGlobalOption(String key) {
+                return null;
+            }
+
+            public Plugin getGlobalOptionSetter(String key) {
+                return null;
+            }
+        }) {
             @Override
              protected void logError(Exception e, String msg) {
                 errors.append(msg).append("\n");

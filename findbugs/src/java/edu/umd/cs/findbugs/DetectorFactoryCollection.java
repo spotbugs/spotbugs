@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -52,36 +53,29 @@ import edu.umd.cs.findbugs.util.ClassPathUtil;
  * @author David Hovemeyer
  * @see DetectorFactory
  */
-public class DetectorFactoryCollection {
+public class DetectorFactoryCollection implements UsageTrackerCallback {
 
     private static final Logger LOGGER = Logger.getLogger(DetectorFactoryCollection.class.getName());
-
     private static final boolean DEBUG_JAWS = SystemProperties.getBoolean("findbugs.jaws.debug");
-
-    private final HashMap<String, Plugin> pluginByIdMap = new LinkedHashMap<String, Plugin>();
-
-    private Plugin corePlugin;
-
-    private final ArrayList<DetectorFactory> factoryList = new ArrayList<DetectorFactory>();
-
-    private final HashMap<String, DetectorFactory> factoriesByName = new HashMap<String, DetectorFactory>();
-
-    private final HashMap<String, DetectorFactory> factoriesByDetectorClassName = new HashMap<String, DetectorFactory>();
+    private static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
 
     private static DetectorFactoryCollection theInstance;
-
     private static final Object lock = new Object();
 
-    static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
-
-    Map<String, CloudPlugin> registeredClouds = new LinkedHashMap<String, CloudPlugin>();
-
-    protected final HashMap<String, BugCategory> categoryDescriptionMap = new HashMap<String, BugCategory>();
-
-    protected final HashMap<String, BugPattern> bugPatternMap = new HashMap<String, BugPattern>();
-
-    protected final HashMap<String, BugCode> bugCodeMap = new HashMap<String, BugCode>();
-    private UsageTracker usageTracker = new UsageTracker();
+    private final Map<String, Plugin> pluginByIdMap = new LinkedHashMap<String, Plugin>();
+    private Plugin corePlugin;
+    private final List<DetectorFactory> factoryList = new ArrayList<DetectorFactory>();
+    private final Map<String, DetectorFactory> factoriesByName = new HashMap<String, DetectorFactory>();
+    private final Map<String, DetectorFactory> factoriesByDetectorClassName = new HashMap<String, DetectorFactory>();
+    private Map<String, CloudPlugin> registeredClouds = new LinkedHashMap<String, CloudPlugin>();
+    protected final Map<String, BugCategory> categoryDescriptionMap = new HashMap<String, BugCategory>();
+    protected final Map<String, BugPattern> bugPatternMap = new HashMap<String, BugPattern>();
+    protected final Map<String, BugCode> bugCodeMap = new HashMap<String, BugCode>();
+    
+    private UsageTracker usageTracker;
+    private CopyOnWriteArrayList<PluginUpdateListener> pluginUpdateListeners
+            = new CopyOnWriteArrayList<PluginUpdateListener>();
+    private List<UsageTracker.PluginUpdate> updates = null;
 
     protected DetectorFactoryCollection() {
         loadCorePlugin();
@@ -94,13 +88,15 @@ public class DetectorFactoryCollection {
             }
         }
         setGlobalOptions();
-        usageTracker.trackUsage(this, combine(corePlugin, enabledPlugins));
+        usageTracker = new UsageTracker(this);
+        usageTracker.trackUsage(combine(corePlugin, enabledPlugins));
     }
 
     protected DetectorFactoryCollection(Plugin onlyPlugin) {
         loadPlugin(onlyPlugin);
         setGlobalOptions();
-        usageTracker.trackUsage(this, combine(corePlugin, Collections.singleton(onlyPlugin)));
+        usageTracker = new UsageTracker(this);
+        usageTracker.trackUsage(combine(corePlugin, Collections.singleton(onlyPlugin)));
     }
 
     protected DetectorFactoryCollection(Collection<Plugin> enabled) {
@@ -113,7 +109,8 @@ public class DetectorFactoryCollection {
         if (FindBugs.DEBUG)
             System.out.println("}\n");
         setGlobalOptions();
-        usageTracker.trackUsage(this, combine(corePlugin, enabled));
+        usageTracker = new UsageTracker(this);
+        usageTracker.trackUsage(combine(corePlugin, enabled));
     }
 
     private Collection<Plugin> combine(Plugin corePlugin, Collection<Plugin> enabled) {
@@ -351,13 +348,6 @@ public class DetectorFactoryCollection {
             System.err.println(message);
     }
 
-    public static void jawsErrorMessage(String message) {
-        if (DEBUG_JAWS)
-            JOptionPane.showMessageDialog(null, message);
-        else
-            System.err.println(message);
-    }
-
     void loadPlugin(Plugin plugin)  {
 
         if (FindBugs.DEBUG) {
@@ -407,13 +397,23 @@ public class DetectorFactoryCollection {
         }
     }
 
+    public void pluginUpdateCheckComplete(List<UsageTracker.PluginUpdate> updates) {
+        this.updates = updates;
+        for (PluginUpdateListener listener : pluginUpdateListeners) {
+            listener.pluginUpdateCheckComplete(updates);
+        }
+    }
+
+    public void addPluginUpdateListener(PluginUpdateListener listener) {
+        pluginUpdateListeners.add(listener);
+        if (updates != null)
+            listener.pluginUpdateCheckComplete(updates);
+    }
+
     public  Map<String, CloudPlugin> getRegisteredClouds() {
         return Collections.unmodifiableMap(registeredClouds);
     }
 
-    /**
-     * @param cloudPlugin
-     */
     void registerCloud(CloudPlugin cloudPlugin) {
         LOGGER.log(Level.FINE, "Registering " + cloudPlugin.getId());
         registeredClouds.put(cloudPlugin.getId(), cloudPlugin);
@@ -485,19 +485,6 @@ public class DetectorFactoryCollection {
         return bugPatternMap.get(bugType);
     }
 
-    /**
-     * Get an Iterator over all registered bug codes.
-     */
-    public Iterator<BugCode> bugCodeIterator() {
-       return bugCodeMap.values().iterator();
-    }
-
-    /**
-     * Register a BugCode.
-     *
-     * @param bugCode
-     *            the BugCode
-     */
     public void registerBugCode(BugCode bugCode) {
         bugCodeMap.put(bugCode.getAbbrev(), bugCode);
     }
@@ -555,6 +542,5 @@ public class DetectorFactoryCollection {
     public Collection<BugCategory> getBugCategoryObjects() {
         return categoryDescriptionMap.values(); // backed by the Map
     }
-
 }
 

@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.TreeSet;
@@ -53,13 +54,16 @@ import javax.swing.SwingUtilities;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugsDisplayFeatures;
 import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.PluginUpdateListener;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.UsageTracker;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
@@ -195,6 +199,12 @@ public class MainFrame extends FBFrame implements LogSync {
         guiLayout = factory.getInstance(this);
         comments = new CommentsArea(this);
         FindBugsDisplayFeatures.setAbridgedMessages(true);
+        DetectorFactoryCollection.instance().addPluginUpdateListener(new PluginUpdateListener() {
+            public void pluginUpdateCheckComplete(Collection<UsageTracker.PluginUpdate> updates) {
+                if (!updates.isEmpty())
+                    JOptionPane.showMessageDialog(MainFrame.this, "Some plugins have been updated!");
+            }
+        });
     }
 
     public void showMessageDialog(String message) {
@@ -255,8 +265,7 @@ public class MainFrame extends FBFrame implements LogSync {
         return mainFrameTree.getBugTreeModel();
     }
 
-    public synchronized @Nonnull
-    Project getProject() {
+    public synchronized @Nonnull Project getProject() {
         if (curProject == null) {
             curProject = new Project();
         }

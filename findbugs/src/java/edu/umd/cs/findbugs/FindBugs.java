@@ -323,7 +323,7 @@ public abstract class FindBugs {
         commandLine.handleXArgs();
 
         commandLine.configureEngine(findBugs);
-        if (commandLine.getProject().getFileCount() == 0) {
+        if (commandLine.getProject().getFileCount() == 0 && !commandLine.justPrintConfiguration()) {
             System.out.println("No files to be analyzed");
 
             showHelp(commandLine);

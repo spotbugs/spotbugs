@@ -30,12 +30,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
-import org.apache.bcel.classfile.ClassFormatException;
-import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.asm.FBClassReader;
 import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
@@ -78,6 +77,8 @@ import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
+import org.apache.bcel.classfile.ClassFormatException;
+import org.dom4j.DocumentException;
 
 /**
  * FindBugs driver class. Orchestrates the analysis of a project, collection of
@@ -112,8 +113,6 @@ public class FindBugs2 implements IFindBugsEngine {
     private IClassFactory classFactory;
 
     private IClassPath classPath;
-
-    private IAnalysisCache analysisCache;
 
     private List<ClassDescriptor> appClassList;
 
@@ -206,9 +205,6 @@ public class FindBugs2 implements IFindBugsEngine {
 
             // The class path object
             createClassPath();
-
-            // The analysis cache object
-            analysisCache = createAnalysisCache();
 
             progress.reportNumberOfArchives(project.getFileCount() + project.getNumAuxClasspathEntries());
             profiler.start(this.getClass());
@@ -332,7 +328,6 @@ public class FindBugs2 implements IFindBugsEngine {
             classObserverList.clear();
         if (referencedClassSet != null)
             referencedClassSet.clear();
-        analysisCache = null;
         analysisOptions.analysisFeatureSettingList = null;
         bugReporter = null;
         classFactory = null;
@@ -565,7 +560,7 @@ public class FindBugs2 implements IFindBugsEngine {
     protected void configureFilters(UserPreferences userPreferences) {
         Set<Entry<String, Boolean>> excludeBugFiles = userPreferences.getExcludeBugsFiles().entrySet();
         for (Entry<String, Boolean> entry : excludeBugFiles) {
-            if (entry.getValue() == null || !entry.getValue().booleanValue()) {
+            if (entry.getValue() == null || !entry.getValue()) {
                 continue;
             }
             try {
@@ -581,7 +576,7 @@ public class FindBugs2 implements IFindBugsEngine {
         }
         Set<Entry<String, Boolean>> includeFilterFiles = userPreferences.getIncludeFilterFiles().entrySet();
         for (Entry<String, Boolean> entry : includeFilterFiles) {
-            if (entry.getValue() == null || !entry.getValue().booleanValue()) {
+            if (entry.getValue() == null || !entry.getValue()) {
                 continue;
             }
             try {
@@ -598,7 +593,7 @@ public class FindBugs2 implements IFindBugsEngine {
         Set<Entry<String, Boolean>> excludeFilterFiles = userPreferences.getExcludeFilterFiles().entrySet();
         for (Entry<String, Boolean> entry : excludeFilterFiles) {
             Boolean value = entry.getValue();
-            if (value == null || !value.booleanValue()) {
+            if (value == null || !value) {
                 continue;
             }
             String excludeFilterFile = entry.getKey();
@@ -686,36 +681,12 @@ public class FindBugs2 implements IFindBugsEngine {
     }
 
     /**
-     * Create the analysis cache object and register it for current execution thread.
-     * <p>
-     * This method is protected to allow clients override it and possibly reuse
-     * some previous analysis data (for Eclipse interactive re-build)
-     *
-     * @throws IOException
-     *             if error occurs registering analysis engines in a plugin
-     */
-    protected IAnalysisCache createAnalysisCache() throws IOException {
-        IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(classPath, bugReporter);
-
-        // Register the "built-in" analysis engines
-        registerBuiltInAnalysisEngines(analysisCache);
-
-        // Register analysis engines in plugins
-        registerPluginAnalysisEngines(detectorFactoryCollection, analysisCache);
-
-        // Install the DetectorFactoryCollection as a database
-        analysisCache.eagerlyPutDatabase(DetectorFactoryCollection.class, detectorFactoryCollection);
-
-        Global.setAnalysisCacheForCurrentThread(analysisCache);
-        return analysisCache;
-    }
-
-    /**
      * Register the "built-in" analysis engines with given IAnalysisCache.
      *
      * @param analysisCache
      *            an IAnalysisCache
      */
+    @SuppressWarnings({"UnusedDeclaration"})
     public static void registerBuiltInAnalysisEngines(IAnalysisCache analysisCache) {
         new edu.umd.cs.findbugs.classfile.engine.EngineRegistrar().registerAnalysisEngines(analysisCache);
         new edu.umd.cs.findbugs.classfile.engine.asm.EngineRegistrar().registerAnalysisEngines(analysisCache);
@@ -732,6 +703,7 @@ public class FindBugs2 implements IFindBugsEngine {
      *            an IAnalysisCache
      * @throws IOException
      */
+    @SuppressWarnings({"UnusedDeclaration"})
     public static void registerPluginAnalysisEngines(DetectorFactoryCollection detectorFactoryCollection,
             IAnalysisCache analysisCache) throws IOException {
         for (Iterator<Plugin> i = detectorFactoryCollection.pluginIterator(); i.hasNext();) {
@@ -826,6 +798,7 @@ public class FindBugs2 implements IFindBugsEngine {
         Set<ClassDescriptor> addedToWorkList = new HashSet<ClassDescriptor>(appClassList);
 
         // add fields
+        //noinspection ConstantIfStatement
         if (false)
             for (ClassDescriptor classDesc : appClassList) {
                 try {
@@ -938,6 +911,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public static void clearAnalysisContext() {
         AnalysisContext.removeCurrentAnalysisContext();
 
@@ -954,6 +928,7 @@ public class FindBugs2 implements IFindBugsEngine {
      * @param sourceInfoFileName
      *            name of source info file (null if none)
      */
+    @SuppressWarnings({"UnusedDeclaration"})
     public static void createAnalysisContext(Project project, List<ClassDescriptor> appClassList,
             @CheckForNull String sourceInfoFileName) throws CheckedAnalysisException, IOException {
         AnalysisCacheToAnalysisContextAdapter analysisContext = new AnalysisCacheToAnalysisContextAdapter();
@@ -1048,8 +1023,6 @@ public class FindBugs2 implements IFindBugsEngine {
         }
     }
 
-    static private final boolean USE_REFERENCES = SystemProperties.getBoolean("tsort.references");
-
     /**
      * Analyze the classes in the application codebase.
      */
@@ -1124,17 +1097,16 @@ public class FindBugs2 implements IFindBugsEngine {
                                     return ((ClassNameAndSuperclassInfo) classNameAndInfo).getCalledClassDescriptorList();
                                 }
                                 assert false;
-                                return Collections.<ClassDescriptor> emptyList();
+                                return Collections.emptyList();
                             } catch (CheckedAnalysisException e2) {
                                 AnalysisContext.logError("error while analyzing " + e.getClassName(), e2);
-                                return Collections.<ClassDescriptor> emptyList();
+                                return Collections.emptyList();
 
                             }
                         }
                     };
-                    List<ClassDescriptor> result = sortByCallGraph(classCollection, outEdges);
 
-                    classCollection = result;
+                    classCollection = sortByCallGraph(classCollection, outEdges);
                 }
                 if (LIST_ORDER) {
                     System.out.println("Analysis order:");
@@ -1301,40 +1273,54 @@ public class FindBugs2 implements IFindBugsEngine {
                 for(DetectorFactory factory : plugin.getDetectorFactories()) {
                     System.out.printf("  detector %s%n", factory.getShortName());
                 }
-
-                System.out.println();
-
-
             }
+
+            printPluginUpdates();
             return;
         }
         // Away we go!
         FindBugs.runMain(findBugs, commandLine);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.IFindBugsEngine#setAbridgedMessages(boolean)
-     */
+    private static void printPluginUpdates() throws InterruptedException {
+        System.out.println();
+        System.out.print("Checking for plugin updates...");
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicReference<Collection<UsageTracker.PluginUpdate>> updatesHolder
+                = new AtomicReference<Collection<UsageTracker.PluginUpdate>>();
+        DetectorFactoryCollection.instance().addPluginUpdateListener(new PluginUpdateListener() {
+            public void pluginUpdateCheckComplete(Collection<UsageTracker.PluginUpdate> updates) {
+                updatesHolder.set(updates);
+                latch.countDown();
+            }
+        });
+        latch.await();
+        Collection<UsageTracker.PluginUpdate> updates = updatesHolder.get();
+        if (updates.isEmpty()) {
+            System.out.println("none!");
+        } else {
+            System.out.println();
+            for (UsageTracker.PluginUpdate update : updates) {
+                System.out.println("PLUGIN UPDATE: " + update.getPlugin().getShortDescription() + " "
+                        + update.getVersion() + " has been released (you have "
+                        + update.getPlugin().getVersion() + ")");
+                if (update.getMessage() != null) {
+                    System.out.println("   " + update.getMessage().replaceAll("\n", "\n   "));
+                }
+                System.out.println("Visit " + update.getUrl() + " for details.");
+                System.out.println("");
+            }
+        }
+    }
+
     public void setAbridgedMessages(boolean xmlWithAbridgedMessages) {
         analysisOptions.abridgedMessages = xmlWithAbridgedMessages;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.IFindBugsEngine#setMergeSimilarWarnings(boolean)
-     */
     public void setMergeSimilarWarnings(boolean mergeSimilarWarnings) {
         this.analysisOptions.mergeSimilarWarnings = mergeSimilarWarnings;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.IFindBugsEngine#setApplySuppression(boolean)
-     */
     public void setApplySuppression(boolean applySuppression) {
         this.analysisOptions.applySuppression = applySuppression;
     }
