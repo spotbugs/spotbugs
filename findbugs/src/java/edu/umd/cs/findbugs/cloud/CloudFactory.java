@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SystemProperties;
 
 /**
@@ -82,7 +83,9 @@ public class CloudFactory {
      */
     public static CloudPlugin getCloudPlugin(BugCollection bc) {
         CloudPlugin plugin = null;
-        String cloudId = bc.getProject().getCloudId();
+        Project project = bc.getProject();
+        assert project != null;
+        String cloudId = project.getCloudId();
         if (cloudId != null) {
             plugin = DetectorFactoryCollection.instance().getRegisteredClouds().get(cloudId);
             if (plugin == null && FAIL_ON_CLOUD_ERROR)
@@ -92,7 +95,7 @@ public class CloudFactory {
         if (plugin != null) {
             Plugin fbplugin = Plugin.getByPluginId(plugin.getFindbugsPluginId());
             //noinspection PointlessBooleanExpression
-            if (fbplugin != null && bc.getProject().getPluginStatus(fbplugin) == false) {
+            if (fbplugin != null && project.getPluginStatus(fbplugin) == false) {
                 plugin = null; // use default cloud below
             }
         }
