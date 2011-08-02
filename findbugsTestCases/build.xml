@@ -86,7 +86,7 @@
 		</parallel>
 	</target>
 
-	<target name="runBaseline" depends="classes">
+	<target name="runBaseline" depends="classes" if="findbugs-baseline.home">
 	<echo>Home is ${findbugs-baseline.home}</echo>
 	<echo>fb-ant jar is ${fb-baseline-ant.jar}</echo>
 	 <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" 
