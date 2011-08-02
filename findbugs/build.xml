@@ -262,6 +262,7 @@
                                 <include name="bugrank.txt"/>
                                 <include name="findbugs.xml"/>
                                 <include name="messages*.xml"/>
+                                <include name="*.properties"/>
                         </fileset>
              </copy>
 
