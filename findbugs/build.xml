@@ -255,7 +255,7 @@
                     </jar>
         </target>
 
-    <target name="jars" depends="classes,validate,version">
+    <target name="jars" depends="classes,version">
         <copy todir="${eclipseClasses.dir}" overwrite="true">
             <fileset dir="${etc.dir}">
                                 <include name="*.xsd"/>
@@ -690,7 +690,7 @@
         </checkstyle>
     </target>
 
-    <target name="smoketest" depends="scripts,findbugscheck,runjunit,validatesampleoutput"/>
+    <target name="smoketest" depends="scripts,findbugscheck,runjunit,validate,validatesampleoutput"/>
 
 
     <!-- Get version properties.  -->
@@ -1045,7 +1045,7 @@
     <target name="dist" depends="clean,bindist,srcdist,web" description="Complete distribution except for jnlp"/>
 
     <!-- Generate binary distribution (both .zip and .tar.gz) -->
-    <target name="bindist" depends="rebuild,docs" description="Binary distribution">
+    <target name="bindist" depends="clean,validate,rebuild,docs" description="Binary distribution">
         <java classpathref="tools.classpath"
             classname="edu.umd.cs.findbugs.tools.CheckClassfileVersion"
             failonerror="true">
