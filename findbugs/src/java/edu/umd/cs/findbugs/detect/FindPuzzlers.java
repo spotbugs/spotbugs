@@ -119,7 +119,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
         try {
             Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
             ClassDescriptor me = getClassDescriptor();
-            if (subtypes2.isSubtype(me, MAP_ENTRY) || subtypes2.isSubtype(me, ITERATOR)) {
+            if (subtypes2.isSubtype(me, MAP_ENTRY) && subtypes2.isSubtype(me, ITERATOR)) {
                 bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY)
                 .addClass(this).addString("shouldn't reuse Iterator as a Map.Entry"));
             }
