@@ -41,7 +41,11 @@ public class FixIndentation {
     static final String SPACES = "                                                                                                                                            ";
 
     public static void main(String args[]) throws Exception {
-        recursiveFix(new File(args[0]), true);
+        File root = new File(args[0]);
+        if (!root.exists() || !root.canRead())
+            throw new IllegalArgumentException("Unable to read " +root);
+        recursiveFix(root, true);
+        System.out.printf("Updated %d/%d files%n", updated, examined);
     }
 
     static void recursiveFix(File root, boolean partial) throws IOException {
@@ -101,9 +105,12 @@ public class FixIndentation {
 
     }
 
+    static int examined = 0;
+    static int updated = 0;
     static void fix(File fileToUpdate, boolean partial) throws IOException {
         boolean anyChanges = false;
         BufferedReader in = new BufferedReader(new FileReader(fileToUpdate));
+        examined++;
         StringWriter stringWriter = new StringWriter();
         PrintWriter out = new PrintWriter(stringWriter);
         int consecutiveFixes = 0;
@@ -129,6 +136,7 @@ public class FixIndentation {
         }
         if (!anyChanges)
             return;
+        updated++;
         System.out.println("Updating " + fileToUpdate);
         if (false)
             return;
