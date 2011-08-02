@@ -112,6 +112,7 @@ public class DumbMethods extends OpcodeStackDetector {
     private final boolean jdk15ChecksEnabled;
 
     private final BugAccumulator accumulator;
+    private final BugAccumulator absoluteValueAccumulator;
 
     private static final int MICROS_PER_DAY_OVERFLOWED_AS_INT
             = 24 * 60 * 60 * 1000 * 1000;
@@ -119,6 +120,7 @@ public class DumbMethods extends OpcodeStackDetector {
     public DumbMethods(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         accumulator = new BugAccumulator(bugReporter);
+        absoluteValueAccumulator = new BugAccumulator(bugReporter);
         jdk15ChecksEnabled = JavaVersion.getRuntimeVersion().isSameOrNewerThan(JavaVersion.JAVA_1_5);
     }
 
@@ -219,10 +221,11 @@ public class DumbMethods extends OpcodeStackDetector {
                 accumulator.accumulateBug(bug, this);
             }
             if ((c instanceof ConstantInteger && ((ConstantInteger) c).getBytes() == Integer.MIN_VALUE
-                    || c instanceof ConstantLong && ((ConstantLong) c).getBytes() == Integer.MAX_VALUE)) {
+                    || c instanceof ConstantLong && ((ConstantLong) c).getBytes() == Long.MIN_VALUE)) {
                 sawLoadOfMinValue = true;
                 pendingAbsoluteValueBug = null;
                 pendingAbsoluteValueBugSourceLine = null;
+                absoluteValueAccumulator.clearBugs();
             }
         }
 
@@ -291,7 +294,7 @@ public class DumbMethods extends OpcodeStackDetector {
                         pendingAbsoluteValueBug.addString(OPCODE_NAMES[getPrevOpcode(1)] + ":" + OPCODE_NAMES[seen]);
 
                     }
-                accumulator.accumulateBug(pendingAbsoluteValueBug, pendingAbsoluteValueBugSourceLine);
+                absoluteValueAccumulator.accumulateBug(pendingAbsoluteValueBug, pendingAbsoluteValueBugSourceLine);
                 pendingAbsoluteValueBug = null;
                 pendingAbsoluteValueBugSourceLine = null;
             }
@@ -1074,12 +1077,17 @@ public class DumbMethods extends OpcodeStackDetector {
      * Flush out cached state at the end of a method.
      */
     private void flush() {
+        
         if (pendingAbsoluteValueBug != null) {
-            accumulator.accumulateBug(pendingAbsoluteValueBug, pendingAbsoluteValueBugSourceLine);
+            absoluteValueAccumulator.accumulateBug(pendingAbsoluteValueBug, pendingAbsoluteValueBugSourceLine);
             pendingAbsoluteValueBug = null;
             pendingAbsoluteValueBugSourceLine = null;
-
         }
+        accumulator.reportAccumulatedBugs();
+        if (sawLoadOfMinValue)
+            absoluteValueAccumulator.clearBugs();
+        else
+            absoluteValueAccumulator.reportAccumulatedBugs();
         if (gcInvocationBugReport != null && !sawCurrentTimeMillis) {
             // Make sure the GC invocation is not in an exception handler
             // for OutOfMemoryError.
