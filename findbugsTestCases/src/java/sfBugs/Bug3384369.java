@@ -12,4 +12,8 @@ public class Bug3384369 {
                 (value == null ? 0 : value.length), dataOffset);
         System.out.println(value.length);
     }
+    
+    public static void main(String args[]) {
+        test1(null, 30);
+    }
 }
