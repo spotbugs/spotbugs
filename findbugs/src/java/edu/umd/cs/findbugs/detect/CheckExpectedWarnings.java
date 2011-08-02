@@ -189,7 +189,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 
             StringTokenizer tok = new StringTokenizer(expectedBugCodes, ",");
             while (tok.hasMoreTokens()) {
-                String bugCode = tok.nextToken();
+                String bugCode = tok.nextToken().trim();
                 if (!possibleBugCodes.contains(bugCode))
                     continue;
                 Collection<SourceLineAnnotation> bugs = countWarnings(xmethod.getMethodDescriptor(), bugCode, minPriority);
