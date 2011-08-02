@@ -21,8 +21,10 @@
 package edu.umd.cs.findbugs;
 
 import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -94,6 +96,22 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * </ul>
  */
 public class OpcodeStack implements Constants2 {
+    
+    /** You can put this annotation on a OpcodeStack detector
+     * to indicate that it uses {@link OpcodeStack.Item#userValue},
+     * and thus should not reuse generic OpcodeStack information 
+     * from an iterative evaluation of the opcode stack. Such detectors
+     * will not use iterative opcode stack evaluation.
+     * 
+     * This is primarily for detectors that need to be backwards compatible with
+     * versions of FindBugs that do not support {@link OpcodeStackDetector.WithCustomJumpInfo }}
+     */
+    @Documented
+    @Target({ElementType.TYPE, ElementType.PACKAGE})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface CustomUserValue {
+    }
+
     /**
      *
      */
@@ -2621,9 +2639,7 @@ public class OpcodeStack implements Constants2 {
             JumpInfo jump = null;
             if (visitor instanceof OpcodeStackDetector.WithCustomJumpInfo) {
                 jump = ((OpcodeStackDetector.WithCustomJumpInfo) visitor).customJumpInfo();
-            }
-
-            if (jump == null)
+            } else if (!visitor.getClass().isAnnotationPresent(OpcodeStack.CustomUserValue.class)) 
                 jump = getJumpInfo();
             if (jump != null) {
                 learnFrom(jump);
