@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -38,17 +40,17 @@ import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.StringAnnotation;
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.visitclass.Util;
 
@@ -106,10 +108,24 @@ public class FindPuzzlers extends OpcodeStackDetector {
     XMethod previousMethodInvocation;
 
     boolean isTigerOrHigher;
+    
+    static ClassDescriptor ITERATOR = DescriptorFactory.createClassDescriptor(Iterator.class);
+    static ClassDescriptor MAP_ENTRY = DescriptorFactory.createClassDescriptor(Map.Entry.class);
+    
 
     @Override
     public void visit(JavaClass obj) {
         isTigerOrHigher = obj.getMajor() >= MAJOR_1_5;
+        try {
+            Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+            ClassDescriptor me = getClassDescriptor();
+            if (subtypes2.isSubtype(me, MAP_ENTRY) || subtypes2.isSubtype(me, ITERATOR)) {
+                bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY)
+                .addClass(this).addString("shouldn't reuse Iterator as a Map.Entry"));
+            }
+        } catch (ClassNotFoundException e) {
+            AnalysisContext.reportMissingClass(e);
+        }
     }
 
     private void resetIMulCastLong() {
@@ -151,8 +167,8 @@ public class FindPuzzlers extends OpcodeStackDetector {
                 else if (name.equals(EnumMap.class.getName())
                         || name.equals(IdentityHashMap.class.getName()))
                     priority = Priorities.HIGH_PRIORITY;
-                bugReporter.reportBug(new BugInstance(this, "TESTING", priority)
-                .addClassAndMethod(this).addCalledMethod(this).addValueSource(top, this).addString("entrySet issue").describe(StringAnnotation.STRING_MESSAGE).addSourceLine(this));
+                bugReporter.reportBug(new BugInstance(this, "DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS", priority)
+                .addClassAndMethod(this).addCalledMethod(returnValueOf).addCalledMethod(this).addValueSource(top, this).addSourceLine(this));
             }
 
 
