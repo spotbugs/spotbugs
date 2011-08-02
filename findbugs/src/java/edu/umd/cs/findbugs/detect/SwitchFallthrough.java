@@ -48,6 +48,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 public class SwitchFallthrough extends OpcodeStackDetector implements StatelessDetector {
     private static final boolean DEBUG = SystemProperties.getBoolean("switchFallthrough.debug");
@@ -228,10 +229,13 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("ordinal") && getSigConstantOperand().equals("()I")) {
             XClass c = getXClassOperand();
-            if (c.getSuperclassDescriptor().getClassName().equals("java/lang/Enum"))
-                enumType = c;
-            if (DEBUG) 
-                System.out.println("Saw " + enumType+".ordinal()");
+            if (c != null) {
+                ClassDescriptor superclassDescriptor = c.getSuperclassDescriptor();
+                if (superclassDescriptor != null && superclassDescriptor.getClassName().equals("java/lang/Enum"))
+                    enumType = c;
+                if (DEBUG) 
+                    System.out.println("Saw " + enumType+".ordinal()");
+            }
         } else if (seen != TABLESWITCH && seen != LOOKUPSWITCH && seen != IALOAD)
             enumType = null;
 
