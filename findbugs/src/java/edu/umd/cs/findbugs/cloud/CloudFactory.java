@@ -95,7 +95,7 @@ public class CloudFactory {
         if (plugin != null) {
             Plugin fbplugin = Plugin.getByPluginId(plugin.getFindbugsPluginId());
             //noinspection PointlessBooleanExpression
-            if (fbplugin != null && project.getPluginStatus(fbplugin) == false) {
+            if (fbplugin != null && Boolean.FALSE.equals(project.getPluginStatus(fbplugin))) {
                 plugin = null; // use default cloud below
             }
         }
