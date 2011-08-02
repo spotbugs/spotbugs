@@ -162,7 +162,7 @@ class UsageTracker {
         xmlOutput.finish();
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) {
-            logError(Level.WARNING, "Error submitting anonymous usage data to " + trackerUrl + ": "
+            logError(SystemProperties.ASSERTIONS_ENABLED ? Level.WARNING : Level.FINE, "Error submitting anonymous usage data to " + trackerUrl + ": "
                     + responseCode + " - " + conn.getResponseMessage());
         }
         parseUpdateXml(trackerUrl, plugins, conn.getInputStream());
