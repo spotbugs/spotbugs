@@ -44,8 +44,8 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
     @Override
     public void visit(JavaClass obj) {
 
-        isDoPrivileged = Subtypes2.instanceOf(getDottedClassName(), "java/security/PrivilegedAction")
-                || Subtypes2.instanceOf(getDottedClassName(), "java/security/PrivilegedExceptionAction");
+        isDoPrivileged = Subtypes2.instanceOf(getDottedClassName(), "java.security.PrivilegedAction")
+                || Subtypes2.instanceOf(getDottedClassName(), "java.security.PrivilegedExceptionAction");
     }
 
     @Override
@@ -74,7 +74,7 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
         if (seen == NEW) {
             @DottedClassName
             String classOfConstructedClass = getDottedClassConstantOperand();
-            if (Subtypes2.instanceOf(classOfConstructedClass, "java/lang/ClassLoader")
+            if (Subtypes2.instanceOf(classOfConstructedClass, "java.lang.ClassLoader")
                     && !(getMethodName().equals("main") && getMethodSig().equals("([Ljava/lang/String;)V") && getMethod()
                             .isStatic()))
                 bugAccumulator.accumulateBug(new BugInstance(this, "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED", NORMAL_PRIORITY)
