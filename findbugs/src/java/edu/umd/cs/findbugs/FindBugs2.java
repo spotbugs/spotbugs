@@ -36,6 +36,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.apache.bcel.classfile.ClassFormatException;
+import org.dom4j.DocumentException;
+
 import edu.umd.cs.findbugs.asm.FBClassReader;
 import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -71,14 +74,11 @@ import edu.umd.cs.findbugs.detect.NoteSuppressedWarnings;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.log.YourKitController;
-import edu.umd.cs.findbugs.mbeans.AnalysisBeanImpl;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
-import org.apache.bcel.classfile.ClassFormatException;
-import org.dom4j.DocumentException;
 
 /**
  * FindBugs driver class. Orchestrates the analysis of a project, collection of
@@ -681,6 +681,30 @@ public class FindBugs2 implements IFindBugsEngine {
     }
 
     /**
+     * Create the analysis cache object and register it for current execution thread.
+     * <p>
+     * This method is protected to allow clients override it and possibly reuse
+     * some previous analysis data (for Eclipse interactive re-build)
+     *
+     * @throws IOException
+     *             if error occurs registering analysis engines in a plugin
+     */
+    protected IAnalysisCache createAnalysisCache() throws IOException {
+        IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(classPath, bugReporter);
+
+        // Register the "built-in" analysis engines
+        registerBuiltInAnalysisEngines(analysisCache);
+
+        // Register analysis engines in plugins
+        registerPluginAnalysisEngines(detectorFactoryCollection, analysisCache);
+
+        // Install the DetectorFactoryCollection as a database
+        analysisCache.eagerlyPutDatabase(DetectorFactoryCollection.class, detectorFactoryCollection);
+
+        Global.setAnalysisCacheForCurrentThread(analysisCache);
+        return analysisCache;
+    }
+    /**
      * Register the "built-in" analysis engines with given IAnalysisCache.
      *
      * @param analysisCache
@@ -1027,7 +1051,6 @@ public class FindBugs2 implements IFindBugsEngine {
      * Analyze the classes in the application codebase.
      */
     private void analyzeApplication() throws InterruptedException {
-        AnalysisBeanImpl analysisBean = AnalysisBeanImpl.makeAnalysisBean();
         int passCount = 0;
         Profiler profiler = bugReporter.getProjectStats().getProfiler();
         profiler.start(this.getClass());
@@ -1077,10 +1100,6 @@ public class FindBugs2 implements IFindBugsEngine {
                 // On subsequent passes, we apply detector only to application
                 // classes.
                 Collection<ClassDescriptor> classCollection = (isNonReportingFirstPass) ? referencedClassSet : appClassList;
-                analysisBean.setPhase(passCount);
-                analysisBean.setCompleted(0);
-                analysisBean.setTotal(classCollection.size());
-                analysisBean.setErrors(0);
                 AnalysisContext.currentXFactory().canonicalizeAll();
                 if (PROGRESS || LIST_ORDER) {
                     System.out.printf("%6d : Pass %d: %d classes%n", (System.currentTimeMillis() - startTime)/1000, passCount,  classCollection.size());
@@ -1126,12 +1145,7 @@ public class FindBugs2 implements IFindBugsEngine {
                                 passCount, executionPlan.getNumPasses(), count,
                                 classCollection.size(), classDescriptor);
                     }
-                    analysisBean.setAnalyzing(classDescriptor.getClassName());
-                    analysisBean.setCompleted(count);
-                    BugCollection bc = bugReporter.getBugCollection();
-                    if (bc instanceof SortedBugCollection)
-                        analysisBean.setErrors(((SortedBugCollection)bc).getErrors().size());
-                    count++;
+                   count++;
 
                     // Check to see if class is excluded by the class screener.
                     // In general, we do not want to screen classes from the
@@ -1202,7 +1216,6 @@ public class FindBugs2 implements IFindBugsEngine {
             bugReporter.finish();
             bugReporter.reportQueuedErrors();
             profiler.end(this.getClass());
-            analysisBean.deregister();
             if (PROGRESS)
                 System.out.println("Analysis completed");
         }

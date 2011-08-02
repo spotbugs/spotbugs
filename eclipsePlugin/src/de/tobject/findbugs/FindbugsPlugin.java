@@ -1048,11 +1048,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     public static Set<BugCode> getKnownPatternTypes() {
-        Set<BugCode> patterns = new TreeSet<BugCode>();
-        Iterator<BugCode> patternIterator = DetectorFactoryCollection.instance().bugCodeIterator();
-        while (patternIterator.hasNext()) {
-            patterns.add(patternIterator.next());
-        }
+        Set<BugCode> patterns = new TreeSet<BugCode>(DetectorFactoryCollection.instance().getBugCodes());
         return patterns;
     }
 
@@ -1078,12 +1074,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     public static Set<BugCode> getFilteredPatternTypes() {
-        Iterator<BugCode> patternIterator = DetectorFactoryCollection.instance().bugCodeIterator();
-        Set<BugCode> set = new HashSet<BugCode>();
+       Set<BugCode> set = new HashSet<BugCode>();
         Set<String> patternTypes = getFilteredIds();
-        while (patternIterator.hasNext()) {
-            BugCode next = patternIterator.next();
-            String type = next.getAbbrev();
+        for(BugCode next :  DetectorFactoryCollection.instance().getBugCodes()) {
+           String type = next.getAbbrev();
             if (!patternTypes.contains(type)) {
                 continue;
             }

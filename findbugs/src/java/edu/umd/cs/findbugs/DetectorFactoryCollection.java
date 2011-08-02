@@ -491,6 +491,10 @@ public class DetectorFactoryCollection implements UsageTrackerCallback {
     protected void unRegisterBugCode(BugCode bugCode) {
         bugCodeMap.remove(bugCode.getAbbrev());
     }
+    
+    public Collection<BugCode> getBugCodes() {
+        return bugCodeMap.values();
+    }
 
     /**
      * Get a description for given "bug type". FIXME: this is referred to
