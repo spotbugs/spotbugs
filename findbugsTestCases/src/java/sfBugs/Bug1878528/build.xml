@@ -27,7 +27,7 @@
          <move file="p1/Foo.j" tofile="p1/Foo.java"/>
        <move file="p2/Foo.j" tofile="p2/Foo.java"/>
        <move file="p3/Foo.j" tofile="p3/Foo.java"/>
-   	
+
       <javac srcdir="p1"/>
       <javac srcdir="p2"/>
       <javac srcdir="p3"/>

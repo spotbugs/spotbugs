@@ -490,7 +490,7 @@ public class DBStats {
 
     private static void printPatterns(String filename, String header, FractionalMultiset<String> average,
             FractionalMultiset<String> variance, Multiset<String> count) throws FileNotFoundException {
-    	DetectorFactoryCollection i18n = DetectorFactoryCollection.instance();
+        DetectorFactoryCollection i18n = DetectorFactoryCollection.instance();
         PrintWriter out = new PrintWriter(filename);
         out.println(header);
         for (Map.Entry<String, Double> e : average.entriesInDecreasingOrder()) {

@@ -10,7 +10,7 @@ public class Foo {
         System.out.println(s);
 
         for(int i = 0; i < 1000; i++) {
-        	s += "Hello";
+            s += "Hello";
         }
         System.out.println(s);
 

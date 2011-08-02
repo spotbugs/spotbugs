@@ -336,8 +336,8 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
      * 
      */
     @Override
-	public boolean communicationInitiated() {
-    		return bugsPopulated.getCount() == 0 && communicationInitiated.get();
+    public boolean communicationInitiated() {
+            return bugsPopulated.getCount() == 0 && communicationInitiated.get();
     }
 
     private static final long LAST_SEEN_UPDATE_WINDOW = TimeUnit.MILLISECONDS.convert(7 * 24 * 3600, TimeUnit.SECONDS);
@@ -554,14 +554,14 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
                         if (!bd.inDatabase) {
                             storeNewBug(b, stillPresentAt);
                             if (LOG_BUG_UPLOADS) 
-                            	System.out.printf("NEW %tD: %s%n", new Date(getLocalFirstSeen(b)), b.getMessage());
+                                System.out.printf("NEW %tD: %s%n", new Date(getLocalFirstSeen(b)), b.getMessage());
                         } else {
                             long firstSeenLocally = getLocalFirstSeen(b);
 
                             if (FindBugs.validTimestamp(firstSeenLocally)
                                     && (firstSeenLocally < bd.firstSeen || !FindBugs.validTimestamp(bd.firstSeen))) {
                                 if (LOG_BUG_UPLOADS) 
-                                	System.out.printf("BACKDATED %tD -> %tD: %s%n", new Date(bd.firstSeen), new Date(firstSeenLocally), b.getMessage());
+                                    System.out.printf("BACKDATED %tD -> %tD: %s%n", new Date(bd.firstSeen), new Date(firstSeenLocally), b.getMessage());
                
                                 bd.firstSeen = firstSeenLocally;
                                 storeFirstSeen(bd);
@@ -616,11 +616,11 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
     }
 
     private String getJDBCProperty(String propertyName) {
-    	String override = System.getProperty("findbugs.override-jdbc." + propertyName);
-    	if (override != null) {
-    		System.out.println("Using override value for " + propertyName + ":" + override);
+        String override = System.getProperty("findbugs.override-jdbc." + propertyName);
+        if (override != null) {
+            System.out.println("Using override value for " + propertyName + ":" + override);
     		return override;
-    	}
+        }
         return properties.getProperty("findbugs.jdbc." + propertyName);
     }
 
@@ -642,8 +642,8 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
 
     @Override
     public boolean initialize() throws IOException {
-    	if (CloudFactory.DEBUG) 
-    		System.out.println("Starting DBCloud initialization");
+        if (CloudFactory.DEBUG)
+            System.out.println("Starting DBCloud initialization");
         if (initializationIsDoomed()) {
             signinState = SigninState.SIGNIN_FAILED;
             return false;
@@ -651,7 +651,7 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
 
         signinState = SigninState.SIGNED_IN;
         if (CloudFactory.DEBUG) 
-    		System.out.println("DBCloud initialization preflight checks completed");
+            System.out.println("DBCloud initialization preflight checks completed");
        
         loadBugComponents();
         Connection c = null;
@@ -688,9 +688,9 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
                 throw new RuntimeException("Unable to get database results");
 
             } else {
-            	if (CloudFactory.DEBUG) 
-            		System.out.println("Unable to connect to database");
-            	signinState = SigninState.SIGNIN_FAILED;
+                if (CloudFactory.DEBUG)
+                    System.out.println("Unable to connect to database");
+                signinState = SigninState.SIGNIN_FAILED;
                 return false;
             }
 
@@ -1280,7 +1280,7 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
 
     public void signIn() {
         if (getSigninState() != SigninState.SIGNED_IN)
-        	throw new UnsupportedOperationException("Unable to sign in");
+            throw new UnsupportedOperationException("Unable to sign in");
     }
 
     public void signOut() {
