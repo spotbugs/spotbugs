@@ -129,8 +129,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
 
         // Save the error information
         Element errorsElement = root.addElement(ERRORS_ELEMENT_NAME);
-        for (Iterator<AnalysisError> i = bugCollection.errorIterator(); i.hasNext();) {
-            AnalysisError analysisError = i.next();
+        for (AnalysisError analysisError : bugCollection.getErrors()) {
             errorsElement.addElement(ANALYSIS_ERROR_ELEMENT_NAME).setText(analysisError.getMessage());
         }
         for (Iterator<String> i = bugCollection.missingClassIterator(); i.hasNext();) {

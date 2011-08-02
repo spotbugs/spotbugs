@@ -72,6 +72,7 @@ import edu.umd.cs.findbugs.detect.NoteSuppressedWarnings;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.log.YourKitController;
+import edu.umd.cs.findbugs.mbeans.AnalysisBeanImpl;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
@@ -1053,6 +1054,7 @@ public class FindBugs2 implements IFindBugsEngine {
      * Analyze the classes in the application codebase.
      */
     private void analyzeApplication() throws InterruptedException {
+        AnalysisBeanImpl analysisBean = AnalysisBeanImpl.makeAnalysisBean();
         int passCount = 0;
         Profiler profiler = bugReporter.getProjectStats().getProfiler();
         profiler.start(this.getClass());
@@ -1089,7 +1091,6 @@ public class FindBugs2 implements IFindBugsEngine {
             for (Iterator<AnalysisPass> passIterator = executionPlan.passIterator(); passIterator.hasNext();) {
                 AnalysisPass pass = passIterator.next();
                 yourkitController.advanceGeneration("Pass " + passCount);
-
                 // The first pass is generally a non-reporting pass which
                 // gathers information about referenced classes.
                 boolean isNonReportingFirstPass = multiplePasses && passCount == 0;
@@ -1103,6 +1104,10 @@ public class FindBugs2 implements IFindBugsEngine {
                 // On subsequent passes, we apply detector only to application
                 // classes.
                 Collection<ClassDescriptor> classCollection = (isNonReportingFirstPass) ? referencedClassSet : appClassList;
+                analysisBean.setPhase(passCount);
+                analysisBean.setCompleted(0);
+                analysisBean.setTotal(classCollection.size());
+                analysisBean.setErrors(0);
                 AnalysisContext.currentXFactory().canonicalizeAll();
                 if (PROGRESS || LIST_ORDER) {
                     System.out.printf("%6d : Pass %d: %d classes%n", (System.currentTimeMillis() - startTime)/1000, passCount,  classCollection.size());
@@ -1148,8 +1153,13 @@ public class FindBugs2 implements IFindBugsEngine {
                         System.out.printf("%6d %d/%d  %d/%d %s%n", (System.currentTimeMillis() - startTime)/1000,
                                 passCount, executionPlan.getNumPasses(), count,
                                 classCollection.size(), classDescriptor);
-                        count++;
                     }
+                    analysisBean.setAnalyzing(classDescriptor.getClassName());
+                    analysisBean.setCompleted(count);
+                    BugCollection bc = bugReporter.getBugCollection();
+                    if (bc instanceof SortedBugCollection)
+                        analysisBean.setErrors(((SortedBugCollection)bc).getErrors().size());
+                    count++;
 
                     // Check to see if class is excluded by the class screener.
                     // In general, we do not want to screen classes from the
@@ -1214,15 +1224,15 @@ public class FindBugs2 implements IFindBugsEngine {
                 passCount++;
             }
 
-            // Flush any queued bug reports
-            bugReporter.finish();
-
-            // if (baselineBugs != null) new
-            // Update().removeBaselineBugs(baselineBugs, bugReporter.);
-            // Flush any queued error reports
-            bugReporter.reportQueuedErrors();
+            
         } finally {
+   
+            bugReporter.finish();
+            bugReporter.reportQueuedErrors();
             profiler.end(this.getClass());
+            analysisBean.deregister();
+            if (PROGRESS)
+                System.out.println("Analysis completed");
         }
 
     }

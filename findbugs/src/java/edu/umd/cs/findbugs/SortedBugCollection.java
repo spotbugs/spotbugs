@@ -752,8 +752,7 @@ public class SortedBugCollection implements BugCollection {
         xmlOutput.openTag(ERRORS_ELEMENT_NAME, attributeList);
 
         // Emit Error elements describing analysis errors
-        for (Iterator<AnalysisError> i = errorIterator(); i.hasNext();) {
-            AnalysisError error = i.next();
+        for (AnalysisError error : getErrors()) {
             xmlOutput.openTag(ERROR_ELEMENT_NAME);
 
             xmlOutput.openTag(ERROR_MESSAGE_ELEMENT_NAME);
@@ -1067,11 +1066,10 @@ public class SortedBugCollection implements BugCollection {
         else
             missingClassSet.add(className);
     }
-
-    public Iterator<AnalysisError> errorIterator() {
-        return errorList.iterator();
-    }
-
+    
+   public Collection<? extends AnalysisError> getErrors() {
+       return errorList;
+   }
     public Iterator<String> missingClassIterator() {
         return missingClassSet.iterator();
     }
