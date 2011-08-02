@@ -125,7 +125,7 @@ class UsageTracker {
         conn.setRequestMethod("POST");
         conn.connect();
         OutputStream out = conn.getOutputStream();
-        XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
+        OutputStreamXMLOutput xmlOutput = new OutputStreamXMLOutput(out);
         xmlOutput.beginDocument();
         xmlOutput.startTag("findbugs-invocation");
         xmlOutput.addAttribute("version", Version.RELEASE);
@@ -159,14 +159,14 @@ class UsageTracker {
         }
 
         xmlOutput.closeTag("findbugs-invocation");
-        xmlOutput.finish();
+        xmlOutput.flush();
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) {
             logError(SystemProperties.ASSERTIONS_ENABLED ? Level.WARNING : Level.FINE, "Error submitting anonymous usage data to " + trackerUrl + ": "
                     + responseCode + " - " + conn.getResponseMessage());
         }
         parseUpdateXml(trackerUrl, plugins, conn.getInputStream());
-        out.close();
+        xmlOutput.finish();
         conn.disconnect();
         
     }

@@ -183,6 +183,9 @@ public class OutputStreamXMLOutput implements XMLOutput {
         newLine = false;
     }
 
+    public void flush() throws IOException {
+        out.flush();
+    }
     @DischargesObligation
     public void finish() throws IOException {
         out.close();
