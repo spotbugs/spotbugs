@@ -7399,6 +7399,23 @@ always be true, and <code>c.retainAll(c)</code> should have no effect.
      ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS">
+    <ShortDescription>Don't reuse entry objects in iterators</ShortDescription>
+    <LongDescription>{0} is both an Iterator and a Map.Entry </LongDescription>
+    <Details>
+     <![CDATA[
+     <p> This class is both anThe entrySet() method is allowed to return a view of the 
+     underlying Map in which an Iterator and Map.Entry. This clever
+     idea was used in several Map implements, but introduces the possibility
+     of nasty coding mistakes. If a map <code>m</code> returns
+     such an iterator for an entrySet, then
+     <code>c.addAll(m.entrySet())</code> will go badly wrong. All of
+     the Map implementations in OpenJDK 1.7 have been rewritten to avoid this,
+     you should to.
+    </p>
+     ]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS">
     <ShortDescription>Adding elements of an entry set may fail due to reuse of Entry objects</ShortDescription>
     <LongDescription>Adding elements of an entry set may fail due to reuse of {2.simpleClass}.Entry object in {1}</LongDescription>
@@ -7415,6 +7432,7 @@ always be true, and <code>c.retainAll(c)</code> should have no effect.
      ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION">
     <ShortDescription>Don't use removeAll to clear a collection</ShortDescription>
     <LongDescription>removeAll used to clear a collection in {1}</LongDescription>
