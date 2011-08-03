@@ -8,6 +8,8 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
@@ -42,8 +44,7 @@ public class Ideas_2011_08_02 {
         c.addAll(m.entrySet());
     }
 
-    @ExpectWarning(value="DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS", priority=Priority.HIGH)
-    
+    @ExpectWarning(value="DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS", priority=Priority.HIGH) 
     public void addAll(IdentityHashMap<Color, Integer> m) {
         c.addAll(m.entrySet());
     }
@@ -52,6 +53,15 @@ public class Ideas_2011_08_02 {
     public void addAll(EnumMap<Color, Integer> m) {
         c.addAll(m.entrySet());
     }
+    @ExpectWarning(value="DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS", priority=Priority.MEDIUM) 
+    public void addAll(ConcurrentHashMap<Color, Integer> m) {
+        c.addAll(m.entrySet());
+    }
+    @ExpectWarning(value="DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS", priority=Priority.MEDIUM) 
+    public void addAll(ConcurrentSkipListMap<Color, Integer> m) {
+        c.addAll(m.entrySet());
+    }
+
     @NoWarning(value="DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS", priority=Priority.MEDIUM)
     public void addAll(HashMap<Color, Integer> m) {
         c.addAll(m.entrySet());
