@@ -24,12 +24,13 @@ import java.util.regex.Pattern;
 
 import javax.annotation.WillClose;
 
-import edu.umd.cs.findbugs.util.MultiMap;
-import edu.umd.cs.findbugs.util.Util;
-import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+
+import edu.umd.cs.findbugs.util.MultiMap;
+import edu.umd.cs.findbugs.util.Util;
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 
 public class UsageTracker {
     private static final Logger LOGGER = Logger.getLogger(UsageTracker.class.getName());
@@ -286,15 +287,22 @@ public class UsageTracker {
         }
         return lastFbClass;
     }
+    
+    /** Should only be used once */
+    private static Random random = new Random();
 
     private static synchronized String getUuid() {
-        Preferences prefs = Preferences.userNodeForPackage(UsageTracker.class);
-        long uuid = prefs.getLong("uuid", 0);
-        if (uuid == 0) {
-            uuid = new Random().nextLong();
-            prefs.putLong("uuid", uuid);
+        try {
+            Preferences prefs = Preferences.userNodeForPackage(UsageTracker.class);
+            long uuid = prefs.getLong("uuid", 0);
+            if (uuid == 0) {
+                uuid = random.nextLong(); 
+                prefs.putLong("uuid", uuid);
+            }
+            return Long.toString(uuid, 16);
+        } catch (RuntimeException e) {
+            return Long.toString(42, 16);
         }
-        return Long.toString(uuid, 16);
     }
 
     private String getMajorJavaVersion() {
