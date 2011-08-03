@@ -15,7 +15,7 @@
     <property name="classes.dir" value="build/classes-ant"/>
     <property name="lib.dir" value="lib"/>
     <property name="findbugs.home" value="${findbugsBase.dir}/findbugs"/>
-    <property name="destination.dir" value="${findbugs.home}/findbugs/${plugin.dir}"/>
+    <property name="destination.dir" value="${findbugs.home}/${plugin.dir}"/>
 
 
     <path id="client.classpath">
