@@ -297,7 +297,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
                                     flags = ValueNumber.mergeFlags(flags, vn.getFlags());
                                 }
                             if (flags == -1)
-                                flags |= ValueNumber.PHI_NODE;
+                                flags = ValueNumber.PHI_NODE;
                             else 
                                 flags |= ValueNumber.PHI_NODE;
                             
