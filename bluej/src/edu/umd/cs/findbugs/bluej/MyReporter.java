@@ -40,6 +40,10 @@ public class MyReporter extends TextUIBugReporter {
 		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public BugCollection getBugCollection() {
+		return bugs;
+	}
 
 
 }

@@ -56,8 +56,7 @@
 	<target name="fbjars" description="Copy required jar files from the main findbugs project (which should be a sibling of this project)">
 		<ant dir="${findbugs.dir}" inheritall="false" target="build"/>
 		<copy todir="${lib.dir}" failonerror="true">
-			<fileset dir="${findbugs.dir}/lib" includes="asm-3.0.jar,asm-commons-3.0.jar,asm-tree-3.0.jar,bcel.jar,findbugs.jar,dom4j-full.jar,jsr305.jar"/>
-			<fileset dir="${findbugs.dir}/plugin" includes="coreplugin.jar"/>
+			<fileset dir="${findbugs.dir}/lib" includes="*.jar"/>
 		</copy>
 	</target>
 	

@@ -30,7 +30,7 @@ public class RunFindbugs {
 		BugReporter reporter = new MyReporter(bugs);
         System.setProperty("findbugs.jaws", "true");
         // System.out.println(System.getProperty("findbugs.jaws"));
-        DetectorFactoryCollection.instance().ensureLoaded();
+        DetectorFactoryCollection.instance();
         
       
 		IFindBugsEngine findBugs = new FindBugs2();
@@ -38,7 +38,7 @@ public class RunFindbugs {
         findBugs.setProject(findBugsProject);
         findBugs.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
 //      Honor current UserPreferences
-        findBugs.setUserPreferences(UserPreferences.getUserPreferences());
+        findBugs.setUserPreferences(UserPreferences.createDefaultUserPreferences());
         
 		reporter.setPriorityThreshold(Detector.NORMAL_PRIORITY);
 		
