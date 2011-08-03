@@ -546,7 +546,7 @@ public class Plugin {
         return pluginLoader.isCorePlugin();
     }
     
-    public boolean cannotDiable() {
+    public boolean cannotDisable() {
         return cannotDisable;
     }
 

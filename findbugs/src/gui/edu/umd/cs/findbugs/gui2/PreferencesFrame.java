@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
+import java.awt.Checkbox;
+import java.awt.CheckboxGroup;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -342,7 +344,15 @@ public class PreferencesFrame extends FBDialog {
 
             EnabledSettings enabled = isEnabled(currentProject, plugin);
             final JCheckBox checkGlobal = new JCheckBox(text, enabled.global);
-            checkGlobal.addMouseListener(new MouseAdapter() {
+            final boolean cannotDisable = plugin.isEnabledByDefault() && plugin.cannotDisable();
+            if (cannotDisable) {
+                if (!enabled.global)
+                    throw new IllegalStateException(
+                            plugin.getPluginId() + " is enabled by default and cannot be disabled, but is disabled");
+                checkGlobal.setEnabled(false);
+            } else {
+                checkGlobal.addMouseListener(new MouseAdapter() {
+            
                 @Override
                 public void mousePressed(MouseEvent e) {
                     if (SwingUtilities.isRightMouseButton(e)) {
@@ -354,16 +364,18 @@ public class PreferencesFrame extends FBDialog {
                     }
                 }
             });
+                checkGlobal.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        pluginEnabledStatus.get(plugin).global = checkGlobal.isSelected();
+                    }
+                });
+            }
             checkGlobal.setVerticalTextPosition(SwingConstants.TOP);
             String longText = plugin.getDetailedDescription();
             if (longText != null)
                 checkGlobal.setToolTipText("<html>" + longText + "</html>");
             pluginEnabledStatus.put(plugin, enabled);
-            checkGlobal.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    pluginEnabledStatus.get(plugin).global = checkGlobal.isSelected();
-                }
-            });
+           
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.fill = GridBagConstraints.BOTH;
             gbc.weightx = 1;
@@ -373,7 +385,7 @@ public class PreferencesFrame extends FBDialog {
             gbc.anchor = GridBagConstraints.NORTHWEST;
             pluginPanelCenter.add(checkGlobal, gbc);
 
-            if (currentProject != null) {
+            if (currentProject != null && !cannotDisable) {
                 final JComboBox combo = new WideComboBox(new Object[]{"DEFAULT", "DISABLED", "ENABLED"});
                 if (enabled.project == null) combo.setSelectedIndex(0);
                 else combo.setSelectedIndex(enabled.project ? 2 : 1);
