@@ -247,7 +247,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
         ValueNumber mergedValue = frame.getMergedValue(slot);
         if (mergedValue == null) {
-            mergedValue = factory.createFreshValue(mine.getFlags() | other.getFlags() | ValueNumber.PHI_NODE);
+            mergedValue = factory.createFreshValue((mine.getFlags() & other.getFlags()) | ValueNumber.PHI_NODE);
             frame.setMergedValue(slot, mergedValue);
 
         }

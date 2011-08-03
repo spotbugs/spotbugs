@@ -76,7 +76,8 @@ public class ValueNumber implements Comparable<ValueNumber> {
     final int number;
 
     /**
-     * Flags representing meta information about the value.
+     * Flags representing meta information about the value. When value numbers are merged, 
+     * their flags should be the flags common to both.
      */
     final int flags;
 
@@ -105,6 +106,9 @@ public class ValueNumber implements Comparable<ValueNumber> {
     }
 
     private ValueNumber(int number, int flags) {
+        if (flags == 25) {
+            System.out.println("hguh");
+        }
         this.number = number;
         this.flags = flags;
     }
