@@ -478,7 +478,7 @@ public class Filter {
                 return false;
             
             if (sloppyUniqueSpecified) {
-                boolean unique = !uniqueSloppy.add(bug);
+                boolean unique = uniqueSloppy.add(bug);
                 if (unique != sloppyUnique) 
                     return false;
             }
