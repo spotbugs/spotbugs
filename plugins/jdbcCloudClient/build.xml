@@ -4,6 +4,8 @@
     <property name="classes.dir" value="build/classes-ant"/>
     <property name="lib.dir" value="lib"/>
     <property name="findbugs.home" value="../findbugs"/>
+    <property name="destination.dir" value="${findbugsBase.dir}/findbugs/${plugin.dir}"/>
+
 
     <path id="client.classpath">
         <fileset dir="${lib.dir}">
@@ -60,7 +62,7 @@
     </target>
 
     <target name="install" depends="plugin-jar">
-        <copy todir="${findbugs.home}/plugin" flatten="true">
+        <copy todir="${destination.dir}" flatten="true">
             <fileset dir="build">
                 <include name="jdbcCloudClient.jar"/>
             </fileset>

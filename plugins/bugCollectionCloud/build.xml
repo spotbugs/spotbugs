@@ -11,6 +11,8 @@
     <property file="build.properties"/>
 
     <property name="findbugs.home" value="${findbugsBase.dir}/findbugs"/>
+    <property name="destination.dir" value="${findbugsBase.dir}/findbugs/${plugin.dir}"/>
+
 
     <target name="validate">
         <xmlvalidate lenient="false" failonerror="yes">
@@ -36,7 +38,7 @@
     </target>
 
     <target name="install" depends="plugin-jar">
-        <copy todir="${findbugs.home}/plugin" file="build/bugCollectionCloud.jar" flatten="true"/>
+        <copy todir="${destination.dir}" file="build/bugCollectionCloud.jar" flatten="true"/>
     </target>
 
 </project>
