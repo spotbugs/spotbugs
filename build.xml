@@ -1,0 +1,24 @@
+<project name="findbugs" default="all">
+
+	<target name="all">
+		<ant dir="findbugs" />
+		<ant dir="plugins/bugCollectionCloud" />
+		<ant dir="plugins/doNotTrack" />
+		<ant dir="plugins/googlecode" />
+		<ant dir="plugins/jdbcCloudClient" />
+		<ant dir="plugins/jira" />
+		<ant dir="plugins/webCloudClient" />
+
+		<!-- <ant dir="bluej" /> -->
+		<ant dir="eclipsePlugin" />
+		<ant dir="findbugs" />
+		<ant dir="findbugsTestCases" />
+		<ant dir="webCloudProtocol" />
+		<ant dir="findbugs"  target="smoketest"/>
+		        
+
+	</target>
+
+</project>
+
+<!-- vim:set ts=4: -->
