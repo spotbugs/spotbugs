@@ -15,8 +15,24 @@
 		<ant dir="findbugsTestCases" />
 		<ant dir="webCloudProtocol" />
 		<ant dir="findbugs"  target="smoketest"/>
-		        
+	</target>
 
+	<target name="clean">
+		<ant dir="findbugs" target="clean"/>
+		<ant dir="plugins/bugCollectionCloud" target="clean"/>
+		<ant dir="plugins/doNotTrack" target="clean"/>
+		<ant dir="plugins/googlecode" target="clean"/>
+		<ant dir="plugins/jdbcCloudClient" target="clean"/>
+		<ant dir="plugins/jira" target="clean"/>
+		<ant dir="plugins/webCloudClient" target="clean"/>
+
+		<!-- <ant dir="bluej" target="clean"/> -->
+		<ant dir="eclipsePlugin" target="clean"/>
+		<ant dir="findbugs" target="clean"/>
+		<ant dir="findbugsTestCases" target="clean"/>
+		<!--
+		<ant dir="webCloudProtocol" target="clean"/>
+		-->
 	</target>
 
 </project>
