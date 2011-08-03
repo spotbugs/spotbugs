@@ -1,6 +1,7 @@
 <FindbugsPlugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
-       pluginid="edu.umd.cs.findbugs.plugins.doNotTrack" defaultenabled="true"
+       pluginid="edu.umd.cs.findbugs.plugins.doNotTrack" 
+       cannotDisable="true"
        provider="FindBugs project" website="http://findbugs.sourceforge.net"
 	>
 
