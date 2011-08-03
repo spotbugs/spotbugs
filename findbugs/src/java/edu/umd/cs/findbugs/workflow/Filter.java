@@ -31,7 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import org.dom4j.DocumentException;
@@ -52,6 +54,7 @@ import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
+import edu.umd.cs.findbugs.SloppyBugComparator;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.config.CommandLine;
@@ -117,6 +120,10 @@ public class Filter {
         String annotation;
 
         HashSet<String> hashesFromFile;
+
+        public boolean sloppyUniqueSpecified = false;
+
+        public boolean sloppyUnique = false;
 
         public boolean purgeHistorySpecified = false;
 
@@ -195,6 +202,8 @@ public class Filter {
         Set<String> designationKey = new HashSet<String>();
 
         Set<String> categoryKey = new HashSet<String>();
+        
+        SortedSet<BugInstance> uniqueSloppy;
 
         int priority = 3;
 
@@ -227,7 +236,8 @@ public class Filter {
             addSwitch("-applySuppression", "exclude warnings that match the suppression filter");
 
             addSwitch("-purgeHistory", "remove all version history");
-
+            addSwitchWithOptionalExtraPart("-sloppyUnique", "truth", "select only issues thought to be unique by the sloppy bug comparator ");
+            makeOptionUnlisted("-sloppyUnique");
             addSwitchWithOptionalExtraPart("-introducedByChange", "truth",
                     "allow only warnings introduced by a change of an existing class");
             addSwitchWithOptionalExtraPart("-removedByChange", "truth",
@@ -348,7 +358,8 @@ public class Filter {
             present = getVersionNum(collection, presentAsString, true);
             absent = getVersionNum(collection, absentAsString, true);
 
-
+            if (sloppyUniqueSpecified)
+                uniqueSloppy = new TreeSet<BugInstance>(new SloppyBugComparator());
 
             long fixed = getVersionNum(collection, fixedAsString, true);
             if (fixed >= 0)
@@ -465,6 +476,12 @@ public class Filter {
                 return false;
             if (shouldFixSpecified && shouldFix != (collection.getCloud().getConsensusDesignation(bug).score() > 0))
                 return false;
+            
+            if (sloppyUniqueSpecified) {
+                boolean unique = !uniqueSloppy.add(bug);
+                if (unique != sloppyUnique) 
+                    return false;
+            }
 
             return true;
         }
