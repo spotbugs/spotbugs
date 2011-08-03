@@ -147,6 +147,7 @@ public class SloppyBugComparator implements WarningComparator {
         if (cmp != 0)
             return cmp;
 
+        boolean havePrimaryMethods = lhs.getPrimaryMethod() != null &&  rhs.getPrimaryMethod() != null;
         // Primary method must match (if any)
         cmp = compareMethodsAllowingNull(lhs.getPrimaryMethod(), rhs.getPrimaryMethod());
         if (cmp != 0) {
@@ -155,12 +156,14 @@ public class SloppyBugComparator implements WarningComparator {
             return cmp;
         }
 
-        // Primary field must match (if any)
-        cmp = compareFieldsAllowingNull(lhs.getPrimaryField(), rhs.getPrimaryField());
-        if (cmp != 0) {
-            if (DEBUG)
-                System.err.println("primary fields do not match");
-            return cmp;
+        if (!havePrimaryMethods) {
+            // Primary field must match (if any)
+            cmp = compareFieldsAllowingNull(lhs.getPrimaryField(), rhs.getPrimaryField());
+            if (cmp != 0) {
+                if (DEBUG)
+                    System.err.println("primary fields do not match");
+                return cmp;
+            }
         }
 
         // Assume they're the same
