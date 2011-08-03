@@ -119,6 +119,7 @@
 	    	message="Please specify path to the Eclipse 3.3+ plugins folder in local.properties file, like: eclipsePlugin.dir=F:\\java\\eclipse33\\plugins"/>
 		<!-- Compile Java source files. -->
 		<javac srcdir="${src.dir}"
+                  includeantruntime="false"
 		  destdir="${bin.dir}"
 				source="1.5"
 				target="1.5"
