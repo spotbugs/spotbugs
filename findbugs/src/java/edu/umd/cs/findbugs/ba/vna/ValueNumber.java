@@ -42,6 +42,12 @@ public class ValueNumber implements Comparable<ValueNumber> {
     static int valueNumbersCreated = 0;
 
     static int valueNumbersReused = 0;
+    
+    public static int mergeFlags(int flags1, int flags2) {
+        if (flags1 == -1) return flags2;
+        if (flags2 == -1) return flags1;
+        return flags1 & flags2;
+    }
 
     public static synchronized ValueNumber createValueNumber(int number, int flags) {
         ValueNumber probe = new ValueNumber(number, flags);
@@ -106,9 +112,6 @@ public class ValueNumber implements Comparable<ValueNumber> {
     }
 
     private ValueNumber(int number, int flags) {
-        if (flags == 25) {
-            System.out.println("hguh");
-        }
         this.number = number;
         this.flags = flags;
     }

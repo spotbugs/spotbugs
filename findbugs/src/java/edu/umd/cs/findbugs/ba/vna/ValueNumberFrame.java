@@ -288,15 +288,19 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
                         ValueNumber phi = getMergedLoads().get(load);
                         if (phi == null) {
-                            int flags = ValueNumber.PHI_NODE;
+                            int flags = -1;
                             for (ValueNumber vn : myVN) {
-                                flags |= vn.getFlags();
+                                flags = ValueNumber.mergeFlags(flags, vn.getFlags());
                             }
                             if (otherVN != null)
                                 for (ValueNumber vn : otherVN) {
-                                    flags |= vn.getFlags();
+                                    flags = ValueNumber.mergeFlags(flags, vn.getFlags());
                                 }
-
+                            if (flags == -1)
+                                flags |= ValueNumber.PHI_NODE;
+                            else 
+                                flags |= ValueNumber.PHI_NODE;
+                            
                             phi = factory.createFreshValue(flags);
 
                             getUpdateableMergedLoads().put(load, phi);
