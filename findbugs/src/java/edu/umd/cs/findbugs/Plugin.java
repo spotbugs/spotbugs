@@ -99,6 +99,8 @@ public class Plugin {
     private final PluginLoader pluginLoader;
 
     private final boolean enabledByDefault;
+    
+    private final boolean cannotDisable;
 
     static Map<URI, Plugin> allPlugins = new LinkedHashMap<URI, Plugin>();
 
@@ -114,8 +116,9 @@ public class Plugin {
      *            the plugin's unique identifier
      * @param version TODO
      * @param enabled TODO
+     * @param cannotDisable TODO
      */
-    public Plugin(String pluginId, String version, Date releaseDate, @Nonnull PluginLoader pluginLoader, boolean enabled) {
+    public Plugin(String pluginId, String version, Date releaseDate, @Nonnull PluginLoader pluginLoader, boolean enabled, boolean cannotDisable) {
         this.pluginId = pluginId;
         if (version == null) {
             version = "";
@@ -123,6 +126,7 @@ public class Plugin {
             version = Version.COMPUTED_RELEASE;
             releaseDate = Version.getReleaseDate();
         }
+        assert enabled || !cannotDisable;
         cloudList = new LinkedHashSet<CloudPlugin>();
         componentPlugins = new DualKeyHashMap<Class, String, ComponentPlugin> ();
         this.version = version;
@@ -136,6 +140,7 @@ public class Plugin {
         this.mainPlugins = new HashMap<String, FindBugsMain>();
         this.pluginLoader = pluginLoader;
         this.enabledByDefault = enabled;
+        this.cannotDisable = cannotDisable;
         this.enabled = EnabledState.PLUGIN_DEFAULT;
     }
 
@@ -540,6 +545,10 @@ public class Plugin {
     public boolean isCorePlugin() {
         return pluginLoader.isCorePlugin();
     }
+    
+    public boolean cannotDiable() {
+        return cannotDisable;
+    }
 
     public boolean isGloballyEnabled() {
         if (isCorePlugin())
@@ -564,6 +573,10 @@ public class Plugin {
             if (!enabled)
                 throw new IllegalArgumentException("Can't disable core plugin");
             return;
+        }
+        if (cannotDisable) {
+            if (enabled) return;
+            throw new IllegalArgumentException("Cannot disable " + pluginId);
         }
         EnabledState oldState = this.enabled;
 

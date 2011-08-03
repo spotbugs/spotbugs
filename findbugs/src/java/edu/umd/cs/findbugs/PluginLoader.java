@@ -45,6 +45,12 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.Node;
+import org.dom4j.io.SAXReader;
+
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
@@ -59,15 +65,11 @@ import edu.umd.cs.findbugs.plan.DetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
 import edu.umd.cs.findbugs.plan.ReportingDetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.SingleDetectorFactorySelector;
-import edu.umd.cs.findbugs.plugins.DuplicatePluginIdDescriptor;
+import edu.umd.cs.findbugs.plugins.DuplicatePluginIdError;
+import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.JavaWebStart;
 import edu.umd.cs.findbugs.util.Util;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.Node;
-import org.dom4j.io.SAXReader;
 
 /**
  * Loader for a FindBugs plugin. A plugin is a jar file containing two metadata
@@ -107,6 +109,8 @@ public class PluginLoader {
     private final boolean corePlugin;
 
     boolean initialPlugin;
+    
+    boolean cannotDisable;
 
     private boolean optionalPlugin;
 
@@ -469,11 +473,21 @@ public class PluginLoader {
                 pluginId = "plugin" + nextUnknownId++;
             }
         }
+        cannotDisable = Boolean.parseBoolean(pluginDescriptor.valueOf("/FindbugsPlugin/@cannotDisable"));
+        
+        String de = pluginDescriptor.valueOf("/FindbugsPlugin/@defaultenabled");
+        if (de != null && de.toLowerCase().trim().equals("false")) {
+            optionalPlugin = true;
+        }
+        if (optionalPlugin)
+            cannotDisable = false;
         if (!loadedPluginIds.add(pluginId)) {
             Plugin existingPlugin = Plugin.getByPluginId(pluginId);
-            if (existingPlugin == null)
-                throw new DuplicatePluginIdDescriptor(pluginId, loadedFrom, null);
-            throw new DuplicatePluginIdDescriptor(pluginId, loadedFrom, existingPlugin.getPluginLoader().getURL());
+            URL u = existingPlugin == null ? null : existingPlugin.getPluginLoader().getURL();
+            if (cannotDisable && initialPlugin) 
+                throw new DuplicatePluginIdError(pluginId, loadedFrom, u);
+            else 
+                throw new DuplicatePluginIdException(pluginId, loadedFrom, u);
         }
 
         String version = pluginDescriptor.valueOf("/FindbugsPlugin/@version");
@@ -494,7 +508,7 @@ public class PluginLoader {
 
         // Create the Plugin object (but don't assign to the plugin field yet,
         // since we're still not sure if everything will load correctly)
-        Plugin plugin = new Plugin(pluginId, version, parseDate(releaseDate), this, !optionalPlugin);
+        Plugin plugin = new Plugin(pluginId, version, parseDate(releaseDate), this, !optionalPlugin, cannotDisable);
 
         // Set provider and website, if specified
         String provider = pluginDescriptor.valueOf("/FindbugsPlugin/@provider").trim();

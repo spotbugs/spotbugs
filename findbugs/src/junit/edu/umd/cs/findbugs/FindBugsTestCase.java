@@ -120,7 +120,7 @@ public abstract class FindBugsTestCase extends TestCase {
                 project.addFile(tmpdir.getAbsolutePath());
 
                 engine.setProject(project);
-                Plugin fakePlugin = new Plugin("edu.umd.cs.findbugs.fakeplugin", null, null, new PluginLoader(), true);
+                Plugin fakePlugin = new Plugin("edu.umd.cs.findbugs.fakeplugin", null, null, new PluginLoader(), true, false);
 
                 DetectorFactoryCollection dfc = new DetectorFactoryCollection(fakePlugin);
                 DetectorFactoryCollection.resetInstance(dfc);

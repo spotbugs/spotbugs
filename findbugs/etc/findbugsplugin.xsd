@@ -179,6 +179,8 @@
         </xsd:sequence>
         <xsd:attribute name="pluginid" type="xsd:string"/>
         <xsd:attribute name="version" type="xsd:string"/>
+        <xsd:attribute name="cannotDisable" type="xsd:boolean" use="optional" />
+        
         <xsd:attribute name="defaultenabled" type="xsd:boolean" use="optional" />
         <xsd:attribute name="provider" type="xsd:string"/>
         <xsd:attribute name="website" type="xsd:anyURI" use="optional"/>

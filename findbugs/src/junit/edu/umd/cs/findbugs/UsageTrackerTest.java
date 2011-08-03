@@ -48,7 +48,7 @@ public class UsageTrackerTest extends TestCase {
                 System.err.println(msg);
             }
         };
-        Plugin plugin = new Plugin("my.id", "2.0", KEITHS_BIRTHDAY_2011,  new PluginLoader(), true);
+        Plugin plugin = new Plugin("my.id", "2.0", KEITHS_BIRTHDAY_2011,  new PluginLoader(), true, false);
         plugin.setShortDescription("My Plugin");
         String xml = "<fb-plugin-updates>" +
                 "<plugin id='my.id'>" +

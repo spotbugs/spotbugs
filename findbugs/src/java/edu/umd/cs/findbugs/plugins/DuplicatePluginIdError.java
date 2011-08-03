@@ -24,7 +24,7 @@ import java.net.URL;
 /**
  * @author pugh
  */
-public class DuplicatePluginIdDescriptor extends RuntimeException {
+public class DuplicatePluginIdError extends Error {
 
 
     final String pluginId;
@@ -45,8 +45,8 @@ public class DuplicatePluginIdDescriptor extends RuntimeException {
      * @param pluginId
      * @param loadedFrom
      */
-    public DuplicatePluginIdDescriptor(String pluginId, URL loadedFrom, URL previouslyLoadedFrom) {
-        super(pluginId + " from " + loadedFrom + " already loaded from " + previouslyLoadedFrom);
+    public DuplicatePluginIdError(String pluginId, URL loadedFrom, URL previouslyLoadedFrom) {
+        super("Manditory plugin " + pluginId + " from " + loadedFrom + " already loaded from " + previouslyLoadedFrom);
         this.pluginId = pluginId;
         this.loadedFrom = loadedFrom;
         this.previouslyLoadedFrom = previouslyLoadedFrom;

@@ -1,6 +1,6 @@
 <FindbugsPlugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
-          pluginid="edu.umd.cs.findbugs.plugins.core" defaultenabled="true"
+          pluginid="edu.umd.cs.findbugs.plugins.core" 
           version="USE_FINDBUGS_VERSION"
           provider="FindBugs project" website="http://findbugs.sourceforge.net"
           usageTracker="http://findbugs-cloud.appspot.com/track"
