@@ -113,6 +113,8 @@ public class FindBugs2 implements IFindBugsEngine {
     private IClassFactory classFactory;
 
     private IClassPath classPath;
+    
+    private IAnalysisCache analysisCache;
 
     private List<ClassDescriptor> appClassList;
 
@@ -208,13 +210,18 @@ public class FindBugs2 implements IFindBugsEngine {
 
             progress.reportNumberOfArchives(project.getFileCount() + project.getNumAuxClasspathEntries());
             profiler.start(this.getClass());
+            
+            // The analysis cache object        
+            analysisCache = createAnalysisCache();
+
             // Create BCEL compatibility layer
             createAnalysisContext(project, appClassList, analysisOptions.sourceInfoFileName);
 
             // Discover all codebases in classpath and
             // enumerate all classes (application and non-application)
             buildClassPath();
-
+            
+             
             // Build set of classes referenced by application classes
             buildReferencedClassSet();
 
