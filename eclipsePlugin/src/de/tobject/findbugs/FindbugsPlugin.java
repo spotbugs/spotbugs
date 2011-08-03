@@ -96,7 +96,7 @@ import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionAssociations;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionLoader;
-import edu.umd.cs.findbugs.plugins.DuplicatePluginIdDescriptor;
+import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
 
 
 /**
@@ -291,7 +291,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
                 } catch (PluginException e) {
                     getDefault().logException(e, "Failed to load plugin for custom detector: " + path);
                     continue;
-                } catch (DuplicatePluginIdDescriptor e) {
+                } catch (DuplicatePluginIdException e) {
                     getDefault().logInfo(e.getPluginId() + " already loaded from " + e.getPreviouslyLoadedFrom()
                             + ", ignoring: " + path);
                     continue;
