@@ -1,10 +1,21 @@
 <project name="jdbcCloudClient" default="install">
 
+    <property file="local.properties"/>
+
+    <!--
+        The build.properties contains global properties, which are common for all developers.
+        Note:
+        Ant properties cannot be overriden, so if local.properties and build.properties
+        contains same keys, ant will use those from local.properties
+    -->
+    <property file="build.properties"/>
+
+
     <property name="src.dir" value="src/java"/>
     <property name="classes.dir" value="build/classes-ant"/>
     <property name="lib.dir" value="lib"/>
-    <property name="findbugs.home" value="../findbugs"/>
-    <property name="destination.dir" value="${findbugsBase.dir}/findbugs/${plugin.dir}"/>
+    <property name="findbugs.home" value="${findbugsBase.dir}/findbugs"/>
+    <property name="destination.dir" value="${findbugs.home}/findbugs/${plugin.dir}"/>
 
 
     <path id="client.classpath">
