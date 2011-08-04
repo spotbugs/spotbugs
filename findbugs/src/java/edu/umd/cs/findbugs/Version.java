@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,6 +29,8 @@ import java.util.Date;
 import java.util.Properties;
 
 import javax.annotation.CheckForNull;
+
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Version number and release date information.
@@ -121,39 +124,38 @@ public class Version {
     private static final String COMPUTED_ECLIPSE_UI_VERSION = RELEASE_BASE + "." + COMPUTED_ECLIPSE_DATE;
 
     static {
+        Class<Version> c = Version.class;
+        URL u = c.getResource(c.getSimpleName() + ".class");
+        boolean fromJarFile = u.toString().contains("\\!");
         InputStream in = null;
-        String release, date;
-        try {
-            Properties versionProperties = new Properties();
-            in = Version.class.getResourceAsStream("version.properties");
-            if (in != null) {
-                versionProperties.load(in);
-            }
-            release = (String) versionProperties.get("release.number");
-            date = (String) versionProperties.get("release.date");
-            if (release == null)
-                release = COMPUTED_RELEASE;
-            if (date == null)
-                date = COMPUTED_DATE;
-        } catch (RuntimeException e) {
-            release = COMPUTED_RELEASE;
-            date = COMPUTED_DATE;
-        } catch (IOException e) {
-            release = COMPUTED_RELEASE;
-            date = COMPUTED_DATE;
-        } finally {
+        String release = null;
+        String date = null;
+        if (fromJarFile)
             try {
-                if (in != null)
-                    in.close();
-            } catch (IOException e) {
-                assert true; // nothing to do here
+                Properties versionProperties = new Properties();
+                in = Version.class.getResourceAsStream("version.properties");
+                if (in != null)  {
+                    versionProperties.load(in);
+                    release = (String) versionProperties.get("release.number");
+                    date = (String) versionProperties.get("release.date");
+                }     
+            } catch (Exception e) {
+                assert true; // ignore
+            } finally {
+                Util.closeSilently(in);
             }
-        }
+        if (release == null)
+            release = COMPUTED_RELEASE;
+        if (date == null)
+            date = COMPUTED_DATE;
         RELEASE = release;
         DATE = date;
         Date parsedDate;
         try {
-            parsedDate = DateFormat.getDateTimeInstance().parse(DATE); //TODO: this doesn't work!
+            parsedDate = DateFormat.getDateTimeInstance().parse(DATE); // TODO:
+                                                                       // this
+                                                                       // doesn't
+                                                                       // work!
         } catch (ParseException e) {
             parsedDate = null;
         }
