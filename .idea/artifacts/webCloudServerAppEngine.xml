@@ -32,6 +32,7 @@
           <element id="file-copy" path="$PROJECT_DIR$/server/appengine/lib/appengine-api-labs.jar" />
           <element id="file-copy" path="$PROJECT_DIR$/server/appengine/lib/datanucleus-appengine-1.0.7.final.jar" />
           <element id="library" level="module" name="guava.jar" module-name="webCloudServerCommon" />
+          <element id="file-copy" path="$PROJECT_DIR$/server/common/lib/commons-fileupload-1.2.2.jar" />
         </element>
       </element>
       <element id="javaee-facet-resources" facet="webCloudServerAppEngine/web/Web" />

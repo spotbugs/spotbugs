@@ -17,6 +17,7 @@ import edu.umd.cs.findbugs.flybush.DbClientVersionStats;
 import edu.umd.cs.findbugs.flybush.DbEvaluation;
 import edu.umd.cs.findbugs.flybush.DbInvocation;
 import edu.umd.cs.findbugs.flybush.DbIssue;
+import edu.umd.cs.findbugs.flybush.DbPluginUpdateXml;
 import edu.umd.cs.findbugs.flybush.DbUsageEntry;
 import edu.umd.cs.findbugs.flybush.DbUser;
 import edu.umd.cs.findbugs.flybush.PersistenceHelper;
@@ -77,6 +78,11 @@ public class LocalPersistenceHelper extends PersistenceHelper {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public DbPluginUpdateXml createPluginUpdateXml(String value) {
+        return new LocalDbPluginUpdateXml();
+    }
+
     public Class<? extends DbUser> getDbUserClass() {
         return LocalDbUser.class;
     }
@@ -105,6 +111,11 @@ public class LocalPersistenceHelper extends PersistenceHelper {
     @Override
     public Class<? extends DbUsageEntry> getDbUsageEntryClass() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Class<? extends DbPluginUpdateXml> getDbPluginUpdateXmlClass() {
+        return LocalDbPluginUpdateXml.class;
     }
 
     public int clearAllData() {
@@ -146,7 +157,13 @@ public class LocalPersistenceHelper extends PersistenceHelper {
         return ((LocalDbUser) who).getEmail();
     }
 
+    @Override
+    public String getEmailOfCurrentAppengineUser() {
+        return null; //TODO: ?
+    }
+
     public boolean isOldCommentStyle(DbEvaluation eval) {
         return false;
     }
+
 }

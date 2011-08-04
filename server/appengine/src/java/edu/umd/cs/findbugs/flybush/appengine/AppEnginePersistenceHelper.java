@@ -21,10 +21,14 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import edu.umd.cs.findbugs.flybush.DbClientVersionStats;
 import edu.umd.cs.findbugs.flybush.DbEvaluation;
 import edu.umd.cs.findbugs.flybush.DbInvocation;
 import edu.umd.cs.findbugs.flybush.DbIssue;
+import edu.umd.cs.findbugs.flybush.DbPluginUpdateXml;
 import edu.umd.cs.findbugs.flybush.DbUsageEntry;
 import edu.umd.cs.findbugs.flybush.DbUser;
 import edu.umd.cs.findbugs.flybush.PersistenceHelper;
@@ -63,6 +67,11 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
     @Override
     public DbUsageEntry createDbUsageEntry() {
         return new AppEngineDbUsageEntry();
+    }
+
+    @Override
+    public DbPluginUpdateXml createPluginUpdateXml(String value) {
+        return new AppEngineDbPluginUpdateXml(value);
     }
 
     public int clearAllData() {
@@ -108,6 +117,11 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
     @Override
     public Class<? extends DbUsageEntry> getDbUsageEntryClass() {
         return AppEngineDbUsageEntry.class;
+    }
+
+    @Override
+    public Class<? extends DbPluginUpdateXml> getDbPluginUpdateXmlClass() {
+        return AppEngineDbPluginUpdateXml.class;
     }
 
     public <E> E getObjectById(PersistenceManager pm, Class<? extends E> cls, Object key) {
@@ -180,6 +194,15 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
     public String getEmail(PersistenceManager pm, Comparable<?> who) {
         // noinspection RedundantCast
         return pm.getObjectById(getDbUserClass(), (Key) who).getEmail();
+    }
+
+    @Override
+    public String getEmailOfCurrentAppengineUser() {
+        UserService userService = UserServiceFactory.getUserService();
+        User user = userService.getCurrentUser();
+        if (user == null)
+            return null;
+        return user.getEmail();
     }
 
     @Override

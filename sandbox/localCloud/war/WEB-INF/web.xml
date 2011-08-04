@@ -50,6 +50,10 @@
         <servlet-name>UpdateCheckServlet</servlet-name>
         <servlet-class>edu.umd.cs.findbugs.flybush.UpdateCheckServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UpdateXmlUploadServlet</servlet-name>
+        <servlet-class>edu.umd.cs.findbugs.flybush.XmlUploadServlet</servlet-class>
+    </servlet>
 
     <servlet-mapping>
         <servlet-name>AuthServlet</servlet-name>
@@ -86,7 +90,12 @@
         <url-pattern>/update-check</url-pattern>
         <url-pattern>/track</url-pattern> <!-- obsolete -->
     </servlet-mapping>
-<!--
+    <!-- TODO: security!! -->
+    <!--
+    <servlet-mapping>
+        <servlet-name>XmlUploadServlet</servlet-name>
+        <url-pattern>/upload</url-pattern>
+    </servlet-mapping>
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>Stats</web-resource-name>

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class UpdateCheckServlet extends AbstractFlybushServlet {
+    @SuppressWarnings({"unchecked"})
     @Override
     protected void handlePost(PersistenceManager pm, HttpServletRequest req, HttpServletResponse resp, String uri)
             throws IOException {
@@ -28,7 +30,8 @@ public class UpdateCheckServlet extends AbstractFlybushServlet {
         try {
             SAXParserFactory.newInstance().newSAXParser().parse(req.getInputStream(), new DefaultHandler() {
                 @Override
-                public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+                public void startElement(String uri, String localName, String qName, Attributes attributes)
+                        throws SAXException {
                     if (qName.equals("findbugs-invocation")) {
                         for (int i = 0; i < attributes.getLength(); i++) {
                             String name = attributes.getQName(i);
@@ -83,10 +86,21 @@ public class UpdateCheckServlet extends AbstractFlybushServlet {
                 pm.makePersistent(pluginEntry);
                 pm.currentTransaction().commit();
             }
-        } catch (Throwable t) {
+        } finally {
             if (pm.currentTransaction().isActive())
                 pm.currentTransaction().rollback();
-            throw new RuntimeException(t);
+        }
+        //TODO: unit test me!
+        resp.setStatus(200);
+        resp.setContentType("text/xml");
+        try {
+            List<DbPluginUpdateXml> results = (List<DbPluginUpdateXml>) pm.newQuery(
+                    "select from " + persistenceHelper.getDbPluginUpdateXmlClassname()
+                    + " order by date desc limit 1").execute();
+            if (results.size() > 0)
+                resp.getWriter().write(results.get(0).getContents());
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Exception while grabbing update check XML from DB", e);
         }
     }
 }

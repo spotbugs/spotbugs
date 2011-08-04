@@ -19,6 +19,7 @@ public abstract class PersistenceHelper {
     public abstract DbEvaluation createDbEvaluation();
     public abstract DbClientVersionStats createDbClientVersionStats(String application, String version, long dayStart);
     public abstract DbUsageEntry createDbUsageEntry();
+    public abstract DbPluginUpdateXml createPluginUpdateXml(String value);
 
     public abstract Class<? extends DbUser> getDbUserClass();
     public abstract Class<? extends SqlCloudSession> getSqlCloudSessionClass();
@@ -27,6 +28,7 @@ public abstract class PersistenceHelper {
     public abstract Class<? extends DbEvaluation> getDbEvaluationClass();
     public abstract Class<? extends DbClientVersionStats> getDbClientVersionStatsClass();
     public abstract Class<? extends DbUsageEntry> getDbUsageEntryClass();
+    public abstract Class<? extends DbPluginUpdateXml> getDbPluginUpdateXmlClass();
 
     public String getDbUserClassname() {
         return getDbUserClass().getName();
@@ -49,6 +51,10 @@ public abstract class PersistenceHelper {
     public String getDbUsageEntryClassname() {
         return getDbUsageEntryClass().getName();
     }
+    public String getDbPluginUpdateXmlClassname() {
+        return getDbPluginUpdateXmlClass().getName();
+    }
+
 
     public abstract int clearAllData();
 
@@ -57,6 +63,7 @@ public abstract class PersistenceHelper {
     public abstract Map<String, DbIssue> findIssues(PersistenceManager pm, Iterable<String> hashes);
 
     public abstract String getEmail(PersistenceManager pm, Comparable<?> who);
+    public abstract String getEmailOfCurrentAppengineUser();
 
     public abstract boolean isOldCommentStyle(DbEvaluation eval);
     public abstract void convertToOldCommentStyleForTesting(DbEvaluation eval);

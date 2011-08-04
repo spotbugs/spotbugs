@@ -55,6 +55,10 @@
         <servlet-name>UpdateCheckServlet</servlet-name>
         <servlet-class>edu.umd.cs.findbugs.flybush.UpdateCheckServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UpdateXmlUploadServlet</servlet-name>
+        <servlet-class>edu.umd.cs.findbugs.flybush.XmlUploadServlet</servlet-class>
+    </servlet>
 
     <servlet-mapping>
         <servlet-name>RemoteApiServlet</servlet-name>
@@ -98,6 +102,10 @@
         <url-pattern>/update-check</url-pattern>
         <url-pattern>/track</url-pattern> <!-- obsolete -->
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateXmlUploadServlet</servlet-name>
+        <url-pattern>/upload</url-pattern>
+    </servlet-mapping>
 
     <security-constraint>
         <web-resource-collection>
@@ -119,6 +127,11 @@
         <web-resource-collection>
             <web-resource-name>Update DB: june 29</web-resource-name>
             <url-pattern>/update-db-jun29</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>Update XML uploader</web-resource-name>
+            <url-pattern>/upload</url-pattern>
+            <url-pattern>/upload.html</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>admin</role-name>
