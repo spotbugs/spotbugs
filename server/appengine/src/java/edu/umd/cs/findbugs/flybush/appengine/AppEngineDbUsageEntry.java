@@ -195,13 +195,17 @@ public class AppEngineDbUsageEntry implements DbUsageEntry {
     @Override
     public String toString() {
         return "AppEngineDbUsageEntry{" +
-                "version='" + version + '\'' +
+                "uuid='" + uuid + '\'' +
+                ", ipAddress='" + ipAddress + '\'' +
+                ", country='" + country + '\'' +
+                ", version='" + version + '\'' +
                 ", appName='" + appName + '\'' +
                 ", appVersion='" + appVersion + '\'' +
                 ", entryPoint='" + entryPoint + '\'' +
                 ", os='" + os + '\'' +
                 ", javaVersion='" + javaVersion + '\'' +
-                ", uuid='" + uuid + '\'' +
+                ", language='" + language + '\'' +
+                ", localeCountry='" + localeCountry + '\'' +
                 '}';
     }
 }
