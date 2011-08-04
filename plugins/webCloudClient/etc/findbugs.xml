@@ -2,7 +2,7 @@
        xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
        pluginid="edu.umd.cs.findbugs.plugins.appengine" 
        provider="FindBugs project" website="http://findbugs.sourceforge.net"
-       usageTracker="http://findbugs-cloud.appspot.com/track">
+       update-url="http://findbugs-cloud.appspot.com/update-check">
 
        <Cloud id="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
               cloudClass="edu.umd.cs.findbugs.cloud.appEngine.WebCloudClient"

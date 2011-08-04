@@ -16,7 +16,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class UsageTrackerServlet extends AbstractFlybushServlet {
+public class UpdateCheckServlet extends AbstractFlybushServlet {
     @Override
     protected void handlePost(PersistenceManager pm, HttpServletRequest req, HttpServletResponse resp, String uri)
             throws IOException {

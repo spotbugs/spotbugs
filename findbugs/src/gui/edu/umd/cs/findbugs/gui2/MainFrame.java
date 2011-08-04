@@ -63,7 +63,7 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.UsageTracker;
+import edu.umd.cs.findbugs.UpdateChecker;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
@@ -200,7 +200,7 @@ public class MainFrame extends FBFrame implements LogSync {
         comments = new CommentsArea(this);
         FindBugsDisplayFeatures.setAbridgedMessages(true);
         DetectorFactoryCollection.instance().addPluginUpdateListener(new PluginUpdateListener() {
-            public void pluginUpdateCheckComplete(Collection<UsageTracker.PluginUpdate> updates) {
+            public void pluginUpdateCheckComplete(Collection<UpdateChecker.PluginUpdate> updates) {
                 if (!updates.isEmpty())
                     JOptionPane.showMessageDialog(MainFrame.this, "Some plugins have been updated!");
             }

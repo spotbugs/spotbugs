@@ -522,12 +522,12 @@ public class PluginLoader {
                 AnalysisContext.logError("Plugin " + pluginId + " has invalid website: " + website, e1);
             }
 
-        String usageTracker = pluginDescriptor.valueOf("/FindbugsPlugin/@usageTracker").trim();
-        if (!usageTracker.equals(""))
+        String updateUrl = pluginDescriptor.valueOf("/FindbugsPlugin/@update-url").trim();
+        if (!updateUrl.equals(""))
             try {
-                plugin.setUsageTracker(usageTracker);
+                plugin.setUpdateUrl(updateUrl);
             } catch (URISyntaxException e1) {
-                AnalysisContext.logError("Plugin " + pluginId + " has invalid usageTracker: " + website, e1);
+                AnalysisContext.logError("Plugin " + pluginId + " has invalid update check URL: " + website, e1);
                 
             }
 

@@ -1304,21 +1304,21 @@ public class FindBugs2 implements IFindBugsEngine {
         System.out.println();
         System.out.print("Checking for plugin updates...");
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Collection<UsageTracker.PluginUpdate>> updatesHolder
-                = new AtomicReference<Collection<UsageTracker.PluginUpdate>>();
+        final AtomicReference<Collection<UpdateChecker.PluginUpdate>> updatesHolder
+                = new AtomicReference<Collection<UpdateChecker.PluginUpdate>>();
         DetectorFactoryCollection.instance().addPluginUpdateListener(new PluginUpdateListener() {
-            public void pluginUpdateCheckComplete(Collection<UsageTracker.PluginUpdate> updates) {
+            public void pluginUpdateCheckComplete(Collection<UpdateChecker.PluginUpdate> updates) {
                 updatesHolder.set(updates);
                 latch.countDown();
             }
         });
         latch.await();
-        Collection<UsageTracker.PluginUpdate> updates = updatesHolder.get();
+        Collection<UpdateChecker.PluginUpdate> updates = updatesHolder.get();
         if (updates.isEmpty()) {
             System.out.println("none!");
         } else {
             System.out.println();
-            for (UsageTracker.PluginUpdate update : updates) {
+            for (UpdateChecker.PluginUpdate update : updates) {
                 System.out.println("PLUGIN UPDATE: " + update.getPlugin().getShortDescription() + " "
                         + update.getVersion() + " has been released (you have "
                         + update.getPlugin().getVersion() + ")");

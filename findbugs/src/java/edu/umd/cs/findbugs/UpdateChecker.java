@@ -32,20 +32,20 @@ import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 
-public class UsageTracker {
-    private static final Logger LOGGER = Logger.getLogger(UsageTracker.class.getName());
+public class UpdateChecker {
+    private static final Logger LOGGER = Logger.getLogger(UpdateChecker.class.getName());
     private static final String KEY_DISABLE_ALL_UPDATE_CHECKS = "noUpdateChecks";
     private static final String KEY_REDIRECT_ALL_UPDATE_CHECKS = "redirectUpdateChecks";
     
-    private final UsageTrackerCallback dfc;
+    private final UpdateCheckCallback dfc;
     private List<PluginUpdate> pluginUpdates = new ArrayList<PluginUpdate>();
 
-    public UsageTracker(UsageTrackerCallback dfc) {
+    public UpdateChecker(UpdateCheckCallback dfc) {
         this.dfc = dfc;
     }
 
-    void trackUsage(Collection<Plugin> plugins) {
-        if (trackingIsGloballyDisabled())
+    void checkForUpdates(Collection<Plugin> plugins) {
+        if (updateChecksGloballyDisabled())
             return;
 
         String redirect = dfc.getGlobalOption(KEY_REDIRECT_ALL_UPDATE_CHECKS);
@@ -56,7 +56,7 @@ public class UsageTracker {
             try {
                 redirectUri = new URI(redirect);
             } catch (URISyntaxException e) {
-                String error = "Invalid usage tracking redirect URI in " + pluginName + ": " + redirect;
+                String error = "Invalid update check redirect URI in " + pluginName + ": " + redirect;
                 logError(Level.SEVERE, error);
                 throw new IllegalStateException(error);
             }
@@ -65,22 +65,22 @@ public class UsageTracker {
         final CountDownLatch latch;
         if (redirectUri != null) {
             latch = new CountDownLatch(1);
-            logError(Level.INFO, "Redirecting all plugin usage tracking to " + redirectUri + " (" + pluginName + ")");
-            startUsageReportThread(redirectUri, plugins, latch);
+            logError(Level.INFO, "Redirecting all plugin update checks to " + redirectUri + " (" + pluginName + ")");
+            startUpdateCheckThread(redirectUri, plugins, latch);
         } else {
-            MultiMap<URI,Plugin> pluginsByTracker = new MultiMap<URI, Plugin>(HashSet.class);
+            MultiMap<URI,Plugin> pluginsByUrl = new MultiMap<URI, Plugin>(HashSet.class);
             for (Plugin plugin : plugins) {
-                URI uri = plugin.getUsageTracker();
+                URI uri = plugin.getUpdateUrl();
                 if (uri == null) {
-                    logError(Level.FINE, "Not logging usage for " + plugin.getShortDescription()
-                            + " - no usageTracker attribute in plugin XML file");
+                    logError(Level.FINE, "Not checking for updates for " + plugin.getShortDescription()
+                            + " - no update-url attribute in plugin XML file");
                     continue;
                 }
-                pluginsByTracker.add(uri, plugin);
+                pluginsByUrl.add(uri, plugin);
             }
-            latch = new CountDownLatch(pluginsByTracker.keySet().size());
-            for (URI uri : pluginsByTracker.keySet()) {
-                startUsageReportThread(uri, pluginsByTracker.get(uri), latch);
+            latch = new CountDownLatch(pluginsByUrl.keySet().size());
+            for (URI uri : pluginsByUrl.keySet()) {
+                startUpdateCheckThread(uri, pluginsByUrl.get(uri), latch);
             }
         }
         new Thread(new Runnable() {
@@ -92,46 +92,46 @@ public class UsageTracker {
                 }
 
             }
-        }, "Usage tracker").start();
+        }, "Plugin update checker").start();
     }
 
-    private boolean trackingIsGloballyDisabled() {
+    private boolean updateChecksGloballyDisabled() {
         String disable = dfc.getGlobalOption(KEY_DISABLE_ALL_UPDATE_CHECKS);
         Plugin setter = dfc.getGlobalOptionSetter(KEY_DISABLE_ALL_UPDATE_CHECKS);
         String pluginName = setter == null ? "<unknown plugin>" : setter.getShortDescription();
         if ("true".equalsIgnoreCase(disable)) {
-            logError(Level.INFO, "Skipping usage tracking due to disableAllUsageTracking=true set by "
+            logError(Level.INFO, "Skipping update checks due to " + KEY_DISABLE_ALL_UPDATE_CHECKS + "=true set by "
                     + pluginName);
             return true;
         }
         if (disable != null && !"false".equalsIgnoreCase(disable)) {
-            String error = "Unknown value '" + disable + "' for disableAllUsageTracking in " + pluginName;
+            String error = "Unknown value '" + disable + "' for " + KEY_DISABLE_ALL_UPDATE_CHECKS + " in " + pluginName;
             logError(Level.SEVERE, error);
             throw new IllegalStateException(error);
         }
         return false;
     }
 
-    private void startUsageReportThread(final URI trackerUrl, final Collection<Plugin> plugins, final CountDownLatch latch) {
-        if (trackerUrl == null) {
-            logError(Level.INFO, "Not submitting usage tracking for plugins with blank URL: " + getPluginNames(plugins));
+    private void startUpdateCheckThread(final URI url, final Collection<Plugin> plugins, final CountDownLatch latch) {
+        if (url == null) {
+            logError(Level.INFO, "Not checking for plugin updates w/ blank URL: " + getPluginNames(plugins));
             return;
         }
         final String entryPoint = getEntryPoint();
         if ((entryPoint.contains("edu.umd.cs.findbugs.FindBugsTestCase") 
                 || entryPoint.contains("edu.umd.cs.findbugs.cloud.appEngine.AbstractWebCloudTest"))
-                && (trackerUrl.getScheme().equals("http") || trackerUrl.getScheme().equals("https"))) {
-            LOGGER.fine("Skipping usage tracking because we're running in FindBugsTestCase and using "
-                    + trackerUrl.getScheme());
+                && (url.getScheme().equals("http") || url.getScheme().equals("https"))) {
+            LOGGER.fine("Skipping update check because we're running in FindBugsTestCase and using "
+                    + url.getScheme());
             return;
         }
         Thread thread = new Thread(new Runnable() {
             public void run() {
                 try {
-                    actuallyTrackUsage(trackerUrl, plugins, entryPoint);
+                    actuallyCheckforUpdates(url, plugins, entryPoint);
                     latch.countDown();
                 } catch (Exception e) {
-                    logError(e, "Error submitting usage tracking data to " + trackerUrl);
+                    logError(e, "Error doing update check at " + url);
                 }
             }
         });
@@ -139,10 +139,10 @@ public class UsageTracker {
         thread.start();
     }
 
-    private void actuallyTrackUsage(URI trackerUrl, Collection<Plugin> plugins, String entryPoint) throws IOException {
-        LOGGER.fine("Submitting anonymous usage tracking info to " + trackerUrl
+    private void actuallyCheckforUpdates(URI url, Collection<Plugin> plugins, String entryPoint) throws IOException {
+        LOGGER.fine("Checking for updates at " + url
                 + " for " + getPluginNames(plugins));
-        HttpURLConnection conn = (HttpURLConnection) trackerUrl.toURL().openConnection();
+        HttpURLConnection conn = (HttpURLConnection) url.toURL().openConnection();
         conn.setDoInput(true);
         conn.setDoOutput(true);
         conn.setRequestMethod("POST");
@@ -186,18 +186,17 @@ public class UsageTracker {
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) {
             logError(SystemProperties.ASSERTIONS_ENABLED ? Level.WARNING : Level.FINE,
-                    "Error submitting anonymous usage data to " + trackerUrl + ": "
+                    "Error checking for updates at " + url + ": "
                     + responseCode + " - " + conn.getResponseMessage());
         }
-        parseUpdateXml(trackerUrl, plugins, conn.getInputStream());
+        parseUpdateXml(url, plugins, conn.getInputStream());
         xmlOutput.finish();
         conn.disconnect();
-        
     }
 
     // package-private for testing
     @SuppressWarnings({"unchecked"})
-    void parseUpdateXml(URI trackerUrl, Collection<Plugin> plugins, @WillClose InputStream inputStream) {
+    void parseUpdateXml(URI url, Collection<Plugin> plugins, @WillClose InputStream inputStream) {
         try {
             Document doc = new SAXReader().read(inputStream);
             List<Element> pluginEls = (List<Element>) doc.selectNodes("fb-plugin-updates/plugin");
@@ -210,7 +209,7 @@ public class UsageTracker {
                 }
             }
         } catch (Exception e) {
-            logError(e, "Could not parse plugin version update for " + trackerUrl);
+            logError(e, "Could not parse plugin version update for " + url);
         } finally {
             Util.closeSilently(inputStream);
         }
@@ -293,7 +292,7 @@ public class UsageTracker {
 
     private static synchronized String getUuid() {
         try {
-            Preferences prefs = Preferences.userNodeForPackage(UsageTracker.class);
+            Preferences prefs = Preferences.userNodeForPackage(UpdateChecker.class);
             long uuid = prefs.getLong("uuid", 0);
             if (uuid == 0) {
                 uuid = random.nextLong(); 

@@ -66,7 +66,7 @@ public class Plugin {
     private String provider;
 
     private URI website;
-    private @CheckForNull URI usageTracker;
+    private @CheckForNull URI updateUrl;
 
     private String shortDescription;
     private String detailedDescription;
@@ -178,12 +178,12 @@ public class Plugin {
     }
 
     
-    public void setUsageTracker(String tracker) throws URISyntaxException {
-        this.usageTracker = new URI(tracker);
+    public void setUpdateUrl(String url) throws URISyntaxException {
+        this.updateUrl = new URI(url);
     }
     
-    public @CheckForNull URI getUsageTracker() {
-        return usageTracker;
+    public @CheckForNull URI getUpdateUrl() {
+        return updateUrl;
     }
     
     public void setMyGlobalOption(String key, String value) {

@@ -11,8 +11,9 @@ import java.util.logging.Level;
 
 import junit.framework.TestCase;
 
-public class UsageTrackerTest extends TestCase {
-    private static final Date KEITHS_BIRTHDAY_2011;static {
+public class UpdateCheckerTest extends TestCase {
+    private static final Date KEITHS_BIRTHDAY_2011;
+    static {
         try {
             KEITHS_BIRTHDAY_2011 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").parse("2011-03-20 02:00:00 EST");
         } catch (ParseException e) {
@@ -24,8 +25,8 @@ public class UsageTrackerTest extends TestCase {
     public void testMe() throws Exception {
         final StringBuilder printed = new StringBuilder();
         final StringBuilder errors = new StringBuilder();
-        UsageTracker tracker = new UsageTracker(new UsageTrackerCallback() {
-            public void pluginUpdateCheckComplete(List<UsageTracker.PluginUpdate> updates) {
+        UpdateChecker checker = new UpdateChecker(new UpdateCheckCallback() {
+            public void pluginUpdateCheckComplete(List<UpdateChecker.PluginUpdate> updates) {
             }
 
             public String getGlobalOption(String key) {
@@ -57,7 +58,7 @@ public class UsageTrackerTest extends TestCase {
                 "</release>" +
                 "</plugin>" +
                 "</fb-plugin-updates>";
-        tracker.parseUpdateXml(new URI("http://example.com/track"), Arrays.asList(plugin),
+        checker.parseUpdateXml(new URI("http://example.com/update-check"), Arrays.asList(plugin),
                 new ByteArrayInputStream(xml.getBytes("UTF-8")));
 
         assertEquals("PLUGIN UPDATE: My Plugin 2.1 has been released (you have 2.0)\n" +

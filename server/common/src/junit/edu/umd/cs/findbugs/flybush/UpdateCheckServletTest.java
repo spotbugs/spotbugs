@@ -6,16 +6,16 @@ import java.util.List;
 import javax.jdo.Query;
 
 @SuppressWarnings({"UnusedDeclaration"})
-public abstract class UsageTrackerServletTest extends AbstractFlybushServletTest {
+public abstract class UpdateCheckServletTest extends AbstractFlybushServletTest {
 
     @Override
     protected AbstractFlybushServlet createServlet() {
-        return new UsageTrackerServlet();
+        return new UpdateCheckServlet();
     }
 
     @SuppressWarnings({"unchecked"})
     public void testTrackSinglePlugin() throws IOException {
-        executePost("/track", (
+        executePost("/update-check", (
                 "<findbugs-invocation version='MINE' uuid='UUID' app-name='APPNAME' " +
                 "app-version='APPVERSION' entry-point='ENTRYPOINT' os='OS' java-version='JAVAVERSION' " +
                 "language='FR' country='CA'>" +
@@ -44,7 +44,7 @@ public abstract class UsageTrackerServletTest extends AbstractFlybushServletTest
 
     @SuppressWarnings({"unchecked"})
     public void testTrackMultiplePlugins() throws IOException {
-        executePost("/track", (
+        executePost("/update-check", (
                 "<findbugs-invocation version='MINE' uuid='UUID' app-name='APPNAME' " +
                 "app-version='APPVERSION' entry-point='ENTRYPOINT' os='OS' java-version='JAVAVERSION' " +
                 "language='FR' country='CA'>" +

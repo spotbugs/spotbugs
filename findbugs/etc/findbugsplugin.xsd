@@ -184,7 +184,7 @@
         <xsd:attribute name="defaultenabled" type="xsd:boolean" use="optional" />
         <xsd:attribute name="provider" type="xsd:string"/>
         <xsd:attribute name="website" type="xsd:anyURI" use="optional"/>
-        <xsd:attribute name="usageTracker" type="xsd:anyURI" use="optional"/>
+        <xsd:attribute name="update-url" type="xsd:anyURI" use="optional"/>
     </xsd:complexType>
 
     <xsd:element name="FindbugsPlugin" type="FindBugsPluginType"/>

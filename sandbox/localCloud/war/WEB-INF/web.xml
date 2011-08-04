@@ -47,8 +47,8 @@
         <servlet-class>edu.umd.cs.findbugs.flybush.ReportServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UsageTrackerServlet</servlet-name>
-        <servlet-class>edu.umd.cs.findbugs.flybush.ReportServlet</servlet-class>
+        <servlet-name>UpdateCheckServlet</servlet-name>
+        <servlet-class>edu.umd.cs.findbugs.flybush.UpdateCheckServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -82,8 +82,9 @@
         <url-pattern>/stats</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UsageTrackerServlet</servlet-name>
-        <url-pattern>/track</url-pattern>
+        <servlet-name>UpdateCheckServlet</servlet-name>
+        <url-pattern>/update-check</url-pattern>
+        <url-pattern>/track</url-pattern> <!-- obsolete -->
     </servlet-mapping>
 <!--
     <security-constraint>

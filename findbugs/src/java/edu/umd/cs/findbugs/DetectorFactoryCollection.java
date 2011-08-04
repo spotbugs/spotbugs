@@ -53,7 +53,7 @@ import edu.umd.cs.findbugs.util.ClassPathUtil;
  * @author David Hovemeyer
  * @see DetectorFactory
  */
-public class DetectorFactoryCollection implements UsageTrackerCallback {
+public class DetectorFactoryCollection implements UpdateCheckCallback {
 
     private static final Logger LOGGER = Logger.getLogger(DetectorFactoryCollection.class.getName());
     private static final boolean DEBUG_JAWS = SystemProperties.getBoolean("findbugs.jaws.debug");
@@ -72,10 +72,10 @@ public class DetectorFactoryCollection implements UsageTrackerCallback {
     protected final Map<String, BugPattern> bugPatternMap = new HashMap<String, BugPattern>();
     protected final Map<String, BugCode> bugCodeMap = new HashMap<String, BugCode>();
     
-    private UsageTracker usageTracker;
+    private UpdateChecker updateChecker;
     private CopyOnWriteArrayList<PluginUpdateListener> pluginUpdateListeners
             = new CopyOnWriteArrayList<PluginUpdateListener>();
-    private List<UsageTracker.PluginUpdate> updates = null;
+    private List<UpdateChecker.PluginUpdate> updates = null;
 
     protected DetectorFactoryCollection() {
         loadCorePlugin();
@@ -88,15 +88,15 @@ public class DetectorFactoryCollection implements UsageTrackerCallback {
             }
         }
         setGlobalOptions();
-        usageTracker = new UsageTracker(this);
-        usageTracker.trackUsage(combine(corePlugin, enabledPlugins));
+        updateChecker = new UpdateChecker(this);
+        updateChecker.checkForUpdates(combine(corePlugin, enabledPlugins));
     }
 
     protected DetectorFactoryCollection(Plugin onlyPlugin) {
         loadPlugin(onlyPlugin);
         setGlobalOptions();
-        usageTracker = new UsageTracker(this);
-        usageTracker.trackUsage(combine(corePlugin, Collections.singleton(onlyPlugin)));
+        updateChecker = new UpdateChecker(this);
+        updateChecker.checkForUpdates(combine(corePlugin, Collections.singleton(onlyPlugin)));
     }
 
     protected DetectorFactoryCollection(Collection<Plugin> enabled) {
@@ -109,8 +109,8 @@ public class DetectorFactoryCollection implements UsageTrackerCallback {
         if (FindBugs.DEBUG)
             System.out.println("}\n");
         setGlobalOptions();
-        usageTracker = new UsageTracker(this);
-        usageTracker.trackUsage(combine(corePlugin, enabled));
+        updateChecker = new UpdateChecker(this);
+        updateChecker.checkForUpdates(combine(corePlugin, enabled));
     }
 
     private Collection<Plugin> combine(Plugin corePlugin, Collection<Plugin> enabled) {
@@ -397,7 +397,7 @@ public class DetectorFactoryCollection implements UsageTrackerCallback {
         }
     }
 
-    public void pluginUpdateCheckComplete(List<UsageTracker.PluginUpdate> updates) {
+    public void pluginUpdateCheckComplete(List<UpdateChecker.PluginUpdate> updates) {
         this.updates = updates;
         for (PluginUpdateListener listener : pluginUpdateListeners) {
             listener.pluginUpdateCheckComplete(updates);
