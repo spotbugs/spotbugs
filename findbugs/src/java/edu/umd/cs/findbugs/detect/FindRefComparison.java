@@ -1070,7 +1070,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 pattern = "EC_INCOMPATIBLE_ARRAY_COMPARE";
             bugAccumulator.accumulateBug(new BugInstance(this, pattern, NORMAL_PRIORITY).addClassAndMethod(methodGen, sourceFile)
                     .addFoundAndExpectedType(rhsType_, lhsType_)
-                    .addSomeSourceForTopTwoStackValues(classContext, method, location),
+                    .addSomeSourceForTopTwoStackValues(classContext, method, location)
+                    .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
                     SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
         }
 
