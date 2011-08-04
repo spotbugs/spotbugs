@@ -112,14 +112,7 @@
 ]]>
   </Details>
  </Detector>
- <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue">
-  <Details>
-<![CDATA[
-<p>Recherche les annotations permettant la vérification de la valeur renvoyée par une méthode.</p>
-]]>
-  </Details>
- </Detector>
- <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations">
+  <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations">
   <Details>
 <![CDATA[
 <p>Recherche les annotations permettant la vérification de la valeur renvoyée par une méthode.</p>
@@ -172,15 +165,7 @@
 ]]>
   </Details>
  </Detector>
- <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop2">
-  <Details>
-<![CDATA[
-<p>Recherche les boucles infinies récursives.</p>
-<p>C'est un détecteur lent.</p>
-]]>
-  </Details>
- </Detector>
- <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage">
+  <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage">
   <Details>
 <![CDATA[
 <p>Détecte l'utilisation erronée de champs volatiles.</p>
@@ -496,14 +481,6 @@
 <![CDATA[
 <p>Ce détecteur détecte les appels à <code>wait()</code> qui ne sont pas dans une boucle.</p>
 <p>C'est un détecteur rapide.</p>
-]]>
-  </Details>
- </Detector>
- <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck">
-  <Details>
-<![CDATA[
-<p>Ce détecteur recherche les appels de méthodes qui ignorent la valeur de retour de façon suspecte.</p>
-<p>C'est un détecteur lent.</p>
 ]]>
   </Details>
  </Detector>
@@ -2240,29 +2217,7 @@ dateString = dateString.trim();
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="RV_RETURN_VALUE_IGNORED2">
-  <ShortDescription>Méthode ignorant une valeur de retour</ShortDescription>
-  <LongDescription>La méthode {1} ignore la valeur renvoyée par {2}</LongDescription>
-  <Details>
-<![CDATA[
-<p>Le valeur renvoyée par cette méthode devrait être vérifiée. Une origine fréquente de cette alarme est l'invocation d'une méthode sur un objet immuable en croyant que cela mettra à jour l'objet. Par exemple, le bout de code suivant :</p>
-<blockquote>
-<pre>
-String dateString = getHeaderField(name);
-dateString.trim();
-</pre>
-</blockquote>
-<p>Le programmeur semble croire que la méthode <code>trim()</code> mettra à jour l'objet <code>String</code> référencé par <code>dateString</code>. Mais, puisque les objets <code>String</code> sont immuables, la fonction <code>trim()</code> renvoie une nouvelle instance de <code>String</code>, qui sera ignorée dans ce cas. Le code devrait être corrigé en :</p>
-<blockquote>
-<pre>
-String dateString = getHeaderField(name);
-dateString = dateString.trim();
-</pre>
-</blockquote>
-]]>
-  </Details>
- </BugPattern>
- <BugPattern type="NP_ALWAYS_NULL">
+  <BugPattern type="NP_ALWAYS_NULL">
   <ShortDescription>Déréférencement d'un pointeur null dans la méthode</ShortDescription>
   <LongDescription>Déréférencement d'un pointeur null dans la méthode {1}</LongDescription>
   <Details>

@@ -155,7 +155,6 @@
                               <Later class="edu.umd.cs.findbugs.detect.FindRefComparison"/>
                     </SplitPass>
 
-                    <!-- NoteCheckReturnValue should happen in an earlier pass than BCPMethodReturnCheck. -->
                     <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.NoteAnnotationRetention"/>
                               <Later class="edu.umd.cs.findbugs.detect.DumbMethods"/>
@@ -170,10 +169,7 @@
                                         class="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase"/>
                               <Later class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation"/>
                     </SplitPass>
-                    <SplitPass>
-                              <Earlier class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue"/>
-                              <Later class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck"/>
-                    </SplitPass>
+
 
                     <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.ReflectiveClasses"/>
@@ -306,8 +302,6 @@
           <Detector class="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod"
                     speed="moderate" reports="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD"
                     disabled="false" hidden="false"/>
-          <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue" speed="fast" reports=""
-                    hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant"
                     speed="fast"
                     reports="DL_SYNCHRONIZATION_ON_BOOLEAN,DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE,DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE,DL_SYNCHRONIZATION_ON_SHARED_CONSTANT"
@@ -329,9 +323,6 @@
                     reports="IL_INFINITE_RECURSIVE_LOOP,IL_CONTAINER_ADDED_TO_ITSELF"/>
           <Detector class="edu.umd.cs.findbugs.detect.InfiniteLoop" speed="fast"
                     reports="IL_INFINITE_LOOP"/>
-          <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop2" speed="slow"
-                    reports="IL_INFINITE_RECURSIVE_LOOP,IL_CONTAINER_ADDED_TO_ITSELF"
-                    disabled="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage" speed="fast"
                     reports="VO_VOLATILE_REFERENCE_TO_ARRAY,VO_VOLATILE_INCREMENT"/>
           <Detector class="edu.umd.cs.findbugs.detect.InheritanceUnsafeGetResource" speed="fast"
@@ -458,8 +449,6 @@
                     reports="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD,NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD,NP_UNWRITTEN_FIELD,UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,UWF_NULL_FIELD,UWF_UNWRITTEN_FIELD,SS_SHOULD_BE_STATIC,UUF_UNUSED_FIELD,URF_UNREAD_FIELD,SIC_INNER_SHOULD_BE_STATIC,SIC_INNER_SHOULD_BE_STATIC_ANON,SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS,SIC_THREADLOCAL_DEADLY_EMBRACE,UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD,UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD,URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
           <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" speed="fast"
                     reports="WA_NOT_IN_LOOP,WA_AWAIT_NOT_IN_LOOP,NO_NOTIFY_NOT_NOTIFYALL"/>
-          <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" speed="slow"
-                    reports="RV_RETURN_VALUE_IGNORED2" disabled="true" hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref" speed="slow"
                     reports="NP_DEREFERENCE_OF_READLINE_VALUE,NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE,NP_TOSTRING_COULD_RETURN_NULL,NP_CLONE_COULD_RETURN_NULL,NP_ALWAYS_NULL_EXCEPTION,NP_ALWAYS_NULL,NP_STORE_INTO_NONNULL_FIELD,NP_NULL_ON_SOME_PATH_EXCEPTION,NP_NULL_ON_SOME_PATH,NP_NULL_PARAM_DEREF_NONVIRTUAL,NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS,NP_NULL_PARAM_DEREF,RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE,RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE,RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE,RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES,RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE,NP_NONNULL_PARAM_VIOLATION,NP_NONNULL_RETURN_VIOLATION,NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE,NP_GUARANTEED_DEREF,NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH,NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT,NP_ARGUMENT_MIGHT_BE_NULL,NP_CLOSING_NULL,DMI_ARGUMENTS_WRONG_ORDER"/>
           <Detector
@@ -903,7 +892,6 @@
                     category="BAD_PRACTICE" cweid="253"/>
           <BugPattern abbrev="RV" type="RV_EXCEPTION_NOT_THROWN" category="CORRECTNESS"/>
           <BugPattern abbrev="RV" type="RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE" category="CORRECTNESS"/>
-          <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED2" category="CORRECTNESS" deprecated="true"/>
           <BugPattern abbrev="RV" type="RV_CHECK_FOR_POSITIVE_INDEXOF" category="STYLE"/>
           <BugPattern abbrev="RV" type="RV_DONT_JUST_NULL_CHECK_READLINE" category="STYLE"/>
           <BugPattern abbrev="NP" type="NP_ALWAYS_NULL" category="CORRECTNESS"/>

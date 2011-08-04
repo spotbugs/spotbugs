@@ -386,17 +386,6 @@
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue">
-    <Details>
-<![CDATA[
-<p>
-このディテクタは、メソッドの戻り値をチェックするために、アノテーションを探します。
-</p>
-]]>
-    </Details>
-  </Detector>
-
-
   <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations">
     <Details>
 <![CDATA[
@@ -504,19 +493,6 @@ null かもしれない値が null でない値だけが使われるべき文脈
 <![CDATA[
 <p>
 このディテクタは、無限ループを探します。
-</p>
-]]>
-    </Details>
-  </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop2">
-    <Details>
-<![CDATA[
-<p>
-このディテクタは、無限再帰ループを探します。
-</p>
-<p>
-低速ディテクタです。
 </p>
 ]]>
     </Details>
@@ -5197,32 +5173,7 @@ if (x &lt; 0) {
     </Details>
   </BugPattern>
 
-  <BugPattern type="RV_RETURN_VALUE_IGNORED2">
-    <ShortDescription>戻り値を無視しているメソッド</ShortDescription>
-    <LongDescription>{2} の戻り値を無視しています。{1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-このメソッドの戻り値はチェックするべきです。
-この警告の共通の原因は、オブジェクトが更新されると思って不変オブジェクトのメソッドを呼び出すことです。<br>
-たとえば、以下のようなコードです。
-</p>
-<blockquote><pre>
-String dateString = getHeaderField(name);
-dateString.trim();
-</pre></blockquote>
-<p>
-プログラマは <code>trim</code> メソッドが <code>dateString</code> によって参照される String オブジェクトが更新されると思っています。
-しかし、String オブジェクトは不変で、<code>trim</code> メソッドが新しい String オブジェクトを返すのに無視しています。
-このコードは、以下のように修正するべきです。
-</p>
-<blockquote><pre>
-String dateString = getHeaderField(name);
-dateString = dateString.trim();
-</pre></blockquote>
-]]>
-    </Details>
-  </BugPattern>
+  
 
   <BugPattern type="NP_ALWAYS_NULL">
     <ShortDescription>null 値を利用している</ShortDescription>

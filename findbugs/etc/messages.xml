@@ -330,15 +330,7 @@ by other detectors.</p>
 ]]>
     </Details>
   </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue">
-    <Details>
-<![CDATA[
-<p> Looks for annotations to check return values of a method.
-</p>
-]]>
-    </Details>
-  </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations">
+    <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations">
     <Details>
 <![CDATA[
 <p> Looks for annotations to check return values of a method.
@@ -442,13 +434,6 @@ another package. </p>
 <p> Looks for an infinite loop. </p>
 ]]>
     </Details>
-  </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop2">
-    <Details>
-<![CDATA[
-<p>Looks for an infinite recursive loop. It is a slow detector.</p>
-]]>
-   </Details>
   </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage">
     <Details>
@@ -4613,34 +4598,6 @@ if (x &lt; 0)
 <pre>
 if (x &lt; 0)
   throw new IllegalArgumentException("x must be nonnegative");
-</pre>
-</blockquote>
-]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="RV_RETURN_VALUE_IGNORED2">
-    <ShortDescription>Method ignores return value</ShortDescription>
-    <LongDescription>return value of {2} ignored in {1}</LongDescription>
-    <Details>
-<![CDATA[
-   <p> The return value of this method should be checked. One common
-cause of this warning is to invoke a method on an immutable object,
-thinking that it updates the object. For example, in the following code
-fragment,</p>
-<blockquote>
-<pre>
-String dateString = getHeaderField(name);
-dateString.trim();
-</pre>
-</blockquote>
-<p>the programmer seems to be thinking that the trim() method will update
-the String referenced by dateString. But since Strings are immutable, the trim()
-function returns a new String value, which is being ignored here. The code
-should be corrected to: </p>
-<blockquote>
-<pre>
-String dateString = getHeaderField(name);
-dateString = dateString.trim();
 </pre>
 </blockquote>
 ]]>
