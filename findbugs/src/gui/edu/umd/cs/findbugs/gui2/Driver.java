@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.gui2;
 import java.io.File;
 import java.util.Locale;
 
+import javax.swing.JOptionPane;
+
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.StartTime;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -47,6 +49,7 @@ public class Driver {
     private static SplashFrame splash;
 
     public static void main(String[] args) throws Exception {
+        try {
 
        String name = "FindBugs GUI";
        if (JavaWebStart.isRunningViaJavaWebstart())
@@ -124,8 +127,14 @@ public class Driver {
             factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
         MainFrame.makeInstance(factory);
 
+
         splash.setVisible(false);
         splash.dispose();
+        } catch (Throwable t) {
+            JOptionPane.showMessageDialog(null, t.toString(), "Fatal Error during FindBugs startup", JOptionPane.ERROR_MESSAGE);
+            t.printStackTrace(System.err);
+            System.exit(1);
+        }
     }
 
     private static void enablePlugins(Iterable<String> plugins, boolean enabled) {
