@@ -109,8 +109,11 @@
 			<auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar:lib/guava.jar"/>
 			<class location="${basedir}/build/classes" />
 		</findbugs>
+		<mkdir dir="${basedir}/classesEclipse" />
 		<findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx600m"
-                         output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/normalEclipse.xml">
+                         output="xml:withMessages" timestampNow="true" 
+			reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/normalEclipse.xml"
+			noClassOk="true">
 			<sourcePath path="${basedir}/src/java" />
 			<auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar:lib/guava.jar"/>
 			<class location="${basedir}/classesEclipse" />
