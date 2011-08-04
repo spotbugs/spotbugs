@@ -59,6 +59,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -96,6 +97,7 @@ import edu.umd.cs.findbugs.ba.type.TypeMerger;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.props.WarningProperty;
@@ -1003,7 +1005,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 return;
             }
         }
-        String sourceFile = jclass.getSourceFileName();
+        String sourceFile = jclass.getSourceFileName(); 
 
         TypeFrame frame = typeDataflow.getFactAtLocation(location);
         if (frame.getStackDepth() < 2) {
@@ -1019,7 +1021,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 || rhsType_.getType() == T_BOTTOM) {
             return;
         }
-
+        InvokeInstruction inv = (InvokeInstruction) handle.getInstruction();
+        MethodAnnotation calledMethodAnnotation = getMethodCalledAnnotation(cpg, inv);
         boolean looksLikeTestCase = TestCaseDetector.likelyTestCase(XFactory.createXMethod(methodGen));
         int priorityModifier = 0;
         if (looksLikeTestCase) {
@@ -1088,7 +1091,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 priorityModifier += 2;
             bugAccumulator.accumulateBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", result.getPriority() + priorityModifier)
                     .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
-                    .addSomeSourceForTopTwoStackValues(classContext, method, location),
+                    .addSomeSourceForTopTwoStackValues(classContext, method, location)
+                    .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
                     SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
         } else if (result == IncompatibleTypes.INCOMPATIBLE_CLASSES) {
             String lhsSig = lhsType_.getSignature();
@@ -1106,7 +1110,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
                                 .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
-                                .addSomeSourceForTopTwoStackValues(classContext, method, location).addEqualsMethodUsed(targets),
+                                .addSomeSourceForTopTwoStackValues(classContext, method, location).addEqualsMethodUsed(targets)
+                                .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
                         SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile,
                                 location.getHandle()));
             }
@@ -1116,22 +1121,50 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                     new BugInstance(this, "EC_UNRELATED_CLASS_AND_INTERFACE", result.getPriority() + priorityModifier)
                             .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
                             .addSomeSourceForTopTwoStackValues(classContext, method, location)
-                            .addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature())),
+                            .addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature()))
+                            .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
                     SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
         } else if (result == IncompatibleTypes.UNRELATED_INTERFACES) {
             bugAccumulator.accumulateBug(
                     new BugInstance(this, "EC_UNRELATED_INTERFACES", result.getPriority() + priorityModifier)
                             .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
                             .addSomeSourceForTopTwoStackValues(classContext, method, location)
-                            .addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature())),
+                            .addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature()))
+                            .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
                     SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
         } else if (result != IncompatibleTypes.UNCHECKED && result.getPriority() <= Priorities.LOW_PRIORITY) {
             bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
                     .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
-                    .addSomeSourceForTopTwoStackValues(classContext, method, location),
+                    .addSomeSourceForTopTwoStackValues(classContext, method, location)
+                    .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
                     SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
         }
 
+    }
+
+    /**
+     * @param cpg
+     * @param inv
+     */
+    public MethodAnnotation getMethodCalledAnnotation(ConstantPoolGen cpg, InvokeInstruction inv) {
+        MethodDescriptor invokedMethod = getInvokedMethod(cpg, inv);
+        boolean standardEquals = invokedMethod.getName().equals("equals")
+                && invokedMethod.getSignature().equals("(Ljava/lang/Object;)Z") && !invokedMethod.isStatic();
+        return standardEquals ? null : MethodAnnotation.fromMethodDescriptor(invokedMethod);
+    }
+
+    /**
+     * @param cpg
+     * @param inv
+     * @return
+     */
+    public MethodDescriptor getInvokedMethod(ConstantPoolGen cpg, InvokeInstruction inv) {
+        String invoked = inv.getClassName(cpg);
+        String methodName = inv.getMethodName(cpg);
+        String methodSig = inv.getSignature(cpg);
+        MethodDescriptor invokedMethod = 
+            DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(invoked), methodName, methodSig, inv instanceof INVOKESTATIC);
+        return invokedMethod;
     }
 
     /**

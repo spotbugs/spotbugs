@@ -265,7 +265,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
      *            the MethodDescriptor
      * @return the MethodAnnotation
      */
-    public static BugAnnotation fromMethodDescriptor(MethodDescriptor methodDescriptor) {
+    public static MethodAnnotation fromMethodDescriptor(MethodDescriptor methodDescriptor) {
         return fromForeignMethod(methodDescriptor.getSlashedClassName(), methodDescriptor.getName(),
                 methodDescriptor.getSignature(), methodDescriptor.isStatic());
     }
