@@ -628,7 +628,7 @@ public class Plugin {
     public static Plugin loadCustomPlugin(URL urlString, @CheckForNull Project project) throws PluginException {
         Plugin plugin = addCustomPlugin(urlString);
         if (project != null) {
-            project.setPluginStatus(plugin.getPluginId(), true);
+            project.setPluginStatusTrinary(plugin.getPluginId(), true);
         }
         return plugin;
     }

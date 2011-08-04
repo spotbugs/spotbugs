@@ -20,8 +20,6 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
-import java.awt.Checkbox;
-import java.awt.CheckboxGroup;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -115,10 +113,6 @@ public class PreferencesFrame extends FBDialog {
         private EnabledSettings(boolean global, Boolean project) {
             this.global = global;
             this.project = project;
-        }
-
-        private boolean getProjectEnabled() {
-            return project == null ? global : project;
         }
     }
 

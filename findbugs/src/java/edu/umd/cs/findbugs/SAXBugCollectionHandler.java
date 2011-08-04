@@ -391,7 +391,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     } else if (qName.equals(Project.PLUGIN_ELEMENT_NAME)) {
                         String pluginId = getRequiredAttribute(attributes, Project.PLUGIN_ID_ATTRIBUTE_NAME, qName);
                         Boolean enabled = Boolean.valueOf(getRequiredAttribute(attributes, Project.PLUGIN_STATUS_ELEMENT_NAME, qName));
-                        project.setPluginStatus(pluginId, enabled);
+                        project.setPluginStatusTrinary(pluginId, enabled);
                     }
 
                 } else if (outerElement.equals(Project.CLOUD_ELEMENT_NAME)) {

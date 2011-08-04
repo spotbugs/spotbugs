@@ -127,17 +127,6 @@ public class Project implements XMLWriteable {
         return enabledPlugins.get(plugin.getPluginId());
     }
 
-    public void setPluginStatus(String pluginId, boolean enabled) {
-        enabledPlugins.put(pluginId, enabled);
-        Plugin plugin = Plugin.getByPluginId(pluginId);
-        if(plugin == null)
-            return;
-
-        if (isDefaultInitialPluginState(plugin, enabled)) {
-            enabledPlugins.remove(plugin.getPluginId());
-        }
-    }
-
     public void setPluginStatusTrinary(String pluginId, Boolean enabled) {
         enabledPlugins.put(pluginId, enabled);
     }
@@ -892,7 +881,7 @@ public class Project implements XMLWriteable {
             String pluginId = e.getKey();
             Boolean enabled = e.getValue();
             Plugin plugin = Plugin.getByPluginId(pluginId);
-            if (plugin == null || isDefaultInitialPluginState(plugin, enabled)) {
+            if (plugin == null || enabled == null) {
                 continue;
             }
             XMLAttributeList pluginAttributeList = new XMLAttributeList();
@@ -924,12 +913,6 @@ public class Project implements XMLWriteable {
             xmlOutput.closeTag(CLOUD_ELEMENT_NAME);
         }
         xmlOutput.closeTag(BugCollection.PROJECT_ELEMENT_NAME);
-    }
-
-    private boolean isDefaultInitialPluginState(Plugin plugin, Boolean enabled) {
-        return plugin.isInitialPlugin()
-                && enabled == plugin.isGloballyEnabled()
-                && plugin.isEnabledByDefault() == plugin.isGloballyEnabled();
     }
 
     /**
