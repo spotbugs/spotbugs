@@ -3,7 +3,7 @@
 				pluginid="edu.umd.cs.findbugs.plugins.bugCollectionCloud"
                 provider="FindBugs project" 
                 website="http://findbugs.sourceforge.net"
-                update-url="http://findbugs-cloud.appspot.com/update-check"
+                update-url="http://update.findbugs.org/update-check"
                 >
 
   <Cloud id="edu.umd.cs.findbugs.cloud.bugCollectionCloud"				

@@ -13,7 +13,7 @@
     <Details>
 <![CDATA[
 <p>
-Allows making bug comments and classifying bugs on the FindBugs Cloud at http://findbugs-cloud.appspot.com.
+Allows making bug comments and classifying bugs on the FindBugs Cloud at http://cloud.findbugs.org.
 </p>
 ]]>
     </Details>
@@ -22,7 +22,7 @@ Allows making bug comments and classifying bugs on the FindBugs Cloud at http://
 
   <Cloud id="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud">
 	<Description>FindBugs Cloud</Description>
-	<Details>Comments are stored on the FindBugs Cloud at http://findbugs-cloud.appspot.com</Details>
+	<Details>Comments are stored on the FindBugs Cloud at http://cloud.findbugs.org</Details>
 	</Cloud>
 
   </MessageCollection>

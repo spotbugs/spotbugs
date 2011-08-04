@@ -2,7 +2,7 @@
           xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
           pluginid="edu.umd.cs.findbugs.plugins.jdbcCloud" 
           provider="FindBugs project" website="http://findbugs.sourceforge.net"
-          update-url="http://findbugs-cloud.appspot.com/update-check">
+          update-url="http://update.findbugs.org/update-check">
 
           <Cloud id="edu.umd.cs.findbugs.cloud.db.Sample-SQL-cloud"
                     cloudClass="edu.umd.cs.findbugs.cloud.db.DBCloud"
