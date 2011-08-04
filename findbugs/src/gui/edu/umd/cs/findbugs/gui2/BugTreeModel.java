@@ -112,7 +112,6 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         this.bugSet = data;
         BugSet.setAsRootAndCache(this.bugSet);
         root.setCount(data.size());
-        FilterActivity.addFilterListener(bugTreeFilterListener);
         if (DEBUG)
             this.addTreeModelListener(new TreeModelListener() {
 
@@ -148,7 +147,6 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
     }
 
     public void getOffListenerList() {
-        FilterActivity.removeFilterListener(bugTreeFilterListener);
         st.removeColumnModelListener(this);
         tree.removeTreeExpansionListener(this);
     }
@@ -418,139 +416,8 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         bugSet = new BugSet(bugSet);
     }
 
-    FilterListener bugTreeFilterListener = new MyFilterListener();
-
-    class MyFilterListener implements FilterListener {
-        public void clearCache() {
-            if (TRACE)
-                System.out.println("clearing cache in bug tree model");
-            resetData();
-            BugSet.setAsRootAndCache(bugSet);// FIXME: Should this be in
-                                             // resetData? Does this allow our
-                                             // main list to not be the same as
-                                             // the data in our tree?
-            root.setCount(bugSet.size());
-
-            rebuild();
-        }
-
-        public void unsuppressBug(TreePath path) {
-            if (TRACE)
-                System.out.println("unsuppressing bug");
-            if (path == null)
-                return;
-            TreePath pathToFirstDeleted = null;
-            Object[] objPath = path.getParentPath().getPath();
-            ArrayList<Object> reconstruct = new ArrayList<Object>();
-            boolean earlyStop = false;
-            for (int x = 0; x < objPath.length; x++) {
-                Object o = objPath[x];
-                reconstruct.add(o);
-                if (o instanceof BugAspects) {
-                    pathToFirstDeleted = new TreePath(reconstruct.toArray());
-                    ((BugAspects) o).setCount(((BugAspects) o).getCount() + 1);
-
-                    if (((BugAspects) o).getCount() == 2 && reconstruct.size() > 1) {
-                        earlyStop = true;
-                        break;
-                    }
-
-                    for (TreeModelListener l : listeners) {
-                        if (pathToFirstDeleted.getParentPath() != null)
-                            l.treeNodesChanged(new TreeModelEvent(this, pathToFirstDeleted.getParentPath(),
-                                    new int[] { getIndexOfChild(pathToFirstDeleted.getParentPath().getLastPathComponent(),
-                                            pathToFirstDeleted.getLastPathComponent()) }, new Object[] { pathToFirstDeleted
-                                            .getLastPathComponent() }));
-                    }
-                }
-            }
-
-            if (path.getParentPath() == null)// They are unsuppressing from the
-                                             // root, but we don't allow root to
-                                             // be suppressed, Dont know what to
-                                             // do here
-            {
-                throw new RuntimeException();
-            }
-
-            if (pathToFirstDeleted == null) {
-                pathToFirstDeleted = path;
-            }
-
-            if (earlyStop == false) {
-                pathToFirstDeleted = pathToFirstDeleted.pathByAddingChild(path.getLastPathComponent());
-            }
-
-            Object parent = pathToFirstDeleted.getParentPath().getLastPathComponent();
-            Object child = pathToFirstDeleted.getLastPathComponent();
-
-            TreeModelEvent insertionEvent = new TreeModelEvent(this, pathToFirstDeleted.getParentPath(),
-                    new int[] { getIndexOfChild(parent, child) }, new Object[] { child });
-            for (TreeModelListener l : listeners) {
-                l.treeNodesInserted(insertionEvent);
-            }
-            if (!isLeaf(child)) {
-                TreeModelEvent structureEvent = new TreeModelEvent(this, pathToFirstDeleted, new int[0], new Object[0]);
-                for (TreeModelListener l : listeners) {
-                    l.treeStructureChanged(structureEvent);
-                }
-            }
-        }
-
-        public void suppressBug(TreePath path) {
-            if (TRACE)
-                System.out.println("unsuppressing bug");
-            Debug.println(path);
-            Object[] objPath = path.getParentPath().getPath();
-            ArrayList<Object> reconstruct = new ArrayList<Object>();
-            for (int x = 0; x < objPath.length; x++) {
-                Object o = objPath[x];
-                ((BugAspects) o).setCount(((BugAspects) o).getCount() - 1);
-            }
-
-            for (int x = 0; x < objPath.length; x++) {
-                Object o = objPath[x];
-                reconstruct.add(o);
-                if (o instanceof BugAspects) {
-                    if (((BugAspects) o).getCount() == 0) {
-                        path = new TreePath(reconstruct.toArray());
-                        break;
-                    }
-                }
-            }
-
-            TreeModelEvent event;
-
-            if (path.getParentPath() == null)// They are suppressing the last
-                                             // bug in the tree
-            {
-                event = new TreeModelEvent(this, path, new int[] { 0 }, new Object[] { BugTreeModel.this.getChild(root, 0) });
-                root.setCount(0);
-            } else {
-                Object parent = path.getParentPath().getLastPathComponent();
-                Object child = path.getLastPathComponent();
-                int indexOfChild = getIndexOfChild(parent, child);
-                if (indexOfChild != -1) {
-                    event = new TreeModelEvent(this, path.getParentPath(), new int[] { indexOfChild }, new Object[] { child });
-                    resetData();
-                } else// They are suppressing something that has already been
-                      // filtered out by setting a designation of a bug to a
-                      // type that has been filtered out.
-                {
-                    resetData();
-                    for (TreeModelListener l : listeners) {
-                        l.treeStructureChanged(new TreeModelEvent(this, path.getParentPath()));
-                    }
-                    return;
-                }
-            }
-
-            for (TreeModelListener l : listeners) {
-                l.treeNodesRemoved(event);
-            }
-        }
-    }
-
+    
+    
     void treeNodeChanged(TreePath path) {
         Debug.println("Tree Node Changed: " + path);
         if (path.getParentPath() == null) {

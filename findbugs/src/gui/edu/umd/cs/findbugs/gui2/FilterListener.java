@@ -27,17 +27,10 @@ import javax.swing.tree.TreePath;
  */
 public interface FilterListener {
     enum Action {
-        FILTERING, UNFILTERING, @Deprecated
-        SUPPRESSING, @Deprecated
-        UNSUPPRESSING
+        FILTERING, UNFILTERING
     };
 
     public void clearCache();
 
-    @Deprecated
-    public void suppressBug(TreePath path);
-
-    @Deprecated
-    public void unsuppressBug(TreePath path);
 
 }

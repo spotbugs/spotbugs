@@ -49,16 +49,11 @@ public class FilterActivity {
         case UNFILTERING:
             for (FilterListener i : currentListeners)
                 i.clearCache();
+            MainFrame.getInstance().mainFrameMenu.setViewMenu();
             break;
-        case SUPPRESSING:
-            for (FilterListener i : currentListeners)
-                i.suppressBug(optionalPath);
-            break;
-        case UNSUPPRESSING:
-            for (FilterListener i : currentListeners)
-                i.unsuppressBug(optionalPath);
-            break;
+       
         }
+        MainFrame.getInstance().mainFrameMenu.setViewMenu();
         MainFrame.getInstance().updateStatusBar();
     }
     

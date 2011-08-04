@@ -3,15 +3,19 @@ package edu.umd.cs.findbugs.gui2;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.swing.ActionMap;
 import javax.swing.ButtonGroup;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -26,6 +30,9 @@ import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.filter.Filter;
+import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.gui2.FilterListener.Action;
 
 public class MainFrameMenu implements Serializable {
     private final MainFrame mainFrame;
@@ -488,6 +495,39 @@ public class MainFrameMenu implements Serializable {
             });
             viewMenu.add(rbMenuItem);
         }
+        viewMenu.addSeparator();
+        final Filter suppressionFilter = MainFrame.getInstance().getProject().getSuppressionFilter();
+        Collection<Matcher> filters = suppressionFilter.getChildren();
+        JMenuItem filterMenu = new JMenuItem(filters.isEmpty() ? "Add Filters..." : "Filters...");
+        
+        filterMenu.addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent e) {
+                PreferencesFrame preferenceFrame = PreferencesFrame.getInstance();
+                preferenceFrame.showFilterPane();
+                preferenceFrame.setLocationRelativeTo(mainFrame);
+                preferenceFrame.setVisible(true);
+                
+                
+            }
+        });
+        viewMenu.add(filterMenu);
+         for(final Matcher m : filters) {
+            JCheckBoxMenuItem f = new JCheckBoxMenuItem(m.toString(), suppressionFilter.isEnabled(m));
+            viewMenu.add(f);
+            f.addItemListener(new ItemListener() {
+                
+                public void itemStateChanged(ItemEvent e) {
+                    boolean enabled = e.getStateChange() == ItemEvent.SELECTED;
+                    suppressionFilter.setEnabled(m, enabled);
+                    FilterActivity.notifyListeners(enabled ? Action.FILTERING : Action.UNFILTERING, null);
+                    
+                }
+            });
+
+           
+        }
+
 
     }
 

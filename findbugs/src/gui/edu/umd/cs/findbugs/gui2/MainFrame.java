@@ -349,10 +349,10 @@ public class MainFrame extends FBFrame implements LogSync {
         int countFilteredBugs = BugSet.countFilteredBugs();
         String msg = "";
         if (countFilteredBugs == 1) {
-            msg = "  1 " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bug_hidden", "bug hidden by filters");
+            msg = "  1 " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bug_hidden", "bug hidden (see view menu)");
         } else if (countFilteredBugs > 1) {
             msg = "  " + countFilteredBugs + " "
-                    + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bugs_hidden", "bugs hidden by filters");
+                    + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bugs_hidden", "bugs hidden (see view menu)");
         }
         msg = updateCloudSigninStatus(msg);
         if (errorMsg != null && errorMsg.length() > 0)

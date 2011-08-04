@@ -256,8 +256,10 @@ public class GUISaveState {
             }
         }
 
-        newInstance.enabledPlugins = new ArrayList<String>(Arrays.asList(p.get(ENABLED_PLUGINS, "").split(",")));
-        newInstance.disabledPlugins = new ArrayList<String>(Arrays.asList(p.get(DISABLED_PLUGINS, "").split(",")));
+        String enabledPluginsString = p.get(ENABLED_PLUGINS, "");
+        String disabledPluginsString = p.get(DISABLED_PLUGINS, "");
+        newInstance.enabledPlugins = new ArrayList<String>(Arrays.asList(enabledPluginsString.split(",")));
+        newInstance.disabledPlugins = new ArrayList<String>(Arrays.asList(disabledPluginsString.split(",")));
 
         instance = newInstance;
     }

@@ -124,15 +124,23 @@ public class PreferencesFrame extends FBDialog {
     }
 
     private boolean pluginsAdded = false;
+    private final JPanel filterPane;
+    private final JTabbedPane mainTabPane;
+    
+    public void showFilterPane() {
+        mainTabPane.setSelectedComponent(filterPane);
+        
+    }
     private PreferencesFrame() {
         setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.fil_sup_ttl", "Preferences"));
         setModal(true);
 
-        JTabbedPane mainTabPane = new JTabbedPane();
+        mainTabPane = new JTabbedPane();
 
         mainTabPane.add("General", createPropertiesPane());
 
-        mainTabPane.add(edu.umd.cs.findbugs.L10N.getLocalString("pref.filters", "Filters"), createFilterPane());
+        filterPane = createFilterPane();
+        mainTabPane.add(edu.umd.cs.findbugs.L10N.getLocalString("pref.filters", "Filters"), filterPane);
         mainTabPane.add("Plugins", createPluginPane());
 
         MainFrame.getInstance().updateStatusBar();
@@ -674,8 +682,7 @@ public class PreferencesFrame extends FBDialog {
         ArrayList<MatchBox> boxes = new ArrayList<MatchBox>();
         final Filter f = MainFrame.getInstance().getProject().getSuppressionFilter();
 
-        for (Iterator<Matcher> i = f.childIterator(); i.hasNext();) {
-            final Matcher m = i.next();
+        for (final Matcher m : f.getChildren()) {
             MatchBox box = new MatchBox(m.toString(), m);
             box.addItemListener(new ItemListener() {
                 public void itemStateChanged(ItemEvent evt) {
@@ -684,10 +691,7 @@ public class PreferencesFrame extends FBDialog {
                     if (isSelected == wasSelected)
                         return;
                     f.setEnabled(m, isSelected);
-                    FilterActivity.notifyListeners(isSelected ? FilterListener.Action.FILTERING
-                            : FilterListener.Action.UNFILTERING, null);
-                    MainFrame.getInstance().updateStatusBar();
-                    MainFrame.getInstance().setProjectChanged(true);
+                    updateFilters(isSelected);
 
                 }
             });
@@ -696,6 +700,13 @@ public class PreferencesFrame extends FBDialog {
         }
 
         filterCheckBoxList.setListData(boxes.toArray(new MatchBox[boxes.size()]));
+    }
+
+
+    public static void updateFilters(boolean addedFilter) {
+        FilterActivity.notifyListeners(addedFilter ? FilterListener.Action.FILTERING
+                : FilterListener.Action.UNFILTERING, null);
+        MainFrame.getInstance().setProjectChanged(true);
     }
 
     private class UninstallClickListener implements ActionListener {
