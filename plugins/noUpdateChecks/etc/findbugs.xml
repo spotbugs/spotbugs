@@ -6,7 +6,7 @@
 	>
 
 <GlobalOptions>
-  <Property key="disableAllUsageTracking">true</Property>
+  <Property key="noUpdateChecks">true</Property>
   </GlobalOptions>
   
 

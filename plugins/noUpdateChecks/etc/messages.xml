@@ -4,11 +4,13 @@
                   xsi:noNamespaceSchemaLocation="messagecollection.xsd">
 
   <Plugin>
-    <ShortDescription>Disable all FindBugs usage tracking</ShortDescription>
+    <ShortDescription>Disable all FindBugs update checks</ShortDescription>
     <Details>
 <![CDATA[
 <p>
-Disable all FindBugs usage tracking and checks for availability of updated versions.
+FindBugs can check for updates to FindBugs or plugins by checking
+with web services provided by FindBugs or by plugins.
+This plugin disables all update checks. 
 </p>
 ]]>
     </Details>

@@ -34,8 +34,8 @@ import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 
 public class UsageTracker {
     private static final Logger LOGGER = Logger.getLogger(UsageTracker.class.getName());
-    private static final String KEY_DISABLE_ALL_USAGE_TRACKING = "disableAllUsageTracking";
-    private static final String KEY_REDIRECT_ALL_USAGE_TRACKING = "redirectAllUsageTracking";
+    private static final String KEY_DISABLE_ALL_UPDATE_CHECKS = "noUpdateChecks";
+    private static final String KEY_REDIRECT_ALL_UPDATE_CHECKS = "redirectUpdateChecks";
     
     private final UsageTrackerCallback dfc;
     private List<PluginUpdate> pluginUpdates = new ArrayList<PluginUpdate>();
@@ -48,8 +48,8 @@ public class UsageTracker {
         if (trackingIsGloballyDisabled())
             return;
 
-        String redirect = dfc.getGlobalOption(KEY_REDIRECT_ALL_USAGE_TRACKING);
-        Plugin setter = dfc.getGlobalOptionSetter(KEY_REDIRECT_ALL_USAGE_TRACKING);
+        String redirect = dfc.getGlobalOption(KEY_REDIRECT_ALL_UPDATE_CHECKS);
+        Plugin setter = dfc.getGlobalOptionSetter(KEY_REDIRECT_ALL_UPDATE_CHECKS);
         URI redirectUri = null;
         String pluginName = setter == null ? "<unknown plugin>" : setter.getShortDescription();
         if (redirect != null && !redirect.trim().equals("")) {
@@ -96,8 +96,8 @@ public class UsageTracker {
     }
 
     private boolean trackingIsGloballyDisabled() {
-        String disable = dfc.getGlobalOption(KEY_DISABLE_ALL_USAGE_TRACKING);
-        Plugin setter = dfc.getGlobalOptionSetter(KEY_DISABLE_ALL_USAGE_TRACKING);
+        String disable = dfc.getGlobalOption(KEY_DISABLE_ALL_UPDATE_CHECKS);
+        Plugin setter = dfc.getGlobalOptionSetter(KEY_DISABLE_ALL_UPDATE_CHECKS);
         String pluginName = setter == null ? "<unknown plugin>" : setter.getShortDescription();
         if ("true".equalsIgnoreCase(disable)) {
             logError(Level.INFO, "Skipping usage tracking due to disableAllUsageTracking=true set by "
