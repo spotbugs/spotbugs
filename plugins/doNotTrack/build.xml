@@ -1,4 +1,4 @@
-<project name="webCloudClient" default="install">
+<project name="noUpdateChecks" default="install">
 
     <property file="local.properties"/>
 
@@ -34,6 +34,11 @@
 
     <target name="install" depends="plugin-jar">
         <copy todir="${destination.dir}" file="build/doNotTrack.jar" />
+    </target>
+
+    <target name="clean">
+        <delete dir="build"/>
+        <mkdir dir="build"/>
     </target>
 
 
