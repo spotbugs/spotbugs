@@ -923,12 +923,10 @@
           <BugPattern abbrev="UCF" type="UCF_USELESS_CONTROL_FLOW_NEXT_LINE" category="STYLE"/>
           <BugPattern abbrev="DMI" type="DMI_ARGUMENTS_WRONG_ORDER" category="CORRECTNESS"/>
           <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE" category="STYLE"/>
-          <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"
-                    category="CORRECTNESS"/>
+          <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" category="CORRECTNESS"/>
           <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE" category="STYLE"/>
           <BugPattern abbrev="RCN" type="RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES" category="STYLE"/>
-          <BugPattern abbrev="RCN" type="RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE"
-                    category="STYLE"/>
+          <BugPattern abbrev="RCN" type="RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE" category="STYLE"/>
           <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK_EXCEPTION_PATH" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="RC" type="RC_REF_COMPARISON_BAD_PRACTICE" category="BAD_PRACTICE"/>
