@@ -123,9 +123,9 @@ public class ProjectStats implements XMLWriteable, Cloneable {
     }
 
     @Override
-    public Object clone() {
+    public ProjectStats clone() {
         try {
-            return super.clone();
+            return (ProjectStats) super.clone();
         } catch (CloneNotSupportedException e) {
             // can't happen
             throw new AssertionError(e);

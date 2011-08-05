@@ -1130,15 +1130,31 @@ public class SortedBugCollection implements BugCollection {
     }
 
     public SortedBugCollection duplicate() {
-        SortedBugCollection dup = new SortedBugCollection((ProjectStats) projectStats.clone(), comparator, project.duplicate());
+        SortedBugCollection dup = createEmptyCollectionWithMetadata();
 
         SortedBugCollection.cloneAll(dup.bugSet, this.bugSet);
+        
+
+        return dup;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * edu.umd.cs.findbugs.BugCollection#createEmptyCollectionWithMetadata()
+     */
+
+    public SortedBugCollection createEmptyCollectionWithMetadata() {
+        SortedBugCollection dup = new SortedBugCollection((ProjectStats) projectStats.clone(), comparator, project.duplicate());
+        dup.projectStats.clearBugCounts();
         dup.errorList.addAll(this.errorList);
         dup.missingClassSet.addAll(this.missingClassSet);
         dup.summaryHTML = this.summaryHTML;
-        // dup.classHashMap.putAll(this.classHashMap);
         dup.classFeatureSetMap.putAll(this.classFeatureSetMap);
         dup.sequence = this.sequence;
+        dup.analysisVersion = this.analysisVersion;
+        dup.analysisTimestamp = this.analysisTimestamp;
         dup.timestamp = this.timestamp;
         dup.releaseName = this.releaseName;
         for (AppVersion appVersion : appVersionList) {
@@ -1225,31 +1241,7 @@ public class SortedBugCollection implements BugCollection {
 
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.BugCollection#createEmptyCollectionWithMetadata()
-     */
-
-    public SortedBugCollection createEmptyCollectionWithMetadata() {
-        SortedBugCollection dup = new SortedBugCollection((ProjectStats) projectStats.clone(), comparator, project.duplicate());
-        dup.errorList.addAll(this.errorList);
-        dup.missingClassSet.addAll(this.missingClassSet);
-        dup.summaryHTML = this.summaryHTML;
-        dup.classFeatureSetMap.putAll(this.classFeatureSetMap);
-        dup.sequence = this.sequence;
-        dup.analysisVersion = this.analysisVersion;
-        dup.analysisTimestamp = this.analysisTimestamp;
-        dup.timestamp = this.timestamp;
-        dup.releaseName = this.releaseName;
-        for (AppVersion appVersion : appVersionList) {
-            dup.appVersionList.add((AppVersion) appVersion.clone());
-        }
-
-        return dup;
-    }
-
+ 
     /*
      * (non-Javadoc)
      *
