@@ -198,6 +198,7 @@
                 debug="on"
                 deprecation="off"
                 excludes="${pkg.base}/tools/patcomp/">
+	    <compilerarg value="-Xlint:unchecked"/>
             <classpath refid="tools.classpath"/>
         </javac>
         <!-- Compile Ant task. -->
