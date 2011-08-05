@@ -103,6 +103,7 @@ public class MainFrameTree implements Serializable {
                 expandTree(10);
                 expandToFirstLeaf(14);
                 mainFrame.getSorter().addColumnModelListener(newModel);
+                FilterActivity.addFilterListener(newModel.bugTreeFilterListener);
                 mainFrame.mainFrameTree.setSorting(true);
 
             }

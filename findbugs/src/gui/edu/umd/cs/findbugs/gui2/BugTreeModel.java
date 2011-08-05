@@ -112,6 +112,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         this.bugSet = data;
         BugSet.setAsRootAndCache(this.bugSet);
         root.setCount(data.size());
+        FilterActivity.addFilterListener(bugTreeFilterListener);
         if (DEBUG)
             this.addTreeModelListener(new TreeModelListener() {
 
@@ -147,6 +148,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
     }
 
     public void getOffListenerList() {
+        FilterActivity.removeFilterListener(bugTreeFilterListener);
         st.removeColumnModelListener(this);
         tree.removeTreeExpansionListener(this);
     }
@@ -416,8 +418,24 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         bugSet = new BugSet(bugSet);
     }
 
-    
-    
+    FilterListener bugTreeFilterListener = new MyFilterListener();
+
+    class MyFilterListener implements FilterListener {
+        public void clearCache() {
+            if (TRACE)
+                System.out.println("clearing cache in bug tree model");
+            resetData();
+            BugSet.setAsRootAndCache(bugSet);// FIXME: Should this be in
+                                             // resetData? Does this allow our
+                                             // main list to not be the same as
+                                             // the data in our tree?
+            root.setCount(bugSet.size());
+
+            rebuild();
+        }
+
+           }
+
     void treeNodeChanged(TreePath path) {
         Debug.println("Tree Node Changed: " + path);
         if (path.getParentPath() == null) {

@@ -592,13 +592,11 @@ public class MainFrameMenu implements Serializable {
 
     public void initOSX() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         osxAdapter = Class.forName("edu.umd.cs.findbugs.gui2.OSXAdapter");
-        Class[] defArgs = { MainFrame.class };
-        Method registerMethod = osxAdapter.getDeclaredMethod("registerMacOSXApplication", defArgs);
+        Method registerMethod = osxAdapter.getDeclaredMethod("registerMacOSXApplication", MainFrame.class);
         if (registerMethod != null) {
             registerMethod.invoke(osxAdapter, mainFrame);
         }
-        defArgs[0] = boolean.class;
-        osxPrefsEnableMethod = osxAdapter.getDeclaredMethod("enablePrefs", defArgs);
+        osxPrefsEnableMethod = osxAdapter.getDeclaredMethod("enablePrefs", boolean.class);
     }
 
     public JMenuItem getCloseProjectItem() {
@@ -606,12 +604,14 @@ public class MainFrameMenu implements Serializable {
     }
 
     public void enableOrDisableItems(Project curProject, BugCollection bugCollection) {
-        redoAnalysis.setEnabled(bugCollection != null && curProject != null && !curProject.getFileList().isEmpty());
-        closeProjectItem.setEnabled(bugCollection != null);
-        saveMenuItem.setEnabled(bugCollection != null);
-        saveAsMenuItem.setEnabled(bugCollection != null);
-        reconfigMenuItem.setEnabled(bugCollection != null);
-        groupByMenuItem.setEnabled(bugCollection != null);
+        boolean haveBugs = bugCollection != null;
+        boolean haveCodeToAnalyze = curProject != null && !curProject.getFileList().isEmpty();
+        redoAnalysis.setEnabled(haveBugs && haveCodeToAnalyze);
+        closeProjectItem.setEnabled(haveBugs);
+        saveMenuItem.setEnabled(haveBugs);
+        saveAsMenuItem.setEnabled(haveBugs);
+        reconfigMenuItem.setEnabled(haveBugs);
+        groupByMenuItem.setEnabled(haveBugs);
     }
 
     static class CutAction extends TextAction {
