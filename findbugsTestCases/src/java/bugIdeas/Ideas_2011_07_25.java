@@ -16,9 +16,14 @@ public class Ideas_2011_07_25 {
         return x.hashCode();
     }
 
+    @ExpectWarning("DMI")
+    public void test0(Object x) {
+        Preconditions.checkNotNull("x should be nonnull");
+        this.x = x;
+    }
+    
     private Object x;
     @ExpectWarning("DMI_ARGUMENTS_WRONG_ORDER")
-    
     public void setX(Object x) {
         Preconditions.checkNotNull("x should be nonnull", x);
         this.x = x;
