@@ -28,6 +28,7 @@ import org.apache.bcel.Constants;
 import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.ComparableField;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -36,6 +37,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
@@ -45,7 +47,7 @@ import edu.umd.cs.findbugs.util.Util;
 /**
  * @author pugh
  */
-public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObject {
+public class FieldInfo extends FieldDescriptor implements XField {
 
     public static final FieldInfo[] EMPTY_ARRAY = new FieldInfo[0];
 
@@ -147,9 +149,9 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
-    public int compareTo(Object rhs) {
+    public int compareTo(ComparableField rhs) {
         if (rhs instanceof FieldDescriptor) {
-            return super.compareTo((FieldDescriptor) rhs);
+            return FieldOrMethodDescriptor.compareTo(this, (FieldDescriptor) rhs);
         }
 
         if (rhs instanceof XField) {

@@ -324,7 +324,7 @@ public class DescriptorFactory {
         return createClassDescriptorFromSignature(signature);
     }
 
-    public static ClassDescriptor createClassDescriptor(Class aClass) {
+    public static ClassDescriptor createClassDescriptor(Class<?> aClass) {
         return instance().getClassDescriptor(ClassName.toSlashedClassName(aClass.getName()));
     }
 

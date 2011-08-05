@@ -242,7 +242,7 @@ public class Filter extends OrMatcher {
                 System.out.println("Match node");
 
             // Iterate over child elements of Match node.
-            Iterator j = matchNode.elementIterator();
+            Iterator<?> j = matchNode.elementIterator();
             while (j.hasNext()) {
                 Element child = (Element) j.next();
                 Matcher matcher = getMatcher(child);
@@ -344,7 +344,7 @@ public class Filter extends OrMatcher {
                 return new FieldMatcher(nameValue, typeAttr.getValue());
         } else if (name.equals("Or")) {
             OrMatcher orMatcher = new OrMatcher();
-            Iterator i = element.elementIterator();
+            Iterator<?> i = element.elementIterator();
             while (i.hasNext()) {
                 orMatcher.addChild(getMatcher((Element) i.next()));
             }

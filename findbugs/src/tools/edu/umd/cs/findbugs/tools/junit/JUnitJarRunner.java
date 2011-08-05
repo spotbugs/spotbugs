@@ -91,7 +91,7 @@ public class JUnitJarRunner {
             }
         });
 
-        Class<junit.framework.TestCase> testCaseClass = (Class<TestCase>) cl.loadClass("junit.framework.TestCase");
+        Class<junit.framework.TestCase> testCaseClass = getTestCase(cl);
 
         JarFile jarFile = new JarFile(jarFileName);
         Enumeration<JarEntry> e = jarFile.entries();
@@ -104,14 +104,21 @@ public class JUnitJarRunner {
                     continue;
                 System.out.println("Loading test class: " + className);
                 System.out.flush();
-                Class<junit.framework.TestCase> jarClass = (Class<TestCase>) cl.loadClass(className);
+                Class<?> jarClass = cl.loadClass(className);
                 if (testCaseClass.isAssignableFrom(jarClass))
-                    suite.addTestSuite(jarClass);
+                    suite.addTestSuite(testCaseClass.asSubclass(testCaseClass));
             }
         }
         jarFile.close();
 
         return suite;
+    }
+
+    /** Done this way to avoid dependency? */
+    @SuppressWarnings("unchecked")
+    private Class<junit.framework.TestCase> getTestCase(ClassLoader cl) throws ClassNotFoundException {
+        Class<junit.framework.TestCase> testCaseClass = (Class<TestCase>) cl.loadClass("junit.framework.TestCase");
+        return testCaseClass;
     }
 
     public void run(TestSuite suite, String how) {

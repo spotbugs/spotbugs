@@ -67,7 +67,7 @@ public class CheckBcel {
      *            the class to check
      * @return true iff Class is declared final
      */
-    private static boolean isFinal(Class c) {
+    private static boolean isFinal(Class<?> c) {
         return (c.getModifiers() & Modifier.FINAL) != 0;
     }
 
@@ -93,11 +93,11 @@ public class CheckBcel {
      * @return true iff all checks passed
      */
     public static boolean check() {
-        Class objectType;
-        Class type;
-        Class constants;
-        Class emptyVis;
-        Class repository;
+        Class<?> objectType;
+        Class<?>  type;
+        Class<?>  constants;
+        Class<?>  emptyVis;
+        Class<?>  repository;
         try {
             objectType = Class.forName(ORG_APACHE_BCEL_GENERIC_OBJECT_TYPE);
             type = Class.forName(ORG_APACHE_BCEL_GENERIC_TYPE);

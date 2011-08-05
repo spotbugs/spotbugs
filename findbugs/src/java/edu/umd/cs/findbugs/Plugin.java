@@ -83,7 +83,7 @@ public class Plugin {
     
     private final HashMap<String,String> myGlobalOptions = new HashMap<String, String>();
 
-    private final DualKeyHashMap<Class, String, ComponentPlugin> componentPlugins;
+    private final DualKeyHashMap<Class<?>, String, ComponentPlugin<?>> componentPlugins;
 
     private BugRanker bugRanker;
 
@@ -128,7 +128,7 @@ public class Plugin {
         }
         assert enabled || !cannotDisable;
         cloudList = new LinkedHashSet<CloudPlugin>();
-        componentPlugins = new DualKeyHashMap<Class, String, ComponentPlugin> ();
+        componentPlugins = new DualKeyHashMap<Class<?>, String, ComponentPlugin<?>> ();
         this.version = version;
         this.releaseDate = releaseDate;
         this.detectorFactoryList = new ArrayList<DetectorFactory>();
@@ -478,19 +478,22 @@ public class Plugin {
         
     }
     
-    <T> void addComponentPlugin(Class<T> componentClass, ComponentPlugin<T> plugin) {
-        if (!componentClass.isAssignableFrom(plugin.getComponentClass()))
+    <T> void addComponentPlugin(Class<T> componentKind, ComponentPlugin<T> plugin) {
+        if (!componentKind.isAssignableFrom(plugin.getComponentClass()))
                 throw new IllegalArgumentException();
-        componentPlugins.put(componentClass, plugin.getId(), plugin);
+        componentPlugins.put(componentKind, plugin.getId(), plugin);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> Iterable<ComponentPlugin<T>> getComponentPlugins(Class<T> componentClass) {
+        @SuppressWarnings("rawtypes")
         Collection values = componentPlugins.get(componentClass).values();
         return values;
     }
 
+    @SuppressWarnings("unchecked")
     public <T>  ComponentPlugin<T> getComponentPlugin(Class<T> componentClass, String name) {
-        return componentPlugins.get(componentClass, name);
+        return (ComponentPlugin<T>) componentPlugins.get(componentClass, name);
     }
 
     public static synchronized @CheckForNull Plugin getByPluginId(String name) {

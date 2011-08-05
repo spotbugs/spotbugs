@@ -62,7 +62,7 @@ public class AddMessages {
      * Add messages to the dom4j tree.
      */
     public void execute() {
-        Iterator elementIter = document.selectNodes("/BugCollection/BugInstance").iterator();
+        Iterator<?> elementIter = document.selectNodes("/BugCollection/BugInstance").iterator();
         Iterator<BugInstance> bugInstanceIter = bugCollection.iterator();
 
         Set<String> bugTypeSet = new HashSet<String>();
@@ -89,7 +89,7 @@ public class AddMessages {
 
             // Add pre-formatted display strings in "Message"
             // elements for all bug annotations.
-            Iterator annElementIter = element.elements().iterator();
+            Iterator<?> annElementIter = element.elements().iterator();
             Iterator<BugAnnotation> annIter = bugInstance.annotationIterator();
             while (annElementIter.hasNext() && annIter.hasNext()) {
                 Element annElement = (Element) annElementIter.next();

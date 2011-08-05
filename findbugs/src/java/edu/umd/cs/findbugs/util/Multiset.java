@@ -104,6 +104,8 @@ public class Multiset<K> {
     public Iterable<Map.Entry<K, Integer>> entriesInDecreasingFrequency() {
         TreeSet<Map.Entry<K, Integer>> result = new TreeSet<Map.Entry<K, Integer>>(new EntryComparator<K>());
         result.addAll(map.entrySet());
+        if (result.size() != map.size())
+            throw new IllegalStateException();
         return result;
     }
 

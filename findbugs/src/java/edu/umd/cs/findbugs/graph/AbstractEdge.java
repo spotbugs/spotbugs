@@ -78,7 +78,7 @@ public class AbstractEdge<ActualEdgeType extends AbstractEdge<ActualEdgeType, Ve
     public boolean equals(Object o) {
         if (!(o instanceof AbstractEdge))
             return false;
-        AbstractEdge other = (AbstractEdge) o;
+        AbstractEdge<?,?> other = (AbstractEdge<?,?>) o;
         return source.equals(other.source) && target.equals(other.target);
     }
 

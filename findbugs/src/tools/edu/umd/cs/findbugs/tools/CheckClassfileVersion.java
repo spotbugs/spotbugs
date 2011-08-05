@@ -58,8 +58,8 @@ public class CheckClassfileVersion {
             String jarFileName = jarFile.getName();
             System.out.println("Checking " + jarFileName);
             JarFile z = new JarFile(jarFile);
-            for (Enumeration e = z.entries(); e.hasMoreElements();) {
-                JarEntry ze = (JarEntry) e.nextElement();
+            for (Enumeration<JarEntry> e = z.entries(); e.hasMoreElements();) {
+                JarEntry ze = e.nextElement();
                 if (ze.isDirectory())
                     continue;
 

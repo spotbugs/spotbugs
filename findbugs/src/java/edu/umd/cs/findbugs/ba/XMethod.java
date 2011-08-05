@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
  * @author David Hovemeyer
  * @author Bill Pugh
  */
-public interface XMethod extends ClassMember, AnnotatedObject {
+public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
     public boolean isNative();
 
     public boolean isAbstract();

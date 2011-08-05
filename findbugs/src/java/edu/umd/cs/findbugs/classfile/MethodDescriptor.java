@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import edu.umd.cs.findbugs.ba.ComparableMethod;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
@@ -26,7 +27,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  * 
  * @author David Hovemeyer
  */
-public class MethodDescriptor extends FieldOrMethodDescriptor {
+public class MethodDescriptor extends FieldOrMethodDescriptor implements ComparableMethod {
 
     /**
      * Constructor.
@@ -45,4 +46,7 @@ public class MethodDescriptor extends FieldOrMethodDescriptor {
         super(className, methodName, methodSignature, isStatic);
     }
 
+    public int compareTo(ComparableMethod o) {
+        return FieldOrMethodDescriptor.compareTo(this, (MethodDescriptor)o);
+    }
 }

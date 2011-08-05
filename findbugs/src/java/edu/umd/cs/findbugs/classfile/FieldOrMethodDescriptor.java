@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  * 
  * @author David Hovemeyer
  */
-public abstract class FieldOrMethodDescriptor implements FieldOrMethodName, Comparable {
+public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
 
     private final @SlashedClassName
     String slashedClassName;
@@ -152,20 +152,17 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName, Comp
         return (isStatic ? "static " : "") + getClassDescriptor().getDottedClassName() + "." + name + signature;
     }
 
-    public int compareTo(Object o) {
-        if (!(o instanceof FieldOrMethodDescriptor))
-            throw new IllegalArgumentException("Can't compare " + this.getClass().getName() + " to a " + o.getClass().getName());
-        FieldOrMethodDescriptor that = (FieldOrMethodDescriptor) o;
-        int result = this.slashedClassName.compareTo(that.slashedClassName);
+    public static <T extends FieldOrMethodDescriptor> int compareTo(T thas, T that) {
+         int result = thas.slashedClassName.compareTo(that.slashedClassName);
         if (result != 0)
             return result;
-        result = this.name.compareTo(that.name);
+        result = thas.name.compareTo(that.name);
         if (result != 0)
             return result;
-        result = this.signature.compareTo(that.signature);
+        result = thas.signature.compareTo(that.signature);
         if (result != 0)
             return result;
-        result = (this.isStatic ? 1 : 0) - (that.isStatic ? 1 : 0);
+        result = (thas.isStatic ? 1 : 0) - (that.isStatic ? 1 : 0);
         return result;
     }
 }

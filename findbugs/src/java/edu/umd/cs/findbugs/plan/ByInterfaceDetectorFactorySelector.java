@@ -31,9 +31,9 @@ import edu.umd.cs.findbugs.Plugin;
 public class ByInterfaceDetectorFactorySelector implements DetectorFactorySelector {
     private Plugin plugin;
 
-    private Class detectorInterface;
+    private Class<?> detectorInterface;
 
-    public ByInterfaceDetectorFactorySelector(Plugin plugin, Class detectorInterface) {
+    public ByInterfaceDetectorFactorySelector(Plugin plugin, Class<?> detectorInterface) {
         this.plugin = plugin;
         this.detectorInterface = detectorInterface;
     }

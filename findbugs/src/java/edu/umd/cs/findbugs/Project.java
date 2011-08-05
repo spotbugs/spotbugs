@@ -902,7 +902,7 @@ public class Project implements XMLWriteable {
             if (url != null)
                 xmlOutput.addAttribute("detailsUrl", url);
             xmlOutput.stopTag(false);
-            for (Map.Entry e : cloudProperties.entrySet()) {
+            for (Map.Entry<?,?> e : cloudProperties.entrySet()) {
                 xmlOutput.startTag(CLOUD_PROPERTY_ELEMENT_NAME);
                 xmlOutput.addAttribute("key", e.getKey().toString());
                 xmlOutput.stopTag(false);

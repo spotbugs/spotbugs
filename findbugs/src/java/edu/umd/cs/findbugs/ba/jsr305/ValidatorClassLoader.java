@@ -34,7 +34,7 @@ public class ValidatorClassLoader extends ClassLoader {
         super(ClassLoader.getSystemClassLoader().getParent());
     }
     @Override
-    public Class findClass(String name) throws ClassNotFoundException {
+    public Class<?> findClass(String name) throws ClassNotFoundException {
         if (name.startsWith("javax.annotation"))
                 return Class.forName(name);
         byte[] b;

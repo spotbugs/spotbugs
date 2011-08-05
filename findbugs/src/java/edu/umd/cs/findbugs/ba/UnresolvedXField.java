@@ -60,7 +60,7 @@ public class UnresolvedXField extends AbstractField {
      * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(Object o) {
+    public int compareTo(ComparableField o) {
         if (o instanceof XField) {
             return XFactory.compare((XField) this, (XField) o);
         }

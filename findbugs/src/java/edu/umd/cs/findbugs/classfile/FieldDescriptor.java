@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import edu.umd.cs.findbugs.ba.ComparableField;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
@@ -26,7 +27,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  * 
  * @author David Hovemeyer
  */
-public class FieldDescriptor extends FieldOrMethodDescriptor {
+public class FieldDescriptor extends FieldOrMethodDescriptor implements ComparableField {
 
     /**
      * Constructor.
@@ -49,4 +50,10 @@ public class FieldDescriptor extends FieldOrMethodDescriptor {
         return (isStatic() ? "static " : "") + getClassDescriptor().getDottedClassName() + "." + getName() + " " + getSignature();
     }
 
+    public int compareTo(ComparableField o) {
+        return FieldOrMethodDescriptor.compareTo(this, (FieldDescriptor)o);
+    }
+
+    
+    
 }

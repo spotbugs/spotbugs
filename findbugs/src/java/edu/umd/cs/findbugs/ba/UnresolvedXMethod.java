@@ -52,7 +52,7 @@ class UnresolvedXMethod extends AbstractMethod {
      * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(Object o) {
+    public int compareTo(ComparableMethod o) {
         if (o instanceof XMethod) {
             return XFactory.compare((XMethod) this, (XMethod) o);
         }

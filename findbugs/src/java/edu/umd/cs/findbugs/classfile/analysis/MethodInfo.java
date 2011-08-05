@@ -32,6 +32,7 @@ import org.objectweb.asm.Opcodes;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.ComparableMethod;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -39,6 +40,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -48,7 +50,7 @@ import edu.umd.cs.findbugs.util.Util;
 /**
  * @author pugh
  */
-public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedObject {
+public class MethodInfo extends MethodDescriptor implements XMethod {
 
     public static final MethodInfo[] EMPTY_ARRAY = new MethodInfo[0];
 
@@ -310,12 +312,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
-    public int compareTo(Object rhs) {
+    public int compareTo(ComparableMethod rhs) {
         if (rhs instanceof MethodDescriptor) {
-            return super.compareTo((MethodDescriptor) rhs);
+            return FieldOrMethodDescriptor.compareTo(this, (MethodDescriptor) rhs);
         }
 
-        if (rhs instanceof XMethod) {
+         if (rhs instanceof XMethod) {
             return XFactory.compare((XMethod) this, (XMethod) rhs);
         }
 

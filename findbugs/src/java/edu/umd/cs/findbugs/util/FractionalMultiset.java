@@ -81,12 +81,16 @@ public class FractionalMultiset<K> {
     public Iterable<Map.Entry<K, Double>> entriesInDecreasingOrder() {
         TreeSet<Map.Entry<K, Double>> result = new TreeSet<Map.Entry<K, Double>>(new DecreasingOrderEntryComparator<K>());
         result.addAll(map.entrySet());
+        if (result.size() != map.size())
+            throw new IllegalStateException();
         return result;
     }
 
     public Iterable<Map.Entry<K, Double>> entriesInIncreasingOrder() {
         TreeSet<Map.Entry<K, Double>> result = new TreeSet<Map.Entry<K, Double>>(new DecreasingOrderEntryComparator<K>());
         result.addAll(map.entrySet());
+        if (result.size() != map.size())
+            throw new IllegalStateException();
         return result;
     }
 

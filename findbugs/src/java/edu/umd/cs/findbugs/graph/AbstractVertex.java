@@ -54,7 +54,7 @@ public class AbstractVertex<EdgeType extends AbstractEdge<EdgeType, ActualVertex
         if (o == null || o.getClass() != this.getClass()) {
             return false;
         }
-        AbstractVertex other = (AbstractVertex) o;
+        AbstractVertex<?,?> other = (AbstractVertex<?,?>) o;
         return other.getLabel() == this.getLabel();
     }
 

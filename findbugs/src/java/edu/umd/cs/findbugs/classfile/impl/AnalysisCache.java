@@ -183,7 +183,8 @@ public class AnalysisCache implements IAnalysisCache {
 
     @SuppressWarnings("unchecked")
     private <E> Map<ClassDescriptor, E> getAllClassAnalysis(Class<E> analysisClass) throws CheckedAnalysisException {
-        Map<ClassDescriptor, Object> descriptorMap = findOrCreateDescriptorMap(classAnalysisMap, (Map) classAnalysisEngineMap,
+        Map<ClassDescriptor, Object> descriptorMap 
+        = findOrCreateDescriptorMap(classAnalysisMap, classAnalysisEngineMap,
                 analysisClass);
         return (Map<ClassDescriptor, E>) descriptorMap;
     }
@@ -222,7 +223,7 @@ public class AnalysisCache implements IAnalysisCache {
         if (myMap != null) {
             myMap.putAll(map);
         } else {
-            myMap = createMap((Map)classAnalysisEngineMap, analysisClass);
+            myMap = createMap(classAnalysisEngineMap, analysisClass);
             myMap.putAll(map);
             classAnalysisMap.put(analysisClass, myMap);
         }
@@ -242,7 +243,8 @@ public class AnalysisCache implements IAnalysisCache {
         }
         // Get the descriptor->result map for this analysis class,
         // creating if necessary
-        Map<ClassDescriptor, Object> descriptorMap = findOrCreateDescriptorMap(classAnalysisMap, (Map) classAnalysisEngineMap,
+        Map<ClassDescriptor, Object> descriptorMap = findOrCreateDescriptorMap(classAnalysisMap, 
+                classAnalysisEngineMap,
                 analysisClass);
 
         // See if there is a cached result in the descriptor map
@@ -441,9 +443,10 @@ public class AnalysisCache implements IAnalysisCache {
      *            the analysis map
      * @return the descriptor to analysis object map
      */
-    private static <DescriptorType, E> Map<DescriptorType, Object> findOrCreateDescriptorMap(
+    private static <DescriptorType> Map<DescriptorType, Object> findOrCreateDescriptorMap(
             final Map<Class<?>, Map<DescriptorType, Object>> analysisClassToDescriptorMapMap,
-            final Map<Class<?>, ? extends IAnalysisEngine<DescriptorType, E>> engineMap, final Class<E> analysisClass) {
+            final Map<Class<?>, ? extends IAnalysisEngine<DescriptorType, ?>> engineMap, 
+                    final Class<?> analysisClass) {
         Map<DescriptorType, Object> descriptorMap = analysisClassToDescriptorMapMap.get(analysisClass);
         if (descriptorMap == null) {
             descriptorMap = createMap(engineMap, analysisClass);
@@ -452,20 +455,20 @@ public class AnalysisCache implements IAnalysisCache {
         return descriptorMap;
     }
 
-    private static <DescriptorType, E> Map<DescriptorType, Object> createMap(
-            final Map<Class<?>, ? extends IAnalysisEngine<DescriptorType, E>> engineMap,
-                    final Class<E> analysisClass) {
+    private static <DescriptorType> Map<DescriptorType, Object> createMap(
+            final Map<Class<?>, ? extends IAnalysisEngine<DescriptorType, ?>> engineMap,
+                    final Class<?> analysisClass) {
         Map<DescriptorType, Object> descriptorMap;
         // Create a MapCache that allows the analysis engine to
         // decide that analysis results should be retained indefinitely.
-        IAnalysisEngine<DescriptorType, E> engine = engineMap.get(analysisClass);
+        IAnalysisEngine<DescriptorType, ?> engine = engineMap.get(analysisClass);
         if (analysisClass.equals(JavaClass.class)) {
             descriptorMap = new MapCache<DescriptorType, Object>(MAX_JAVACLASS_RESULTS_TO_CACHE);
         } else if (analysisClass.equals(ConstantPoolGen.class)) {
             descriptorMap = new MapCache<DescriptorType, Object>(MAX_CONSTANT_POOL_GEN_RESULTS_TO_CACHE);
         } else if (analysisClass.equals(ClassContext.class)) {
             descriptorMap = new MapCache<DescriptorType, Object>(10);
-        } else if (engine instanceof IClassAnalysisEngine && ((IClassAnalysisEngine) engine).canRecompute()) {
+        } else if (engine instanceof IClassAnalysisEngine && ((IClassAnalysisEngine<?>) engine).canRecompute()) {
             descriptorMap = new MapCache<DescriptorType, Object>(MAX_CLASS_RESULTS_TO_CACHE);
         } else {
             descriptorMap = new HashMap<DescriptorType, Object>();

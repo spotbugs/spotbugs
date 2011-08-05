@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
  * name/signature/etc. cannot be trusted.
  * </p>
  */
-public interface XField extends ClassMember, AnnotatedObject {
+public interface XField extends ClassMember, AnnotatedObject, ComparableField {
     /**
      * Is the type of the field a reference type?
      */

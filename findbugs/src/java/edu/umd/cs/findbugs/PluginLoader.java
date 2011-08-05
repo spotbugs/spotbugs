@@ -423,6 +423,7 @@ public class PluginLoader {
 
     }
 
+    @SuppressWarnings("unchecked")
     private Plugin init() throws PluginException {
 
         if (DEBUG)
@@ -606,53 +607,51 @@ public class PluginLoader {
         // Create PluginComponents
         try {
 
-            List<Node> filterNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/PluginComponent");
-            for (Node filterNode : filterNodeList) {
-                String componentKindname = filterNode.valueOf("@componentKind");
+            List<Node> componentNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/PluginComponent");
+            for (Node componentNode : componentNodeList) {
+                String componentKindname = componentNode.valueOf("@componentKind");
                 if (componentKindname == null) throw new PluginException("Missing @componentKind for " + pluginId
                         + " loaded from " + loadedFrom);
-                String componentClassname = filterNode.valueOf("@componentClass");
+                String componentClassname = componentNode.valueOf("@componentClass");
                 if (componentClassname == null) throw new PluginException("Missing @componentClassname for " + pluginId
                         + " loaded from " + loadedFrom);
-                String filterId = filterNode.valueOf("@id");
-                if (filterId == null) throw new PluginException("Missing @id for " + pluginId
+                String componentId = componentNode.valueOf("@id");
+                if (componentId == null) throw new PluginException("Missing @id for " + pluginId
                         + " loaded from " + loadedFrom);
 
                 try {
-                    String propertiesLocation = filterNode.valueOf("@properties");
-                    boolean disabled = Boolean.valueOf(filterNode.valueOf("@disabled"));
-
-                    Class<?> componentKind =  classLoader.loadClass(componentKindname);
-
-                    Class<?> componentClass = null;
-                    if (!FindBugs.noAnalysis) {
-                        componentClass = getClass(classLoader, componentClassname, componentKind);
-                    }
+                    String propertiesLocation = componentNode.valueOf("@properties");
+                    boolean disabled = Boolean.valueOf(componentNode.valueOf("@disabled"));
 
                     Node filterMessageNode = findMessageNode(messageCollectionList,
-                            "/MessageCollection/PluginComponent[@id='" + filterId + "']",
-                            "Missing Cloud description for PluginComponent " + filterId);
+                            "/MessageCollection/PluginComponent[@id='" + componentId + "']",
+                            "Missing Cloud description for PluginComponent " + componentId);
                     String description = getChildText(filterMessageNode, "Description").trim();
                     String details = getChildText(filterMessageNode, "Details").trim();
                     PropertyBundle properties = new PropertyBundle();
                     if (propertiesLocation != null && propertiesLocation.length() > 0) {
                         URL properiesURL = classLoaderForResources.getResource(propertiesLocation);
-                        if (properiesURL == null)
+                        if (properiesURL == null) {
+                            AnalysisContext.logError("Could not load properties for " + pluginId + " component " + componentId
+                                    + " from " + propertiesLocation);
                             continue;
+                        }
                         properties.loadPropertiesFromURL(properiesURL);
                     }
-                    List<Node> propertyNodes = filterNode.selectNodes("Property");
+                    List<Node> propertyNodes = componentNode.selectNodes("Property");
                     for (Node node : propertyNodes) {
                         String key = node.valueOf("@key");
                         String value = node.getText();
                         properties.setProperty(key, value);
                     }
 
-                    ComponentPlugin componentPlugin = new ComponentPlugin(plugin, filterId, classLoader, componentClass,
-                            properties, !disabled, description, details);
-                    plugin.addComponentPlugin(componentKind, componentPlugin);
+                    Class<?> componentKind =  classLoader.loadClass(componentKindname);
+
+                    loadComponentPlugin(plugin, componentKind, componentClassname, componentId, disabled, description, details,
+                            properties);
+                    
                 } catch (RuntimeException e) {
-                    AnalysisContext.logError("Unable to load ComponentPlugin " + filterId +
+                    AnalysisContext.logError("Unable to load ComponentPlugin " + componentId +
                             " : " + componentClassname + " implementing " + componentKindname, e);
                 }
             }
@@ -914,6 +913,23 @@ public class PluginLoader {
         if (DEBUG)
             System.out.println("Loaded " + plugin.getPluginId() + " from " + loadedFrom);
         return plugin;
+    }
+
+
+
+    private <T> void loadComponentPlugin(@SuppressWarnings("hiding") Plugin plugin, 
+            Class<T> componentKind, String componentClassname, String filterId,
+            boolean disabled, String description, String details, PropertyBundle properties) throws PluginException {
+        {
+        Class<? extends T> componentClass = null;
+        if (!FindBugs.noAnalysis) {
+            componentClass = getClass(classLoader, componentClassname, componentKind);
+        }
+        
+        ComponentPlugin<T> componentPlugin = new ComponentPlugin<T>(plugin, filterId, classLoader, componentClass,
+                properties, !disabled, description, details);
+        plugin.addComponentPlugin(componentKind, componentPlugin);
+        }
     }
 
     private Date parseDate(String releaseDate) {

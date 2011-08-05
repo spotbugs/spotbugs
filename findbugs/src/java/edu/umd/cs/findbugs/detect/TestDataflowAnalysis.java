@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.Dataflow;
+import edu.umd.cs.findbugs.ba.DataflowAnalysis;
 import edu.umd.cs.findbugs.ba.DataflowCFGPrinter;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.XClass;
@@ -44,13 +45,13 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  *
  * @author David Hovemeyer
  */
-public class TestDataflowAnalysis implements Detector2, NonReportingDetector {
+public class TestDataflowAnalysis<Fact,AnalysisType extends DataflowAnalysis<Fact>> implements Detector2, NonReportingDetector {
 
     private final String dataflowClassName;
 
     private final String methodName;
 
-    private Class<? extends Dataflow> dataflowClass;
+    private Class<? extends Dataflow<Fact,AnalysisType>> dataflowClass;
 
     private boolean initialized;
 
@@ -113,12 +114,13 @@ public class TestDataflowAnalysis implements Detector2, NonReportingDetector {
             System.out.println("-----------------------------------------------------------------");
 
             // Create and execute the dataflow analysis
-            Dataflow dataflow = analysisCache.getMethodAnalysis(dataflowClass, methodDescriptor);
+            Dataflow<Fact,AnalysisType> dataflow = analysisCache.getMethodAnalysis(dataflowClass, methodDescriptor);
 
             System.out.println("Dataflow finished after " + dataflow.getNumIterations());
 
             if (SystemProperties.getBoolean("dataflow.printcfg")) {
-                DataflowCFGPrinter cfgPrinter = new DataflowCFGPrinter(dataflow);
+                DataflowCFGPrinter<Fact,AnalysisType> cfgPrinter 
+                    = new DataflowCFGPrinter<Fact,AnalysisType>(dataflow);
                 cfgPrinter.print(System.out);
             }
 
@@ -130,13 +132,15 @@ public class TestDataflowAnalysis implements Detector2, NonReportingDetector {
 
         IAnalysisCache analysisCache = Global.getAnalysisCache();
 
-        Class<?> cls = null;
+        Class<? extends Dataflow<Fact,AnalysisType>> cls = null;
 
         // First, try loading the dataflow class from the general findBugs code.
         try {
-            cls = getClass().getClassLoader().loadClass(dataflowClassName);
+            Class<?> c = getClass().getClassLoader().loadClass(dataflowClassName);
+            cls = asDataflowClass(c);
+            
         } catch (ClassNotFoundException e) {
-            // Ignore
+            assert true;
         }
 
         if (cls == null) {
@@ -147,10 +151,10 @@ public class TestDataflowAnalysis implements Detector2, NonReportingDetector {
                 Plugin plugin = i.next();
 
                 try {
-                    cls = plugin.getClassLoader().loadClass(dataflowClassName);
+                    cls = asDataflowClass(plugin.getClassLoader().loadClass(dataflowClassName));
                     break;
                 } catch (ClassNotFoundException e) {
-                    // Ignore
+                    assert true;
                 }
 
             }
@@ -161,12 +165,14 @@ public class TestDataflowAnalysis implements Detector2, NonReportingDetector {
             return;
         }
 
-        if (!Dataflow.class.isAssignableFrom(cls)) {
-            analysisCache.getErrorLogger().logError("TestDataflowAnalysis: " + dataflowClassName + " is not a Dataflow class");
-            return;
-        }
+      
+        dataflowClass = cls;
+    }
 
-        dataflowClass = cls.<Dataflow> asSubclass(Dataflow.class);
+
+    @SuppressWarnings("unchecked")
+    private Class<? extends Dataflow<Fact, AnalysisType>> asDataflowClass(Class<?> c) {
+        return (Class<? extends Dataflow<Fact, AnalysisType>>) c.asSubclass(Dataflow.class);
     }
 
 }

@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  * @see edu.umd.cs.findbugs.ba.XMethod
  * @author David Hovemeyer
  */
-public interface ClassMember extends Serializable, AccessibleEntity, Comparable, FieldOrMethodName {
+public interface ClassMember extends Serializable, AccessibleEntity,  FieldOrMethodName {
 
     /**
      * Get the full (dotted) name of the class (if the object represents a
