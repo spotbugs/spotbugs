@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.dom4j.DocumentException;
 
@@ -200,7 +201,7 @@ public class Update {
                 throw new IllegalArgumentException("Can't merge bug collections if the newer collection contains dead bugs: " + b);
 
         mapFromNewToOldBug.clear();
-
+                
         matchedOldBugs.clear();
         BugCollection resultCollection = newCollection.createEmptyCollectionWithMetadata();
         // Previous sequence number
@@ -327,6 +328,19 @@ public class Update {
 
     }
 
+    /**
+     * @param newCollection
+     */
+    private void discardUnwantedBugs(BugCollection newCollection) {
+        BugRanker.trimToMaxRank(newCollection, maxRank);
+        if (sloppyMatch) {
+            TreeSet<BugInstance> sloppyUnique = new TreeSet<BugInstance>(new SloppyBugComparator());
+            for(Iterator<BugInstance> i = newCollection.iterator(); i.hasNext(); ) 
+                if (!sloppyUnique.add(i.next()))
+                    i.remove();
+        }
+    }
+
     private static int size(BugCollection b) {
         int count = 0;
         for (Iterator<BugInstance> i = b.iterator(); i.hasNext();) {
@@ -451,8 +465,8 @@ public class Update {
             if (bug.getLastVersion() >= 0 && bug.getFirstVersion() > bug.getLastVersion())
                 throw new IllegalStateException("Illegal Version range: " + bug.getFirstVersion() + ".." + bug.getLastVersion());
 
-        BugRanker.trimToMaxRank(origCollection, maxRank);
-
+        discardUnwantedBugs(origCollection);
+        
         while (argCount <= (args.length - 1)) {
 
             BugCollection newCollection = new SortedBugCollection();
@@ -474,8 +488,8 @@ public class Update {
                     newCollection.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
                 if (useAnalysisTimes)
                     newCollection.setTimestamp(newCollection.getAnalysisTimestamp());
-                BugRanker.trimToMaxRank(newCollection, maxRank);
-
+                discardUnwantedBugs(newCollection);
+                
                 origCollection = mergeCollections(origCollection, newCollection, true, false);
             } catch (IOException e) {
                 IOException e2 = new IOException("Error parsing " + newFilename);
