@@ -67,6 +67,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class DumbMethods extends OpcodeStackDetector {
 
@@ -307,6 +308,22 @@ public class DumbMethods extends OpcodeStackDetector {
                 && getPrevOpcode(1) == ANEWARRAY && getPrevOpcode(2) == ICONST_0)
             accumulator.accumulateBug(new BugInstance(this, "DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD", NORMAL_PRIORITY)
                     .addClassAndMethod(this).addCalledMethod(this), this);
+        
+        if (seen == INVOKESTATIC && getClassConstantOperand().equals("com/google/common/base/Preconditions")
+             && getNameConstantOperand().equals("checkNotNull")) {
+                      int args = PreorderVisitor.getNumberArguments(getSigConstantOperand());
+
+                     OpcodeStack.Item item =  stack.getStackItem(args-1);
+                     Object o = item.getConstant();
+                     if (o instanceof String)
+                         accumulator.accumulateBug(new BugInstance(this, args > 1 ? "DMI_ARGUMENTS_WRONG_ORDER" : "DMI_DOH", NORMAL_PRIORITY)
+                         .addClassAndMethod(this).addCalledMethod(this)
+                         .addString((String)o).describe(StringAnnotation.STRING_CONSTANT_ROLE), 
+                         this);
+                 
+
+            
+        }
 
         if ((seen == INVOKESTATIC || seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKEINTERFACE)
                 && getSigConstantOperand().indexOf("Ljava/lang/Runnable;") >= 0) {
