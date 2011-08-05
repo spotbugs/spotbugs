@@ -55,3 +55,9 @@ syntax: regexp
 
 syntax: regexp
 ^findbugs/bin$
+
+syntax: regexp
+^eclipsePlugin/bin_build$
+
+syntax: regexp
+^eclipsePlugin/dist$
