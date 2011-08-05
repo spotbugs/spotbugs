@@ -69,6 +69,7 @@
         <pathelement location="${jar.dir}/jsr305.jar"/>
         <pathelement location="${jar.dir}/jFormatString.jar"/>
         <pathelement location="${jar.dir}/commons-lang-2.4.jar"/>
+        <pathelement location="${jar.dir}/jcip-annotations.jar"/>
     </path>
 
     <path id="tools.classpath">
@@ -304,6 +305,7 @@
             <fileset dir="${src.dir}">
                 <include name="**/annotations/*.java"/>
             </fileset>
+            <zipfileset src="${jar.dir}/jcip-annotations.jar" excludes="META-INF/**,**/*.html"/>
         </jar>
     </target>
 
