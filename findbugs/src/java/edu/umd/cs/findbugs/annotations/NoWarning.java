@@ -26,4 +26,7 @@ public @interface NoWarning {
     /** Want no warning at this priority or higher */
     public Priority priority() default Priority.LOW;
 
+    /** Want no warning at this rank or scarier */
+    public int rank() default 20;
+
 }

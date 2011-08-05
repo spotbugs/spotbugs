@@ -183,6 +183,10 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
             Integer num = (Integer) expect.getValue("num");
             if (num == null)
                 num = 1;
+            Integer rank = (Integer) expect.getValue("rank");
+            if (rank == null)
+                rank = 20;
+           
             Priority minPriority = Priority.LOW;
             if (wantedPriority != null)
                 minPriority = Priority.valueOf(wantedPriority.value);
@@ -192,7 +196,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                 String bugCode = tok.nextToken().trim();
                 if (!possibleBugCodes.contains(bugCode))
                     continue;
-                Collection<SourceLineAnnotation> bugs = countWarnings(xmethod.getMethodDescriptor(), bugCode, minPriority);
+                Collection<SourceLineAnnotation> bugs = countWarnings(xmethod.getMethodDescriptor(), bugCode, minPriority, rank);
                 if (expectWarnings && bugs.size() < num) {
                     BugInstance bug = new BugInstance(this, "FB_MISSING_EXPECTED_WARNING", priority).addClassAndMethod(
                             xmethod.getMethodDescriptor()).addString(bugCode);
@@ -209,7 +213,8 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         }
     }
 
-    private Collection<SourceLineAnnotation> countWarnings(MethodDescriptor methodDescriptor, String bugCode, Priority minPriority) {
+    private Collection<SourceLineAnnotation> countWarnings(MethodDescriptor methodDescriptor, String bugCode, 
+            Priority minPriority, int rank) {
         Collection<BugInstance> warnings = warningsByMethod.get(methodDescriptor);
         Collection<SourceLineAnnotation> matching = new HashSet<SourceLineAnnotation>();
         DetectorFactoryCollection i18n = DetectorFactoryCollection.instance();
@@ -223,6 +228,8 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         if (warnings != null) {
             for (BugInstance warning : warnings) {
                 if (warning.getPriority() > minPriority.getPriorityValue())
+                    continue;
+                if (warning.getBugRank() > rank)
                     continue;
                 BugPattern pattern = warning.getBugPattern();
                 String match;
