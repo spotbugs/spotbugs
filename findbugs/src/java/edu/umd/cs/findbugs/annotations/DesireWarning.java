@@ -24,7 +24,7 @@ public @interface DesireWarning {
     public String value();
 
     /** Want a warning at this priority or higher */
-    public Priority priority() default Priority.LOW;
+    public Confidence priority() default Confidence.LOW;
     
     /** Expect a warning at least this scary */
     public int rank() default 20;

@@ -39,6 +39,7 @@ import java.lang.annotation.Target;
 @Documented
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.CLASS)
+@Deprecated
 public @interface OverrideMustInvoke {
     When value() default When.ANYTIME;
 

@@ -1,8 +1,8 @@
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
-import edu.umd.cs.findbugs.annotations.Priority;
+import edu.umd.cs.findbugs.annotations.Confidence;
 
 class AnnotationTest {
-    @CheckReturnValue(priority = Priority.HIGH)
+    @CheckReturnValue(confidence = Confidence.HIGH)
     int f() {
         return 42;
     }

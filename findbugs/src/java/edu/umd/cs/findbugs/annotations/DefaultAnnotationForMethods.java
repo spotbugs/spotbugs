@@ -43,8 +43,12 @@ import java.lang.annotation.Target;
 @Documented
 @Target({ ElementType.TYPE, ElementType.PACKAGE })
 @Retention(RetentionPolicy.CLASS)
+@Deprecated
 public @interface DefaultAnnotationForMethods {
     Class<? extends Annotation>[] value();
 
+    @Deprecated
     Priority priority() default Priority.MEDIUM;
+    
+    Confidence confidence() default Confidence.MEDIUM;
 }

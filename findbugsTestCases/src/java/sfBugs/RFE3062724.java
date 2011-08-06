@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.Priority;
+import edu.umd.cs.findbugs.annotations.Confidence;
 
 public class RFE3062724 {
 
@@ -15,12 +15,12 @@ public class RFE3062724 {
     }
 
     static class B extends A {
-        @ExpectWarning(value="SE_BAD_FIELD", priority=Priority.HIGH)
+        @ExpectWarning(value="SE_BAD_FIELD", confidence=Confidence.HIGH)
         RFE3062724 notSerializable;
     }
 
     static class C extends A {
-        @ExpectWarning(value="SE_BAD_FIELD", priority=Priority.HIGH)
+        @ExpectWarning(value="SE_BAD_FIELD", confidence=Confidence.HIGH)
         RFE3062724 notSerializable;
     }
 

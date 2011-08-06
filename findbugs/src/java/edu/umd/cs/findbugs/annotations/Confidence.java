@@ -19,11 +19,22 @@
 
 package edu.umd.cs.findbugs.annotations;
 
+import edu.umd.cs.findbugs.Priorities;
+
 /**
  * @author pugh
  */
-@Deprecated
-public enum When {
-    FIRST, ANYTIME, LAST
+public enum Confidence {
+    HIGH(Priorities.HIGH_PRIORITY), MEDIUM(Priorities.NORMAL_PRIORITY), LOW(Priorities.LOW_PRIORITY), IGNORE(
+            Priorities.IGNORE_PRIORITY);
 
+    private final int confidenceValue;
+
+    public int getConfidenceValue() {
+        return confidenceValue;
+    }
+
+    private Confidence(int p) {
+        confidenceValue = p;
+    }
 }

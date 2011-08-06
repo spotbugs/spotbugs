@@ -3,7 +3,8 @@ package bugIdeas;
 import com.google.common.base.Preconditions;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.Priority;
+import edu.umd.cs.findbugs.annotations.NoWarning;
+import edu.umd.cs.findbugs.annotations.Confidence;
 
 /** Bug pattern suggested by Curtis Light and Kevin Bourrillion.
  * Variations on test1 version occur 80+ times in Google's codebase. */
@@ -34,7 +35,8 @@ public class Ideas_2011_07_25 {
         return x;
     }
 
-    @ExpectWarning("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE") 
+    @NoWarning(value="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE",
+            confidence=Confidence.MEDIUM)
     public int test2(Object x) {
         int result = x.hashCode();
         Preconditions.checkNotNull(x, "x should be nonnull");
@@ -47,7 +49,7 @@ public class Ideas_2011_07_25 {
         Preconditions.checkNotNull(x, "x should be nonnull");
         return x.hashCode();
     }
-    @ExpectWarning("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
+    @NoWarning(value="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", confidence=Confidence.MEDIUM)
     public int test3a(Object x) {
        if (x == null) 
            return 42;

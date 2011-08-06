@@ -24,6 +24,7 @@ import edu.umd.cs.findbugs.Priorities;
 /**
  * @author pugh
  */
+@Deprecated
 public enum Priority {
     HIGH(Priorities.HIGH_PRIORITY), MEDIUM(Priorities.NORMAL_PRIORITY), LOW(Priorities.LOW_PRIORITY), IGNORE(
             Priorities.IGNORE_PRIORITY);

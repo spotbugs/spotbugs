@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
+import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.annotations.Priority;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
@@ -179,6 +180,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                 System.out.println("*** Found " + annotation + " annotation");
             }
             String expectedBugCodes = (String) expect.getValue("value");
+            EnumValue wantedConfidence = (EnumValue) expect.getValue("confidence");
             EnumValue wantedPriority = (EnumValue) expect.getValue("priority");
             Integer num = (Integer) expect.getValue("num");
             if (num == null)
@@ -187,9 +189,11 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
             if (rank == null)
                 rank = 20;
            
-            Priority minPriority = Priority.LOW;
-            if (wantedPriority != null)
-                minPriority = Priority.valueOf(wantedPriority.value);
+            int minPriority = Confidence.LOW.getConfidenceValue();
+            if (wantedConfidence != null)
+                minPriority = Confidence.valueOf(wantedConfidence.value).getConfidenceValue();
+            else if (wantedPriority != null)
+                minPriority = Priority.valueOf(wantedPriority.value).getPriorityValue();
 
             StringTokenizer tok = new StringTokenizer(expectedBugCodes, ",");
             while (tok.hasMoreTokens()) {
@@ -214,7 +218,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
     }
 
     private Collection<SourceLineAnnotation> countWarnings(MethodDescriptor methodDescriptor, String bugCode, 
-            Priority minPriority, int rank) {
+            int desiredPriority, int rank) {
         Collection<BugInstance> warnings = warningsByMethod.get(methodDescriptor);
         Collection<SourceLineAnnotation> matching = new HashSet<SourceLineAnnotation>();
         DetectorFactoryCollection i18n = DetectorFactoryCollection.instance();
@@ -227,7 +231,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 
         if (warnings != null) {
             for (BugInstance warning : warnings) {
-                if (warning.getPriority() > minPriority.getPriorityValue())
+                if (warning.getPriority() > desiredPriority)
                     continue;
                 if (warning.getBugRank() > rank)
                     continue;

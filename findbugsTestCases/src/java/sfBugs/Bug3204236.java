@@ -3,7 +3,7 @@ package sfBugs;
 import javax.imageio.IIOException;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.Priority;
+import edu.umd.cs.findbugs.annotations.Confidence;
 
 public class Bug3204236 {
 

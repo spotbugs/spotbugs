@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
-import edu.umd.cs.findbugs.annotations.Priority;
+import edu.umd.cs.findbugs.annotations.Confidence;
 
 public class Ideas_2010_10_04 {
 
@@ -43,7 +43,7 @@ public class Ideas_2010_10_04 {
         return false;
     }
 
-    @NoWarning(value = "EC_ARRAY_AND_NONARRAY", priority = Priority.MEDIUM)
+    @NoWarning(value = "EC_ARRAY_AND_NONARRAY", confidence = Confidence.MEDIUM)
     public static void main(String args[]) {
         int [] x = {1};
         int [] y = {1};

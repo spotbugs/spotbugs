@@ -39,6 +39,7 @@ import javax.annotation.meta.When;
 @Retention(RetentionPolicy.CLASS)
 @javax.annotation.Nonnull(when = When.MAYBE)
 @TypeQualifierNickname
+@Deprecated
 public @interface CheckForNull {
 
 }

@@ -24,7 +24,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import edu.umd.cs.findbugs.annotations.DesireWarning;
-import edu.umd.cs.findbugs.annotations.Priority;
+import edu.umd.cs.findbugs.annotations.Confidence;
 
 /**
  * @author pugh
@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.annotations.Priority;
 public class Bug3104124 {
 
     
-    @DesireWarning(value="OS_OPEN_STREAM_EXCEPTION_PATH", priority=Priority.MEDIUM)
+    @DesireWarning(value="OS_OPEN_STREAM_EXCEPTION_PATH", priority=Confidence.MEDIUM)
     public static String fileToString(String fileName) {
         StringBuffer output = new StringBuffer();
         try {

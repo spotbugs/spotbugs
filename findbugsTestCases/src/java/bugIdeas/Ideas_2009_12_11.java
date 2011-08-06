@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.DesireWarning;
-import edu.umd.cs.findbugs.annotations.Priority;
+import edu.umd.cs.findbugs.annotations.Confidence;
 
 public class Ideas_2009_12_11 {
 
@@ -28,7 +28,7 @@ public class Ideas_2009_12_11 {
         return Arrays.deepHashCode(data);
     }
 
-    @DesireNoWarning(value="EC_ARRAY_AND_NONARRAY", priority=Priority.MEDIUM)
+    @DesireNoWarning(value="EC_ARRAY_AND_NONARRAY", confidence=Confidence.MEDIUM)
     @DesireWarning("EC_INCOMPATIBLE_TYPES")
     public static void main(String args[]) {
         Ideas_2009_12_11 a = new Ideas_2009_12_11();

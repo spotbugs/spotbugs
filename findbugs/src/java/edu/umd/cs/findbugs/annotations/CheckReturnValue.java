@@ -33,9 +33,13 @@ import java.lang.annotation.Target;
 @Documented
 @Target({ ElementType.METHOD, ElementType.CONSTRUCTOR })
 @Retention(RetentionPolicy.CLASS)
+@Deprecated
 public @interface CheckReturnValue {
 
+    @Deprecated
     Priority priority() default Priority.MEDIUM;
+
+    Confidence confidence() default Confidence.MEDIUM;
 
     /**
      * A textual explanation of why the return value should be checked
