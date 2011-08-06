@@ -54,6 +54,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -395,7 +396,9 @@ public class SortedBugCollection implements BugCollection {
      *            the file to write to
      */
     public void writeXML(String fileName) throws IOException {
-        BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
+        OutputStream out = new FileOutputStream(fileName);
+        if (fileName.endsWith(".gz"))
+            out = new GZIPOutputStream(out);
         writeXML(out);
     }
 
@@ -406,7 +409,9 @@ public class SortedBugCollection implements BugCollection {
      *            the file to write to
      */
     public void writeXML(File file) throws IOException {
-        BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+        OutputStream out = new FileOutputStream(file);
+        if (file.getName().endsWith(".gz"))
+            out = new GZIPOutputStream(out);
         writeXML(out);
     }
 
