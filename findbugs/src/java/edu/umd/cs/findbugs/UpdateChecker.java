@@ -299,7 +299,7 @@ public class UpdateChecker {
                 prefs.putLong("uuid", uuid);
             }
             return Long.toString(uuid, 16);
-        } catch (RuntimeException e) {
+        } catch (Throwable e) {
             return Long.toString(42, 16);
         }
     }
