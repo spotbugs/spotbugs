@@ -61,3 +61,6 @@ syntax: regexp
 
 syntax: regexp
 ^eclipsePlugin/dist$
+
+syntax: regexp
+^findbugs/optionalPlugin/noUsageTracking\.jar$
