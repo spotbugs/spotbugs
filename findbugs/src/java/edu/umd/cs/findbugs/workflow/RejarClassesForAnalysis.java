@@ -468,7 +468,7 @@ public class RejarClassesForAnalysis {
                     ZipOutputStream out = null;
                     if (writeToAnalyzeOut) {
                         out = getZipOutputFile(name);
-                        out.putNextEntry(new ZipEntry(name));
+                        out.putNextEntry(new ZipEntry(ze));
                     }
 
                     if (writeToAuxilaryOut) {
@@ -477,7 +477,7 @@ public class RejarClassesForAnalysis {
                             auxilaryClassCount = 0;
                             advanceAuxilaryOut();
                         }
-                        auxilaryOut.putNextEntry(new ZipEntry(name));
+                        auxilaryOut.putNextEntry(new ZipEntry(ze));
                     }
 
                     copyEntry(zipInputFile, ze, writeToAnalyzeOut, out, writeToAuxilaryOut, auxilaryOut);
@@ -508,7 +508,7 @@ public class RejarClassesForAnalysis {
                         auxilaryClassCount = 0;
                         advanceAuxilaryOut();
                     }
-                    auxilaryOut.putNextEntry(new ZipEntry(name));
+                    auxilaryOut.putNextEntry(new ZipEntry(ze));
 
                     copyEntry(zipInputFile, ze, false, null, true, auxilaryOut);
                 }
