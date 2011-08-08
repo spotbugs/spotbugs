@@ -169,11 +169,10 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 returnSelf++;
             else {
                 XMethod xMethod = rv.getReturnValueOf();
-                if (okToIgnore.contains(xMethod))
+                if (xMethod == null || okToIgnore.contains(xMethod) || xMethod.getSignature().equals("()V") )
                     returnSelf++;
-                else if (xMethod != null && !xMethod.isAbstract() && xMethod.getClassDescriptor().equals(getClassDescriptor())) {
-                    if (xMethod.getName().equals("<init>") && !xMethod.getSignature().equals("()V")
-                            || doNotIgnoreHigh.contains(xMethod)) {
+                else if (!xMethod.isAbstract() && xMethod.getClassDescriptor().equals(getClassDescriptor())) {
+                    if (xMethod.getName().equals("<init>") || doNotIgnoreHigh.contains(xMethod)) {
                         returnOther++;
 //                        System.out.println("  calls " + xMethod);
 //                        System.out.println("  at " + MethodAnnotation.fromXMethod(xMethod).getSourceLines());
