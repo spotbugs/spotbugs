@@ -48,6 +48,8 @@ import org.apache.bcel.classfile.StackMapTable;
 import org.apache.bcel.classfile.StackMapTableEntry;
 
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -56,6 +58,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
@@ -323,6 +326,17 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
         return true;
     }
 
+    boolean visitMethodsInCallOrder;
+    
+    
+   protected boolean isVisitMethodsInCallOrder() {
+        return visitMethodsInCallOrder;
+    }
+
+    protected void setVisitMethodsInCallOrder(boolean visitMethodsInCallOrder) {
+        this.visitMethodsInCallOrder = visitMethodsInCallOrder;
+    }
+
     // General classes
     @Override
     public void visitJavaClass(JavaClass obj) {
@@ -334,8 +348,26 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
             Attribute[] attributes = obj.getAttributes();
             for (Field field : fields)
                 doVisitField(field);
-            for (Method method1 : methods)
-                doVisitMethod(method1);
+            boolean didInCallOrder = false;
+                       
+            if (visitMethodsInCallOrder) {
+                try {
+                    IAnalysisCache analysisCache = Global.getAnalysisCache();
+
+                    ClassDescriptor c = DescriptorFactory.createClassDescriptor(obj);
+                    
+                    ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, c);
+                    didInCallOrder = true;
+                    for (Method m : classContext.getMethodsInCallOrder()) 
+                        doVisitMethod(m);
+
+                } catch (CheckedAnalysisException e) {
+                   AnalysisContext.logError("Error trying to visit methods in order", e);
+                }
+            }
+            if (!didInCallOrder)
+                for (Method m : methods)
+                    doVisitMethod(m);
             for (Attribute attribute : attributes)
                 attribute.accept(this);
             visitAfter(obj);
