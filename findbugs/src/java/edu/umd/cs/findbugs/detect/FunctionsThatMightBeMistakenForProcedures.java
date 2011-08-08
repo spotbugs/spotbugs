@@ -28,6 +28,7 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -35,6 +36,7 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -60,32 +62,42 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
     public void visitAfter(JavaClass obj) {
         mReturnSelf.clear();
         mReturnOther.clear();
+        methodsSeen.clear();
+        
     }
     
     
     HashSet<XMethod> mReturnSelf = new HashSet<XMethod>();
+    HashSet<XMethod> methodsSeen = new HashSet<XMethod>();
+    
     HashSet<XMethod> mReturnOther = new HashSet<XMethod>();
     
     int returnSelf, returnOther, returnNew, returnUnknown;
     int updates;
     @Override
     public void visit(Code code) {
+         
 
+        methodsSeen.add(getXMethod());
         if (getMethod().isStatic())
             return;
         String signature = getMethodSig();
         SignatureParser parser = new SignatureParser(signature);
-        for (int i = 0; i < parser.getNumParameters(); i++) {
-            String p = ClassName.fromFieldSignature(parser.getParameter(i));
-            if (getClassName().equals(p))
-                return;
-        }
+       
         String returnType = parser.getReturnTypeSignature();
         @SlashedClassName
         String r = ClassName.fromFieldSignature(returnType);
         if (r == null || !r.equals(getClassName()))
             return;
-
+//        System.out.println("Checking " + getFullyQualifiedMethodName());
+        boolean funky = false;
+        for (int i = 0; i < parser.getNumParameters(); i++) {
+            String p = ClassName.fromFieldSignature(parser.getParameter(i));
+            if (getClassName().equals(p)) {
+                funky = true;
+            }
+              
+        }
         //
         XMethod m = getXMethod();
         String sourceSig = m.getSourceSignature();
@@ -93,8 +105,9 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
             GenericSignatureParser sig = new GenericSignatureParser(sourceSig);
             String genericReturnValue = sig.getReturnTypeSignature();
             Type t = GenericUtilities.getType(genericReturnValue);
-            if (t != null)
-                return;
+            if (t instanceof GenericObjectType) {
+                funky = true;
+            }
 
             if (false) {
                 XClass c = getXClass();
@@ -106,18 +119,20 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
 //        System.out.println(getFullyQualifiedMethodName());
         returnSelf = returnOther = updates = returnNew = returnUnknown = 0;
+//        System.out.println(" investingating");
+        
         super.visit(code); // make callbacks to sawOpcode for all opcodes
-
+//        System.out.printf("  %3d %3d %3d %3d%n", returnSelf, updates, returnOther, returnNew);
+        
         if (returnSelf > 0 && returnOther == 0) {
             mReturnSelf.add(getXMethod());
+        } else if (funky && returnOther > returnNew) {
+            mReturnSelf.add(getXMethod());
         } else if (returnOther > 0 && returnOther >= returnSelf) {
+        
             int priority = HIGH_PRIORITY;
             if (returnSelf > 0 || updates > 0)
                 priority++;
-            String name = getMethodName();
-            // if (name.equals("clone") || name.startsWith("get")
-            // || name.startsWith("merge"))
-            // priority++;
             if (returnUnknown > 0)
                 priority++;
             if (returnNew > 0 && priority > NORMAL_PRIORITY)
@@ -127,11 +142,13 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
             if (priority <= HIGH_PRIORITY)
                 mReturnOther.add(getXMethod());
             if (priority <= NORMAL_PRIORITY) {
+//                System.out.printf("  adding %d %s%n",priority, MethodAnnotation.fromVisitedMethod(this).getSourceLines());
+                               
                 XFactory xFactory = AnalysisContext.currentXFactory();
                 xFactory.addFunctionThatMightBeMistakenForProcedures(getMethodDescriptor());
             }
 
-            if (false)
+            if (true)
                 bugReporter.reportBug(new BugInstance("TESTING", priority).addClassAndMethod(this).addString(
                         String.format("%3d %3d %5d %3d", returnOther, returnSelf, returnNew, updates)));
 
@@ -156,7 +173,14 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                         && (getPrevOpcode(1) != INVOKESPECIAL 
                                 || xMethod.getName().equals("<init>") 
                                     && !xMethod.getSignature().equals("()V"))) {
+                    if (!methodsSeen.contains(xMethod)) {
+//                        System.out.println("Not seen: " + xMethod);
+                        return;
+                    }
+                   
                     returnOther++;
+//                    System.out.println("  calls " + xMethod);
+//                    System.out.println("  at " + MethodAnnotation.fromXMethod(xMethod).getSourceLines());
                     if (xMethod.getName().equals("<init>")
                             || mReturnOther.contains(xMethod))
                         returnNew++;
