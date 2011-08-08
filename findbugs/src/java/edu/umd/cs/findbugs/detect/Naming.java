@@ -429,12 +429,7 @@ public class Naming extends PreorderVisitor implements Detector {
 
     private final static Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
 
-    private static boolean isInnerClass(JavaClass obj) {
-        for (Field f : obj.getFields())
-            if (f.getName().startsWith("this$"))
-                return true;
-        return false;
-    }
+  
 
     private static @CheckForNull
     String getSignatureOfOuterClass(JavaClass obj) {
