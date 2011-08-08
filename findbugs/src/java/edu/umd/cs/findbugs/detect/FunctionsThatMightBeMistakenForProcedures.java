@@ -60,17 +60,17 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
     }
     @Override
     public void visitAfter(JavaClass obj) {
-        mReturnSelf.clear();
-        mReturnOther.clear();
+        okToIgnore.clear();
+        doNotIgnore.clear();
         methodsSeen.clear();
         
     }
     
     
-    HashSet<XMethod> mReturnSelf = new HashSet<XMethod>();
+    HashSet<XMethod> okToIgnore = new HashSet<XMethod>();
     HashSet<XMethod> methodsSeen = new HashSet<XMethod>();
     
-    HashSet<XMethod> mReturnOther = new HashSet<XMethod>();
+    HashSet<XMethod> doNotIgnore = new HashSet<XMethod>();
     
     int returnSelf, returnOther, returnNew, returnUnknown;
     int updates;
@@ -125,9 +125,9 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 //        System.out.printf("  %3d %3d %3d %3d%n", returnSelf, updates, returnOther, returnNew);
         
         if (returnSelf > 0 && returnOther == 0) {
-            mReturnSelf.add(getXMethod());
+            okToIgnore.add(getXMethod());
         } else if (funky && returnOther > returnNew) {
-            mReturnSelf.add(getXMethod());
+            okToIgnore.add(getXMethod());
         } else if (returnOther > 0 && returnOther >= returnSelf) {
         
             int priority = HIGH_PRIORITY;
@@ -140,7 +140,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
             if (updates > 0)
                 priority = LOW_PRIORITY;
             if (priority <= HIGH_PRIORITY)
-                mReturnOther.add(getXMethod());
+                doNotIgnore.add(getXMethod());
             if (priority <= NORMAL_PRIORITY) {
 //                System.out.printf("  adding %d %s%n",priority, MethodAnnotation.fromVisitedMethod(this).getSourceLines());
                                
@@ -148,7 +148,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 xFactory.addFunctionThatMightBeMistakenForProcedures(getMethodDescriptor());
             }
 
-            if (true)
+            if (false)
                 bugReporter.reportBug(new BugInstance("TESTING", priority).addClassAndMethod(this).addString(
                         String.format("%3d %3d %5d %3d", returnOther, returnSelf, returnNew, updates)));
 
@@ -162,11 +162,11 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
         if (seen == ARETURN) {
             OpcodeStack.Item rv = stack.getStackItem(0);
             if (rv.isNull()) return;
-            if (rv.getRegisterNumber() == 0 && rv.isInitialParameter())
+            if (rv.isInitialParameter())
                 returnSelf++;
             else {
                 XMethod xMethod = rv.getReturnValueOf();
-                if (mReturnSelf.contains(xMethod))
+                if (okToIgnore.contains(xMethod))
                     returnSelf++;
                 else if (xMethod != null && !xMethod.isAbstract() 
                         && xMethod.getClassDescriptor().equals(getClassDescriptor())
@@ -182,7 +182,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 //                    System.out.println("  calls " + xMethod);
 //                    System.out.println("  at " + MethodAnnotation.fromXMethod(xMethod).getSourceLines());
                     if (xMethod.getName().equals("<init>")
-                            || mReturnOther.contains(xMethod))
+                            || doNotIgnore.contains(xMethod))
                         returnNew++;
                 } else {
                     returnUnknown++;
