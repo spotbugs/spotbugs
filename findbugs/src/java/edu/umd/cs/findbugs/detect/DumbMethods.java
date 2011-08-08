@@ -313,14 +313,26 @@ public class DumbMethods extends OpcodeStackDetector {
              && getNameConstantOperand().equals("checkNotNull")) {
                       int args = PreorderVisitor.getNumberArguments(getSigConstantOperand());
 
-                     OpcodeStack.Item item =  stack.getStackItem(args-1);
-                     Object o = item.getConstant();
-                     if (o instanceof String)
-                         accumulator.accumulateBug(new BugInstance(this, args > 1 ? "DMI_ARGUMENTS_WRONG_ORDER" : "DMI_DOH", NORMAL_PRIORITY)
-                         .addClassAndMethod(this).addCalledMethod(this)
-                         .addString((String)o).describe(StringAnnotation.STRING_CONSTANT_ROLE), 
-                         this);
-                 
+            OpcodeStack.Item item = stack.getStackItem(args - 1);
+            Object o = item.getConstant();
+            if (o instanceof String) {
+
+                OpcodeStack.Item secondArgument = null;
+                String bugPattern = "DMI_DOH";
+                if (args > 1) {
+                    secondArgument = stack.getStackItem(args - 2);
+                    Object o2 = item.getConstant();
+                    if (!(o2 instanceof String)) {
+                        bugPattern = "DMI_ARGUMENTS_WRONG_ORDER";
+                    }
+                }
+
+                BugInstance bug = new BugInstance(this, bugPattern, NORMAL_PRIORITY).addClassAndMethod(this)
+                        .addCalledMethod(this).addString((String) o).describe(StringAnnotation.STRING_CONSTANT_ROLE)
+                        .addValueSource(secondArgument, this);
+
+                accumulator.accumulateBug(bug, this);
+            }
 
             
         }
