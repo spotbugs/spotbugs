@@ -175,7 +175,8 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
     public void sawOpcode(int seen) {
         if (getMethod().isStatic() && (seen == INVOKEVIRTUAL || seen == INVOKESPECIAL) ){
             String name = getNameConstantOperand();
-            if (name.startsWith("set") || name.startsWith("update")) {
+            String sig = getSigConstantOperand();
+            if ((name.startsWith("set") || name.startsWith("update")) || sig.endsWith("()V")) {
                 Item invokedOn = stack.getItemMethodInvokedOn(this);
                 if (invokedOn.isInitialParameter()
                         && invokedOn.getRegisterNumber() == 0)
