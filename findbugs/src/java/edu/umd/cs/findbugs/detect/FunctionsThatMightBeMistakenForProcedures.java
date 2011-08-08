@@ -49,7 +49,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetector implements NonReportingDetector {
 
     final BugReporter bugReporter;
-    
+
     final static boolean REPORT_INFERRED_METHODS = SystemProperties.getBoolean("mrc.inferred.report");
 
     public FunctionsThatMightBeMistakenForProcedures(BugReporter bugReporter) {
@@ -81,7 +81,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
     int returnSelf, returnOther, returnNew, returnUnknown;
 
     int updates;
-    
+
     BugInstance inferredMethod;
 
     @Override
@@ -96,7 +96,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
         String r = ClassName.fromFieldSignature(returnType);
         if (r == null || !r.equals(getClassName()))
             return;
-//        System.out.println("Checking " + getFullyQualifiedMethodName());
+        // System.out.println("Checking " + getFullyQualifiedMethodName());
         boolean funky = false;
         for (int i = 0; i < parser.getNumParameters(); i++) {
             String p = ClassName.fromFieldSignature(parser.getParameter(i));
@@ -126,12 +126,13 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
         // System.out.println(getFullyQualifiedMethodName());
         returnSelf = returnOther = updates = returnNew = returnUnknown = 0;
-//        System.out.println(" investingating");
+        // System.out.println(" investingating");
 
         if (REPORT_INFERRED_METHODS)
-           inferredMethod = new BugInstance("TESTING", NORMAL_PRIORITY).addClassAndMethod(this);
+            inferredMethod = new BugInstance("TESTING", NORMAL_PRIORITY).addClassAndMethod(this);
         super.visit(code); // make callbacks to sawOpcode for all opcodes
-//        System.out.printf("  %3d %3d %3d %3d%n", returnSelf, updates, returnOther, returnNew);
+        // System.out.printf("  %3d %3d %3d %3d%n", returnSelf, updates,
+        // returnOther, returnNew);
 
         if (returnSelf > 0 && returnOther == 0) {
             okToIgnore.add(m);
@@ -151,7 +152,8 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
             if (priority <= HIGH_PRIORITY)
                 doNotIgnoreHigh.add(m);
             if (priority <= NORMAL_PRIORITY) {
-//                System.out.printf("  adding %d %s%n", priority, MethodAnnotation.fromVisitedMethod(this).getSourceLines());
+                // System.out.printf("  adding %d %s%n", priority,
+                // MethodAnnotation.fromVisitedMethod(this).getSourceLines());
                 doNotIgnore.add(m);
                 if (!m.isStatic()) {
                     XFactory xFactory = AnalysisContext.currentXFactory();
@@ -161,8 +163,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
             if (REPORT_INFERRED_METHODS) {
                 inferredMethod.setPriority(priority);
-                inferredMethod.addString(
-                        String.format("%3d %3d %5d %3d", returnOther, returnSelf, returnNew, updates));
+                inferredMethod.addString(String.format("%3d %3d %5d %3d", returnOther, returnSelf, returnNew, updates));
                 bugReporter.reportBug(inferredMethod);
             }
             inferredMethod = null;
@@ -173,62 +174,75 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
     @Override
     public void sawOpcode(int seen) {
-        if (getMethod().isStatic() && (seen == INVOKEVIRTUAL || seen == INVOKESPECIAL) ){
+        switch (seen) {
+        case INVOKEVIRTUAL:
+        case INVOKESPECIAL:
+            if (getMethod().isStatic())
+                break;
+
             String name = getNameConstantOperand();
             String sig = getSigConstantOperand();
             if ((name.startsWith("set") || name.startsWith("update")) || sig.endsWith("()V")) {
                 Item invokedOn = stack.getItemMethodInvokedOn(this);
-                if (invokedOn.isInitialParameter()
-                        && invokedOn.getRegisterNumber() == 0)
+                if (invokedOn.isInitialParameter() && invokedOn.getRegisterNumber() == 0)
                     updates++;
                 if (REPORT_INFERRED_METHODS)
                     inferredMethod.addCalledMethod(this);
-                    
             }
-               
-        }
+            break;
 
-        if (seen == ARETURN) {
+        case ARETURN: {
             OpcodeStack.Item rv = stack.getStackItem(0);
             if (rv.isNull())
-                return;
-            if (rv.isInitialParameter())
+                break;
+            if (rv.isInitialParameter()) {
                 returnSelf++;
-            else {
-                XMethod xMethod = rv.getReturnValueOf();
-                if (xMethod == null) {
-                    returnSelf++;
-                    return;
-                } 
-                if (REPORT_INFERRED_METHODS)
-                    inferredMethod.addCalledMethod(xMethod);
-                if (okToIgnore.contains(xMethod) || xMethod.getSignature().equals("()V") )
-                    returnSelf++;
-                else if (!xMethod.isAbstract() && xMethod.getClassDescriptor().equals(getClassDescriptor())) {
-                    if (xMethod.getName().equals("<init>") || doNotIgnoreHigh.contains(xMethod)) {
-                        returnOther++;
-//                        System.out.println("  calls " + xMethod);
-//                        System.out.println("  at " + MethodAnnotation.fromXMethod(xMethod).getSourceLines());
-                        if (xMethod.getName().equals("<init>") || doNotIgnore.contains(xMethod))
-                            returnNew++;
-                    } else if (doNotIgnore.contains(xMethod)) {
-                        returnOther++;
-//                        System.out.println("  calls " + xMethod);
-//                        System.out.println("  at " + MethodAnnotation.fromXMethod(xMethod).getSourceLines());
-
-                    }
-                } else {
-                    returnUnknown++;
-                }
+                break;
             }
-        } else if (seen == PUTFIELD) {
+
+            XMethod xMethod = rv.getReturnValueOf();
+            if (xMethod == null) {
+                returnSelf++;
+                break;
+            }
+            if (REPORT_INFERRED_METHODS)
+                inferredMethod.addCalledMethod(xMethod);
+            if (okToIgnore.contains(xMethod) || xMethod.getSignature().equals("()V")) {
+                returnSelf++;
+                break;
+            }
+            if (xMethod.isAbstract() && !xMethod.getClassDescriptor().equals(getClassDescriptor())) {
+                returnUnknown++;
+                break;
+            }
+            if (xMethod.getName().equals("<init>") || doNotIgnoreHigh.contains(xMethod)) {
+                returnOther++;
+                // System.out.println("  calls " + xMethod);
+                // System.out.println("  at " +
+                // MethodAnnotation.fromXMethod(xMethod).getSourceLines());
+                if (xMethod.getName().equals("<init>") || doNotIgnore.contains(xMethod))
+                    returnNew++;
+            } else if (doNotIgnore.contains(xMethod)) {
+                returnOther++;
+                // System.out.println("  calls " + xMethod);
+                // System.out.println("  at " +
+                // MethodAnnotation.fromXMethod(xMethod).getSourceLines());
+
+            } else
+                returnUnknown++;
+
+        }
+        break;
+        case PUTFIELD: {
+
             OpcodeStack.Item rv = stack.getStackItem(1);
             if (rv.getRegisterNumber() == 0 && rv.isInitialParameter()) {
                 if (REPORT_INFERRED_METHODS)
                     inferredMethod.addReferencedField(this);
-               updates++;
+                updates++;
+
             }
         }
+        }
     }
-
 }
