@@ -64,7 +64,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
     HashSet<XMethod> mReturnSelf = new HashSet<XMethod>();
     HashSet<XMethod> mReturnOther = new HashSet<XMethod>();
    
-    int returnSelf, returnOther, returnNew;
+    int returnSelf, returnOther, returnNew, returnUnknown;
     int updates;
     @Override
     public void visit(Code code) {
@@ -78,7 +78,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
         
         if (r != null && r.equals(getClassName())) {
 //            System.out.println(getFullyQualifiedMethodName());
-            returnSelf = returnOther = updates = returnNew = 0;
+            returnSelf = returnOther = updates = returnNew = returnUnknown = 0;
             super.visit(code); // make callbacks to sawOpcode for all opcodes
             
             if (returnSelf > 0 && returnOther == 0) {
@@ -88,7 +88,10 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 if (returnSelf > 0 || updates > 0)
                     priority++;
                 String name = getMethodName();
-                if (name.equals("clone") || name.startsWith("get"))
+//                if (name.equals("clone") || name.startsWith("get")
+//                        || name.startsWith("merge"))
+//                    priority++;
+                if (returnUnknown > 0)
                     priority++;
                 if (returnNew > 0 && priority > NORMAL_PRIORITY)
                     priority = NORMAL_PRIORITY;
@@ -124,11 +127,16 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 XMethod xMethod = rv.getReturnValueOf();
                 if (mReturnSelf.contains(xMethod))
                     returnSelf++;
-                else {
+                else if (xMethod != null && !xMethod.isAbstract() 
+                        && xMethod.getClassDescriptor().equals(getClassDescriptor())
+                        && (getPrevOpcode(1) != INVOKESPECIAL 
+                                || xMethod.getName().equals("<init>"))) {
                     returnOther++;
-                    if (xMethod != null && (xMethod.getName().equals("<init>")
-                            || mReturnOther.contains(xMethod)))
+                    if (xMethod.getName().equals("<init>")
+                            || mReturnOther.contains(xMethod))
                         returnNew++;
+                } else {
+                    returnUnknown++;
                 }
             }
         } else if (seen == PUTFIELD) {
