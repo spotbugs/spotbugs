@@ -266,42 +266,6 @@ public class ClassContext {
         return methodsInCallOrder;
     }
 
-    @CheckForNull
-    List<Method> methodsInCallOrder = null;
-
-    public @NonNull
-    List<Method> getMethodsInCallOrder2() {
-        if (methodsInCallOrder != null)
-            return methodsInCallOrder;
-        List<Method> result = computeMethodsInCallOrder();
-
-        methodsInCallOrder = result;
-
-        return methodsInCallOrder;
-    }
-
-    /**
-     * @return
-     */
-    private List<Method> computeMethodsInCallOrder() {
-        List<Method> methodList = Arrays.asList(getJavaClass().getMethods());
-        final Map<String, Method> map = new HashMap<String, Method>();
-
-        for (Method m : methodList) {
-            map.put(m.getName() + m.getSignature() + m.isStatic(), m);
-        }
-        final MultiMap<Method, Method> multiMap = SelfMethodCalls.getSelfCalls(getClassDescriptor(), map);
-        OutEdges<Method> edges1 = new OutEdges<Method>() {
-
-            public Collection<Method> getOutEdges(Method method) {
-                return multiMap.get(method);
-            }
-        };
-        List<Method> result = TopologicalSort.sortByCallGraph(methodList, edges1);
-        assert methodList.size() == result.size();
-        return result;
-    }
-
     /**
      * Get the AnalysisContext.
      */
