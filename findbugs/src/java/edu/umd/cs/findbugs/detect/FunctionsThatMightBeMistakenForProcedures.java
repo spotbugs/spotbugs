@@ -129,7 +129,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 //        System.out.println(" investingating");
 
         if (REPORT_INFERRED_METHODS)
-           inferredMethod = new BugInstance("TESTING", NORMAL_PRIORITY);
+           inferredMethod = new BugInstance("TESTING", NORMAL_PRIORITY).addClassAndMethod(this);
         super.visit(code); // make callbacks to sawOpcode for all opcodes
 //        System.out.printf("  %3d %3d %3d %3d%n", returnSelf, updates, returnOther, returnNew);
 
