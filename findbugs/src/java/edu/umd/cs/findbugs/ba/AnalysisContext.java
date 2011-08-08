@@ -26,6 +26,7 @@ import java.util.BitSet;
 import java.util.Collection;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import net.jcip.annotations.NotThreadSafe;
 
@@ -235,7 +236,9 @@ public abstract class AnalysisContext {
         return unreadFieldsData;
     }
 
-    public UnreadFields getUnreadFields() {
+    public @Nonnull UnreadFields getUnreadFields() {
+        if (unreadFieldsAvailable())
+            throw new IllegalStateException();
         return unreadFields;
     }
 
