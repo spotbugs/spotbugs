@@ -24,6 +24,7 @@ import java.util.Iterator;
 
 import org.dom4j.DocumentException;
 
+import edu.umd.cs.findbugs.AnalysisError;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
@@ -99,6 +100,9 @@ public class UnionResults {
         Project project = result.getProject();
         Project project2 = newCollection.getProject();
         project.add(project2);
+        
+        for(AnalysisError error : newCollection.getErrors())
+            result.addError(error);
 
         return result;
     }
@@ -117,6 +121,7 @@ public class UnionResults {
                 SortedBugCollection more = new SortedBugCollection();
 
                 more.readXML(argv[i]);
+                
                 if (results != null) {
                     results = union(results, more);
                 } else {
