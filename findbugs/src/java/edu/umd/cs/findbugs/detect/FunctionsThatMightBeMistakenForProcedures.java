@@ -150,7 +150,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 }
             }
 
-            if (true)
+            if (false)
                 bugReporter.reportBug(new BugInstance("TESTING", priority).addClassAndMethod(this).addString(
                         String.format("%3d %3d %5d %3d", returnOther, returnSelf, returnNew, updates)));
 
