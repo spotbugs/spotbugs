@@ -1,7 +1,9 @@
 package gcUnrelatedTypes;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Objects;
@@ -66,6 +68,17 @@ public class Guava {
         mm.remove(1, 2);
         mm.removeAll(1);
     }
+    
+    @ExpectWarning("GC")
+    public static void testMultimap3( Multimap<Long, Long> counts, int minSize) {
+        List<Long> idsToRemove = new ArrayList<Long>();
+        for (Long id : counts.keySet()) {
+          if (counts.get(id).size() < minSize) 
+            idsToRemove.add(id);
+          }
+          counts.removeAll(idsToRemove);  
+    }
+
 
     @NoWarning("GC")
     public static void testMultimapOK(Multimap<String, Integer> mm) {
@@ -84,6 +97,8 @@ public class Guava {
         mm.remove("x", p);
         mm.removeAll("x");
     }
+    
+ 
 
     @ExpectWarning(value="GC", num=4)
     public static void testMultiset(Multiset<String> ms) {

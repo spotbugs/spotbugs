@@ -1,6 +1,7 @@
 package bugIdeas;
 
 import edu.umd.cs.findbugs.annotations.DesireWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2011_08_07 {
 
@@ -25,6 +26,42 @@ public class Ideas_2011_08_07 {
         System.out.println(x);
     }
 
+    static class Foo<T> {
+
+        final int x;
+
+        Foo(int x) {
+            this.x = x;
+        }
+
+        Foo<String> plusOne() {
+            return new Foo<String>(x + 1);
+        }
+        Foo<T> plusTwo() {
+            return new Foo<T>(x + 2);
+        }
+
+        @NoWarning("")
+        public static void ignoredReturnValueOK() {
+            Foo x = new Foo(42);
+            x.plusOne();
+            System.out.println(x);
+        }
+        
+        @DesireWarning("")
+        public static void ignoredReturnValue() {
+            Foo x = new Foo(42);
+            x.plusTwo();
+            System.out.println(x);
+        }
+        
+        
+        public String toString() {
+            return Integer.toString(x);
+        }
+
+        
+    }
 //    @DesireWarning("")
 //    public static boolean test(@SlashedClassName String x, @DottedClassName String y) {
 //        return x.equals(y);
