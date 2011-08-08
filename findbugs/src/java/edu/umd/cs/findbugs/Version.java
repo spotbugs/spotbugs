@@ -210,6 +210,7 @@ public class Version {
             System.out.println("eclipse.ui.version=" + COMPUTED_ECLIPSE_UI_VERSION);
             System.out.println("findbugs.website=" + WEBSITE);
             System.out.println("findbugs.downloads.website=" + DOWNLOADS_WEBSITE);
+            System.out.println("findbugs.svn.revision=" + SVN_REVISION);
         } else if (arg.equals("-plugins")) {
             DetectorFactoryCollection.instance();
             for(Plugin p : Plugin.getAllPlugins()) {
