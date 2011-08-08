@@ -25,6 +25,45 @@ public class Ideas_2011_08_07 {
         x.plusOne();
         System.out.println(x);
     }
+    
+    static class Bar{
+        final int x;
+
+
+        Bar() {
+             x = 0;
+        }
+        Bar(int x) {
+            this.x = x;
+        }
+
+
+        Bar plusOne() {
+            return new Bar(x + 1);
+        }
+        Bar print() {
+            System.out.println("x is " + x);
+            return new Bar();
+          
+        }
+
+        @NoWarning("")
+        public static void ignoredReturnValueOK() {
+            Bar x = new Bar(42);
+            x.plusOne();
+            System.out.println(x);
+        }
+        
+        @DesireWarning("")
+        public static void ignoredReturnValue() {
+            Bar x = new Bar(42);
+            x.print();
+            System.out.println(x);
+        }
+        
+        
+        
+    }
 
     static class Foo<T> {
 
