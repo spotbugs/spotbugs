@@ -323,6 +323,15 @@ by other detectors.</p>
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures">
+    <Details>
+<![CDATA[
+<p> Looks for immutable classes with methods that return new instances of that class, 
+where people might accidently think those methods mutate the instance they are invoked on.
+</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod">
     <Details>
 <![CDATA[
@@ -4538,6 +4547,28 @@ to use that non-null value. Calling readLine again will give you a different lin
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="RV_RETURN_VALUE_IGNORED_INFERRED">
+    <ShortDescription>Method ignores return value, is this OK?</ShortDescription>
+    <LongDescription>return value of {2.givenClass} ignored, is this OK in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>This code calls a method and ignores the return value. The return value
+is the same type as the type the method is invoked on, and from our analysis it looks
+like the return value might be important (e.g., like ignoring the
+return value of <code>String.toLowerCase()</code>). 
+</p>
+<p>We are guessing that ignoring the return value might be a bad idea just from 
+a simple analysis of the body of the method. You can use a @CheckReturnValue annotation
+to instruct FindBugs as to whether ignoring the return value of this method
+is important or acceptable.
+</p>
+<p>Please investigate this closely to decide whether it is OK to ignore the return value.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="RV_RETURN_VALUE_IGNORED">
     <ShortDescription>Method ignores return value</ShortDescription>
     <LongDescription>return value of {2.givenClass} ignored in {1}</LongDescription>
@@ -4566,6 +4597,8 @@ dateString = dateString.trim();
 ]]>
     </Details>
   </BugPattern>
+
+
   <BugPattern type="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE">
     <ShortDescription>Method ignores exceptional return value</ShortDescription>
     <LongDescription>exceptional return value of {2} ignored in {1}</LongDescription>

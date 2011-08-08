@@ -76,6 +76,8 @@ public class XFactory {
     private Set<XField> emptyArrays = new HashSet<XField>();
 
     private Set<String> calledMethodSignatures = new HashSet<String>();
+    
+    private Set<MethodDescriptor> functionsThatMightBeMistakenForProcedures = new HashSet<MethodDescriptor>();
 
     public void canonicalizeAll() {
         DescriptorFactory descriptorFactory = DescriptorFactory.instance();
@@ -131,7 +133,14 @@ public class XFactory {
     public Set<XMethod> getCalledMethods() {
         return calledMethods;
     }
+    
+    public void addFunctionThatMightBeMistakenForProcedures(MethodDescriptor m) {
+        functionsThatMightBeMistakenForProcedures.add(m);
+    }
 
+    public boolean isFunctionshatMightBeMistakenForProcedures(MethodDescriptor m) {
+        return functionsThatMightBeMistakenForProcedures.contains(m);
+    }
     public Set<ClassDescriptor> getReflectiveClasses() {
         return reflectiveClasses;
     }

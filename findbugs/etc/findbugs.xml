@@ -104,9 +104,12 @@
                               <LaterCategory name="reporting" spanplugins="true"/>
                     </SplitPass>
                     <SplitPass>
-                              <Earlier
-                                        class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical"/>
+                              <Earlier class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical"/>
                               <Later class="edu.umd.cs.findbugs.detect.FindHEmismatch"/>
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures"/>
+                              <Later class="edu.umd.cs.findbugs.detect.MethodReturnCheck"/>
                     </SplitPass>
                     <WithinPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats"/>
@@ -116,9 +119,7 @@
                     </WithinPass>
                     <WithinPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats"/>
-                              <Later
-                                        class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical"
-                              />
+                              <Later class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" />
                     </WithinPass>
                     <WithinPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
@@ -277,6 +278,8 @@
                               <Later class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings"/>
                     </SplitPass>
           </OrderingConstraints>
+          <Detector class="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" speed="fast"
+                    reports="" hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" speed="fast"
                     reports="" hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteAnnotationRetention" speed="fast"
@@ -524,7 +527,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue" speed="fast"
                     reports="RV_CHECK_FOR_POSITIVE_INDEXOF,RV_DONT_JUST_NULL_CHECK_READLINE"/>
           <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck" speed="fast"
-                    reports="RV_RETURN_VALUE_IGNORED,RV_RETURN_VALUE_IGNORED_BAD_PRACTICE,RV_EXCEPTION_NOT_THROWN,RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE"/>
+                    reports="RV_RETURN_VALUE_IGNORED,RV_RETURN_VALUE_IGNORED_BAD_PRACTICE,RV_EXCEPTION_NOT_THROWN,RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE,RV_RETURN_VALUE_IGNORED_INFERRED"/>
           <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble" speed="fast"
                     reports="ICAST_IDIV_CAST_TO_DOUBLE,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL,ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindBadCast2" speed="fast"
@@ -888,6 +891,7 @@
           <BugPattern abbrev="Wa" type="WA_AWAIT_NOT_IN_LOOP" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="No" type="NO_NOTIFY_NOT_NOTIFYALL" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED" category="CORRECTNESS"/>
+          <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED_INFERRED" category="STYLE"/>
           <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"
                     category="BAD_PRACTICE" cweid="253"/>
           <BugPattern abbrev="RV" type="RV_EXCEPTION_NOT_THROWN" category="CORRECTNESS"/>

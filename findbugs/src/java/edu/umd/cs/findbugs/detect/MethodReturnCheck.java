@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.UseAnnotationDatabase;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
+import edu.umd.cs.findbugs.annotations.Priority;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CheckReturnAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.CheckReturnValueAnnotation;
@@ -207,7 +208,14 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
     private void sawMethodCallWithIgnoredReturnValue() {
         {
             CheckReturnValueAnnotation annotation = checkReturnAnnotationDatabase.getResolvedAnnotation(callSeen, false);
-            if (annotation != null && annotation != CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE) {
+            if (annotation == null) {
+                XFactory xFactory = AnalysisContext.currentXFactory();
+                
+                if (xFactory.isFunctionshatMightBeMistakenForProcedures(callSeen.getMethodDescriptor())) {
+                    annotation = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_INFERRED;
+                }
+            }
+            if (annotation != null && annotation.getPriority() <= LOW_PRIORITY) {
                 int popPC = getPC();
                 if (DEBUG)
                     System.out.println("Saw POP @" + popPC);
