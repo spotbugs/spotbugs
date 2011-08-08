@@ -21,15 +21,15 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.HashSet;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
@@ -56,9 +56,19 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
         this.bugReporter = bugReporter;
         setVisitMethodsInCallOrder(true);
     }
+    
+    boolean isInnerClass;
 
+    @Override
     public void visit(JavaClass obj) {
+        isInnerClass = false;
 
+    }
+    
+    @Override
+    public void visit(Field obj) {
+        if (obj.getName().equals("this$0"))
+            isInnerClass = true;
     }
 
     @Override
@@ -82,7 +92,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
     int updates;
 
-    BugInstance inferredMethod;
+    @CheckForNull BugInstance inferredMethod;
 
     @Override
     public void visit(Code code) {
@@ -124,15 +134,16 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
             }
         }
 
-        // System.out.println(getFullyQualifiedMethodName());
+//         System.out.println("Investigating " + getFullyQualifiedMethodName());
         returnSelf = returnOther = updates = returnNew = returnUnknown = 0;
-        // System.out.println(" investingating");
-
-        if (REPORT_INFERRED_METHODS)
+        
+        if (REPORT_INFERRED_METHODS 
+                && AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass()))
             inferredMethod = new BugInstance("TESTING", NORMAL_PRIORITY).addClassAndMethod(this);
+        else 
+            inferredMethod = null;
         super.visit(code); // make callbacks to sawOpcode for all opcodes
-        // System.out.printf("  %3d %3d %3d %3d%n", returnSelf, updates,
-        // returnOther, returnNew);
+//         System.out.printf("  %3d %3d %3d %3d%n", returnSelf, updates, returnOther, returnNew);
 
         if (returnSelf > 0 && returnOther == 0) {
             okToIgnore.add(m);
@@ -158,14 +169,15 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 if (!m.isStatic()) {
                     XFactory xFactory = AnalysisContext.currentXFactory();
                     xFactory.addFunctionThatMightBeMistakenForProcedures(getMethodDescriptor());
+                    if (inferredMethod != null) {
+                        inferredMethod.setPriority(priority);
+                        inferredMethod.addString(String.format("%3d %3d %5d %3d", returnOther, returnSelf, returnNew, updates));
+                        bugReporter.reportBug(inferredMethod);
+                    }
                 }
             }
 
-            if (REPORT_INFERRED_METHODS) {
-                inferredMethod.setPriority(priority);
-                inferredMethod.addString(String.format("%3d %3d %5d %3d", returnOther, returnSelf, returnNew, updates));
-                bugReporter.reportBug(inferredMethod);
-            }
+          
             inferredMethod = null;
 
         }
@@ -176,20 +188,21 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
     public void sawOpcode(int seen) {
         switch (seen) {
         case INVOKEVIRTUAL:
-        case INVOKESPECIAL:
+        case INVOKESPECIAL: {
             if (getMethod().isStatic())
                 break;
 
             String name = getNameConstantOperand();
             String sig = getSigConstantOperand();
-            if ((name.startsWith("set") || name.startsWith("update")) || sig.endsWith("()V")) {
+            if ((name.startsWith("set") || name.startsWith("update")) || sig.endsWith(")V")) {
                 Item invokedOn = stack.getItemMethodInvokedOn(this);
                 if (invokedOn.isInitialParameter() && invokedOn.getRegisterNumber() == 0)
                     updates++;
-                if (REPORT_INFERRED_METHODS)
+                if (inferredMethod != null)
                     inferredMethod.addCalledMethod(this);
             }
             break;
+        }
 
         case ARETURN: {
             OpcodeStack.Item rv = stack.getStackItem(0);
@@ -205,12 +218,33 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 returnSelf++;
                 break;
             }
-            if (REPORT_INFERRED_METHODS)
+            if (inferredMethod != null)
                 inferredMethod.addCalledMethod(xMethod);
-            if (okToIgnore.contains(xMethod) || xMethod.getSignature().equals("()V")) {
+            if (okToIgnore.contains(xMethod) ) {
                 returnSelf++;
                 break;
             }
+            if (xMethod.getName().equals("<init>")) {
+                String sig = xMethod.getSignature();
+                // returning a newly constructed value
+                boolean voidConstructor;
+                if (!isInnerClass) {
+                    voidConstructor = sig.equals("()V");
+                } else {
+                    SignatureParser parser = new SignatureParser(sig);
+                    voidConstructor = parser.getNumParameters()  <= 1;
+                }
+                if (voidConstructor) {
+                    returnSelf++;
+                } else {
+                    returnOther++;
+                    returnNew++;
+                }
+                break;
+                
+            }
+               
+            
             if (xMethod.isAbstract() && !xMethod.getClassDescriptor().equals(getClassDescriptor())) {
                 returnUnknown++;
                 break;
@@ -237,7 +271,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
             OpcodeStack.Item rv = stack.getStackItem(1);
             if (rv.getRegisterNumber() == 0 && rv.isInitialParameter()) {
-                if (REPORT_INFERRED_METHODS)
+                if (inferredMethod != null)
                     inferredMethod.addReferencedField(this);
                 updates++;
 
