@@ -53,39 +53,21 @@ public abstract class ClassName {
         return "L" + className + ";";
     }
 
-    public static @CheckForNull
+    /**
+     * Converts from signature to slashed class name
+     * (e.g., from Ljava/lang/String; to java/lang/String).
+     * Returns null if it is the signature for an array or
+     * primitive type. 
+     */
+    public static @javax.annotation.CheckForNull
     @SlashedClassName
     String fromFieldSignature(String signature) {
-        if (signature.charAt(0) != 'L')
+        if (signature.charAt(0) != 'L') {
             return null;
+        }
         return signature.substring(1, signature.length() - 1);
     }
 
-    /**
-     *
-     * @param signature
-     *            bytecode notated type name
-     * @return for reference types: class name without bytecode characters,
-     *         otherwise unchanged signature
-     */
-    @Deprecated
-    public static String fromSignature(String signature) {
-        if (signature.charAt(0) == '[') {
-            if (signature.charAt(signature.length() - 1) == ';') {
-                // [Ljava.lang.String; or [[Ljava.lang.String;
-                int start = 1;
-                while (signature.charAt(start) == '[') {
-                    start++;
-                }
-                return signature.substring(start + 1, signature.length() - 1);
-            } else {
-                // [Z
-                return signature; // signature.substring(start,
-                                  // signature.length());
-            }
-        }
-        return signature;
-    }
 
     /**
      * Convert class name to slashed format. If the class name is already in
