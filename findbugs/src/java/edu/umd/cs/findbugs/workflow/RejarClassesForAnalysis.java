@@ -467,7 +467,7 @@ public class RejarClassesForAnalysis {
                     ZipOutputStream out = null;
                     if (writeToAnalyzeOut) {
                         out = getZipOutputFile(name);
-                        out.putNextEntry(new ZipEntry(ze));
+                        out.putNextEntry(newZipEntry(ze));
                     }
 
                     if (writeToAuxilaryOut) {
@@ -476,7 +476,7 @@ public class RejarClassesForAnalysis {
                             auxilaryClassCount = 0;
                             advanceAuxilaryOut();
                         }
-                        auxilaryOut.putNextEntry(new ZipEntry(ze));
+                        auxilaryOut.putNextEntry(newZipEntry(ze));
                     }
 
                     copyEntry(zipInputFile, ze, writeToAnalyzeOut, out, writeToAuxilaryOut, auxilaryOut);
@@ -507,7 +507,7 @@ public class RejarClassesForAnalysis {
                         auxilaryClassCount = 0;
                         advanceAuxilaryOut();
                     }
-                    auxilaryOut.putNextEntry(new ZipEntry(ze));
+                    auxilaryOut.putNextEntry(newZipEntry(ze));
 
                     copyEntry(zipInputFile, ze, false, null, true, auxilaryOut);
                 }
@@ -611,6 +611,19 @@ public class RejarClassesForAnalysis {
         }
         return true;
 
+    }
+
+
+    /**
+     * @param ze
+     * @return
+     */
+    public ZipEntry newZipEntry(ZipEntry ze) {
+        ZipEntry ze2 = new ZipEntry(ze.getName());
+        ze2.setComment(ze.getComment());
+        ze2.setTime(ze.getTime());
+        ze2.setExtra(ze.getExtra());
+        return ze2;
     }
 
 
