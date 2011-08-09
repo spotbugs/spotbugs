@@ -328,8 +328,9 @@ public class DumbMethods extends OpcodeStackDetector {
                 }
 
                 BugInstance bug = new BugInstance(this, bugPattern, NORMAL_PRIORITY).addClassAndMethod(this)
-                        .addCalledMethod(this).addString((String) o).describe(StringAnnotation.STRING_CONSTANT_ROLE)
-                        .addValueSource(secondArgument, this);
+                        .addCalledMethod(this).addString((String) o).describe(StringAnnotation.STRING_CONSTANT_ROLE);
+                if (secondArgument != null)
+                        bug.addValueSource(secondArgument, this);
 
                 accumulator.accumulateBug(bug, this);
             }
