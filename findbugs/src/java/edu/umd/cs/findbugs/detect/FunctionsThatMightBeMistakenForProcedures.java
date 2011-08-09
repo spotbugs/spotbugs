@@ -57,11 +57,12 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
         setVisitMethodsInCallOrder(true);
     }
     
-    boolean isInnerClass;
+    boolean isInnerClass, hasNonFinalFields;
 
     @Override
     public void visit(JavaClass obj) {
         isInnerClass = false;
+        hasNonFinalFields = false;
 
     }
     
@@ -69,6 +70,8 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
     public void visit(Field obj) {
         if (obj.getName().equals("this$0"))
             isInnerClass = true;
+        if (!obj.isFinal() && !obj.isStatic() && !obj.isSynthetic()) 
+            hasNonFinalFields = true;
     }
 
     @Override
@@ -189,7 +192,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
         switch (seen) {
         case INVOKEVIRTUAL:
         case INVOKESPECIAL: {
-            if (getMethod().isStatic())
+            if (getMethod().isStatic() || !hasNonFinalFields)
                 break;
 
             String name = getNameConstantOperand();
