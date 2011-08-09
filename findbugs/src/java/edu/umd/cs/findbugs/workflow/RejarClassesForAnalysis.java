@@ -27,15 +27,14 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
@@ -54,7 +53,6 @@ import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.charsets.UserTextFile;
-import edu.umd.cs.findbugs.classfile.ClassNameMismatchException;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -207,8 +205,8 @@ public class RejarClassesForAnalysis {
         this.args = args;
     }
 
-    public static List<String> readFromStandardInput() throws IOException {
-        return readFrom(UserTextFile.bufferedReader(System.in));
+    public static void readFromStandardInput(Collection<String> result) throws IOException {
+         readFrom(result, UserTextFile.bufferedReader(System.in));
     }
 
     SortedMap<String, ZipOutputStream> analysisOutputFiles = new TreeMap<String, ZipOutputStream>();
@@ -226,16 +224,15 @@ public class RejarClassesForAnalysis {
         return result;
     }
 
-    public static List<String> readFrom(@WillClose Reader r) throws IOException {
+    public static void readFrom(Collection<String> result, @WillClose Reader r) throws IOException {
         BufferedReader in = new BufferedReader(r);
-        List<String> lst = new LinkedList<String>();
         while (true) {
             String s = in.readLine();
             if (s == null) {
                 in.close();
-                return lst;
+                return;
             }
-            lst.add(s);
+            result.add(s);
         }
 
     }
@@ -303,17 +300,19 @@ public class RejarClassesForAnalysis {
     boolean classFileFound;
     public void execute() throws IOException {
 
-        List<String> fileList;
+        TreeSet<String> fileList = new TreeSet<String>();
 
         if (commandLine.inputFileList != null)
-            fileList = readFrom(new FileReader(commandLine.inputFileList));
+            readFrom(fileList, new FileReader(commandLine.inputFileList));
         else if (argCount == args.length)
-            fileList = readFromStandardInput();
+             readFromStandardInput(fileList);
         else
-            fileList = Arrays.asList(args).subList(argCount, args.length);
-        List<String> auxFileList = Collections.emptyList();
-        if (commandLine.auxFileList != null)
-            auxFileList = readFrom(new FileReader(commandLine.auxFileList));
+            fileList.addAll(Arrays.asList(args).subList(argCount, args.length));
+        TreeSet<String> auxFileList = new TreeSet<String>();
+        if (commandLine.auxFileList != null) {
+            readFrom(auxFileList, new FileReader(commandLine.auxFileList));
+            auxFileList.removeAll(fileList);
+        }
 
         List<File> inputZipFiles = new ArrayList<File>(fileList.size());
         List<File> auxZipFiles = new ArrayList<File>(auxFileList.size());
