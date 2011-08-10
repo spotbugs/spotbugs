@@ -150,7 +150,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
         if (returnSelf > 0 && returnOther == 0) {
             okToIgnore.add(m);
-        } else if (funky && returnOther > returnNew) {
+        } else if (funky) {
             okToIgnore.add(m);
         } else if (returnOther > 0 && returnOther >= returnSelf && returnNew > 0 && returnNew >= returnOther - 1) {
 

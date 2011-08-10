@@ -1,6 +1,7 @@
 package bugIdeas;
 
 import edu.umd.cs.findbugs.annotations.DesireWarning;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2011_08_07 {
@@ -47,14 +48,14 @@ public class Ideas_2011_08_07 {
           
         }
 
-        @NoWarning("")
+        @ExpectWarning("")
         public static void ignoredReturnValueOK() {
             Bar x = new Bar(42);
             x.plusOne();
             System.out.println(x);
         }
         
-        @DesireWarning("")
+        @NoWarning("")
         public static void ignoredReturnValue() {
             Bar x = new Bar(42);
             x.print();
