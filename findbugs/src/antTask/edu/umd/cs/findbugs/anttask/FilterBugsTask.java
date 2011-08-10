@@ -34,6 +34,8 @@ public class FilterBugsTask extends AbstractFindBugsTask {
     private File outputFile;
 
     private String applySuppression;
+    
+    private String notAProblem;
 
     private String not;
 
@@ -102,8 +104,16 @@ public class FilterBugsTask extends AbstractFindBugsTask {
     public void setOutput(File output) {
         this.outputFile = output;
     }
+    public void setOutputFile(File output) {
+        this.outputFile = output;
+    }
+
 
     public void setInput(String input) {
+        this.inputFile = new DataFile();
+        this.inputFile.name = input;
+    }
+    public void setInputFile(String input) {
         this.inputFile = new DataFile();
         this.inputFile.name = input;
     }
@@ -111,7 +121,11 @@ public class FilterBugsTask extends AbstractFindBugsTask {
     public void setNot(String arg) {
         this.not = arg;
     }
-
+    
+    public void setNotAProblem(String arg) {
+        this.notAProblem = arg;
+    }
+    
     public void setWithSource(String arg) {
         this.withSource = arg;
     }
@@ -235,6 +249,7 @@ public class FilterBugsTask extends AbstractFindBugsTask {
             throw new BuildException("inputFile element is required");
         }
 
+        checkBoolean(notAProblem, "notAProblem");
         checkBoolean(withSource, "withSource");
         checkBoolean(applySuppression, "applySuppression");
         checkBoolean(active, "active");
@@ -270,6 +285,7 @@ public class FilterBugsTask extends AbstractFindBugsTask {
         if (not != null) {
             addArg("-not");
         }
+        addBoolOption("-notAProblem", notAProblem);
         addBoolOption("-withSource", withSource);
         addOption("-exclude", exclude);
         addOption("-include", include);
