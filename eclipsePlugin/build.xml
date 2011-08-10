@@ -35,7 +35,7 @@
     <property file="build.properties" />
 
     <property name="fbeclipse.dir" value="."/>
-    <property name="fb.noUsageTracking.dir" value="../plugins/noUpdateChecks"/>
+    <property name="fb.noUpdateChecks.dir" value="../plugins/noUpdateChecks"/>
 
     <property name="src.dir" value="src"/>
     <property name="dist.dir" value="dist"/>
@@ -55,8 +55,8 @@
     <!-- FB core jar created by FB core ant build -->
     <property name="fb.jar" value="${findbugs.dir}/lib/findbugs.jar" />
 
-    <!-- FB optional noUsageTracking jar (we need it) -->
-    <property name="fb.noUsageTracking.jar" value="${findbugs.dir}/optionalPlugin/noUsageTracking.jar" />
+    <!-- FB optional noUpdateChecks jar (we need it) -->
+    <property name="fb.noUpdateChecks.jar" value="${findbugs.dir}/optionalPlugin/noUpdateChecks.jar" />
 
     <!-- root folder for required libraries, copied from FB core project -->
     <property name="lib.dir" value="lib"/>
@@ -101,8 +101,8 @@
         <condition property="fb.recompile" >
             <not><available file="${fb.jar}" /></not>
         </condition>
-        <condition property="fb.generate.noUsageTracking.jar" >
-            <not><available file="${fb.noUsageTracking.jar}" /></not>
+        <condition property="fb.generate.noUpdateChecks.jar" >
+            <not><available file="${fb.noUpdateChecks.jar}" /></not>
         </condition>
         <mkdir dir="${dist.dir}"/>
         <mkdir dir="${bin.dir}"/>
@@ -189,7 +189,7 @@
     <!-- use it to force recompilation of FB core libraries -->
     <target name="force_recompile">
         <property name="fb.recompile" value="true" />
-        <property name="fb.generate.noUsageTracking.jar" value="true" />
+        <property name="fb.generate.noUpdateChecks.jar" value="true" />
         <antcall target="clean" />
     </target>
 
@@ -220,7 +220,7 @@
         </copy>
 
         <!-- disable FB updates as Eclipse uses it's own update manager/workflow -->
-        <copy  file="${fb.noUsageTracking.jar}" todir="${dist.dir}/plugin"/>
+        <copy  file="${fb.noUpdateChecks.jar}" todir="${dist.dir}/plugin"/>
 
         <copy todir="${dist.dir}/lib">
             <fileset dir="${lib.dir}" includes="${jars.required}"/>
@@ -327,7 +327,7 @@
     </target>
 
     <!-- Copy required jar files from the main findbugs project (which should be a sibling of this project) -->
-    <target name="fbjars" depends="init,fbcompile,noUsageTracking">
+    <target name="fbjars" depends="init,fbcompile,noUpdateChecks">
         <echo message="Copying Findbugs libraries and classes to Eclipse plugin"/>
 
         <!-- copy only FB core classes to the plugin bin folder -->
@@ -356,9 +356,9 @@
         <ant dir="${findbugs.dir}" inheritall="false" target="build" />
     </target>
 
-    <!-- Trigger (re-)compilation of optional noUsageTracking plugin, if noUsageTracking.jar is not available -->
-    <target name="noUsageTracking" if="fb.generate.noUsageTracking.jar" >
-        <echo message="Building Findbugs noUsageTracking plugin"/>
-        <ant dir="${fb.noUsageTracking.dir}" inheritall="false" target="install" />
+    <!-- Trigger (re-)compilation of optional noUpdateChecks plugin, if noUpdateChecks.jar is not available -->
+    <target name="noUpdateChecks" if="fb.generate.noUpdateChecks.jar" >
+        <echo message="Building Findbugs noUpdateChecks plugin"/>
+        <ant dir="${fb.noUpdateChecks.dir}" inheritall="false" target="install" />
     </target>
 </project>
