@@ -18,7 +18,7 @@
     <target name="compile-classes">
         <ant dir="../../server/common" target="fulljar" inheritall="false" />
         <mkdir dir="build/classes-ant"/>
-        <javac srcdir="src/java" destdir="build/classes-ant" classpathref="localCloud.classpath" debug="on"/>
+        <javac srcdir="src/java" destdir="build/classes-ant" classpathref="localCloud.classpath" includeantruntime="false" debug="on"/>
     </target>
 
     <target name="enhance" depends="compile-classes">
