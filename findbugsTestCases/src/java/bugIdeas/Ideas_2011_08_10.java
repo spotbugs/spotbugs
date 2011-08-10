@@ -33,4 +33,22 @@ public abstract class Ideas_2011_08_10 {
         } catch (IOException veryImportant) {}
         
     }
+    
+    public static
+    void setSecurityManager(final SecurityManager s) {
+        try {
+            s.checkPackageAccess("java.lang");
+        } catch (Exception e) {
+            // no-op
+        }
+        setSecurityManager0(s);
+    }
+    public static
+    void setSecurityManager0(final SecurityManager s) {
+    }
+    
+    @NoWarning("NP")
+    public static void turnOffSecurity() {
+        setSecurityManager(null);
+    }
 }
