@@ -1754,9 +1754,14 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
             return String.format("%d remain to be synchronized", numToSync);
         else if (resync != null && resync.after(lastUpdate))
             return String.format("%d updates received from db at %s", resyncCount, format.format(resync));
-        else if (updatesSentToDatabase == 0)
-            return String.format("%d issues synchronized with database", idMap.size());
-        else
+        else if (updatesSentToDatabase == 0) {
+            int skipped = bugCollection.getCollection().size() - idMap.size();
+            if (skipped == 0)
+            		return String.format("%d issues synchronized with database", idMap.size());
+            else
+                    return String.format("%d issues synchronized with database, %d low rank issues not synchronized", 
+                            idMap.size(), skipped);
+        } else
             return String.format("%d classifications/bug filings sent to db, last updated at %s", updatesSentToDatabase,
                     format.format(lastUpdate));
 
