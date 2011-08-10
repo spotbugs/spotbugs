@@ -38,6 +38,7 @@ import javax.annotation.meta.When;
 @Retention(RetentionPolicy.CLASS)
 @javax.annotation.Nonnull(when = When.ALWAYS)
 @TypeQualifierNickname
+@Deprecated
 public @interface NonNull {
 
 }
