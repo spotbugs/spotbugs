@@ -321,8 +321,8 @@ public class DumbMethods extends OpcodeStackDetector {
                 String bugPattern = "DMI_DOH";
                 if (args > 1) {
                     secondArgument = stack.getStackItem(args - 2);
-                    Object o2 = item.getConstant();
-                    if (!(o2 instanceof String)) {
+                    Object secondConstant = secondArgument.getConstant();
+                    if (!(secondConstant instanceof String)) {
                         bugPattern = "DMI_ARGUMENTS_WRONG_ORDER";
                     }
                 }
