@@ -232,6 +232,10 @@ public abstract class AbstractCloud implements Cloud {
         return false;
     }
 
+    public String notInCloudeMsg(BugInstance b) {
+        return "Issue not recorded in cloud";
+        
+    }
     public String getCloudReport(BugInstance b) {
         return getSelectiveCloudReport(b, Collections.<String>emptySet());
     }
@@ -243,6 +247,9 @@ public abstract class AbstractCloud implements Cloud {
     }
 
     private String getSelectiveCloudReport(BugInstance b, Set<String> usersToExclude) {
+        if (!isInCloud(b)) {
+            return notInCloudeMsg(b);
+        }
         SimpleDateFormat format = new SimpleDateFormat("MM/dd, yyyy");
         StringBuilder builder = new StringBuilder();
         long firstSeen = getFirstSeen(b);
