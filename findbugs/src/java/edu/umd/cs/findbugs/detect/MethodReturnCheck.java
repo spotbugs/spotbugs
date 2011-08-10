@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.ba.CheckReturnValueAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
@@ -67,13 +68,9 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
 
     boolean previousOpcodeWasNEW;
 
-    private final BugReporter bugReporter;
-
     private final BugAccumulator bugAccumulator;
 
     private CheckReturnAnnotationDatabase checkReturnAnnotationDatabase;
-
-    private Method method;
 
     private XMethod callSeen;
 
@@ -82,7 +79,6 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
     private int callPC;
 
     public MethodReturnCheck(BugReporter bugReporter) {
-        this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
@@ -90,11 +86,6 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
     public void visitClassContext(ClassContext classContext) {
         checkReturnAnnotationDatabase = AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase();
         super.visitClassContext(classContext);
-    }
-
-    @Override
-    public void visit(Method method) {
-        this.method = method;
     }
 
     @Override
