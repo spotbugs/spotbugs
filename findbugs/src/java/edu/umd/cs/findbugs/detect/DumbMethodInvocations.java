@@ -114,7 +114,8 @@ public class DumbMethodInvocations implements Detector {
                 if (!operandValue.isConstantString())
                     continue;
                 String v = operandValue.getConstantString();
-                if (isAbsoluteFileName(v) && !v.startsWith("/etc/") && !v.startsWith("/dev/")) {
+                if (isAbsoluteFileName(v) && !v.startsWith("/etc/") && !v.startsWith("/dev/")
+                        && !v.startsWith("/proc")) {
                     int priority = NORMAL_PRIORITY;
                     if (v.startsWith("/tmp"))
                         priority = LOW_PRIORITY;
