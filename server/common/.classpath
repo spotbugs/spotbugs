@@ -11,6 +11,7 @@
 	<classpathentry kind="lib" path="lib/junit.jar" sourcepath="C:/Users/Keith/Code/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar"/>
 	<classpathentry kind="lib" path="lib/mockito-all-1.8.2.jar" sourcepath="C:/Users/Keith/Code/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar"/>
 	<classpathentry kind="lib" path="lib/guava.jar"/>
+	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.2.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/webCloudProtocol"/>
 	<classpathentry kind="lib" path="lib/charts4j-1.2.jar" sourcepath="C:/Users/Keith/Code/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.5.jar" sourcepath="C:/Users/Keith/Code/Libraries/guava-r05/guava-src-r05.zip"/>

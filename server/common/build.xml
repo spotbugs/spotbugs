@@ -11,7 +11,7 @@
     <target name="compile">
         <ant dir="../../webCloudProtocol" target="fulljar" inheritall="false"/>
         <mkdir dir="build/classes-ant"/>
-        <javac srcdir="src/java" destdir="build/classes-ant" classpathref="common.classpath" debug="on" />
+        <javac srcdir="src/java" destdir="build/classes-ant" classpathref="common.classpath" debug="on"   includeantruntime="false" />
     </target>
 
     <target name="compile-tests" depends="compile">
