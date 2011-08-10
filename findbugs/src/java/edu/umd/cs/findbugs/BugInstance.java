@@ -2433,6 +2433,13 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         this.firstVersion = firstVersion;
 
     }
+    
+    public void clearHistory() {
+        setFirstVersion(0);
+        setLastVersion(-1);
+        setIntroducedByChangeOfExistingClass(false);
+        setRemovedByChangeOfPersistingClass(false);
+    }
 
     /**
      * @return Returns the firstVersion.

@@ -772,8 +772,7 @@ public class Filter {
         if (commandLine.purgeHistorySpecified && commandLine.purgeHistory) {
             resultCollection.clearAppVersions();
             for (BugInstance bug : resultCollection.getCollection()) {
-                bug.setFirstVersion(0);
-                bug.setLastVersion(-1);
+                bug.clearHistory();
             }
                 
             
