@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs;
 
 import java.awt.GraphicsEnvironment;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -62,6 +61,15 @@ import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
 import javax.xml.transform.TransformerException;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.charsets.UTF8;
@@ -75,14 +83,6 @@ import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutputUtil;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentFactory;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * An implementation of {@link BugCollection} that keeps the BugInstances sorted
@@ -1126,6 +1126,22 @@ public class SortedBugCollection implements BugCollection {
         return null;
     }
 
+    /** Returns whether this bug collection contains results from multiple analysis runs,
+     * either of different version of the software or from different versions of FindBugs.
+     * 
+     * @return
+     */
+    public boolean isMultiversion() {
+        return sequence > 0;
+    }
+    public boolean hasDeadBugs() {
+        if (sequence == 0)
+            return false;
+        for(BugInstance b : bugSet)
+            if (b.isDead())
+                return true;
+        return false;
+    }
     public long getSequenceNumber() {
         return sequence;
     }

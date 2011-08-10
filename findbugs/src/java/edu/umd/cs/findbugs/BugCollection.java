@@ -155,6 +155,11 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @return the sequence number
      */
     public long getSequenceNumber();
+    
+    public boolean isMultiversion();
+    public boolean hasDeadBugs();
+  
+
 
     /**
      * Clear all AppVersions representing previously-analyzed versions of the
