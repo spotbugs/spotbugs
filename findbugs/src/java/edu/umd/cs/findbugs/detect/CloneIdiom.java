@@ -185,7 +185,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 
     @Override
     public void visit(Method obj) {
-        if (obj.isAbstract())
+        if (obj.isAbstract() || obj.isSynthetic())
             return;
         if (!obj.isPublic())
             return;
