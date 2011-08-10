@@ -518,31 +518,32 @@ public class NullDerefAndRedundantComparisonFinder {
         else
             slots = vnaFrame.getNumLocals();
         
-        InstructionHandle handle = thisLocation.getHandle();
-        if (false && handle != null && handle.getInstruction() instanceof NullnessConversationInstruction) {
-            try {
-                IsNullValue isNullValue = invFrame.getStackValue(0);
-                ValueNumber valueNumber = vnaFrame.getStackValue(0);
-                if (!isNullValue.isDefinitelyNotNull() && !isNullValue.isDefinitelyNull() && derefSet.isUnconditionallyDereferenced(valueNumber)) {
-                    Location where = thisLocation;
-                    SortedSet<Location> doomedAt = knownNullAndDoomedAt.get(valueNumber);
-                    if (doomedAt == null)
-                        knownNullAndDoomedAt.put(valueNumber, doomedAt = new TreeSet<Location>());
-                    doomedAt.add(thisLocation);
-                    NullValueUnconditionalDeref nullValueUnconditionalDeref = nullValueGuaranteedDerefMap.get(valueNumber);
-                    if (nullValueUnconditionalDeref != null) {
-                        Set<Location> derefLocationSet = nullValueUnconditionalDeref.getDerefLocationSet();
-                        if (derefLocationSet.size() == 1)
-                            where = derefLocationSet.iterator().next();
+        if (false) {
+            InstructionHandle handle = thisLocation.getHandle();
+            if (handle != null && handle.getInstruction() instanceof NullnessConversationInstruction) {
+                try {
+                    IsNullValue isNullValue = invFrame.getStackValue(0);
+                    ValueNumber valueNumber = vnaFrame.getStackValue(0);
+                    if (!isNullValue.isDefinitelyNotNull() && !isNullValue.isDefinitelyNull() && derefSet.isUnconditionallyDereferenced(valueNumber)) {
+                        Location where = thisLocation;
+                        SortedSet<Location> doomedAt = knownNullAndDoomedAt.get(valueNumber);
+                        if (doomedAt == null)
+                            knownNullAndDoomedAt.put(valueNumber, doomedAt = new TreeSet<Location>());
+                        doomedAt.add(thisLocation);
+                        NullValueUnconditionalDeref nullValueUnconditionalDeref = nullValueGuaranteedDerefMap.get(valueNumber);
+                        if (nullValueUnconditionalDeref != null) {
+                            Set<Location> derefLocationSet = nullValueUnconditionalDeref.getDerefLocationSet();
+                            if (derefLocationSet.size() == 1)
+                                where = derefLocationSet.iterator().next();
+                        }
+                        noteUnconditionallyDereferencedNullValue(where, knownNullAndDoomedAt, nullValueGuaranteedDerefMap, derefSet,
+                                isNullValue, valueNumber);
                     }
-                    noteUnconditionallyDereferencedNullValue(where, knownNullAndDoomedAt, nullValueGuaranteedDerefMap, derefSet,
-                            isNullValue, valueNumber);
+                } catch (DataflowAnalysisException e) {
+                    AnalysisContext.logError("huh", e);
                 }
-            } catch (DataflowAnalysisException e) {
-                AnalysisContext.logError("huh", e);
             }
-            
-            
+
         }
 
         // See if there are any definitely-null values in the frame
