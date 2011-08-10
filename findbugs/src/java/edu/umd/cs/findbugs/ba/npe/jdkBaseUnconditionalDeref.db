@@ -911,7 +911,6 @@ java.lang.System,getProperty,(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/St
 java.lang.System,load,(Ljava/lang/String;)V,9|1
 java.lang.System,loadLibrary,(Ljava/lang/String;)V,9|1
 java.lang.System,setProperty,(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;,9|3
-java.lang.System,setSecurityManager,(Ljava/lang/SecurityManager;)V,9|1
 java.lang.Thread,<init>,(Ljava/lang/Runnable;Ljava/lang/String;)V,1|2
 java.lang.Thread,<init>,(Ljava/lang/String;)V,1|1
 java.lang.Thread,<init>,(Ljava/lang/ThreadGroup;Ljava/lang/Runnable;Ljava/lang/String;)V,1|4
