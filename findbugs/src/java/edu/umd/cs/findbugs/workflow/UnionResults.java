@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.workflow;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import org.dom4j.DocumentException;
@@ -86,25 +87,28 @@ public class UnionResults {
     }
 
     static public SortedBugCollection union(SortedBugCollection origCollection, SortedBugCollection newCollection) {
-
         SortedBugCollection result = origCollection.duplicate();
+        merge(null, result, newCollection);
+        return result;
+    }
+    static public void merge(HashSet<String> hashes, SortedBugCollection into, SortedBugCollection from) {
 
-        for (Iterator<BugInstance> i = newCollection.iterator(); i.hasNext();) {
-            BugInstance bugInstance = i.next();
-            result.add(bugInstance);
+        for (BugInstance bugInstance : from.getCollection()) {
+            if (hashes == null || hashes.add(bugInstance.getInstanceHash()))
+                into.add(bugInstance);
         }
-        ProjectStats stats = result.getProjectStats();
-        ProjectStats stats2 = newCollection.getProjectStats();
+        ProjectStats stats = into.getProjectStats();
+        ProjectStats stats2 = from.getProjectStats();
         stats.addStats(stats2);
 
-        Project project = result.getProject();
-        Project project2 = newCollection.getProject();
+        Project project = into.getProject();
+        Project project2 = from.getProject();
         project.add(project2);
         
-        for(AnalysisError error : newCollection.getErrors())
-            result.addError(error);
+        for(AnalysisError error : from.getErrors())
+            into.addError(error);
 
-        return result;
+        return;
     }
 
     public static void main(String[] argv) throws IOException {
@@ -116,6 +120,8 @@ public class UnionResults {
                 + " [options] [<results1> <results2> ... <resultsn>] ");
 
         SortedBugCollection results = null;
+        HashSet<String> hashes = new HashSet<String>();
+        
         for (int i = argCount; i < argv.length; i++) {
             try {
                 SortedBugCollection more = new SortedBugCollection();
@@ -123,9 +129,11 @@ public class UnionResults {
                 more.readXML(argv[i]);
                 
                 if (results != null) {
-                    results = union(results, more);
+                    merge(hashes, results, more);
                 } else {
                     results = more;
+                    for(BugInstance b : more.getCollection())
+                        hashes.add(b.getInstanceHash());
                 }
             } catch (IOException e) {
                 System.err.println("Trouble reading/parsing " + argv[i]);
