@@ -394,9 +394,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         if (!frame.isValid())
             return;
         
-        String className = invokeInstruction.getClassName(cpg);
         if (false && methodName.equals("checkNotNull") 
-                && className.equals("com.google.common.base.Preconditions")) {
+                &&  invokeInstruction.getClassName(cpg).equals("com.google.common.base.Preconditions")) {
             SignatureParser sigParser = new SignatureParser(signature);
             int numParameters = sigParser.getNumParameters();
             IsNullValue value = frame.getArgument(invokeInstruction, cpg, 0, sigParser);
