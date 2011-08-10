@@ -201,7 +201,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                 Collection<SourceLineAnnotation> bugs = countWarnings(xmethod.getMethodDescriptor(), null, minPriority, rank);
                 if (expectWarnings && bugs.size() < num) {
                     BugInstance bug = new BugInstance(this, "FB_MISSING_EXPECTED_WARNING", priority).addClassAndMethod(xmethod
-                            .getMethodDescriptor());
+                            .getMethodDescriptor()).addString("any bug");
                     if (!bugs.isEmpty()) {
                         bug.addString(String.format("Expected %d bugs, saw %d", num, bugs.size()));
                     }
@@ -209,7 +209,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                 } else if (!expectWarnings && bugs.size() >= num)
                     for (SourceLineAnnotation s : bugs) {
                         reporter.reportBug(new BugInstance(this, "FB_UNEXPECTED_WARNING", priority).addClassAndMethod(
-                                xmethod.getMethodDescriptor()).add(s));
+                                xmethod.getMethodDescriptor()).addString("any bug").add(s));
 
                     }
             } else {
