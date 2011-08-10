@@ -57,6 +57,7 @@ import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SloppyBugComparator;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -248,7 +249,7 @@ public class Filter {
             makeOptionUnlisted("-priority");
             addOption("-confidence", "level", "allow only warnings with this confidence or higher");
             addOption("-maxRank", "rank", "allow only warnings with this rank or lower");
-            addOption("-maxAge", "days", "Only issues that weren't first seen more than this many days ago");
+            addOption("-maxAge", "days", "Only issues that and in the cloud and weren't first seen more than this many days ago");
             addSwitchWithOptionalExtraPart("-notAProblem", "truth",
                     "Only issues with a consensus view that they are not a problem");
             addSwitchWithOptionalExtraPart("-shouldFix", "truth", "Only issues with a consensus view that they should be fixed");
@@ -466,15 +467,18 @@ public class Filter {
                     return false;
             }
 
+            Cloud cloud = collection.getCloud();
             if (maxAgeSpecified) {
-                long firstSeen = collection.getCloud().getFirstSeen(bug);
+                long firstSeen = cloud.getFirstSeen(bug);
+                if (!cloud.isInCloud(bug))
+                    return false;
                 if (firstSeen < minFirstSeen)
                     return false;
             }
 
-            if (notAProblemSpecified && notAProblem != (collection.getCloud().getConsensusDesignation(bug).score() < 0))
+            if (notAProblemSpecified && notAProblem != (cloud.getConsensusDesignation(bug).score() < 0))
                 return false;
-            if (shouldFixSpecified && shouldFix != (collection.getCloud().getConsensusDesignation(bug).score() > 0))
+            if (shouldFixSpecified && shouldFix != (cloud.getConsensusDesignation(bug).score() > 0))
                 return false;
             
             if (sloppyUniqueSpecified) {
