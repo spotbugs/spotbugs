@@ -40,7 +40,9 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
@@ -52,9 +54,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.Type;
 import org.objectweb.asm.tree.ClassNode;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -2266,7 +2266,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     }
 
-    public static @CheckForNull
+    public static @javax.annotation.CheckForNull
     BugAnnotation getValueSource(OpcodeStack.Item item, Method method, int pc) {
         LocalVariableAnnotation lv = LocalVariableAnnotation.getLocalVariableAnnotation(method, item, pc);
         if (lv != null && lv.isNamed())
@@ -2290,8 +2290,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     }
 
-    public BugInstance addValueSource(OpcodeStack.Item item, DismantleBytecode dbc) {
-        return addValueSource(item, dbc.getMethod(), dbc.getPC());
+    public BugInstance addValueSource(@CheckForNull OpcodeStack.Item item, DismantleBytecode dbc) {
+        if (item != null)
+            addValueSource(item, dbc.getMethod(), dbc.getPC());
+        return this;
     }
 
     public BugInstance addValueSource(OpcodeStack.Item item, Method method, int pc) {
