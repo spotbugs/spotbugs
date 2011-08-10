@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.annotation.meta.When;
 
@@ -43,6 +44,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -134,7 +136,7 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
 
                 ValueNumber paramVN = vnaDataflow.getAnalysis().getEntryValue(paramLocalOffset);
 
-                if (entryFact.isUnconditionallyDereferenced(paramVN)) {
+                handleParameter: if (entryFact.isUnconditionallyDereferenced(paramVN)) {
                     TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications
                             .getDirectTypeQualifierAnnotation(xmethod, i, nonnullTypeQualifierValue);
                     boolean implicitNullCheckForEquals = false;
@@ -160,7 +162,11 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
                         directTypeQualifierAnnotation = TypeQualifierAnnotation.getValue(nonnullTypeQualifierValue, When.MAYBE);
                     }
 
-                    if (directTypeQualifierAnnotation == null || directTypeQualifierAnnotation.when == When.ALWAYS)
+                    if (directTypeQualifierAnnotation != null && directTypeQualifierAnnotation.when == When.ALWAYS)
+                        unconditionalDerefSet.set(i);
+                    else if (isCaught(classContext, method, entryFact, paramVN)) {
+                        // ignore
+                    } else if (directTypeQualifierAnnotation == null)
                         unconditionalDerefSet.set(i);
                     else {
                         int paramLocal = xmethod.isStatic() ? i : i + 1;
@@ -210,6 +216,30 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
             AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
                     .logError("Error analyzing " + xmethod + " for unconditional deref training", e);
         }
+    }
+
+    /**
+     * @param classContext
+     * @param method
+     * @param entryFact
+     * @param paramVN
+     * @return
+     */
+    public boolean isCaught(ClassContext classContext, Method method, UnconditionalValueDerefSet entryFact, ValueNumber paramVN) {
+        boolean caught = true;
+        
+        Set<Location> dereferenceSites 
+          = entryFact.getDerefLocationSet(paramVN);
+        if (dereferenceSites != null && !dereferenceSites.isEmpty()) {
+            ConstantPool cp = classContext.getJavaClass().getConstantPool();
+            
+            for(Location loc : dereferenceSites) {
+                if (!FindNullDeref.catchesNull(cp, method.getCode(), loc))
+                    caught = false;
+            }
+            
+        }
+        return caught;
     }
 
 }

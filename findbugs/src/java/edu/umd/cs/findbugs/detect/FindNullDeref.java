@@ -575,10 +575,16 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
 
     private boolean catchesNull(Location location) {
-        int position = location.getHandle().getPosition();
-
+        
         ConstantPool constantPool = classContext.getJavaClass().getConstantPool();
         Code code = method.getCode();
+
+        return catchesNull(constantPool, code, location);
+    }
+
+
+    public static boolean catchesNull(ConstantPool constantPool, Code code, Location location) {
+        int position = location.getHandle().getPosition();
 
         for (String t : catchTypesForNull) {
             int catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, t, position);
