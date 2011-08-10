@@ -1836,7 +1836,25 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
     }
 
     public boolean isInCloud(BugInstance b) {
-        return instanceMap.get(b.getInstanceHash()).inDatabase;
+    	if (b == null)
+    		throw new NullPointerException("null bug");
+        String instanceHash = b.getInstanceHash();
+		BugData bugData = instanceMap.get(instanceHash);
+		return bugData != null && bugData.inDatabase;
+    }
+
+    @Override
+    public String notInCloudeMsg(BugInstance b) {
+    	if (isInCloud(b)) {
+    		assert false;
+    		return "Is in cloud";
+    	}
+    	int rank = BugRanker.findRank(b);
+		if (rank > MAX_DB_RANK) 
+    		return 
+    		String.format("This issue is rank %d, only issues up to rank %d are recorded in the cloud",
+    				rank, MAX_DB_RANK);
+		return "Issue is not recorded in cloud";
     }
 
     public boolean isOnlineCloud() {
