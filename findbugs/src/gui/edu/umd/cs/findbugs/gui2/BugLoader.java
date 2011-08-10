@@ -25,6 +25,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 
+import javax.annotation.CheckForNull;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -43,7 +44,6 @@ import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -139,7 +139,10 @@ public class BugLoader {
         try {
             col.readXML(source);
             initiateCommunication(col);
-            addDeadBugMatcher(project);
+            if (col.hasDeadBugs()) {
+                System.out.println("Has dead bugs");
+                addDeadBugMatcher(col);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(mainFrame, "Could not read " + source + "; " + e.getMessage());
@@ -173,7 +176,7 @@ public class BugLoader {
                 JOptionPane.showMessageDialog(mainFrame, "loaded: " + url);
             }
             initiateCommunication(col);
-            addDeadBugMatcher(project);
+            addDeadBugMatcher(col);
 
         } catch (Exception e) {
             String msg = SystemProperties.getOSDependentProperty("findbugs.unableToLoadViaURL");
@@ -189,8 +192,12 @@ public class BugLoader {
         return col;
     }
 
-    static void addDeadBugMatcher(Project p) {
-        Filter suppressionMatcher = p.getSuppressionFilter();
+    static void addDeadBugMatcher(BugCollection bugCollection) {
+        if (bugCollection == null  || !bugCollection.hasDeadBugs()) {
+            return;
+        }
+            
+        Filter suppressionMatcher = bugCollection.getProject().getSuppressionFilter();
         if (suppressionMatcher != null) {
             suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
         }
@@ -200,11 +207,6 @@ public class BugLoader {
     Project loadProject(MainFrame mainFrame, File f) {
         try {
             Project project = Project.readXML(f);
-
-            Filter suppressionMatcher = project.getSuppressionFilter();
-            if (suppressionMatcher != null) {
-                suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
-            }
             project.setGuiCallback(mainFrame.getGuiCallback());
             return project;
         } catch (IOException e) {

@@ -35,6 +35,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -64,7 +65,6 @@ import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.UpdateChecker;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
 import edu.umd.cs.findbugs.cloud.Cloud.SigninState;
@@ -446,7 +446,7 @@ public class MainFrame extends FBFrame implements LogSync {
 
             Project project = bugs.getProject();
             project.setGuiCallback(guiCallback);
-            BugLoader.addDeadBugMatcher(project);
+            BugLoader.addDeadBugMatcher(bugs);
             setProjectAndBugCollectionInSwingThread(project, bugs);
         } finally {
             releaseDisplayWait();
@@ -477,14 +477,11 @@ public class MainFrame extends FBFrame implements LogSync {
                 System.out.println("Setting bug collection; contains " + bugCollection.getCollection().size() + " bugs");
 
         }
+        if (bugCollection != null && bugCollection.getProject() != project)
+            throw new IllegalArgumentException("project and bug collection don't match");
         acquireDisplayWait();
         try {
-            if (project != null) {
-                Filter suppressionMatcher = project.getSuppressionFilter();
-                if (suppressionMatcher != null) {
-                    suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
-                }
-            }
+            
             if (this.bugCollection != bugCollection && this.bugCollection != null) {
                 Cloud plugin = this.bugCollection.getCloud();
                 if (plugin != null) {
@@ -496,6 +493,8 @@ public class MainFrame extends FBFrame implements LogSync {
             // setRebuilding(false);
             setProject(project);
             this.bugCollection = bugCollection;
+            BugLoader.addDeadBugMatcher(bugCollection);
+
             comments.updateBugCollection();
             displayer.clearCache();
             if (bugCollection != null) {

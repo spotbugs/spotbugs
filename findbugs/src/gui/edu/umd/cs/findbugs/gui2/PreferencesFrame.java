@@ -595,8 +595,7 @@ public class PreferencesFrame extends FBDialog {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1;
         gbc.weighty = 1;
-        filterPanel.add(new JLabel("<HTML>These rules control which bugs are shown and which are hidden.<BR>" +
-                "To modify these settings, a FindBugs project must be opened first."), gbc);
+        filterPanel.add(new JLabel("<HTML>These rules control which bugs are shown and which are hidden in this project"), gbc);
 
         gbc.gridheight = 4;
         gbc.gridwidth = 1;

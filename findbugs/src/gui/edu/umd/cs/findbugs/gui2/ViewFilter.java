@@ -122,6 +122,12 @@ public class ViewFilter {
 
         },
         ALL("All issues") {
+            
+            @Override
+            public boolean show(MainFrame mf, BugInstance b) {
+                    return true;
+            }
+
             @Override
             boolean show(Cloud cloud, BugInstance b) {
                 return true;
@@ -142,7 +148,7 @@ public class ViewFilter {
 
         public boolean show(MainFrame mf, BugInstance b) {
             Cloud c = mf.getBugCollection().getCloud();
-            return show(c, b);
+            return c.isInCloud(b) && show(c, b);
 
         }
 
@@ -258,6 +264,11 @@ public class ViewFilter {
             boolean show(Cloud cloud, BugInstance b) {
                 return true;
             }
+
+            @Override
+            public boolean show(MainFrame mf, BugInstance b) {
+                     return true;
+            }
         };
 
         CloudFilter(String displayName) {
@@ -274,7 +285,7 @@ public class ViewFilter {
 
         public boolean show(MainFrame mf, BugInstance b) {
             Cloud c = mf.getBugCollection().getCloud();
-            return show(c, b);
+            return c.isInCloud(b) && show(c, b);
         }
 
         @Override
@@ -306,7 +317,10 @@ public class ViewFilter {
         }
 
         public boolean show(MainFrame mf, BugInstance b) {
-            long firstSeen = mf.getBugCollection().getCloud().getFirstSeen(b);
+            Cloud cloud = mf.getBugCollection().getCloud();
+            if (!cloud.isInCloud(b))
+                return false;
+            long firstSeen = cloud.getFirstSeen(b);
             long time = System.currentTimeMillis() - firstSeen;
             long days = TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS) / 3600 / 24;
             return days < this.maxDays;

@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import static edu.umd.cs.findbugs.util.Util.nullSafeEquals;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -41,6 +43,7 @@ import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -76,8 +79,6 @@ import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 
-import static edu.umd.cs.findbugs.util.Util.nullSafeEquals;
-
 @edu.umd.cs.findbugs.annotations.SuppressWarnings({"SE_TRANSIENT_FIELD_NOT_RESTORED", "SE_BAD_FIELD", "SE_BAD_FIELD_STORE"})
 public abstract class CloudCommentsPane extends JPanel {
 
@@ -102,7 +103,7 @@ public abstract class CloudCommentsPane extends JPanel {
     private JPanel cards;
     private JButton bulkReviewButton;
     private JLabel warningLabel;
-
+    
     protected BugCollection _bugCollection;
     protected BugInstance _bugInstance;
     private BugAspects _bugAspects;
@@ -116,9 +117,16 @@ public abstract class CloudCommentsPane extends JPanel {
     private Set<BugInstance> lastBugsEdited = Collections.emptySet();
     private boolean clickedBulkReview = false;
 
+    
+    private void addNotInCloudCard() {
+        final JPanel panel5 = new JPanel();
+        cards.add(panel5, "NOT_IN_CLOUD");
+        
+        
+    }
     public CloudCommentsPane() {
         $$$setupUI$$$();
-
+        addNotInCloudCard();
         cloudReportPane.setBackground(this.getBackground());
         cloudReportPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         _cloudReportScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -604,6 +612,15 @@ public abstract class CloudCommentsPane extends JPanel {
     }
 
 
+    private boolean inCloud(Collection<BugInstance> bugs) {
+        final Cloud cloud = _bugCollection.getCloud();
+        
+        for(BugInstance b : bugs)
+            if (cloud.isInCloud(b))
+                return true;
+        return false;
+        
+    }
     private void updateBugCommentsView() {
 
         //TODO: fix cancel button
@@ -663,7 +680,9 @@ public abstract class CloudCommentsPane extends JPanel {
             lastBugsEdited = newBugSet;
             clickedBulkReview = false;
         }
-        if (bugs.size() > 1 && !clickedBulkReview) {
+        if (!inCloud(bugs)) {
+            cl.show(cards, "NOT_IN_CLOUD");
+        } else if (bugs.size() > 1 && !clickedBulkReview) {
             warningLabel.setText("<HTML>" + bugs.size() + " bugs are selected.<BR>Click to review them all at once.");
             cl.show(cards, "WARNING");
         } else {

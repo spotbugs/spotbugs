@@ -30,6 +30,7 @@ import java.util.List;
 
 import javax.annotation.WillClose;
 
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.gui2.BugTreeModel.BranchOperationException;
 
@@ -52,13 +53,6 @@ public class ProjectSettings implements Serializable {
 
     public static ProjectSettings newInstance() {
         instance = new ProjectSettings();
-        LastVersionMatcher dbf = LastVersionMatcher.DEAD_BUG_MATCHER;
-
-        // Important: add the deadbug filter directly to filters and
-        // allmatchers, dont go through addFilter, otherwise it causes a
-        // tree to rebuild.
-        MainFrame.getInstance().getProject().getSuppressionFilter().addChild(dbf);
-        PreferencesFrame.getInstance().updateFilterPanel();
         return instance;
     }
 
