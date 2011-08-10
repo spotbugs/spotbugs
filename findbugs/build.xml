@@ -499,9 +499,7 @@
   </target>
   <target name="runanttask" depends="anttask,jars">
    <property name="findbugs.home" value="." />
-    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
-    <taskdef name="convertXmlToText" classname="edu.umd.cs.findbugs.anttask.ConvertXmlToTextTask" classpath="${anttask.jar}"/>
-    <taskdef name="setBugDatabaseInfo" classname="edu.umd.cs.findbugs.anttask.SetBugDatabaseInfoTask" classpath="${anttask.jar}"/>
+    <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
     <findbugs home="."
               output="xml:withMessages"
               jvmargs="-ea -Xmx900m"
@@ -559,7 +557,7 @@
   <target name="findbugscheck" depends="anttask,junittests,jars">
     <property name="findbugs.home" value="." />
     <ant dir="${pluginsSrc.dir}/webCloudClient" target="install" inheritAll="false" />
-    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
+    <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
     <findbugs home="."
               output="xml:withMessages"
               cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
@@ -568,17 +566,24 @@
               projectName="FindBugs"
               maxRank="20"
               timeout="1800000"
-              outputFile="${build.dir}/findbugscheck.xml" >
+              outputFile="${build.dir}/findbugscheckAll.xml" >
       <class location="${classes.dir}" />
       <sourcePath path="src/java:src/gui:src/junit:src/tools"/>
       <auxClasspath refid="tools.classpath"/>
     </findbugs>
+    <filterBugs home="."
+              withMessages="true"
+              notAProblem="false"
+              jvmargs="-ea -Xmx900m"
+              input="${build.dir}/findbugscheckAll.xml" 
+              output="${build.dir}/findbugscheck.xml" >
+    </filterBugs>
   </target>
     
   <target name="findbugscheck-cloud-fails" depends="anttask,junittests,jars">
     <property name="findbugs.home" value="." />
     <ant dir="${pluginsSrc.dir}/webCloudClient" target="install" inheritAll="false" />
-    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
+    <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
     <findbugs home="."
               output="xml:withMessages"
               cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
@@ -596,7 +601,7 @@
 
   <target name="findbugsTestCases" depends="anttask,junittests,jars">
    <property name="findbugs.home" value="." />
-    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
+    <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
     <findbugs home="."
               output="xml"
               jvmargs="-ea -Xmx900m"
@@ -613,7 +618,7 @@
          kept in the ${sampleoutput.dir} for later perusal. -->
     <target name="plugincheck" depends="anttask">
         <property name="findbugs.home" value="." />
-        <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
+        <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
         <!-- download the plugin -->
         <echo message="curl ${plugincheck.jar} -o ${plugin.dir}/${plugincheck.jar}"/>
         <!-- won't work everywhere, but I can't find an easy alternative -->
@@ -698,7 +703,8 @@
 
 
     <!-- Get version properties.  -->
-    <target name="version" depends="-get-svn-revision" >
+    <target name="version" depends="classes,-get-svn-revision" >
+        <echo>${svnrnum}</echo>
         <java classpathref="tools.classpath"
               output="${version.props.file}"
               classname="edu.umd.cs.findbugs.Version"
@@ -715,9 +721,10 @@
     <target name="-get-svn-revision" if="svnant.home">
         <taskdef resource="org/tigris/subversion/svnant/svnantlib.xml"
                  classpathref="svn.classpath"/>
-        <svn svnkit="false" javahl="true">
+        <svn svnkit="false" javahl="false">
             <status path="." revisionProperty="svnrnum"/>
         </svn>
+        <echo>${svnrnum}</echo>
     </target>
 
 
