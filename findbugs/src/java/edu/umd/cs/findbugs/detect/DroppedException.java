@@ -32,9 +32,11 @@ import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Utility;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Token;
@@ -53,18 +55,18 @@ public class DroppedException extends PreorderVisitor implements Detector {
     private static final boolean LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS = SystemProperties
             .getBoolean("findbugs.de.comment");
 
-    Set<String> reported = new HashSet<String>();
-
     Set<String> causes = new HashSet<String>();
 
     Set<String> checkedCauses = new HashSet<String>();
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
+    private final BugAccumulator bugAccumulator;
 
     private ClassContext classContext;
 
     public DroppedException(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+        this.bugAccumulator = new BugAccumulator(bugReporter);
         if (DEBUG)
             System.out.println("Dropped Exception debugging turned on");
     }
@@ -72,6 +74,8 @@ public class DroppedException extends PreorderVisitor implements Detector {
     public void visitClassContext(ClassContext classContext) {
         this.classContext = classContext;
         classContext.getJavaClass().accept(this);
+        bugAccumulator.reportAccumulatedBugs();
+     
     }
 
     public void report() {
@@ -157,10 +161,10 @@ public class DroppedException extends PreorderVisitor implements Detector {
             int opcode = asUnsignedByte(code[handled]);
             int afterHandler = 0;
             if (DEBUG)
-                System.out.println("DE:\topcode is " + opcode + ", " + asUnsignedByte(code[handled + 1]));
+                System.out.println("DE:\topcode is " + OPCODE_NAMES[opcode] + ", " + asUnsignedByte(code[handled + 1]));
             boolean drops = false;
             boolean startsWithASTORE03 = opcode >= ASTORE_0 && opcode <= ASTORE_3;
-            if (startsWithASTORE03 && asUnsignedByte(code[handled + 1]) == RETURN) {
+                      if (startsWithASTORE03 && asUnsignedByte(code[handled + 1]) == RETURN) {
                 if (DEBUG)
                     System.out.println("Drop 1");
                 drops = true;
@@ -262,6 +266,24 @@ public class DroppedException extends PreorderVisitor implements Detector {
                         priority--;
                 }
 
+                int register = -1;
+                if (startsWithASTORE03) {
+                    register = opcode - ASTORE_0;
+                } else if (opcode == ASTORE) {
+                    register =  asUnsignedByte(code[handled + 1]);
+                }
+                if (register >= 0) {
+                    LocalVariableAnnotation lva = LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, handled+2, handled+1);
+                    String name = lva.getName();
+                    if (DEBUG) {
+                        System.out.println("Name: " + name);
+                        if (name.startsWith("ignore"))
+                            continue;
+                    }
+                    
+                }
+                    
+
                 if (DEBUG) {
                     System.out.println("Priority is " + priority);
                 }
@@ -273,14 +295,11 @@ public class DroppedException extends PreorderVisitor implements Detector {
                     System.out.println("reporting warning");
                 }
 
-                String key = (exitInTryBlock ? "mightDrop," : "mightIgnore,") + getFullyQualifiedMethodName() + "," + causeName;
-                if (reported.add(key)) {
-                    BugInstance bugInstance = new BugInstance(this, exitInTryBlock ? "DE_MIGHT_DROP" : "DE_MIGHT_IGNORE",
-                            priority).addClassAndMethod(this);
-                    bugInstance.addClass(causeName).describe("CLASS_EXCEPTION");
-                    bugInstance.addSourceLine(srcLine);
-                    bugReporter.reportBug(bugInstance);
-                }
+                BugInstance bugInstance = new BugInstance(this, exitInTryBlock ? "DE_MIGHT_DROP" : "DE_MIGHT_IGNORE", priority)
+                        .addClassAndMethod(this);
+                bugInstance.addClass(causeName).describe("CLASS_EXCEPTION");
+                bugInstance.addSourceLine(srcLine);
+                bugAccumulator.accumulateBug(bugInstance, srcLine);
 
             }
         }
