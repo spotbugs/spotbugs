@@ -23,7 +23,7 @@
     </target>
 
     <target name="plugin-jar">
-        <jar destfile="build/noUsageTracking.jar">
+        <jar destfile="build/noUpdateChecks.jar">
             <fileset dir="etc">
                 <include name="findbugs.xml"/>
                 <include name="messages.xml"/>
@@ -33,7 +33,7 @@
     </target>
 
     <target name="install" depends="plugin-jar">
-        <copy todir="${destination.dir}" file="build/noUsageTracking.jar" />
+        <copy todir="${destination.dir}" file="build/noUpdateChecks.jar" />
     </target>
 
     <target name="clean">
