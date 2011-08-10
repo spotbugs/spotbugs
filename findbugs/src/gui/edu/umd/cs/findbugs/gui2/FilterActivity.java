@@ -49,11 +49,9 @@ public class FilterActivity {
         case UNFILTERING:
             for (FilterListener i : currentListeners)
                 i.clearCache();
-            MainFrame.getInstance().mainFrameMenu.setViewMenu();
             break;
        
         }
-        MainFrame.getInstance().mainFrameMenu.setViewMenu();
         MainFrame.getInstance().updateStatusBar();
     }
     
