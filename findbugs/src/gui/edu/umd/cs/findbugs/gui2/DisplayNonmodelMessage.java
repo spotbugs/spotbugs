@@ -91,7 +91,7 @@ public class DisplayNonmodelMessage {
         messageFrame.toFront();
         if (onTop) {
             messageFrame.setAlwaysOnTop(true);
-            new Thread(clearAlwaysOnTopLater).start();
+            edu.umd.cs.findbugs.util.Util.runInDameonThread(clearAlwaysOnTopLater);
         }
     }
 

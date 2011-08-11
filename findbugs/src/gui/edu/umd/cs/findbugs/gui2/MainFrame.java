@@ -621,8 +621,8 @@ public class MainFrame extends FBFrame implements LogSync {
             return;
 
         acquireDisplayWait();
-        new Thread() {
-            @Override
+        edu.umd.cs.findbugs.util.Util.runInDameonThread(
+        new Runnable() {
             public void run() {
                 try {
                     updateDesignationDisplay();
@@ -632,7 +632,7 @@ public class MainFrame extends FBFrame implements LogSync {
                     releaseDisplayWait();
                 }
             }
-        }.start();
+        });
     }
 
     // ================================== misc junk 2

@@ -83,7 +83,7 @@ public class UpdateChecker {
                 startUpdateCheckThread(uri, pluginsByUrl.get(uri), latch);
             }
         }
-        new Thread(new Runnable() {
+        Util.runInDameonThread(new Runnable() {
             public void run() {
                 try {
                     latch.await();
@@ -92,7 +92,7 @@ public class UpdateChecker {
                 }
 
             }
-        }, "Plugin update checker").start();
+        }, "Plugin update checker");
     }
 
     private boolean updateChecksGloballyDisabled() {
@@ -125,7 +125,7 @@ public class UpdateChecker {
                     + url.getScheme());
             return;
         }
-        Thread thread = new Thread(new Runnable() {
+        Util.runInDameonThread(new Runnable() {
             public void run() {
                 try {
                     actuallyCheckforUpdates(url, plugins, entryPoint);
@@ -134,10 +134,9 @@ public class UpdateChecker {
                     logError(e, "Error doing update check at " + url);
                 }
             }
-        });
-        thread.setDaemon(true);
-        thread.start();
+        }, "Check for updates");
     }
+       
 
     private void actuallyCheckforUpdates(URI url, Collection<Plugin> plugins, String entryPoint) throws IOException {
         LOGGER.fine("Checking for updates at " + url

@@ -320,10 +320,9 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
 
         Debug.println("Please Wait called right before starting rebuild thread");
         mainFrame.acquireDisplayWait();
-        rebuildingThread = new Thread("Rebuilding thread") {
+        rebuildingThread =  edu.umd.cs.findbugs.util.Util.runInDameonThread(new Runnable() {
             BugTreeModel newModel;
 
-            @Override
             public void run() {
                 try {
                     newModel = new BugTreeModel(BugTreeModel.this);
@@ -345,8 +344,8 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
                     });
                 }
             }
-        };
-        rebuildingThread.start();
+        }, "Rebuilding thread");
+       
     }
 
     public void crawl(final ArrayList<BugAspects> path, final int depth) {

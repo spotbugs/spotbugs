@@ -219,7 +219,7 @@ public class SourceFinder {
 
     SourceRepository makeInMemorySourceRepository(final String url) {
         final BlockingSourceRepository r = new BlockingSourceRepository();
-        Thread t = new Thread(new Runnable() {
+        Util.runInDameonThread(new Runnable() {
 
             public void run() {
                 InputStream in = null;
@@ -245,8 +245,6 @@ public class SourceFinder {
                 }
             }
         }, "Source loading thread");
-        t.setDaemon(true);
-        t.start();
         return r;
     }
 
@@ -254,7 +252,7 @@ public class SourceFinder {
         final File file = File.createTempFile("jar_cache", null);
         file.deleteOnExit();
         final BlockingSourceRepository r = new BlockingSourceRepository();
-        Thread t = new Thread(new Runnable() {
+        Util.runInDameonThread(new Runnable() {
 
             public void run() {
                 InputStream in = null;
@@ -279,8 +277,6 @@ public class SourceFinder {
                 }
             }
         }, "Source loading thread");
-        t.setDaemon(true);
-        t.start();
         return r;
     }
 

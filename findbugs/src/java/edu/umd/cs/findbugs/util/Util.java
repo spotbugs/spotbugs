@@ -66,7 +66,23 @@ import edu.umd.cs.findbugs.charsets.UTF8;
  * @author William Pugh
  */
 public class Util {
-
+    
+    public static Thread startDameonThread(Thread t) {
+        t.setDaemon(true);
+        t.start();
+        return t;
+    }
+    
+    public static Thread runInDameonThread(Runnable r, String name) {
+        Thread t = new Thread(r, name);
+        return startDameonThread(t);
+        
+    }
+    public static Thread runInDameonThread(Runnable r) {
+        Thread t = new Thread(r);
+        return startDameonThread(t);
+        
+    }
     /**
      * return sign of x - y
      *
