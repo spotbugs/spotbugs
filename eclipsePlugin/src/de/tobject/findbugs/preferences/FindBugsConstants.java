@@ -33,17 +33,12 @@ public final class FindBugsConstants {
     }
 
     /**
-     * use short classpath for Eclipse plugins (experimental)
-     */
-    public final static String KEY_SHORT_CLASSPATH = "useShortClasspath4EclipsePlugins";
-
-    /**
      * Cache FB class data (experimental)
      */
     public final static String KEY_CACHE_CLASS_DATA = "cacheClassData";
 
     /**
-     * Run FB analysis as extra job (independent from build job) (experimental)
+     * Run FB analysis as extra job (independent from build job)
      */
     public final static String KEY_RUN_ANALYSIS_AS_EXTRA_JOB = "runAnalysisAsExtraJob";
 

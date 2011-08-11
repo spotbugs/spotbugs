@@ -35,7 +35,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.launching.JREContainer;
 import org.eclipse.jdt.launching.JavaRuntime;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.osgi.service.resolver.BundleDescription;
 import org.eclipse.pde.core.plugin.IPluginModelBase;
 import org.eclipse.pde.core.plugin.PluginRegistry;
@@ -43,7 +42,6 @@ import org.eclipse.pde.internal.build.site.PDEState;
 import org.eclipse.pde.internal.core.ClasspathUtilCore;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.preferences.FindBugsConstants;
 
 /**
  * Helper class to resolve full classpath for Eclipse plugin projects. Plugin
@@ -88,11 +86,6 @@ public class PDEClassPathGenerator {
                     classPath.add(path.toOSString());
                 }
             }
-            IPreferenceStore store = FindbugsPlugin.getPluginPreferences(javaProject.getProject());
-            boolean shortClassPath = store.getBoolean(FindBugsConstants.KEY_SHORT_CLASSPATH);
-            if(shortClassPath){
-                return classPath.toArray(new String[classPath.size()]);
-            }
             // add CPE_CONTAINER classpathes
             IClasspathEntry[] rawClasspath = javaProject.getRawClasspath();
             for (IClasspathEntry entry : rawClasspath) {
@@ -128,9 +121,7 @@ public class PDEClassPathGenerator {
     private static String[] createPluginClassPath(IJavaProject javaProject) throws CoreException {
         String[] javaClassPath = createJavaClasspath(javaProject);
         IPluginModelBase model = PluginRegistry.findModel(javaProject.getProject());
-        IPreferenceStore store = FindbugsPlugin.getPluginPreferences(javaProject.getProject());
-        boolean shortClassPath = store.getBoolean(FindBugsConstants.KEY_SHORT_CLASSPATH);
-        if (shortClassPath || model == null || model.getPluginBase().getId() == null) {
+        if (model == null || model.getPluginBase().getId() == null) {
             return javaClassPath;
         }
         List<String> pdeClassPath = new ArrayList<String>();

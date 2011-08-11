@@ -51,8 +51,6 @@ public class WorkspaceSettingsTab extends Composite {
 
     private DetectorProvider detectorProvider;
 
-    private Button optimizeClasspath;
-
     private Button cacheClassData;
 
     private Button runAsExtraJob;
@@ -67,20 +65,15 @@ public class WorkspaceSettingsTab extends Composite {
         tabDetector.setText("Misc. Settings");
         tabDetector.setControl(this);
 
-        optimizeClasspath = new Button(this, SWT.CHECK);
-        optimizeClasspath.setSelection(store.getBoolean(FindBugsConstants.KEY_SHORT_CLASSPATH));
-        optimizeClasspath.setText("Use short classpath for Eclipse plugins (experimental)");
-        optimizeClasspath.setToolTipText("Skip some extra PDE generated entries");
+        runAsExtraJob = new Button(this, SWT.CHECK);
+        runAsExtraJob.setSelection(store.getBoolean(FindBugsConstants.KEY_RUN_ANALYSIS_AS_EXTRA_JOB));
+        runAsExtraJob.setText("Run FB analysis as extra job (independent from build job)");
+        runAsExtraJob.setToolTipText("Should improve user experience especially for the incremented compile");
 
         cacheClassData = new Button(this, SWT.CHECK);
         cacheClassData.setSelection(store.getBoolean(FindBugsConstants.KEY_CACHE_CLASS_DATA));
         cacheClassData.setText("Cache .class data (useful for slow file system && lot of RAM) (experimental)");
         cacheClassData.setToolTipText("Cache .class data for FB analysis on same project");
-
-        runAsExtraJob = new Button(this, SWT.CHECK);
-        runAsExtraJob.setSelection(store.getBoolean(FindBugsConstants.KEY_RUN_ANALYSIS_AS_EXTRA_JOB));
-        runAsExtraJob.setText("Run FB analysis as extra job (independent from build job) (experimental)");
-        runAsExtraJob.setToolTipText("Should improve user experience especially for the incremented compile");
 
         if(!isWorkspaceSettings()) {
             return;
@@ -137,7 +130,6 @@ public class WorkspaceSettingsTab extends Composite {
     }
 
     public void refreshUI(UserPreferences prefs) {
-        optimizeClasspath.setSelection(store.getBoolean(FindBugsConstants.KEY_SHORT_CLASSPATH));
         cacheClassData.setSelection(store.getBoolean(FindBugsConstants.KEY_CACHE_CLASS_DATA));
         runAsExtraJob.setSelection(store.getBoolean(FindBugsConstants.KEY_RUN_ANALYSIS_AS_EXTRA_JOB));
         if(!isWorkspaceSettings()) {
@@ -158,7 +150,6 @@ public class WorkspaceSettingsTab extends Composite {
     }
 
     public void performOK() {
-        store.setValue(FindBugsConstants.KEY_SHORT_CLASSPATH, optimizeClasspath.getSelection());
         store.setValue(FindBugsConstants.KEY_CACHE_CLASS_DATA, cacheClassData.getSelection());
         store.setValue(FindBugsConstants.KEY_RUN_ANALYSIS_AS_EXTRA_JOB, runAsExtraJob.getSelection());
         if(!isWorkspaceSettings()) {
