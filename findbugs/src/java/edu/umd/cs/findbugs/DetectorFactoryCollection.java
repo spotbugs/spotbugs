@@ -400,7 +400,11 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
     public void pluginUpdateCheckComplete(List<UpdateChecker.PluginUpdate> updates) {
         this.updates = updates;
         for (PluginUpdateListener listener : pluginUpdateListeners) {
-            listener.pluginUpdateCheckComplete(updates);
+            try {
+                listener.pluginUpdateCheckComplete(updates);
+            } catch (Throwable e) {
+                LOGGER.log(Level.INFO, "Error during update check callback", e);
+            }
         }
     }
 

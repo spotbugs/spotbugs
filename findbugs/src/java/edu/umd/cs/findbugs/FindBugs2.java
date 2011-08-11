@@ -1319,7 +1319,8 @@ public class FindBugs2 implements IFindBugsEngine {
         } else {
             System.out.println();
             for (UpdateChecker.PluginUpdate update : updates) {
-                System.out.println("PLUGIN UPDATE: " + update.getPlugin().getShortDescription() + " "
+                String name = update.getPlugin().isCorePlugin() ? "FindBugs" : update.getPlugin().getShortDescription();
+                System.out.println("PLUGIN UPDATE: " + name + " "
                         + update.getVersion() + " has been released (you have "
                         + update.getPlugin().getVersion() + ")");
                 if (update.getMessage() != null) {

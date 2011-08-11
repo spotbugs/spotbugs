@@ -9,7 +9,6 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -27,8 +26,8 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -58,8 +57,6 @@ import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
@@ -74,11 +71,6 @@ public class MainFrameComponentFactory implements Serializable {
 
     public MainFrameComponentFactory(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
-    }
-
-    private ImageIcon loadImageResource(String filename, int width, int height) throws IOException {
-        return new ImageIcon(ImageIO.read(MainFrame.class.getResource(filename)).getScaledInstance(width, height,
-                Image.SCALE_SMOOTH));
     }
 
     JPanel statusBar() {
@@ -97,14 +89,6 @@ public class MainFrameComponentFactory implements Serializable {
         constraints.weightx = 0;
         constraints.fill = GridBagConstraints.NONE;
 
-        try {
-            mainFrame.setSignedInIcon(loadImageResource("greencircle.png", 16, 16));
-            mainFrame.setWarningIcon(loadImageResource("warningicon.png", 16, 16));
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Could not load status icons", e);
-            mainFrame.setSignedInIcon(null);
-            mainFrame.setWarningIcon(null);
-        }
         constraints.anchor = GridBagConstraints.EAST;
         constraints.insets = new Insets(0, 5, 0, 5);
 
@@ -536,7 +520,7 @@ public class MainFrameComponentFactory implements Serializable {
 
         private final SourceLineAnnotation note;
 
-        BugSummaryMouseListener(@NonNull BugInstance bugInstance, @NonNull JLabel label, @NonNull SourceLineAnnotation link) {
+        BugSummaryMouseListener(@Nonnull BugInstance bugInstance, @Nonnull JLabel label, @Nonnull SourceLineAnnotation link) {
             this.bugInstance = bugInstance;
             this.label = label;
             this.note = link;

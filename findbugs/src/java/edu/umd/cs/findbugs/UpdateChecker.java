@@ -129,9 +129,10 @@ public class UpdateChecker {
             public void run() {
                 try {
                     actuallyCheckforUpdates(url, plugins, entryPoint);
-                    latch.countDown();
                 } catch (Exception e) {
                     logError(e, "Error doing update check at " + url);
+                } finally {
+                    latch.countDown();
                 }
             }
         }, "Check for updates");
@@ -177,6 +178,9 @@ public class UpdateChecker {
             xmlOutput.addAttribute("id", plugin.getPluginId());
             xmlOutput.addAttribute("name", plugin.getShortDescription());
             xmlOutput.addAttribute("version", plugin.getVersion());
+            Date date = plugin.getReleaseDate();
+            if (date != null)
+                xmlOutput.addAttribute("release-date", Long.toString(date.getTime()));
             xmlOutput.stopTag(true);
         }
 
@@ -196,6 +200,9 @@ public class UpdateChecker {
     // package-private for testing
     @SuppressWarnings({"unchecked"})
     void parseUpdateXml(URI url, Collection<Plugin> plugins, @WillClose InputStream inputStream) {
+//        for (Plugin plugin : plugins) {
+//            pluginUpdates.add(new PluginUpdate(plugin, "200.0", "http://example.com/url", "THIS IS MY\nMESSAGE\nME!"));
+//        }
         try {
             Document doc = new SAXReader().read(inputStream);
             List<Element> pluginEls = (List<Element>) doc.selectNodes("fb-plugin-updates/plugin");
