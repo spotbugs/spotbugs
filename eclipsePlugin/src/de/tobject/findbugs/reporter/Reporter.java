@@ -38,6 +38,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.ui.console.IOConsoleOutputStream;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.builder.FindBugs2Eclipse;
 import de.tobject.findbugs.util.ConfigurableXmlOutputStream;
 import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.AnalysisError;
@@ -153,6 +154,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
 
         Set<String> missingClasses = getMissingClasses();
         if (missingClasses.size() > 0) {
+            FindBugs2Eclipse.cleanClassClache(project.getProject());
             MultiStatus status = new MultiStatus(FindbugsPlugin.PLUGIN_ID, IStatus.WARNING,
                     "The following classes needed for FindBugs analysis on project " + project.getElementName()
                             + " were missing:", null);

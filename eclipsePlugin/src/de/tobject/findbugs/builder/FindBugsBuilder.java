@@ -62,7 +62,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
         monitor.subTask("Running FindBugs...");
         switch (kind) {
         case IncrementalProjectBuilder.FULL_BUILD: {
-            FindBugs2Eclipse.cleanBuild(getProject());
+            FindBugs2Eclipse.cleanClassClache(getProject());
             if (FindbugsPlugin.getUserPreferences(getProject()).isRunAtFullBuild()) {
                 if (DEBUG) {
                     System.out.println("FULL BUILD");

@@ -77,9 +77,9 @@ public class FindBugs2Eclipse extends FindBugs2 {
     private static IResourceChangeListener resourceListener = new IResourceChangeListener() {
         public void resourceChanged(IResourceChangeEvent event) {
             if(event.getSource() instanceof IProject) {
-                cleanBuild((IProject) event.getSource());
+                cleanClassClache((IProject) event.getSource());
             } else if (event.getResource() instanceof IProject) {
-                cleanBuild((IProject) event.getResource());
+                cleanClassClache((IProject) event.getResource());
             } else if(event.getDelta() != null) {
                 final Set<IProject> affectedProjects = new HashSet<IProject>();
                 final IResourceDelta delta = event.getDelta();
@@ -101,7 +101,7 @@ public class FindBugs2Eclipse extends FindBugs2 {
                     FindbugsPlugin.getDefault().logException(e, "Error traversing resource delta");
                 }
                 for (IProject iProject : affectedProjects) {
-                    cleanBuild(iProject);
+                    cleanClassClache(iProject);
                 }
             }
         }
@@ -249,7 +249,7 @@ public class FindBugs2Eclipse extends FindBugs2 {
         long classCount;
     }
 
-    static void cleanBuild(IProject project) {
+    public static void cleanClassClache(IProject project) {
         auxClassPaths.remove(project);
         classAnalysisCache.remove(project);
     }
