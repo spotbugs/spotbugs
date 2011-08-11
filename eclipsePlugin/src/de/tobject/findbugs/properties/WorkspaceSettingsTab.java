@@ -73,7 +73,8 @@ public class WorkspaceSettingsTab extends Composite {
         cacheClassData = new Button(this, SWT.CHECK);
         cacheClassData.setSelection(store.getBoolean(FindBugsConstants.KEY_CACHE_CLASS_DATA));
         cacheClassData.setText("Cache .class data (useful for slow file system && lot of RAM) (experimental)");
-        cacheClassData.setToolTipText("Cache .class data for FB analysis on same project");
+        cacheClassData.setToolTipText("Reuse .class data for the next FindBugs analysis. " +
+                "The cache will survive until the next project build.");
 
         if(!isWorkspaceSettings()) {
             return;

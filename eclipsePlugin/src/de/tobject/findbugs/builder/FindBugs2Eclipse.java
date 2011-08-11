@@ -76,15 +76,19 @@ public class FindBugs2Eclipse extends FindBugs2 {
 
     private static IResourceChangeListener resourceListener = new IResourceChangeListener() {
         public void resourceChanged(IResourceChangeEvent event) {
-            if(event.getSource() instanceof IProject || event.getResource() instanceof IProject) {
+            if(event.getSource() instanceof IProject) {
                 cleanBuild((IProject) event.getSource());
+            } else if (event.getResource() instanceof IProject) {
+                cleanBuild((IProject) event.getResource());
             } else if(event.getDelta() != null) {
                 final Set<IProject> affectedProjects = new HashSet<IProject>();
-                IResourceDelta delta = event.getDelta();
+                final IResourceDelta delta = event.getDelta();
                 try {
                     delta.accept(new IResourceDeltaVisitor() {
-
                         public boolean visit(IResourceDelta d1) throws CoreException {
+                            if(d1 == delta || d1.getFlags() == 0 || d1.getFlags() == IResourceDelta.MARKERS) {
+                                return true;
+                            }
                             IResource resource = d1.getResource();
                             if(resource instanceof IProject) {
                                 affectedProjects.add((IProject) resource);
@@ -176,10 +180,12 @@ public class FindBugs2Eclipse extends FindBugs2 {
         DescriptorFactory descriptorFactory = DescriptorFactory.instance();
         for (Entry<String, ICodeBaseEntry> entry : entrySet2) {
             String className = entry.getKey();
-            if(className.endsWith(".class")) {
-                className = className.substring(0, className.length() - 6);
+            if(cacheClassData) {
+                if(className.endsWith(".class")) {
+                    className = className.substring(0, className.length() - 6);
+                }
+                classAnalysis.remove(descriptorFactory.getClassDescriptor(className));
             }
-            classAnalysis.remove(descriptorFactory.getClassDescriptor(className));
             data.byteSizeApp += entry.getValue().getNumBytes();
         }
         if(cacheClassData) {
