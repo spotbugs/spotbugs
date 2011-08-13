@@ -21,24 +21,13 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
@@ -59,7 +48,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 
@@ -70,12 +58,10 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugsDisplayFeatures;
 import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.PluginUpdateListener;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.UpdateChecker;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
 import edu.umd.cs.findbugs.cloud.Cloud.SigninState;
@@ -84,7 +70,6 @@ import edu.umd.cs.findbugs.log.ConsoleLogger;
 import edu.umd.cs.findbugs.log.LogSync;
 import edu.umd.cs.findbugs.log.Logger;
 import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
-import edu.umd.cs.findbugs.util.LaunchBrowser;
 import edu.umd.cs.findbugs.util.Multiset;
 
 @SuppressWarnings("serial")
@@ -186,7 +171,7 @@ public class MainFrame extends FBFrame implements LogSync {
     final MainFrameMenu mainFrameMenu = new MainFrameMenu(this);
 
     private final MainFrameComponentFactory mainFrameComponentFactory = new MainFrameComponentFactory(this);
-    private static final int SOFTWARE_UPDATE_DIALOG_DELAY_MS = 5000;
+    private final PluginUpdateDialog pluginUpdateDialog = new PluginUpdateDialog();
 
     public static void makeInstance(FindBugsLayoutManagerFactory factory) {
         if (instance != null)
@@ -205,130 +190,7 @@ public class MainFrame extends FBFrame implements LogSync {
         guiLayout = factory.getInstance(this);
         comments = new CommentsArea(this);
         FindBugsDisplayFeatures.setAbridgedMessages(true);
-        DetectorFactoryCollection.instance().addPluginUpdateListener(new PluginUpdateListener() {
-            public void pluginUpdateCheckComplete(final Collection<UpdateChecker.PluginUpdate> updates) {
-                if (updates.isEmpty())
-                    return;
-
-                // wait 5 seconds before showing dialog
-                edu.umd.cs.findbugs.util.Util.runInDameonThread(new Runnable() {
-                    public void run() {
-                        try {
-                            Thread.sleep(SOFTWARE_UPDATE_DIALOG_DELAY_MS);
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    showUpdateDialog(updates);
-                                }
-                            });
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, "Software Update Dialog");
-            }
-        });
-    }
-
-    private void showUpdateDialog(Collection<UpdateChecker.PluginUpdate> updates) {
-        List<UpdateChecker.PluginUpdate> sortedUpdates = new ArrayList<UpdateChecker.PluginUpdate>();
-        UpdateChecker.PluginUpdate core = sortUpdates(updates, sortedUpdates);
-
-        String headline;
-        if (core != null && updates.size() >= 2)
-            headline = "FindBugs and some plugins have updates";
-        else if (core == null)
-            headline = "Some FindBugs plugins have updates";
-        else
-            headline = null;
-
-        final JPanel comp = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5,5,5,5);
-        gbc.gridwidth = 3;
-        gbc.fill = GridBagConstraints.BOTH;
-        if (headline != null) {
-            JLabel headlineLabel = new JLabel(headline);
-            headlineLabel.setFont(headlineLabel.getFont().deriveFont(Font.BOLD, 24));
-            comp.add(headlineLabel, gbc);
-        }
-        int i = 1;
-        for (final UpdateChecker.PluginUpdate update : sortedUpdates) {
-            gbc.gridy = ++i;
-            gbc.gridx = 1;
-            gbc.fill = GridBagConstraints.BOTH;
-            gbc.gridwidth = 1;
-            gbc.weightx = 1;
-            String name;
-            if (update.getPlugin().isCorePlugin())
-                name = "FindBugs";
-            else
-                name = update.getPlugin().getShortDescription();
-            JLabel label = new JLabel(MessageFormat.format(
-                    "<html><b>{0} {2}</b> is available<br><i><small>(currently installed: {1})",
-                    name, update.getPlugin().getVersion(), update.getVersion()));
-            label.setFont(label.getFont().deriveFont(Font.PLAIN, label.getFont().getSize()+4));
-            comp.add(label, gbc);
-            gbc.weightx = 0;
-            gbc.gridx = 2;
-            if (update.getUrl() != null && update.getUrl().length() > 0) {
-                JButton button = new JButton("<html><u><font color=#0000ff>More info...");
-                button.setBorderPainted(false);
-                button.setOpaque(false);
-                button.setContentAreaFilled(false);
-                button.setBackground(comp.getBackground());
-                button.setToolTipText(update.getUrl());
-                button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                button.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        boolean failed;
-                        try {
-                            failed = !LaunchBrowser.showDocument(new URL(update.getUrl()));
-                        } catch (MalformedURLException e1) {
-                            failed = true;
-                        }
-                        if (failed)
-                            JOptionPane.showMessageDialog(comp, "Could not open URL " + update.getUrl());
-                    }
-                });
-                comp.add(button, gbc);
-            }
-            String msg = update.getMessage();
-            if (msg != null && msg.length() > 0) {
-                gbc.gridx = 1;
-                gbc.gridwidth = 3;
-                gbc.weightx = 1;
-                gbc.fill = GridBagConstraints.BOTH;
-                gbc.gridy = ++i;
-                JTextPane msgpane = new JTextPane();
-                msgpane.setEditable(false);
-                msgpane.setFocusable(false);
-                msgpane.setText(msg);
-                comp.add(msgpane, gbc);
-            }
-        }
-        //TODO: add "never show again" option
-        JOptionPane.showMessageDialog(MainFrame.this, comp, "Software Updates", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private UpdateChecker.PluginUpdate sortUpdates(Collection<UpdateChecker.PluginUpdate> updates,
-                                                   List<UpdateChecker.PluginUpdate> updates2) {
-        UpdateChecker.PluginUpdate core = null;
-        for (UpdateChecker.PluginUpdate update : updates) {
-            if (update.getPlugin().isCorePlugin())
-                core = update;
-            else
-                updates2.add(update);
-        }
-        // sort by name
-        Collections.sort(updates2, new Comparator<UpdateChecker.PluginUpdate>() {
-            public int compare(UpdateChecker.PluginUpdate o1, UpdateChecker.PluginUpdate o2) {
-                return o1.getPlugin().getShortDescription().compareTo(o2.getPlugin().getShortDescription());
-            }
-        });
-        // place core plugin first, if present
-        if (core != null)
-            updates2.add(0, core);
-        return core;
+        DetectorFactoryCollection.instance().addPluginUpdateListener(pluginUpdateDialog.createListener());
     }
 
     public void showMessageDialog(String message) {
@@ -1271,4 +1133,5 @@ public class MainFrame extends FBFrame implements LogSync {
             updateStatusBar();
         }
     }
+
 }

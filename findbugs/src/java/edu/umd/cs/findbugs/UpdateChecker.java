@@ -36,7 +36,7 @@ public class UpdateChecker {
     private static final Logger LOGGER = Logger.getLogger(UpdateChecker.class.getName());
     private static final String KEY_DISABLE_ALL_UPDATE_CHECKS = "noUpdateChecks";
     private static final String KEY_REDIRECT_ALL_UPDATE_CHECKS = "redirectUpdateChecks";
-    
+
     private final UpdateCheckCallback dfc;
     private List<PluginUpdate> pluginUpdates = new ArrayList<PluginUpdate>();
 
@@ -49,6 +49,9 @@ public class UpdateChecker {
             return;
 
         String redirect = dfc.getGlobalOption(KEY_REDIRECT_ALL_UPDATE_CHECKS);
+        String sysprop = System.getProperty("findbugs.redirectUpdateChecks");
+        if (sysprop != null)
+            redirect = sysprop;
         Plugin setter = dfc.getGlobalOptionSetter(KEY_REDIRECT_ALL_UPDATE_CHECKS);
         URI redirectUri = null;
         String pluginName = setter == null ? "<unknown plugin>" : setter.getShortDescription();
