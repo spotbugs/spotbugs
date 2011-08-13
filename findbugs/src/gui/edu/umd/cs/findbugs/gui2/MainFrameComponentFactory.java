@@ -113,8 +113,6 @@ public class MainFrameComponentFactory implements Serializable {
         JPanel summaryTopOuter = new JPanel(new BorderLayout());
         summaryTopOuter.add(mainFrame.getSummaryTopPanel(), BorderLayout.NORTH);
 
-        mainFrame.getSummaryHtmlArea().setToolTipText(
-                L10N.getLocalString("tooltip.longer_description", "This gives a longer description of the detected bug pattern"));
         mainFrame.getSummaryHtmlArea().setContentType("text/html");
         mainFrame.getSummaryHtmlArea().setEditable(false);
         mainFrame.getSummaryHtmlArea().addHyperlinkListener(new HyperlinkListener() {

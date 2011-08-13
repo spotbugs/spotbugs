@@ -67,7 +67,7 @@ public class NewFilterFromBug extends FBDialog {
                 closeDialog();
             }
         });
-        Util.addOkAndCancelButtons(south, okButton, cancelButton);
+        GuiUtil.addOkAndCancelButtons(south, okButton, cancelButton);
         add(south, BorderLayout.SOUTH);
 
         pack();

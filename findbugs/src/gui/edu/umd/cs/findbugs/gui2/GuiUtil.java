@@ -27,7 +27,7 @@ import javax.swing.JPanel;
 /**
  * @author pugh
  */
-public class Util {
+public class GuiUtil {
 
     public static void addOkAndCancelButtons(JPanel panel, JButton ok, JButton cancel) {
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));

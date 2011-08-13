@@ -255,7 +255,9 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
                         actuallyCheckBugsAgainstCloud();
                     } catch (RejectedExecutionException e) {
                         // I think this only happens on purpose -Keith
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
+                        if (e instanceof ExecutionException)
+                            e = e.getCause();
                         getGuiCallback().showMessageDialog("Error while checking bugs against " + getCloudName()
                                 + "\n\n" + e.getClass().getSimpleName() + ": " + e.getMessage());
                         LOGGER.log(Level.SEVERE, "Error while checking bugs against cloud in background " , e);
@@ -707,12 +709,12 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
                                 + "of the FindBugs window. Any changes you make while offline will be uploaded\n"
                                 + "to the server upon signin.");
             } else {
-                task.failed(e.getMessage());
+                task.failed(e.getClass().getSimpleName() + ": " + e.getMessage());
             }
             throw e;
 
         } catch (RuntimeException e) {
-            task.failed(e.getMessage());
+            task.failed(e.getClass().getSimpleName() + ": " + e.getMessage());
             throw e;
 
         } finally {

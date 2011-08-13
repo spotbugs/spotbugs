@@ -108,7 +108,7 @@ public abstract class CloudCommentsPane extends JPanel {
     protected BugInstance _bugInstance;
     private BugAspects _bugAspects;
 
-    private final Executor backgroundExecutor = Executors.newSingleThreadExecutor();
+    private final Executor backgroundExecutor = Executors.newCachedThreadPool();
 
     private final Cloud.CloudStatusListener _cloudStatusListener = new MyCloudStatusListener();
     private Cloud lastCloud = null;
@@ -121,8 +121,6 @@ public abstract class CloudCommentsPane extends JPanel {
     private void addNotInCloudCard() {
         final JPanel panel5 = new JPanel();
         cards.add(panel5, "NOT_IN_CLOUD");
-
-
     }
 
     public CloudCommentsPane() {
@@ -171,7 +169,8 @@ public abstract class CloudCommentsPane extends JPanel {
         designationCombo.addItem(null);
         designationCombo.setRenderer(new DefaultListCellRenderer() {
             @Override
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+                                                          boolean cellHasFocus) {
                 Component real = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (value == null)
                     return real;
@@ -319,8 +318,8 @@ public abstract class CloudCommentsPane extends JPanel {
     protected abstract void setupLinksOrButtons();
 
 
-    private void applyToBugs(boolean background, final BugAction bugAction) {
-        Executor executor = background ? backgroundExecutor : new NowExecutor();
+    private void applyToBugs(final BugAction bugAction) {
+        Executor executor = backgroundExecutor;
 
         final AtomicInteger shownErrorMessages = new AtomicInteger(0);
         for (final BugInstance bug : getSelectedBugs())
@@ -355,16 +354,27 @@ public abstract class CloudCommentsPane extends JPanel {
                 case SIGNED_OUT:
                 case SIGNIN_FAILED:
                 case UNAUTHENTICATED:
-                    try {
-                        cloud.signIn();
-                        refresh();
-                    } catch (Exception e) {
-                        _bugCollection.getProject().getGuiCallback().showMessageDialog(
-                                "The FindBugs Cloud could not be contacted at this time.\n\n" + e.getMessage());
-                    }
+                    backgroundExecutor.execute(new Runnable() {
+                        public void run() {
+                            try {
+                                cloud.signIn();
+                            } catch (Exception e) {
+                                _bugCollection.getProject().getGuiCallback().showMessageDialog(
+                                        "The FindBugs Cloud could not be contacted at this time.\n\n"
+                                                + e.getClass().getSimpleName() + ": " + e.getMessage());
+                            }
+                            refresh();
+                        }
+                    });
+                    refresh();
                     break;
                 case SIGNED_IN:
-                    cloud.signOut();
+                    backgroundExecutor.execute(new Runnable() {
+                        public void run() {
+                            cloud.signOut();
+                            refresh();
+                        }
+                    });
                     refresh();
                     break;
                 default:
@@ -410,7 +420,7 @@ public abstract class CloudCommentsPane extends JPanel {
 //            if (!confirmAnnotation(selectedBugs))
 //                return;
         final AtomicBoolean stop = new AtomicBoolean(false);
-        applyToBugs(false, new BugAction() {
+        applyToBugs(new BugAction() {
             public void execute(BugInstance bug) {
                 if (stop.get())
                     return;
@@ -461,7 +471,7 @@ public abstract class CloudCommentsPane extends JPanel {
             setDesignation(choice);
         }
         final String finalComment = comment;
-        applyToBugs(true, new BugAction() {
+        applyToBugs(new BugAction() {
             public void execute(BugInstance bug) {
                 bug.setAnnotationText(finalComment, _bugCollection);
                 refresh();
@@ -490,7 +500,6 @@ public abstract class CloudCommentsPane extends JPanel {
     }
 
     private List<BugInstance> getSelectedBugs() {
-        //TODO: why is it including filtered bugs?
         if (_bugInstance != null)
             return Collections.singletonList(_bugInstance);
         if (_bugAspects != null) {
@@ -968,12 +977,6 @@ public abstract class CloudCommentsPane extends JPanel {
 
     private interface BugAction {
         void execute(BugInstance bug);
-    }
-
-    private static class NowExecutor implements Executor {
-        public void execute(Runnable command) {
-            command.run();
-        }
     }
 
     private class CommentInfo {

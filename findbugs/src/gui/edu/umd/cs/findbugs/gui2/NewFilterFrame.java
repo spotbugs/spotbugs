@@ -162,7 +162,7 @@ public class NewFilterFrame extends FBDialog {
                 close();
             }
         });
-        Util.addOkAndCancelButtons(south, okButton, cancelButton);
+        GuiUtil.addOkAndCancelButtons(south, okButton, cancelButton);
 
         list.addMouseListener(new MouseAdapter() {
             @Override
