@@ -34,10 +34,14 @@ import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui2.FilterListener.Action;
 
+import static edu.umd.cs.findbugs.gui2.MainFrameHelper.attachAcceleratorKey;
+import static edu.umd.cs.findbugs.gui2.MainFrameHelper.newJMenu;
+import static edu.umd.cs.findbugs.gui2.MainFrameHelper.newJMenuItem;
+
 public class MainFrameMenu implements Serializable {
     private final MainFrame mainFrame;
 
-    JMenuItem reconfigMenuItem = MainFrameHelper.newJMenuItem("menu.reconfig", "Reconfigure...", KeyEvent.VK_F);
+    JMenuItem reconfigMenuItem = newJMenuItem("menu.reconfig", "Reconfigure...", KeyEvent.VK_F);
 
     JMenuItem redoAnalysis;
     JMenuItem closeProjectItem;
@@ -50,7 +54,7 @@ public class MainFrameMenu implements Serializable {
 
     JMenu viewMenu;
 
-    JMenuItem saveMenuItem = MainFrameHelper.newJMenuItem("menu.save_item", "Save", KeyEvent.VK_S);
+    JMenuItem saveMenuItem = newJMenuItem("menu.save_item", "Save", KeyEvent.VK_S);
 
     private Class<?> osxAdapter;
 
@@ -151,22 +155,22 @@ public class MainFrameMenu implements Serializable {
         JMenuBar menuBar = new JMenuBar();
 
         // Create JMenus for menuBar.
-        JMenu fileMenu = MainFrameHelper.newJMenu("menu.file_menu", "File");
+        JMenu fileMenu = newJMenu("menu.file_menu", "File");
         fileMenu.setMnemonic(KeyEvent.VK_F);
-        JMenu editMenu = MainFrameHelper.newJMenu("menu.edit_menu", "Edit");
+        JMenu editMenu = newJMenu("menu.edit_menu", "Edit");
         editMenu.setMnemonic(KeyEvent.VK_E);
 
         // Edit fileMenu JMenu object.
-        JMenuItem openMenuItem = MainFrameHelper.newJMenuItem("menu.open_item", "Open...", KeyEvent.VK_O);
-        recentMenu = MainFrameHelper.newJMenu("menu.recent", "Recent");
+        JMenuItem openMenuItem = newJMenuItem("menu.open_item", "Open...", KeyEvent.VK_O);
+        recentMenu = newJMenu("menu.recent", "Recent");
         recentMenuCache = new RecentMenu(recentMenu);
-        saveAsMenuItem = MainFrameHelper.newJMenuItem("menu.saveas_item", "Save As...", KeyEvent.VK_A);
-        JMenuItem importFilter = MainFrameHelper.newJMenuItem("menu.importFilter_item", "Import bug filters...");
-        JMenuItem exportFilter = MainFrameHelper.newJMenuItem("menu.exportFilter_item", "Export bug filters...");
+        saveAsMenuItem = newJMenuItem("menu.saveas_item", "Save As...", KeyEvent.VK_A);
+        JMenuItem importFilter = newJMenuItem("menu.importFilter_item", "Import bug filters...");
+        JMenuItem exportFilter = newJMenuItem("menu.exportFilter_item", "Export bug filters...");
 
         JMenuItem exitMenuItem = null;
         if (!MainFrame.MAC_OS_X) {
-            exitMenuItem = MainFrameHelper.newJMenuItem("menu.exit", "Exit", KeyEvent.VK_X);
+            exitMenuItem = newJMenuItem("menu.exit", "Exit", KeyEvent.VK_X);
             exitMenuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     mainFrame.callOnClose();
@@ -177,9 +181,9 @@ public class MainFrameMenu implements Serializable {
 
         JMenuItem newProjectMenuItem = null;
         if (!FindBugs.noAnalysis) {
-            newProjectMenuItem = MainFrameHelper.newJMenuItem("menu.new_item", "New Project", KeyEvent.VK_N);
+            newProjectMenuItem = newJMenuItem("menu.new_item", "New Project", KeyEvent.VK_N);
 
-            MainFrameHelper.attachAcceleratorKey(newProjectMenuItem, KeyEvent.VK_N);
+            attachAcceleratorKey(newProjectMenuItem, KeyEvent.VK_N);
 
             newProjectMenuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
@@ -189,7 +193,7 @@ public class MainFrameMenu implements Serializable {
         }
 
         reconfigMenuItem.setEnabled(false);
-        MainFrameHelper.attachAcceleratorKey(reconfigMenuItem, KeyEvent.VK_F);
+        attachAcceleratorKey(reconfigMenuItem, KeyEvent.VK_F);
         reconfigMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 if (!mainFrame.canNavigateAway())
@@ -198,7 +202,7 @@ public class MainFrameMenu implements Serializable {
             }
         });
 
-        JMenuItem mergeMenuItem = MainFrameHelper.newJMenuItem("menu.mergeAnalysis", "Merge Analysis...");
+        JMenuItem mergeMenuItem = newJMenuItem("menu.mergeAnalysis", "Merge Analysis...");
 
         mergeMenuItem.setEnabled(true);
         mergeMenuItem.addActionListener(new ActionListener() {
@@ -208,23 +212,23 @@ public class MainFrameMenu implements Serializable {
         });
 
         if (!FindBugs.noAnalysis) {
-            redoAnalysis = MainFrameHelper.newJMenuItem("menu.rerunAnalysis", "Redo Analysis", KeyEvent.VK_R);
+            redoAnalysis = newJMenuItem("menu.rerunAnalysis", "Redo Analysis", KeyEvent.VK_R);
 
             redoAnalysis.setEnabled(false);
-            MainFrameHelper.attachAcceleratorKey(redoAnalysis, KeyEvent.VK_R);
+            attachAcceleratorKey(redoAnalysis, KeyEvent.VK_R);
             redoAnalysis.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     mainFrame.redoAnalysis();
                 }
             });
-            MainFrameHelper.attachAcceleratorKey(redoAnalysis, KeyEvent.VK_R);
+            attachAcceleratorKey(redoAnalysis, KeyEvent.VK_R);
             redoAnalysis.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     mainFrame.redoAnalysis();
                 }
             });
         }
-        closeProjectItem = MainFrameHelper.newJMenuItem("menu.closeProject", "Close Project");
+        closeProjectItem = newJMenuItem("menu.closeProject", "Close Project");
         closeProjectItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 mainFrame.getMainFrameLoadSaveHelper().closeProject();
@@ -235,7 +239,7 @@ public class MainFrameMenu implements Serializable {
 
 
         openMenuItem.setEnabled(true);
-        MainFrameHelper.attachAcceleratorKey(openMenuItem, KeyEvent.VK_O);
+        attachAcceleratorKey(openMenuItem, KeyEvent.VK_O);
         openMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 mainFrame.getMainFrameLoadSaveHelper().open();
@@ -258,7 +262,7 @@ public class MainFrameMenu implements Serializable {
             }
         });
         saveMenuItem.setEnabled(false);
-        MainFrameHelper.attachAcceleratorKey(saveMenuItem, KeyEvent.VK_S);
+        attachAcceleratorKey(saveMenuItem, KeyEvent.VK_S);
         saveMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 mainFrame.getMainFrameLoadSaveHelper().save();
@@ -297,13 +301,13 @@ public class MainFrameMenu implements Serializable {
         JMenuItem cutMenuItem = new JMenuItem(new CutAction());
         JMenuItem copyMenuItem = new JMenuItem(new CopyAction());
         JMenuItem pasteMenuItem = new JMenuItem(new PasteAction());
-        preferencesMenuItem = MainFrameHelper.newJMenuItem("menu.preferences_menu", "Preferences...");
-        groupByMenuItem = MainFrameHelper.newJMenuItem("menu.sortConfiguration", "Sort Configuration...");
-        JMenuItem goToLineMenuItem = MainFrameHelper.newJMenuItem("menu.gotoLine", "Go to line...");
+        preferencesMenuItem = newJMenuItem("menu.preferences_menu", "Preferences...");
+        groupByMenuItem = newJMenuItem("menu.sortConfiguration", "Sort Configuration...");
+        JMenuItem goToLineMenuItem = newJMenuItem("menu.gotoLine", "Go to line...");
 
-        MainFrameHelper.attachAcceleratorKey(cutMenuItem, KeyEvent.VK_X);
-        MainFrameHelper.attachAcceleratorKey(copyMenuItem, KeyEvent.VK_C);
-        MainFrameHelper.attachAcceleratorKey(pasteMenuItem, KeyEvent.VK_V);
+        attachAcceleratorKey(cutMenuItem, KeyEvent.VK_X);
+        attachAcceleratorKey(copyMenuItem, KeyEvent.VK_C);
+        attachAcceleratorKey(pasteMenuItem, KeyEvent.VK_V);
 
         preferencesMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -320,7 +324,7 @@ public class MainFrameMenu implements Serializable {
             }
         });
 
-        MainFrameHelper.attachAcceleratorKey(goToLineMenuItem, KeyEvent.VK_L);
+        attachAcceleratorKey(goToLineMenuItem, KeyEvent.VK_L);
         goToLineMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 mainFrame.getGuiLayout().makeSourceVisible();
@@ -351,13 +355,13 @@ public class MainFrameMenu implements Serializable {
         if (windowMenu != null)
             menuBar.add(windowMenu);
 
-        viewMenu = MainFrameHelper.newJMenu("menu.view", "View");
+        viewMenu = newJMenu("menu.view", "View");
         setViewMenu();
         menuBar.add(viewMenu);
 
         final ActionMap map = mainFrame.getMainFrameTree().getTree().getActionMap();
 
-        JMenu navMenu = MainFrameHelper.newJMenu("menu.navigation", "Navigation");
+        JMenu navMenu = newJMenu("menu.navigation", "Navigation");
 
         addNavItem(map, navMenu, "menu.expand", "Expand", "expand", KeyEvent.VK_RIGHT);
         addNavItem(map, navMenu, "menu.collapse", "Collapse", "collapse", KeyEvent.VK_LEFT);
@@ -366,7 +370,7 @@ public class MainFrameMenu implements Serializable {
 
         menuBar.add(navMenu);
 
-        JMenu designationMenu = MainFrameHelper.newJMenu("menu.designation", "Designation");
+        JMenu designationMenu = newJMenu("menu.designation", "Designation");
         int i = 0;
         int keyEvents[] = { KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6,
                 KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9 };
@@ -379,8 +383,8 @@ public class MainFrameMenu implements Serializable {
         if (!MainFrame.MAC_OS_X) {
             // On Mac, 'About' appears under Findbugs menu, so no need for it
             // here
-            JMenu helpMenu = MainFrameHelper.newJMenu("menu.help_menu", "Help");
-            JMenuItem aboutItem = MainFrameHelper.newJMenuItem("menu.about_item", "About FindBugs");
+            JMenu helpMenu = newJMenu("menu.help_menu", "Help");
+            JMenuItem aboutItem = newJMenuItem("menu.about_item", "About FindBugs");
             helpMenu.add(aboutItem);
 
             aboutItem.addActionListener(new ActionListener() {
@@ -636,7 +640,7 @@ public class MainFrameMenu implements Serializable {
      */
     private void addNavItem(final ActionMap map, JMenu navMenu, String menuNameKey, String menuNameDefault, String actionName,
             int keyEvent) {
-        JMenuItem toggleItem = MainFrameHelper.newJMenuItem(menuNameKey, menuNameDefault);
+        JMenuItem toggleItem = newJMenuItem(menuNameKey, menuNameDefault);
         toggleItem.addActionListener(mainFrame.getMainFrameTree().treeActionAdapter(map, actionName));
         MainFrameHelper.attachAcceleratorKeyNoCtrl(toggleItem, keyEvent);
         navMenu.add(toggleItem);
