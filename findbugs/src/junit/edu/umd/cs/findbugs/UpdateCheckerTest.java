@@ -26,7 +26,7 @@ public class UpdateCheckerTest extends TestCase {
         final StringBuilder printed = new StringBuilder();
         final StringBuilder errors = new StringBuilder();
         UpdateChecker checker = new UpdateChecker(new UpdateCheckCallback() {
-            public void pluginUpdateCheckComplete(List<UpdateChecker.PluginUpdate> updates) {
+            public void pluginUpdateCheckComplete(List<UpdateChecker.PluginUpdate> updates, boolean force) {
             }
 
             public String getGlobalOption(String key) {

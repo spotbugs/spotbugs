@@ -44,7 +44,7 @@ public class UpdateChecker {
         this.dfc = dfc;
     }
 
-    void checkForUpdates(Collection<Plugin> plugins) {
+    public void checkForUpdates(Collection<Plugin> plugins, final boolean force) {
         if (updateChecksGloballyDisabled())
             return;
 
@@ -90,7 +90,7 @@ public class UpdateChecker {
             public void run() {
                 try {
                     latch.await();
-                    dfc.pluginUpdateCheckComplete(pluginUpdates);
+                    dfc.pluginUpdateCheckComplete(pluginUpdates, force);
                 } catch (Exception e) {
                 }
 
@@ -98,21 +98,26 @@ public class UpdateChecker {
         }, "Plugin update checker");
     }
 
-    private boolean updateChecksGloballyDisabled() {
+    public boolean updateChecksGloballyDisabled() {
+        return getPluginThatDisabledUpdateChecks() != null;
+    }
+
+    public String getPluginThatDisabledUpdateChecks() {
         String disable = dfc.getGlobalOption(KEY_DISABLE_ALL_UPDATE_CHECKS);
         Plugin setter = dfc.getGlobalOptionSetter(KEY_DISABLE_ALL_UPDATE_CHECKS);
         String pluginName = setter == null ? "<unknown plugin>" : setter.getShortDescription();
+        String disablingPlugin = null;
         if ("true".equalsIgnoreCase(disable)) {
             logError(Level.INFO, "Skipping update checks due to " + KEY_DISABLE_ALL_UPDATE_CHECKS + "=true set by "
                     + pluginName);
-            return true;
+            disablingPlugin = pluginName;
         }
         if (disable != null && !"false".equalsIgnoreCase(disable)) {
             String error = "Unknown value '" + disable + "' for " + KEY_DISABLE_ALL_UPDATE_CHECKS + " in " + pluginName;
             logError(Level.SEVERE, error);
             throw new IllegalStateException(error);
         }
-        return false;
+        return disablingPlugin;
     }
 
     private void startUpdateCheckThread(final URI url, final Collection<Plugin> plugins, final CountDownLatch latch) {

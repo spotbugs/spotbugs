@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -35,16 +36,18 @@ public class PluginUpdateDialog implements Serializable {
 
     private static final int SOFTWARE_UPDATE_DIALOG_DELAY_MS = 5000;
 
-    public void showUpdateDialog(Collection<UpdateChecker.PluginUpdate> updates) {
+    public void showUpdateDialog(Collection<UpdateChecker.PluginUpdate> updates, boolean force) {
         List<UpdateChecker.PluginUpdate> sortedUpdates = new ArrayList<UpdateChecker.PluginUpdate>();
         UpdateChecker.PluginUpdate core = sortUpdates(updates, sortedUpdates);
 
-        if (updatesHaveBeenSeenBefore(sortedUpdates))
+        if (updatesHaveBeenSeenBefore(sortedUpdates) && !force)
             return;
 
         String headline;
         if (core != null && updates.size() >= 2)
             headline = "FindBugs and some plugins have updates";
+        else if (updates.isEmpty())
+            headline = "FindBugs and all plugins are up to date!";
         else if (core == null)
             headline = "Some FindBugs plugins have updates";
         else
@@ -60,30 +63,32 @@ public class PluginUpdateDialog implements Serializable {
             headlineLabel.setFont(headlineLabel.getFont().deriveFont(Font.BOLD, 24));
             comp.add(headlineLabel, gbc);
         }
-        int i = 1;
-        for (final UpdateChecker.PluginUpdate update : sortedUpdates) {
-            gbc.gridy = ++i;
-            gbc.gridx = 1;
-            gbc.fill = GridBagConstraints.BOTH;
-            gbc.gridwidth = 1;
-            gbc.weightx = 1;
-            JLabel label = createPluginLabel(update);
-            comp.add(label, gbc);
-            gbc.weightx = 0;
-            gbc.gridx = 2;
-            if (update.getUrl() != null && update.getUrl().length() > 0) {
-                JButton button = createPluginUpdateButton(comp, update);
-                comp.add(button, gbc);
-            }
-            String msg = update.getMessage();
-            if (msg != null && msg.length() > 0) {
-                gbc.gridx = 1;
-                gbc.gridwidth = 3;
-                gbc.weightx = 1;
-                gbc.fill = GridBagConstraints.BOTH;
+        if (!updates.isEmpty()) {
+            int i = 1;
+            for (final UpdateChecker.PluginUpdate update : sortedUpdates) {
                 gbc.gridy = ++i;
-                JTextPane msgpane = createMessagePane(msg);
-                comp.add(msgpane, gbc);
+                gbc.gridx = 1;
+                gbc.fill = GridBagConstraints.BOTH;
+                gbc.gridwidth = 1;
+                gbc.weightx = 1;
+                JLabel label = createPluginLabel(update);
+                comp.add(label, gbc);
+                gbc.weightx = 0;
+                gbc.gridx = 2;
+                if (update.getUrl() != null && update.getUrl().length() > 0) {
+                    JButton button = createPluginUpdateButton(comp, update);
+                    comp.add(button, gbc);
+                }
+                String msg = update.getMessage();
+                if (msg != null && msg.length() > 0) {
+                    gbc.gridx = 1;
+                    gbc.gridwidth = 3;
+                    gbc.weightx = 1;
+                    gbc.fill = GridBagConstraints.BOTH;
+                    gbc.gridy = ++i;
+                    JTextPane msgpane = createMessagePane(msg);
+                    comp.add(msgpane, gbc);
+                }
             }
         }
         JOptionPane.showMessageDialog(null, comp, "Software Updates", JOptionPane.INFORMATION_MESSAGE);
@@ -180,25 +185,32 @@ public class PluginUpdateDialog implements Serializable {
     }
 
     private class MyPluginUpdateListener implements PluginUpdateListener {
-        public void pluginUpdateCheckComplete(final Collection<UpdateChecker.PluginUpdate> updates) {
-            if (updates.isEmpty())
+        public void pluginUpdateCheckComplete(final Collection<UpdateChecker.PluginUpdate> updates, final boolean force) {
+            if (updates.isEmpty() && !force)
                 return;
 
-            // wait 5 seconds before showing dialog
-            edu.umd.cs.findbugs.util.Util.runInDameonThread(new Runnable() {
-                public void run() {
-                    try {
-                        Thread.sleep(SOFTWARE_UPDATE_DIALOG_DELAY_MS);
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                showUpdateDialog(updates);
-                            }
-                        });
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+            if (force)
+                showUpdateDialogInSwingThread(updates, force);
+            else
+                // wait 5 seconds before showing dialog
+                edu.umd.cs.findbugs.util.Util.runInDameonThread(new Runnable() {
+                    public void run() {
+                        try {
+                            Thread.sleep(SOFTWARE_UPDATE_DIALOG_DELAY_MS);
+                            showUpdateDialogInSwingThread(updates, force);
+                        } catch (InterruptedException e) {
+                            LOGGER.log(Level.FINE, "Software update dialog thread interrupted", e);
+                        }
                     }
+                }, "Software Update Dialog");
+        }
+
+        private void showUpdateDialogInSwingThread(final Collection<UpdateChecker.PluginUpdate> updates, final boolean force) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    showUpdateDialog(updates, force);
                 }
-            }, "Software Update Dialog");
+            });
         }
     }
 }

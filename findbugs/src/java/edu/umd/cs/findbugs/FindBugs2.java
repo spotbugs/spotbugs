@@ -1307,7 +1307,7 @@ public class FindBugs2 implements IFindBugsEngine {
         final AtomicReference<Collection<UpdateChecker.PluginUpdate>> updatesHolder
                 = new AtomicReference<Collection<UpdateChecker.PluginUpdate>>();
         DetectorFactoryCollection.instance().addPluginUpdateListener(new PluginUpdateListener() {
-            public void pluginUpdateCheckComplete(Collection<UpdateChecker.PluginUpdate> updates) {
+            public void pluginUpdateCheckComplete(Collection<UpdateChecker.PluginUpdate> updates, boolean force) {
                 updatesHolder.set(updates);
                 latch.countDown();
             }

@@ -25,10 +25,12 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.TextAction;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.UpdateChecker;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -390,6 +392,21 @@ public class MainFrameMenu implements Serializable {
             aboutItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     mainFrame.about();
+                }
+            });
+
+            JMenuItem updateItem = newJMenuItem("menu.check_for_updates", "Check for Updates...");
+            UpdateChecker checker = DetectorFactoryCollection.instance().getUpdateChecker();
+            boolean disabled = checker.updateChecksGloballyDisabled();
+            updateItem.setEnabled(!disabled);
+            if (disabled)
+                updateItem.setToolTipText("Update checks disabled by plugin: "
+                        + checker.getPluginThatDisabledUpdateChecks());
+            helpMenu.add(updateItem);
+
+            updateItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    DetectorFactoryCollection.instance().checkForUpdates(true);
                 }
             });
             menuBar.add(helpMenu);

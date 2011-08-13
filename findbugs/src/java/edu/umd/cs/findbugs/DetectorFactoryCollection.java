@@ -57,7 +57,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
 
     private static final Logger LOGGER = Logger.getLogger(DetectorFactoryCollection.class.getName());
     private static final boolean DEBUG_JAWS = SystemProperties.getBoolean("findbugs.jaws.debug");
-    private static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
+//    private static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
 
     private static DetectorFactoryCollection theInstance;
     private static final Object lock = new Object();
@@ -76,6 +76,8 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
     private CopyOnWriteArrayList<PluginUpdateListener> pluginUpdateListeners
             = new CopyOnWriteArrayList<PluginUpdateListener>();
     private List<UpdateChecker.PluginUpdate> updates = null;
+    private boolean updatesForced = false;
+    private Collection<Plugin> pluginsToUpdate = Collections.emptySet();
 
     protected DetectorFactoryCollection() {
         loadCorePlugin();
@@ -89,14 +91,27 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         }
         setGlobalOptions();
         updateChecker = new UpdateChecker(this);
-        updateChecker.checkForUpdates(combine(corePlugin, enabledPlugins));
+        checkForUpdatesInit(combine(corePlugin, enabledPlugins));
+    }
+
+    /**
+     * @param force whether the updates should be shown to the user no matter what - even if the updates have been
+     *        seen before
+     */
+    public void checkForUpdates(boolean force) {
+        updateChecker.checkForUpdates(pluginsToUpdate, force);
+    }
+
+    private void checkForUpdatesInit(Collection<Plugin> plugins) {
+        this.pluginsToUpdate = plugins;
+        updateChecker.checkForUpdates(plugins, false);
     }
 
     protected DetectorFactoryCollection(Plugin onlyPlugin) {
         loadPlugin(onlyPlugin);
         setGlobalOptions();
         updateChecker = new UpdateChecker(this);
-        updateChecker.checkForUpdates(combine(corePlugin, Collections.singleton(onlyPlugin)));
+        checkForUpdatesInit(combine(corePlugin, Collections.singleton(onlyPlugin)));
     }
 
     protected DetectorFactoryCollection(Collection<Plugin> enabled) {
@@ -110,7 +125,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
             System.out.println("}\n");
         setGlobalOptions();
         updateChecker = new UpdateChecker(this);
-        updateChecker.checkForUpdates(combine(corePlugin, enabled));
+        checkForUpdatesInit(combine(corePlugin, enabled));
     }
 
     private Collection<Plugin> combine(Plugin corePlugin, Collection<Plugin> enabled) {
@@ -397,11 +412,13 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         }
     }
 
-    public void pluginUpdateCheckComplete(List<UpdateChecker.PluginUpdate> updates) {
+    @SuppressWarnings({"ConstantConditions"})
+    public void pluginUpdateCheckComplete(List<UpdateChecker.PluginUpdate> updates, boolean force) {
         this.updates = updates;
+        this.updatesForced = force;
         for (PluginUpdateListener listener : pluginUpdateListeners) {
             try {
-                listener.pluginUpdateCheckComplete(updates);
+                listener.pluginUpdateCheckComplete(updates, force);
             } catch (Throwable e) {
                 LOGGER.log(Level.INFO, "Error during update check callback", e);
             }
@@ -411,7 +428,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
     public void addPluginUpdateListener(PluginUpdateListener listener) {
         pluginUpdateListeners.add(listener);
         if (updates != null)
-            listener.pluginUpdateCheckComplete(updates);
+            listener.pluginUpdateCheckComplete(updates, updatesForced);
     }
 
     public  Map<String, CloudPlugin> getRegisteredClouds() {
@@ -549,6 +566,10 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
 
     public Collection<BugCategory> getBugCategoryObjects() {
         return categoryDescriptionMap.values(); // backed by the Map
+    }
+
+    public UpdateChecker getUpdateChecker() {
+        return updateChecker;
     }
 }
 
