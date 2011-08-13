@@ -18,6 +18,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class UpdateCheckServlet extends AbstractFlybushServlet {
+
+    public static String getUpdateXmlQuery(PersistenceHelper persistenceHelper) {
+        return "select from " + persistenceHelper.getDbPluginUpdateXmlClassname()
+                + " order by date desc limit 1";
+    }
+    
     @SuppressWarnings({"unchecked"})
     @Override
     protected void handlePost(PersistenceManager pm, HttpServletRequest req, HttpServletResponse resp, String uri)
@@ -95,8 +101,7 @@ public class UpdateCheckServlet extends AbstractFlybushServlet {
         resp.setContentType("text/xml");
         try {
             List<DbPluginUpdateXml> results = (List<DbPluginUpdateXml>) pm.newQuery(
-                    "select from " + persistenceHelper.getDbPluginUpdateXmlClassname()
-                    + " order by date desc limit 1").execute();
+                    getUpdateXmlQuery(persistenceHelper)).execute();
             if (results.size() > 0)
                 resp.getWriter().write(results.get(0).getContents());
         } catch (Exception e) {

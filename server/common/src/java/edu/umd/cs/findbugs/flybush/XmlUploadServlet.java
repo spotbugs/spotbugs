@@ -4,10 +4,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Transaction;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,10 +18,17 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class XmlUploadServlet extends AbstractFlybushServlet {
     private static final Logger LOGGER =
             Logger.getLogger(FileUpload.class.getName());
+
+    @Override
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setStatus(200);
+        printForm(getPersistenceManager(), resp);
+    }
 
     @Override
     protected void handlePost(PersistenceManager pm, HttpServletRequest req, HttpServletResponse resp, String uri)
@@ -47,7 +56,7 @@ public class XmlUploadServlet extends AbstractFlybushServlet {
                     byte[] array = bout.toByteArray();
                     if (array.length == 0)
                         throw new RuntimeException("No data received");
-                   
+
                     LOGGER.info("Stored XML file - " + array.length + " bytes");
                     DbPluginUpdateXml xml = persistenceHelper.createPluginUpdateXml(new String(array, "UTF-8"));
                     xml.setDate(new Date());
@@ -65,11 +74,39 @@ public class XmlUploadServlet extends AbstractFlybushServlet {
                 }
             }
             if (!stored)
-                throw new RuntimeException("Did not receive file!");
-            else
-                setResponse(resp, 200, "Success!");
+                printForm(pm, resp);
         } catch (FileUploadException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private void printForm(PersistenceManager pm, HttpServletResponse resp) throws IOException {
+        List<DbPluginUpdateXml> xmls = (List<DbPluginUpdateXml>) pm.newQuery(
+                UpdateCheckServlet.getUpdateXmlQuery(persistenceHelper)).execute();
+        String currentXml;
+        if (xmls.isEmpty())
+            currentXml = "(no update xml has been uploaded yet)";
+        else
+            currentXml = xmls.get(0).getContents();
+
+        resp.setContentType("text/html");
+        resp.getWriter().print(
+                "<html>\n" +
+                        "<head>\n" +
+                        "  <title>File Upload</title>\n" +
+                        "</head>\n" +
+                        "<body>\n" +
+                        "  <form method=\"post\" action=\"upload\" enctype=\"multipart/form-data\">\n" +
+                        "    <input type=\"file\" name=\"file\" />\n" +
+                        "    <input type=\"submit\" value=\"Upload\" />\n" +
+                        "  </form>\n" +
+                        "<h3>Current XML:</h3>" +
+                        "<div style='font-family: monospace; height: 400px; overflow:auto; width: 600px; " +
+                        "border: 2px solid gray; background-color: #ddf'>" +
+                        StringEscapeUtils.escapeHtml(currentXml).replaceAll("\n", "<br>\n").replaceAll(" ", "&nbsp;")
+                        + "</div>" +
+                        "</body>\n" +
+                        "</html>");
     }
 }
