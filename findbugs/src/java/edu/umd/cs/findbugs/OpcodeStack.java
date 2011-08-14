@@ -2558,7 +2558,7 @@ public class OpcodeStack implements Constants2 {
                 stack.resetForMethodEntry0(ClassName.toSlashedClassName(jclass.getClassName()), method);
                 branchAnalysis.doVisitMethod(method);
                 int newCount = stack.jumpEntries.size();
-                if (xMethod.hasBackBranch() != stack.backwardsBranch) {
+                if (xMethod.hasBackBranch() != stack.backwardsBranch && !stack.encountedTop) {
                     AnalysisContext.logError(
                             String.format("For %s, mismatch on existence of backedge: %s for precomputation, %s for bytecode analysis",
                                     xMethod, xMethod.hasBackBranch(), stack.backwardsBranch));
