@@ -24,6 +24,10 @@ This plugin code for synchronizing with a JDBC based cloud
 	<Details>Comments are stored in a MySQL database at a location that must be configured</Details>
     </Cloud>
 
+
+  <FindBugsMain cmd="dbStats" class="edu.umd.cs.findbugs.cloud.db.DBStats">
+    <Description>XXXXXX</Description>
+  </FindBugsMain>
   </MessageCollection>
 
 

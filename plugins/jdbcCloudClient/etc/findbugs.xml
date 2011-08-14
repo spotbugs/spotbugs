@@ -16,5 +16,7 @@
                     <Property key="findbugs.jdbc.dbPassword"></Property>
           </Cloud>
 
+       <FindBugsMain cmd="dbStats" kind="db" class="edu.umd.cs.findbugs.cloud.db.DBStats"/>
+       
 
 </FindbugsPlugin>
