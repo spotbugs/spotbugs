@@ -277,12 +277,11 @@ public class DroppedException extends PreorderVisitor implements Detector {
                     String name = lva.getName();
                     if (DEBUG) {
                         System.out.println("Name: " + name);
-                        if (name.startsWith("ignore"))
-                            continue;
                     }
-                    
+                    if (name.startsWith("ignore"))
+                        continue;
                 }
-                    
+
 
                 if (DEBUG) {
                     System.out.println("Priority is " + priority);
