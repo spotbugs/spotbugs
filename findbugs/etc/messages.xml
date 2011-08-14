@@ -54,37 +54,11 @@ This plugin contains all of the standard FindBugs detectors.
   <FindBugsMain cmd="merge" class="edu.umd.cs.findbugs.workflow.Update">
     <Description>Combine analysis results from different versions of software to produce multi-version analysis results </Description>
   </FindBugsMain>
-  <FindBugsMain cmd="copySource" class="edu.umd.cs.findbugs.workflow.CopyBuggySource">
-    <Description>Copy all the source files referenced in analysis results to a src directory</Description>
-  </FindBugsMain>
-  <FindBugsMain cmd="rejar" class="edu.umd.cs.findbugs.workflow.RejarClassesForAnalysis">
-    <Description>Combine multiple jar files into jar files for analysis</Description>
-  </FindBugsMain>
-  <FindBugsMain cmd="dd" class="edu.umd.cs.findbugs.workflow.DefectDensity">
-    <Description>List the defect density by package and class</Description>
-  </FindBugsMain>
-  <FindBugsMain cmd="msv" class="edu.umd.cs.findbugs.workflow.MergeSummarizeAndView">
-    <Description>XXXXXX</Description>
-  </FindBugsMain>
-  <FindBugsMain cmd="backdate" class="edu.umd.cs.findbugs.workflow.BackdateHistoryUsingSource">
-    <Description>Use the last-modified date of source files to back date the introduction
-            of bugs</Description>
-  </FindBugsMain>
-  <FindBugsMain cmd="csr" class="edu.umd.cs.findbugs.workflow.CloudSyncAndReport">
-    <Description>XXXXXX</Description>
-  </FindBugsMain>
-  <FindBugsMain cmd="appVersion" class="edu.umd.cs.findbugs.workflow.PrintAppVersion">
-    <Description>XXXXXX</Description>
-  </FindBugsMain>
-  <FindBugsMain cmd="dbStats" class="edu.umd.cs.findbugs.cloud.db.DBStats">
-    <Description>XXXXXX</Description>
-  </FindBugsMain>
+  
   <FindBugsMain cmd="dis" class="edu.umd.cs.findbugs.workflow.PrintClass">
     <Description>Disassemble a class file</Description>
   </FindBugsMain>
-  <FindBugsMain cmd="xpath" class="edu.umd.cs.findbugs.xml.XPathFind">
-    <Description>Perform an xpath query on an XML file</Description>
-  </FindBugsMain>
+
   <!-- On changing this, please also update default cloud id in FindbugsPlugin -->
   <Cloud id="edu.umd.cs.findbugs.cloud.doNothingCloud">
     <Description>(cloud disabled)</Description>

@@ -59,24 +59,8 @@
           <FindBugsMain cmd="history" kind="history" class="edu.umd.cs.findbugs.workflow.MineBugHistory"/>
           <FindBugsMain cmd="union" kind="history" class="edu.umd.cs.findbugs.workflow.UnionResults"/>
           <FindBugsMain cmd="merge" kind="history" class="edu.umd.cs.findbugs.workflow.Update"/>
-          
-          <FindBugsMain cmd="copySource" kind="poweruser" class="edu.umd.cs.findbugs.workflow.CopyBuggySource"/>
-          <FindBugsMain cmd="rejar" kind="poweruser" class="edu.umd.cs.findbugs.workflow.RejarClassesForAnalysis"/>
-          <FindBugsMain cmd="dd" kind="poweruser" class="edu.umd.cs.findbugs.workflow.DefectDensity"/>
-          <FindBugsMain cmd="msv" kind="poweruser" class="edu.umd.cs.findbugs.workflow.MergeSummarizeAndView"/>
-          <FindBugsMain cmd="rejar" kind="poweruser" class="edu.umd.cs.findbugs.workflow.RejarClassesForAnalysis"/>
-          <FindBugsMain cmd="backdate" kind="poweruser" class="edu.umd.cs.findbugs.workflow.BackdateHistoryUsingSource"/>
-          <FindBugsMain cmd="csr" kind="poweruser" class="edu.umd.cs.findbugs.workflow.CloudSyncAndReport"/>
-          <FindBugsMain cmd="appVersion" kind="poweruser" class="edu.umd.cs.findbugs.workflow.PrintAppVersion"/>
-          
-          <FindBugsMain cmd="dbStats" kind="db" class="edu.umd.cs.findbugs.cloud.db.DBStats"/>
-          
-          <FindBugsMain cmd="dis" kind="utility" class="edu.umd.cs.findbugs.workflow.PrintClass"/>
-          <FindBugsMain cmd="xpath" kind="utility" class="edu.umd.cs.findbugs.xml.XPathFind"/>
-          
-                                                                                                                                
-          
-          
+                  
+          <FindBugsMain cmd="dis" kind="utility" class="edu.umd.cs.findbugs.workflow.PrintClass"/> 
           
           <OrderingConstraints>
                     <SplitPass>
