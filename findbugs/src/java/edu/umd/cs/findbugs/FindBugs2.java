@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.CheckForNull;
@@ -1291,6 +1292,7 @@ public class FindBugs2 implements IFindBugsEngine {
                 for(DetectorFactory factory : plugin.getDetectorFactories()) {
                     System.out.printf("  detector %s%n", factory.getShortName());
                 }
+                System.out.println();
             }
 
             printPluginUpdates();
@@ -1312,7 +1314,7 @@ public class FindBugs2 implements IFindBugsEngine {
                 latch.countDown();
             }
         });
-        latch.await();
+        if (latch.await(15,TimeUnit.SECONDS)) {
         Collection<UpdateChecker.PluginUpdate> updates = updatesHolder.get();
         if (updates.isEmpty()) {
             System.out.println("none!");
@@ -1329,6 +1331,8 @@ public class FindBugs2 implements IFindBugsEngine {
                 System.out.println("Visit " + update.getUrl() + " for details.");
                 System.out.println("");
             }
+        }} else {
+            System.out.println("Timeout while trying to get updates");
         }
     }
 
