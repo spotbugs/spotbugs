@@ -79,10 +79,13 @@ public class FindPuzzlers extends OpcodeStackDetector {
         resetIMulCastLong();
         imul_distance = 10000;
         ternaryConversionState = 0;
+        becameTop = -1;
         super.visit(obj);
         bugAccumulator.reportAccumulatedBugs();
+        pendingUnreachableBranch = null;
     }
 
+    int becameTop;
     int imul_constant;
 
     int imul_distance;
@@ -149,10 +152,34 @@ public class FindPuzzlers extends OpcodeStackDetector {
         return Math.abs(((Integer) constant).intValue()) * mul;
 
     }
+    
+    @Override
+    public boolean beforeOpcode(int seen) {
+        super.beforeOpcode(seen);
+        return true;
+    }
+
+    BugInstance pendingUnreachableBranch;
 
     @Override
     public void sawOpcode(int seen) {
-
+        
+        if (stack.isTop()) {
+            pendingUnreachableBranch = null;
+            if (becameTop == -1)
+                becameTop = getPC();
+            if (seen == GOTO && getBranchTarget() < becameTop)  {
+                pendingUnreachableBranch = new BugInstance(this, "TESTING", NORMAL_PRIORITY)
+                .addClassAndMethod(this).addString("Unreachable loop body").addSourceLineRange(this, becameTop, getPC());
+            }
+            return;
+           
+        }
+        if (pendingUnreachableBranch != null) {
+           bugReporter.reportBug(pendingUnreachableBranch);
+           pendingUnreachableBranch = null;
+        }
+        becameTop = -1;
 
         if (seen == INVOKESPECIAL && getNameConstantOperand().equals("<init>") && getSigConstantOperand().equals("(Ljava/util/Collection;)V")
                    && getClassConstantOperand().contains("Set")
