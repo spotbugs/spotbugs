@@ -278,7 +278,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
                     if (DEBUG) {
                         System.out.println("Name: " + name);
                     }
-                    if (name.startsWith("ignore"))
+                    if (name.startsWith("ignore") || name.startsWith("cant"))
                         continue;
                 }
 
