@@ -4,18 +4,44 @@
                   xsi:noNamespaceSchemaLocation="messagecollection.xsd">
 
   <Plugin>
-    <ShortDescription>Disable all FindBugs update checks</ShortDescription>
+    <ShortDescription>Power user commnand lint tools</ShortDescription>
     <Details>
 <![CDATA[
 <p>
-FindBugs can check for updates to FindBugs or plugins by checking
-with web services provided by FindBugs or by plugins.
-This plugin disables all update checks. 
+Poweruser command line tools
 </p>
 ]]>
     </Details>
-  </Plugin>
+   </Plugin>
+    
 
+<FindBugsMain cmd="copySource" class="edu.umd.cs.findbugs.workflow.CopyBuggySource">
+    <Description>Copy all the source files referenced in analysis results to a src directory</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="rejar" class="edu.umd.cs.findbugs.workflow.RejarClassesForAnalysis">
+    <Description>Combine multiple jar files into jar files for analysis</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="dd" class="edu.umd.cs.findbugs.workflow.DefectDensity">
+    <Description>List the defect density by package and class</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="msv" class="edu.umd.cs.findbugs.workflow.MergeSummarizeAndView">
+    <Description>XXXXXX</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="backdate" class="edu.umd.cs.findbugs.workflow.BackdateHistoryUsingSource">
+    <Description>Use the last-modified date of source files to back date the introduction
+            of bugs</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="csr" class="edu.umd.cs.findbugs.workflow.CloudSyncAndReport">
+    <Description>XXXXXX</Description>
+  </FindBugsMain>
+  <FindBugsMain cmd="appVersion" class="edu.umd.cs.findbugs.workflow.PrintAppVersion">
+    <Description>XXXXXX</Description>
+  </FindBugsMain>
+  
+    <FindBugsMain cmd="xpath" class="edu.umd.cs.findbugs.xml.XPathFind">
+    <Description>Perform an xpath query on an XML file</Description>
+  </FindBugsMain>
+  
   </MessageCollection>
 
 
