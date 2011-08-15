@@ -49,19 +49,20 @@ import edu.umd.cs.findbugs.workflow.UnionResults;
  * @ant.task category="utility"
  * 
  */
+@Deprecated
 public class UnionBugs extends Task {
 
-    private List<FileSet> sets = new ArrayList<FileSet>();
+    private List<FileSet> fileSets = new ArrayList<FileSet>();
 
     private String into;
 
     /**
      * The fileset containing all the findbugs xml files that need to be merged
      * 
-     * @param set
+     * @param arg
      */
-    public void addFileset(FileSet set) {
-        sets.add(set);
+    public void addFileset(FileSet arg) {
+        fileSets.add(arg);
     }
 
     /**
@@ -109,7 +110,7 @@ public class UnionBugs extends Task {
 
     private List<File> createListOfAllFilesToMerge() {
         List<File> fileList = new ArrayList<File>();
-        for (FileSet s : sets) {
+        for (FileSet s : fileSets) {
             File fromDir = s.getDir(getProject());
             for (String file : s.getDirectoryScanner(getProject()).getIncludedFiles()) {
                 fileList.add(new File(fromDir, file));

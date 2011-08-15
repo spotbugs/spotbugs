@@ -401,5 +401,10 @@ public abstract class AbstractFindBugsTask extends Task {
 
     protected abstract void beforeExecuteJavaProcess();
 
-    protected abstract void afterExecuteJavaProcess(int rc);
+    protected void afterExecuteJavaProcess(int rc) {
+        if (rc != 0)
+            throw new BuildException("execution of " + getTaskName() + " failed");
+
+    }
+
 }

@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.FileSet;
 
+import edu.umd.cs.findbugs.workflow.UnionResults;
+
 /**
  * An ant task that is wraps the behavior of the UnionResults executable into an
  * ant task.
@@ -51,12 +53,22 @@ public class UnionBugs2 extends AbstractFindBugsTask {
         setFailOnError(true);
     }
 
-    public void setTo(String arg) {
-        this.to = arg;
-    }
-
+    /**
+     * The fileset containing all the findbugs xml files that need to be merged
+     * 
+     * @param arg
+     */
     public void addFileset(FileSet arg) {
         this.fileSets.add(arg);
+    }
+    
+    /**
+     * The File everything should get merged into
+     * 
+     * @param file
+     */
+    public void setTo(String arg) {
+        this.to = arg;
     }
 
     @Override
@@ -70,13 +82,7 @@ public class UnionBugs2 extends AbstractFindBugsTask {
             throw new BuildException("fileset is required");
     }
 
-    @Override
-    protected void afterExecuteJavaProcess(int rc) {
-        if (rc != 0)
-            throw new BuildException("execution of " + getTaskName() + " failed");
-
-    }
-
+  
     @Override
     protected void beforeExecuteJavaProcess() {
         log("unioning bugs...");
