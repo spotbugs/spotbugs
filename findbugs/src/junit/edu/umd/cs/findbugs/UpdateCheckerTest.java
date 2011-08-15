@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
@@ -36,6 +38,7 @@ public class UpdateCheckerTest extends TestCase {
     private UpdateChecker checker;
     private Map<String, Collection<Plugin>> checked;
     private Map<String, String> globalOptions;
+    private String uploadedXml;
 
     protected void setUp() throws Exception {
         updateCollector = new ArrayList<UpdateChecker.PluginUpdate>();
@@ -43,6 +46,7 @@ public class UpdateCheckerTest extends TestCase {
         latch = new CountDownLatch(1);
         checked = new HashMap<String, Collection<Plugin>>();
         globalOptions = new HashMap<String, String>();
+        uploadedXml = null;
         checker = new UpdateChecker(new TestingUpdateCheckCallback(latch)) {
             @Override
             protected void actuallyCheckforUpdates(URI url, Collection<Plugin> plugins, String entryPoint)
@@ -51,6 +55,9 @@ public class UpdateCheckerTest extends TestCase {
                 assertFalse(checked.containsKey(urlStr));
                 checked.put(urlStr, plugins);
                 ByteArrayInputStream stream = new ByteArrayInputStream(responseXml.getBytes("UTF-8"));
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                writeXml(out, plugins, "x.y.z");
+                uploadedXml = new String(out.toByteArray(), "UTF-8");
                 parseUpdateXml(url, plugins, stream);
             }
 
@@ -186,11 +193,42 @@ public class UpdateCheckerTest extends TestCase {
         assertEquals(0, updateCollector.size());
     }
 
+    public void testSubmittedXml() throws Exception {
+        // setup
+        setResponseXml("my.id", "09/01/2011 02:00 PM EST", "2.1");
+        Version.registerApplication("MyApp", "2.x");
+
+        // execute
+        checkForUpdates(createPlugin("my.id", KEITHS_BIRTHDAY_2011, "2.0"));
+
+        // verify
+        String pattern = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                "\n" +
+                "<findbugs-invocation version='*' app-name='MyApp' app-version='2.x' " +
+                "entry-point='x.y.z' os='*' java-version='*' language='*' country='*' " +
+                "uuid='*'>\n" +
+                "  <plugin id='my.id' name='My Plugin' version='2.0' release-date='1300604400000'/>\n" +
+                "</findbugs-invocation>\n";
+        String patternRE = convertGlobToRE(pattern);
+        assertTrue(uploadedXml + " did not match " + patternRE, uploadedXml.matches(patternRE));
+    }
+
     // ================ end of tests =============
 
     private void checkForUpdates(Plugin plugin) throws URISyntaxException, InterruptedException {
         checker.checkForUpdates(Arrays.asList(plugin), true);
         latch.await();
+    }
+
+    private String convertGlobToRE(String pattern) {
+        StringBuilder builder = new StringBuilder();
+        boolean first = true;
+        for (String blah : pattern.split("\\*")) {
+            if (first) first = false;
+            else builder.append(".*");
+            builder.append(Pattern.quote(blah.replaceAll("'", "\"")));
+        }
+        return builder.toString();
     }
 
     private void setResponseXml(String pluginid, String releaseDate, String v) {

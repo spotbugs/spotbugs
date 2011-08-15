@@ -174,7 +174,8 @@ public class UpdateChecker {
         conn.disconnect();
     }
 
-    private void writeXml(OutputStream out, Collection<Plugin> plugins, String entryPoint) throws IOException {
+    /** protected for testing */
+    protected final void writeXml(OutputStream out, Collection<Plugin> plugins, String entryPoint) throws IOException {
         OutputStreamXMLOutput xmlOutput = new OutputStreamXMLOutput(out);
         xmlOutput.beginDocument();
         xmlOutput.startTag("findbugs-invocation");
