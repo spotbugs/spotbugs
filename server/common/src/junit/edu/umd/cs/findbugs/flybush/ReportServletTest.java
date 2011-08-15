@@ -160,7 +160,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         executeGet("/stats");
 
         String url = generatedCharts.get(4);
-        checkParam(url, "chxl", "1:|1|2|3|4|5|2:|No. of evaluators");
+        checkParam(url, "chxl", "1:|1|2|3|4|5|2:|No. of reviewers");
         checkParam(url, "chd", "t:100.0,0.0,66.7,0.0,33.3");
     }
 
