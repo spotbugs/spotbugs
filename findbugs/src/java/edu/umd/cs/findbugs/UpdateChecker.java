@@ -111,8 +111,7 @@ public class UpdateChecker {
             logError(Level.INFO, "Skipping update checks due to " + KEY_DISABLE_ALL_UPDATE_CHECKS + "=true set by "
                     + pluginName);
             disablingPlugin = pluginName;
-        }
-        if (disable != null && !"false".equalsIgnoreCase(disable)) {
+        } else if (disable != null && !"false".equalsIgnoreCase(disable)) {
             String error = "Unknown value '" + disable + "' for " + KEY_DISABLE_ALL_UPDATE_CHECKS + " in " + pluginName;
             logError(Level.SEVERE, error);
             throw new IllegalStateException(error);
