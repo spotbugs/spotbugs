@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs;
 
+import java.util.List;
 import java.util.Set;
 
 import org.apache.bcel.Repository;
@@ -8,6 +9,7 @@ import org.apache.bcel.generic.ReferenceType;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -45,15 +47,19 @@ public class DeepSubtypeAnalysis {
         }
     }
 
-    private static boolean containsConcreteClasses(Set<JavaClass> s) {
-        for (JavaClass c : s)
-            if (!c.isInterface() && !c.isAbstract())
-                return true;
-        return false;
-    }
-
     public static double isDeepSerializable(ReferenceType type) throws ClassNotFoundException {
-        return isDeepSerializable(type.getSignature());
+        double result =  isDeepSerializable(type.getSignature());
+        if (type instanceof GenericObjectType && Subtypes2.isContainer(type)) {
+            GenericObjectType gt = (GenericObjectType) type;
+            List<? extends ReferenceType> parameters = gt.getParameters();
+            if (parameters != null) for(ReferenceType t : parameters) {
+                double r = isDeepSerializable(t);
+                if (result > r)
+                    result = r;
+            }
+        }
+        
+        return result;
 
     }
 

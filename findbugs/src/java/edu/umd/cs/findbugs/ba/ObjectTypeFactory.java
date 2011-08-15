@@ -45,6 +45,11 @@ public class ObjectTypeFactory {
         instance.remove();
     }
 
+    public static ObjectType getInstance(Class<?> c) {
+        return getInstance(c.getName());
+    }
+        
+    
     public static ObjectType getInstance(@DottedClassName String s) {
         if (FindBugs.DEBUG && s.startsWith("[")) {
             throw new IllegalArgumentException("Cannot create an ObjectType to represent an array type: " + s);

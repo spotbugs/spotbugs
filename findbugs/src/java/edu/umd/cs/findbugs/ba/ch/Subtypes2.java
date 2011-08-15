@@ -128,6 +128,22 @@ public class Subtypes2 {
         return graph;
     }
 
+    final static ObjectType COLLECTION_TYPE = ObjectTypeFactory.getInstance(Collection.class);
+    final static ObjectType MAP_TYPE = ObjectTypeFactory.getInstance(Map.class);
+
+    static public boolean isCollection(ReferenceType target) throws ClassNotFoundException {      
+        Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+        return subtypes2.isSubtype(target, COLLECTION_TYPE);
+    }
+    /** A collection, a map, or some other container */
+    static public boolean isContainer(ReferenceType target) throws ClassNotFoundException {      
+        Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+        return subtypes2.isSubtype(target, COLLECTION_TYPE)
+                || subtypes2.isSubtype(target, MAP_TYPE);
+    }
+
+
+    
     public static boolean instanceOf(@DottedClassName String dottedSubtype, @DottedClassName String dottedSupertype) {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
         ClassDescriptor subDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(dottedSubtype);

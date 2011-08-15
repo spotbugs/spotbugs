@@ -73,8 +73,6 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type, TypeFrame> implements Constants, Debug {
 
-    static private final ObjectType COLLECTION_TYPE = ObjectTypeFactory.getInstance("java.util.Collection");
-
     private ValueNumberDataflow valueNumberDataflow;
 
     // Fields for precise modeling of instanceof instructions.
@@ -724,7 +722,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             if (obj.getName(getCPG()).equals("toArray")) {
                 ReferenceType target = obj.getReferenceType(getCPG());
                 String signature = obj.getSignature(getCPG());
-                if (signature.equals("([Ljava/lang/Object;)[Ljava/lang/Object;") && isCollection(target)) {
+                if (signature.equals("([Ljava/lang/Object;)[Ljava/lang/Object;") && Subtypes2.isCollection(target)) {
 
                     boolean topIsExact = frame.isExact(frame.getStackLocation(0));
                     Type resultType = frame.popValue();
@@ -732,7 +730,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                     frame.pushValue(resultType);
                     frame.setExact(frame.getStackLocation(0), topIsExact);
                     return true;
-                } else if (signature.equals("()[Ljava/lang/Object;") && isCollection(target)
+                } else if (signature.equals("()[Ljava/lang/Object;") && Subtypes2.isCollection(target)
                         && !topValue.getSignature().equals("Ljava/util/Arrays$ArrayList;")) {
                     consumeStack(obj);
                     pushReturnType(obj);
@@ -790,11 +788,6 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         frame.pushValue(value);
         if (isExact)
             setTopOfStackIsExact();
-    }
-
-    private boolean isCollection(ReferenceType target) throws ClassNotFoundException {
-        Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-        return subtypes2.isSubtype(target, COLLECTION_TYPE);
     }
 
     @Override
