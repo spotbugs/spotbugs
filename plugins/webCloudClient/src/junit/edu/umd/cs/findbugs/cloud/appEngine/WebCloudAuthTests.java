@@ -1,15 +1,15 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
-import org.mockito.Mockito;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
+import org.mockito.Mockito;
 
 import static edu.umd.cs.findbugs.cloud.Cloud.SigninState.UNAUTHENTICATED;
 import static org.mockito.Mockito.mock;
@@ -77,7 +77,11 @@ public class WebCloudAuthTests extends AbstractWebCloudTest {
 
         when(networkClient.initialize()).thenThrow(new IOException());
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
-        cloud.initialize();
+        try {
+            cloud.initialize();
+            fail("should have thrown exception");
+        } catch (IOException e) {
+        }
         assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSigninState());
         assertEquals(0, cloud.urlsRequested.size());
     }

@@ -206,7 +206,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
         // verify no dialogs, just status bar changes
         Mockito.verify(cloud.mockGuiCallback, Mockito.never()).showMessageDialog(Mockito.anyString());
-        cloud.checkStatusBarHistory("Checking FindBugs Cloud for updates", "Checking FindBugs Cloud for updates... FAILED - blah");
+        cloud.checkStatusBarHistory("Checking FindBugs Cloud for updates", "Checking FindBugs Cloud for updates... FAILED - IOException: blah");
     }
 
     public void testGetRecentEvaluationsOverwritesOldEvaluationsFromSamePerson() throws Exception {
