@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 
@@ -18,6 +20,7 @@ import junit.framework.TestCase;
 
 public class UpdateCheckerTest extends TestCase {
     private static final Date KEITHS_BIRTHDAY_2011;
+
     static {
         try {
             KEITHS_BIRTHDAY_2011 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").parse("2011-03-20 02:00:00 EST");
@@ -31,15 +34,22 @@ public class UpdateCheckerTest extends TestCase {
     private String responseXml;
     private CountDownLatch latch;
     private UpdateChecker checker;
+    private Map<String, Collection<Plugin>> checked;
+    private Map<String, String> globalOptions;
 
     protected void setUp() throws Exception {
         updateCollector = new ArrayList<UpdateChecker.PluginUpdate>();
         errors = new StringBuilder();
         latch = new CountDownLatch(1);
+        checked = new HashMap<String, Collection<Plugin>>();
+        globalOptions = new HashMap<String, String>();
         checker = new UpdateChecker(new TestingUpdateCheckCallback(latch)) {
             @Override
             protected void actuallyCheckforUpdates(URI url, Collection<Plugin> plugins, String entryPoint)
                     throws IOException {
+                String urlStr = url.toString();
+                assertFalse(checked.containsKey(urlStr));
+                checked.put(urlStr, plugins);
                 ByteArrayInputStream stream = new ByteArrayInputStream(responseXml.getBytes("UTF-8"));
                 parseUpdateXml(url, plugins, stream);
             }
@@ -50,6 +60,7 @@ public class UpdateCheckerTest extends TestCase {
                 System.err.println(msg);
                 e.printStackTrace();
             }
+
             @Override
             protected void logError(Level level, String msg) {
                 errors.append(msg).append("\n");
@@ -62,12 +73,12 @@ public class UpdateCheckerTest extends TestCase {
         // setup
         responseXml =
                 "<fb-plugin-updates>" +
-                "  <plugin id='my.id'>" +
-                "    <release date='09/01/2011 02:00 PM EST' version='2.1' url='http://example.com/update'>" +
-                "      <message>UPDATE ME</message>" +
-                "    </release>" +
-                "  </plugin>" +
-                "</fb-plugin-updates>";
+                        "  <plugin id='my.id'>" +
+                        "    <release date='09/01/2011 02:00 PM EST' version='2.1' url='http://example.com/update'>" +
+                        "      <message>UPDATE ME</message>" +
+                        "    </release>" +
+                        "  </plugin>" +
+                        "</fb-plugin-updates>";
 
         // execute
         checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
@@ -85,12 +96,12 @@ public class UpdateCheckerTest extends TestCase {
         // setup
         responseXml =
                 "<fb-plugin-updates>" +
-                "  <plugin id='my.id'>" +
-                "    <release date='09/01/2011 02:00 PM EST' version='2.0' url='http://example.com/update'>" +
-                "      <message>UPDATE ME</message>" +
-                "    </release>" +
-                "  </plugin>" +
-                "</fb-plugin-updates>";
+                        "  <plugin id='my.id'>" +
+                        "    <release date='09/01/2011 02:00 PM EST' version='2.0' url='http://example.com/update'>" +
+                        "      <message>UPDATE ME</message>" +
+                        "    </release>" +
+                        "  </plugin>" +
+                        "</fb-plugin-updates>";
 
         // execute
         checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
@@ -103,12 +114,12 @@ public class UpdateCheckerTest extends TestCase {
         // setup
         responseXml =
                 "<fb-plugin-updates>" +
-                "  <plugin id='my.id'>" +
-                "    <release date='2011-03-20 02:00:00 EST' version='2.0' url='http://example.com/update'>" +
-                "      <message>UPDATE ME</message>" +
-                "    </release>" +
-                "  </plugin>" +
-                "</fb-plugin-updates>";
+                        "  <plugin id='my.id'>" +
+                        "    <release date='2011-03-20 02:00:00 EST' version='2.0' url='http://example.com/update'>" +
+                        "      <message>UPDATE ME</message>" +
+                        "    </release>" +
+                        "  </plugin>" +
+                        "</fb-plugin-updates>";
 
         // execute
         checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
@@ -121,17 +132,120 @@ public class UpdateCheckerTest extends TestCase {
         // setup
         responseXml =
                 "<fb-plugin-updates>" +
-                "  <plugin id='my.id'>" +
-                "    <release date='09/01/2011 02:00 PM EST' version='2.0' url='http://example.com/update'>" +
-                "      <message>UPDATE ME</message>" +
-                "    </release>" +
-                "  </plugin>" +
-                "</fb-plugin-updates>";
+                        "  <plugin id='my.id'>" +
+                        "    <release date='09/01/2011 02:00 PM EST' version='2.0' url='http://example.com/update'>" +
+                        "      <message>UPDATE ME</message>" +
+                        "    </release>" +
+                        "  </plugin>" +
+                        "</fb-plugin-updates>";
 
         // execute
         checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
 
         // verify
+        assertEquals(0, updateCollector.size());
+    }
+
+    public void testPluginNotPresent() throws Exception {
+        // setup
+        responseXml =
+                "<fb-plugin-updates>" +
+                        "  <plugin id='SOME.OTHER.PLUGIN'>" +
+                        "    <release date='09/01/2011 02:00 PM EST' version='2.0' url='http://example.com/update'>" +
+                        "      <message></message>" +
+                        "    </release>" +
+                        "  </plugin>" +
+                        "</fb-plugin-updates>";
+
+        // execute
+        checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
+
+        // verify
+        assertEquals(0, updateCollector.size());
+    }
+
+    public void testRedirectUpdateChecks() throws Exception {
+        // setup
+        responseXml =
+                "<fb-plugin-updates>" +
+                        "  <plugin id='SOME.OTHER.PLUGIN'>" +
+                        "    <release date='09/01/2011 02:00 PM EST' version='2.0' url='http://example.com/update'>" +
+                        "      <message></message>" +
+                        "    </release>" +
+                        "  </plugin>" +
+                        "</fb-plugin-updates>";
+
+        // execute
+        globalOptions.put("redirectUpdateChecks", "http://redirect.com");
+        checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
+
+        // verify
+        assertEquals(1, checked.size());
+        assertTrue(checked.containsKey("http://redirect.com"));
+        assertEquals(0, updateCollector.size());
+    }
+
+    public void testDisableUpdateChecks() throws Exception {
+        // setup
+        responseXml =
+                "<fb-plugin-updates>" +
+                        "  <plugin id='my.id'>" +
+                        "    <release date='09/01/2011 02:00 PM EST' version='2.1' url='http://example.com/update'>" +
+                        "      <message>UPDATE ME</message>" +
+                        "    </release>" +
+                        "  </plugin>" +
+                        "</fb-plugin-updates>";
+
+        // execute
+        globalOptions.put("noUpdateChecks", "true");
+        checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
+
+        // verify
+        assertEquals(0, checked.size());
+        assertEquals(0, updateCollector.size());
+    }
+
+    public void testDisableUpdateChecksFalse() throws Exception {
+        // setup
+        responseXml =
+                "<fb-plugin-updates>" +
+                        "  <plugin id='my.id'>" +
+                        "    <release date='09/01/2011 02:00 PM EST' version='2.1' url='http://example.com/update'>" +
+                        "      <message>UPDATE ME</message>" +
+                        "    </release>" +
+                        "  </plugin>" +
+                        "</fb-plugin-updates>";
+
+        // execute
+        globalOptions.put("noUpdateChecks", "false");
+        checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
+
+        // verify
+        assertEquals(1, checked.size());
+        assertEquals(1, updateCollector.size());
+    }
+
+    public void testDisableUpdateChecksInvalid() throws Exception {
+        // setup
+        responseXml =
+                "<fb-plugin-updates>" +
+                        "  <plugin id='my.id'>" +
+                        "    <release date='09/01/2011 02:00 PM EST' version='2.1' url='http://example.com/update'>" +
+                        "      <message>UPDATE ME</message>" +
+                        "    </release>" +
+                        "  </plugin>" +
+                        "</fb-plugin-updates>";
+
+        // execute
+        globalOptions.put("noUpdateChecks", "BLAH");
+        try {
+            checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
+            fail();
+        } catch (Throwable e) {
+        }
+
+        // verify
+        assertEquals(0, checked.size());
         assertEquals(0, updateCollector.size());
     }
 
@@ -144,7 +258,7 @@ public class UpdateCheckerTest extends TestCase {
 
     @SuppressWarnings({"deprecation"})
     private Plugin createPlugin(String version, Date releaseDate) throws URISyntaxException {
-        Plugin plugin = new Plugin("my.id", version, releaseDate,  new PluginLoader(), true, false);
+        Plugin plugin = new Plugin("my.id", version, releaseDate, new PluginLoader(), true, false);
         plugin.setShortDescription("My Plugin");
         plugin.setUpdateUrl("http://example.com/update");
         return plugin;
@@ -163,7 +277,7 @@ public class UpdateCheckerTest extends TestCase {
         }
 
         public String getGlobalOption(String key) {
-            return null;
+            return globalOptions.get(key);
         }
 
         public Plugin getGlobalOptionSetter(String key) {

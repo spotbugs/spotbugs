@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -24,13 +25,12 @@ import java.util.regex.Pattern;
 
 import javax.annotation.WillClose;
 
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
-
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
 public class UpdateChecker {
     private static final Logger LOGGER = Logger.getLogger(UpdateChecker.class.getName());
@@ -45,8 +45,10 @@ public class UpdateChecker {
     }
 
     public void checkForUpdates(Collection<Plugin> plugins, final boolean force) {
-        if (updateChecksGloballyDisabled())
+        if (updateChecksGloballyDisabled()) {
+            dfc.pluginUpdateCheckComplete(pluginUpdates, force);
             return;
+        }
 
         String redirect = dfc.getGlobalOption(KEY_REDIRECT_ALL_UPDATE_CHECKS);
         String sysprop = System.getProperty("findbugs.redirectUpdateChecks");
@@ -61,6 +63,7 @@ public class UpdateChecker {
             } catch (URISyntaxException e) {
                 String error = "Invalid update check redirect URI in " + pluginName + ": " + redirect;
                 logError(Level.SEVERE, error);
+                dfc.pluginUpdateCheckComplete(pluginUpdates, force);
                 throw new IllegalStateException(error);
             }
         }
@@ -86,10 +89,15 @@ public class UpdateChecker {
                 startUpdateCheckThread(uri, pluginsByUrl.get(uri), latch);
             }
         }
+        
+        waitForCompletion(latch, force);
+    }
+
+    private void waitForCompletion(final CountDownLatch latch, final boolean force) {
         Util.runInDameonThread(new Runnable() {
             public void run() {
                 try {
-                    latch.await();
+                    latch.await(15, TimeUnit.SECONDS);
                     dfc.pluginUpdateCheckComplete(pluginUpdates, force);
                 } catch (Exception e) {
                 }
