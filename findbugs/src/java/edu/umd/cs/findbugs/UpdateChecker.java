@@ -144,17 +144,29 @@ public class UpdateChecker {
             }
         }, "Check for updates");
     }
-       
 
-    private void actuallyCheckforUpdates(URI url, Collection<Plugin> plugins, String entryPoint) throws IOException {
-        LOGGER.fine("Checking for updates at " + url
-                + " for " + getPluginNames(plugins));
+    /** protected for testing */
+    protected void actuallyCheckforUpdates(URI url, Collection<Plugin> plugins, String entryPoint) throws IOException {
+        LOGGER.fine("Checking for updates at " + url + " for " + getPluginNames(plugins));
         HttpURLConnection conn = (HttpURLConnection) url.toURL().openConnection();
         conn.setDoInput(true);
         conn.setDoOutput(true);
         conn.setRequestMethod("POST");
         conn.connect();
         OutputStream out = conn.getOutputStream();
+        writeXml(out, plugins, entryPoint);
+        int responseCode = conn.getResponseCode();
+        if (responseCode != 200) {
+            logError(SystemProperties.ASSERTIONS_ENABLED ? Level.WARNING : Level.FINE,
+                    "Error checking for updates at " + url + ": "
+                    + responseCode + " - " + conn.getResponseMessage());
+        } else {
+            parseUpdateXml(url, plugins, conn.getInputStream());
+        }
+        conn.disconnect();
+    }
+
+    private void writeXml(OutputStream out, Collection<Plugin> plugins, String entryPoint) throws IOException {
         OutputStreamXMLOutput xmlOutput = new OutputStreamXMLOutput(out);
         xmlOutput.beginDocument();
         xmlOutput.startTag("findbugs-invocation");
@@ -193,15 +205,7 @@ public class UpdateChecker {
 
         xmlOutput.closeTag("findbugs-invocation");
         xmlOutput.flush();
-        int responseCode = conn.getResponseCode();
-        if (responseCode != 200) {
-            logError(SystemProperties.ASSERTIONS_ENABLED ? Level.WARNING : Level.FINE,
-                    "Error checking for updates at " + url + ": "
-                    + responseCode + " - " + conn.getResponseMessage());
-        }
-        parseUpdateXml(url, plugins, conn.getInputStream());
         xmlOutput.finish();
-        conn.disconnect();
     }
 
     // package-private for testing
