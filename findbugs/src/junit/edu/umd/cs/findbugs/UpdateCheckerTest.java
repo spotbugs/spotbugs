@@ -71,17 +71,10 @@ public class UpdateCheckerTest extends TestCase {
 
     public void testSimplePluginUpdate() throws Exception {
         // setup
-        responseXml =
-                "<fb-plugin-updates>" +
-                        "  <plugin id='my.id'>" +
-                        "    <release date='09/01/2011 02:00 PM EST' version='2.1' url='http://example.com/update'>" +
-                        "      <message>UPDATE ME</message>" +
-                        "    </release>" +
-                        "  </plugin>" +
-                        "</fb-plugin-updates>";
+        setResponseXml("my.id", "09/01/2011 02:00 PM EST", "2.1");
 
         // execute
-        checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
+        checkForUpdates(createPlugin("my.id", KEITHS_BIRTHDAY_2011, "2.0"));
 
         // verify
         assertEquals(1, updateCollector.size());
@@ -94,17 +87,10 @@ public class UpdateCheckerTest extends TestCase {
 
     public void testPluginSameVersionDifferentDate() throws Exception {
         // setup
-        responseXml =
-                "<fb-plugin-updates>" +
-                        "  <plugin id='my.id'>" +
-                        "    <release date='09/01/2011 02:00 PM EST' version='2.0' url='http://example.com/update'>" +
-                        "      <message>UPDATE ME</message>" +
-                        "    </release>" +
-                        "  </plugin>" +
-                        "</fb-plugin-updates>";
+        setResponseXml("my.id", "09/01/2011 02:00 PM EST", "2.0");
 
         // execute
-        checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
+        checkForUpdates(createPlugin("my.id", KEITHS_BIRTHDAY_2011, "2.0"));
 
         // verify
         assertEquals(0, updateCollector.size());
@@ -112,17 +98,10 @@ public class UpdateCheckerTest extends TestCase {
 
     public void testPluginSameVersionSameDate() throws Exception {
         // setup
-        responseXml =
-                "<fb-plugin-updates>" +
-                        "  <plugin id='my.id'>" +
-                        "    <release date='2011-03-20 02:00:00 EST' version='2.0' url='http://example.com/update'>" +
-                        "      <message>UPDATE ME</message>" +
-                        "    </release>" +
-                        "  </plugin>" +
-                        "</fb-plugin-updates>";
+        setResponseXml("my.id", "2011-03-20 02:00:00 EST", "2.0");
 
         // execute
-        checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
+        checkForUpdates(createPlugin("my.id", KEITHS_BIRTHDAY_2011, "2.0"));
 
         // verify
         assertEquals(0, updateCollector.size());
@@ -130,17 +109,10 @@ public class UpdateCheckerTest extends TestCase {
 
     public void testPluginDifferentVersionSameDate() throws Exception {
         // setup
-        responseXml =
-                "<fb-plugin-updates>" +
-                        "  <plugin id='my.id'>" +
-                        "    <release date='09/01/2011 02:00 PM EST' version='2.0' url='http://example.com/update'>" +
-                        "      <message>UPDATE ME</message>" +
-                        "    </release>" +
-                        "  </plugin>" +
-                        "</fb-plugin-updates>";
+        setResponseXml("my.id", "09/01/2011 02:00 PM EST", "2.0");
 
         // execute
-        checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
+        checkForUpdates(createPlugin("my.id", KEITHS_BIRTHDAY_2011, "2.0"));
 
         // verify
         assertEquals(0, updateCollector.size());
@@ -148,17 +120,10 @@ public class UpdateCheckerTest extends TestCase {
 
     public void testPluginNotPresent() throws Exception {
         // setup
-        responseXml =
-                "<fb-plugin-updates>" +
-                        "  <plugin id='SOME.OTHER.PLUGIN'>" +
-                        "    <release date='09/01/2011 02:00 PM EST' version='2.0' url='http://example.com/update'>" +
-                        "      <message></message>" +
-                        "    </release>" +
-                        "  </plugin>" +
-                        "</fb-plugin-updates>";
+        setResponseXml("SOME.OTHER.PLUGIN", "09/01/2011 02:00 PM EST", "2.0");
 
         // execute
-        checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
+        checkForUpdates(createPlugin("my.id", KEITHS_BIRTHDAY_2011, "2.0"));
 
         // verify
         assertEquals(0, updateCollector.size());
@@ -166,18 +131,11 @@ public class UpdateCheckerTest extends TestCase {
 
     public void testRedirectUpdateChecks() throws Exception {
         // setup
-        responseXml =
-                "<fb-plugin-updates>" +
-                        "  <plugin id='SOME.OTHER.PLUGIN'>" +
-                        "    <release date='09/01/2011 02:00 PM EST' version='2.0' url='http://example.com/update'>" +
-                        "      <message></message>" +
-                        "    </release>" +
-                        "  </plugin>" +
-                        "</fb-plugin-updates>";
+        setResponseXml("SOME.OTHER.PLUGIN", "09/01/2011 02:00 PM EST", "2.0");
+        globalOptions.put("redirectUpdateChecks", "http://redirect.com");
 
         // execute
-        globalOptions.put("redirectUpdateChecks", "http://redirect.com");
-        checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
+        checkForUpdates(createPlugin("my.id", KEITHS_BIRTHDAY_2011, "2.0"));
 
         // verify
         assertEquals(1, checked.size());
@@ -187,18 +145,11 @@ public class UpdateCheckerTest extends TestCase {
 
     public void testDisableUpdateChecks() throws Exception {
         // setup
-        responseXml =
-                "<fb-plugin-updates>" +
-                        "  <plugin id='my.id'>" +
-                        "    <release date='09/01/2011 02:00 PM EST' version='2.1' url='http://example.com/update'>" +
-                        "      <message>UPDATE ME</message>" +
-                        "    </release>" +
-                        "  </plugin>" +
-                        "</fb-plugin-updates>";
+        setResponseXml("my.id", "09/01/2011 02:00 PM EST", "2.1");
+        globalOptions.put("noUpdateChecks", "true");
 
         // execute
-        globalOptions.put("noUpdateChecks", "true");
-        checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
+        checkForUpdates(createPlugin("my.id", KEITHS_BIRTHDAY_2011, "2.0"));
 
         // verify
         assertEquals(0, checked.size());
@@ -207,18 +158,11 @@ public class UpdateCheckerTest extends TestCase {
 
     public void testDisableUpdateChecksFalse() throws Exception {
         // setup
-        responseXml =
-                "<fb-plugin-updates>" +
-                        "  <plugin id='my.id'>" +
-                        "    <release date='09/01/2011 02:00 PM EST' version='2.1' url='http://example.com/update'>" +
-                        "      <message>UPDATE ME</message>" +
-                        "    </release>" +
-                        "  </plugin>" +
-                        "</fb-plugin-updates>";
+        setResponseXml("my.id", "09/01/2011 02:00 PM EST", "2.1");
+        globalOptions.put("noUpdateChecks", "false");
 
         // execute
-        globalOptions.put("noUpdateChecks", "false");
-        checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
+        checkForUpdates(createPlugin("my.id", KEITHS_BIRTHDAY_2011, "2.0"));
 
         // verify
         assertEquals(1, checked.size());
@@ -227,19 +171,12 @@ public class UpdateCheckerTest extends TestCase {
 
     public void testDisableUpdateChecksInvalid() throws Exception {
         // setup
-        responseXml =
-                "<fb-plugin-updates>" +
-                        "  <plugin id='my.id'>" +
-                        "    <release date='09/01/2011 02:00 PM EST' version='2.1' url='http://example.com/update'>" +
-                        "      <message>UPDATE ME</message>" +
-                        "    </release>" +
-                        "  </plugin>" +
-                        "</fb-plugin-updates>";
+        setResponseXml("my.id", "09/01/2011 02:00 PM EST", "2.1");
+        globalOptions.put("noUpdateChecks", "BLAH");
 
         // execute
-        globalOptions.put("noUpdateChecks", "BLAH");
         try {
-            checkForUpdates(createPlugin("2.0", KEITHS_BIRTHDAY_2011));
+            checkForUpdates(createPlugin("my.id", KEITHS_BIRTHDAY_2011, "2.0"));
             fail();
         } catch (Throwable e) {
         }
@@ -256,9 +193,20 @@ public class UpdateCheckerTest extends TestCase {
         latch.await();
     }
 
+    private void setResponseXml(String pluginid, String releaseDate, String v) {
+        responseXml =
+                "<fb-plugin-updates>" +
+                        "  <plugin id='" + pluginid + "'>" +
+                        "    <release date='" + releaseDate + "' version='" + v + "' url='http://example.com/update'>" +
+                        "      <message>UPDATE ME</message>" +
+                        "    </release>" +
+                        "  </plugin>" +
+                        "</fb-plugin-updates>";
+    }
+
     @SuppressWarnings({"deprecation"})
-    private Plugin createPlugin(String version, Date releaseDate) throws URISyntaxException {
-        Plugin plugin = new Plugin("my.id", version, releaseDate, new PluginLoader(), true, false);
+    private Plugin createPlugin(String pluginId, Date releaseDate, String version) throws URISyntaxException {
+        Plugin plugin = new Plugin(pluginId, version, releaseDate, new PluginLoader(), true, false);
         plugin.setShortDescription("My Plugin");
         plugin.setUpdateUrl("http://example.com/update");
         return plugin;
