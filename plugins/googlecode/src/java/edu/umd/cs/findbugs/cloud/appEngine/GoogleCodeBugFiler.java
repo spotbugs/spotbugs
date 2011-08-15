@@ -62,7 +62,10 @@ public class GoogleCodeBugFiler implements BugFiler {
 
     public GoogleCodeBugFiler(ComponentPlugin<BugFiler> plugin, Cloud cloud) {
         this.cloud = cloud;
-        this.url = SystemProperties.getProperty("findbugs.googlecodeURL");
+        String url = SystemProperties.getProperty("findbugs.googlecodeURL");
+        if (url == null)
+            url = plugin.getProperties().getProperty("googlecodeURL");
+        this.url = url;
         this.bugFilingCommentHelper = new BugFilingCommentHelper(cloud);
     }
 
@@ -299,7 +302,7 @@ public class GoogleCodeBugFiler implements BugFiler {
 
     private String askUserForGoogleCodeProjectName() {
         IGuiCallback guiCallback = cloud.getGuiCallback();
-        Preferences prefs = Preferences.userNodeForPackage(GoogleCodeBugFiler.class);
+        Preferences prefs = getPrefs();
 
         String lastProject = prefs.get("last_google_code_project", "");
         String projectName = guiCallback.showQuestionDialog("Issue will be filed at Google Code.\n\n"

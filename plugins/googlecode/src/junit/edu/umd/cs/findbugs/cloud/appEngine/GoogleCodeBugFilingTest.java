@@ -76,7 +76,7 @@ public class GoogleCodeBugFilingTest extends TestCase {
         // filer.init(mockCloudClient, "http://code.google.com/p/test/");
 
         PropertyBundle componentProps = new PropertyBundle();
-        componentProps.setProperty("trackerURL", "http://code.google.com/p/test/");
+        componentProps.setProperty("googlecodeURL", "http://code.google.com/p/test/");
         ComponentPlugin<BugFiler> componentPlugin = new ComponentPlugin<BugFiler>(
                 null, "x.y", null, null, componentProps, true, null, null);
         filer = new GoogleCodeBugFiler(componentPlugin, mockCloudClient) {
