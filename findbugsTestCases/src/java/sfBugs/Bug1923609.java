@@ -34,7 +34,7 @@ public class Bug1923609 {
         }
     }
 
-    @NoWarning("DMI")
+    @ExpectWarning("DMI")
     public void writeMapThreadThread() throws IOException {
         ObjectOutputStream os = new ObjectOutputStream(new ByteArrayOutputStream());
         Map<Thread, Thread> m = new HashMap<Thread, Thread>();
