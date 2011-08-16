@@ -2092,9 +2092,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             } else if (hasXmlProps()) {
                 XmlProps props = getXmlProps();
                 
-                attributeList.addOptionalAttribute("firstSeen", firstSeenXMLFormat().format(props.firstSeen));
+                if (props.firstSeen != null)
+                    attributeList.addOptionalAttribute("firstSeen", firstSeenXMLFormat().format(props.firstSeen));
                 if (props.reviewCount > 0) {
-                    attributeList.addOptionalAttribute("consensus", props.consensus);  
+                    if (props.consensus != null)
+                        attributeList.addOptionalAttribute("consensus", props.consensus);  
                     attributeList.addAttribute("reviews", Integer.toString(props.reviewCount));               
                 }
                 if (!props.isInCloud())
@@ -2661,7 +2663,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
         private String consensus;
 
-        public Date getFirstSeen() {
+        public @CheckForNull Date getFirstSeen() {
             return firstSeen;
         }
 
@@ -2669,7 +2671,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             return reviewCount;
         }
 
-        public String getConsensus() {
+        public @CheckForNull String getConsensus() {
             return consensus;
         }
 
