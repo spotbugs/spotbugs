@@ -822,8 +822,9 @@ public abstract class AbstractCloud implements Cloud {
         long firstSeen = v.getTimestamp();
         if (b.hasXmlProps()) {
             XmlProps props = b.getXmlProps();
-            if (firstSeen > props.getFirstSeen().getTime())
-                firstSeen = props.getFirstSeen().getTime();
+            Date propsFirstSeen = props.getFirstSeen();
+            if (propsFirstSeen != null && firstSeen > propsFirstSeen.getTime())
+                firstSeen = propsFirstSeen.getTime();
         }
         return firstSeen;
     }
