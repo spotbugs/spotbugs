@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.charsets.UTF8;
 
 public class Noise extends OpcodeStackDetector {
 
@@ -61,7 +62,7 @@ public class Noise extends OpcodeStackDetector {
         }
 
         public void push(String s) {
-            for (byte b : s.getBytes())
+            for (byte b : UTF8.getBytes(s))
                 push(b);
         }
 
@@ -119,8 +120,7 @@ public class Noise extends OpcodeStackDetector {
 
     @Override
     public void visit(Code code) {
-        primer = getFullyQualifiedMethodName().getBytes();
-        hq.reset();
+        primer = UTF8.getBytes(getFullyQualifiedMethodName());
 
         super.visit(code); // make callbacks to sawOpcode for all opcodes
         accumulator.reportAccumulatedBugs();
