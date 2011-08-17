@@ -583,6 +583,9 @@
           <Detector class="edu.umd.cs.findbugs.detect.DefaultEncodingDetector" speed="fast"
                     reports="DM_DEFAULT_ENCODING"/>
 
+            <!-- Bug Categories -->
+           <BugCategory category="NOISE" hidden="true"/>
+         
           <!-- Bug Codes -->
           <BugCode abbrev="USELESS_STRING"/>
           <BugCode abbrev="DMI" cweid="440"/>
