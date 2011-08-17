@@ -26,11 +26,13 @@ package edu.umd.cs.findbugs;
 public class BugCategory implements Comparable<BugCategory> {
     final private String category;
 
-    final private String shortDescription;
+    private String shortDescription;
 
     private String abbrev;
 
     private String detailText;
+    
+    private boolean hidden;
 
     /**
      * Constructor.
@@ -65,6 +67,18 @@ public class BugCategory implements Comparable<BugCategory> {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param category
+     *            the category
+     * @param shortDescription
+     *            short (a word or three) description of the bug species
+     */
+    public BugCategory(String category) {
+        this(category, null, null, null);
+    }
+
+    /**
      * Get the category.
      */
     public String getCategory() {
@@ -94,6 +108,13 @@ public class BugCategory implements Comparable<BugCategory> {
         return detailText;
     }
 
+    /**
+     * Set the short description of the category
+     */
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
+    }
+    
     /**
      * Set the abbreviation (typically a single capital letter)
      */
@@ -131,5 +152,20 @@ public class BugCategory implements Comparable<BugCategory> {
     public String toString() {
         return "BugCategory[" + category + "]{short=" + shortDescription + ",abbrev=" + abbrev + ",details=" + detailText + '}';
     }
+
+    /**
+     * @return Returns the hidden.
+     */
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    /**
+     * @param hidden The hidden to set.
+     */
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+
 
 }
