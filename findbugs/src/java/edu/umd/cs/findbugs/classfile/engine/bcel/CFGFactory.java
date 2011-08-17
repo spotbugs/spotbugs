@@ -108,7 +108,6 @@ public class CFGFactory extends AnalysisFactory<CFG> {
         // System.out.println("CC: getting refined CFG for " + methodId);
         if (CFGFactory.DEBUG_CFG) {
             String methodId = methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature();
-            ClassContext.indent();
             System.out.println("CC: getting refined CFG for " + methodId);
         }
         if (ClassContext.DEBUG) {

@@ -20,9 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,6 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
@@ -42,10 +43,9 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.OpcodeStack.JumpInfo;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
@@ -66,15 +66,11 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
-import edu.umd.cs.findbugs.classfile.engine.SelfMethodCalls;
 import edu.umd.cs.findbugs.classfile.engine.bcel.NonExceptionPostdominatorsAnalysis;
 import edu.umd.cs.findbugs.classfile.engine.bcel.NonImplicitExceptionPostDominatorsAnalysis;
 import edu.umd.cs.findbugs.classfile.engine.bcel.UnpackedBytecodeCallback;
 import edu.umd.cs.findbugs.classfile.engine.bcel.UnpackedCode;
 import edu.umd.cs.findbugs.util.MapCache;
-import edu.umd.cs.findbugs.util.MultiMap;
-import edu.umd.cs.findbugs.util.TopologicalSort;
-import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
 
 /**
  * A ClassContext caches all of the auxiliary objects used to analyze the
@@ -89,13 +85,6 @@ public class ClassContext {
     public static final boolean TIME_ANALYSES = SystemProperties.getBoolean("classContext.timeAnalyses");
 
     public static final boolean DUMP_DATAFLOW_ANALYSIS = SystemProperties.getBoolean("dataflow.dump");
-
-    public static int depth;
-
-    public static void indent() {
-        for (int i = 0; i < depth; ++i)
-            System.out.print("  ");
-    }
 
     private final JavaClass jclass;
 
@@ -249,7 +238,7 @@ public class ClassContext {
         return getClassDescriptor().getDottedClassName() + "." + method.getName() + method.getSignature();
     }
 
-    public @NonNull
+    public @Nonnull
     List<Method> getMethodsInCallOrder() {
         Map<XMethod, Method> map = new HashMap<XMethod, Method>();
         for (Method m : getJavaClass().getMethods()) {
@@ -317,7 +306,7 @@ public class ClassContext {
      * 
      * @return the ConstantPoolGen
      */
-    public @NonNull
+    public @Nonnull
     ConstantPoolGen getConstantPoolGen() {
         return getClassAnalysisNoException(ConstantPoolGen.class);
     }
@@ -389,9 +378,22 @@ public class ClassContext {
         return getMethodAnalysisNoDataflowAnalysisException(ReverseDepthFirstSearch.class, method);
     }
 
-    static MapCache<XMethod, BitSet> cachedBitsets = new MapCache<XMethod, BitSet>(64);
+    static final AnalysisLocal<MapCache<XMethod, BitSet>> cachedBitsets_AL 
+     = new AnalysisLocal<MapCache<XMethod, BitSet>>() {
+        @Override
+        protected MapCache<XMethod, BitSet> initialValue() {
+            return  new MapCache<XMethod, BitSet>(64);
+        }
+    };
 
-    static MapCache<XMethod, Set<Integer>> cachedLoopExits = new MapCache<XMethod, Set<Integer>>(13);
+    static final AnalysisLocal<MapCache<XMethod, Set<Integer>>> cachedLoopExits_AL = 
+            new AnalysisLocal<MapCache<XMethod, Set<Integer>>>() {
+        @Override
+        protected MapCache<XMethod, Set<Integer>> initialValue() {
+            return  new MapCache<XMethod, Set<Integer>>(13);
+        }
+    };
+            
 
     /**
      * Get a BitSet representing the bytecodes that are used in the given
@@ -426,8 +428,8 @@ public class ClassContext {
     static public BitSet getBytecodeSet(JavaClass clazz, Method method) {
 
         XMethod xmethod = XFactory.createXMethod(clazz, method);
-        if (cachedBitsets.containsKey(xmethod)) {
-            return cachedBitsets.get(xmethod);
+        if (cachedBitsets().containsKey(xmethod)) {
+            return cachedBitsets().get(xmethod);
         }
         Code code = method.getCode();
         if (code == null)
@@ -446,18 +448,29 @@ public class ClassContext {
         BitSet result = null;
         if (unpackedCode != null)
             result = unpackedCode.getBytecodeSet();
-        cachedBitsets.put(xmethod, result);
+        cachedBitsets().put(xmethod, result);
         return result;
     }
 
-    @NonNull
+    /**
+     * @return
+     */
+    private static MapCache<XMethod, BitSet> cachedBitsets() {
+        return cachedBitsets_AL.get();
+    }
+
+    @Nonnull
     static public Set<Integer> getLoopExitBranches(Method method, MethodGen methodGen) {
 
         XMethod xmethod = XFactory.createXMethod(methodGen);
-        if (cachedLoopExits.containsKey(xmethod)) {
-            Set<Integer> result = cachedLoopExits.get(xmethod);
-            assert result != null;
-            return result;
+        if (cachedLoopExits().containsKey(xmethod)) {
+            Set<Integer> result = cachedLoopExits().get(xmethod);
+            if (result == null) {
+                AnalysisContext.logError("Null cachedLoopExits for " + xmethod, new NullPointerException());
+                assert false;
+                return Collections.<Integer> emptySet();
+            }
+           return result;
         }
         Code code = method.getCode();
         if (code == null) {
@@ -474,8 +487,15 @@ public class ClassContext {
         if (result.size() == 0)
             result = Collections.<Integer> emptySet();
 
-        cachedLoopExits.put(xmethod, result);
+        cachedLoopExits().put(xmethod, result);
         return result;
+    }
+
+    /**
+     * @return
+     */
+    private static MapCache<XMethod, Set<Integer>> cachedLoopExits() {
+        return cachedLoopExits_AL.get();
     }
 
     static short getBranchOffset(byte[] codeBytes, int pos) {

@@ -171,8 +171,10 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
     }
 
     public boolean sourceIsTopOfLoop(@Nonnull Set<Integer> positions) {
-        if (positions == null)
-            throw new NullPointerException("positions can't be null");
+        if (positions == null) {
+            AnalysisContext.logError("Null positions",  new NullPointerException("positions can't be null"));
+            return false;
+        }
         BasicBlock source = getSource();
 
         InstructionHandle sourceInstruction = source.getLastInstruction();
