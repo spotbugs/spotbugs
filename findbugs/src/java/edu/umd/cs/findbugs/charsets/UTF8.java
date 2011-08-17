@@ -77,4 +77,7 @@ public class UTF8 {
         return new BufferedReader(reader(in));
     }
 
+    public static byte[] getBytes(String s) {
+        return s.getBytes(charset);
+    }
 }
