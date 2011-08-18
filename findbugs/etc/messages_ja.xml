@@ -19,8 +19,7 @@
   </Plugin>
 
   <FindBugsMain cmd="addMessages" class="edu.umd.cs.findbugs.AddMessages">
-    <Description>add msgs (e.g., textual descriptions of bugs) to analysis results
-		 </Description>
+    <Description>add msgs (e.g., textual descriptions of bugs) to analysis results</Description>
   </FindBugsMain>
   <FindBugsMain cmd="analyze" class="edu.umd.cs.findbugs.FindBugs2">
     <Description>Perform FindBugs Analysis</Description>
@@ -55,36 +54,8 @@
   <FindBugsMain cmd="merge" class="edu.umd.cs.findbugs.workflow.Update">
     <Description>Combine analysis results from different versions of software to produce multi-version analysis results </Description>
   </FindBugsMain>
-  <FindBugsMain cmd="copySource" class="edu.umd.cs.findbugs.workflow.CopyBuggySource">
-    <Description>Copy all the source files referenced in analysis results to a src directory</Description>
-  </FindBugsMain>
-  <FindBugsMain cmd="rejar" class="edu.umd.cs.findbugs.workflow.RejarClassesForAnalysis">
-    <Description>Combine multiple jar files into jar files for analysis</Description>
-  </FindBugsMain>
-  <FindBugsMain cmd="dd" class="edu.umd.cs.findbugs.workflow.DefectDensity">
-    <Description>List the defect density by package and class</Description>
-  </FindBugsMain>
-  <FindBugsMain cmd="msv" class="edu.umd.cs.findbugs.workflow.MergeSummarizeAndView">
-    <Description>XXXXXX</Description>
-  </FindBugsMain>
-  <FindBugsMain cmd="backdate" class="edu.umd.cs.findbugs.workflow.BackdateHistoryUsingSource">
-    <Description>Use the last-modified date of source files to back date the introduction
-			of bugs</Description>
-  </FindBugsMain>
-  <FindBugsMain cmd="csr" class="edu.umd.cs.findbugs.workflow.CloudSyncAndReport">
-    <Description>XXXXXX</Description>
-  </FindBugsMain>
-  <FindBugsMain cmd="appVersion" class="edu.umd.cs.findbugs.workflow.PrintAppVersion">
-    <Description>XXXXXX</Description>
-  </FindBugsMain>
-  <FindBugsMain cmd="dbStats" class="edu.umd.cs.findbugs.cloud.db.DBStats">
-    <Description>XXXXXX</Description>
-  </FindBugsMain>
   <FindBugsMain cmd="dis" class="edu.umd.cs.findbugs.workflow.PrintClass">
     <Description>Disassemble a class file</Description>
-  </FindBugsMain>
-  <FindBugsMain cmd="xpath" class="edu.umd.cs.findbugs.xml.XPathFind">
-    <Description>Perform an xpath query on an XML file</Description>
   </FindBugsMain>
   
   <!-- これを変えたら FindbugsPlugin のデフォルト ID も更新して下さい -->
@@ -376,6 +347,16 @@
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures">
+    <Details>
+<![CDATA[
+<p>
+このディテクタは、そのクラスの新しいインスタンスを返すメソッドを持つ不変クラスを探します。
+そこで、それらのメソッドが呼び出されるインスタンスを変異させると誤って思うかもしれません。
+</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod">
     <Details>
 <![CDATA[
@@ -385,7 +366,6 @@
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations">
     <Details>
 <![CDATA[
@@ -1961,6 +1941,18 @@ null の参照解除のためのノイズが多いディテクタです。コー
 </p>
 ]]>
     </Details>
+  </BugPattern>
+
+  <BugPattern type="DMI_DOH">
+    <ShortDescription>D'oh! 無意味なメソッド呼び出し</ShortDescription>
+    <LongDescription>D'oh! {2.nameAndSignature} の無意味なメソッド呼び出し。{1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+この実用的なメソッド呼び出しは、検査から明らかな理由で意味がないです。
+</p>
+]]>
+    </Details> 
   </BugPattern>
 
   <BugPattern type="DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD">
@@ -3598,7 +3590,7 @@ Web サーバは、通常サーブレットや JSP クラスのインスタン�
 <![CDATA[
 <p>
 public static メソッドは、クラスの 静的な状態の一部である配列の参照を返します。
-このメソッドを呼び出すどんなコードも、根底にある配列を自由に変更できます。
+このメソッドを呼び出すどんなコードも、基底配列を自由に変更できます。
 解決策は、配列のコピーを返すことです。
 </p>
 ]]>
@@ -5091,6 +5083,26 @@ static フィールドにすることを検討してください。
     </Details>
   </BugPattern>
 
+  <BugPattern type="RV_RETURN_VALUE_IGNORED_INFERRED">
+    <ShortDescription>メソッドは戻り値を無視しています、これは間違いではないですか?</ShortDescription>
+    <LongDescription>{2.givenClass} の戻り値を無視しています、これは間違いではないですか? {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このコードは、メソッドを呼び出して、戻り値を無視しています。
+戻り値は、メソッドが呼び出される型と同じ型です。そして、我々の解析から戻り値が重要であるかもしれないように見えます （たとえば、<code>String.toLowerCase()</code>　の戻り値を無視するような）。 
+</p>
+<p>
+我々は、戻り値を無視することがメソッド本体の単純な解析から悪い考えかもしれないと推測しています。
+このメソッドの戻り値を無視することが重要であるか許容できるかどうかに関して、FindBugs に指示する @CheckReturnValue アノテーションが使えます。
+</p>
+<p>
+戻り値を無視することが間違いではないか決めるために、厳密に調査してください。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="RV_RETURN_VALUE_IGNORED">
     <ShortDescription>戻り値を無視しているメソッド</ShortDescription>
     <LongDescription>{2.givenClass} の戻り値を無視しています。{1}</LongDescription>
@@ -6082,6 +6094,19 @@ public void foo() {
     </Details>
   </BugPattern>
 
+  <BugPattern type="INT_BAD_COMPARISON_WITH_INT_VALUE">
+    <ShortDescription>int 値と long 定数との間違った比較</ShortDescription>
+    <LongDescription>int 値と {2} との間違った比較です。{1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このコードは、int 値と int 値として表現できる値の範囲外にある long 定数を比較しています。
+この比較は無意味で、おそらく間違っています。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
   <BugPattern type="INT_VACUOUS_BIT_OPERATION">
     <ShortDescription>整数値の無意味なビットマスク演算</ShortDescription>
     <LongDescription>{3} の無意味な {2} 演算です。{1}</LongDescription>
@@ -7937,6 +7962,36 @@ APIのどれも文書化していないし、保証もしていないが通常�
     </Details>
   </BugPattern>
 
+  <BugPattern type="PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS">
+    <ShortDescription>繰り返しでエントリオブジェクトを再利用しない</ShortDescription>
+    <LongDescription>{0} は Iterator と  Map.Entry の両方があります。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このクラスは、Iterator と Map.Entry で基底 Map のビューを返すことを許可された両方の entrySet メソッドがあります。
+この巧妙なアイデアは、Map 実装で使用されましたが、厄介なコーディング間違いの可能性を取り込みました。
+Map <code>m</code> が entrySet のためのそのような反復子を返すならば、<code>c.addAll(m.entrySet())</code>　はひどく間違っていくでしょう。
+OpenJDK 1.7 の すべての Map 実装はこれを回避するために書き直されました。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS">
+    <ShortDescription>エントリセットの要素を加えることは、Entry オブジェクトの再利用のために失敗するかもしれない</ShortDescription>
+    <LongDescription>エントリセットの要素を加えることは、{2.simpleClass} の再利用のために失敗するかもしれません。{1} の Entry オブジェクト</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+entrySet メソッドは、一つの Entry オブジェクトを再利用し、反復中に返される基底 Map のビューを返すことが許可されています。
+Java 1.6 の時点で、IdentityHashMap と EnumMap の両方がそうしました。
+そのような Map を通して繰り返すとき、エントリ値は次の繰り返しへ進むまでが有効です。
+たとえば、addAll メソッドにそのような entrySet を渡そうとすると、物事はひどく間違っていくでしょう。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
   <BugPattern type="DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION">
     <ShortDescription>コレクションを消去するために removeAll メソッドを使用しない</ShortDescription>
     <LongDescription>コレクションを消去するために removeAll メソッドを使用しています。{1}</LongDescription>
@@ -8236,7 +8291,7 @@ FindBugs は、@ExpectedWarning によって、予期した/望ましい警告�
     <Details>
 <![CDATA[
 <p>
-OpenJDK には、潜在的非互換性があります。特に、java.util.logging.Logger は振る舞いが変更されています。
+OpenJDK は、潜在的非互換性を取り入れました。特に、java.util.logging.Logger は振る舞いが変更されています。
 強参照を使用する代わりに、現在、内部的に弱参照を使用しています。
 それは理にかなった変更ですが、残念ながらいくつかのコードは古い振る舞いに依存しています。
 ロガーの構成を変更するとき、ロガーへの参照を捨てます。
