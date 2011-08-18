@@ -77,7 +77,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ImportDeclarationCompara
  * <CODE>CreateDoPrivilegedBlockResolution</CODE> creates a new
  * <CODE>doPrivileged()</CODE>-Block around the <CODE>ClassLoader</CODE>
  * creation.
- * 
+ *
  * @see <a
  *      href="http://findbugs.sourceforge.net/bugDescriptions.html#DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED">DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
@@ -111,7 +111,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
     /**
      * Returns <CODE>true</CODE> if the imports were updated, otherwise
      * <CODE>false</CODE>.
-     * 
+     *
      * @return <CODE>true</CODE> or <CODE>false</CODE>. Default is
      *         <CODE>true</CODE>.
      */
@@ -121,7 +121,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 
     /**
      * Enables or disables the update on the imports.
-     * 
+     *
      * @param updateImports
      *            the flag.
      */
@@ -133,7 +133,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
      * Returns <CODE>true</CODE> if the <CODE>doPrivileged()</CODE>-invocation
      * is imported statically. This feature should only be used under
      * source-level 1.5 or higher.
-     * 
+     *
      * @return <CODE>true</CODE> or </CODE>false</CODE>. Default is
      *         <CODE>false</CODE>.
      */
@@ -145,7 +145,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
      * Enables or disables static import for the <CODE>doPrivileged()</CODE>
      * -invocation. This feature should only be used under source-level 1.5 or
      * higher.
-     * 
+     *
      * @param staticImport
      *            the flag.
      */
@@ -327,6 +327,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
         return privilegedActionType;
     }
 
+    @SuppressWarnings("unchecked")
     <V> List<V> checkedList(List<?> o) {
         return (List<V>) o;
     }
