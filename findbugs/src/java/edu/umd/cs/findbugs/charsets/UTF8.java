@@ -78,6 +78,6 @@ public class UTF8 {
     }
 
     public static byte[] getBytes(String s) {
-        return s.getBytes(charset);
+        return charset.encode(s).array();
     }
 }
