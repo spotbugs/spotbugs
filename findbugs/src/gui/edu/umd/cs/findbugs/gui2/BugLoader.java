@@ -140,7 +140,6 @@ public class BugLoader {
             col.readXML(source);
             initiateCommunication(col);
             if (col.hasDeadBugs()) {
-                System.out.println("Has dead bugs");
                 addDeadBugMatcher(col);
             }
         } catch (Exception e) {
