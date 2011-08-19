@@ -321,6 +321,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     public int getBugRank() {
         return BugRanker.findRank(this);
     }
+    
+    public BugRankCategory getBugRankCategory() {
+        return BugRankCategory.getRank(getBugRank());
+    }
 
     /**
      * Get a string describing the bug priority and type. e.g.

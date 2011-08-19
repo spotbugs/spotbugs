@@ -557,12 +557,18 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
     /**
      * Get a Collection containing all known bug category keys. E.g.,
      * "CORRECTNESS", "MT_CORRECTNESS", "PERFORMANCE", etc.
+     * 
+     * Excludes hidden bug categories
      *
      * @return Collection of bug category keys.
      */
     public Collection<String> getBugCategories() {
-        return categoryDescriptionMap.keySet(); // backed by the Map
-    }
+        ArrayList<String> result = new ArrayList<String>(categoryDescriptionMap.size());
+        for(BugCategory c : categoryDescriptionMap.values())
+            if (!c.isHidden())
+                result.add(c.getCategory());
+        return result;
+   }
 
     public Collection<BugCategory> getBugCategoryObjects() {
         return categoryDescriptionMap.values(); // backed by the Map

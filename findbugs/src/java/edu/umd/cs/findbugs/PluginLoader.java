@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -41,9 +42,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.WillClose;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -435,9 +439,7 @@ public class PluginLoader {
         // Unique plugin id
         String pluginId;
 
-        // List of message translation files in decreasing order of precedence
-        ArrayList<Document> messageCollectionList = new ArrayList<Document>();
-
+       
         // Read the plugin descriptor
         String name = "findbugs.xml";
         URL findbugsXML_URL = getResource(name);
@@ -493,19 +495,7 @@ public class PluginLoader {
 
         String version = pluginDescriptor.valueOf("/FindbugsPlugin/@version");
         String releaseDate = pluginDescriptor.valueOf("/FindbugsPlugin/@releaseDate");
-        // Load the message collections
-        Locale locale = Locale.getDefault();
-        String language = locale.getLanguage();
-        String country = locale.getCountry();
-
-        try {
-            if (country != null)
-                addCollection(messageCollectionList, "messages_" + language + "_" + country + ".xml");
-            addCollection(messageCollectionList, "messages_" + language + ".xml");
-        } catch (PluginException e) {
-            AnalysisContext.logError("Error loading localized message file", e);
-        }
-        addCollection(messageCollectionList, "messages.xml");
+        List<Document> messageCollectionList = getMessageDocuments();
 
         // Create the Plugin object (but don't assign to the plugin field yet,
         // since we're still not sure if everything will load correctly)
@@ -759,6 +749,20 @@ public class PluginLoader {
         }
 
         // register global Category descriptions
+        
+        List<Node> categoryNodeListGlobal = pluginDescriptor.selectNodes("/FindbugsPlugin/BugCategory");
+        for(Node categoryNode : categoryNodeListGlobal) {
+            String key = categoryNode.valueOf("@category");
+            if (key.equals(""))
+                throw new PluginException("BugCategory element with missing category attribute");
+            BugCategory bc = plugin.addOrCreateBugCategory(key);
+            
+            boolean hidden = Boolean.valueOf(categoryNode.valueOf("@hidden"));
+            if (hidden)
+                bc.setHidden(hidden);
+        }
+ 
+        
         for (Document messageCollection : messageCollectionList) {
             List<Node> categoryNodeList = messageCollection.selectNodes("/MessageCollection/BugCategory");
             if (DEBUG)
@@ -767,8 +771,9 @@ public class PluginLoader {
                 String key = categoryNode.valueOf("@category");
                 if (key.equals(""))
                     throw new PluginException("BugCategory element with missing category attribute");
+                BugCategory bc = plugin.addOrCreateBugCategory(key);
                 String shortDesc = getChildText(categoryNode, "Description");
-                BugCategory bc = new BugCategory(key, shortDesc);
+                bc.setShortDescription(shortDesc);
                 try {
                     String abbrev = getChildText(categoryNode, "Abbreviation");
                     if (bc.getAbbrev() == null) {
@@ -795,8 +800,6 @@ public class PluginLoader {
                 } catch (PluginException pe) {
                     // do nothing -- LongDescription is optional
                 }
-
-                plugin.addBugCategory(bc);
 
             }
         }
@@ -916,6 +919,39 @@ public class PluginLoader {
     }
 
 
+    private  static  List<String> getPotentialMessageFiles() {
+        // Load the message collections
+        Locale locale = Locale.getDefault();
+        String language = locale.getLanguage();
+        String country = locale.getCountry();
+        
+        List<String> potential = new ArrayList<String>(3);
+        if (country != null)
+            potential.add("messages_" + language + "_" + country + ".xml");
+        potential.add("messages_" + language + ".xml");
+        potential.add("messages.xml");
+        return potential;
+    }
+
+    private List<Document> getMessageDocuments() throws PluginException {
+        // List of message translation files in decreasing order of precedence
+        ArrayList<Document> messageCollectionList = new ArrayList<Document>();
+        PluginException caught = null;
+        for (String m : getPotentialMessageFiles())
+            try {
+                addCollection(messageCollectionList, m);
+            } catch (PluginException e) {
+                caught = e;
+                AnalysisContext.logError(
+                        "Error loading localized message file:" + m, e);
+            }
+        if (messageCollectionList.isEmpty()) {
+            if (caught != null) throw caught;
+            throw new PluginException("No message.xml files found");
+        }
+        return messageCollectionList;
+    }
+
 
     private <T> void loadComponentPlugin(@SuppressWarnings("hiding") Plugin plugin, 
             Class<T> componentKind, String componentClassname, String filterId,
@@ -1019,6 +1055,18 @@ public class PluginLoader {
         }
         throw new PluginException(missingMsg);
     }
+    private static  String findMessageText(List<Document> messageCollectionList, String xpath, String missingMsg)
+            throws PluginException {
+
+        for (Document document : messageCollectionList) {
+            Node node = document.selectSingleNode(xpath);
+            if (node != null) {
+                return node.getText().trim();
+            }
+        }
+        return missingMsg;
+    }
+
 
     private static String getChildText(Node node, String childName) throws PluginException {
         Node child = node.selectSingleNode(childName);
@@ -1238,6 +1286,87 @@ public class PluginLoader {
         if (plugin == null)
             return String.format("PluginLoader(%s)", loadedFrom);
         return String.format("PluginLoader(%s, %s)", plugin.getPluginId(), loadedFrom);
+    }
+    
+    static public class Summary {
+        public final String id;
+        public final String description;
+        public final String provider;
+        public final String webbsite;
+
+        public Summary(String id, String description, String provider,
+                String website) {
+            super();
+            this.id = id;
+            this.description = description;
+            this.provider = provider;
+            this.webbsite = website;
+        }
+    }
+    
+    public static Summary validate(File file) throws IOException {
+        String path = file.getPath();
+        if (!file.getName().endsWith(".jar")) {
+            String message = "File " + path + " is not a .jar file";
+            throw new IOException(message);
+        }
+        if (!file.isFile() || !file.canRead()) {
+            String message = "File " + path
+                    + " is not a file or is not readable";
+            throw new IOException(message);
+        }
+        if (file.length() == 0) {
+            String message = "File " + path + " is empty";
+            throw new IOException(message);
+        }
+
+        ZipFile zip = null;
+        try {
+            zip = new ZipFile(file);
+            ZipEntry findbugsXML = zip.getEntry("etc/findbugs.xml");
+            if (findbugsXML == null)
+                throw new IllegalArgumentException(
+                        "plugin doesn't contain a etc/findbugs.xml file");
+            Document pluginDocument = parseDocument(zip
+                    .getInputStream(findbugsXML));
+            String pluginId = pluginDocument
+                    .valueOf("/FindbugsPlugin/@pluginid");
+            String provider = pluginDocument
+                    .valueOf("/FindbugsPlugin/@website");
+            String website = pluginDocument.valueOf("/FindbugsPlugin/@url");
+            List<Document> msgDocuments = new ArrayList<Document>(3);
+            for (String msgFile : getPotentialMessageFiles()) {
+                ZipEntry msgEntry = zip.getEntry("etc/" + msgFile);
+                if (msgEntry == null)
+                    continue;
+                Document msgDocument = parseDocument(zip
+                        .getInputStream(msgEntry));
+                msgDocuments.add(msgDocument);
+            }
+
+            String shortDesc = findMessageText(msgDocuments,
+                    "/MessageCollection/Plugin/ShortDescription", "");
+            return new Summary(pluginId, shortDesc, provider, website);
+        } catch (NullPointerException e) {
+            throw e;
+        } catch (DocumentException e) {
+            throw new IOException(e);
+        } catch (PluginException e) {
+            throw new IOException(e);
+        } finally {
+            Util.closeSilently(zip);
+        }
+    }
+    
+    
+    private static Document parseDocument(@WillClose InputStream in) throws DocumentException {
+        SAXReader reader = new SAXReader();
+
+        Reader r = UTF8.bufferedReader(in);
+        Document d = reader.read(r);
+        Util.closeSilently(r);
+        return d;
+
     }
 }
 

@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs;
 
 public enum BugRankCategory {
-    SCARIEST, SCARY, TROUBLING, OF_CONCERN, UNRANKED;
+    SCARIEST, SCARY, TROUBLING, OF_CONCERN;
     static public BugRankCategory getRank(int rank) {
         if (rank <= 4)
             return SCARIEST;
@@ -30,6 +30,6 @@ public enum BugRankCategory {
             return TROUBLING;
         if (rank <= 20)
             return OF_CONCERN;
-        return UNRANKED;
+        throw new IllegalArgumentException("Rank of " + rank + " is outside legal rank");
     }
 }

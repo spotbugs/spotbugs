@@ -5,7 +5,9 @@ import java.util.Set;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
@@ -48,6 +50,14 @@ public class DeepSubtypeAnalysis {
     }
 
     public static double isDeepSerializable(ReferenceType type) throws ClassNotFoundException {
+        if (type instanceof ArrayType) {
+            ArrayType a = (ArrayType) type;
+            Type t = a.getBasicType();
+            if (t instanceof ReferenceType) 
+                type = (ReferenceType) t;
+            else
+                return 1.0;
+        }
         double result =  isDeepSerializable(type.getSignature());
         if (type instanceof GenericObjectType && Subtypes2.isContainer(type)) {
             GenericObjectType gt = (GenericObjectType) type;
@@ -60,7 +70,33 @@ public class DeepSubtypeAnalysis {
         }
         
         return result;
+    }
+    public static ReferenceType getLeastSerializableTypeComponent(ReferenceType type) 
+            throws ClassNotFoundException {
+        if (type instanceof ArrayType) {
+            ArrayType a = (ArrayType) type;
+            Type t = a.getBasicType();
+            if (t instanceof ReferenceType) 
+                type = (ReferenceType) t;
+            else
+                return type;
+        }
 
+        ReferenceType result = type;
+        double value =  isDeepSerializable(type.getSignature());
+        if (type instanceof GenericObjectType && Subtypes2.isContainer(type)) {
+            GenericObjectType gt = (GenericObjectType) type;
+            List<? extends ReferenceType> parameters = gt.getParameters();
+            if (parameters != null) for(ReferenceType t : parameters) {
+                double r = isDeepSerializable(t);
+                if (value > r) {
+                    value = r;
+                    result = getLeastSerializableTypeComponent(t);
+                }
+            }
+        }
+        
+        return result;
     }
 
     public static double isDeepSerializable(@DottedClassName String refSig) throws ClassNotFoundException {

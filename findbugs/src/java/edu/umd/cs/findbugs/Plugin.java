@@ -78,7 +78,7 @@ public class Plugin {
 
     private final LinkedHashSet<BugCode> bugCodeList;
 
-    private final LinkedHashSet<BugCategory> bugCategoryList;
+    private final LinkedHashMap<String, BugCategory> bugCategories;
     private final LinkedHashSet<CloudPlugin> cloudList;
     
     private final HashMap<String,String> myGlobalOptions = new HashMap<String, String>();
@@ -134,7 +134,7 @@ public class Plugin {
         this.detectorFactoryList = new ArrayList<DetectorFactory>();
         this.bugPatterns = new LinkedHashSet<BugPattern>();
         this.bugCodeList = new LinkedHashSet<BugCode>();
-        this.bugCategoryList = new LinkedHashSet<BugCategory>();
+        this.bugCategories = new LinkedHashMap<String,BugCategory>();
         this.interPassConstraintList = new ArrayList<DetectorOrderingConstraint>();
         this.intraPassConstraintList = new ArrayList<DetectorOrderingConstraint>();
         this.mainPlugins = new HashMap<String, FindBugsMain>();
@@ -281,7 +281,20 @@ public class Plugin {
      * @param bugCode
      */
     public void addBugCategory(BugCategory bugCategory) {
-        bugCategoryList.add(bugCategory);
+        BugCategory old = bugCategories.get(bugCategory.getCategory());
+        if (old != null)
+            throw new IllegalArgumentException("Category already exists");
+        bugCategories.put(bugCategory.getCategory(), bugCategory);
+    }
+    
+
+    public BugCategory addOrCreateBugCategory(String id) {
+        BugCategory c = bugCategories.get(id);
+        if (c != null)
+            return c;
+        c = new BugCategory(id);
+        bugCategories.put(id, c);
+        return c;
     }
     /**
      * Add an inter-pass Detector ordering constraint.
@@ -363,8 +376,8 @@ public class Plugin {
      *
      * @return Iterator over BugCategory objects
      */
-    public Set<BugCategory> getBugCategories() {
-        return bugCategoryList;
+    public Collection<BugCategory> getBugCategories() {
+        return bugCategories.values();
     }
 
     /**
@@ -373,12 +386,7 @@ public class Plugin {
      */
     @CheckForNull
     public BugCategory getBugCategory(String id) {
-        for (BugCategory bc : bugCategoryList) {
-            if(bc.getCategory().equals(id)){
-                return bc;
-            }
-        }
-        return null;
+        return bugCategories.get(id);
     }
 
     public Set<CloudPlugin> getCloudPlugins() {
