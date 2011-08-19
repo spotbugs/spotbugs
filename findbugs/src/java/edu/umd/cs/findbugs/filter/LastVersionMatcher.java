@@ -58,9 +58,9 @@ public class LastVersionMatcher extends VersionMatcher implements Matcher {
     @Override
     public String toString() {
         if (version == -1 && relOp == RelationalOp.EQ)
-            return "ActiveBugs()";
+            return "ActiveBugs";
         else if (version == -1 && relOp == RelationalOp.NEQ)
-            return "DeadBugs()";
+            return "DeadBugs";
         return "LastVersion(version " + relOp + version + ")";
     }
 }
