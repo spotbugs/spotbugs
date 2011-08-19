@@ -330,61 +330,67 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
     public void modelFieldLoad(FieldInstruction obj) {
         consumeStack(obj);
 
-        Type loadType = obj.getType(getCPG());
-        Type originalLoadType = loadType;
-
+        Type loadType = obj.getFieldType(cpg);
+        String sig = obj.getSignature(cpg);
         try {
-            // Check the field store type database to see if we can
-            // get a more precise type for this load.
             XField xfield = Hierarchy.findXField(obj, getCPG());
-            if (xfield != null) {
-                if (database != null && (loadType instanceof ReferenceType)) {
-                    FieldStoreType property = database.getProperty(xfield.getFieldDescriptor());
-                    if (property != null) {
-                        loadType = property.getLoadType((ReferenceType) loadType);
-                    }
-                }
-
-                Item summary = fieldSummary.getSummary(xfield);
-                if (xfield.isFinal() && summary.isNull()) {
-                    pushValue(TypeFrame.getNullType());
-                    return;
-                }
-                if (loadType == originalLoadType && summary != null && !summary.getSignature().equals("Ljava/lang/Object;")) {
-                    loadType = Type.getType(summary.getSignature());
-                }
-
-                // [Added: Support for Generics]
-                // XXX If the loadType was not changed by the
-                // FieldStoreTypeDatabase, then
-                // we can assume, that the signature for obj is still relevant.
-                // This should
-                // be updated by inserting generic information in the
-                // FieldStoreTypeDatabase
-
-                // find the field and its signature
-                Field field = Hierarchy.findField(xfield.getClassName(), xfield.getName());
-                String signature = null;
-                for (Attribute a : field.getAttributes()) {
-                    if (a instanceof Signature) {
-                        signature = ((Signature) a).getSignature();
-                        break;
-                    }
-                }
-
-                // replace loadType with information from field signature
-                // (conservative)
-                if (signature != null && (loadType instanceof ObjectType)) {
-                    loadType = GenericUtilities.merge(GenericUtilities.getType(signature), (ObjectType) loadType);
-                }
-
-            }
+            loadType = getType(xfield);
         } catch (ClassNotFoundException e) {
-            AnalysisContext.reportMissingClass(e);
-        } catch (RuntimeException e) {
-        } // degrade gracefully
-
+           AnalysisContext.reportMissingClass(e);
+        }
+       
         pushValue(loadType);
+    }
+
+    /**
+     * @param xfield
+     * @return
+     */
+    public static Type getType(XField xfield) {
+        Type t = Type.getType(xfield.getSignature());
+        if (!(t instanceof ReferenceType))
+            return t;
+        ReferenceType loadType = (ReferenceType) t;
+
+        // Check the field store type database to see if we can
+        // get a more precise type for this load.
+
+        useDatabase: {
+            FieldStoreTypeDatabase database = AnalysisContext
+                    .currentAnalysisContext().getFieldStoreTypeDatabase();
+            if (database != null) {
+                FieldStoreType property = database.getProperty(xfield
+                        .getFieldDescriptor());
+                if (property != null) {
+                    loadType = property.getLoadType(loadType);
+                    break useDatabase;
+                }
+            }
+
+            FieldSummary fieldSummary = AnalysisContext
+                    .currentAnalysisContext().getFieldSummary();
+            if (fieldSummary != null) {
+                Item summary = fieldSummary.getSummary(xfield);
+                if (summary != null) {
+                    if (xfield.isFinal() && summary.isNull()) {
+                        return TypeFrame.getNullType();
+                    }
+                    if (!summary.getSignature().equals("Ljava/lang/Object;")) {
+                        loadType = (ReferenceType) Type.getType(summary
+                                .getSignature());
+                    }
+                }
+            }
+        }
+
+        String sourceSignature = xfield.getSourceSignature();
+        if (sourceSignature != null && loadType instanceof ObjectType) {
+            loadType = GenericUtilities.merge(
+                    GenericUtilities.getType(sourceSignature),
+                    (ObjectType) loadType);
+        }
+
+        return loadType;
     }
 
     @Override

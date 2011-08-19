@@ -3,6 +3,8 @@ package edu.umd.cs.findbugs.detect;
 import java.util.BitSet;
 import java.util.Iterator;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -13,6 +15,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
@@ -29,14 +32,17 @@ import edu.umd.cs.findbugs.ba.type.TopType;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 
-public class FindNonSerializableValuePassedToWriteObject implements Detector {
+public class FindUseOfNonSerializableValue implements Detector {
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
+
+    private final BugAccumulator bugAccumulator;
 
     private static final boolean DEBUG = false;
 
-    public FindNonSerializableValuePassedToWriteObject(BugReporter bugReporter) {
+    public FindUseOfNonSerializableValue(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+        this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
     public void visitClassContext(ClassContext classContext) {
@@ -54,9 +60,28 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
                 // bugReporter.logError("Detector " + this.getClass().getName()
                 // + " caught exception", e);
             }
+            bugAccumulator.reportAccumulatedBugs();
         }
     }
 
+    enum Use { STORE_INTO_HTTP_SESSION, PASSED_TO_WRITE_OBJECT, STORED_IN_SERIALZIED_FIELD };
+    
+    @CheckForNull Use getUse(ConstantPoolGen cpg, Instruction ins) {
+        if (ins instanceof InvokeInstruction) {
+            InvokeInstruction invoke = (InvokeInstruction) ins;
+
+           String mName = invoke.getMethodName(cpg);
+            String cName = invoke.getClassName(cpg);
+            
+            if (mName.equals("setAttribute") && cName.equals("javax.servlet.http.HttpSession"))
+                return Use.STORE_INTO_HTTP_SESSION;
+            if (mName.equals("writeObject")
+                    && (cName.equals("java.io.ObjectOutput") 
+                            || cName.equals("java.io.ObjectOutputStream")))
+                return Use.PASSED_TO_WRITE_OBJECT;
+        }
+       return null;
+    }
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
         MethodGen methodGen = classContext.getMethodGen(method);
         if (methodGen == null)
@@ -80,20 +105,12 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
             InstructionHandle handle = location.getHandle();
-            int pc = handle.getPosition();
             Instruction ins = handle.getInstruction();
 
-            if (!(ins instanceof InvokeInstruction))
+            Use use = getUse(cpg, ins);
+            if (use == null) 
                 continue;
-
-            InvokeInstruction invoke = (InvokeInstruction) ins;
-            String mName = invoke.getMethodName(cpg);
-            if (!mName.equals("writeObject"))
-                continue;
-            String cName = invoke.getClassName(cpg);
-            if (!cName.equals("java.io.ObjectOutput") && !cName.equals("java.io.ObjectOutputStream"))
-                continue;
-
+                
             TypeFrame frame = typeDataflow.getFactAtLocation(location);
             if (!frame.isValid()) {
                 // This basic block is probably dead
@@ -119,26 +136,34 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
 
                 double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(refType);
 
-                if (isSerializable >= 0.9)
-                    continue;
-                
-                ReferenceType problem = DeepSubtypeAnalysis.getLeastSerializableTypeComponent(refType);
+                if (isSerializable < 0.9) {
+                    SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext,
+                            methodGen, sourceFile, handle);
+                    ReferenceType problem = DeepSubtypeAnalysis.getLeastSerializableTypeComponent(refType);
 
-                double isRemote = DeepSubtypeAnalysis.isDeepRemote(refType);
-                if (isRemote >= 0.9)
-                    continue;
-                if (isSerializable < isRemote) 
-                    isSerializable = isRemote;
+                    String pattern;
+                    switch(use) {
+                    case PASSED_TO_WRITE_OBJECT:  
+                        pattern = "DMI_NONSERIALIZABLE_OBJECT_WRITTEN";
+                        double isRemote = DeepSubtypeAnalysis.isDeepRemote(refType);
+                        if (isRemote >= 0.9)
+                            continue;
+                        if (isSerializable < isRemote) 
+                            isSerializable = isRemote;
+                        break;
+                    case STORE_INTO_HTTP_SESSION:
+                        pattern = "J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION";
+                        break;
+                        default:
+                            throw new IllegalStateException();
+                    }
+                    
+                    bugAccumulator.accumulateBug(new BugInstance(this, pattern,
+                            isSerializable < 0.15 ? HIGH_PRIORITY : isSerializable > 0.5 ? LOW_PRIORITY : NORMAL_PRIORITY)
+                            .addClassAndMethod(methodGen, sourceFile).addType(problem).describe(TypeAnnotation.FOUND_ROLE),
+                            sourceLineAnnotation);
 
-
-                SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext,
-                        methodGen, sourceFile, handle);
-
-                bugReporter.reportBug(new BugInstance(this, "DMI_NONSERIALIZABLE_OBJECT_WRITTEN",
-                        isSerializable < 0.15 ? HIGH_PRIORITY : isSerializable > 0.5 ? LOW_PRIORITY : NORMAL_PRIORITY)
-                .addClassAndMethod(methodGen, sourceFile).addType(problem).describe(TypeAnnotation.FOUND_ROLE)
-                .addSourceLine(sourceLineAnnotation));
-
+                }
             } catch (ClassNotFoundException e) {
                 // ignore
             }

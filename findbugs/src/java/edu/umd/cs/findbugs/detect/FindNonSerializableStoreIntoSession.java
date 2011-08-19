@@ -19,6 +19,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -125,11 +126,11 @@ public class FindNonSerializableStoreIntoSession implements Detector {
                 if (isSerializable < 0.9) {
                     SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext,
                             methodGen, sourceFile, handle);
-                    String refSig = refType.getSignature();
+                    ReferenceType problem = DeepSubtypeAnalysis.getLeastSerializableTypeComponent(refType);
 
                     bugAccumulator.accumulateBug(new BugInstance(this, "J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION",
                             isSerializable < 0.15 ? HIGH_PRIORITY : isSerializable > 0.5 ? LOW_PRIORITY : NORMAL_PRIORITY)
-                            .addClassAndMethod(methodGen, sourceFile).addClass(DeepSubtypeAnalysis.getComponentClass(refSig)),
+                            .addClassAndMethod(methodGen, sourceFile).addType(problem).describe(TypeAnnotation.FOUND_ROLE),
                             sourceLineAnnotation);
 
                 }

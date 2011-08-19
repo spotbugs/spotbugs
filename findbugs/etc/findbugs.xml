@@ -237,19 +237,24 @@
                               <Later class="edu.umd.cs.findbugs.detect.FindUninitializedGet"/>
                     </WithinPass>
                     <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindNonSerializableStoreIntoSession" />
+                    </WithinPass>
+                    <WithinPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindNonSerializableValuePassedToWriteObject" />
+                    </WithinPass>
+                    <WithinPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
-                              <Later class="edu.umd.cs.findbugs.detect.ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass"
-                              />
+                              <Later class="edu.umd.cs.findbugs.detect.ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass" />
                     </WithinPass>
                     <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"/>
-                              <Later class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"
-                              />
+                              <Later class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs" />
                     </SplitPass>
                     <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.Methods"/>
-                              <Later class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"
-                              />
+                              <Later class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs" />
                     </SplitPass>
 
 
@@ -515,11 +520,18 @@
           <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble" speed="fast"
                     reports="ICAST_IDIV_CAST_TO_DOUBLE,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL,ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindBadCast2" speed="fast"
-                    reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION,BC_BAD_CAST_TO_ABSTRACT_COLLECTION,BC_UNCONFIRMED_CAST,BC_IMPOSSIBLE_CAST,BC_IMPOSSIBLE_INSTANCEOF,BC_VACUOUS_INSTANCEOF,NP_NULL_INSTANCEOF,BC_IMPOSSIBLE_DOWNCAST,BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY"
-          /> /> <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableStoreIntoSession"
-                    speed="fast" reports="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION"/>
+                    reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION,BC_BAD_CAST_TO_ABSTRACT_COLLECTION,BC_UNCONFIRMED_CAST,BC_IMPOSSIBLE_CAST,BC_IMPOSSIBLE_INSTANCEOF,BC_VACUOUS_INSTANCEOF,NP_NULL_INSTANCEOF,BC_IMPOSSIBLE_DOWNCAST,BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY" /> 
+
+          <Detector class="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue"
+                    speed="fast" reports="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION,DMI_NONSERIALIZABLE_OBJECT_WRITTEN"/>
+
+          <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableStoreIntoSession"
+                    speed="fast" reports="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION"
+		    disabled="true" hidden="true"  />
           <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableValuePassedToWriteObject"
-                    speed="fast" reports="DMI_NONSERIALIZABLE_OBJECT_WRITTEN"/>
+                    speed="fast" reports="DMI_NONSERIALIZABLE_OBJECT_WRITTEN"
+		    disabled="true" hidden="true"  />
+
           <Detector class="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression" speed="fast"
                     reports="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION,RE_POSSIBLE_UNINTENDED_PATTERN,RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION"/>
           <Detector class="edu.umd.cs.findbugs.detect.VarArgsProblems" speed="fast"

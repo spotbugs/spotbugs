@@ -34,6 +34,8 @@ import org.apache.bcel.classfile.FieldOrMethod;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Synthetic;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -46,10 +48,10 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.XClass;
-import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -494,6 +496,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
             XField xField = getXFieldOperand();
             if (xField != null && xField.getClassDescriptor().equals(getClassDescriptor())) {
                 Item first = stack.getStackItem(0);
+                
                 boolean isPutOfDefaultValue = first.isNull(); // huh?? ||
                                                               // first.isInitialParameter();
                 if (!isPutOfDefaultValue && first.getConstant() != null) {
@@ -524,7 +527,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                             if (isSerializable <= 0.2) {
                                 XField f = fieldsThatMightBeAProblem.get(nameOfField);
 
-                                String sig = f.getSignature();
+                               String sig = f.getSignature();
                                 // System.out.println("Field signature: " +
                                 // sig);
                                 // System.out.println("Class stored: " +
@@ -589,15 +592,20 @@ public class SerializableIdiom extends OpcodeStackDetector {
             if (DEBUG) {
                 System.out.println("Examining non-transient field with name: " + getFieldName() + ", sig: " + fieldSig);
             }
+            XField xfield = getXField();
+            Type type = TypeFrameModelingVisitor.getType(xfield);
+            if (type instanceof ReferenceType) 
             try {
-
-                double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(fieldSig);
+                ReferenceType rtype = (ReferenceType) type;
+               
+                double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(rtype);
                 if (DEBUG) {
                     System.out.println("  isSerializable: " + isSerializable);
                 }
                 if (isSerializable < 1.0)
-                    fieldsThatMightBeAProblem.put(obj.getName(), XFactory.createXField(this));
+                    fieldsThatMightBeAProblem.put(obj.getName(), xfield);
                 if (isSerializable < 0.9) {
+                    ReferenceType problemType = DeepSubtypeAnalysis.getLeastSerializableTypeComponent(rtype);
 
                     // Priority is LOW for GUI classes (unless explicitly marked
                     // Serializable),
@@ -630,7 +638,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                     else if (isSerializable < 0.9)
                         fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD", priority)
                                 .addClass(getThisClass().getClassName())
-                                .addField(getDottedClassName(), obj.getName(), fieldSig, false).addType(fieldSig)
+                                .addField(xfield).addType(problemType)
                                 .describe("TYPE_FOUND"));
                 } else if (!isGUIClass && !isEjbImplClass && obj.getName().equals("this$0"))
                     fieldWarningList.add(new BugInstance(this, "SE_INNER_CLASS", implementsSerializableDirectly ? NORMAL_PRIORITY

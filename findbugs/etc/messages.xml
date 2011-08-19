@@ -1269,16 +1269,31 @@ This detector looks for stores of non Serializable objects into HTTP sessions.
 ]]>
     </Details>
   </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue">
+    <Details>
+<![CDATA[
+<p>
+This detector looks for uses of of non Serializable objects in contexts that require them to be serializable.
+</p>
+]]>
+    </Details>
+  </Detector>
+
+
   <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableValuePassedToWriteObject">
     <Details>
 <![CDATA[
 <p>
-This detector looks for stores of non Serializable objects passed to the writeObject method of
+This detector looks for non Serializable objects passed to the writeObject method of
 an ObjectOutput.
 </p>
 ]]>
     </Details>
   </Detector>
+
+
+
   <Detector class="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression">
     <Details>
 <![CDATA[
