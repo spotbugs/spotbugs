@@ -25,6 +25,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -67,31 +68,56 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
     private final List<DetectorFactory> factoryList = new ArrayList<DetectorFactory>();
     private final Map<String, DetectorFactory> factoriesByName = new HashMap<String, DetectorFactory>();
     private final Map<String, DetectorFactory> factoriesByDetectorClassName = new HashMap<String, DetectorFactory>();
-    private Map<String, CloudPlugin> registeredClouds = new LinkedHashMap<String, CloudPlugin>();
+    private final Map<String, CloudPlugin> registeredClouds = new LinkedHashMap<String, CloudPlugin>();
     protected final Map<String, BugCategory> categoryDescriptionMap = new HashMap<String, BugCategory>();
     protected final Map<String, BugPattern> bugPatternMap = new HashMap<String, BugPattern>();
     protected final Map<String, BugCode> bugCodeMap = new HashMap<String, BugCode>();
-    
-    private UpdateChecker updateChecker;
-    private CopyOnWriteArrayList<PluginUpdateListener> pluginUpdateListeners
+
+    private final UpdateChecker updateChecker;
+    private final CopyOnWriteArrayList<PluginUpdateListener> pluginUpdateListeners
             = new CopyOnWriteArrayList<PluginUpdateListener>();
-    private List<UpdateChecker.PluginUpdate> updates = null;
-    private boolean updatesForced = false;
-    private Collection<Plugin> pluginsToUpdate = Collections.emptySet();
+    private List<UpdateChecker.PluginUpdate> updates;
+    private boolean updatesForced;
+    private final Collection<Plugin> pluginsToUpdate;
+    final Map<String, String> globalOptions = new HashMap<String,String>();
+    final Map<String, Plugin> globalOptionsSetter = new HashMap<String,Plugin>();
 
     protected DetectorFactoryCollection() {
-        loadCorePlugin();
-        Collection<Plugin> allPlugins = Plugin.getAllPlugins();
-        List<Plugin> enabledPlugins = new ArrayList<Plugin>();
-        for(Plugin plugin : allPlugins) {
-            if (plugin.isGloballyEnabled() && !plugin.isCorePlugin()) {
+        this(true, false, Plugin.getAllPlugins(), new ArrayList<Plugin>());
+    }
+
+    protected DetectorFactoryCollection(Plugin onlyPlugin) {
+        this(false, true, Collections.singleton(onlyPlugin), new ArrayList<Plugin>());
+    }
+
+    protected DetectorFactoryCollection(Collection<Plugin> enabled) {
+        this(true, true, enabled, enabled);
+    }
+
+    private DetectorFactoryCollection(boolean loadCore, boolean forceLoad,
+            @Nonnull Collection<Plugin> pluginsToLoad,
+            @Nonnull Collection<Plugin> enabledPlugins) {
+        if(loadCore) {
+            loadCorePlugin();
+        }
+        for(Plugin plugin : pluginsToLoad) {
+            if (forceLoad || plugin.isGloballyEnabled() && !plugin.isCorePlugin()) {
                 loadPlugin(plugin);
-                enabledPlugins.add(plugin);
+                if(!enabledPlugins.contains(plugin)) {
+                    enabledPlugins.add(plugin);
+                }
             }
         }
         setGlobalOptions();
         updateChecker = new UpdateChecker(this);
-        checkForUpdatesInit(combine(corePlugin, enabledPlugins));
+        pluginsToUpdate = combine(enabledPlugins);
+        // There are too many places where the detector factory collection can be created,
+        // and in many cases it has nothing to do with update checks, like Plugin#addCustomPlugin(URI).
+
+        // Line below commented to allow custom plugins be loaded/registered BEFORE we
+        // start to update something. The reason is that custom plugins
+        // can disable update globally OR just will be NOT INCLUDED in the update check!
+        // updateChecker.checkForUpdates(pluginsToUpdate, false);
     }
 
     /**
@@ -102,36 +128,11 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         updateChecker.checkForUpdates(pluginsToUpdate, force);
     }
 
-    private void checkForUpdatesInit(Collection<Plugin> plugins) {
-        this.pluginsToUpdate = plugins;
-        updateChecker.checkForUpdates(plugins, false);
-    }
-
-    protected DetectorFactoryCollection(Plugin onlyPlugin) {
-        loadPlugin(onlyPlugin);
-        setGlobalOptions();
-        updateChecker = new UpdateChecker(this);
-        checkForUpdatesInit(combine(corePlugin, Collections.singleton(onlyPlugin)));
-    }
-
-    protected DetectorFactoryCollection(Collection<Plugin> enabled) {
-        if (FindBugs.DEBUG)
-            System.out.println("\nCreating custom DFC {");
-        loadCorePlugin();
-        for(Plugin plugin : enabled) {
-            loadPlugin(plugin);
-        }
-        if (FindBugs.DEBUG)
-            System.out.println("}\n");
-        setGlobalOptions();
-        updateChecker = new UpdateChecker(this);
-        checkForUpdatesInit(combine(corePlugin, enabled));
-    }
-
-    private Collection<Plugin> combine(Plugin corePlugin, Collection<Plugin> enabled) {
+    private Collection<Plugin> combine(Collection<Plugin> enabled) {
         List<Plugin> result = new ArrayList<Plugin>(enabled);
-        if (corePlugin != null)
+        if (corePlugin != null && !result.contains(corePlugin)) {
             result.add(corePlugin);
+        }
         return result;
     }
 
@@ -162,28 +163,29 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         }
     }
 
-     final Map<String, String> globalOptions = new HashMap<String,String>();
-     final Map<String, Plugin> globalOptionsSetter = new HashMap<String,Plugin>();
-
-   
      private void setGlobalOptions() {
-         for(Plugin p : plugins()) 
-             if (p.isGloballyEnabled()) 
+         globalOptions.clear();
+         globalOptionsSetter.clear();
+
+         for(Plugin p : plugins()) {
+             if (p.isGloballyEnabled()) {
                  for(Map.Entry<String, String> e : p.getMyGlobalOptions().entrySet()) {
                      String key = e.getKey();
                      String value = e.getValue();
                      String oldValue = globalOptions.get(key);
-                     
+
                      if (oldValue != null) {
-                         if (oldValue.equals(value))
+                         if (oldValue.equals(value)) {
                              continue;
+                         }
                          Plugin oldP = globalOptionsSetter.get(key);
                          throw new RuntimeException(
                                  "Incompatible global options for " + key + "; conflict between " + oldP.getPluginId() + " and " + p.getPluginId());
                      }
                      globalOptions.put(key, value);
                      globalOptionsSetter.put(key, p);
-                 
+                 }
+             }
          }
      }
     public  @CheckForNull String getGlobalOption(String key) {
@@ -194,7 +196,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         return globalOptionsSetter.get(key);
     }
 
-    
+
     /**
      * Return an Iterator over all available Plugin objects.
      */
@@ -289,7 +291,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         factoriesByDetectorClassName.remove(factory.getFullName());
     }
 
-   
+
     /**
      * See if the location of ${findbugs.home} can be inferred from the location
      * of findbugs.jar in the classpath.
@@ -370,6 +372,8 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         }
         pluginByIdMap.put(plugin.getPluginId(), plugin);
 
+        setGlobalOptions();
+
         // Register all of the detectors that this plugin contains
         for (DetectorFactory factory : plugin.getDetectorFactories()) {
             registerDetector(factory);
@@ -395,6 +399,9 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
 
     void unLoadPlugin(Plugin plugin)  {
         pluginByIdMap.remove(plugin.getPluginId());
+
+        setGlobalOptions();
+
         for (DetectorFactory factory : plugin.getDetectorFactories()) {
             unRegisterDetector(factory);
         }
@@ -413,12 +420,12 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
     }
 
     @SuppressWarnings({"ConstantConditions"})
-    public void pluginUpdateCheckComplete(List<UpdateChecker.PluginUpdate> updates, boolean force) {
-        this.updates = updates;
+    public void pluginUpdateCheckComplete(List<UpdateChecker.PluginUpdate> newUpdates, boolean force) {
+        this.updates = newUpdates;
         this.updatesForced = force;
         for (PluginUpdateListener listener : pluginUpdateListeners) {
             try {
-                listener.pluginUpdateCheckComplete(updates, force);
+                listener.pluginUpdateCheckComplete(newUpdates, force);
             } catch (Throwable e) {
                 LOGGER.log(Level.INFO, "Error during update check callback", e);
             }
@@ -427,8 +434,11 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
 
     public void addPluginUpdateListener(PluginUpdateListener listener) {
         pluginUpdateListeners.add(listener);
-        if (updates != null)
+        if (updates != null) {
             listener.pluginUpdateCheckComplete(updates, updatesForced);
+        } else if(!updateChecker.updateChecksGloballyDisabled()){
+            checkForUpdates(false);
+        }
     }
 
     public  Map<String, CloudPlugin> getRegisteredClouds() {
@@ -512,7 +522,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
     protected void unRegisterBugCode(BugCode bugCode) {
         bugCodeMap.remove(bugCode.getAbbrev());
     }
-    
+
     public Collection<BugCode> getBugCodes() {
         return bugCodeMap.values();
     }
@@ -557,7 +567,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
     /**
      * Get a Collection containing all known bug category keys. E.g.,
      * "CORRECTNESS", "MT_CORRECTNESS", "PERFORMANCE", etc.
-     * 
+     *
      * Excludes hidden bug categories
      *
      * @return Collection of bug category keys.
