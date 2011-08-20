@@ -123,7 +123,17 @@ public class PrintingBugReporter extends TextUIBugReporter {
                 Map<String, Boolean> customPlugins = getProject().getConfiguration().getCustomPlugins();
                 StringTokenizer tok = new StringTokenizer(pluginListStr, File.pathSeparator);
                 while (tok.hasMoreTokens()) {
-                    customPlugins.put(new File(tok.nextToken()).getAbsolutePath(), Boolean.TRUE);
+                    File file = new File(tok.nextToken());
+                    Boolean enabled = Boolean.valueOf(file.isFile());
+                    customPlugins.put(file.getAbsolutePath(), enabled);
+                    if(enabled.booleanValue()) {
+                        try {
+                            Plugin.loadCustomPlugin(file, getProject());
+                        } catch (PluginException e) {
+                            throw new IllegalStateException("Failed to load plugin " +
+                                    "specified by the '-pluginList', file: " + file, e);
+                        }
+                    }
                 }
             } else if (option.equals("-maxRank")) {
                 maxRank = Integer.parseInt(argument);

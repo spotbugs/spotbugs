@@ -24,6 +24,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
@@ -142,7 +144,17 @@ public abstract class FindBugsCommandLine extends CommandLine {
             Map<String, Boolean> customPlugins = getProject().getConfiguration().getCustomPlugins();
             StringTokenizer tok = new StringTokenizer(pluginListStr, File.pathSeparator);
             while (tok.hasMoreTokens()) {
-                customPlugins.put(new File(tok.nextToken()).getAbsolutePath(), Boolean.TRUE);
+                File file = new File(tok.nextToken());
+                Boolean enabled = Boolean.valueOf(file.isFile());
+                customPlugins.put(file.getAbsolutePath(), enabled);
+                if(enabled.booleanValue()) {
+                    try {
+                        Plugin.loadCustomPlugin(file, getProject());
+                    } catch (PluginException e) {
+                        throw new IllegalStateException("Failed to load plugin " +
+                                "specified by the '-pluginList', file: " + file, e);
+                    }
+                }
             }
         } else if (option.equals("-project")) {
             loadProject(argument);
