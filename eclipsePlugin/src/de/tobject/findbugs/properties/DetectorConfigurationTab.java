@@ -66,6 +66,7 @@ import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
@@ -236,6 +237,9 @@ public class DetectorConfigurationTab extends Composite {
                 return factory.getSpeed();
             case PLUGIN:
                 String provider = factory.getPlugin().getProvider();
+                if(provider == null) {
+                    provider = "<unknown>";
+                }
                 if (provider.endsWith(" project")) {
                     return provider.substring(0, provider.length() - " project".length());
                 }
@@ -394,12 +398,14 @@ public class DetectorConfigurationTab extends Composite {
         StringBuilder sb = new StringBuilder();
         sb.append("\n\nPlugin: ").append(plugin.getPluginId());
         String version = plugin.getVersion();
-        if (version.length() > 0)
+        if (version.length() > 0) {
             sb.append("\nVersion: ").append(version);
+        }
 
         sb.append("\nProvider: ").append(plugin.getProvider());
-        if (plugin.getWebsite() != null && plugin.getWebsite().length() > 0) {
-            sb.append(" (").append(plugin.getWebsite()).append(")");
+        String website = plugin.getWebsite();
+        if (website != null && website.length() > 0) {
+            sb.append(" (").append(website).append(")");
         }
         return sb.toString();
     }

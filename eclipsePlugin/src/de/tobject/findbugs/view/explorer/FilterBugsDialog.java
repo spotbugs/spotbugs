@@ -623,8 +623,9 @@ public class FilterBugsDialog extends SelectionDialog {
     private void appendPluginDescription(StringBuilder sb, Plugin plugin) {
         sb.append("<p>Contributed by plugin: ").append(plugin.getPluginId());
         sb.append("<p>Provider: ").append(plugin.getProvider());
-        if (plugin.getWebsite() != null && plugin.getWebsite().length() > 0) {
-            sb.append(" (").append(plugin.getWebsite()).append(")");
+        String website = plugin.getWebsite();
+        if (website != null && website.length() > 0) {
+            sb.append(" (").append(website).append(")");
         }
     }
 
