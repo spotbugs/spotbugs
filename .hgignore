@@ -64,3 +64,6 @@ syntax: regexp
 
 syntax: regexp
 ^findbugs/optionalPlugin/noUpdateChecks\.jar$
+
+syntax: regexp
+^plugins/noUpdateChecks/build_eclipse$
