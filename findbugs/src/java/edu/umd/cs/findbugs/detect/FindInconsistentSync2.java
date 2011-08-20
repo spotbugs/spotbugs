@@ -611,6 +611,7 @@ public class FindInconsistentSync2 implements Detector {
                         System.out.println("is null check");
                     FieldInstruction fins = (FieldInstruction) ins;
                     xfield = Hierarchy.findXField(fins, cpg);
+                    if (xfield == null) continue;
                     isWrite = ins.getOpcode() == Constants.PUTFIELD;
                     isLocal = fins.getClassName(cpg).equals(classContext.getJavaClass().getClassName());
                     if (DEBUG)

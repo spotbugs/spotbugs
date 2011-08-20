@@ -331,10 +331,10 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         consumeStack(obj);
 
         Type loadType = obj.getFieldType(cpg);
-        String sig = obj.getSignature(cpg);
         try {
             XField xfield = Hierarchy.findXField(obj, getCPG());
-            loadType = getType(xfield);
+            if (xfield != null)
+                loadType = getType(xfield);
         } catch (ClassNotFoundException e) {
            AnalysisContext.reportMissingClass(e);
         }

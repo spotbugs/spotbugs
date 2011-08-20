@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.ba.heap;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
@@ -140,7 +142,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
         }
     }
 
-    private XField lookupField(InstructionHandle handle, FieldInstruction fins) throws ClassNotFoundException {
+    private @CheckForNull XField lookupField(InstructionHandle handle, FieldInstruction fins) throws ClassNotFoundException {
         XField field = instructionToFieldMap.get(handle);
         if (field == null) {
             field = Hierarchy.findXField(fins, getCPG());

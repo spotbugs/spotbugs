@@ -19,16 +19,18 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import javax.annotation.Nonnull;
+
 public class InnerClassAccess {
     private String methodName;
 
     private String methodSig;
 
-    private XField field;
+    private @Nonnull XField field;
 
     private boolean isLoad;
 
-    public InnerClassAccess(String methodName, String methodSig, XField field, boolean isLoad) {
+    public InnerClassAccess(String methodName, String methodSig, @Nonnull XField field, boolean isLoad) {
         this.methodName = methodName;
         this.methodSig = methodSig;
         this.field = field;
@@ -43,7 +45,7 @@ public class InnerClassAccess {
         return methodSig;
     }
 
-    public XField getField() {
+    public @Nonnull XField getField() {
         return field;
     }
 

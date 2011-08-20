@@ -25,6 +25,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Field;
@@ -41,8 +44,6 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.NullType;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
@@ -927,7 +928,7 @@ public class Hierarchy {
      * @return an XField object representing the field, or null if no such field
      *         could be found
      */
-    public static XField findXField(FieldInstruction fins, @NonNull ConstantPoolGen cpg) throws ClassNotFoundException {
+    public static @CheckForNull XField findXField(FieldInstruction fins, @Nonnull ConstantPoolGen cpg) throws ClassNotFoundException {
 
         String className = fins.getClassName(cpg);
         String fieldName = fins.getFieldName(cpg);
