@@ -80,8 +80,8 @@ public class WorkspaceSettingsTab extends Composite {
             return;
         }
         ManagePathsWidget pathsWidget = new ManagePathsWidget(this);
-        CheckboxTableViewer viewer = pathsWidget.createViewer("Custom Detectors",
-                "See: <a href=\"http://www.ibm.com/developerworks/library/j-findbug2/\">'Writing custom detectors'</a>"
+        CheckboxTableViewer viewer = pathsWidget.createViewer("FindBugs Plugins",
+                "See: <a href=\"http://www.ibm.com/developerworks/library/j-findbug2/\">'Writing custom plugins'</a>"
                         + " and <a href=\"http://fb-contrib.sourceforge.net/\">fb-contrib</a>: additional bug detectors package",
                         true); // set true to enable checkbox to allow enable/disable detectors without removing them
         detectorProvider = createDetectorProvider(viewer);

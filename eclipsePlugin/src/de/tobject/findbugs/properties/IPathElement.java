@@ -29,4 +29,6 @@ public interface IPathElement {
     void setEnabled(boolean enabled);
 
     boolean isEnabled();
+
+    boolean isSystem();
 }

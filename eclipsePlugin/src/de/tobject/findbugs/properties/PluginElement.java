@@ -18,21 +18,25 @@
  */
 package de.tobject.findbugs.properties;
 
+import org.eclipse.core.runtime.IStatus;
+
 import edu.umd.cs.findbugs.Plugin;
 
-public class PluginElement {
+public class PluginElement implements IPathElement {
 
     private final Plugin plugin;
     private boolean enabled;
 
-    public PluginElement(Plugin plugin, boolean enabled) {
+    public PluginElement(Plugin plugin) {
         this.plugin = plugin;
-        this.setEnabled(enabled);
+        if(plugin.isCorePlugin()) {
+            enabled = true;
+        }
     }
 
     @Override
     public String toString() {
-        return plugin.toString() + (isEnabled() ? "" : " (disabled)");
+        return "System plugin: " + plugin.getPluginId() + (isEnabled() ? "" : " (disabled)");
     }
 
     public String getPath() {
@@ -66,6 +70,18 @@ public class PluginElement {
      * @param enabled the enabled to set
      */
     public void setEnabled(boolean enabled) {
+        if(plugin.isCorePlugin()) {
+            return;
+        }
+        plugin.setGloballyEnabled(enabled);
         this.enabled = enabled;
+    }
+
+    public void setStatus(IStatus status) {
+        //
+    }
+
+    public boolean isSystem() {
+        return true;
     }
 }

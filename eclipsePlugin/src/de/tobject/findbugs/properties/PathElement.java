@@ -82,4 +82,8 @@ public class PathElement implements IPathElement {
     public boolean isEnabled() {
         return enabled;
     }
+
+    public boolean isSystem() {
+        return false;
+    }
 }

@@ -19,6 +19,7 @@
 package de.tobject.findbugs.properties;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,6 +33,7 @@ import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.tobject.findbugs.builder.FindBugsWorker;
+import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 class DetectorProvider extends PathsProvider {
@@ -55,6 +57,15 @@ class DetectorProvider extends PathsProvider {
                 newPaths.add(element);
             }
         }
+        Collection<Plugin> allPlugins = Plugin.getAllPlugins();
+        for (Plugin plugin : allPlugins) {
+            PluginElement element = new PluginElement(plugin);
+            // TODO read the state from prefs
+            element.setEnabled(plugin.isGloballyEnabled());
+            if(!newPaths.contains(element)) {
+                newPaths.add(element);
+            }
+        }
         return newPaths;
     }
 
@@ -73,6 +84,9 @@ class DetectorProvider extends PathsProvider {
         DetectorValidator validator = new DetectorValidator();
         IStatus bad = null;
         for (IPathElement path : paths) {
+            if(path.isSystem()) {
+                continue;
+            }
             IStatus status = validator.validate(path.getPath());
             path.setStatus(status);
             if (!status.isOK()) {

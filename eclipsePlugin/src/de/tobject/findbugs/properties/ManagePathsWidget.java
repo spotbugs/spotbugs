@@ -20,6 +20,7 @@ package de.tobject.findbugs.properties;
 
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -111,7 +112,15 @@ public class ManagePathsWidget extends Composite {
 
         viewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
-                removeButton.setEnabled(!event.getSelection().isEmpty());
+                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+                if(selection.isEmpty()) {
+                    removeButton.setEnabled(false);
+                } else {
+                    if(selection.getFirstElement() instanceof IPathElement) {
+                        IPathElement pathElement = (IPathElement) selection.getFirstElement();
+                        removeButton.setEnabled(!pathElement.isSystem());
+                    }
+                }
             }
         });
     }
