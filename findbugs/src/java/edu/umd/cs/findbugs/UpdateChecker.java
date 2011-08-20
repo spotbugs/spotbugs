@@ -99,7 +99,8 @@ public class UpdateChecker {
                 try {
                     latch.await(15, TimeUnit.SECONDS);
                     dfc.pluginUpdateCheckComplete(pluginUpdates, force);
-                } catch (Exception e) {
+                } catch (Exception ignored) {
+                    assert true;
                 }
 
             }
