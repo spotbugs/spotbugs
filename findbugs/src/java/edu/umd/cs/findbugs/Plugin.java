@@ -55,8 +55,8 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
  * @author David Hovemeyer
  */
 public class Plugin {
-    
-  
+
+
     private static final String USE_FINDBUGS_VERSION = "USE_FINDBUGS_VERSION";
     private final String pluginId;
 
@@ -80,7 +80,7 @@ public class Plugin {
 
     private final LinkedHashMap<String, BugCategory> bugCategories;
     private final LinkedHashSet<CloudPlugin> cloudList;
-    
+
     private final HashMap<String,String> myGlobalOptions = new HashMap<String, String>();
 
     private final DualKeyHashMap<Class<?>, String, ComponentPlugin<?>> componentPlugins;
@@ -99,7 +99,7 @@ public class Plugin {
     private final PluginLoader pluginLoader;
 
     private final boolean enabledByDefault;
-    
+
     private final boolean cannotDisable;
 
     static Map<URI, Plugin> allPlugins = new LinkedHashMap<URI, Plugin>();
@@ -177,19 +177,19 @@ public class Plugin {
         return provider;
     }
 
-    
+
     public void setUpdateUrl(String url) throws URISyntaxException {
         this.updateUrl = new URI(url);
     }
-    
+
     public @CheckForNull URI getUpdateUrl() {
         return updateUrl;
     }
-    
+
     public void setMyGlobalOption(String key, String value) {
         myGlobalOptions.put(key, value);
     }
-    
+
     Map<String,String> getMyGlobalOptions() {
         return Collections.unmodifiableMap(myGlobalOptions);
     }
@@ -198,7 +198,7 @@ public class Plugin {
      *
      * @param website
      *            the plugin website
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
     public void setWebsite(String website) throws URISyntaxException {
         this.website = new URI(website);
@@ -214,7 +214,7 @@ public class Plugin {
             return null;
         return website.toASCIIString();
     }
-    
+
     public  @CheckForNull URI getWebsiteURI() {
         return website;
     }
@@ -286,7 +286,7 @@ public class Plugin {
             throw new IllegalArgumentException("Category already exists");
         bugCategories.put(bugCategory.getCategory(), bugCategory);
     }
-    
+
 
     public BugCategory addOrCreateBugCategory(String id) {
         BugCategory c = bugCategories.get(id);
@@ -475,17 +475,17 @@ public class Plugin {
         FindBugsMain main = new FindBugsMain(mainClass, cmd, description, kind, analysis);
         mainPlugins.put(cmd, main);
     }
-    
+
     public @CheckForNull FindBugsMain getFindBugsMain(String cmd) {
         return mainPlugins.get(cmd);
-        
+
     }
-    
+
     public Collection<FindBugsMain> getAllFindBugsMain() {
         return mainPlugins.values();
-        
+
     }
-    
+
     <T> void addComponentPlugin(Class<T> componentKind, ComponentPlugin<T> plugin) {
         if (!componentKind.isAssignableFrom(plugin.getComponentClass()))
                 throw new IllegalArgumentException();
@@ -523,7 +523,7 @@ public class Plugin {
         Collection<Plugin> plugins = getAllPlugins();
         Set<URI> uris = new HashSet<URI>();
         for (Plugin plugin : plugins) {
-            
+
             try {
                 URI uri = plugin.getPluginLoader().getURL().toURI();
                 if(uri != null) {
@@ -532,7 +532,7 @@ public class Plugin {
             } catch (URISyntaxException e) {
                 AnalysisContext.logError("Unable to get URI", e);
             }
-           
+
         }
         return uris;
     }
@@ -556,7 +556,7 @@ public class Plugin {
     public boolean isCorePlugin() {
         return pluginLoader.isCorePlugin();
     }
-    
+
     public boolean cannotDisable() {
         return cannotDisable;
     }
@@ -659,16 +659,13 @@ public class Plugin {
     }
 
     public static Plugin addCustomPlugin(URI u, ClassLoader parent) throws PluginException {
+        URL url;
         try {
-            PluginLoader pluginLoader = PluginLoader.getPluginLoader(u.toURL(), parent, false, true);
-
-            Plugin plugin = pluginLoader.loadPlugin();
-            // register new clouds
-            DetectorFactoryCollection.instance().loadPlugin(plugin);
-            return plugin;
+            url = u.toURL();
         } catch (MalformedURLException e) {
             throw new PluginException("Unable to convert uri to url:" + u, e);
         }
+        return addCustomPlugin(url, parent);
     }
     public static synchronized void removeCustomPlugin(Plugin plugin) {
         Set<Entry<URI, Plugin>> entrySet = Plugin.allPlugins.entrySet();
