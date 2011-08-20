@@ -23,12 +23,14 @@
     </target>
 
     <target name="plugin-jar">
-        <jar destfile="build/noUpdateChecks.jar">
+        <jar destfile="build/noUpdateChecks.jar" manifest="META-INF/MANIFEST.MF">
             <fileset dir="etc">
                 <include name="findbugs.xml"/>
                 <include name="messages.xml"/>
             </fileset>
-
+            <fileset dir=".">
+                <include name="plugin.xml"/>
+            </fileset>
         </jar>
     </target>
 
@@ -44,4 +46,4 @@
 
 </project>
 
-      
+

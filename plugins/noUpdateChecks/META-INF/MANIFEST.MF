@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: noUpdateChecks
+Bundle-SymbolicName: noUpdateChecks;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-ClassPath: .
+Bundle-Vendor: FindBugs Project
+Require-Bundle: 
+  findbugs;resolution:=optional
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
