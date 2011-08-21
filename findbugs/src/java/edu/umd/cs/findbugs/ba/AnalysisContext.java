@@ -232,7 +232,7 @@ public abstract class AnalysisContext {
     final UnreadFieldsData unreadFieldsData = new UnreadFieldsData();
     UnreadFields unreadFields;
 
-    public UnreadFieldsData getUnreadFieldsData() {
+    public @Nonnull UnreadFieldsData getUnreadFieldsData() {
         return unreadFieldsData;
     }
 

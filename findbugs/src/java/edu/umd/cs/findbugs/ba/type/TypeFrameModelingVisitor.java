@@ -538,7 +538,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         }
 
         mapGetCheck: if (methodName.equals("get") && signature.equals("(Ljava/lang/Object;)Ljava/lang/Object;")
-                && className.endsWith("Map")) {
+                && className.endsWith("Map") && Subtypes2.instanceOf(className, "java.util.Map")
+                && frame.getStackDepth() >= 2) {
             try {
                 Type mapType = frame.getStackValue(1);
                 if (mapType instanceof GenericObjectType) {
