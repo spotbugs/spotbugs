@@ -100,11 +100,16 @@ public class AuthServlet extends AbstractFlybushServlet {
         resp.setStatus(200);
         resp.setContentType("text/html");
         PrintWriter writer = resp.getWriter();
-        writer.println("<title>" + getCloudName() + "</title>");
-        writer.println("<h1>You are now signed in</h1>");
-        writer.println("<p style='font-size: large; font-weight: bold'>"
-                + "Please return to the FindBugs application window to continue.</p>");
-        writer.println("<p style='font-style: italic'>Signed in as <strong>" + escapeHtml(email) + "</strong> ("
+        writer.println("<title>" + getCloudName() + "</title>" +
+                "<table border=0 cellpadding=10><tr>" +
+                "<td bgcolor='#b9b9fe' valign='top'>" +
+                "<img src='http://findbugs.sourceforge.net/umdFindbugs.png' alt='FindBugs'>" +
+                "</td>" +
+                "<td valign='top'>" +
+                "<h1>You are now signed into " + getCloudName() + "</h1>" +
+                "<p style='font-size: large; font-weight: bold'>"
+                + "Please return to the FindBugs application window to continue.</p>" +
+                "<p style='font-style: italic'>Signed in as <strong>" + escapeHtml(email) + "</strong> ("
                 + escapeHtml(openidUrl) + ")</p>");
     }
 
