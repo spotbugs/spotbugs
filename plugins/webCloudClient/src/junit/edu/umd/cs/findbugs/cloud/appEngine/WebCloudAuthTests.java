@@ -79,7 +79,6 @@ public class WebCloudAuthTests extends AbstractWebCloudTest {
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         try {
             cloud.initialize();
-            fail("should have thrown exception");
         } catch (IOException e) {
         }
         assertEquals(Cloud.SigninState.SIGNIN_FAILED, cloud.getSigninState());
