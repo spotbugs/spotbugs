@@ -242,7 +242,7 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
 
     @SuppressWarnings("boxing")
     void loadDatabaseInfo(String hash, int id, long firstSeen, long lastSeen) {
-    	BugData bd = sendToDatabase.get(hash);
+        BugData bd = sendToDatabase.get(hash);
         firstSeen = sanityCheckFirstSeen(firstSeen);
         lastSeen = sanityCheckLastSeen(lastSeen);
         if (bd == null)
