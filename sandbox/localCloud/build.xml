@@ -156,6 +156,7 @@
         <mkdir dir="build/tests"/>
         <junit fork="yes" printsummary="true">
             <jvmarg value="-ea"/>
+            <sysproperty key="java.util.logging.config.file" value="mylogging.properties"/>
             <formatter type="xml"/>   <!-- Hudson reads generated xml -->
 
             <classpath refid="localCloud.classpath"/>

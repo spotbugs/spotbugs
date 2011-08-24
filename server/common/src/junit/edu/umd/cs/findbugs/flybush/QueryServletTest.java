@@ -2,6 +2,7 @@ package edu.umd.cs.findbugs.flybush;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
@@ -14,6 +15,7 @@ import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil.enc
 
 @SuppressWarnings({ "UnusedDeclaration" })
 public abstract class QueryServletTest extends AbstractFlybushServletTest {
+    private static final Logger LOGGER = Logger.getLogger(QueryServletTest.class.getName());
 
     @Override
     protected AbstractFlybushServlet createServlet() {
@@ -106,6 +108,7 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
     }
 
     public void testGetRecentEvaluationsAskAgain() throws Exception {
+        LOGGER.fine("STARTING testGetRecentEvaluationsAskAgain");
         DbIssue issue1 = createDbIssue("fad");
         DbIssue issue2 = createDbIssue("fad2");
         DbEvaluation eval1 = createEvaluation(issue1, "someone1", 100);
@@ -127,7 +130,11 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
         assertEquals(1, foundissueProto.getEvaluationsCount());
         checkEvaluationsEqual(eval1, foundissueProto.getEvaluations(0));
 
-        assertTrue(result.getAskAgain());
+        try {
+            assertTrue(result.getAskAgain());
+        } finally {
+            LOGGER.fine("ENDING testGetRecentEvaluationsAskAgain");
+        }
     }
 
     public void testGetRecentEvaluationsOnlyShowsLatestFromEachPerson() throws Exception {

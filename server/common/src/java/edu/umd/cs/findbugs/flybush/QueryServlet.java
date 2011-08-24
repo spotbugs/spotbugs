@@ -76,18 +76,22 @@ public class QueryServlet extends AbstractFlybushServlet {
             throws IOException {
         GetRecentEvaluations recentEvalsRequest = GetRecentEvaluations.parseFrom(req.getInputStream());
         long startTime = recentEvalsRequest.getTimestamp();
-        LOGGER.info("Looking for updates since " + new Date(startTime) + " for " + req.getRemoteAddr());
 
         String limitParam = req.getParameter("_debug_max");
         int limit = limitParam != null ? Integer.parseInt(limitParam) : 10;
+        LOGGER.info("Looking for " + limit + " updates since " + new Date(startTime) + " for " + req.getRemoteAddr());
         // we request limit+1 so we can tell the client whether there are more results beyond the limit they provided.
         int queryLimit = limit + 1;
+
         Query query = pm.newQuery();
         query.setClass(persistenceHelper.getDbEvaluationClass());
         query.setFilter("when > " + startTime);
         query.setOrdering("when ascending");
         query.setRange(0,queryLimit);
+
         List<DbEvaluation> evaluations = (List<DbEvaluation>) query.execute();
+        int resultCount = evaluations.size();
+        LOGGER.fine(resultCount + " results");
         RecentEvaluations.Builder issueProtos = RecentEvaluations.newBuilder();
         issueProtos.setCurrentServerTime(System.currentTimeMillis());
         Iterator<DbEvaluation> iterator = evaluations.iterator();
@@ -98,6 +102,7 @@ public class QueryServlet extends AbstractFlybushServlet {
                 DbIssue issue = evaluationsForIssue.iterator().next().getIssue();
                 Issue issueProto = buildFullIssueProto(issue, evaluationsForIssue);
                 issueProtos.addIssues(issueProto);
+                LOGGER.fine(evaluationsForIssue.size() + " evals");
             }
         } catch (RuntimeException e) {
             if (issueProtos.getIssuesCount() > 0) {
@@ -106,12 +111,12 @@ public class QueryServlet extends AbstractFlybushServlet {
                 askAgain = true;
             } else {
                 // just return 500 so the client tries again
-                throw (RuntimeException) e;
+                throw e;
             }
         }
         query.closeAll();
         if (!askAgain) {
-            askAgain = iterator.hasNext();
+            askAgain = resultCount > limit;
             LOGGER.info("Returning " + issueProtos.getIssuesCount() + (askAgain ? " (more to come)" : ""));
         }
         issueProtos.setAskAgain(askAgain);
