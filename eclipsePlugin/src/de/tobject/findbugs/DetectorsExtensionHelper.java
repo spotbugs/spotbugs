@@ -86,7 +86,7 @@ public class DetectorsExtensionHelper {
                     }
                     libPathAsString = resolveRelativePath(contributor, libPathAsString);
                     if (libPathAsString == null) {
-                        throw new IllegalArgumentException("Failed to resolve library path: " + libPathAsString);
+                        throw new IllegalArgumentException("Failed to resolve library path: " + contributor.getName());
                     }
                     set.add(libPathAsString);
                 } catch (Throwable e) {
