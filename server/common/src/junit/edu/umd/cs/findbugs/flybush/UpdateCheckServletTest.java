@@ -52,7 +52,7 @@ public abstract class UpdateCheckServletTest extends AbstractFlybushServletTest 
                 "  <plugin id='PLUGIN2' name='PLUGINNAME2' version='PLUGINVERSION2'/>" +
                 "</findbugs-invocation>").getBytes("UTF-8"));
         Query query = getPersistenceManager().newQuery("select from " + persistenceHelper.getDbUsageEntryClassname()
-                + " order by plugin");
+                + " order by plugin ascending");
         List<DbUsageEntry> results = (List<DbUsageEntry>) query.execute();
         assertEquals(2, results.size());
         checkEntry(results.get(0), "PLUGIN1", "PLUGINNAME1", "PLUGINVERSION1");
