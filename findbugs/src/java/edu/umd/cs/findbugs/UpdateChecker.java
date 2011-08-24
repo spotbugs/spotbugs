@@ -36,6 +36,7 @@ public class UpdateChecker {
     private static final Logger LOGGER = Logger.getLogger(UpdateChecker.class.getName());
     private static final String KEY_DISABLE_ALL_UPDATE_CHECKS = "noUpdateChecks";
     private static final String KEY_REDIRECT_ALL_UPDATE_CHECKS = "redirectUpdateChecks";
+    private static final boolean ENV_FB_NO_UPDATE_CHECKS = System.getenv("FB_NO_UPDATE_CHECKS") != null;
 
     private final UpdateCheckCallback dfc;
     private List<PluginUpdate> pluginUpdates = new ArrayList<PluginUpdate>();
@@ -108,7 +109,7 @@ public class UpdateChecker {
     }
 
     public boolean updateChecksGloballyDisabled() {
-        return getPluginThatDisabledUpdateChecks() != null;
+        return ENV_FB_NO_UPDATE_CHECKS || getPluginThatDisabledUpdateChecks() != null;
     }
 
     public String getPluginThatDisabledUpdateChecks() {
