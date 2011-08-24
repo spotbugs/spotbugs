@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup;
+import edu.umd.cs.findbugs.gui2.GuiUtil;
 import edu.umd.cs.findbugs.util.Util;
 
 @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
@@ -258,9 +259,10 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
                     } catch (Throwable e) {
                         if (e instanceof ExecutionException)
                             e = e.getCause();
-                        getGuiCallback().showMessageDialog("Error while checking bugs against " + getCloudName()
-                                + "\n\n" + e.getClass().getSimpleName() + ": " + e.getMessage());
-                        LOGGER.log(Level.SEVERE, "Error while checking bugs against cloud in background " , e);
+                        String errorMsg = GuiUtil.getNetworkErrorMessage(e);
+                        getGuiCallback().showMessageDialog("Could not connect to " + getCloudName()
+                                + "\n\n" + errorMsg);
+                        LOGGER.log(Level.SEVERE, "Error while checking bugs against cloud in background" , e);
                     }
                 }
             });

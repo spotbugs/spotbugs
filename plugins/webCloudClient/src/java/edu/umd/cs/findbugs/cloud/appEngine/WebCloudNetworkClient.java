@@ -100,11 +100,11 @@ public class WebCloudNetworkClient {
     /** returns whether soft initialization worked and the user is now signed in */
     public boolean initialize() throws IOException {
         lookerupper = createNameLookup();
-        try {
+//        try {
             lookerupper.softSignin();
-        } catch (IOException e) {
-            LOGGER.log(Level.INFO, "Could not connect to cloud", e);
-        }
+//        } catch (IOException e) {
+//            LOGGER.log(Level.INFO, "Could not connect to cloud", e);
+//        }
         this.sessionId = lookerupper.getSessionId();
         this.username = lookerupper.getUsername();
         this.host = lookerupper.getHost();

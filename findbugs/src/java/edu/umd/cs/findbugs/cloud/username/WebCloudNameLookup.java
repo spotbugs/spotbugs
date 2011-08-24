@@ -26,6 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.security.SecureRandom;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -56,7 +57,7 @@ public class WebCloudNameLookup implements NameLookup {
 
     private Long sessionId;
     private String username;
-    private String host;
+    private String url;
 
     public boolean signIn(CloudPlugin plugin, BugCollection bugCollection) throws IOException {
         loadProperties(plugin);
@@ -68,7 +69,7 @@ public class WebCloudNameLookup implements NameLookup {
             sessionId = loadOrCreateSessionId();
 
         LOGGER.info("Opening browser for session " + sessionId);
-        URL u = new URL(host + "/browser-auth/" + sessionId);
+        URL u = new URL(url + "/browser-auth/" + sessionId);
         LaunchBrowser.showDocument(u);
 
         // wait 1 minute for the user to sign in
@@ -88,8 +89,8 @@ public class WebCloudNameLookup implements NameLookup {
 
     public void loadProperties(CloudPlugin plugin) {
         PropertyBundle pluginProps = plugin.getProperties();
-        host = pluginProps.getProperty(APPENGINE_HOST_PROPERTY_NAME);
-        if (host == null)
+        url = pluginProps.getProperty(APPENGINE_HOST_PROPERTY_NAME);
+        if (url == null)
             throw new IllegalStateException("Host not specified for " + plugin.getId());
     }
 
@@ -100,12 +101,11 @@ public class WebCloudNameLookup implements NameLookup {
      * @throws IOException
      */
     public boolean softSignin() throws IOException {
-        if (host == null)
+        if (url == null)
             throw new IllegalStateException("Null host");
         
-        /** Check that we can resolve the host */
-        InetAddress ignored = InetAddress.getByName(host);
-        
+        checkResolveHost();
+
         if (sessionId != null) {
             if (checkAuthorized(getAuthCheckUrl(sessionId))) {
                 LOGGER.fine("Skipping soft init; session ID already exists - " + sessionId);
@@ -127,8 +127,16 @@ public class WebCloudNameLookup implements NameLookup {
         return authorized;
     }
 
+    private void checkResolveHost() throws UnknownHostException {
+        try {
+            String host = new URL(url).getHost();
+            @SuppressWarnings({"UnusedDeclaration"})
+            InetAddress ignored = InetAddress.getByName(host);
+        } catch (MalformedURLException e) { /* this will come out later */ }
+    }
+
     private URL getAuthCheckUrl(long sessionId) throws MalformedURLException {
-        return new URL(host + "/check-auth/" + sessionId);
+        return new URL(url + "/check-auth/" + sessionId);
     }
 
     public static void setSaveSessionInformation(boolean save) {
@@ -163,7 +171,7 @@ public class WebCloudNameLookup implements NameLookup {
     }
 
     public String getHost() {
-        return host;
+        return url;
     }
 
     // ======================= end of public methods =======================
