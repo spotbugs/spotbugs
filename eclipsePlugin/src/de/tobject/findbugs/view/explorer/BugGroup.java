@@ -207,7 +207,7 @@ public class BugGroup implements IAdaptable, IActionFilter {
     }
 
     @SuppressWarnings("unchecked")
-    public Object getAdapter(Class adapter) {
+    public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
         if (adapter.isAssignableFrom(self.getClass())) {
             return self;
         }
