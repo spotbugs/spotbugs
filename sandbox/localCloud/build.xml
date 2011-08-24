@@ -42,6 +42,26 @@
         </datanucleusenhancer>
     </target>
 
+    <target name="enhance-intellij">
+        <mkdir dir="classes"/> <!-- so datanucleus enhancer doesn't complain-->
+        <taskdef name="datanucleusenhancer" classpathref="enhancer.classpath"
+                 classname="org.datanucleus.enhancer.tools.EnhancerTask"/>
+
+        <datanucleusenhancer failonerror="true" verbose="true">
+            <classpath>
+                <path refid="enhancer.classpath"/>
+                <path location="classes"/>
+                <path location="../../server/common/classes"/>
+            </classpath>
+
+            <jvmarg line="-Dlog4j.configuration=etc/logging.properties"/>
+
+            <fileset dir="classes">
+                <include name="**/*.class"/>
+            </fileset>
+        </datanucleusenhancer>
+    </target>
+
     <target name="fulljar-uptodate-check" depends="enhance">
         <uptodate property="fulljar-not-required" targetfile="build/localCloud.jar">
             <srcfiles dir="build/classes-ant" includes="**/*"/>

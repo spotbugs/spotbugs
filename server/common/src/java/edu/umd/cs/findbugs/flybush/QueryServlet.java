@@ -82,8 +82,11 @@ public class QueryServlet extends AbstractFlybushServlet {
         int limit = limitParam != null ? Integer.parseInt(limitParam) : 10;
         // we request limit+1 so we can tell the client whether there are more results beyond the limit they provided.
         int queryLimit = limit + 1;
-        Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClassname() + " where when > "
-                + startTime + " order by when ascending limit " + queryLimit);
+        Query query = pm.newQuery();
+        query.setClass(persistenceHelper.getDbEvaluationClass());
+        query.setFilter("when > " + startTime);
+        query.setOrdering("when ascending");
+        query.setRange(0,queryLimit);
         List<DbEvaluation> evaluations = (List<DbEvaluation>) query.execute();
         RecentEvaluations.Builder issueProtos = RecentEvaluations.newBuilder();
         issueProtos.setCurrentServerTime(System.currentTimeMillis());
