@@ -82,8 +82,8 @@ public class XmlUploadServlet extends AbstractFlybushServlet {
 
     @SuppressWarnings({"unchecked"})
     private void printForm(PersistenceManager pm, HttpServletResponse resp) throws IOException {
-        List<DbPluginUpdateXml> xmls = (List<DbPluginUpdateXml>) pm.newQuery(
-                UpdateCheckServlet.getUpdateXmlQuery(persistenceHelper)).execute();
+        List<DbPluginUpdateXml> xmls = (List<DbPluginUpdateXml>)
+                UpdateCheckServlet.getUpdateXmlQueryObj(pm, persistenceHelper).execute();
         String currentXml;
         if (xmls.isEmpty())
             currentXml = "(no update xml has been uploaded yet)";

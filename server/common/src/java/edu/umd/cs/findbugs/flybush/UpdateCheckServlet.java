@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
@@ -19,11 +20,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class UpdateCheckServlet extends AbstractFlybushServlet {
 
-    public static String getUpdateXmlQuery(PersistenceHelper persistenceHelper) {
-        return "select from " + persistenceHelper.getDbPluginUpdateXmlClassname()
-                + " order by date desc limit 1";
-    }
-    
     @SuppressWarnings({"unchecked"})
     @Override
     protected void handlePost(PersistenceManager pm, HttpServletRequest req, HttpServletResponse resp, String uri)
@@ -100,12 +96,19 @@ public class UpdateCheckServlet extends AbstractFlybushServlet {
         resp.setStatus(200);
         resp.setContentType("text/xml");
         try {
-            List<DbPluginUpdateXml> results = (List<DbPluginUpdateXml>) pm.newQuery(
-                    getUpdateXmlQuery(persistenceHelper)).execute();
+            List<DbPluginUpdateXml> results = (List<DbPluginUpdateXml>) getUpdateXmlQueryObj(pm, persistenceHelper).execute();
             if (results.size() > 0)
                 resp.getWriter().write(results.get(0).getContents());
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while grabbing update check XML from DB", e);
         }
+    }
+
+    public static Query getUpdateXmlQueryObj(PersistenceManager pm, PersistenceHelper persistenceHelper) {
+        Query query = pm.newQuery();
+        query.setClass(persistenceHelper.getDbPluginUpdateXmlClass());
+        query.setOrdering("date descending");
+        query.setRange(0,1);
+        return query;
     }
 }

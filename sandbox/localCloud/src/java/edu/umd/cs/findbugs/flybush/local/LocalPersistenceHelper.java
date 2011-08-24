@@ -70,12 +70,12 @@ public class LocalPersistenceHelper extends PersistenceHelper {
 
     @Override
     public DbClientVersionStats createDbClientVersionStats(String application, String version, long dayStart) {
-        throw new UnsupportedOperationException();
+        return new LocalDbClientVersionStats(application, version, dayStart);
     }
 
     @Override
     public DbUsageEntry createDbUsageEntry() {
-        throw new UnsupportedOperationException();
+        return new LocalDbUsageEntry();
     }
 
     @Override
@@ -105,12 +105,12 @@ public class LocalPersistenceHelper extends PersistenceHelper {
 
     @Override
     public Class<? extends DbClientVersionStats> getDbClientVersionStatsClass() {
-        throw new UnsupportedOperationException();
+        return LocalDbClientVersionStats.class;
     }
 
     @Override
     public Class<? extends DbUsageEntry> getDbUsageEntryClass() {
-        throw new UnsupportedOperationException();
+        return LocalDbUsageEntry.class;
     }
 
     @Override

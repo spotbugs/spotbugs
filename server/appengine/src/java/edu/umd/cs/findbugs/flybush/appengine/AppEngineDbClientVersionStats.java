@@ -11,6 +11,7 @@ import edu.umd.cs.findbugs.flybush.DbClientVersionStats;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class AppEngineDbClientVersionStats implements DbClientVersionStats {
+    @SuppressWarnings({"UnusedDeclaration"})
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;

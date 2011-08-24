@@ -118,8 +118,9 @@
 
     <target name="dist" depends="fulljar">
         <mkdir dir="dist" />
-        <mkdir dir="dist/lib" />
         <mkdir dir="dist/web-root" />
+        <mkdir dir="dist/web-root/WEB-INF" />
+        <mkdir dir="dist/web-root/WEB-INF/lib" />
 
         <copy todir="dist">
             <fileset dir="build" includes="localCloud.jar"/>
@@ -127,7 +128,7 @@
             <fileset dir="etc" includes="jdo.properties"/>
             <fileset dir="etc" includes="logging.properties"/>
         </copy>
-        <copy todir="dist/lib">
+        <copy todir="dist/web-root/WEB-INF/lib">
             <fileset dir="lib/datanucleus" includes="datanucleus-core-1.1.6.jar"/>
             <fileset dir="lib/datanucleus" includes="datanucleus-rdbms-1.1.6.jar"/>
         </copy>
