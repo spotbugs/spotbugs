@@ -1347,12 +1347,10 @@ public class PluginLoader {
             String shortDesc = findMessageText(msgDocuments,
                     "/MessageCollection/Plugin/ShortDescription", "");
             return new Summary(pluginId, shortDesc, provider, website);
-        } catch (NullPointerException e) {
-            throw e;
         } catch (DocumentException e) {
-            throw new IOException(e);
+            throw new IllegalStateException(e);
         } catch (PluginException e) {
-            throw new IOException(e);
+            throw new IllegalStateException(e);
         } finally {
             Util.closeSilently(zip);
         }
