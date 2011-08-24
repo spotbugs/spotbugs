@@ -63,6 +63,7 @@ import javax.annotation.CheckForNull;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
@@ -211,17 +212,17 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
 
     int resyncCount;
 
-    final Map<String, BugData> instanceMap = new HashMap<String, BugData>();
+    final Map<String, BugData> sendToDatabase = new HashMap<String, BugData>();
 
-    final Map<Integer, BugData> idMap = new HashMap<Integer, BugData>();
+    final Map<Integer, BugData> fromDatabase = new HashMap<Integer, BugData>();
 
     final IdentityHashMap<BugDesignation, Integer> bugDesignationId = new IdentityHashMap<BugDesignation, Integer>();
 
     BugData getBugData(String instanceHash) {
-        BugData bd = instanceMap.get(instanceHash);
+        BugData bd = sendToDatabase.get(instanceHash);
         if (bd == null) {
             bd = new BugData(instanceHash);
-            instanceMap.put(instanceHash, bd);
+            sendToDatabase.put(instanceHash, bd);
         }
         return bd;
 
@@ -241,13 +242,13 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
 
     @SuppressWarnings("boxing")
     void loadDatabaseInfo(String hash, int id, long firstSeen, long lastSeen) {
-        BugData bd = instanceMap.get(hash);
+    	BugData bd = sendToDatabase.get(hash);
         firstSeen = sanityCheckFirstSeen(firstSeen);
         lastSeen = sanityCheckLastSeen(lastSeen);
         if (bd == null)
             return;
-        if (idMap.containsKey(id)) {
-            assert bd == idMap.get(id);
+        if (fromDatabase.containsKey(id)) {
+            assert bd == fromDatabase.get(id);
             assert bd.id == id;
             assert bd.firstSeen == firstSeen;
         } else {
@@ -256,7 +257,7 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
             bd.lastSeen = lastSeen;
 
             bd.inDatabase = true;
-            idMap.put(id, bd);
+            fromDatabase.put(id, bd);
         }
         if (bd.firstSeen < FIRST_LIGHT)
             throw new IllegalStateException("Bug has first seen of " + new Date(bd.firstSeen));
@@ -354,6 +355,8 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
     
     static final boolean LOG_BUG_UPLOADS = SystemProperties.getBoolean("cloud.buguploads.log");
 
+    volatile boolean sendToDatabasePopulated = false;
+
     class PopulateBugs implements Update {
         /**
          * True if this is the initial load from the database, false if we are
@@ -378,6 +381,7 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
                         commonPrefix = Util.commonPrefix(commonPrefix, b.getPrimaryClass().getClassName());
                         getBugData(b.getInstanceHash()).bugs.add(b);
                     }
+                sendToDatabasePopulated = true;
                 if (commonPrefix == null)
                     commonPrefix = "<no bugs>";
                 else if (commonPrefix.length() > 128)
@@ -390,21 +394,47 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
                 PreparedStatement ps;
                 ResultSet rs;
                 if (performFullLoad) {
-                    ps = c.prepareStatement("SELECT id, hash, firstSeen, lastSeen FROM findbugs_issue");
-                    rs = ps.executeQuery();
+					if (issuesInDatabase > 10 * sendToDatabase.size()) {
+						if (CloudFactory.DEBUG) {
+							System.out.printf("Loading %d individual bugs from database%n", sendToDatabase.size());						
+						}
+						for (String hash : sendToDatabase.keySet()) {
+							ps = c.prepareStatement("SELECT id, firstSeen, lastSeen FROM findbugs_issue WHERE hash=?");
+							ps.setString(1, hash);
+							rs = ps.executeQuery();
+							if (rs.next()) {
+								int col = 1;
+								int id = rs.getInt(col++);
+								Timestamp firstSeen = rs.getTimestamp(col++);
+								Timestamp lastSeen = rs.getTimestamp(col++);
+								loadDatabaseInfo(hash, id, firstSeen.getTime(),
+										lastSeen.getTime());
+							}
+							rs.close();
+							ps.close();
 
-                    while (rs.next()) {
-                        int col = 1;
-                        int id = rs.getInt(col++);
-                        String hash = rs.getString(col++);
-                        Timestamp firstSeen = rs.getTimestamp(col++);
-                        Timestamp lastSeen = rs.getTimestamp(col++);
+						}
+					} else {
+						if (CloudFactory.DEBUG) {
+							System.out.printf("Bulk loading all %d bugs from database%n", issuesInDatabase);						
+						}
+						ps = c.prepareStatement("SELECT id, hash, firstSeen, lastSeen FROM findbugs_issue");
+						rs = ps.executeQuery();
 
-                        loadDatabaseInfo(hash, id, firstSeen.getTime(), lastSeen.getTime());
-                    }
-                    rs.close();
-                    ps.close();
-                }
+						while (rs.next()) {
+							int col = 1;
+							int id = rs.getInt(col++);
+							String hash = rs.getString(col++);
+							Timestamp firstSeen = rs.getTimestamp(col++);
+							Timestamp lastSeen = rs.getTimestamp(col++);
+
+							loadDatabaseInfo(hash, id, firstSeen.getTime(),
+									lastSeen.getTime());
+						}
+						rs.close();
+						ps.close();
+					}
+				}
                 if (startShutdown)
                     return;
 
@@ -420,7 +450,7 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
                     String designation = rs.getString(col++);
                     String comment = rs.getString(col++);
                     Timestamp when = rs.getTimestamp(col++);
-                    BugData data = idMap.get(issueId);
+                    BugData data = fromDatabase.get(issueId);
 
                     if (data != null) {
                         BugDesignation bd = new BugDesignation(designation, when.getTime(), comment, who);
@@ -454,7 +484,7 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
                     String assignedTo = rs.getString(col++);
                     String componentName = rs.getString(col++);
 
-                    BugData data = instanceMap.get(hash);
+                    BugData data = sendToDatabase.get(hash);
 
                     if (data != null) {
                         if (Util.nullSafeEquals(data.bugLink, bugReportId) && Util.nullSafeEquals(data.filedBy, whoFiled)
@@ -640,6 +670,7 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
         return DriverManager.getConnection(url, dbUser, dbPassword);
     }
 
+    volatile int issuesInDatabase;
     @Override
     public boolean initialize() throws IOException {
         if (CloudFactory.DEBUG)
@@ -675,11 +706,16 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) from  findbugs_issue");
             boolean result = false;
             if (rs.next()) {
+            	issuesInDatabase = rs.getInt(1);
                 result = true;
             }
             rs.close();
             stmt.close();
             c.close();
+            if (CloudFactory.DEBUG) {
+            	System.out.printf("%d issues in database%n", issuesInDatabase);
+            }
+                
             if (result) {
                 runnerThread.setDaemon(true);
                 runnerThread.start();
@@ -892,7 +928,9 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
     private static final String HAS_SKIPPED_BUG = "has_skipped_bugs";
 
     private boolean skipBug(BugInstance bug) {
-        boolean result = bug.getBugPattern().getCategory().equals("NOISE") || bug.isDead()
+        BugPattern bugPattern = bug.getBugPattern();
+		boolean result = bugPattern.getCategory().equals("NOISE") || bug.isDead()
+	            || bugPattern.getType().equals("UNKNOWN")
                 || BugRanker.findRank(bug) > MAX_DB_RANK;
         if (result && firstTimeDoing(HAS_SKIPPED_BUG)) {
             bugCollection
@@ -1102,7 +1140,7 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
         ResultSet rs = null;
         boolean needsUpdate = false;
         try {
-            query = c.prepareStatement("SELECT  id, bugReportId, whoFiled, whenFiled FROM findbugs_bugreport where hash=?");
+            query = c.prepareStatement("SELECT  id, bugReportId, whoFiled, whenFiled FROM findbugs_bugreport WHERE hash=?");
             query.setString(1, bug.instanceHash);
             rs = query.executeQuery();
 
@@ -1748,6 +1786,10 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
 
     @SuppressWarnings("boxing")
     public String getStatusMsg0() {
+    	if (!communicationInitiated.get() || !sendToDatabasePopulated) {
+    		return String.format("communications with database not yet initialized");
+    	}
+        
         SimpleDateFormat format = new SimpleDateFormat("h:mm a");
         int numToSync = queue.size();
         if (numToSync > 0)
@@ -1755,12 +1797,12 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
         else if (resync != null && resync.after(lastUpdate))
             return String.format("%d updates received from db at %s", resyncCount, format.format(resync));
         else if (updatesSentToDatabase == 0) {
-            int skipped = bugCollection.getCollection().size() - idMap.size();
+            int skipped = bugCollection.getCollection().size() - sendToDatabase.size();
             if (skipped == 0)
-                    return String.format("%d issues synchronized with database", idMap.size());
+            	return String.format("%d issues synchronized with database", fromDatabase.size());
             else
-                    return String.format("%d issues synchronized with database, %d low rank issues not synchronized", 
-                            idMap.size(), skipped);
+                return String.format("%d issues synchronized with database, %d low rank issues not synchronized", 
+                            fromDatabase.size(), skipped);
         } else
             return String.format("%d classifications/bug filings sent to db, last updated at %s", updatesSentToDatabase,
                     format.format(lastUpdate));
@@ -1819,7 +1861,7 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
 
     @Override
     protected Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd) {
-        BugData bugData = instanceMap.get(bd.getInstanceHash());
+        BugData bugData = sendToDatabase.get(bd.getInstanceHash());
         if (bugData == null)
             return Collections.emptyList();
         return bugData.getUniqueDesignations();
@@ -1827,7 +1869,7 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
 
     @Override
     public BugInstance getBugByHash(String hash) {
-        Collection<BugInstance> bugs = instanceMap.get(hash).bugs;
+        Collection<BugInstance> bugs = sendToDatabase.get(hash).bugs;
         return bugs.isEmpty() ? null : bugs.iterator().next();
     }
 
@@ -1839,8 +1881,9 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
         if (b == null)
             throw new NullPointerException("null bug");
         String instanceHash = b.getInstanceHash();
-        BugData bugData = instanceMap.get(instanceHash);
-        return bugData != null && bugData.inDatabase;
+
+		BugData bugData = sendToDatabase.get(instanceHash);
+		return bugData != null && bugData.inDatabase;
     }
 
     @Override
