@@ -380,7 +380,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 
     private IProject enableOrDisableCloudControls() {
         IProject eclipseProj = getProject();
-        String txt = "Store comments in:";
+        String txt = "Store issue evaluations in:";
         if (eclipseProj == null) {
             cloudLabel.setEnabled(false);
             cloudCombo.setEnabled(false);

@@ -100,6 +100,6 @@ class DetectorProvider extends PathsProvider {
     @Override
     protected void configureDialog(FileDialog dialog) {
         dialog.setFilterExtensions(new String[] { "*.jar" });
-        dialog.setText("Select jar file(s) containing custom detectors");
+        dialog.setText("Select FindBugs plugins (plugins should have a .jar extension)");
     }
 }
