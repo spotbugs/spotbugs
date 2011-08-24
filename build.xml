@@ -1,4 +1,4 @@
-<project name="findbugs" default="all">
+<project name="findbugs root" default="all">
 
 	<target name="all">
 		<ant dir="findbugs" />
@@ -25,12 +25,8 @@
 		<ant dir="plugins/jdbcCloudClient" target="clean"/>
 		<ant dir="plugins/jira" target="clean"/>
 		<ant dir="plugins/webCloudClient" target="clean"/>
-		<ant dir="server/appengine" target="clean"/>
 		<ant dir="server/common" target="clean"/>
-
-		<!-- <ant dir="bluej" target="clean"/> -->
 		<ant dir="eclipsePlugin" target="clean"/>
-		<ant dir="findbugs" target="clean"/>
 		<ant dir="findbugsTestCases" target="clean"/>
 		<!--
 		<ant dir="webCloudProtocol" target="clean"/>

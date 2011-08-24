@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="lib/gdata-projecthosting-meta-2.1.jar"/>
 	<classpathentry kind="lib" path="test-lib/mockito-all-1.8.2.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
+	<classpathentry kind="var" path="CODE_DIR/findbugs/plugins/googlecode/lib/google-collect-1.0-rc1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
