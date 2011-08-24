@@ -137,9 +137,10 @@ public class Guava {
         t.remove("x", 1);
     }
 
-    @ExpectWarning(value="EC", num=1)
+    @ExpectWarning(value="EC", num=2)
     public static void testObjects() {
         Objects.equal("x", 1);
+        Objects.equal("x",  new int[1]);
     }
     
     @NoWarning("EC")
