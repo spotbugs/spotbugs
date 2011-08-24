@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.SecureRandom;
@@ -99,6 +100,12 @@ public class WebCloudNameLookup implements NameLookup {
      * @throws IOException
      */
     public boolean softSignin() throws IOException {
+        if (host == null)
+            throw new IllegalStateException("Null host");
+        
+        /** Check that we can resolve the host */
+        InetAddress ignored = InetAddress.getByName(host);
+        
         if (sessionId != null) {
             if (checkAuthorized(getAuthCheckUrl(sessionId))) {
                 LOGGER.fine("Skipping soft init; session ID already exists - " + sessionId);
