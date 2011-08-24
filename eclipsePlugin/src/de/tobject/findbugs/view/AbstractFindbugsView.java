@@ -87,7 +87,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.WorkbenchPart#dispose()
      */
     @Override
@@ -98,7 +98,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets
      * .Composite)
@@ -204,7 +204,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
     }
 
     @Override
-    public Object getAdapter(Class adapter) {
+    public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
         if (adapter == IContributedContentsView.class) {
             return this;
         }
@@ -223,7 +223,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
 
     /**
      * Get the IWorkbenchSiteProgressService for the receiver.
-     * 
+     *
      * @return IWorkbenchSiteProgressService or <code>null</code>.
      */
     protected IWorkbenchSiteProgressService getProgressService() {

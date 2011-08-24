@@ -130,7 +130,7 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
     }
 
     @Override
-    public Object getAdapter(Class clazz) {
+    public Object getAdapter(@SuppressWarnings("rawtypes") Class clazz) {
         Object adapter = super.getAdapter(clazz);
         if (adapter == null && clazz == IMemento.class) {
             return viewMemento;

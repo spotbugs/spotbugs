@@ -159,7 +159,7 @@ public class FindBugsConsole extends MessageConsole implements IPropertyChangeLi
             bars.getToolBarManager().appendToGroup(IConsoleConstants.LAUNCH_GROUP, removeAction);
         }
 
-        public Object getAdapter(Class adapter) {
+        public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
             return null;
         }
     }
