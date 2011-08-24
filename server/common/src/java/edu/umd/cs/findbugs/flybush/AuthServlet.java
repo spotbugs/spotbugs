@@ -107,10 +107,11 @@ public class AuthServlet extends AbstractFlybushServlet {
                 "</td>" +
                 "<td valign='top'>" +
                 "<h1>You are now signed into " + getCloudName() + "</h1>" +
-                "<p style='font-size: large; font-weight: bold'>"
-                + "Please return to the FindBugs application window to continue.</p>" +
-                "<p style='font-style: italic'>Signed in as <strong>" + escapeHtml(email) + "</strong> ("
-                + escapeHtml(openidUrl) + ")</p>");
+                "<p style='font-size: large'>"
+                + "Return to the FindBugs application window to continue.</p>" +
+                "<p>Signed in as <strong>" + escapeHtml(email) + "</strong><br>" +
+                "<span style='font-size:x-small; font-style: italic'>("
+                + escapeHtml(openidUrl) + ")</span></p>");
     }
 
     private DbUser createAndStoreUser(PersistenceManager pm, String openidUrl, String email) {
