@@ -25,9 +25,10 @@ import static de.tobject.findbugs.preferences.FindBugsConstants.EXPORT_SORT_ORDE
 import static de.tobject.findbugs.preferences.FindBugsConstants.KEY_CACHE_CLASS_DATA;
 import static de.tobject.findbugs.preferences.FindBugsConstants.KEY_RUN_ANALYSIS_AS_EXTRA_JOB;
 import static de.tobject.findbugs.preferences.FindBugsConstants.ORDER_BY_NAME;
-import static de.tobject.findbugs.preferences.FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY;
-import static de.tobject.findbugs.preferences.FindBugsConstants.PRIO_LOW_MARKER_SEVERITY;
-import static de.tobject.findbugs.preferences.FindBugsConstants.PRIO_NORMAL_MARKER_SEVERITY;
+import static de.tobject.findbugs.preferences.FindBugsConstants.RANK_OFCONCERN_MARKER_SEVERITY;
+import static de.tobject.findbugs.preferences.FindBugsConstants.RANK_SCARIEST_MARKER_SEVERITY;
+import static de.tobject.findbugs.preferences.FindBugsConstants.RANK_SCARY_MARKER_SEVERITY;
+import static de.tobject.findbugs.preferences.FindBugsConstants.RANK_TROUBLING_MARKER_SEVERITY;
 import static de.tobject.findbugs.preferences.FindBugsConstants.RUN_ANALYSIS_AUTOMATICALLY;
 import static de.tobject.findbugs.preferences.FindBugsConstants.RUN_ANALYSIS_ON_FULL_BUILD;
 import static de.tobject.findbugs.preferences.FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS;
@@ -62,9 +63,10 @@ public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer
         store.setDefault(RUN_ANALYSIS_ON_FULL_BUILD, false);
         store.setDefault(ASK_ABOUT_PERSPECTIVE_SWITCH, true);
         store.setDefault(SWITCH_PERSPECTIVE_AFTER_ANALYSIS, false);
-        store.setDefault(PRIO_LOW_MARKER_SEVERITY, MarkerSeverity.Warning.name());
-        store.setDefault(PRIO_NORMAL_MARKER_SEVERITY, MarkerSeverity.Warning.name());
-        store.setDefault(PRIO_HIGH_MARKER_SEVERITY, MarkerSeverity.Warning.name());
+        store.setDefault(RANK_OFCONCERN_MARKER_SEVERITY, MarkerSeverity.Warning.name());
+        store.setDefault(RANK_TROUBLING_MARKER_SEVERITY, MarkerSeverity.Warning.name());
+        store.setDefault(RANK_SCARY_MARKER_SEVERITY, MarkerSeverity.Warning.name());
+        store.setDefault(RANK_SCARIEST_MARKER_SEVERITY, MarkerSeverity.Warning.name());
         // disabled to be able to distinguish between default and current value
         // store.setDefault(PROJECT_PROPS_DISABLED, true);
     }
@@ -100,9 +102,10 @@ public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer
         store.setToDefault(RUN_ANALYSIS_ON_FULL_BUILD);
         store.setToDefault(ASK_ABOUT_PERSPECTIVE_SWITCH);
         store.setToDefault(SWITCH_PERSPECTIVE_AFTER_ANALYSIS);
-        store.setToDefault(PRIO_LOW_MARKER_SEVERITY);
-        store.setToDefault(PRIO_NORMAL_MARKER_SEVERITY);
-        store.setToDefault(PRIO_HIGH_MARKER_SEVERITY);
+        store.setToDefault(RANK_OFCONCERN_MARKER_SEVERITY);
+        store.setToDefault(RANK_TROUBLING_MARKER_SEVERITY);
+        store.setToDefault(RANK_SCARY_MARKER_SEVERITY);
+        store.setToDefault(RANK_SCARIEST_MARKER_SEVERITY);
 
         store.setToDefault(KEY_CACHE_CLASS_DATA);
         store.setToDefault(KEY_RUN_ANALYSIS_AS_EXTRA_JOB);

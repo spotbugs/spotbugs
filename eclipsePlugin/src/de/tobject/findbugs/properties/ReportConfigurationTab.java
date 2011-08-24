@@ -62,17 +62,26 @@ public class ReportConfigurationTab extends Composite {
 
     private Combo minPriorityCombo;
 
-    private Combo normalPrioCombo;
 
-    private MarkerSeverity initialNormalPrio;
 
-    private Combo highPrioCombo;
+    private Combo scariestRankCombo;
 
-    private MarkerSeverity initialHighPrio;
+    private MarkerSeverity initialScariestRank;
 
-    private Combo lowPrioCombo;
 
-    private MarkerSeverity initialLowPrio;
+    private Combo scaryRankCombo;
+
+    private MarkerSeverity initialScaryRank;
+
+
+    private Combo troublingRankCombo;
+
+    private MarkerSeverity initialTroublingRank;
+
+    private Combo ofConcernRankCombo;
+
+    private MarkerSeverity initialOfConcernRank;
+
 
     public ReportConfigurationTab(TabFolder parent, FindbugsPropertyPage page, int style) {
         super(parent, style);
@@ -98,40 +107,50 @@ public class ReportConfigurationTab extends Composite {
         IPreferenceStore store = propertyPage.getPreferenceStore();
         MarkerSeverity[] markerSeverities = MarkerSeverity.values();
 
-        Group prioGroup = new Group(parent, SWT.NONE);
-        prioGroup.setLayout(new GridLayout(2, false));
-        prioGroup.setText("Mark bugs with ... priority as:");
-        prioGroup.setLayoutData(new GridData(SWT.BEGINNING, SWT.TOP, true, true));
+        Group rankGroup = new Group(parent, SWT.NONE);
+        rankGroup.setLayout(new GridLayout(2, false));
+        rankGroup.setText("Mark bugs with ... rank as:");
+        rankGroup.setLayoutData(new GridData(SWT.BEGINNING, SWT.TOP, true, true));
 
-        Label bugSeverityLabel = new Label(prioGroup, SWT.NONE);
-        bugSeverityLabel.setText("High Priority:");
+        Label bugSeverityLabel = new Label(rankGroup, SWT.NONE);
+        bugSeverityLabel.setText("Scariest:");
 
-        highPrioCombo = new Combo(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+        scariestRankCombo = new Combo(rankGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
         for (MarkerSeverity markerSeverity : markerSeverities) {
-            highPrioCombo.add(markerSeverity.name());
+            scariestRankCombo.add(markerSeverity.name());
         }
-        initialHighPrio = MarkerSeverity.get(store.getString(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY));
-        highPrioCombo.setText(initialHighPrio.name());
+        initialScariestRank = MarkerSeverity.get(store.getString(FindBugsConstants.RANK_SCARIEST_MARKER_SEVERITY));
+        scariestRankCombo.setText(initialScariestRank.name());
 
-        bugSeverityLabel = new Label(prioGroup, SWT.NONE);
-        bugSeverityLabel.setText("Medium Priority:");
+        bugSeverityLabel = new Label(rankGroup, SWT.NONE);
+        bugSeverityLabel.setText("Scary:");
 
-        normalPrioCombo = new Combo(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+        scaryRankCombo = new Combo(rankGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
         for (MarkerSeverity markerSeverity : markerSeverities) {
-            normalPrioCombo.add(markerSeverity.name());
+            scaryRankCombo.add(markerSeverity.name());
         }
-        initialNormalPrio = MarkerSeverity.get(store.getString(FindBugsConstants.PRIO_NORMAL_MARKER_SEVERITY));
-        normalPrioCombo.setText(initialNormalPrio.name());
+        initialScaryRank = MarkerSeverity.get(store.getString(FindBugsConstants.RANK_SCARY_MARKER_SEVERITY));
+        scaryRankCombo.setText(initialScaryRank.name());
 
-        bugSeverityLabel = new Label(prioGroup, SWT.NONE);
-        bugSeverityLabel.setText("Low Priority:");
+        bugSeverityLabel = new Label(rankGroup, SWT.NONE);
+        bugSeverityLabel.setText("Troubling:");
 
-        lowPrioCombo = new Combo(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+        troublingRankCombo = new Combo(rankGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
         for (MarkerSeverity markerSeverity : markerSeverities) {
-            lowPrioCombo.add(markerSeverity.name());
+            troublingRankCombo.add(markerSeverity.name());
         }
-        initialLowPrio = MarkerSeverity.get(store.getString(FindBugsConstants.PRIO_LOW_MARKER_SEVERITY));
-        lowPrioCombo.setText(initialLowPrio.name());
+        initialTroublingRank = MarkerSeverity.get(store.getString(FindBugsConstants.RANK_TROUBLING_MARKER_SEVERITY));
+        troublingRankCombo.setText(initialTroublingRank.name());
+
+        bugSeverityLabel = new Label(rankGroup, SWT.NONE);
+        bugSeverityLabel.setText("Of concern:");
+
+        ofConcernRankCombo = new Combo(rankGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+        for (MarkerSeverity markerSeverity : markerSeverities) {
+            ofConcernRankCombo.add(markerSeverity.name());
+        }
+        initialOfConcernRank = MarkerSeverity.get(store.getString(FindBugsConstants.RANK_OFCONCERN_MARKER_SEVERITY));
+        ofConcernRankCombo.setText(initialOfConcernRank.name());
 
     }
 
@@ -203,7 +222,7 @@ public class ReportConfigurationTab extends Composite {
         } else if (rank < 15) {
             label = "Troubling";
         } else {
-            label = "Possible";
+            label = "Of Concern";
         }
         rankValueLabel.setText(rank + " (" + label + ")");
     }
@@ -282,9 +301,10 @@ public class ReportConfigurationTab extends Composite {
     @Override
     public void setEnabled(boolean enabled) {
         minPriorityCombo.setEnabled(enabled);
-        lowPrioCombo.setEnabled(enabled);
-        normalPrioCombo.setEnabled(enabled);
-        highPrioCombo.setEnabled(enabled);
+        ofConcernRankCombo.setEnabled(enabled);
+        troublingRankCombo.setEnabled(enabled);
+        scaryRankCombo.setEnabled(enabled);
+        scariestRankCombo.setEnabled(enabled);
         minRankSlider.setEnabled(enabled);
         for (Button checkBox : chkEnableBugCategoryList) {
             checkBox.setEnabled(enabled);
@@ -301,19 +321,34 @@ public class ReportConfigurationTab extends Composite {
     }
 
     public boolean isMarkerSeveritiesChanged() {
+        if (isMarkerSeveritiesChanged(FindBugsConstants.RANK_SCARIEST_MARKER_SEVERITY, initialScariestRank)) {
+            return true;
+        }
+        if (isMarkerSeveritiesChanged(FindBugsConstants.RANK_SCARY_MARKER_SEVERITY, initialScaryRank)) {
+            return true;
+        }
+        if (isMarkerSeveritiesChanged(FindBugsConstants.RANK_TROUBLING_MARKER_SEVERITY, initialTroublingRank)) {
+            return true;
+        }
+        if (isMarkerSeveritiesChanged(FindBugsConstants.RANK_OFCONCERN_MARKER_SEVERITY, initialOfConcernRank)) {
+            return true;
+        }
+        return false;
+
+    }
+
+    private boolean isMarkerSeveritiesChanged(String propertyName, MarkerSeverity marker) {
         IPreferenceStore store = propertyPage.getPreferenceStore();
-        String highPrio = store.getString(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY);
-        String normalPrio = store.getString(FindBugsConstants.PRIO_NORMAL_MARKER_SEVERITY);
-        String lowPrio = store.getString(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY);
-        return !initialHighPrio.name().equals(highPrio) || !initialNormalPrio.name().equals(normalPrio)
-                || !initialLowPrio.name().equals(lowPrio);
+        return !store.getString(propertyName).equals(marker.name());
+
     }
 
     void refreshUI(UserPreferences prefs) {
         IPreferenceStore store = propertyPage.getPreferenceStore();
-        highPrioCombo.setText(MarkerSeverity.get(store.getString(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY)).name());
-        normalPrioCombo.setText(MarkerSeverity.get(store.getString(FindBugsConstants.PRIO_NORMAL_MARKER_SEVERITY)).name());
-        lowPrioCombo.setText(MarkerSeverity.get(store.getString(FindBugsConstants.PRIO_LOW_MARKER_SEVERITY)).name());
+        scariestRankCombo.setText(MarkerSeverity.get(store.getString(FindBugsConstants.RANK_SCARIEST_MARKER_SEVERITY)).name());
+        scaryRankCombo.setText(MarkerSeverity.get(store.getString(FindBugsConstants.RANK_SCARY_MARKER_SEVERITY)).name());
+        troublingRankCombo.setText(MarkerSeverity.get(store.getString(FindBugsConstants.RANK_TROUBLING_MARKER_SEVERITY)).name());
+        ofConcernRankCombo.setText(MarkerSeverity.get(store.getString(FindBugsConstants.RANK_OFCONCERN_MARKER_SEVERITY)).name());
 
         ProjectFilterSettings filterSettings = prefs.getFilterSettings();
         minRankSlider.setSelection(filterSettings.getMinRank());
@@ -331,14 +366,17 @@ public class ReportConfigurationTab extends Composite {
 
     public void performOk() {
         IPreferenceStore store = propertyPage.getPreferenceStore();
-        String highPrio = highPrioCombo.getText();
-        store.setValue(FindBugsConstants.PRIO_HIGH_MARKER_SEVERITY, highPrio);
+        String scariest = scariestRankCombo.getText();
+        store.setValue(FindBugsConstants.RANK_SCARIEST_MARKER_SEVERITY, scariest);
 
-        String normalPrio = normalPrioCombo.getText();
-        store.setValue(FindBugsConstants.PRIO_NORMAL_MARKER_SEVERITY, normalPrio);
+        String scary = scaryRankCombo.getText();
+        store.setValue(FindBugsConstants.RANK_SCARY_MARKER_SEVERITY, scary);
 
-        String lowPrio = lowPrioCombo.getText();
-        store.setValue(FindBugsConstants.PRIO_LOW_MARKER_SEVERITY, lowPrio);
+        String troubling = troublingRankCombo.getText();
+        store.setValue(FindBugsConstants.RANK_TROUBLING_MARKER_SEVERITY, troubling);
+
+        String ofConcern = ofConcernRankCombo.getText();
+        store.setValue(FindBugsConstants.RANK_OFCONCERN_MARKER_SEVERITY, ofConcern);
 
     }
 

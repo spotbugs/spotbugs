@@ -20,17 +20,14 @@ package de.tobject.findbugs.reporter;
 
 import org.eclipse.core.resources.IMarker;
 
-import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.builder.WorkItem;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.Priorities;
 
 /**
  * @author Andrei Loskutov
  */
 public class MarkerParameter {
-    private static final boolean EXPERIMENTAL_BUGS = false;
 
     public final BugInstance bug;
 
@@ -65,30 +62,16 @@ public class MarkerParameter {
      * @return null if marker shouldn't be generated
      */
     private String getMarkerType() {
-        String type;
-        switch (bug.getPriority()) {
-        case Priorities.HIGH_PRIORITY:
-            type = FindBugsMarker.NAME_HIGH;
-            break;
-        case Priorities.NORMAL_PRIORITY:
-            type = FindBugsMarker.NAME_NORMAL;
-            break;
-        case Priorities.LOW_PRIORITY:
-            type = FindBugsMarker.NAME_LOW;
-            break;
-        case Priorities.EXP_PRIORITY:
-            if (!EXPERIMENTAL_BUGS) {
-                return null;
-            }
-            type = FindBugsMarker.NAME_EXPERIMENTAL;
-            break;
-        case Priorities.IGNORE_PRIORITY:
-            FindbugsPlugin.getDefault().logError("Bug with ignore priority ");
-            return null;
-        default:
-            FindbugsPlugin.getDefault().logError("Bug with unknown priority " + bug.getPriority());
-            return null;
+        switch (bug.getBugRankCategory()) {
+        case SCARIEST:
+            return FindBugsMarker.NAME_SCARIEST;
+        case SCARY:
+            return FindBugsMarker.NAME_SCARY;
+        case TROUBLING:
+            return FindBugsMarker.NAME_TROUBLING;
+        case OF_CONCERN:
+            return FindBugsMarker.NAME_OF_CONCERN;
         }
-        return type;
+        return FindBugsMarker.NAME_OF_CONCERN;
     }
 }

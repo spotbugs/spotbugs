@@ -38,13 +38,23 @@ public interface FindBugsMarker {
      */
     public static final String NAME = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker";
 
+    @Deprecated
     public static final String NAME_HIGH = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerHigh";
-
+    @Deprecated
     public static final String NAME_NORMAL = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerNormal";
-
+    @Deprecated
     public static final String NAME_LOW = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerLow";
-
+    @Deprecated
     public static final String NAME_EXPERIMENTAL = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerExperimental";
+
+    public static final String NAME_SCARIEST = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScariest";
+
+    public static final String NAME_SCARY = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScary";
+
+    public static final String NAME_TROUBLING = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerTroubling";
+    public static final String NAME_OF_CONCERN = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerOfConcern";
+
+
 
     /**
      * Marker attribute recording the bug type (specific bug pattern).

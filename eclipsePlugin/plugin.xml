@@ -121,24 +121,41 @@
             markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerExperimental"
             name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationExperimental"
             super="org.eclipse.ui.workbench.texteditor.warning"/>
+            
+      <type
+            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationScariest"
+            super="org.eclipse.ui.workbench.texteditor.warning"
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScariest"/>
+      <type
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScary"
+            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationScary"
+            super="org.eclipse.ui.workbench.texteditor.warning"/>
+      <type
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerTroubling"
+            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationTroubling"
+            super="org.eclipse.ui.workbench.texteditor.warning"/>
+      <type
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerOfConcern"
+            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationOfConcern"
+            super="org.eclipse.ui.workbench.texteditor.warning"/>
   </extension>
   <extension point="org.eclipse.ui.editors.markerAnnotationSpecification">
       <specification
             annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationHigh"
             icon="icons/buggy-tiny.png"
-            includeOnPreferencePage="true"
+            includeOnPreferencePage="false"
             label="fbWarningHigh"
             quickFixIcon="icons/buggy-tiny.png"/>
       <specification
             annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationNormal"
             icon="icons/buggy-tiny-orange.png"
-            includeOnPreferencePage="true"
+            includeOnPreferencePage="false"
             label="fbWarningNormal"
             quickFixIcon="icons/buggy-tiny-orange.png"/>
       <specification
             annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationLow"
             icon="icons/buggy-tiny-yellow.png"
-            includeOnPreferencePage="true"
+            includeOnPreferencePage="false"
             label="fbWarningLow"
             quickFixIcon="icons/buggy-tiny-yellow.png"/>
       <specification
@@ -147,6 +164,31 @@
             includeOnPreferencePage="false"
             label="fbWarningExperimental"
             quickFixIcon="icons/buggy-tiny-green.png"/>
+      <specification
+            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationScariest"
+            icon="icons/buggy-tiny.png"
+            includeOnPreferencePage="true"
+            label="fbWarningScariest"
+            quickFixIcon="icons/buggy-tiny.png"/>
+      <specification
+            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationScary"
+            icon="icons/buggy-tiny-orange.png"
+            includeOnPreferencePage="true"
+            label="fbWarningScary"
+            quickFixIcon="icons/buggy-tiny-orange.png"/>
+      <specification
+            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationTroubling"
+            icon="icons/buggy-tiny-yellow.png"
+            includeOnPreferencePage="true"
+            label="fbWarningTroubling"
+            quickFixIcon="icons/buggy-tiny-yellow.png"/>
+      <specification
+            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationOfConcern"
+            icon="icons/buggy-tiny-green.png"
+            includeOnPreferencePage="true"
+            label="fbWarningOfConcern"
+            quickFixIcon="icons/buggy-tiny-green.png"/>
+            
    </extension>
 
    <extension
