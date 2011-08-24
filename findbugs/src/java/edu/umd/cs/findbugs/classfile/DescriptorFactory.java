@@ -328,7 +328,7 @@ public class DescriptorFactory {
         return instance().getClassDescriptor(ClassName.toSlashedClassName(aClass.getName()));
     }
 
-    public static ClassDescriptor createClassDescriptor(@SlashedClassName String className) {
+    public static @Nonnull ClassDescriptor createClassDescriptor(@SlashedClassName String className) {
         return instance().getClassDescriptor(className);
     }
 
