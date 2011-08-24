@@ -31,7 +31,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.protobuf.GeneratedMessage;
-
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
@@ -56,6 +55,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.Builder;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup;
+import edu.umd.cs.findbugs.gui2.GuiUtil;
 
 public class WebCloudNetworkClient {
     private static final Logger LOGGER = Logger.getLogger(WebCloudNetworkClient.class.getPackage().getName());
@@ -100,14 +100,17 @@ public class WebCloudNetworkClient {
     /** returns whether soft initialization worked and the user is now signed in */
     public boolean initialize() throws IOException {
         lookerupper = createNameLookup();
-//        try {
+        IOException throwLater = null;
+        try {
             lookerupper.softSignin();
-//        } catch (IOException e) {
-//            LOGGER.log(Level.INFO, "Could not connect to cloud", e);
-//        }
+        } catch (IOException e) {
+            throwLater = e;
+        }
         this.sessionId = lookerupper.getSessionId();
         this.username = lookerupper.getUsername();
         this.host = lookerupper.getHost();
+        if (throwLater != null)
+            throw throwLater;
         return this.sessionId != null;
     }
 
@@ -462,7 +465,8 @@ public class WebCloudNetworkClient {
                         getGuiCallback().showMessageDialog(
                                 "A network error occurred while attempting to sign out of the "
                                         + cloudClient.getCloudName() + ". \n"
-                                        + "Please check your internet settings and try again.\n\n" + e.getMessage());
+                                        + "Please check your internet settings and try again.\n\n"
+                                        + GuiUtil.getNetworkErrorMessage(e));
                         LOGGER.log(Level.SEVERE, "Could not sign out", e);
                     }
                 }

@@ -361,7 +361,7 @@ public abstract class CloudCommentsPane extends JPanel {
                             } catch (Exception e) {
                                 _bugCollection.getProject().getGuiCallback().showMessageDialog(
                                         "The FindBugs Cloud could not be contacted at this time.\n\n"
-                                                + e.getClass().getSimpleName() + ": " + e.getMessage());
+                                                + GuiUtil.getNetworkErrorMessage(e));
                             }
                             refresh();
                         }

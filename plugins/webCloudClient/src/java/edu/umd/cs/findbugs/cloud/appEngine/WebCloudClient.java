@@ -163,13 +163,17 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
 
                 return false;
             }
-            if (networkClient.initialize()) {
+            try {
+                if (networkClient.initialize()) {
 
-                setSigninState(SigninState.SIGNED_IN);
+                    setSigninState(SigninState.SIGNED_IN);
 
-            } else {
-                // soft init didn't work
-                setSigninState(SigninState.UNAUTHENTICATED);
+                } else {
+                    // soft init didn't work
+                    setSigninState(SigninState.UNAUTHENTICATED);
+                }
+            } catch (Throwable e) {
+                setSigninState(SigninState.SIGNIN_FAILED);
             }
         } catch (IOException e) {
             setSigninState(SigninState.SIGNIN_FAILED);
@@ -200,7 +204,8 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
             try {
                 signIn();
             } catch (Exception e) {
-                getGuiCallback().showMessageDialog("Could not sign into " + getCloudName() + ": " + e.getMessage());
+                getGuiCallback().showMessageDialog("Could not sign into " + getCloudName() + ": "
+                        + GuiUtil.getNetworkErrorMessage(e));
                 throw new SignInCancelledException(e);
             }
 
@@ -711,7 +716,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
                                 + "of the FindBugs window. Any changes you make while offline will be uploaded\n"
                                 + "to the server upon signin.");
             } else {
-                task.failed(e.getClass().getSimpleName() + ": " + e.getMessage());
+                task.failed(GuiUtil.getNetworkErrorMessage(e));
             }
             throw e;
 

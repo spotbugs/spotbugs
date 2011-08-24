@@ -662,7 +662,7 @@ public abstract class AbstractCloud implements Cloud {
     }
 
     @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
-    protected void setSigninState(SigninState state) {
+    public void setSigninState(SigninState state) {
         SigninState oldState = this.signinState;
         if (oldState == state)
             return;
