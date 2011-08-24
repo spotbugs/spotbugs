@@ -18,6 +18,7 @@
     <filter-mapping>
         <filter-name>openid-filter</filter-name>
         <url-pattern>/browser-auth/*</url-pattern>
+        <url-pattern>/token</url-pattern>
     </filter-mapping>
 
     <context-param>
@@ -61,6 +62,7 @@
         <url-pattern>/check-auth/*</url-pattern>
         <url-pattern>/log-in</url-pattern>
         <url-pattern>/log-out/*</url-pattern>
+        <url-pattern>/token</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>QueryServlet</servlet-name>
@@ -93,7 +95,7 @@
     <!-- TODO: security!! -->
     <!--
     <servlet-mapping>
-        <servlet-name>XmlUploadServlet</servlet-name>
+        <servlet-name>UpdateXmlUploadServlet</servlet-name>
         <url-pattern>/upload</url-pattern>
     </servlet-mapping>
     <security-constraint>
@@ -104,6 +106,11 @@
         <web-resource-collection>
             <web-resource-name>Expire SQL Sessions</web-resource-name>
             <url-pattern>/expire-sql-sessions</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>Update XML uploader</web-resource-name>
+            <url-pattern>/upload</url-pattern>
+            <url-pattern>/upload.html</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>admin</role-name>
