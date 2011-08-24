@@ -55,7 +55,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.Builder;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup;
-import edu.umd.cs.findbugs.gui2.GuiUtil;
+import edu.umd.cs.findbugs.util.Util;
 
 public class WebCloudNetworkClient {
     private static final Logger LOGGER = Logger.getLogger(WebCloudNetworkClient.class.getPackage().getName());
@@ -466,7 +466,7 @@ public class WebCloudNetworkClient {
                                 "A network error occurred while attempting to sign out of the "
                                         + cloudClient.getCloudName() + ". \n"
                                         + "Please check your internet settings and try again.\n\n"
-                                        + GuiUtil.getNetworkErrorMessage(e));
+                                        + Util.getNetworkErrorMessage(e));
                         LOGGER.log(Level.SEVERE, "Could not sign out", e);
                     }
                 }

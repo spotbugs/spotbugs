@@ -61,7 +61,6 @@ import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
 import javax.xml.transform.TransformerException;
 
-import edu.umd.cs.findbugs.gui2.GuiUtil;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
@@ -159,7 +158,7 @@ public class SortedBugCollection implements BugCollection {
                 CloudFactory.initializeCloud(this, cloud);
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Could not load cloud plugin "+ cloud.getCloudName(), e);
-                callback.showMessageDialog("Unable to connect to " + cloud.getCloudName() + ": " + GuiUtil.getNetworkErrorMessage(e));
+                callback.showMessageDialog("Unable to connect to " + cloud.getCloudName() + ": " + Util.getNetworkErrorMessage(e));
                 if (CloudFactory.FAIL_ON_CLOUD_ERROR)
                     throw new IllegalStateException("Could not load FindBugs Cloud plugin - to avoid this message, " +
                             "set -D" + CloudFactory.FAIL_ON_CLOUD_ERROR_PROP + "=false", e);

@@ -76,6 +76,7 @@ import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.util.Util;
 
 import static edu.umd.cs.findbugs.util.Util.nullSafeEquals;
 
@@ -361,7 +362,7 @@ public abstract class CloudCommentsPane extends JPanel {
                             } catch (Exception e) {
                                 _bugCollection.getProject().getGuiCallback().showMessageDialog(
                                         "The FindBugs Cloud could not be contacted at this time.\n\n"
-                                                + GuiUtil.getNetworkErrorMessage(e));
+                                                + Util.getNetworkErrorMessage(e));
                             }
                             refresh();
                         }

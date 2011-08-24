@@ -49,7 +49,6 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 import edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup;
-import edu.umd.cs.findbugs.gui2.GuiUtil;
 import edu.umd.cs.findbugs.util.Util;
 
 @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
@@ -205,7 +204,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
                 signIn();
             } catch (Exception e) {
                 getGuiCallback().showMessageDialog("Could not sign into " + getCloudName() + ": "
-                        + GuiUtil.getNetworkErrorMessage(e));
+                        + Util.getNetworkErrorMessage(e));
                 throw new SignInCancelledException(e);
             }
 
@@ -264,7 +263,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
                     } catch (Throwable e) {
                         if (e instanceof ExecutionException)
                             e = e.getCause();
-                        String errorMsg = GuiUtil.getNetworkErrorMessage(e);
+                        String errorMsg = Util.getNetworkErrorMessage(e);
                         getGuiCallback().showMessageDialog("Could not connect to " + getCloudName()
                                 + "\n\n" + errorMsg);
                         LOGGER.log(Level.SEVERE, "Error while checking bugs against cloud in background" , e);
@@ -716,7 +715,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
                                 + "of the FindBugs window. Any changes you make while offline will be uploaded\n"
                                 + "to the server upon signin.");
             } else {
-                task.failed(GuiUtil.getNetworkErrorMessage(e));
+                task.failed(Util.getNetworkErrorMessage(e));
             }
             throw e;
 

@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.net.UnknownHostException;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -48,14 +46,4 @@ public class GuiUtil {
         }
     }
 
-    public static String getNetworkErrorMessage(Throwable e) {
-        String errorMsg = e.getClass().getSimpleName() + ": " + e.getMessage();
-        if (e.getClass().getSimpleName().equals("InvalidProtocolBufferException")) {
-            errorMsg = "Your Internet provider may require you to log in via your web browser.";
-        }
-        if (e instanceof UnknownHostException) {
-            errorMsg = "You may not be connected to the Internet.";
-        }
-        return errorMsg;
-    }
 }

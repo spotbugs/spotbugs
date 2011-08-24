@@ -32,6 +32,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -150,6 +151,17 @@ public class Util {
     }
 
     static Collection<Runnable> runAtShutdown;
+
+    public static String getNetworkErrorMessage(Throwable e) {
+        String errorMsg = e.getClass().getSimpleName() + ": " + e.getMessage();
+        if (e.getClass().getSimpleName().equals("InvalidProtocolBufferException")) {
+            errorMsg = "Your Internet provider may require you to log in via your web browser.";
+        }
+        if (e instanceof UnknownHostException) {
+            errorMsg = "You may not be connected to the Internet.";
+        }
+        return errorMsg;
+    }
 
     static class ShutdownLogging {
         public static final boolean LOGGING = SystemProperties.getBoolean("findbugs.shutdownLogging");
