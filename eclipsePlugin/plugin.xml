@@ -171,7 +171,7 @@
             includeOnPreferencePage="true"
             label="fbWarningOfConcern"
             quickFixIcon="icons/buggy-tiny-blue.png"/>
-            
+
    </extension>
 
    <extension
@@ -1181,7 +1181,7 @@
           point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
        <propertyContributor
              contributorId="de.tobject.findbugs.view.bugtreeview"
-             labelProvider="de.tobject.findbugs.view.properties.PropPageTitleProvider">
+             labelProvider="de.tobject.findbugs.view.PropPageTitleProvider">
           <propertyCategory category="general"/>
           <propertyCategory category="advanced"/>
        </propertyContributor>
@@ -1196,15 +1196,15 @@
                 image="icons/detailsView.png"
                 indented="false"
                 label="&gt;"/>
-                
+
          <propertyTab
                 afterTab="bug.tab.bugPattern"
                 category="general"
                 id="bug.tab.bugInfo"
                 image="icons/runFindbugs.png"
                 indented="false"
-                label="&gt;"/>                
-  
+                label="&gt;"/>
+
           <propertyTab
                 category="advanced"
                 id="bug.tab.Advanced"
@@ -1218,7 +1218,7 @@
     <extension
           point="org.eclipse.ui.views.properties.tabbed.propertySections">
        <propertySections contributorId="de.tobject.findbugs.view.bugtreeview">
-        
+
    <propertySection
                 class="org.eclipse.ui.views.properties.tabbed.AdvancedPropertySection"
                 enablesFor="1"
