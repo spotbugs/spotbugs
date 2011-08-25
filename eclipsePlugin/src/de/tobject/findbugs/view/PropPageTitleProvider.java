@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package de.tobject.findbugs.view.properties;
+package de.tobject.findbugs.view;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -129,7 +129,7 @@ public class PropPageTitleProvider extends BugLabelProvider {
             return null;
         }
         StringBuilder sb = new StringBuilder("Priority: ");
-        sb.append(FindBugsMarker.Priority.label(priority.intValue()).name());
+        sb.append(FindBugsMarker.MarkerRank.label(priority.intValue()).name());
         return sb.toString();
     }
 
@@ -197,7 +197,7 @@ public class PropPageTitleProvider extends BugLabelProvider {
         return sb.toString();
     }
 
-    String getDetails(BugPattern pattern) {
+    public String getDetails(BugPattern pattern) {
         if (pattern == null) {
             return null;
         }

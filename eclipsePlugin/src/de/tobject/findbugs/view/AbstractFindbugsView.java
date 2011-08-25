@@ -18,6 +18,7 @@
  */
 package de.tobject.findbugs.view;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.Action;
@@ -31,6 +32,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -289,4 +291,13 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
             FindbugsPlugin.getDefault().logException(e, "Failed to open FindBugs Perspective");
         }
     }
+
+    /**
+     * @param thePart
+     *            non null part in which the marker was selected
+     * @param marker
+     *            may be null or existing FindBugs marker
+     */
+    public abstract void markerSelected(IWorkbenchPart thePart, IMarker marker);
+
 }

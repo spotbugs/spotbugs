@@ -35,7 +35,7 @@ public class FindBugsPerspectiveFactory implements IPerspectiveFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.IPerspectiveFactory#createInitialLayout(org.eclipse.ui
      * .IPageLayout)
@@ -50,11 +50,11 @@ public class FindBugsPerspectiveFactory implements IPerspectiveFactory {
         IFolderLayout bottomRightA = layout.createFolder("bottomRightA", IPageLayout.BOTTOM, (float) 0.55, editorArea);
 
         bottomRightA.addView(FindbugsPlugin.USER_ANNOTATIONS_VIEW_ID);
-        bottomRightA.addView(IPageLayout.ID_PROBLEM_VIEW);
+
 
         IFolderLayout bottomRightB = layout.createFolder("bottomRightB", IPageLayout.RIGHT, (float) 0.55, "bottomRightA");
 
-        bottomRightB.addView(IPageLayout.ID_PROP_SHEET);
+        bottomRightB.addView(FindbugsPlugin.DETAILS_VIEW_ID);
     }
 
 }

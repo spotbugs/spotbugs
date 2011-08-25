@@ -28,7 +28,7 @@ import org.eclipse.ui.IActionFilter;
 import org.eclipse.ui.views.tasklist.ITaskListResourceAdapter;
 
 import de.tobject.findbugs.marker.FindBugsMarker;
-import de.tobject.findbugs.marker.FindBugsMarker.Priority;
+import de.tobject.findbugs.marker.FindBugsMarker.MarkerRank;
 
 /**
  * @author Andrei
@@ -43,36 +43,20 @@ public class BugGroup implements IAdaptable, IActionFilter {
 
     private Object parent;
 
-    private final FindBugsMarker.Priority priority;
+    private final FindBugsMarker.MarkerRank priority;
 
     private final Object self;
 
     private final GroupType type;
 
-    BugGroup(Object parent, Object self, GroupType type, Priority priority) {
+    BugGroup(Object parent, Object self, GroupType type, MarkerRank priority) {
         super();
         this.parent = parent;
         Assert.isNotNull(type, "Group type cannot be null");
         this.type = type;
         this.self = self == null ? this : self;
-        this.children = new HashSet<Object>(); /*
-                                                * new TreeSet<Object>(new
-                                                * Comparator<Object>() { public
-                                                * int compare(Object m1, Object
-                                                * m2) { if (m1 instanceof
-                                                * IMarker && m2 instanceof
-                                                * IMarker) { return
-                                                * BugPrioritySorter
-                                                * .compareMarkers((IMarker) m1,
-                                                * (IMarker) m2); } if (m1
-                                                * instanceof BugGroup && m2
-                                                * instanceof BugGroup) { return
-                                                * BugPrioritySorter
-                                                * .compareGroups((BugGroup) m1,
-                                                * (BugGroup) m2); } return 0; }
-                                                * });
-                                                */
-        this.priority = priority == null ? Priority.Unknown : priority;
+        this.children = new HashSet<Object>();
+        this.priority = priority == null ? MarkerRank.Unknown : priority;
         this.allMarkers = new HashSet<IMarker>();
         if (parent instanceof BugGroup) {
             BugGroup bugGroup = (BugGroup) parent;
@@ -112,7 +96,8 @@ public class BugGroup implements IAdaptable, IActionFilter {
             case WorkingSet:
                 return "Overall issues number: ";
             default:
-                shortDescription = type.getMapper().getShortDescription(self);
+                MarkerMapper mapper = type.getMapper();
+                shortDescription = mapper.getShortDescription(self);
                 break;
             }
         }
@@ -202,7 +187,7 @@ public class BugGroup implements IAdaptable, IActionFilter {
         return shortDescription == null ? getShortDescription() : shortDescription;
     }
 
-    public FindBugsMarker.Priority getPriority() {
+    public FindBugsMarker.MarkerRank getPriority() {
         return priority;
     }
 

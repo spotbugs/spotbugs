@@ -52,7 +52,7 @@ abstract class MarkerMapper<Identifier> {
         }
 
         @Override
-        String getShortDescription(Object id) {
+        String getShortDescription(Void id) {
             return "Undefined";
         }
 
@@ -87,19 +87,16 @@ abstract class MarkerMapper<Identifier> {
      */
     abstract Identifier getIdentifier(IMarker marker);
 
-    abstract String getShortDescription(Object id);
+    abstract String getShortDescription(Identifier id);
 
     /**
      * @param marker non null
-     * @return the raw data from current marker for debug porpose
+     * @return the raw data from current marker for debug purposes
      */
     abstract String getDebugDescription(IMarker marker) throws CoreException;
 
-    FindBugsMarker.Priority getPrio(Identifier data) {
-        if (getType() == GroupType.Priority) {
-            return FindBugsMarker.Priority.label(((Integer) data).intValue());
-        }
-        return FindBugsMarker.Priority.Unknown;
+    FindBugsMarker.MarkerRank getMarkerRank(Identifier data) {
+        return FindBugsMarker.MarkerRank.Unknown;
     }
 
     GroupType getType() {

@@ -145,6 +145,8 @@ public class MarkerReporter implements IWorkspaceRunnable {
         attributes.put(FindBugsMarker.PRIMARY_LINE, mp.primaryLine);
         attributes.put(FindBugsMarker.BUG_TYPE, mp.bug.getType());
         attributes.put(FindBugsMarker.PATTERN_TYPE, mp.bug.getAbbrev());
+        attributes.put(FindBugsMarker.RANK_TYPE, mp.bug.getBugRank());
+
         long seqNum = mp.bug.getFirstVersion();
         if (seqNum == 0) {
             attributes.put(FindBugsMarker.FIRST_VERSION, "-1");

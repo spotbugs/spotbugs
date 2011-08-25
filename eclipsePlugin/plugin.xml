@@ -60,9 +60,9 @@
       <persistent value="true"/>
    </extension>
 
-   <extension
-         id="findbugsMarkerHigh"
-         name="FindBugs Problem (High Priority)"
+ <extension
+         id="findbugsMarkerScariest"
+         name="FindBugs Problem (Scariest)"
          point="org.eclipse.core.resources.markers">
       <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
       <super type="org.eclipse.core.resources.problemmarker"/>
@@ -72,8 +72,8 @@
       </persistent>
    </extension>
    <extension
-         id="findbugsMarkerNormal"
-         name="FindBugs Problem (Normal Priority)"
+         id="findbugsMarkerScary"
+         name="FindBugs Problem (Scary)"
          point="org.eclipse.core.resources.markers">
       <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
       <super type="org.eclipse.core.resources.problemmarker"/>
@@ -82,8 +82,8 @@
       <persistent value="true"/>
    </extension>
    <extension
-         id="findbugsMarkerLow"
-         name="FindBugs Problem (Low Priority)"
+         id="findbugsMarkerTroubling"
+         name="FindBugs Problem (Troubling)"
          point="org.eclipse.core.resources.markers">
       <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
       <super type="org.eclipse.core.resources.problemmarker"/>
@@ -92,8 +92,8 @@
       <persistent value="true"/>
    </extension>
    <extension
-         id="findbugsMarkerExperimental"
-         name="FindBugs Problem (Experimental)"
+         id="findbugsMarkerOfConcern"
+         name="FindBugs Problem (Of concern)"
          point="org.eclipse.core.resources.markers">
       <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
       <super type="org.eclipse.core.resources.problemmarker"/>
@@ -105,23 +105,6 @@
 
    <!-- specify custom icon for findbugsMarker -->
    <extension point="org.eclipse.ui.editors.annotationTypes">
-      <type
-         name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationHigh"
-         super="org.eclipse.ui.workbench.texteditor.warning"
-         markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerHigh"/>
-      <type
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerNormal"
-            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationNormal"
-            super="org.eclipse.ui.workbench.texteditor.warning"/>
-      <type
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerLow"
-            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationLow"
-            super="org.eclipse.ui.workbench.texteditor.warning"/>
-      <type
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerExperimental"
-            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationExperimental"
-            super="org.eclipse.ui.workbench.texteditor.warning"/>
-            
       <type
             name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationScariest"
             super="org.eclipse.ui.workbench.texteditor.warning"
@@ -184,10 +167,10 @@
             quickFixIcon="icons/buggy-tiny-yellow.png"/>
       <specification
             annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationOfConcern"
-            icon="icons/buggy-tiny-green.png"
+            icon="icons/buggy-tiny-blue.png"
             includeOnPreferencePage="true"
             label="fbWarningOfConcern"
-            quickFixIcon="icons/buggy-tiny-green.png"/>
+            quickFixIcon="icons/buggy-tiny-blue.png"/>
             
    </extension>
 
@@ -562,7 +545,13 @@
             class="de.tobject.findbugs.view.UserAnnotationsView"
             icon="icons/annotationsView.png"
             id="de.tobject.findbugs.view.userannotationsview"
-            name="Bug Comments"/>
+            name="Bug Reviews"/>
+      <view
+            category="de.tobject.findbugs.view.findBugsCategory"
+            class="de.tobject.findbugs.view.BugInfoView"
+            icon="icons/annotationsView.png"
+            id="de.tobject.findbugs.view.buginfoview"
+            name="Bug Info"/>
       <view
          category="de.tobject.findbugs.view.findBugsCategory"
          class="de.tobject.findbugs.view.BugExplorerView"
@@ -610,15 +599,19 @@
    <extension
          point="org.eclipse.ui.ide.markerResolution">
       <markerResolutionGenerator
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerHigh"
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScariest"
             class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator"/>
       <markerResolutionGenerator
             class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator"
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerNormal">
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScary">
       </markerResolutionGenerator>
       <markerResolutionGenerator
             class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator"
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerLow">
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerTroubling">
+      </markerResolutionGenerator>
+      <markerResolutionGenerator
+            class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator"
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerOfConcern">
       </markerResolutionGenerator>
    </extension>
 
@@ -651,6 +644,7 @@
          <perspectiveShortcut id="org.eclipse.jdt.ui.JavaBrowsingPerspective"/>
 
          <viewShortcut id="de.tobject.findbugs.view.userannotationsview"/>
+         <viewShortcut id="de.tobject.findbugs.view.buginfoview"/>
          <viewShortcut id="de.tobject.findbugs.view.bugtreeview"/>
          <viewShortcut id="org.eclipse.jdt.ui.PackageExplorer"/>
          <viewShortcut id="org.eclipse.ui.views.ProblemView"/>
@@ -1185,23 +1179,15 @@
                 image="icons/detailsView.png"
                 indented="false"
                 label="&gt;"/>
-
-          <propertyTab
+                
+         <propertyTab
                 afterTab="bug.tab.bugPattern"
                 category="general"
-                id="bug.tab.bugInstance"
+                id="bug.tab.bugInfo"
                 image="icons/runFindbugs.png"
                 indented="false"
-                label="&gt;"/>
-
-          <propertyTab
-                afterTab="bug.tab.bugInstance"
-                category="general"
-                id="bug.tab.userNotes"
-                image="icons/annotationsView.png"
-                indented="false"
-                label="&gt;"/>
-
+                label="&gt;"/>                
+  
           <propertyTab
                 category="advanced"
                 id="bug.tab.Advanced"
@@ -1209,74 +1195,19 @@
                 indented="false"
                 label="&gt;"/>
 
-          <propertyTab
-                category="general"
-                id="bug.tab.bugPatternStandAlone"
-                image="icons/buggy-tiny.png"
-                indented="false"
-                label="&gt;">
-          </propertyTab>
-
-          <propertyTab
-                afterTab="bug.tab.bugPatternStandAlone"
-                category="general"
-                id="bug.tab.genericGroupTab"
-                image="icons/treeView.png"
-                indented="false"
-                label="&gt;">
-          </propertyTab>
        </propertyTabs>
     </extension>
 
     <extension
           point="org.eclipse.ui.views.properties.tabbed.propertySections">
        <propertySections contributorId="de.tobject.findbugs.view.bugtreeview">
-          <propertySection
+        
+   <propertySection
                 class="org.eclipse.ui.views.properties.tabbed.AdvancedPropertySection"
                 enablesFor="1"
                 id="bug.section.Advanced"
                 tab="bug.tab.Advanced">
              <input type="org.eclipse.core.resources.IMarker"/>
-          </propertySection>
-
-          <propertySection
-                class="de.tobject.findbugs.view.properties.BugGroupSection"
-                id="bug.section.genericGroupTab"
-                tab="bug.tab.genericGroupTab">
-             <input
-                   type="de.tobject.findbugs.view.explorer.BugGroup">
-             </input>
-          </propertySection>
-
-          <propertySection
-                class="de.tobject.findbugs.view.properties.BugInstanceSection"
-                enablesFor="1"
-                id="bug.section.bugInstance"
-                tab="bug.tab.bugInstance">
-             <input
-                   type="org.eclipse.core.resources.IMarker">
-             </input>
-          </propertySection>
-
-          <propertySection
-                class="de.tobject.findbugs.view.properties.BugPatternSection"
-                enablesFor="1"
-                filter="de.tobject.findbugs.view.properties.BugPatternFilter"
-                id="bug.section.bugPatternStandAlone"
-                tab="bug.tab.bugPatternStandAlone">
-             <input
-                   type="de.tobject.findbugs.view.explorer.BugGroup">
-             </input>
-          </propertySection>
-
-          <propertySection
-                class="de.tobject.findbugs.view.properties.BugPatternSection"
-                enablesFor="1"
-                id="bug.section.bugPattern"
-                tab="bug.tab.bugPattern">
-             <input
-                   type="org.eclipse.core.resources.IMarker">
-             </input>
           </propertySection>
 
           <propertySection

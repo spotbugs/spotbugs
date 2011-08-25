@@ -68,7 +68,7 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
                     || group.getType() == GroupType.Project || group.getType() == GroupType.Marker) {
                 return wbProvider.getImage(group.getData());
             }
-            FindBugsMarker.Priority prio = group.getPriority();
+            FindBugsMarker.MarkerRank prio = group.getPriority();
             ImageRegistry imageRegistry = FindbugsPlugin.getDefault().getImageRegistry();
             return imageRegistry.get(prio.iconName());
         }

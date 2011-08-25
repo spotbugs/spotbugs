@@ -568,6 +568,19 @@ public final class MarkerUtil {
         return null;
     }
 
+    public static int
+     findBugRankForMarker(IMarker marker) {
+        try {
+            Object bugCode = marker.getAttribute(FindBugsMarker.RANK_TYPE);
+            if (bugCode instanceof Integer) {
+                return (Integer) bugCode;
+            }
+        } catch (CoreException e) {
+            FindbugsPlugin.getDefault().logException(e, "Marker does not contain bug code");
+            return 20;
+        }
+        return 20;
+    }
     public static @CheckForNull
     BugPattern findBugPatternForMarker(IMarker marker) {
         try {

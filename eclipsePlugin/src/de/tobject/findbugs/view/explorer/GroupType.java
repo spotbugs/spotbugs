@@ -37,6 +37,7 @@ import edu.umd.cs.findbugs.BugCategory;
 import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.BugRankCategory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.Priorities;
@@ -59,8 +60,8 @@ public enum GroupType {
         }
 
         @Override
-        String getShortDescription(Object id) {
-            return ((Plugin) id).getProvider();
+        String getShortDescription(Plugin id) {
+            return id.getProvider();
         }
 
         @Override
@@ -76,8 +77,8 @@ public enum GroupType {
         }
 
         @Override
-        String getShortDescription(Object id) {
-            return ((IProject) id).getName();
+        String getShortDescription(IProject id) {
+            return id.getName();
         }
 
         @Override
@@ -100,8 +101,8 @@ public enum GroupType {
         }
 
         @Override
-        String getShortDescription(Object id) {
-            String name = ((IPackageFragment) id).getElementName();
+        String getShortDescription(IPackageFragment id) {
+            String name = id.getElementName();
             if (name == null || name.length() == 0) {
                 name = "default package";
             }
@@ -125,8 +126,8 @@ public enum GroupType {
         }
 
         @Override
-        String getShortDescription(Object id) {
-            return ((IJavaElement) id).getElementName();
+        String getShortDescription(IJavaElement id) {
+            return id.getElementName();
         }
 
         @Override
@@ -159,8 +160,15 @@ public enum GroupType {
         }
 
         @Override
-        String getShortDescription(Object id) {
-            return FindBugsMarker.Priority.label(((Integer) id).intValue()).name() + " priority";
+        String getShortDescription(Integer id) {
+            int i = id;
+            switch(i) {
+            case 1: return "High confidence";
+            case 2: return "Normal confidence";
+            case 3: return "Low confidence";
+            default: return "Unknown confidence";
+            }
+
         }
 
         @Override
@@ -168,6 +176,32 @@ public enum GroupType {
             return "priority: " + marker.getAttribute(IMarker.PRIORITY);
         }
     }),
+
+    BugRankCategory(true, new MarkerMapper<BugRankCategory>() {
+        @Override
+        BugRankCategory getIdentifier(IMarker marker) {
+                int rank = MarkerUtil.findBugRankForMarker(marker);
+                BugRankCategory bc = edu.umd.cs.findbugs.BugRankCategory.getRank(rank);
+                return bc;
+        }
+
+        @Override
+        String getShortDescription(BugRankCategory id) {
+            return "rank " + id;
+        }
+
+        @Override
+        String getDebugDescription(IMarker marker) throws CoreException {
+            return "priority: " + marker.getAttribute(IMarker.PRIORITY);
+        }
+
+        @Override
+        FindBugsMarker.MarkerRank getMarkerRank(BugRankCategory data) {
+            return FindBugsMarker.MarkerRank.values()[data.ordinal()];
+        }
+
+    }),
+
 
     Category(true, new MarkerMapper<BugCategory>() {
         @Override
@@ -180,8 +214,8 @@ public enum GroupType {
         }
 
         @Override
-        String getShortDescription(Object id) {
-            return ((BugCategory) id).getShortDescription();
+        String getShortDescription(BugCategory id) {
+            return id.getShortDescription();
         }
 
         @Override
@@ -207,8 +241,8 @@ public enum GroupType {
         }
 
         @Override
-        String getShortDescription(Object id) {
-            return ((BugCode) id).getDescription();
+        String getShortDescription(BugCode id) {
+            return id.getDescription();
         }
 
         @Override
@@ -224,8 +258,8 @@ public enum GroupType {
         }
 
         @Override
-        String getShortDescription(Object id) {
-            return ((BugPattern) id).getShortDescription();
+        String getShortDescription(BugPattern id) {
+            return id.getShortDescription();
         }
 
         @Override

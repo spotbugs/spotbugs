@@ -106,7 +106,6 @@ public class UserAnnotationsView extends AbstractFindbugsView {
     private IWorkbenchPart contributingPart;
 
     public UserAnnotationsView() {
-        super();
         userAnnotation = "";
         firstVersionText = "";
         cloudText = "";
@@ -191,7 +190,6 @@ public class UserAnnotationsView extends AbstractFindbugsView {
         // Add selection listener to detect click in problems view or bug tree
         // view
         ISelectionService theService = getSite().getWorkbenchWindow().getSelectionService();
-
         selectionListener = new MarkerSelectionListener(this);
         theService.addSelectionListener(selectionListener);
         return main;
@@ -305,6 +303,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
         setContent(bci);
     }
 
+    @Override
     public void markerSelected(IWorkbenchPart thePart, IMarker newMarker) {
         contributingPart = thePart;
         showInView(newMarker);

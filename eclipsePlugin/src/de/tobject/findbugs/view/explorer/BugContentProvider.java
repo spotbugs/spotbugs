@@ -381,7 +381,7 @@ public class BugContentProvider implements ICommonContentProvider {
         int i = 0;
         for (Entry<Identifier, Set<IMarker>> entry : typesSet) {
             Identifier groupId = entry.getKey();
-            children[i] = new BugGroup(parent, groupId, mapper.getType(), mapper.getPrio(groupId));
+            children[i] = new BugGroup(parent, groupId, mapper.getType(), mapper.getMarkerRank(groupId));
             children[i].setMarkers(entry.getValue());
             i++;
         }
@@ -580,7 +580,7 @@ public class BugContentProvider implements ICommonContentProvider {
             // if there is no node, create one and recursvely all children to
             // the last
             // level
-            BugGroup group = new BugGroup(parent, id, mapper.getType(), mapper.getPrio(id));
+            BugGroup group = new BugGroup(parent, id, mapper.getType(), mapper.getMarkerRank(id));
             group.addMarker(marker);
             if (filtered) {
                 filteredMarkersMap.put(group, Integer.valueOf(1));

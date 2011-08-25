@@ -22,7 +22,7 @@ package de.tobject.findbugs.marker;
 
 import org.eclipse.jdt.core.IJavaElement;
 
-import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.BugRankCategory;
 
 /**
  * Marker ids for the findbugs.
@@ -38,22 +38,12 @@ public interface FindBugsMarker {
      */
     public static final String NAME = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker";
 
-    @Deprecated
-    public static final String NAME_HIGH = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerHigh";
-    @Deprecated
-    public static final String NAME_NORMAL = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerNormal";
-    @Deprecated
-    public static final String NAME_LOW = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerLow";
-    @Deprecated
-    public static final String NAME_EXPERIMENTAL = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerExperimental";
-
     public static final String NAME_SCARIEST = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScariest";
 
     public static final String NAME_SCARY = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScary";
 
     public static final String NAME_TROUBLING = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerTroubling";
     public static final String NAME_OF_CONCERN = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerOfConcern";
-
 
 
     /**
@@ -65,6 +55,13 @@ public interface FindBugsMarker {
      * Marker attribute recording the pattern type (more general pattern group).
      */
     public static final String PATTERN_TYPE = "PATTERNTYPE";
+
+
+    /**
+     * Marker attribute recording the bug rank.
+     */
+    public static final String RANK_TYPE = "RANKTYPE";
+
 
     /**
      * Marker attribute recording the unique id of the BugInstance in its
@@ -105,39 +102,45 @@ public interface FindBugsMarker {
     // */
     // public static final String PATTERN_DESCR_SHORT = "PATTERN_DESCR_SHORT";
 
-    enum Priority {
-        High(NAME_HIGH, "buggy-tiny.png", Priorities.HIGH_PRIORITY), Normal(NAME_NORMAL, "buggy-tiny-orange.png",
-                Priorities.NORMAL_PRIORITY), Low(NAME_LOW, "buggy-tiny-yellow.png", Priorities.LOW_PRIORITY), Experimental(
-                NAME_EXPERIMENTAL, "buggy-tiny-blue.png", Priorities.EXP_PRIORITY), Ignore("", "buggy-tiny-green.png",
-                Priorities.IGNORE_PRIORITY), Unknown("", "buggy-tiny-gray.png", Priorities.IGNORE_PRIORITY);
+    enum MarkerRank {
+        High(NAME_SCARIEST, "buggy-tiny.png", BugRankCategory.SCARIEST),
+                Normal(NAME_SCARY, "buggy-tiny-orange.png",
+                        BugRankCategory.SCARY),
+                Low(NAME_TROUBLING, "buggy-tiny-yellow.png", BugRankCategory.TROUBLING),
+                Experimental(
+                NAME_OF_CONCERN, "buggy-tiny-blue.png", BugRankCategory.OF_CONCERN),
+                Unknown( NAME_OF_CONCERN, "buggy-tiny-blue.png", BugRankCategory.OF_CONCERN);
+
 
         private final String prioName;
 
         private final String icon;
 
-        private final int detectorPrio;
+        private final BugRankCategory rankCategory;
 
-        Priority(String prioName, String icon, int detectorPrio) {
+        MarkerRank(String prioName, String icon, BugRankCategory rankCategory) {
             this.prioName = prioName;
             this.icon = icon;
-            this.detectorPrio = detectorPrio;
+            this.rankCategory = rankCategory;
         }
 
-        public static Priority label(int prioId) {
-            Priority[] values = Priority.values();
-            for (Priority priority : values) {
-                if (priority.detectorPrio == prioId) {
-                    return priority;
+        public static MarkerRank label(int rank) {
+
+            MarkerRank[] values = MarkerRank.values();
+            for (MarkerRank mr : values) {
+                if (rank <= mr.rankCategory.maxRank) {
+                    return mr;
                 }
             }
-            return Unknown;
+
+            throw new IllegalArgumentException("Illegal rank " + rank);
         }
 
         public static int ordinal(String prioId) {
-            Priority[] values = Priority.values();
-            for (Priority priority : values) {
-                if (priority.prioName.equals(prioId)) {
-                    return priority.ordinal();
+            MarkerRank[] values = MarkerRank.values();
+            for (MarkerRank mr : values) {
+                if (mr.prioName.equals(prioId)) {
+                    return mr.ordinal();
                 }
             }
             return -1;

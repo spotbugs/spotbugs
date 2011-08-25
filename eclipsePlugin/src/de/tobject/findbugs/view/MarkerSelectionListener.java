@@ -28,6 +28,11 @@ import de.tobject.findbugs.reporter.MarkerUtil;
 class MarkerSelectionListener implements ISelectionListener {
     private final IMarkerSelectionHandler handler;
 
+    @Override
+    public String toString() {
+        return "MarkerSelectionListener for " + handler.getClass().getSimpleName();
+    }
+
     public MarkerSelectionListener(IMarkerSelectionHandler handler) {
         this.handler = handler;
     }

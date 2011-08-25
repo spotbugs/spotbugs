@@ -99,8 +99,8 @@ public class BugPrioritySorter extends ViewerSorter {
             return 0;
         }
         try {
-            int ordinal1 = FindBugsMarker.Priority.ordinal(m1.getType());
-            int ordinal2 = FindBugsMarker.Priority.ordinal(m2.getType());
+            int ordinal1 = FindBugsMarker.MarkerRank.ordinal(m1.getType());
+            int ordinal2 = FindBugsMarker.MarkerRank.ordinal(m2.getType());
             int result = ordinal1 - ordinal2;
             if (result != 0) {
                 return result;

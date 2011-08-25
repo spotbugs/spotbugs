@@ -61,7 +61,6 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -115,7 +114,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     public static final IPath DEPRECATED_PREFS_PATH = new Path(PREFS_NAME);
 
-    public static final String DETAILS_VIEW_ID = IPageLayout.ID_PROP_SHEET;
+    public static final String DETAILS_VIEW_ID = "de.tobject.findbugs.view.buginfoview";
 
     public static final String USER_ANNOTATIONS_VIEW_ID = "de.tobject.findbugs.view.userannotationsview";
 
@@ -327,7 +326,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     @Override
     protected void initializeImageRegistry(ImageRegistry reg) {
-        for (FindBugsMarker.Priority prio : FindBugsMarker.Priority.values()) {
+        for (FindBugsMarker.MarkerRank prio : FindBugsMarker.MarkerRank.values()) {
             ImageDescriptor descriptor = getImageDescriptor(prio.iconName());
             if (descriptor != null) {
                 reg.put(prio.iconName(), descriptor);

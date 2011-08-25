@@ -42,18 +42,6 @@ public final class FindBugsConstants {
      */
     public final static String KEY_RUN_ANALYSIS_AS_EXTRA_JOB = "runAnalysisAsExtraJob";
 
-    /** marker severity to use for bugs with low prio */
-    @Deprecated
-    public final static String PRIO_LOW_MARKER_SEVERITY = FindBugsMarker.NAME_LOW;
-
-    /** marker severity to use for bugs with normal prio */
-    @Deprecated
-    public final static String PRIO_NORMAL_MARKER_SEVERITY = FindBugsMarker.NAME_NORMAL;
-
-    /** marker severity to use for bugs with high prio */
-    @Deprecated
-    public final static String PRIO_HIGH_MARKER_SEVERITY = FindBugsMarker.NAME_HIGH;
-
     /** marker severity to use for bugs with of concern tank */
     public final static String RANK_OFCONCERN_MARKER_SEVERITY = FindBugsMarker.NAME_OF_CONCERN;
 
