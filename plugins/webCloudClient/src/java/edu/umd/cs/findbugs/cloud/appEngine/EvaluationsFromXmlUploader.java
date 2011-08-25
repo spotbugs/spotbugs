@@ -77,10 +77,10 @@ public class EvaluationsFromXmlUploader {
         String message;
         if (users.numKeys() == 1 && users.uniqueKeys().iterator().next().equals(cloud.getUser()))
             message = "The loaded XML file contains " + localAnnotations.size()
-                    + " of your reviews that are more recent than ones stored in the cloud"
+                    + " of your reviews that are more recent than ones stored in the cloud.\n\n"
                     + "Do you wish to upload these reviews?";
         else
-            message = "The loaded XML file contains " + authorsToString(users) + "\n"
+            message = "The loaded XML file contains " + authorsToString(users) + "\n\n"
                     + "Do you wish to upload these reviews as your reviews?";
 
         int result = cloud.getGuiCallback().showConfirmDialog(message, "Upload reviews", "Upload", "Skip");

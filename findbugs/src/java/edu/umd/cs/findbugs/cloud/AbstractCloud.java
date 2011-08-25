@@ -22,14 +22,11 @@ package edu.umd.cs.findbugs.cloud;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -111,6 +108,7 @@ public abstract class AbstractCloud implements Cloud {
     private String statusMsg;
 
     private SigninState signinState = SigninState.UNAUTHENTICATED;
+    private boolean issueDataDownloaded = false;
 
     protected AbstractCloud(CloudPlugin plugin, BugCollection bugs, Properties properties) {
         this.plugin = plugin;
@@ -174,7 +172,7 @@ public abstract class AbstractCloud implements Cloud {
     }
 
     public void setBugLinkOnCloudAndStoreIssueDetails(BugInstance b, String viewUrl, String linkType)
-    throws IOException, SignInCancelledException  {
+            throws IOException, SignInCancelledException {
         throw new UnsupportedOperationException();
     }
 
@@ -232,8 +230,8 @@ public abstract class AbstractCloud implements Cloud {
         return false;
     }
 
-    public String notInCloudeMsg(BugInstance b) {
-        return "Issue not recorded in cloud";
+    public String notInCloudMsg(BugInstance b) {
+        return !isOnlineCloud() || issueDataDownloaded ? "Issue not recorded in cloud" : "Waiting for issue data...";
         
     }
     public String getCloudReport(BugInstance b) {
@@ -246,9 +244,13 @@ public abstract class AbstractCloud implements Cloud {
         return getSelectiveCloudReport(b, usersToExclude);
     }
 
+    public void bugsPopulated() {
+        issueDataDownloaded = false;
+    }
+
     private String getSelectiveCloudReport(BugInstance b, Set<String> usersToExclude) {
         if (!isInCloud(b)) {
-            return notInCloudeMsg(b);
+            return notInCloudMsg(b);
         }
         SimpleDateFormat format = new SimpleDateFormat("MM/dd, yyyy");
         StringBuilder builder = new StringBuilder();
@@ -284,6 +286,10 @@ public abstract class AbstractCloud implements Cloud {
             }
         }
         return builder.toString();
+    }
+
+    protected boolean issueDataHasBeenDownloaded() {
+        return false;
     }
 
     public String getBugStatus(BugInstance b) {
@@ -653,6 +659,7 @@ public abstract class AbstractCloud implements Cloud {
     }
 
     protected void fireIssueDataDownloadedEvent() {
+        issueDataDownloaded = true;
         for (CloudStatusListener statusListener : statusListeners)
             statusListener.handleIssueDataDownloadedEvent();
     }
@@ -742,8 +749,7 @@ public abstract class AbstractCloud implements Cloud {
     }
 
     @SuppressWarnings("boxing")
-    public @CheckForNull
-    URL getSourceLink(BugInstance b) {
+    public @CheckForNull URL getSourceLink(BugInstance b) {
         if (sourceFileLinkPattern == null)
             return null;
 
@@ -757,7 +763,8 @@ public abstract class AbstractCloud implements Cloud {
             try {
                 URL link;
                 if (startLine > 0)
-                    link = new URL(String.format(sourceFileLinkFormatWithLine, m.group(1), startLine, startLine - 10, endLine));
+                    link = new URL(String.format(sourceFileLinkFormatWithLine, m.group(1),
+                            startLine, startLine - 10, endLine));
                 else
                     link = new URL(String.format(sourceFileLinkFormat, m.group(1)));
                 return link;

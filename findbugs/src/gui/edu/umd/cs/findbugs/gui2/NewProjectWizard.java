@@ -57,6 +57,7 @@ import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
@@ -119,6 +120,7 @@ public class NewProjectWizard extends FBDialog {
     private final JComponent[] wizardComponents = new JComponent[4];
 
     private int currentPanel;
+    private boolean resetSettings;
 
     static class CloudComboBoxRenderer extends BasicComboBoxRenderer {
         @Override
@@ -155,6 +157,10 @@ public class NewProjectWizard extends FBDialog {
      */
     public NewProjectWizard(Project curProject) {
         project = curProject;
+        if (project == null) {
+            project = new Project();
+            resetSettings = true;
+        }
         boolean temp = false;
 
         if (curProject == null)
@@ -193,12 +199,13 @@ public class NewProjectWizard extends FBDialog {
         wizardComponents[3] = cloudPanel;
         cloudSelector.setRenderer(new CloudComboBoxRenderer());
         cloudSelector.addItem(null);
-        String cloudId = null;
-        if (project != null)
-            cloudId = project.getCloudId();
+        String cloudId = project.getCloudId();
 
         for (CloudPlugin c : DetectorFactoryCollection.instance().getRegisteredClouds().values()) {
-            if (!c.isHidden() || c.getId().equals(cloudId))
+            String fbid = c.getFindbugsPluginId();
+            Plugin plugin = Plugin.getByPluginId(fbid);
+            Boolean fbPluginStatus = project.getPluginStatus(plugin);
+            if ((!c.isHidden() || c.getId().equals(cloudId)) && !Boolean.FALSE.equals(fbPluginStatus))
                 cloudSelector.addItem(c);
         }
 
@@ -239,15 +246,8 @@ public class NewProjectWizard extends FBDialog {
                     return;
                 Project p;
                 String oldCloudId = null;
-                boolean resetSettings;
-                if (project == null) {
-                    p = new Project();
-                    resetSettings = true;
-                } else {
-                    p = project;
-                    oldCloudId = project.getCloudId();
-                    resetSettings = false;
-                }
+                p = project;
+                oldCloudId = project.getCloudId();
                 p.setGuiCallback(MainFrame.getInstance().getGuiCallback());
                 clearProjectSettings(p);
 
@@ -272,7 +272,8 @@ public class NewProjectWizard extends FBDialog {
                 MainFrame mainFrame = MainFrame.getInstance();
                 if (keepGoing) {
                     mainFrame.setProject(p);
-                } else if (project == null
+                }
+                if (project == null
                         || (projectChanged && JOptionPane.showConfirmDialog(NewProjectWizard.this, edu.umd.cs.findbugs.L10N
                                 .getLocalString("dlg.project_settings_changed_lbl",
                                         "Project settings have been changed.  Perform a new analysis with the changed files?"),
@@ -283,6 +284,7 @@ public class NewProjectWizard extends FBDialog {
                     BugCollection bugs = mainFrame.getBugCollection();
                     try {
                         bugs.reinitializeCloud();
+                        mainFrame.getComments().updateCloud();
                     } catch (Exception e) {
                         JOptionPane.showMessageDialog(NewProjectWizard.this, "Error loading " + newCloudId + "\n\n"
                                 + e.getClass().getSimpleName() + ": " + e.getMessage(),

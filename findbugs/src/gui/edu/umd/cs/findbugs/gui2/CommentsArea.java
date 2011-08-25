@@ -184,4 +184,8 @@ public class CommentsArea {
     public void setDesignation(String designationKey) {
         commentsPane.setDesignation(designationKey);
     }
+
+    public void updateCloud() {
+        commentsPane.updateCloud();
+    }
 }

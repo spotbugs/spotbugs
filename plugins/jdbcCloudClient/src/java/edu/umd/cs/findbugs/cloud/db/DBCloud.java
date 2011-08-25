@@ -1887,7 +1887,7 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
     }
 
     @Override
-    public String notInCloudeMsg(BugInstance b) {
+    public String notInCloudMsg(BugInstance b) {
         if (isInCloud(b)) {
             assert false;
             return "Is in cloud";

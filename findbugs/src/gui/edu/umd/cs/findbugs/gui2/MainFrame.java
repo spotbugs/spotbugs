@@ -58,6 +58,7 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugsDisplayFeatures;
 import edu.umd.cs.findbugs.IGuiCallback;
+import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -369,13 +370,18 @@ public class MainFrame extends FBFrame implements LogSync {
             return;
 
         if (projectChanged && !SystemProperties.getBoolean("findbugs.skipSaveChangesWarning")) {
-            int value = JOptionPane.showConfirmDialog(this, getActionWithoutSavingMsg("closing"),
+            Object[] options = {
+                    L10N.getLocalString("dlg.save_btn", "Save"),
+                    L10N.getLocalString("dlg.dontsave_btn", "Don't Save"),
+                    L10N.getLocalString("dlg.cancel_btn", "Cancel"),
+            };
+            int value = JOptionPane.showOptionDialog(this, getActionWithoutSavingMsg("closing"),
                     edu.umd.cs.findbugs.L10N.getLocalString("msg.confirm_save_txt", "Do you want to save?"),
-                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
-            if (value == JOptionPane.CANCEL_OPTION || value == JOptionPane.CLOSED_OPTION)
+            if (value == 2 || value == JOptionPane.CLOSED_OPTION)
                 return;
-            else if (value == JOptionPane.YES_OPTION) {
+            else if (value == 0) {
 
                 if (saveFile == null) {
                     if (!mainFrameLoadSaveHelper.saveAs())

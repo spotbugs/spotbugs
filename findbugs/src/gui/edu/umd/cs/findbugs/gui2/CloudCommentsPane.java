@@ -545,6 +545,7 @@ public abstract class CloudCommentsPane extends JPanel {
         final String oldCloudId = _bugCollection.getCloud().getPlugin().getId();
         if (!oldCloudId.equals(newCloudId)) {
             _bugCollection.getProject().setCloudId(newCloudId);
+            MainFrame.getInstance().setProjectChanged(true);
             backgroundExecutor.execute(new Runnable() {
                 public void run() {
                     _bugCollection.reinitializeCloud();
@@ -604,6 +605,11 @@ public abstract class CloudCommentsPane extends JPanel {
 
     public void refresh() {
         updateBugCommentsView();
+    }
+
+    public void updateCloud() {
+        updateCloudListeners(_bugCollection);
+        refresh();
     }
 
     private void updateCloudListeners(BugCollection newBugCollection) {
@@ -966,11 +972,13 @@ public abstract class CloudCommentsPane extends JPanel {
 
     private class MyCloudStatusListener implements Cloud.CloudStatusListener {
         public void handleIssueDataDownloadedEvent() {
+            refresh();
         }
 
 
         public void handleStateChange(final Cloud.SigninState oldState, final Cloud.SigninState state) {
             updateHeader();
+            refresh();
         }
 
 
