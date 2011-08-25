@@ -1,5 +1,5 @@
 #FindBugs User Preferences
-#Mon Mar 21 14:51:53 CET 2011
+#Thu Aug 25 14:48:51 EDT 2011
 detectorAppendingToAnObjectOutputStream=AppendingToAnObjectOutputStream|true
 detectorAtomicityProblem=AtomicityProblem|true
 detectorBCPMethodReturnCheck=BCPMethodReturnCheck|true
@@ -34,6 +34,7 @@ detectorDuplicateBranches=DuplicateBranches|true
 detectorEmptyZipFileEntry=EmptyZipFileEntry|true
 detectorEqStringTest=EqStringTest|false
 detectorEqualsOperandShouldHaveClassCompatibleWithThis=EqualsOperandShouldHaveClassCompatibleWithThis|true
+detectorExplicitSerialization=ExplicitSerialization|true
 detectorFieldItemSummary=FieldItemSummary|true
 detectorFinalizerNullsFields=FinalizerNullsFields|true
 detectorFindBadCast=FindBadCast|true
@@ -79,6 +80,7 @@ detectorFindUnrelatedTypesInGenericContainer=FindUnrelatedTypesInGenericContaine
 detectorFindUnreleasedLock=FindUnreleasedLock|true
 detectorFindUnsatisfiedObligation=FindUnsatisfiedObligation|true
 detectorFindUnsyncGet=FindUnsyncGet|true
+detectorFindUseOfNonSerializableValue=FindUseOfNonSerializableValue|true
 detectorFindUselessControlFlow=FindUselessControlFlow|true
 detectorFormatStringChecker=FormatStringChecker|true
 detectorHugeSharedStringConstants=HugeSharedStringConstants|true
@@ -159,7 +161,7 @@ detectorWrongMapIterator=WrongMapIterator|true
 detectorXMLFactoryBypass=XMLFactoryBypass|true
 detector_threshold=2
 effort=max
-excludefilter0=findbugsExclude.xml
-filter_settings=Medium|BAD_PRACTICE,CORRECTNESS,EXPERIMENTAL,I18N,MT_CORRECTNESS,PERFORMANCE,SECURITY,STYLE|false|15
+excludefilter0=findbugsExclude.xml|true
+filter_settings=Medium|BAD_PRACTICE,CORRECTNESS,EXPERIMENTAL,I18N,MT_CORRECTNESS,PERFORMANCE,SECURITY,STYLE|false|20
 filter_settings_neg=MALICIOUS_CODE,NOISE|
 run_at_full_build=false
