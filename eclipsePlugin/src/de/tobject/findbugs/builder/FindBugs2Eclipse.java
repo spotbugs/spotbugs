@@ -208,7 +208,6 @@ public class FindBugs2Eclipse extends FindBugs2 {
         IOConsoleOutputStream out = FindBugsConsole.getConsole().newOutputStream();
         PrintWriter pw = new PrintWriter(out);
 
-
         ProjectStats stats = bugCollection.getProjectStats();
         Footprint footprint = new Footprint(stats.getBaseFootprint());
         Profiler profiler = stats.getProfiler();
@@ -222,25 +221,23 @@ public class FindBugs2Eclipse extends FindBugs2 {
         double appPart = data.byteSize > 0? data.byteSizeApp * 100 / data.byteSize : 0;
         double bytesPerClass = data.classCount > 0? data.byteSize / data.classCount : 0;
         long peakMemory = footprint.getPeakMemory() / (1024 * 1024);
-        pw.printf("\n");
-        pw.printf("Peak memory (MB)      : %1$ 20d \n", peakMemory);
-        pw.printf("Total classes         : %1$ 20d \n", data.classCount);
-        pw.printf("Total time (msec)     : %1$ 20d \n", totalTime);
-        pw.printf("Class read time (msec): %1$ 20d \n", totalClassReadTime);
-        pw.printf("Class read time (%%)   : %1$ 20.0f \n", classPart);
-        pw.printf("Total bytes read      : %1$ 20d \n", data.byteSize);
-        pw.printf("Application bytes     : %1$ 20d \n", data.byteSizeApp);
-        pw.printf("Application bytes (%%) : %1$ 20.0f \n", appPart);
-        pw.printf("Avg. bytes per class  : %1$ 20.0f \n", bytesPerClass);
-        pw.printf("Analysis class/sec    : %1$ 20.0f \n", classCountSpeed);
-        pw.printf("Read     bytes/sec    : %1$ 20.0f \n", classReadSpeed);
-        pw.printf("            MB/sec    : %1$ 20.1f \n", classReadSpeed / (1024 * 1024));
+        pw.printf("%n");
+        pw.printf("Peak memory (MB)      : %1$ 20d %n", peakMemory);
+        pw.printf("Total classes         : %1$ 20d %n", data.classCount);
+        pw.printf("Total time (msec)     : %1$ 20d %n", totalTime);
+        pw.printf("Class read time (msec): %1$ 20d %n", totalClassReadTime);
+        pw.printf("Class read time (%%)   : %1$ 20.0f %n", classPart);
+        pw.printf("Total bytes read      : %1$ 20d %n", data.byteSize);
+        pw.printf("Application bytes     : %1$ 20d %n", data.byteSizeApp);
+        pw.printf("Application bytes (%%) : %1$ 20.0f %n", appPart);
+        pw.printf("Avg. bytes per class  : %1$ 20.0f %n", bytesPerClass);
+        pw.printf("Analysis class/sec    : %1$ 20.0f %n", classCountSpeed);
+        pw.printf("Read     bytes/sec    : %1$ 20.0f %n", classReadSpeed);
+        pw.printf("            MB/sec    : %1$ 20.1f %n", classReadSpeed / (1024 * 1024));
         pw.flush();
-        try {
-            out.close();
-        } catch (IOException e) {
-            // ignore
-        }
+
+        pw.close();
+
     }
 
     static class AnalysisData {

@@ -69,6 +69,7 @@ import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * @author Andrei Loskutov
@@ -147,7 +148,7 @@ public class DetectorConfigurationTab extends Composite {
                 result = s1.compareTo(s2);
             } else if (revertOrder) {
                 // same column selected twice - revert first order
-                result = -result;
+                result = -Util.sign(result);
             }
             return result;
         }

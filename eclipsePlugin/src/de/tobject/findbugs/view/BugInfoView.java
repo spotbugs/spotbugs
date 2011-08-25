@@ -148,7 +148,9 @@ public class BugInfoView extends AbstractFindbugsView {
        rootComposite.setLayout(layout);
        rootComposite.setSize(SWT.DEFAULT, SWT.DEFAULT);
        Color background = toolkit.getColors().getBackground();
-//       rootComposite.setBackground(background);
+       if (false) {
+        rootComposite.setBackground(background);
+    }
        }
 
    private void createBrowser(Composite parent) {
@@ -329,7 +331,7 @@ public class BugInfoView extends AbstractFindbugsView {
        URL url;
        try {
            url = new URL(event.location);
-       } catch (MalformedURLException e) {
+       } catch (MalformedURLException ignored) {
            return;
        }
        IWorkbenchBrowserSupport support = PlatformUI.getWorkbench().getBrowserSupport();
