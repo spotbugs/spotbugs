@@ -28,7 +28,12 @@ public class LocalPersistenceHelper extends PersistenceHelper {
 
     private static PersistenceManagerFactory createPersistenceManagerFactory() throws IOException {
         Properties properties = new Properties();
-        properties.load(new FileInputStream("jdo.properties"));
+        FileInputStream fis = new FileInputStream("jdo.properties");
+        try {
+            properties.load(fis);
+        } finally {
+            fis.close();
+        }
         return JDOHelper.getPersistenceManagerFactory(properties);
     }
 

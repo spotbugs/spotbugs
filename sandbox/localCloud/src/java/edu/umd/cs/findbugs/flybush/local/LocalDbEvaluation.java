@@ -108,6 +108,15 @@ public class LocalDbEvaluation implements DbEvaluation {
         this.when = when;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LocalDbEvaluation)) return false;
+
+        LocalDbEvaluation that = (LocalDbEvaluation) o;
+        return that.compareTo(this) == 0;
+    }
+
     public int compareTo(DbEvaluation o) {
         if (getWhen() < o.getWhen()) return -1;
         if (getWhen() > o.getWhen()) return 1;

@@ -28,10 +28,6 @@ public class LocalDbUser implements DbUser {
         return this;
     }
 
-    public int compareTo(DbUser o) {
-        return getOpenid().compareTo(o.getOpenid());
-    }
-
     public String getOpenid() {
         return openid;
     }
@@ -46,5 +42,18 @@ public class LocalDbUser implements DbUser {
 
     public void setUploadToken(String token) {
         this.uploadToken = token;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LocalDbEvaluation)) return false;
+
+        LocalDbUser that = (LocalDbUser) o;
+        return that.compareTo(this) == 0;
+    }
+
+    public int compareTo(DbUser o) {
+        return getOpenid().compareTo(o.getOpenid());
     }
 }
