@@ -24,6 +24,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -71,7 +73,12 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
                 MainFrame instance = MainFrame.getInstance();
                 assert results.getProject() == project;
                 instance.setBugCollection(results);
-                instance.releaseDisplayWait();
+                try {
+                    instance.releaseDisplayWait();
+                } catch (Exception e) {
+                    Logger.getLogger(AnalyzingDialog.class.getName()).log(Level.FINE, "", e);
+                }
+                results.reinitializeCloud();
             }
 
             public void analysisInterrupted() {
@@ -217,6 +224,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
             // Give the analysis thread its (possibly user-defined) priority.
             // The default is a slightly lower priority than the UI.
             setPriority(Driver.getPriority());
+            setName("Analysis Thread");
         }
 
         @Override
