@@ -200,7 +200,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
         addMethodAnnotation(c.getName(), "submit",
                 "(Ljava/lang/Runnable;)Ljava/util/concurrent/Future;", false, 
-                CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
+                CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW_BAD_PRACTICE);
         addMethodAnnotation(c.getName(), "submit",
                 "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;", false, 
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
