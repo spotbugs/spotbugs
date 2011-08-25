@@ -50,10 +50,10 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration<CheckRetur
             "CheckReturnValueVeryHigh", 5, Detector.HIGH_PRIORITY - 1);
 
     public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_LOW_BAD_PRACTICE = new CheckReturnValueAnnotation(
-            "CheckReturnValueLow", 6, "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE", Detector.LOW_PRIORITY);
+            "CheckReturnValueLowBadPractice", 6, "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE", Detector.LOW_PRIORITY);
 
     public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE = new CheckReturnValueAnnotation(
-            "CheckReturnValueLow", 7, "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE", Detector.NORMAL_PRIORITY);
+            "CheckReturnValueMediumBadPractice", 7, "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE", Detector.NORMAL_PRIORITY);
     
     public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_INFERRED = new CheckReturnValueAnnotation(
             "CheckReturnValueInferred", 8, "RV_RETURN_VALUE_IGNORED_INFERRED", Detector.NORMAL_PRIORITY);
