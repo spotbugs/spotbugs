@@ -438,7 +438,7 @@ public class NewProjectWizard extends FBDialog {
         gbc.weightx = 0;
         gbc.weighty = 0;
         gbc.anchor = GridBagConstraints.WEST;
-        JButton button = new JButton("<HTML><U>Details...");
+        JButton button = new JButton("<HTML><U>Help");
         button.setFont(button.getFont().deriveFont(Font.PLAIN));
         button.setForeground(Color.BLUE);
         button.setBorderPainted(false);

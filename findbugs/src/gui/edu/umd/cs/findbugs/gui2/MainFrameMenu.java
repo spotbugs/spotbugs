@@ -223,12 +223,6 @@ public class MainFrameMenu implements Serializable {
                     mainFrame.redoAnalysis();
                 }
             });
-            attachAcceleratorKey(redoAnalysis, KeyEvent.VK_R);
-            redoAnalysis.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    mainFrame.redoAnalysis();
-                }
-            });
         }
         closeProjectItem = newJMenuItem("menu.closeProject", "Close Project");
         closeProjectItem.addActionListener(new ActionListener() {
