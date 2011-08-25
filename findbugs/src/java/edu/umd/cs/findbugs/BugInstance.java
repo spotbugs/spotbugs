@@ -2604,7 +2604,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             c.add(a);
     }
 
-    public Iterable<BugAnnotation> getAnnotationsForMessage(boolean showContext) {
+    public List<BugAnnotation> getAnnotationsForMessage(boolean showContext) {
         ArrayList<BugAnnotation> result = new ArrayList<BugAnnotation>();
 
         HashSet<BugAnnotation> primaryAnnotations = new HashSet<BugAnnotation>();

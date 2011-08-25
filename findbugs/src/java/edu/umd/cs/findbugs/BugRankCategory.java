@@ -20,16 +20,17 @@
 package edu.umd.cs.findbugs;
 
 public enum BugRankCategory {
-    SCARIEST, SCARY, TROUBLING, OF_CONCERN;
+    SCARIEST(4), SCARY(9), TROUBLING(14), OF_CONCERN(20);
+    public final int maxRank;
     static public BugRankCategory getRank(int rank) {
-        if (rank <= 4)
-            return SCARIEST;
-        if (rank <= 9)
-            return SCARY;
-        if (rank <= 14)
-            return TROUBLING;
-        if (rank <= 20)
-            return OF_CONCERN;
+        for(BugRankCategory c : values()) 
+            if (rank <= c.maxRank)
+                return c;
+            
         throw new IllegalArgumentException("Rank of " + rank + " is outside legal rank");
+    }
+
+    private BugRankCategory(int maxRank) {
+        this.maxRank = maxRank;
     }
 }
