@@ -1,5 +1,6 @@
 #FindBugs User Preferences
-#Sat Feb 19 15:57:48 CET 2011
+#Thu Aug 25 18:56:29 EDT 2011
+cloud_id=edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud
 detectorAbnormalFinallyBlockReturn=AbnormalFinallyBlockReturn|true
 detectorAbstractClassEmptyMethods=AbstractClassEmptyMethods|true
 detectorAbstractOverriddenMethod=AbstractOverriddenMethod|true
@@ -53,6 +54,7 @@ detectorEmptyZipFileEntry=EmptyZipFileEntry|true
 detectorEqStringTest=EqStringTest|false
 detectorEqualsOperandShouldHaveClassCompatibleWithThis=EqualsOperandShouldHaveClassCompatibleWithThis|true
 detectorExceptionSoftening=ExceptionSoftening|true
+detectorExplicitSerialization=ExplicitSerialization|true
 detectorFieldCouldBeLocal=FieldCouldBeLocal|true
 detectorFieldItemSummary=FieldItemSummary|true
 detectorFinalParameters=FinalParameters|true
@@ -100,6 +102,7 @@ detectorFindUnrelatedTypesInGenericContainer=FindUnrelatedTypesInGenericContaine
 detectorFindUnreleasedLock=FindUnreleasedLock|true
 detectorFindUnsatisfiedObligation=FindUnsatisfiedObligation|true
 detectorFindUnsyncGet=FindUnsyncGet|true
+detectorFindUseOfNonSerializableValue=FindUseOfNonSerializableValue|true
 detectorFindUselessControlFlow=FindUselessControlFlow|true
 detectorFloatingPointLoops=FloatingPointLoops|true
 detectorFormatStringChecker=FormatStringChecker|false
@@ -250,7 +253,7 @@ detectorWrongMapIterator=WrongMapIterator|true
 detectorXMLFactoryBypass=XMLFactoryBypass|true
 detector_threshold=2
 effort=default
-excludefilter0=findbugsExclude.xml
+excludefilter0=findbugsExclude.xml|true
 filter_settings=Medium|BAD_PRACTICE,CORRECTNESS,I18N,MT_CORRECTNESS,PERFORMANCE,SECURITY,STYLE|false|15
 filter_settings_neg=MALICIOUS_CODE,NOISE,EXPERIMENTAL|
 run_at_full_build=false
