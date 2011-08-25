@@ -499,6 +499,9 @@ public class BugInfoView extends AbstractFindbugsView {
                     if (ma.startsWith("Q")) {
                         ma = stripFirstAndLast(ma);
                         ClassDescriptor ad = ClassDescriptor.fromFieldSignature(a);
+                        if (ad == null) {
+                            continue nextMethod;
+                        }
                         a = ad.getSimpleName();
                     }
                     if (!ma.equals(a)) {

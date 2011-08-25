@@ -410,6 +410,14 @@
                label="Properties"
                menubarPath="group.properties">
          </action>
+          <action
+               class="de.tobject.findbugs.actions.ShowBugInfoAction"
+               enablesFor="1"
+               icon="platform:/plugin/org.eclipse.ui/icons/full/eview16/prop_ps.gif"
+               id="de.tobject.findbugs.showBugInfo"
+               label="Show Bug Info"
+               menubarPath="fb">
+         </action>
          <filter
                name="superType"
                value="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker">
@@ -479,6 +487,15 @@
                label="Properties"
                menubarPath="group.properties">
          </action>
+           <action
+               class="de.tobject.findbugs.actions.ShowBugInfoAction"
+               enablesFor="1"
+               icon="platform:/plugin/org.eclipse.ui/icons/full/eview16/prop_ps.gif"
+               id="de.tobject.findbugs.showBugInfo"
+               label="Show Bug Info"
+               menubarPath="fb">
+         </action>
+         
          <action
                class="de.tobject.findbugs.actions.ShowInPackageExplorerAction"
                enablesFor="1"
