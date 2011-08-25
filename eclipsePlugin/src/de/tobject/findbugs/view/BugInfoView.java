@@ -6,13 +6,17 @@ import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.JavaUI;
-import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.text.DefaultInformationControl.IInformationPresenterExtension;
-import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -22,18 +26,11 @@ import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
-import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -65,13 +62,20 @@ import de.tobject.findbugs.util.Util;
 import de.tobject.findbugs.view.explorer.BugGroup;
 import de.tobject.findbugs.view.explorer.GroupType;
 import edu.umd.cs.findbugs.BugAnnotation;
-import edu.umd.cs.findbugs.BugAnnotationWithSourceLines;
+import edu.umd.cs.findbugs.BugCategory;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.TypeAnnotation;
+import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
 * @author Andrei
@@ -81,29 +85,14 @@ public class BugInfoView extends AbstractFindbugsView {
 
    private Browser browser;
 
-   private StyledText htmlControl;
-
-   private IInformationPresenterExtension presenter;
-
    private Composite rootComposite;
 
    private BugPattern pattern;
 
-   private TextPresentation presentation;
-
-   private ScrolledComposite scrolledComposite;
-
-   private ControlAdapter listener;
 
    private String oldText;
 
-   private final PropPageTitleProvider titleProvider;
-
    private BugInstance bug;
-
-   private Point scrollSize;
-
-   private boolean inResize;
 
    protected String browserId;
 
@@ -129,8 +118,7 @@ public class BugInfoView extends AbstractFindbugsView {
     *
     */
    public BugInfoView() {
-       super();
-       titleProvider = new PropPageTitleProvider();
+
    }
 
    @Override
@@ -160,21 +148,16 @@ public class BugInfoView extends AbstractFindbugsView {
        rootComposite.setLayout(layout);
        rootComposite.setSize(SWT.DEFAULT, SWT.DEFAULT);
        Color background = toolkit.getColors().getBackground();
-       rootComposite.setBackground(background);
+//       rootComposite.setBackground(background);
        }
 
    private void createBrowser(Composite parent) {
        Color background = toolkit.getColors().getBackground();
        GridData data = new GridData(GridData.FILL_BOTH);
-       data.horizontalIndent = 0;
-       data.verticalIndent = 0;
        try {
            browser = new Browser(parent, SWT.NO_BACKGROUND);
-           if (parent instanceof ScrolledComposite) {
-            browser.setLayout(new FillLayout());
-        } else {
-            browser.setLayoutData(data);
-        }
+           browser.setLayoutData(data);
+
            browser.setBackground(background);
            browser.addOpenWindowListener(new OpenWindowListener() {
                public void open(WindowEvent event) {
@@ -201,33 +184,16 @@ public class BugInfoView extends AbstractFindbugsView {
                }
            });
        } catch (SWTError e) {
-           presentation = new TextPresentation();
-           htmlControl = new StyledText(parent, SWT.READ_ONLY);
-           toolkit.adapt(htmlControl);
-           if (parent instanceof ScrolledComposite) {
-            htmlControl.setLayout(new FillLayout());
-        } else {
-            htmlControl.setLayoutData(data);
-        }
-
-           htmlControl.setBackground(background);
-           try {
-               presenter = new HTMLTextPresenter(false);
-           } catch (Exception e2) {
-               FindbugsPlugin plugin = FindbugsPlugin.getDefault();
+                     FindbugsPlugin plugin = FindbugsPlugin.getDefault();
                plugin.logException(new RuntimeException(e.getMessage(), e),
                        "Could not create org.eclipse.swt.widgets.Composite.Browser");
-               plugin.logException(new RuntimeException(e2.getMessage(), e2),
-                       "Could not create org.eclipse.jface.internal.text.html.HTMLTextPresenter");
-           }
+
        }
    }
 
    private  void makeAnnotationList(Composite panel) {
        annotationList = new List(panel, SWT.NONE);
        GridData data = new GridData(GridData.FILL_HORIZONTAL);
-       data.horizontalIndent = 0;
-       data.verticalIndent = 0;
        annotationList.setLayoutData(data);
 
        annotationList.setFont(JFaceResources.getDialogFont());
@@ -257,80 +223,27 @@ public class BugInfoView extends AbstractFindbugsView {
                item.setEnabled(bug != null);
            }
        });
+       annotationList.setToolTipText("Click on lines or methods to go to them");
        annotationList.setMenu(menu);
        annotationList.pack(true);
 
    }
 
-
-
-    private void initScrolledComposite(Composite parent) {
-        scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.BORDER);
-
-        listener = new ControlAdapter() {
-            @Override
-            public void controlResized(ControlEvent e) {
-                if (!rootComposite.isDisposed() && rootComposite.isVisible()) {
-                    updateBrowserSize();
-                }
-            }
-        };
-        scrolledComposite.addControlListener(listener);
-
-    }
-
    protected void updateDisplay() {
        String html = null;
        if (browser != null && !browser.isDisposed()) {
            html = getHtml();
-           // required even if html is the same: our client area might be
-           // changed
-           updateBrowserSize();
+
            // avoid flickering if same input
            if (!html.equals(oldText)) {
                allowUrlChange = true;
                browser.setText(html);
                allowUrlChange = false;
            }
-       } else {
-           if (htmlControl != null && !htmlControl.isDisposed() && presenter != null) {
-               Rectangle clientArea = updateBrowserSize();
-               htmlControl.setSize(clientArea.width - 5, clientArea.height - 5);
-               html = getHtml();
-               try {
-                   html = presenter.updatePresentation(rootComposite.getShell().getDisplay(), html, presentation,
-                           clientArea.width, clientArea.height);
-               } catch (StringIndexOutOfBoundsException e) {
-                   // I can't understand why it happens, but it happens...
-               }
-               htmlControl.setText(html);
-           }
        }
        oldText = html;
    }
 
-   /**
-    * Updates the browser/scrolledComposite size to avoid second pair of
-    * scrollbars
-    */
-   private Rectangle updateBrowserSize() {
-       if (scrolledComposite == null ) {
-        return rootComposite.getClientArea();
-    }
-       Point newScrollSize = scrolledComposite.getSize();
-       Rectangle clientArea = scrolledComposite.getClientArea();
-       if (!inResize && clientArea.width > 0 && clientArea.height > 0
-               && !newScrollSize.equals(scrollSize)) {
-
-           scrollSize = newScrollSize;
-           inResize = true;
-           rootComposite.setSize(clientArea.width, clientArea.height);
-           scrolledComposite.setMinSize(clientArea.width, clientArea.height);
-           scrolledComposite.layout();
-           inResize = false;
-       }
-       return clientArea;
-   }
 
    private String getHtml() {
        if (pattern == null) {
@@ -339,6 +252,9 @@ public class BugInfoView extends AbstractFindbugsView {
        boolean hasBug = bug != null;
        StringBuilder text = new StringBuilder();
        text.append(pattern.getDetailText());
+
+       BugCategory category = DetectorFactoryCollection.instance().getBugCategory(pattern.getCategory());
+       text.append("<p> Category: " + category.getShortDescription());
        if (!hasBug) {
            return text.toString();
        }
@@ -361,22 +277,15 @@ public class BugInfoView extends AbstractFindbugsView {
        return html;
    }
 
-   private String toSafeHtml(String s) {
-       if (s.indexOf(">") >= 0) {
-           s = s.replace(">", "&gt;");
-       }
-       if (s.indexOf("<") >= 0) {
-           s = s.replace("<", "&lt;");
-       }
-       return s;
-   }
-
    /**
     * Updates pattern and bug from selection
     *
     * @return true if the content is changed
     */
    private boolean contentChanged(ISelection selection) {
+       if (showingAnnotation) {
+        return false;
+    }
        boolean existsBefore = pattern != null;
        if (!(selection instanceof IStructuredSelection)) {
            bug = null;
@@ -396,6 +305,7 @@ public class BugInfoView extends AbstractFindbugsView {
                refreshTitle();
                refreshAnnotations();
                updateDisplay();
+               rootComposite.layout();
                return old != data;
            }
        } else if (object instanceof IMarker) {
@@ -410,10 +320,6 @@ public class BugInfoView extends AbstractFindbugsView {
        if (selectionListener != null) {
            getSite().getWorkbenchWindow().getSelectionService().removeSelectionListener(selectionListener);
            selectionListener = null;
-       }
-       if (rootComposite != null && !rootComposite.isDisposed()) {
-           scrolledComposite.removeControlListener(listener);
-           rootComposite.dispose();
        }
        super.dispose();
    }
@@ -441,6 +347,7 @@ public class BugInfoView extends AbstractFindbugsView {
        annotationList.removeAll();
        // bug may be null, but if so then the error has already been logged.
        if (bug != null) {
+           annotationList.add(bug.getMessageWithoutPrefix());
            for(BugAnnotation ba : bug.getAnnotationsForMessage(false)) {
                annotationList.add(ba.toString());
            }
@@ -448,20 +355,159 @@ public class BugInfoView extends AbstractFindbugsView {
        annotationList.pack(true);
    }
 
-    protected int getLineToSelect() {
-        int index = annotationList.getSelectionIndex();
-        BugAnnotation theAnnotation = bug.getAnnotationsForMessage(false).get(index);
-        System.out.println("Selected item " + index + " : " + theAnnotation);
-        SourceLineAnnotation sla;
-        if (theAnnotation instanceof SourceLineAnnotation) {
-            sla = (SourceLineAnnotation) theAnnotation;
-        } else if (theAnnotation instanceof BugAnnotationWithSourceLines) {
-            sla = ((BugAnnotationWithSourceLines) theAnnotation).getSourceLines();
-        } else {
-            return marker.getAttribute(IMarker.LINE_NUMBER, EditorUtil.DEFAULT_LINE_IN_EDITOR);
+    private IJavaProject getIProject() {
+        if (javaElt != null) {
+            return javaElt.getJavaProject();
         }
-        int startLine = sla.getStartLine();
-        return startLine <= 0 ? EditorUtil.DEFAULT_LINE_IN_EDITOR : startLine;
+
+        if (file != null) {
+            IProject p =  file.getProject();
+            try {
+                if (p.hasNature(JavaCore.NATURE_ID)) {
+                    return JavaCore.create(p);
+                }
+            } catch (CoreException e) {
+                FindbugsPlugin.getDefault().logException(e, "Could not open Java project for " + file);
+            }
+        }
+          return null;
+    }
+
+    volatile boolean showingAnnotation = false;
+
+    protected void showAnnotation(IEditorPart activeEditor) {
+        if (showingAnnotation) {
+            FindbugsPlugin.getDefault().logInfo("Recursive showAnnotation");
+        }
+        showingAnnotation = true;
+
+        try {
+
+            int index = annotationList.getSelectionIndex() - 1;
+            if (index >= 0) {
+                BugAnnotation theAnnotation = bug.getAnnotationsForMessage(false).get(index);
+                findLocation: try {
+
+                    if (theAnnotation instanceof SourceLineAnnotation) {
+                        SourceLineAnnotation sla = (SourceLineAnnotation) theAnnotation;
+                        int line = sla.getStartLine();
+                        EditorUtil.goToLine(activeEditor, line);
+                        return;
+
+                    } else if (theAnnotation instanceof MethodAnnotation) {
+                        MethodAnnotation ma = (MethodAnnotation) theAnnotation;
+                        String className = ma.getClassName();
+                        IJavaProject project = getIProject();
+                        IType type = project.findType(className);
+                        if (type == null) {
+                            break findLocation;
+                        }
+                        IMethod m = getIMethod(type, ma);
+                        if (m != null) {
+                            JavaUI.openInEditor(m, true, true);
+
+                        } else {
+                            activeEditor = JavaUI.openInEditor(type, true, true);
+                            SourceLineAnnotation sla = ma.getSourceLines();
+                            EditorUtil.goToLine(activeEditor, sla.getStartLine());
+                        }
+
+                        return;
+
+                    } else if (theAnnotation instanceof FieldAnnotation) {
+                        FieldAnnotation fa = (FieldAnnotation) theAnnotation;
+                        String className = fa.getClassName();
+                        IJavaProject project = getIProject();
+                        IType type = project.findType(className);
+                        if (type == null) {
+                            break findLocation;
+                        }
+
+                        IField f = type.getField(fa.getFieldName());
+                        if (f != null) {
+                            JavaUI.openInEditor(f, true, true);
+                        } else {
+                            activeEditor = JavaUI.openInEditor(type, true, true);
+                            SourceLineAnnotation sla = fa.getSourceLines();
+                            EditorUtil.goToLine(activeEditor, sla.getStartLine());
+                        }
+                        return;
+                    } else if (theAnnotation instanceof TypeAnnotation) {
+                        TypeAnnotation fa = (TypeAnnotation) theAnnotation;
+                        String className = ClassName.fromFieldSignature(fa.getTypeDescriptor());
+                        if (className == null) {
+                            break findLocation;
+                        }
+                        IJavaProject project = getIProject();
+                        IType type = project.findType(ClassName.toDottedClassName(className));
+                        if (type == null) {
+                            break findLocation;
+                        }
+                        JavaUI.openInEditor(type, true, true);
+                        return;
+
+                    } else if (theAnnotation instanceof ClassAnnotation) {
+                        ClassAnnotation fa = (ClassAnnotation) theAnnotation;
+                        String className = fa.getClassName();
+                        IJavaProject project = getIProject();
+                        IType type = project.findType(className);
+                        if (type == null) {
+                            break findLocation;
+                        }
+                        JavaUI.openInEditor(type, true, true);
+                        return;
+                    }
+                } catch (JavaModelException e) {
+                    FindbugsPlugin.getDefault().logException(e, "Could not open editor for " + theAnnotation);
+                } catch (PartInitException e) {
+                    FindbugsPlugin.getDefault().logException(e, "Could not open editor for " + theAnnotation);
+                }
+            }
+            int line = marker.getAttribute(IMarker.LINE_NUMBER, EditorUtil.DEFAULT_LINE_IN_EDITOR);
+            EditorUtil.goToLine(activeEditor, line);
+        } finally {
+            showingAnnotation = false;
+        }
+    }
+
+    private String stripFirstAndLast(String s) {
+        return s.substring(1, s.length()-1);
+    }
+    private IMethod getIMethod(IType type, MethodAnnotation mma) throws JavaModelException {
+        String name = mma.getMethodName();
+        SignatureParser parser = new SignatureParser(mma.getMethodSignature());
+        String[] arguments = parser.getArguments();
+
+
+        nextMethod: for(IMethod m : type.getMethods()) {
+            if (!m.getElementName().equals(name)) {
+                continue nextMethod;
+            }
+
+                String [] mArguments = m.getParameterTypes();
+                if (arguments.length != mArguments.length) {
+                    continue nextMethod;
+                }
+
+                for(int i = 0; i < arguments.length; i++) {
+                    String a = arguments[i];
+                    String ma = mArguments[i];
+                    while (a.startsWith("[") && ma.startsWith("[")) {
+                        a = a.substring(1);
+                        ma = ma.substring(1);
+                    }
+                    if (ma.startsWith("Q")) {
+                        ma = stripFirstAndLast(ma);
+                        ClassDescriptor ad = ClassDescriptor.fromFieldSignature(a);
+                        a = ad.getSimpleName();
+                    }
+                    if (!ma.equals(a)) {
+                        continue nextMethod;
+                    }
+                }
+                return m;
+        }
+        return null;
     }
 
    protected void copyInfoToClipboard() {
@@ -502,8 +548,8 @@ public class BugInfoView extends AbstractFindbugsView {
            }
        }
        if (matchInput(input)) {
-           int startLine = getLineToSelect();
-           EditorUtil.goToLine(activeEditor, startLine);
+           showAnnotation(activeEditor);
+
        }
    }
 
@@ -558,6 +604,9 @@ public class BugInfoView extends AbstractFindbugsView {
 
     @Override
     public void markerSelected(IWorkbenchPart thePart, IMarker newMarker) {
+        if (showingAnnotation) {
+            return;
+        }
         contributingPart = thePart;
         showInView(newMarker);
         if (!isVisible()) {
@@ -581,6 +630,7 @@ public class BugInfoView extends AbstractFindbugsView {
             refreshTitle();
             refreshAnnotations();
             updateDisplay();
+            rootComposite.layout();
         }
     }
 

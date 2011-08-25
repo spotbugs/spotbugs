@@ -138,6 +138,13 @@ public class SignatureParser {
 
     }
 
+    public String[] getArguments() {
+        ArrayList<String> result = new ArrayList<String>();
+        for (Iterator<String> i = parameterSignatureIterator(); i.hasNext();) {
+            result.add(i.next());
+        }
+        return result.toArray(new String[result.size()]);        
+    }
     /**
      * Get an Iterator over signatures of the method parameters.
      * 

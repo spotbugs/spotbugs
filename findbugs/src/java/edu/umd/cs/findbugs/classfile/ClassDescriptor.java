@@ -22,9 +22,10 @@ package edu.umd.cs.findbugs.classfile;
 import java.io.Serializable;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.classfile.JavaClass;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;

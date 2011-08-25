@@ -96,7 +96,7 @@ public class WorkItem {
                 addJavaElementPath(fbProject);
             }
         } else if (res instanceof IFile) {
-            // ID: 2734173: allow to analyse classes inside archives
+            // ID: 2734173: allow to analyze classes inside archives
             if (Util.isClassFile(res) || Util.isJavaArchive(res)) {
                 fbProject.addFile(res.getLocation().toOSString());
             } else if (Util.isJavaFile(res)) {

@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import org.apache.bcel.classfile.Field;
@@ -32,7 +33,6 @@ import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
