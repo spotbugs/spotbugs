@@ -711,9 +711,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
                                 + "you add or change will only be stored on your computer if you save the\n"
                                 + "analysis via the File->Save menu.\n"
                                 + "\n"
-                                + "To sign back in, click the " + getCloudName() + " box in the lower right corner\n"
-                                + "of the FindBugs window. Any changes you make while offline will be uploaded\n"
-                                + "to the server upon signin.");
+                                + "To attempt to sign back in, click the Sign In button on the left.");
             } else {
                 task.failed(Util.getNetworkErrorMessage(e));
             }
