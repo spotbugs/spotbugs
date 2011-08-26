@@ -87,7 +87,7 @@ public class FindBugsConsole extends MessageConsole implements IPropertyChangeLi
         if (Display.getCurrent() == null) {
             PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
                 public void run() {
-                	setConsoleFont();
+                    setConsoleFont();
                 }
             });
         } else {
