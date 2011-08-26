@@ -746,7 +746,7 @@ public abstract class CloudCommentsPane extends JPanel {
         final String stateStr = state == Cloud.SigninState.NO_SIGNIN_REQUIRED ? "" : "" + state;
         final String userStr = cloud.getUser() == null ? "" : cloud.getUser();
         if (plugin.getId().equals("edu.umd.cs.findbugs.cloud.doNothingCloud"))
-            titleLabel.setText("<html><b>Reviews disabled");
+            titleLabel.setText("<html><b>No cloud selected");
         else
             titleLabel.setText("<html><b>Reviews - " + cloud.getCloudName() + "</b>"
                     + "<br><font style='font-size: x-small;color:darkgray'>" + stateStr
