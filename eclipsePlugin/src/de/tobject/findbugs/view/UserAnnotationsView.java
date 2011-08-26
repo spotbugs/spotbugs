@@ -301,7 +301,6 @@ public class UserAnnotationsView extends AbstractFindbugsView {
      */
     private void showInView(IMarker marker) {
         BugCollectionAndInstance bci = marker == null ? null : MarkerUtil.findBugCollectionAndInstanceForMarker(marker);
-        System.out.println("Seeing user annotation view for " + bci);
         setContent(bci);
     }
 

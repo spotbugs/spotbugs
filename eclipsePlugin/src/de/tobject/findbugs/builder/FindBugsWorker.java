@@ -98,7 +98,7 @@ public class FindBugsWorker {
         }
         this.monitor = monitor;
         // clone is required because we rewrite project relative references to absolute
-        this.userPrefs = (UserPreferences) FindbugsPlugin.getUserPreferences(project).clone();
+        this.userPrefs = FindbugsPlugin.getUserPreferences(project).clone();
     }
 
     /**
@@ -183,6 +183,11 @@ public class FindBugsWorker {
         for (String entry : classPathEntries) {
             findBugsProject.addAuxClasspathEntry(entry);
         }
+        String cloudId = userPrefs.getCloudId();
+        if (cloudId != null) {
+            findBugsProject.setCloudId(cloudId);
+        }
+
 
         st.newPoint("configureProps");
         IPreferenceStore store = FindbugsPlugin.getPluginPreferences(project);

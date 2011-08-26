@@ -614,33 +614,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         return bugCollection;
     }
 
-    //
-    // /**
-    // * Read stored findbugs Project for a project.
-    // * Returns an empty default project if no project is stored.
-    // *
-    // * @param project the eclipse project
-    // * @param monitor a progress monitor
-    // * @return the saved findbugs Project, or null if there is no saved
-    // project
-    // * @throws CoreException
-    // * @throws DocumentException
-    // * @throws DocumentException
-    // * @throws IOException
-    // */
-    // public static Project readProject(IProject project, IProgressMonitor
-    // monitor)
-    // throws CoreException, DocumentException, DocumentException, IOException {
-    // Project findbugsProject = (Project) project.getSessionProperty(
-    // SESSION_PROPERTY_FB_PROJECT);
-    // if (findbugsProject == null) {
-    // readBugCollectionAndProject(project, monitor);
-    // findbugsProject = (Project) project.getSessionProperty(
-    // SESSION_PROPERTY_FB_PROJECT);
-    // }
-    // return findbugsProject;
-    // }
-
     /**
      * Read saved bug collection and findbugs project from file. Will populate
      * the bug collection and findbugs project session properties if successful.
@@ -676,11 +649,18 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             return;
         }
 
+        UserPreferences prefs = getUserPreferences(project);
         bugCollection = new SortedBugCollection();
         bugCollection.getProject().setGuiCallback(new EclipseGuiCallback());
         bugCollection.setDoNotUseCloud(!useCloud);
 
         bugCollection.readXML(bugCollectionFile);
+        if (useCloud) {
+            String cloudId = prefs.getCloudId();
+            if (cloudId != null) {
+                bugCollection.getProject().setCloudId(cloudId);
+            }
+        }
 
         cacheBugCollectionAndProject(project, bugCollection, bugCollection.getProject());
     }
