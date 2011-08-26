@@ -1011,7 +1011,14 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     public static void createViews() {
-        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        if (activeWorkbenchWindow == null) {
+            return;
+        }
+        IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
+        if (page == null) {
+            return;
+        }
         page.findView(DETAILS_VIEW_ID);
         page.findView(USER_ANNOTATIONS_VIEW_ID);
 
