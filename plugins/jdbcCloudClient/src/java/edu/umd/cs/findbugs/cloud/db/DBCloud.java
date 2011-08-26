@@ -394,47 +394,47 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
                 PreparedStatement ps;
                 ResultSet rs;
                 if (performFullLoad) {
-					if (issuesInDatabase > 10 * sendToDatabase.size()) {
-						if (CloudFactory.DEBUG) {
-							System.out.printf("Loading %d individual bugs from database%n", sendToDatabase.size());						
+                    if (issuesInDatabase > 10 * sendToDatabase.size()) {
+                        if (CloudFactory.DEBUG) {
+                            System.out.printf("Loading %d individual bugs from database%n", sendToDatabase.size());
 						}
-						for (String hash : sendToDatabase.keySet()) {
-							ps = c.prepareStatement("SELECT id, firstSeen, lastSeen FROM findbugs_issue WHERE hash=?");
-							ps.setString(1, hash);
+                        for (String hash : sendToDatabase.keySet()) {
+                            ps = c.prepareStatement("SELECT id, firstSeen, lastSeen FROM findbugs_issue WHERE hash=?");
+                            ps.setString(1, hash);
 							rs = ps.executeQuery();
-							if (rs.next()) {
-								int col = 1;
-								int id = rs.getInt(col++);
+                            if (rs.next()) {
+                                int col = 1;
+                                int id = rs.getInt(col++);
 								Timestamp firstSeen = rs.getTimestamp(col++);
-								Timestamp lastSeen = rs.getTimestamp(col++);
-								loadDatabaseInfo(hash, id, firstSeen.getTime(),
-										lastSeen.getTime());
+                                Timestamp lastSeen = rs.getTimestamp(col++);
+                                loadDatabaseInfo(hash, id, firstSeen.getTime(),
+                                        lastSeen.getTime());
 							}
-							rs.close();
-							ps.close();
+                            rs.close();
+                            ps.close();
 
-						}
-					} else {
-						if (CloudFactory.DEBUG) {
+                        }
+                    } else {
+                        if (CloudFactory.DEBUG) {
 							System.out.printf("Bulk loading all %d bugs from database%n", issuesInDatabase);						
-						}
-						ps = c.prepareStatement("SELECT id, hash, firstSeen, lastSeen FROM findbugs_issue");
-						rs = ps.executeQuery();
+                        }
+                        ps = c.prepareStatement("SELECT id, hash, firstSeen, lastSeen FROM findbugs_issue");
+                        rs = ps.executeQuery();
 
-						while (rs.next()) {
-							int col = 1;
-							int id = rs.getInt(col++);
+                        while (rs.next()) {
+                            int col = 1;
+                            int id = rs.getInt(col++);
 							String hash = rs.getString(col++);
-							Timestamp firstSeen = rs.getTimestamp(col++);
-							Timestamp lastSeen = rs.getTimestamp(col++);
+                            Timestamp firstSeen = rs.getTimestamp(col++);
+                            Timestamp lastSeen = rs.getTimestamp(col++);
 
-							loadDatabaseInfo(hash, id, firstSeen.getTime(),
-									lastSeen.getTime());
-						}
+                            loadDatabaseInfo(hash, id, firstSeen.getTime(),
+                                    lastSeen.getTime());
+                        }
 						rs.close();
-						ps.close();
-					}
-				}
+                        ps.close();
+                    }
+                }
                 if (startShutdown)
                     return;
 
@@ -706,14 +706,14 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) from  findbugs_issue");
             boolean result = false;
             if (rs.next()) {
-            	issuesInDatabase = rs.getInt(1);
+                issuesInDatabase = rs.getInt(1);
                 result = true;
             }
             rs.close();
             stmt.close();
             c.close();
             if (CloudFactory.DEBUG) {
-            	System.out.printf("%d issues in database%n", issuesInDatabase);
+                System.out.printf("%d issues in database%n", issuesInDatabase);
             }
                 
             if (result) {
@@ -929,8 +929,8 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
 
     private boolean skipBug(BugInstance bug) {
         BugPattern bugPattern = bug.getBugPattern();
-		boolean result = bugPattern.getCategory().equals("NOISE") || bug.isDead()
-	            || bugPattern.getType().equals("UNKNOWN")
+        boolean result = bugPattern.getCategory().equals("NOISE") || bug.isDead()
+                || bugPattern.getType().equals("UNKNOWN")
                 || BugRanker.findRank(bug) > MAX_DB_RANK;
         if (result && firstTimeDoing(HAS_SKIPPED_BUG)) {
             bugCollection
@@ -1786,9 +1786,9 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
 
     @SuppressWarnings("boxing")
     public String getStatusMsg0() {
-    	if (!communicationInitiated.get() || !sendToDatabasePopulated) {
-    		return String.format("communications with database not yet initialized");
-    	}
+        if (!communicationInitiated.get() || !sendToDatabasePopulated) {
+            return String.format("communications with database not yet initialized");
+        }
         
         SimpleDateFormat format = new SimpleDateFormat("h:mm a");
         int numToSync = queue.size();
@@ -1799,7 +1799,7 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
         else if (updatesSentToDatabase == 0) {
             int skipped = bugCollection.getCollection().size() - sendToDatabase.size();
             if (skipped == 0)
-            	return String.format("%d issues synchronized with database", fromDatabase.size());
+                return String.format("%d issues synchronized with database", fromDatabase.size());
             else
                 return String.format("%d issues synchronized with database, %d low rank issues not synchronized", 
                             fromDatabase.size(), skipped);
@@ -1882,8 +1882,8 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
             throw new NullPointerException("null bug");
         String instanceHash = b.getInstanceHash();
 
-		BugData bugData = sendToDatabase.get(instanceHash);
-		return bugData != null && bugData.inDatabase;
+        BugData bugData = sendToDatabase.get(instanceHash);
+        return bugData != null && bugData.inDatabase;
     }
 
     @Override
