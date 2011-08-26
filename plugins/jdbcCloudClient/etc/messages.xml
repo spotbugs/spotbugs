@@ -20,8 +20,8 @@ This plugin code for synchronizing with a JDBC based cloud
   </Plugin>
 
   <Cloud id="edu.umd.cs.findbugs.cloud.db.Sample-SQL-cloud" >
-	<Description>Sample SQL Bug cloud</Description>
-	<Details>Comments are stored in a MySQL database at a location that must be configured</Details>
+    <Description>Sample SQL Bug cloud</Description>
+    <Details>Comments are stored in a MySQL database at a location that must be configured</Details>
     </Cloud>
 
 
