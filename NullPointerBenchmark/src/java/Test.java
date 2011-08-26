@@ -2,86 +2,86 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Test {
 
-	/**
-	 * Benchmark tests for null pointer defect detectors This benchmark tests
-	 * local variable tracking tracking fp1, fp2, fp3 : false positives tp1 :
+    /**
+     * Benchmark tests for null pointer defect detectors This benchmark tests
+     * local variable tracking tracking fp1, fp2, fp3 : false positives tp1 :
 	 * true positive ifp1 : interprocedural false positives itp1, itp2, itp3 :
-	 * interprocedural true positives
-	 */
+     * interprocedural true positives
+     */
 
-	int fp1(int level) {
-		Object x = null;
-		if (level > 0)
+    int fp1(int level) {
+        Object x = null;
+        if (level > 0)
 			x = new Object();
-		if (level > 4)
-			return x.hashCode();
-		return 0;
+        if (level > 4)
+            return x.hashCode();
+        return 0;
 	}
 
-	int fp2(boolean b) {
-		Object x = null;
-		if (b)
+    int fp2(boolean b) {
+        Object x = null;
+        if (b)
 			x = new Object();
-		if (b)
-			return x.hashCode();
-		return 0;
+        if (b)
+            return x.hashCode();
+        return 0;
 	}
 
-	int fp3(Object x, boolean b) {
-		Object y = null;
-		if (x != null)
+    int fp3(Object x, boolean b) {
+        Object y = null;
+        if (x != null)
 			y = new Object();
-		if (y != null)
-			return x.hashCode() + y.hashCode();
-		else
+        if (y != null)
+            return x.hashCode() + y.hashCode();
+        else
 			return 0;
-	}
+    }
 
-	@ExpectWarning("NP")
-	int tp1(Object x, boolean b) {
-		Object y = null;
+    @ExpectWarning("NP")
+    int tp1(Object x, boolean b) {
+        Object y = null;
 		if (x != null)
-			y = new Object();
-		if (y != null)
-			return x.hashCode() + y.hashCode();
+            y = new Object();
+        if (y != null)
+            return x.hashCode() + y.hashCode();
 		else
-			return x.hashCode();
-	}
+            return x.hashCode();
+    }
 
-	int itp1(boolean b) {
-		Object x = null;
-		if (b)
+    int itp1(boolean b) {
+        Object x = null;
+        if (b)
 			x = new Object();
-		return helper1(x, b); // bug when x is null and b is false
-	}
+        return helper1(x, b); // bug when x is null and b is false
+    }
 
-	int ifp1(boolean b) {
-		Object x = null;
-		if (!b)
+    int ifp1(boolean b) {
+        Object x = null;
+        if (!b)
 			x = new Object();
-		return helper1(x, b); // OK when x is null and b is true
+        return helper1(x, b); // OK when x is null and b is true
+    }
+
+    @ExpectWarning("NP")
+    int itp2() {
+        return helper2(null);
 	}
 
-	@ExpectWarning("NP")
-	int itp2() {
-		return helper2(null);
-	}
-
-	@ExpectWarning("NP")
-	int itp3(Object x) {
-		if (x == null)
+    @ExpectWarning("NP")
+    int itp3(Object x) {
+        if (x == null)
 			System.out.println("x is null");
-		return helper2(x);
-	}
+        return helper2(x);
+    }
 
-	private int helper1(Object x, boolean b) {
-		if (b)
-			return 0;
+    private int helper1(Object x, boolean b) {
+        if (b)
+            return 0;
 		return x.hashCode();
-	}
+    }
 
-	private int helper2(Object x) {
-		return x.hashCode();
-	}
+    private int helper2(Object x) {
+        return x.hashCode();
+    }
 
 }
