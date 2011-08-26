@@ -104,12 +104,10 @@ public interface FindBugsMarker {
 
     enum MarkerRank {
         High(NAME_SCARIEST, "buggy-tiny.png", BugRankCategory.SCARIEST),
-                Normal(NAME_SCARY, "buggy-tiny-orange.png",
-                        BugRankCategory.SCARY),
-                Low(NAME_TROUBLING, "buggy-tiny-yellow.png", BugRankCategory.TROUBLING),
-                Experimental(
-                NAME_OF_CONCERN, "buggy-tiny-blue.png", BugRankCategory.OF_CONCERN),
-                Unknown( NAME_OF_CONCERN, "buggy-tiny-blue.png", BugRankCategory.OF_CONCERN);
+        Normal(NAME_SCARY, "buggy-tiny-orange.png",  BugRankCategory.SCARY),
+        Low(NAME_TROUBLING, "buggy-tiny-yellow.png", BugRankCategory.TROUBLING),
+        Experimental(NAME_OF_CONCERN, "buggy-tiny-blue.png", BugRankCategory.OF_CONCERN),
+        Unknown( NAME_OF_CONCERN, "buggy-tiny-gray.png", BugRankCategory.OF_CONCERN);
 
 
         private final String prioName;
