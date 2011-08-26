@@ -25,6 +25,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -61,16 +63,30 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
         wbProvider = new WorkbenchLabelProvider();
     }
 
-    public Image getImage(Object element) {
+    public @CheckForNull Image getImage(Object element) {
         if (element instanceof BugGroup) {
             BugGroup group = (BugGroup) element;
-            if (group.getType() == GroupType.Class || group.getType() == GroupType.Package
-                    || group.getType() == GroupType.Project || group.getType() == GroupType.Marker) {
+            switch(group.getType()) {
+            case Class:
+            case Package:
+            case Project:
+            case Marker:
                 return wbProvider.getImage(group.getData());
+            case BugRankCategory: {
+                FindBugsMarker.MarkerRank prio = group.getPriority();
+                ImageRegistry imageRegistry = FindbugsPlugin.getDefault().getImageRegistry();
+                return imageRegistry.get(prio.iconName());
             }
-            FindBugsMarker.MarkerRank prio = group.getPriority();
-            ImageRegistry imageRegistry = FindbugsPlugin.getDefault().getImageRegistry();
-            return imageRegistry.get(prio.iconName());
+            case Priority: {
+                Integer confidence = (Integer) group.getData();
+                FindBugsMarker.MarkerRank mr = FindBugsMarker.MarkerRank.values()[confidence-1];
+                ImageRegistry imageRegistry = FindbugsPlugin.getDefault().getImageRegistry();
+                return imageRegistry.get(mr.iconName());
+            }
+            default:
+                return null;
+            }
+
         }
         if (element instanceof IMarker) {
             IMarker marker = (IMarker) element;
