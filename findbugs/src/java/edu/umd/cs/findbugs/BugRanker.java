@@ -33,6 +33,7 @@ import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -233,12 +234,24 @@ public class BugRanker {
         return adjustRank(patternRank, priority);
     }
 
-    private static HashMap<BugPattern, Integer> rankForBugPattern = new HashMap<BugPattern, Integer>();
+    
+    private static AnalysisLocal<HashMap<BugPattern, Integer>> rankForBugPattern
+    = new AnalysisLocal<HashMap<BugPattern, Integer>>() {
+        @Override
+        protected HashMap<BugPattern, Integer> initialValue() {
+            return new HashMap<BugPattern, Integer>();
+        }
+    };
 
+   
     public static int findRank(BugPattern pattern, @CheckForNull DetectorFactory detectorFactory) {
-        Integer cachedResult = rankForBugPattern.get(pattern);
-        if (cachedResult != null)
-            return cachedResult;
+        boolean haveCache = Global.getAnalysisCache() != null;
+        if (haveCache) {
+             Integer cachedResult = rankForBugPattern.get().get(pattern);
+             if (cachedResult != null)
+                 return cachedResult;
+        }
+        
         int rank;
         if (detectorFactory == null)
             rank = findRankUnknownPlugin(pattern);
@@ -252,7 +265,8 @@ public class BugRanker {
             else
                 rank = rankBugPattern(pattern, pluginRanker, coreRanker);
         }
-        rankForBugPattern.put(pattern, rank);
+        if (haveCache)
+            rankForBugPattern.get().put(pattern, rank);
         return rank;
     }
 
@@ -293,3 +307,4 @@ public class BugRanker {
         }
     }
 }
+
