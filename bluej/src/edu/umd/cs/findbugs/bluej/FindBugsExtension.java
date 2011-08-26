@@ -10,46 +10,46 @@ import bluej.extensions.Extension;
 public class FindBugsExtension extends Extension
 {
 
-	@Override
-	public boolean isCompatible()
-	{
+    @Override
+    public boolean isCompatible()
+    {
 		return true;
-	}
+    }
 
-	@Override
-	public void startup(BlueJ bluej)
-	{
+    @Override
+    public void startup(BlueJ bluej)
+    {
 		Log.setPath(new File(bluej.getSystemLibDir(), "findbugs.errlog")); 
-		bluej.setMenuGenerator(new RegularMenuBuilder(bluej));
-		bluej.setPreferenceGenerator(new FindBugsPreferences(bluej));
-		bluej.addPackageListener(new PackageClosingListener());
+        bluej.setMenuGenerator(new RegularMenuBuilder(bluej));
+        bluej.setPreferenceGenerator(new FindBugsPreferences(bluej));
+        bluej.addPackageListener(new PackageClosingListener());
 	}
 
-	@Override
-	public String getName()
-	{
+    @Override
+    public String getName()
+    {
 		return "FindBugs";
-	}
+    }
 
-	@Override
-	public String getVersion()
-	{
+    @Override
+    public String getVersion()
+    {
 		return "1.3.5-dev";
-	}
+    }
 
-	@Override
-	public String getDescription()
-	{
+    @Override
+    public String getDescription()
+    {
 		return "Extension for FindBugs, a static analysis tool that looks for coding errors.";
-	}
-	
-	@Override
+    }
+
+    @Override
 	public URL getURL()
-	{
-		try
-		{
+    {
+        try
+        {
 			return new URL("http://findbugs.sourceforge.net");
-		}
-		catch (MalformedURLException e) {return null;}
-	}
+        }
+        catch (MalformedURLException e) {return null;}
+    }
 }

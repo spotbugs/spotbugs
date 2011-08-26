@@ -13,40 +13,40 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 public class RunFindbugs {
-	
-	/**
-	 * Returns a SortBugCollection of bugs that are in the classes that
+
+    /**
+     * Returns a SortBugCollection of bugs that are in the classes that
 	 * are passed to it.
-	 * @param classes String[] of classes in the project
-	 * @return
-	 * @throws IOException
+     * @param classes String[] of classes in the project
+     * @return
+     * @throws IOException
 	 * @throws InterruptedException
-	 */
-	public static SortedBugCollection getBugs(String[] classes) throws IOException, InterruptedException {
-		Project findBugsProject = new Project();
+     */
+    public static SortedBugCollection getBugs(String[] classes) throws IOException, InterruptedException {
+        Project findBugsProject = new Project();
 		for(String f : classes)
-			findBugsProject.addFile(f);
-		final SortedBugCollection bugs = new SortedBugCollection();
-		BugReporter reporter = new MyReporter(bugs);
+            findBugsProject.addFile(f);
+        final SortedBugCollection bugs = new SortedBugCollection();
+        BugReporter reporter = new MyReporter(bugs);
         System.setProperty("findbugs.jaws", "true");
         // System.out.println(System.getProperty("findbugs.jaws"));
         DetectorFactoryCollection.instance();
         
       
-		IFindBugsEngine findBugs = new FindBugs2();
+        IFindBugsEngine findBugs = new FindBugs2();
         findBugs.setBugReporter(reporter);
         findBugs.setProject(findBugsProject);
         findBugs.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
 //      Honor current UserPreferences
         findBugs.setUserPreferences(UserPreferences.createDefaultUserPreferences());
         
-		reporter.setPriorityThreshold(Detector.NORMAL_PRIORITY);
-		
-		// System.setProperty("findbugs.home", "/Users/pugh/Documents/eclipse-3.2/workspace/findbugs");
+        reporter.setPriorityThreshold(Detector.NORMAL_PRIORITY);
 
-		
-		findBugs.execute();
-		
+        // System.setProperty("findbugs.home", "/Users/pugh/Documents/eclipse-3.2/workspace/findbugs");
+
+
+        findBugs.execute();
+
 		return bugs;		
-	}
+    }
 }

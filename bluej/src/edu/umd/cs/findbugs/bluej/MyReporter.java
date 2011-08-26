@@ -9,40 +9,40 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 
 public class MyReporter extends TextUIBugReporter {
-	BugCollection bugs;
-	
-	
+    BugCollection bugs;
+
+
 	MyReporter(BugCollection bugs) {
-		this.bugs = bugs;
-	}
-	@Override
+        this.bugs = bugs;
+    }
+    @Override
 	protected void doReportBug(BugInstance bugInstance) {
-		BugPattern bugPattern = bugInstance.getBugPattern();
-		if (bugPattern.getCategory().equals("CORRECTNESS")
-				&& ! bugPattern.getType().startsWith("DE_")
+        BugPattern bugPattern = bugInstance.getBugPattern();
+        if (bugPattern.getCategory().equals("CORRECTNESS")
+                && ! bugPattern.getType().startsWith("DE_")
 				&& ! bugPattern.getType().startsWith("HE_")
-				&& ! bugPattern.getType().startsWith("SE_")
-			)
-			bugs.add(bugInstance);
+                && ! bugPattern.getType().startsWith("SE_")
+            )
+            bugs.add(bugInstance);
 		
+    }
+
+    public void finish() {
+        // TODO Auto-generated method stub
+
 	}
 
-	public void finish() {
-		// TODO Auto-generated method stub
-		
-	}
+    public void observeClass(JavaClass javaClass) {
+        // TODO Auto-generated method stub
 
-	public void observeClass(JavaClass javaClass) {
-		// TODO Auto-generated method stub
-		
 	}
-	public void observeClass(ClassDescriptor classDescriptor) {
-		// TODO Auto-generated method stub
-		
+    public void observeClass(ClassDescriptor classDescriptor) {
+        // TODO Auto-generated method stub
+
 	}
-	@Override
-	public BugCollection getBugCollection() {
-		return bugs;
+    @Override
+    public BugCollection getBugCollection() {
+        return bugs;
 	}
 
 

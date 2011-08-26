@@ -12,25 +12,25 @@ import bluej.extensions.event.PackageListener;
  */
 public class PackageClosingListener implements PackageListener {
 
-	/**
-	 * Does not do anything when package is opened.
-	 */
+    /**
+     * Does not do anything when package is opened.
+     */
 	public void packageOpened(PackageEvent vt) {
-	}
+    }
 
-	/**
-	 * When package is closed will also close the FindBugs results frame
-	 * if it is open.
+    /**
+     * When package is closed will also close the FindBugs results frame
+     * if it is open.
 	 */
-	public void packageClosing(PackageEvent evt) {
-		try {
-			ResultsFrame frame = ResultsFrame.getInstance(evt.getPackage().getProject(), false);
+    public void packageClosing(PackageEvent evt) {
+        try {
+            ResultsFrame frame = ResultsFrame.getInstance(evt.getPackage().getProject(), false);
 			if(frame != null)
-				frame.setVisible(false);
-		} catch (ProjectNotOpenException e) {
-			Log.recordBug(e);
+                frame.setVisible(false);
+        } catch (ProjectNotOpenException e) {
+            Log.recordBug(e);
 		}
 
-	}
+    }
 
 }
