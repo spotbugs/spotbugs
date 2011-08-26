@@ -1601,9 +1601,9 @@ factory pattern to create these objects.</p>
 ]]>
     </Details>
   </BugPattern>
-	<BugPattern type="DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE">
-		<ShortDescription>BigDecimal constructed from double that isn't represented precisely</ShortDescription>
-		<LongDescription>BigDecimal constructed from {4} in {1}</LongDescription>
+    <BugPattern type="DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE">
+        <ShortDescription>BigDecimal constructed from double that isn't represented precisely</ShortDescription>
+        <LongDescription>BigDecimal constructed from {4} in {1}</LongDescription>
 		<Details>
       <![CDATA[
     <p>
@@ -1616,11 +1616,11 @@ of the double to create the BigDecimal (e.g., BigDecimal.valueOf(0.1) gives 0.1)
 
 ]]>
     </Details>
-	</BugPattern>
+    </BugPattern>
 
-	<BugPattern type="DMI_DOH">
-		<ShortDescription>D'oh! A nonsensical method invocation</ShortDescription>
-		<LongDescription>D'oh! A nonsensical invocation of {2.nameAndSignature} in {1}</LongDescription>
+    <BugPattern type="DMI_DOH">
+        <ShortDescription>D'oh! A nonsensical method invocation</ShortDescription>
+        <LongDescription>D'oh! A nonsensical invocation of {2.nameAndSignature} in {1}</LongDescription>
 		<Details>
       <![CDATA[
     <p>
@@ -1629,7 +1629,7 @@ This partical method invocation doesn't make sense, for reasons that should be a
 
 ]]>
     </Details> 
-	</BugPattern>
+    </BugPattern>
 
   <BugPattern type="DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD">
     <ShortDescription>Useless/vacuous call to EasyMock method</ShortDescription>

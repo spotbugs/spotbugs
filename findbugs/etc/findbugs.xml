@@ -527,10 +527,10 @@
 
           <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableStoreIntoSession"
                     speed="fast" reports="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION"
-		    disabled="true" hidden="true"  />
+            disabled="true" hidden="true"  />
           <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableValuePassedToWriteObject"
                     speed="fast" reports="DMI_NONSERIALIZABLE_OBJECT_WRITTEN"
-		    disabled="true" hidden="true"  />
+            disabled="true" hidden="true"  />
 
           <Detector class="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression" speed="fast"
                     reports="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION,RE_POSSIBLE_UNINTENDED_PATTERN,RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION"/>
