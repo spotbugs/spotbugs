@@ -275,7 +275,7 @@ public class ExecutionPlan {
      * @return the ConstraintGraph
      */
     private ConstraintGraph buildConstraintGraph(Map<String, DetectorNode> nodeMap, Set<DetectorFactory> factorySet,
-            List<DetectorOrderingConstraint> constraintList) throws OrderingConstraintException {
+            List<DetectorOrderingConstraint> constraintList) {
 
         ConstraintGraph result = new ConstraintGraph();
 
@@ -300,7 +300,7 @@ public class ExecutionPlan {
     }
 
     private Set<DetectorNode> addOrCreateDetectorNodes(DetectorFactorySelector selector, Map<String, DetectorNode> nodeMap,
-            Set<DetectorFactory> factorySet, ConstraintGraph constraintGraph) throws OrderingConstraintException {
+            Set<DetectorFactory> factorySet, ConstraintGraph constraintGraph) {
         HashSet<DetectorNode> result = new HashSet<DetectorNode>();
 
         Set<DetectorFactory> chosenSet = selectDetectors(selector, factorySet);
@@ -314,7 +314,7 @@ public class ExecutionPlan {
     }
 
     private DetectorNode addOrCreateDetectorNode(DetectorFactory factory, Map<String, DetectorNode> nodeMap,
-            ConstraintGraph constraintGraph) throws OrderingConstraintException {
+            ConstraintGraph constraintGraph) {
         DetectorNode node = nodeMap.get(factory.getFullName());
         if (node == null) {
             node = new DetectorNode(factory);
@@ -325,7 +325,7 @@ public class ExecutionPlan {
     }
 
     private void createConstraintEdges(ConstraintGraph result, Set<DetectorNode> earlierSet, Set<DetectorNode> laterSet,
-            DetectorOrderingConstraint constraint) throws OrderingConstraintException {
+            DetectorOrderingConstraint constraint)  {
 
         // It is perfectly fine for a constraint to produce no edges
         // if any detector it specifies is not enabled.
@@ -469,12 +469,12 @@ public class ExecutionPlan {
      * Append a DetectorFactory to the end position in an AnalysisPass. The
      * DetectorFactory must be a member of the pass.
      */
-    private void appendToPass(DetectorFactory factory, AnalysisPass pass) throws OrderingConstraintException {
+    private void appendToPass(DetectorFactory factory, AnalysisPass pass) {
         pass.append(factory);
     }
 
     private void appendDetectorsToPass(Collection<DetectorFactory> detectorSet, AnalysisPass pass)
-            throws OrderingConstraintException {
+             {
         DetectorFactory[] unassignedList = detectorSet.toArray(new DetectorFactory[detectorSet.size()]);
         Arrays.sort(unassignedList, new Comparator<DetectorFactory>() {
             public int compare(DetectorFactory a, DetectorFactory b) {

@@ -25,6 +25,8 @@
 
 package edu.umd.cs.findbugs;
 
+import static edu.umd.cs.findbugs.xml.XMLOutputUtil.writeElementList;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -49,10 +51,16 @@ import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import org.dom4j.DocumentException;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.URLClassPath;
@@ -67,13 +75,6 @@ import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
-import org.dom4j.DocumentException;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-
-import static edu.umd.cs.findbugs.xml.XMLOutputUtil.writeElementList;
 
 /**
  * A project in the GUI. This consists of some number of Jar files to analyze
@@ -707,7 +708,7 @@ public class Project implements XMLWriteable {
         isModified = false;
     }
 
-    public static Project readXML(File f) throws IOException, DocumentException, SAXException {
+    public static Project readXML(File f) throws IOException,  SAXException {
         InputStream in = new BufferedInputStream(new FileInputStream(f));
         Project project = new Project();
         try {
@@ -766,10 +767,6 @@ public class Project implements XMLWriteable {
         if (projectFileName.endsWith(".xml") || projectFileName.endsWith(".fbp")) {
             try {
                 return Project.readXML(projectFile);
-            } catch (DocumentException e) {
-                IOException ioe = new IOException("Couldn't read saved FindBugs project");
-                ioe.initCause(e);
-                throw ioe;
             } catch (SAXException e) {
                 IOException ioe = new IOException("Couldn't read saved FindBugs project");
                 ioe.initCause(e);
@@ -1007,7 +1004,7 @@ public class Project implements XMLWriteable {
      *            path to convert
      * @return the converted filename
      */
-    private String convertToAbsolute(String fileName) throws IOException {
+    private String convertToAbsolute(String fileName)  {
         // At present relative paths are only calculated if the fileName is
         // below the project file. This need not be the case, and we could use
         // ..
@@ -1100,7 +1097,7 @@ public class Project implements XMLWriteable {
      * Make the given list of pathnames absolute relative to the absolute path
      * of the project file.
      */
-    private void makeListAbsoluteProject(List<String> list) throws IOException {
+    private void makeListAbsoluteProject(List<String> list)  {
         List<String> replace = new LinkedList<String>();
         for (String fileName : list) {
             fileName = convertToAbsolute(fileName);

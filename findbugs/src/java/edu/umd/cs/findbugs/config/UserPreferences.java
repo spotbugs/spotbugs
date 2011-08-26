@@ -56,6 +56,7 @@ import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * User Preferences outside of any one Project. This consists of a class to
@@ -84,6 +85,8 @@ public class UserPreferences implements Cloneable {
 
     private static final int MAX_RECENT_FILES = 9;
 
+    private static final String CLOUD_ID_KEY = "cloud_id";
+    
     private static final String DETECTOR_THRESHOLD_KEY = "detector_threshold";
 
     private static final String FILTER_SETTINGS_KEY = "filter_settings";
@@ -113,6 +116,8 @@ public class UserPreferences implements Cloneable {
     private boolean runAtFullBuild;
 
     private String effort;
+    
+    private String cloudId;
 
     private Map<String, Boolean> includeFilterFiles;
 
@@ -235,6 +240,7 @@ public class UserPreferences implements Cloneable {
             runAtFullBuild = Boolean.parseBoolean(props.getProperty(RUN_AT_FULL_BUILD));
         }
         effort = props.getProperty(EFFORT_KEY, EFFORT_DEFAULT);
+        cloudId = props.getProperty(CLOUD_ID_KEY);
         includeFilterFiles = readProperties(props, KEY_INCLUDE_FILTER);
         excludeFilterFiles = readProperties(props, KEY_EXCLUDE_FILTER);
         excludeBugsFiles = readProperties(props, KEY_EXCLUDE_BUGS);
@@ -289,6 +295,8 @@ public class UserPreferences implements Cloneable {
         props.put(DETECTOR_THRESHOLD_KEY, String.valueOf(filterSettings.getMinPriorityAsInt()));
         props.put(RUN_AT_FULL_BUILD, String.valueOf(runAtFullBuild));
         props.setProperty(EFFORT_KEY, effort);
+        if (cloudId != null)
+            props.setProperty(CLOUD_ID_KEY, cloudId);
         writeProperties(props, KEY_INCLUDE_FILTER, includeFilterFiles);
         writeProperties(props, KEY_EXCLUDE_FILTER, excludeFilterFiles);
         writeProperties(props, KEY_EXCLUDE_BUGS, excludeBugsFiles);
@@ -485,28 +493,29 @@ public class UserPreferences implements Cloneable {
                 && detectorEnablementMap.equals(other.detectorEnablementMap) && filterSettings.equals(other.filterSettings)
                 && effort.equals(other.effort) && includeFilterFiles.equals(other.includeFilterFiles)
                 && excludeFilterFiles.equals(other.excludeFilterFiles) && excludeBugsFiles.equals(other.excludeBugsFiles)
-                && customPlugins.equals(other.customPlugins);
+                && customPlugins.equals(other.customPlugins)
+                && Util.nullSafeEquals(cloudId, other.cloudId);
     }
 
     @Override
     public int hashCode() {
         return recentProjectsList.hashCode() + detectorEnablementMap.hashCode() + filterSettings.hashCode() + effort.hashCode()
-                + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode() + (runAtFullBuild ? 1 : 0);
+                + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode() + (runAtFullBuild ? 1 : 0) 
+                + Util.nullSafeHashcode(cloudId);
     }
 
     @Override
-    public Object clone() {
+    public UserPreferences clone() {
         try {
             UserPreferences dup = (UserPreferences) super.clone();
+            // Deep copy
             dup.recentProjectsList = new LinkedList<String>(recentProjectsList);
             dup.detectorEnablementMap = new HashMap<String, Boolean>(detectorEnablementMap);
             dup.filterSettings = (ProjectFilterSettings) this.filterSettings.clone();
-            dup.runAtFullBuild = runAtFullBuild;
             dup.includeFilterFiles = new TreeMap<String, Boolean>(includeFilterFiles);
             dup.excludeFilterFiles = new TreeMap<String, Boolean>(excludeFilterFiles);
             dup.excludeBugsFiles = new TreeMap<String, Boolean>(excludeBugsFiles);
             dup.customPlugins = new TreeMap<String, Boolean>(customPlugins);
-            dup.effort = effort;
             return dup;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
@@ -523,6 +532,20 @@ public class UserPreferences implements Cloneable {
         }
         this.effort = effort;
 
+    }
+
+    /**
+     * @return Returns the cloudId.
+     */
+    public String getCloudId() {
+        return cloudId;
+    }
+
+    /**
+     * @param cloudId The cloudId to set.
+     */
+    public void setCloudId(String cloudId) {
+        this.cloudId = cloudId;
     }
 
     public Map<String, Boolean> getIncludeFilterFiles() {

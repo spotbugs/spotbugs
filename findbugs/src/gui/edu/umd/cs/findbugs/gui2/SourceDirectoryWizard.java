@@ -209,18 +209,8 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
         nextButton.setText("Next >>");
         nextButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                try {
-                    nextButtonActionPerformed(evt);
-                } catch (CheckedAnalysisException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                nextButtonActionPerformed(evt);
+               
             }
         });
         getContentPane().add(nextButton);
@@ -251,8 +241,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
         foundModel.removeAllElements();
     }// GEN-LAST:event_previousButtonActionPerformed
 
-    private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) throws CheckedAnalysisException, IOException,
-            InterruptedException {// GEN-FIRST:event_nextButtonActionPerformed
+    private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_nextButtonActionPerformed
 
         discover = new Thread() {
             @Override

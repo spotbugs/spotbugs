@@ -215,7 +215,7 @@ public class UpdateCheckerTest extends TestCase {
 
     // ================ end of tests =============
 
-    private void checkForUpdates(Plugin plugin) throws URISyntaxException, InterruptedException {
+    private void checkForUpdates(Plugin plugin) throws  InterruptedException {
         checker.checkForUpdates(Arrays.asList(plugin), true);
         latch.await();
     }

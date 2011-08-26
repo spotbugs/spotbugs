@@ -244,7 +244,7 @@ public class UpdateChecker {
     }
 
     @SuppressWarnings({"unchecked"})
-    private void checkPlugin(Element pluginEl, Plugin plugin) throws ParseException {
+    private void checkPlugin(Element pluginEl, Plugin plugin) {
         Date max = null;
         Element maxEl = null;
         for (Element release : (List<Element>) pluginEl.elements("release")) {
@@ -259,7 +259,7 @@ public class UpdateChecker {
         }
     }
 
-    private void printPluginUpdateMsg(Plugin plugin, Element maxEl) throws ParseException {
+    private void printPluginUpdateMsg(Plugin plugin, Element maxEl) {
         String version = maxEl.attributeValue("version");
         if (version.equals(plugin.getVersion()))
             return;
@@ -284,7 +284,7 @@ public class UpdateChecker {
         LOGGER.log(Level.INFO, msg, e);
     }
 
-    private Date parseReleaseDate(Element releaseEl) throws ParseException {
+    private Date parseReleaseDate(Element releaseEl) {
         SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm aa z");
         String dateStr = releaseEl.attributeValue("date");
         try {

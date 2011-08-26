@@ -258,14 +258,12 @@ public class InnerClassAccessMap {
             String fieldName = nameAndType.getName(cp);
             String fieldSig = nameAndType.getSignature(cp);
 
-            try {
+
                 XField xfield = Hierarchy.findXField(className, fieldName, fieldSig, isStatic);
                 if (xfield != null && xfield.isStatic() == isStatic && isValidAccessMethod(methodSig, xfield, isLoad)) {
                     access = new InnerClassAccess(methodName, methodSig, xfield, isLoad);
                 }
-            } catch (ClassNotFoundException e) {
-                throw new LookupFailure(e);
-            }
+           
         }
 
         /**

@@ -216,8 +216,6 @@ public class BugLoader {
             return project;
         } catch (IOException e) {
             JOptionPane.showMessageDialog(mainFrame, "Could not read " + f + "; " + e.getMessage());
-        } catch (DocumentException e) {
-            JOptionPane.showMessageDialog(mainFrame, "Could not read project from " + f + "; " + e.getMessage());
         } catch (SAXException e) {
             JOptionPane.showMessageDialog(mainFrame, "Could not read  project from " + f + "; " + e.getMessage());
         }

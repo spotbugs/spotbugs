@@ -415,7 +415,7 @@ public class Hierarchy {
      *             instead
      */
     @Deprecated
-    public static ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg) throws ClassNotFoundException {
+    public static ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg) {
         return Hierarchy2.findDeclaredExceptions(inv, cpg);
     }
 
@@ -911,7 +911,7 @@ public class Hierarchy {
      *         could be found
      */
     public static XField findXField(String className, String fieldName, String fieldSig, boolean isStatic)
-            throws ClassNotFoundException {
+             {
 
         return XFactory.createXField(className, fieldName, fieldSig, isStatic);
     }
@@ -928,7 +928,7 @@ public class Hierarchy {
      * @return an XField object representing the field, or null if no such field
      *         could be found
      */
-    public static @CheckForNull XField findXField(FieldInstruction fins, @Nonnull ConstantPoolGen cpg) throws ClassNotFoundException {
+    public static @CheckForNull XField findXField(FieldInstruction fins, @Nonnull ConstantPoolGen cpg) {
 
         String className = fins.getClassName(cpg);
         String fieldName = fins.getFieldName(cpg);

@@ -280,7 +280,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
     }
 
-    public void startTransfer() throws DataflowAnalysisException {
+    public void startTransfer()  {
         lastFrame = null;
         instanceOfFrame = null;
     }

@@ -378,7 +378,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
      * @param appClassCollection
      *            List of ClassDescriptors identifying application classes
      */
-    public void setAppClassList(List<ClassDescriptor> appClassCollection) throws CheckedAnalysisException {
+    public void setAppClassList(List<ClassDescriptor> appClassCollection) {
 
         // FIXME: we really should drive the progress callback here
         HashSet<ClassDescriptor> appSet = new HashSet<ClassDescriptor>(appClassCollection);

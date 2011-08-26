@@ -176,13 +176,11 @@ public class AnalysisCache implements IAnalysisCache {
             }
         } catch (ClassCastException e) {
             AnalysisContext.logError("Unable to purge method analysis", e);
-        } catch (CheckedAnalysisException e) {
-            AnalysisContext.logError("Unable to purge method analysis", e);
         }
     }
 
     @SuppressWarnings("unchecked")
-    private <E> Map<ClassDescriptor, E> getAllClassAnalysis(Class<E> analysisClass) throws CheckedAnalysisException {
+    private <E> Map<ClassDescriptor, E> getAllClassAnalysis(Class<E> analysisClass)  {
         Map<ClassDescriptor, Object> descriptorMap 
         = findOrCreateDescriptorMap(classAnalysisMap, classAnalysisEngineMap,
                 analysisClass);

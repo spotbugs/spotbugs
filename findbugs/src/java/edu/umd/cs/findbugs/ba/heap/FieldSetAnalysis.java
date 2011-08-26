@@ -100,16 +100,12 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
         if (!isFactValid(fact))
             return;
 
-        try {
-            handleInstruction(handle, basicBlock, fact);
-        } catch (ClassNotFoundException e) {
-            AnalysisContext.reportMissingClass(e);
-            fact.setBottom();
-        }
+        handleInstruction(handle, basicBlock, fact);
+       
     }
 
     private void handleInstruction(InstructionHandle handle, BasicBlock basicBlock, FieldSet fact)
-            throws DataflowAnalysisException, ClassNotFoundException {
+            {
         Instruction ins = handle.getInstruction();
         short opcode = ins.getOpcode();
         XField field;
@@ -142,7 +138,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
         }
     }
 
-    private @CheckForNull XField lookupField(InstructionHandle handle, FieldInstruction fins) throws ClassNotFoundException {
+    private @CheckForNull XField lookupField(InstructionHandle handle, FieldInstruction fins) {
         XField field = instructionToFieldMap.get(handle);
         if (field == null) {
             field = Hierarchy.findXField(fins, getCPG());

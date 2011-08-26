@@ -743,7 +743,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
      * edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
      */
     public void meetInto(UnconditionalValueDerefSet fact, Edge edge, UnconditionalValueDerefSet result, boolean onlyEdge)
-            throws DataflowAnalysisException {
+             {
 
         if (isExceptionEdge(edge) && !onlyEdge) {
             if (DEBUG)

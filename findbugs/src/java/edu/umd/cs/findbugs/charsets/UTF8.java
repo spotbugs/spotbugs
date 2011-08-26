@@ -46,7 +46,7 @@ public class UTF8 {
         charset = Charset.forName("UTF-8");
     }
 
-    public static Writer writer(OutputStream out) throws IOException {
+    public static Writer writer(OutputStream out) {
         return new OutputStreamWriter(out, charset);
     }
     public static Writer fileWriter(File fileName) throws IOException {

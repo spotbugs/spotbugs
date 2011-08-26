@@ -95,7 +95,7 @@ public class LaunchBrowser {
         return false;
     }
 
-    static void viaDesktop(URI u) throws IllegalAccessException, InvocationTargetException, URISyntaxException {
+    static void viaDesktop(URI u) throws IllegalAccessException, InvocationTargetException {
         if (desktopBrowseMethod == null)
             throw new UnsupportedOperationException("Launch via desktop not available");
         desktopBrowseMethod.invoke(desktopObject, u);

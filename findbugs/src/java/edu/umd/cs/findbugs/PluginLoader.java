@@ -1056,7 +1056,7 @@ public class PluginLoader {
         throw new PluginException(missingMsg);
     }
     private static  String findMessageText(List<Document> messageCollectionList, String xpath, String missingMsg)
-            throws PluginException {
+             {
 
         for (Document document : messageCollectionList) {
             Node node = document.selectSingleNode(xpath);
@@ -1078,6 +1078,7 @@ public class PluginLoader {
     /**
      * @deprecated Use {@link #getPluginLoader(URL,ClassLoader,boolean,boolean)} instead
      */
+    @Deprecated
     public static PluginLoader getPluginLoader(URL url, ClassLoader parent) throws PluginException {
         return getPluginLoader(url, parent, false, true);
     }
@@ -1348,8 +1349,6 @@ public class PluginLoader {
                     "/MessageCollection/Plugin/ShortDescription", "");
             return new Summary(pluginId, shortDesc, provider, website);
         } catch (DocumentException e) {
-            throw new IllegalStateException(e);
-        } catch (PluginException e) {
             throw new IllegalStateException(e);
         } finally {
             Util.closeSilently(zip);

@@ -342,7 +342,7 @@ public class URLClassPath implements Serializable {
      *             if an IO error occurs trying to determine whether or not the
      *             resource exists
      */
-    private InputStream getInputStreamForResource(String resourceName) throws IOException {
+    private InputStream getInputStreamForResource(String resourceName)  {
         // Try each classpath entry, in order, until we find one
         // that has the resource. Catch and ignore IOExceptions.
 

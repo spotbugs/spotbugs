@@ -588,7 +588,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
         mergeInto(fact, result);
     }
 
-    private TypeFrame handleInstanceOfBranch(TypeFrame fact, TypeFrame tmpFact, Edge edge) throws DataflowAnalysisException {
+    private TypeFrame handleInstanceOfBranch(TypeFrame fact, TypeFrame tmpFact, Edge edge) {
 
         InstanceOfCheck check = instanceOfCheckMap.get(edge.getSource());
         if (check == null) {
@@ -747,16 +747,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
      */
     private CachedExceptionSet computeBlockExceptionSet(BasicBlock basicBlock, TypeFrame result) throws DataflowAnalysisException {
 
-        ExceptionSet exceptionSet;
-        try {
-            exceptionSet = computeThrownExceptionTypes(basicBlock);
-        } catch (ClassNotFoundException e) {
-            // Special case: be as conservative as possible
-            // if a class hierarchy lookup fails.
-            lookupFailureCallback.reportMissingClass(e);
-            exceptionSet = exceptionSetFactory.createExceptionSet();
-            exceptionSet.addExplicit(Type.THROWABLE);
-        }
+        ExceptionSet exceptionSet = computeThrownExceptionTypes(basicBlock);
+        
 
         TypeFrame copyOfResult = createFact();
         copy(result, copyOfResult);
@@ -855,7 +847,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
      *            the basic block
      * @return the set of exceptions that can be thrown by the block
      */
-    private ExceptionSet computeThrownExceptionTypes(BasicBlock basicBlock) throws ClassNotFoundException,
+    private ExceptionSet computeThrownExceptionTypes(BasicBlock basicBlock) throws 
             DataflowAnalysisException {
 
         ExceptionSet exceptionTypeSet = exceptionSetFactory.createExceptionSet();

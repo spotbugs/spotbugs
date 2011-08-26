@@ -58,7 +58,7 @@ public class CheckMessages {
 
         private Document document;
 
-        public XMLFile(String filename) throws DocumentException, MalformedURLException {
+        public XMLFile(String filename) throws DocumentException {
             this.filename = filename;
 
             File file = new File(filename);
@@ -133,7 +133,7 @@ public class CheckMessages {
 
     private Set<String> declaredAbbrevsSet;
 
-    public CheckMessages(String pluginDescriptorFilename) throws DocumentException, MalformedURLException {
+    public CheckMessages(String pluginDescriptorFilename) throws DocumentException {
 
         XMLFile pluginDescriptorDoc = new XMLFile(pluginDescriptorFilename);
 

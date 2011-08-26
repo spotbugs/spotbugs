@@ -85,6 +85,7 @@ public class UnreadFields extends OpcodeStackDetector {
     /**
      * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isContainerField(XField)} instead
      */
+    @Deprecated
     public boolean isContainerField(XField f) {
         return data.isContainerField(f);
     }
@@ -106,6 +107,7 @@ public class UnreadFields extends OpcodeStackDetector {
     /**
      * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#getReadFields()} instead
      */
+    @Deprecated
     public Set<? extends XField> getReadFields() {
         return data.getReadFields();
     }
@@ -113,6 +115,7 @@ public class UnreadFields extends OpcodeStackDetector {
     /**
      * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#getWrittenFields()} instead
      */
+    @Deprecated
     public Set<? extends XField> getWrittenFields() {
         return data.getWrittenFields();
     }
@@ -120,6 +123,7 @@ public class UnreadFields extends OpcodeStackDetector {
     /**
      * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isWrittenOutsideOfInitialization(XField)} instead
      */
+    @Deprecated
     public boolean isWrittenOutsideOfInitialization(XField f) {
         return data.isWrittenOutsideOfInitialization(f);
     }
@@ -127,6 +131,7 @@ public class UnreadFields extends OpcodeStackDetector {
     /**
      * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isWrittenDuringInitialization(XField)} instead
      */
+    @Deprecated
     public boolean isWrittenDuringInitialization(XField f) {
         return data.isWrittenDuringInitialization(f);
     }
@@ -134,6 +139,7 @@ public class UnreadFields extends OpcodeStackDetector {
     /**
      * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isWrittenInConstructor(XField)} instead
      */
+    @Deprecated
     public boolean isWrittenInConstructor(XField f) {
         return data.isWrittenInConstructor(f);
     }
@@ -160,6 +166,7 @@ public class UnreadFields extends OpcodeStackDetector {
     /**
      * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#strongEvidenceForIntendedSerialization(ClassDescriptor)} instead
      */
+    @Deprecated
     public void strongEvidenceForIntendedSerialization(ClassDescriptor c) {
         data.strongEvidenceForIntendedSerialization(c);
     }
@@ -167,6 +174,7 @@ public class UnreadFields extends OpcodeStackDetector {
     /**
      * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#existsStrongEvidenceForIntendedSerialization(ClassDescriptor)} instead
      */
+    @Deprecated
     public boolean existsStrongEvidenceForIntendedSerialization(ClassDescriptor c) {
         return data.existsStrongEvidenceForIntendedSerialization(c);
     }
@@ -718,6 +726,7 @@ public class UnreadFields extends OpcodeStackDetector {
     /**
      * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isReflexive(XField)} instead
      */
+    @Deprecated
     public boolean isReflexive(XField f) {
         return data.isReflexive(f);
     }

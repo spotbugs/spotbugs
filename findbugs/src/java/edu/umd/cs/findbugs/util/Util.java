@@ -233,24 +233,23 @@ public class Util {
         return o1.compareTo(o2);
     }
 
-    public static Reader getReader(@WillCloseWhenClosed InputStream in) throws UnsupportedEncodingException {
+    public static Reader getReader(@WillCloseWhenClosed InputStream in)  {
         return UTF8.reader(in);
     }
 
-    public static Reader getFileReader(String filename) throws UnsupportedEncodingException, FileNotFoundException {
+    public static Reader getFileReader(String filename) throws  FileNotFoundException {
         return getReader(new FileInputStream(filename));
     }
 
-    public static Reader getFileReader(File filename) throws UnsupportedEncodingException, FileNotFoundException {
+    public static Reader getFileReader(File filename) throws  FileNotFoundException {
         return getReader(new FileInputStream(filename));
     }
 
-    public static Writer getWriter(@WillCloseWhenClosed OutputStream out) throws UnsupportedEncodingException,
-            FileNotFoundException {
-        return new OutputStreamWriter(out, "UTF-8");
+    public static Writer getWriter(@WillCloseWhenClosed OutputStream out) {
+        return UTF8.writer(out);
     }
 
-    public static Writer getFileWriter(String filename) throws UnsupportedEncodingException, FileNotFoundException {
+    public static Writer getFileWriter(String filename) throws FileNotFoundException {
         return getWriter(new FileOutputStream(filename));
     }
 

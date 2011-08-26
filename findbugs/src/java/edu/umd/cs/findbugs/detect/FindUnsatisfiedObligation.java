@@ -296,16 +296,8 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                 }
 
                 // Apply the false-positive suppression heuristics
-                int leakCount;
-                try {
-                    leakCount = getAdjustedLeakCount(state, id);
-                } catch (DataflowAnalysisException e) {
-                    // ignore
-                    continue;
-                } catch (ClassNotFoundException e) {
-                    // ignore
-                    continue;
-                }
+                int leakCount = getAdjustedLeakCount(state, id);
+                
 
                 if (leakCount > 0) {
                     leakedObligationMap.put(obligation, state);
@@ -606,7 +598,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
          * @return the adjusted leak count (positive if leaked obligation,
          *         negative if attempt to release an un-acquired obligation)
          */
-        private int getAdjustedLeakCount(State state, int obligationId) throws DataflowAnalysisException, ClassNotFoundException {
+        private int getAdjustedLeakCount(State state, int obligationId) {
 
             final Obligation obligation = database.getFactory().getObligationById(obligationId);
             Path path = state.getPath();

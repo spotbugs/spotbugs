@@ -328,7 +328,7 @@ public abstract class Frame<ValueType> {
      *         for instance methods
      * @throws DataflowAnalysisException
      */
-    public int getNumArguments(InvokeInstruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
+    public int getNumArguments(InvokeInstruction ins, ConstantPoolGen cpg) {
         SignatureParser parser = new SignatureParser(ins.getSignature(cpg));
         return parser.getNumParameters();
     }

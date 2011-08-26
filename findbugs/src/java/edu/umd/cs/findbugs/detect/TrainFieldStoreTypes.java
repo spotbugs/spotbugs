@@ -74,14 +74,12 @@ public class TrainFieldStoreTypes implements Detector, TrainingDetector {
                 bugReporter.logError("Error compting field store types", e);
             } catch (DataflowAnalysisException e) {
                 bugReporter.logError("Error compting field store types", e);
-            } catch (ClassNotFoundException e) {
-                bugReporter.reportMissingClass(e);
-            }
+            } 
         }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException,
-            ClassNotFoundException {
+    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException
+             {
         CFG cfg = classContext.getCFG(method);
         TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
         ConstantPoolGen cpg = classContext.getConstantPoolGen();

@@ -223,7 +223,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     }
 
     private ValueNumber mergeValues(ValueNumberFrame frame, int slot, ValueNumber mine, ValueNumber other)
-            throws DataflowAnalysisException {
+             {
 
         // Merging slot values:
         // - Merging identical values results in no change

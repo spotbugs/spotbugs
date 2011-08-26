@@ -244,19 +244,15 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 
     @Override
     public void visitGETFIELD(GETFIELD obj) {
-        try {
-            XField xfield = Hierarchy.findXField(obj, getCPG());
-            if (xfield != null) {
-                if (xfield.isVolatile())
-                    getFrame().killAllLoads();
+        XField xfield = Hierarchy.findXField(obj, getCPG());
+        if (xfield != null) {
+            if (xfield.isVolatile())
+                getFrame().killAllLoads();
 
-                if (doRedundantLoadElimination()) {
-                    loadInstanceField(xfield, obj);
-                    return;
-                }
+            if (doRedundantLoadElimination()) {
+                loadInstanceField(xfield, obj);
+                return;
             }
-        } catch (ClassNotFoundException e) {
-            lookupFailureCallback.reportMissingClass(e);
         }
 
         handleNormalInstruction(obj);
@@ -265,15 +261,12 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
     @Override
     public void visitPUTFIELD(PUTFIELD obj) {
         if (doForwardSubstitution()) {
-            try {
                 XField xfield = Hierarchy.findXField(obj, getCPG());
                 if (xfield != null) {
                     storeInstanceField(xfield, obj, false);
                     return;
                 }
-            } catch (ClassNotFoundException e) {
-                lookupFailureCallback.reportMissingClass(e);
-            }
+           
         }
         handleNormalInstruction(obj);
     }
@@ -300,35 +293,31 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
             frame.pushValue(value);
             return;
         }
-        try {
-            XField xfield = Hierarchy.findXField(obj, getCPG());
-            if (xfield != null) {
-                if (xfield.isVolatile())
-                    getFrame().killAllLoads();
-                if (doRedundantLoadElimination()) {
-                    loadStaticField(xfield, obj);
-                    return;
-                }
 
+        XField xfield = Hierarchy.findXField(obj, getCPG());
+        if (xfield != null) {
+            if (xfield.isVolatile())
+                getFrame().killAllLoads();
+            if (doRedundantLoadElimination()) {
+                loadStaticField(xfield, obj);
+                return;
             }
-        } catch (ClassNotFoundException e) {
-            lookupFailureCallback.reportMissingClass(e);
+
         }
+
         handleNormalInstruction(obj);
     }
 
     @Override
     public void visitPUTSTATIC(PUTSTATIC obj) {
         if (doForwardSubstitution()) {
-            try {
-                XField xfield = Hierarchy.findXField(obj, getCPG());
-                if (xfield != null) {
-                    storeStaticField(xfield, obj, false);
-                    return;
-                }
-            } catch (ClassNotFoundException e) {
-                lookupFailureCallback.reportMissingClass(e);
+
+            XField xfield = Hierarchy.findXField(obj, getCPG());
+            if (xfield != null) {
+                storeStaticField(xfield, obj, false);
+                return;
             }
+
         }
         handleNormalInstruction(obj);
     }
@@ -405,17 +394,15 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 
     private void killLoadsOfObjectsPassed(InvokeInstruction ins) {
         try {
-            try {
-                XMethod called = Hierarchy2.findExactMethod(ins, methodGen.getConstantPool(), Hierarchy.ANY_METHOD);
-                FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
-                Set<XField> touched = fieldSummary.getFieldsWritten(called);
-                if (!touched.isEmpty()) {
-                    getFrame().killLoadsOf(touched);
-                }
 
-            } catch (ClassNotFoundException e) {
-                AnalysisContext.reportMissingClass(e);
+            XMethod called = Hierarchy2.findExactMethod(ins, methodGen.getConstantPool(), Hierarchy.ANY_METHOD);
+            FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+            Set<XField> touched = fieldSummary.getFieldsWritten(called);
+            if (!touched.isEmpty()) {
+                getFrame().killLoadsOf(touched);
             }
+
+
             int passed = getNumWordsConsumed(ins);
             ValueNumber[] arguments = allocateValueNumberArray(passed);
             getFrame().killLoadsWithSimilarName(ins.getClassName(cpg), ins.getMethodName(cpg));

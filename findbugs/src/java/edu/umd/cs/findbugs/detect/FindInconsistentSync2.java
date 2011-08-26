@@ -821,7 +821,7 @@ public class FindInconsistentSync2 implements Detector {
      * which is not really a valid assumption.
      */
     private Set<Method> findNotUnlockedMethods(ClassContext classContext, SelfCalls selfCalls, Set<CallSite> obviouslyLockedSites)
-            throws CFGBuilderException, DataflowAnalysisException {
+            {
 
         JavaClass javaClass = classContext.getJavaClass();
         Method[] methodList = javaClass.getMethods();
@@ -885,7 +885,7 @@ public class FindInconsistentSync2 implements Detector {
      * which is not really a valid assumption.
      */
     private Set<Method> findLockedMethods(ClassContext classContext, SelfCalls selfCalls, Set<CallSite> obviouslyLockedSites)
-            throws CFGBuilderException, DataflowAnalysisException {
+             {
 
         JavaClass javaClass = classContext.getJavaClass();
         Method[] methodList = javaClass.getMethods();

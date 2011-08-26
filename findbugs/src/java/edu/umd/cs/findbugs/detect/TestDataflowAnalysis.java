@@ -127,7 +127,7 @@ public class TestDataflowAnalysis<Fact,AnalysisType extends DataflowAnalysis<Fac
         }
     }
 
-    private void initialize() throws CheckedAnalysisException {
+    private void initialize()  {
         initialized = true;
 
         IAnalysisCache analysisCache = Global.getAnalysisCache();

@@ -960,7 +960,7 @@ public class FindBugs2 implements IFindBugsEngine {
      */
     @SuppressWarnings({"UnusedDeclaration"})
     public static void createAnalysisContext(Project project, List<ClassDescriptor> appClassList,
-            @CheckForNull String sourceInfoFileName) throws CheckedAnalysisException, IOException {
+            @CheckForNull String sourceInfoFileName) throws  IOException {
         AnalysisCacheToAnalysisContextAdapter analysisContext = new AnalysisCacheToAnalysisContextAdapter();
 
         // Make this the current analysis context
@@ -978,7 +978,7 @@ public class FindBugs2 implements IFindBugsEngine {
         analysisContext.setProject(project);
     }
 
-    public static void setAppClassList(List<ClassDescriptor> appClassList) throws CheckedAnalysisException, IOException {
+    public static void setAppClassList(List<ClassDescriptor> appClassList)  {
         AnalysisCacheToAnalysisContextAdapter analysisContext = (AnalysisCacheToAnalysisContextAdapter) AnalysisContext
                 .currentAnalysisContext();
 

@@ -28,6 +28,8 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -39,7 +41,6 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.type.NullType;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
@@ -81,7 +82,7 @@ public class Hierarchy2 {
      *         the class
      */
     public static XMethod findExactMethod(InvokeInstruction inv, ConstantPoolGen cpg, JavaClassAndMethodChooser chooser)
-            throws ClassNotFoundException {
+            {
         String className = inv.getClassName(cpg);
         String methodName = inv.getName(cpg);
         String methodSig = inv.getSignature(cpg);
@@ -103,7 +104,7 @@ public class Hierarchy2 {
 
     public static @CheckForNull
     XMethod findInvocationLeastUpperBound(InvokeInstruction inv, ConstantPoolGen cpg, JavaClassAndMethodChooser methodChooser)
-            throws ClassNotFoundException {
+            {
 
         if (DEBUG_METHOD_LOOKUP) {
             System.out.println("Find prototype method for " + SignatureConverter.convertMethodSignature(inv, cpg));
@@ -457,7 +458,7 @@ public class Hierarchy2 {
      *         find the method implementation
      */
     public static @CheckForNull
-    ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg) throws ClassNotFoundException {
+    ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg)  {
         XMethod method = findInvocationLeastUpperBound(inv, cpg, inv instanceof INVOKESTATIC ? Hierarchy.STATIC_METHOD
                 : Hierarchy.INSTANCE_METHOD);
 

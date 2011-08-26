@@ -54,7 +54,7 @@ public class RepositoryClassParser {
      * @throws IOException
      *             if the file cannot be read
      */
-    public RepositoryClassParser(String fileName) throws IOException {
+    public RepositoryClassParser(String fileName)  {
         classParser = new ClassParser(fileName);
     }
 
@@ -68,7 +68,7 @@ public class RepositoryClassParser {
      * @throws IOException
      *             if the zip entry cannot be read
      */
-    public RepositoryClassParser(String zipFile, String fileName) throws IOException {
+    public RepositoryClassParser(String zipFile, String fileName) {
         classParser = new ClassParser(zipFile, fileName);
     }
 

@@ -196,7 +196,7 @@ public class FindSqlInjection implements Detector {
         return false;
     }
 
-    private boolean isConstantStringLoad(Location location, ConstantPoolGen cpg) throws CFGBuilderException {
+    private boolean isConstantStringLoad(Location location, ConstantPoolGen cpg)  {
         Instruction ins = location.getHandle().getInstruction();
         if (ins instanceof LDC) {
             LDC load = (LDC) ins;
@@ -222,7 +222,7 @@ public class FindSqlInjection implements Detector {
     }
 
     private StringAppendState updateStringAppendState(Location location, ConstantPoolGen cpg, StringAppendState stringAppendState)
-            throws CFGBuilderException {
+            {
         InstructionHandle handle = location.getHandle();
         Instruction ins = handle.getInstruction();
         if (!isConstantStringLoad(location, cpg)) {

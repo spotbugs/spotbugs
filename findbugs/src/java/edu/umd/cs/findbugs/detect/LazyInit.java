@@ -149,7 +149,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
         MethodGen methodGen = classContext.getMethodGen(method);
         CFG cfg = classContext.getCFG(method);
 
-        try {
+
             // Get the variable referenced in the pattern instance.
             BindingSet bindingSet = match.getBindingSet();
             Binding binding = bindingSet.lookup("f");
@@ -342,9 +342,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
                     : "LI_LAZY_INIT_STATIC", priority).addClassAndMethod(methodGen, sourceFile).addField(xfield)
                     .describe("FIELD_ON").addSourceLine(classContext, methodGen, sourceFile, start, end));
             reported.set(testInstructionHandle.getPosition());
-        } catch (ClassNotFoundException e) {
-            bugReporter.reportMissingClass(e);
-        }
+       
     }
 
     /**
