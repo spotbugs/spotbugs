@@ -495,7 +495,7 @@
                label="Show Bug Info"
                menubarPath="fb">
          </action>
-         
+
          <action
                class="de.tobject.findbugs.actions.ShowInPackageExplorerAction"
                enablesFor="1"
@@ -929,40 +929,64 @@
          </action>
            <action
                  class="de.tobject.findbugs.actions.GroupByAction"
-                 id="findBugsEclipsePlugin.toggleGrouping.Priority.Category.Project.Package.Class.PatternType.Pattern.Marker"
-                 label="Priority-&gt;Category-&gt;Project-&gt;Package-&gt;Class-&gt;Pattern Type-&gt;Pattern"
+                 id="findBugsEclipsePlugin.toggleGrouping.Confidence.BugRank.Category.Project.Package.Class.PatternType.Pattern.Marker"
+                 label="Confidence-&gt;Rank-&gt;Category-&gt;Project-&gt;Package-&gt;Class-&gt;Pattern Type-&gt;Pattern"
                  menubarPath="bugExplorer.menu.group/groupBy"
                  style="radio"
                  tooltip="Change Bug Explorer Grouping">
            </action>
            <action
                  class="de.tobject.findbugs.actions.GroupByAction"
-                 id="findBugsEclipsePlugin.toggleGrouping.Priority.Category.Project.PatternType.Pattern.Marker"
-                 label="Priority-&gt;Category-&gt;Project-&gt;Pattern Type-&gt;Pattern"
+                 id="findBugsEclipsePlugin.toggleGrouping.Confidence.Category.Project.PatternType.Pattern.Marker"
+                 label="Confidence-&gt;Category-&gt;Project-&gt;Pattern Type-&gt;Pattern"
                  menubarPath="bugExplorer.menu.group/groupBy"
                  style="radio"
                  tooltip="Change Bug Explorer Grouping">
            </action>
            <action
                  class="de.tobject.findbugs.actions.GroupByAction"
-                 id="findBugsEclipsePlugin.toggleGrouping.Priority.Project.Pattern.Marker"
-                 label="Priority-&gt;Project-&gt;Pattern"
+                 id="findBugsEclipsePlugin.toggleGrouping.Confidence.Project.Pattern.Marker"
+                 label="Confidence-&gt;Project-&gt;Pattern"
                  menubarPath="bugExplorer.menu.group/groupBy"
                  style="radio"
                  tooltip="Change Bug Explorer Grouping">
            </action>
            <action
                  class="de.tobject.findbugs.actions.GroupByAction"
-                 id="findBugsEclipsePlugin.toggleGrouping.Project.Priority.Category.PatternType.Pattern.Marker"
-                 label="Project-&gt;Priority-&gt;Category-&gt;Pattern Type-&gt;Pattern"
+                 id="findBugsEclipsePlugin.toggleGrouping.Confidence.BugRank.Pattern.Marker"
+                 label="Confidence-&gt;Rank-&gt;Pattern"
                  menubarPath="bugExplorer.menu.group/groupBy"
                  style="radio"
                  tooltip="Change Bug Explorer Grouping">
            </action>
            <action
                  class="de.tobject.findbugs.actions.GroupByAction"
-                 id="findBugsEclipsePlugin.toggleGrouping.Project.Priority.Pattern.Marker"
-                 label="Project-&gt;Priority-&gt;Pattern"
+                 id="findBugsEclipsePlugin.toggleGrouping.Project.Confidence.Category.PatternType.Pattern.Marker"
+                 label="Project-&gt;Confidence-&gt;Category-&gt;Pattern Type-&gt;Pattern"
+                 menubarPath="bugExplorer.menu.group/groupBy"
+                 style="radio"
+                 tooltip="Change Bug Explorer Grouping">
+           </action>
+           <action
+                 class="de.tobject.findbugs.actions.GroupByAction"
+                 id="findBugsEclipsePlugin.toggleGrouping.Project.Confidence.BugRank.Pattern.Marker"
+                 label="Project-&gt;Confidence-&gt;Rank-&gt;Pattern"
+                 menubarPath="bugExplorer.menu.group/groupBy"
+                 style="radio"
+                 tooltip="Change Bug Explorer Grouping">
+           </action>
+           <action
+                 class="de.tobject.findbugs.actions.GroupByAction"
+                 id="findBugsEclipsePlugin.toggleGrouping.Project.Confidence.Pattern.Marker"
+                 label="Project-&gt;Confidence-&gt;Pattern"
+                 menubarPath="bugExplorer.menu.group/groupBy"
+                 style="radio"
+                 tooltip="Change Bug Explorer Grouping">
+           </action>
+           <action
+                 class="de.tobject.findbugs.actions.GroupByAction"
+                 id="findBugsEclipsePlugin.toggleGrouping.Project.BugRank.Marker"
+                 label="Project-&gt;Rank-&gt;Pattern"
                  menubarPath="bugExplorer.menu.group/groupBy"
                  style="radio"
                  tooltip="Change Bug Explorer Grouping">

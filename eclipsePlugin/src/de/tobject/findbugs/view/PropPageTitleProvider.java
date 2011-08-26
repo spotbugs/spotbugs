@@ -75,7 +75,7 @@ public class PropPageTitleProvider extends BugLabelProvider {
             return getTitle((BugCode) group.getData());
         case Category:
             return getTitle((BugCategory) group.getData());
-        case Priority:
+        case Confidence:
             return getTitle((Integer) group.getData());
         case Package:
             return getTitle((IPackageFragment) group.getData());

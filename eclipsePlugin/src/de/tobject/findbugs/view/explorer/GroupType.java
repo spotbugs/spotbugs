@@ -136,7 +136,7 @@ public enum GroupType {
         }
     }),
 
-    Priority(true, new MarkerMapper<Integer>() {
+    Confidence(true, new MarkerMapper<Integer>() {
         @Override
         Integer getIdentifier(IMarker marker) {
             try {
@@ -161,14 +161,13 @@ public enum GroupType {
 
         @Override
         String getShortDescription(Integer id) {
-            int i = id;
-            switch(i) {
-            case 1: return "High confidence";
-            case 2: return "Normal confidence";
-            case 3: return "Low confidence";
+            int prio = id.intValue();
+            switch(prio) {
+            case Priorities.HIGH_PRIORITY: return "High confidence";
+            case Priorities.NORMAL_PRIORITY: return "Normal confidence";
+            case Priorities.LOW_PRIORITY: return "Low confidence";
             default: return "Unknown confidence";
             }
-
         }
 
         @Override
@@ -177,7 +176,7 @@ public enum GroupType {
         }
     }),
 
-    BugRankCategory(true, new MarkerMapper<BugRankCategory>() {
+    BugRank(true, new MarkerMapper<BugRankCategory>() {
         @Override
         BugRankCategory getIdentifier(IMarker marker) {
                 int rank = MarkerUtil.findBugRankForMarker(marker);
@@ -187,7 +186,7 @@ public enum GroupType {
 
         @Override
         String getShortDescription(BugRankCategory id) {
-            return "rank " + id;
+            return id.toString();
         }
 
         @Override
@@ -339,7 +338,19 @@ public enum GroupType {
             return GroupType.Category;
         }
         if (element instanceof Integer) {
-            return GroupType.Priority;
+            return GroupType.Confidence;
+        }
+        if (element instanceof String) {
+            GroupType[] values = values();
+            for (GroupType type : values) {
+                if(type.toString().equals(element)) {
+                    return type;
+                }
+            }
+            // legacy name for compatibility if restoring from saved
+            if("Priority".equals(element)) {
+                return GroupType.Confidence;
+            }
         }
         return GroupType.Undefined;
     }

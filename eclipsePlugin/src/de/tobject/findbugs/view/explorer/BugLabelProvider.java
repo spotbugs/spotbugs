@@ -72,19 +72,21 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
             case Project:
             case Marker:
                 return wbProvider.getImage(group.getData());
-            case BugRankCategory: {
+            case BugRank: {
                 FindBugsMarker.MarkerRank prio = group.getPriority();
                 ImageRegistry imageRegistry = FindbugsPlugin.getDefault().getImageRegistry();
                 return imageRegistry.get(prio.iconName());
             }
-            case Priority: {
+            case Confidence: {
                 int confidence = (Integer) group.getData();
                 FindBugsMarker.MarkerRank mr = FindBugsMarker.MarkerRank.values()[confidence-1];
                 ImageRegistry imageRegistry = FindbugsPlugin.getDefault().getImageRegistry();
                 return imageRegistry.get(mr.iconName());
             }
             default:
-                return null;
+                FindBugsMarker.MarkerRank prio = group.getPriority();
+                ImageRegistry imageRegistry = FindbugsPlugin.getDefault().getImageRegistry();
+                return imageRegistry.get(prio.iconName());
             }
 
         }

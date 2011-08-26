@@ -107,7 +107,7 @@ public class Grouping implements IPersistable {
         StringTokenizer st = new StringTokenizer(saved, "[] ,", false);
         List<GroupType> types = new ArrayList<GroupType>();
         while (st.hasMoreTokens()) {
-            GroupType type = GroupType.valueOf(st.nextToken());
+            GroupType type = GroupType.getType(st.nextToken());
             types.add(type);
         }
         if (types.isEmpty()) {
