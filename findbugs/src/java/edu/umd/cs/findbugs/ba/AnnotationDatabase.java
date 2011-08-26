@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -58,7 +59,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 
     private final Map<Object, AnnotationEnum> directAnnotations = new HashMap<Object, AnnotationEnum>();
 
-    private final Map<AnnotationDatabase.Target, Map<String, AnnotationEnum>> defaultAnnotation = new HashMap<AnnotationDatabase.Target, Map<String, AnnotationEnum>>();
+    private final Map<AnnotationDatabase.Target, Map<String, AnnotationEnum>> defaultAnnotation = new EnumMap<AnnotationDatabase.Target, Map<String, AnnotationEnum>>(AnnotationDatabase.Target.class);
 
     // private Subtypes subtypes;
     public AnnotationDatabase() {
