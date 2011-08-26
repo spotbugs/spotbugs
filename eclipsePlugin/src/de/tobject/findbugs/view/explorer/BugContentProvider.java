@@ -577,7 +577,7 @@ public class BugContentProvider implements ICommonContentProvider {
                 addMarker(marker, childType.getMapper(), matchingChild, changedParents, patternFilter);
             }
         } else {
-            // if there is no node, create one and recursvely all children to
+            // if there is no node, create one and recursively all children to
             // the last
             // level
             BugGroup group = new BugGroup(parent, id, mapper.getType(), mapper.getMarkerRank(id));
