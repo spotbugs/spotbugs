@@ -18,7 +18,8 @@
  */
 package de.tobject.findbugs.reporter.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.Set;
@@ -36,7 +37,7 @@ import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the MarkerUtil class.
- * 
+ *
  * @author Tomás Pollak
  */
 public class MarkerUtilTest extends AbstractFindBugsTest {
@@ -106,7 +107,7 @@ public class MarkerUtilTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testIsFiltered_NullMarker() throws CoreException {
+    public void testIsFiltered_NullMarker()  {
         assertTrue(MarkerUtil.isFiltered(null, Collections.<String> emptySet()));
     }
 

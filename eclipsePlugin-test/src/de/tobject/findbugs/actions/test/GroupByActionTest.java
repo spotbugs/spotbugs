@@ -18,7 +18,7 @@
  */
 package de.tobject.findbugs.actions.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +38,7 @@ import de.tobject.findbugs.view.explorer.GroupType;
 
 /**
  * This class tests the GroupByAction.
- * 
+ *
  * @author Tomás Pollak
  */
 public class GroupByActionTest extends AbstractFindBugsTest {
@@ -137,7 +137,7 @@ public class GroupByActionTest extends AbstractFindBugsTest {
         action.run(proxyAction);
     }
 
-    private static class ProxyAction extends Action implements IAction {
+    private static class ProxyAction extends Action {
         public ProxyAction(String id) {
             setId(id);
         }

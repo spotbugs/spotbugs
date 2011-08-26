@@ -18,7 +18,10 @@
  */
 package de.tobject.findbugs.properties.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -82,7 +85,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testAddFileToConflictingFilters() throws CoreException {
+    public void testAddFileToConflictingFilters()  {
         // Check that there are no filter files
         assertNoFilterFiles();
 
@@ -102,7 +105,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testAddFileToExcludeBugsFilter() throws CoreException {
+    public void testAddFileToExcludeBugsFilter()  {
         // Check that there are no filter files
         assertNoFilterFiles();
 
@@ -123,7 +126,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testAddFileToExcludeFilter() throws CoreException {
+    public void testAddFileToExcludeFilter()  {
         // Check that there are no filter files
         assertNoFilterFiles();
 
@@ -144,7 +147,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testAddFileToExcludeFilterTwice() throws CoreException {
+    public void testAddFileToExcludeFilterTwice() {
         // Check that there are no filter files
         assertNoFilterFiles();
 
@@ -166,7 +169,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testAddFileToIncludeFilter() throws CoreException {
+    public void testAddFileToIncludeFilter()  {
         // Check that there are no filter files
         assertNoFilterFiles();
 
@@ -187,7 +190,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testDeselectAllCategories() throws CoreException {
+    public void testDeselectAllCategories()  {
         // Add all categories
         addAllBugCategories();
         assertAllBugCategoriesSelected(true);
@@ -207,7 +210,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testDisableAllDetectors() throws CoreException {
+    public void testDisableAllDetectors()  {
         // Enable all detectors
         getProjectPreferences().enableAllDetectors(true);
         assertAllVisibleDetectorsEnabled(true);
@@ -248,7 +251,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testDisableProjectProperties() throws CoreException {
+    public void testDisableProjectProperties()  {
         // Create the properties page and the dialog
         FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
         PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
@@ -305,7 +308,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testEnableOneDetector() throws CoreException {
+    public void testEnableOneDetector() {
         // Disable all detectors
         getProjectPreferences().enableAllDetectors(false);
         assertAllVisibleDetectorsEnabled(false);
@@ -326,7 +329,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testOpenProjectPreferencePage() throws CoreException {
+    public void testOpenProjectPreferencePage() {
         // Create the preferences page and the dialog
         FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
         PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
@@ -338,7 +341,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testOpenWorkspacePreferencePage() throws CoreException {
+    public void testOpenWorkspacePreferencePage() {
         // Create the preferences page and the dialog
         FindbugsPropertyPageTestSubclass page = createWorkspacePropertiesPage();
         PropertiesTestDialog dialog = createAndOpenWorkspacePreferencesDialog(page);
@@ -374,7 +377,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testSelectOneCategory() throws CoreException {
+    public void testSelectOneCategory() {
         // Remove all categories
         removeAllBugCategories();
         assertAllBugCategoriesSelected(false);
@@ -395,7 +398,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testSetEffort() throws CoreException {
+    public void testSetEffort() {
         // Reset the effort
         getProjectPreferences().setEffort(UserPreferences.EFFORT_DEFAULT);
         assertEquals(UserPreferences.EFFORT_DEFAULT, getProjectPreferences().getEffort());

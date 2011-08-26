@@ -18,8 +18,7 @@
  */
 package de.tobject.findbugs.builder.test;
 
-import static junit.framework.Assert.*;
-import java.io.IOException;
+import static junit.framework.Assert.assertEquals;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -35,7 +34,7 @@ import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the public methods for FindBugsWorker.
- * 
+ *
  * @author Tom�s Pollak
  */
 public class FindBugsWorkerTest extends AbstractFindBugsTest {
@@ -54,7 +53,7 @@ public class FindBugsWorkerTest extends AbstractFindBugsTest {
     private static final String CLASS_A_WORKSPACE_RELATIVE = TEST_PROJECT + "/" + CLASS_A_PROJECT_RELATIVE;
 
     @Test
-    public void testBaselineBugs() throws CoreException, IOException {
+    public void testBaselineBugs() throws CoreException {
         assertNoBugs();
 
         setBaselineBugsFile(true);
@@ -65,7 +64,7 @@ public class FindBugsWorkerTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testFilter() throws CoreException, IOException {
+    public void testFilter() throws CoreException{
         assertNoBugs();
 
         setFilterFile(true);

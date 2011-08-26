@@ -18,11 +18,16 @@
  */
 package de.tobject.findbugs.test;
 
-import static org.eclipse.core.runtime.jobs.Job.*;
-import static org.eclipse.jdt.testplugin.JavaProjectHelper.*;
-import static org.junit.Assert.*;
+import static org.eclipse.core.runtime.jobs.Job.getJobManager;
+import static org.eclipse.jdt.testplugin.JavaProjectHelper.addRTJar;
+import static org.eclipse.jdt.testplugin.JavaProjectHelper.addSourceContainer;
+import static org.eclipse.jdt.testplugin.JavaProjectHelper.createJavaProject;
+import static org.eclipse.jdt.testplugin.JavaProjectHelper.delete;
+import static org.eclipse.jdt.testplugin.JavaProjectHelper.importResources;
+import static org.eclipse.jdt.testplugin.JavaProjectHelper.performDummySearch;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
@@ -74,7 +79,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * test scenario as returned by getTestScenario(). The fixture may be shared by
  * all tests in the same class, if the tests don't modify the project or are
  * independent from the modifications.</li>
- * 
+ *
  * @author Tom�s Pollak
  */
 public abstract class AbstractPluginTest {
@@ -89,7 +94,7 @@ public abstract class AbstractPluginTest {
      * Hook for subclasses to add extra classpath entries to the test project
      * during the setup of the test.
      */
-    protected static void addExtraClassPathEntries(TestScenario scenario) throws CoreException, IOException {
+    protected static void addExtraClassPathEntries(TestScenario scenario) throws CoreException {
         // Add JUnit if the test scenario requires it
         if (scenario.usesJUnit()) {
             addJUnitToProjectClasspath();
@@ -103,7 +108,7 @@ public abstract class AbstractPluginTest {
 
     /**
      * Returns the Java project for this test.
-     * 
+     *
      * @return An IJavaProject.
      */
     protected static IJavaProject getJavaProject() {
@@ -112,7 +117,7 @@ public abstract class AbstractPluginTest {
 
     /**
      * Returns the project for this test.
-     * 
+     *
      * @return An IProject.
      */
     protected static IProject getProject() {
@@ -162,7 +167,7 @@ public abstract class AbstractPluginTest {
 
     /**
      * Delete the Java project used for this test.
-     * 
+     *
      * @throws CoreException
      */
     protected static void tearDownTestProject() throws CoreException {
@@ -212,7 +217,7 @@ public abstract class AbstractPluginTest {
 
     /**
      * Assert the total number of bugs in the given resource.
-     * 
+     *
      * @param expected
      *            The expected number of bugs.
      * @param project
@@ -250,7 +255,7 @@ public abstract class AbstractPluginTest {
     /**
      * Asserts that the number of present markers of the given type match the
      * given expected count.
-     * 
+     *
      * @param expectedBugType
      *            The expected bug type.
      * @param expectedBugCount
@@ -282,7 +287,7 @@ public abstract class AbstractPluginTest {
     /**
      * Asserts that the number of detected bugs of the given type match the
      * given expected count.
-     * 
+     *
      * @param expectedBugType
      *            The expected bug type.
      * @param expectedBugCount
@@ -351,9 +356,9 @@ public abstract class AbstractPluginTest {
     /**
      * Suspend the calling thread until all the background jobs belonging to the
      * given family are done.
-     * 
+     *
      * @see org.eclipse.core.runtime.jobs.Job#belongsTo(Object)
-     * 
+     *
      * @param family
      *            The family object that groups the jobs.
      */
