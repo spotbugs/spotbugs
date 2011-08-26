@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,12 +31,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.CheckForNull;
+
 import com.google.protobuf.GeneratedMessage;
+
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.Version;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.Cloud.SigninState;
 import edu.umd.cs.findbugs.cloud.MutableCloudTask;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
@@ -105,6 +108,7 @@ public class WebCloudNetworkClient {
             lookerupper.softSignin();
         } catch (IOException e) {
             throwLater = e;
+            return false;
         }
         this.sessionId = lookerupper.getSessionId();
         this.username = lookerupper.getUsername();
@@ -789,6 +793,12 @@ public class WebCloudNetworkClient {
                     write(out);
                     out.close();
                     result = finish(conn.getResponseCode(), conn.getResponseMessage(), conn.getInputStream());
+                    finished = true;
+                } catch (UnknownHostException ex2) {
+                    UnknownHostException ex = new UnknownHostException(ex2.getMessage());
+                    if (firstException == null)
+                        firstException = ex;
+                    lastException = ex;
                     finished = true;
                 } catch (IOException ex) {
                     if (firstException == null)
