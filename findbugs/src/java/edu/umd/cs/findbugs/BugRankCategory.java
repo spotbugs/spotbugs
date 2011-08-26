@@ -23,14 +23,23 @@ public enum BugRankCategory {
     SCARIEST(4), SCARY(9), TROUBLING(14), OF_CONCERN(20);
     public final int maxRank;
     static public BugRankCategory getRank(int rank) {
-        for(BugRankCategory c : values()) 
-            if (rank <= c.maxRank)
+        for(BugRankCategory c : values()) {
+            if (rank <= c.maxRank) {
                 return c;
-            
+            }
+        }
         throw new IllegalArgumentException("Rank of " + rank + " is outside legal rank");
     }
 
     private BugRankCategory(int maxRank) {
         this.maxRank = maxRank;
+    }
+
+    @Override
+    public String toString() {
+        if(this == OF_CONCERN) {
+            return "Of Concern";
+        }
+        return name().substring(0,1) + name().toLowerCase().substring(1, name().length());
     }
 }
