@@ -78,7 +78,7 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
                 return imageRegistry.get(prio.iconName());
             }
             case Priority: {
-                Integer confidence = (Integer) group.getData();
+                int confidence = (Integer) group.getData();
                 FindBugsMarker.MarkerRank mr = FindBugsMarker.MarkerRank.values()[confidence-1];
                 ImageRegistry imageRegistry = FindbugsPlugin.getDefault().getImageRegistry();
                 return imageRegistry.get(mr.iconName());

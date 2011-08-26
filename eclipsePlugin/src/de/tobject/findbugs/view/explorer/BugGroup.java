@@ -96,6 +96,7 @@ public class BugGroup implements IAdaptable, IActionFilter {
             case WorkingSet:
                 return "Overall issues number: ";
             default:
+                @SuppressWarnings("rawtypes")
                 MarkerMapper mapper = type.getMapper();
                 shortDescription = mapper.getShortDescription(self);
                 break;
