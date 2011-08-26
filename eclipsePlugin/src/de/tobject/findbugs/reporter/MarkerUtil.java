@@ -773,6 +773,11 @@ public final class MarkerUtil {
                 return null;
             }
             BugInstance bug = bugCollection.findBug(bugId, bugType, primaryLineNumber.intValue());
+            if(bug == null) {
+                FindbugsPlugin.getDefault().logError(
+                        "Could not get find bug for marker on " + resource + ": (" + bugId + ", " + primaryLineNumber + ")");
+                return null;
+            }
             return new BugCollectionAndInstance(bugCollection, bug);
         } catch (CoreException e) {
             FindbugsPlugin.getDefault().logException(e, "Could not get BugInstance for FindBugs marker");
