@@ -546,9 +546,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     public static SortedBugCollection getBugCollectionIfSet(IProject project) {
         try {
-            return (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
-        } catch (CoreException e) {
-            // TODO Auto-generated catch block
+            SortedBugCollection bugs = (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
+            if (bugs != null) {
+                createViews();
+            }
+            return bugs;
+        } catch (CoreException ignored) {
             return null;
         }
     }
@@ -584,20 +587,29 @@ public class FindbugsPlugin extends AbstractUIPlugin {
                 bugCollection = createDefaultEmptyBugCollection(project);
             }
         }
+        createViews();
         return bugCollection;
     }
 
     private static void cacheBugCollectionAndProject(IProject project, SortedBugCollection bugCollection, Project fbProject)
             throws CoreException {
+        createViews();
         project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
         markBugCollectionDirty(project, false);
     }
 
     private static SortedBugCollection createDefaultEmptyBugCollection(IProject project) throws CoreException {
         SortedBugCollection bugCollection = new SortedBugCollection();
-        Project fbProject = new Project();
+        Project fbProject = bugCollection.getProject();
 
+        UserPreferences userPrefs = getUserPreferences(project);
+
+        String cloudId = userPrefs.getCloudId();
+        if (cloudId != null) {
+            fbProject.setCloudId(cloudId);
+        }
         cacheBugCollectionAndProject(project, bugCollection, fbProject);
+        createViews();
 
         return bugCollection;
     }
@@ -843,7 +855,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      * @param project
      *            must be non null, exist and be opened
      * @param forceRead
-     * @return current project preferences, independently if project prefrences
+     * @return current project preferences, independently if project preferences
      *         are enabled or disabled for given project.
      */
     public static UserPreferences getProjectPreferences(IProject project, boolean forceRead) {
@@ -852,14 +864,14 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             if (prefs == null || forceRead) {
                 prefs = readUserPreferences(project);
                 if (prefs == null) {
-                    prefs = (UserPreferences) getWorkspacePreferences().clone();
+                    prefs = getWorkspacePreferences().clone();
                 }
                 project.setSessionProperty(SESSION_PROPERTY_USERPREFS, prefs);
             }
             return prefs;
         } catch (CoreException e) {
             FindbugsPlugin.getDefault().logException(e, "Error getting FindBugs preferences for project");
-            return (UserPreferences) getWorkspacePreferences().clone();
+            return getWorkspacePreferences().clone();
         }
     }
 
@@ -998,6 +1010,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         return loader.loadBugResolutions();
     }
 
+    public static void createViews() {
+        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        page.findView(DETAILS_VIEW_ID);
+        page.findView(USER_ANNOTATIONS_VIEW_ID);
+
+    }
     public static void showMarker(IMarker marker, String viewId, IWorkbenchPart source) {
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         IViewPart view = page.findView(viewId);

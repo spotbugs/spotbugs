@@ -316,11 +316,11 @@
             targetID="#CompilationUnitRulerContext"
             id="de.tobject.findbugs.TextRulerActions">
          <action
-               label="Show Bug Details"
+               label="Show Bug Info"
                icon="icons/detailsView.png"
-               class="de.tobject.findbugs.actions.MarkerRulerAction"
+               class="de.tobject.findbugs.actions.ShowBugInfoAction"
                menubarPath="additions"
-               id="de.tobject.findbugs.actions.editor.showInProperties">
+               id="de.tobject.findbugs.actions.showBugInfo">
          </action>
          <action
                class="de.tobject.findbugs.actions.MarkerRulerAction"
@@ -413,8 +413,8 @@
           <action
                class="de.tobject.findbugs.actions.ShowBugInfoAction"
                enablesFor="1"
-               icon="platform:/plugin/org.eclipse.ui/icons/full/eview16/prop_ps.gif"
-               id="de.tobject.findbugs.showBugInfo"
+               icon="icons/detailsView.png"
+               id="de.tobject.findbugs.actions.showBugInfo"
                label="Show Bug Info"
                menubarPath="fb">
          </action>
@@ -490,8 +490,8 @@
            <action
                class="de.tobject.findbugs.actions.ShowBugInfoAction"
                enablesFor="1"
-               icon="platform:/plugin/org.eclipse.ui/icons/full/eview16/prop_ps.gif"
-               id="de.tobject.findbugs.showBugInfo"
+               icon="icons/detailsView.png"
+               id="de.tobject.findbugs.actions.showBugInfo"
                label="Show Bug Info"
                menubarPath="fb">
          </action>

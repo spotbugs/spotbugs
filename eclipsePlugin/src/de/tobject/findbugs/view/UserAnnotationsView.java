@@ -177,12 +177,13 @@ public class UserAnnotationsView extends AbstractFindbugsView {
             }
         });
         Label cloudLabel = new Label(main, SWT.LEFT);
-        cloudLabel.setText("Comments:");
+        cloudLabel.setText("Cloud info:");
         GridData lData = new GridData(SWT.LEFT, SWT.TOP, true, false);
         lData.horizontalSpan = 2;
         cloudLabel.setLayoutData(lData);
 
         cloudTextField = new Text(main, SWT.LEFT | SWT.WRAP | SWT.BORDER | SWT.READ_ONLY);
+        cloudTextField.setToolTipText("This information about this issue was retrieved from the cloud");
         GridData ctfData = new GridData(GridData.FILL_BOTH);
         ctfData.horizontalSpan = 2;
         cloudTextField.setLayoutData(ctfData);
@@ -240,7 +241,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
             BugInstance bug = theBug2.getBugInstance();
             long timestamp = theBug2.getBugCollection().getAppVersionFromSequenceNumber(bug.getFirstVersion()).getTimestamp();
 
-            String firstVersion = "Bug present since: " + convertTimestamp(timestamp);
+            String firstVersion = "First seen: " + convertTimestamp(timestamp);
 
             Cloud cloud = theBug2.getBugCollection().getCloud();
 
@@ -300,6 +301,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
      */
     private void showInView(IMarker marker) {
         BugCollectionAndInstance bci = marker == null ? null : MarkerUtil.findBugCollectionAndInstanceForMarker(marker);
+        System.out.println("Seeing user annotation view for " + bci);
         setContent(bci);
     }
 

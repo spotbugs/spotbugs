@@ -19,19 +19,15 @@
 
 package de.tobject.findbugs.actions;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.window.IShellProvider;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorActionDelegate;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IObjectActionDelegate;
-import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.dialogs.PropertyDialogAction;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.view.explorer.BugGroup;
@@ -40,7 +36,7 @@ import de.tobject.findbugs.view.explorer.GroupType;
 /**
  * Show details on a selected FindBugs marker.
  */
-public class ShowBugInfoAction implements IObjectActionDelegate {
+public class ShowBugInfoAction implements IObjectActionDelegate, IEditorActionDelegate {
 
     /** The current selection. */
     private ISelection selection;
@@ -77,41 +73,31 @@ public class ShowBugInfoAction implements IObjectActionDelegate {
             if (!selection.isEmpty() && (selection instanceof IStructuredSelection)) {
                 IStructuredSelection ssel = (IStructuredSelection) selection;
                 Object element = ssel.getFirstElement();
-                if (element instanceof BugGroup) {
+                if (element instanceof IMarker) {
+                    IMarker marker = (IMarker) element;
+                    FindbugsPlugin.showMarker(marker, FindbugsPlugin.DETAILS_VIEW_ID, targetPart);
+                } else if (element instanceof BugGroup) {
                     final BugGroup group = (BugGroup) element;
-                    if (group.getType() == GroupType.Project) {
-                        PropertyDialogAction paction = new PropertyDialogAction(new IShellProvider() {
-                            public Shell getShell() {
-                                return null;
-                            }
-                        }, new ISelectionProvider() {
-                            public void addSelectionChangedListener(ISelectionChangedListener listener) {
-                                // noop
-                            }
-
-                            public ISelection getSelection() {
-                                return new StructuredSelection(group.getData());
-                            }
-
-                            public void removeSelectionChangedListener(ISelectionChangedListener listener) {
-                                // noop
-                            }
-
-                            public void setSelection(ISelection selection) {
-                                // noop
-                            }
-                        });
-                        paction.run();
-                        return;
+                    System.out.println(group.getType());
+                    if (group.getType() == GroupType.Pattern) {
+                        Object data = group.getData();
+                        System.out.println(data.getClass().getName() + " " + data);
                     }
+                    targetPart.getSite().getPage().showView(FindbugsPlugin.DETAILS_VIEW_ID);
+                } else {
+                    System.out.println(element.getClass().getName());
+
                 }
-                targetPart.getSite().getPage().showView(IPageLayout.ID_PROP_SHEET);
             }
         } catch (CoreException e) {
             FindbugsPlugin.getDefault().logException(e, "Exception while parsing content of FindBugs markers.");
         } finally {
             targetPart = null;
         }
+    }
+
+    public void setActiveEditor(IAction action, IEditorPart editor) {
+        targetPart = editor.getSite().getPart();
     }
 
 }

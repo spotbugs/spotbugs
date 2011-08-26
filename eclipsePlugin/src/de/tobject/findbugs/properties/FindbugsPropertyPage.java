@@ -75,8 +75,10 @@ import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.cloud.DoNothingCloud;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
@@ -217,7 +219,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         } else {
             origUserPreferences = FindbugsPlugin.getProjectPreferences(currProject, true);
         }
-        currentUserPreferences = (UserPreferences) origUserPreferences.clone();
+        currentUserPreferences = origUserPreferences.clone();
         return currentUserPreferences;
     }
 
@@ -228,13 +230,10 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         layoutData.verticalIndent = -5;
         tabFolder.setLayoutData(layoutData);
 
-        detectorTab = createDetectorConfigurationTab(tabFolder);
         reportConfigurationTab = createReportConfigurationTab(tabFolder);
         filterFilesTab = createFilterFilesTab(tabFolder);
-//        if (getProject() == null) {
-            // workspace settings
-            workspaceSettingsTab = createWorkspaceSettings(tabFolder);
-//        }
+        workspaceSettingsTab = createWorkspaceSettings(tabFolder);
+        detectorTab = createDetectorConfigurationTab(tabFolder);
     }
 
     private WorkspaceSettingsTab createWorkspaceSettings(TabFolder parentTabFolder) {
@@ -330,7 +329,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         cloudCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 
         enableOrDisableCloudControls();
-        String cloudid = getCloudIdFromCollection();
+        String cloudid = getCloudId();
 
         clouds = new ArrayList<CloudPlugin>();
         populateCloudsCombo(cloudid);
@@ -366,14 +365,23 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         return defaultIndex;
     }
 
-    private String getCloudIdFromCollection() {
+    private String getCloudId() {
         final IProject eclipseProj = getProject();
-        String cloudid = CloudFactory.DEFAULT_CLOUD;
+        String cloudid = null;
         if (eclipseProj != null) {
             SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
             if (collection != null) {
-                cloudid = collection.getCloud().getPlugin().getId();
+                Cloud cloud = collection.getCloud();
+                if (!(cloud instanceof DoNothingCloud)) {
+                    cloudid = cloud.getPlugin().getId();
+                }
             }
+        }
+        if (cloudid == null) {
+            cloudid = currentUserPreferences.getCloudId();
+        }
+        if (cloudid == null) {
+            cloudid =  CloudFactory.DEFAULT_CLOUD;
         }
         return cloudid;
     }
@@ -442,7 +450,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         if (workspaceSettingsTab != null) {
             workspaceSettingsTab.refreshUI(prefs);
         }
-        String cloudid = getCloudIdFromCollection();
+        String cloudid = getCloudId();
         cloudCombo.removeAll();
         clouds.clear();
         populateCloudsCombo(cloudid);
@@ -543,6 +551,30 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
             workspaceSettingsTab.performOK();
         }
 
+        IProject eclipseProj = getProject();
+        if (eclipseProj != null) {
+            CloudPlugin item = clouds.get(cloudCombo.getSelectionIndex());
+            if (item != null) {
+                currentUserPreferences.setCloudId(item.getId());
+
+                SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
+                if (collection != null) {
+                    Project fbProject = collection.getProject();
+                    if (fbProject != null && !item.getId().equals(fbProject.getCloudId())) {
+                        fbProject.setCloudId(item.getId());
+                        collection.reinitializeCloud();
+                        IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage();
+                        if (page != null) {
+                            IViewPart view = page.findView(FindbugsPlugin.TREE_VIEW_ID);
+                            if (view instanceof CommonNavigator) {
+                                CommonNavigator nav = ((CommonNavigator) view);
+                                nav.getCommonViewer().refresh(true);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         boolean pluginsChanged = false;
         // Have user preferences for project changed?
         // If so, write them to the user preferences file & re-run builder
@@ -611,26 +643,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
             redisplayMarkers();
         }
 
-        IProject eclipseProj = getProject();
-        if (eclipseProj != null) {
-            SortedBugCollection collection = FindbugsPlugin.getBugCollectionIfSet(eclipseProj);
-            if (collection != null) {
-                Project fbProject = collection.getProject();
-                CloudPlugin item = clouds.get(cloudCombo.getSelectionIndex());
-                if (item != null && fbProject != null && !item.getId().equals(fbProject.getCloudId())) {
-                    fbProject.setCloudId(item.getId());
-                    collection.reinitializeCloud();
-                    IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage();
-                    if (page != null) {
-                        IViewPart view = page.findView(FindbugsPlugin.TREE_VIEW_ID);
-                        if (view instanceof CommonNavigator) {
-                            CommonNavigator nav = ((CommonNavigator) view);
-                            nav.getCommonViewer().refresh(true);
-                        }
-                    }
-                }
-            }
-        }
+
         return true;
     }
 

@@ -679,7 +679,13 @@ public final class MarkerUtil {
             return bugInstance;
         }
 
-        public BugCollectionAndInstance(BugCollection bugCollection, BugInstance bugInstance) {
+        public BugCollectionAndInstance(@Nonnull BugCollection bugCollection, @Nonnull BugInstance bugInstance) {
+            if (bugCollection == null) {
+                throw new NullPointerException("Null bug collection");
+            }
+            if (bugInstance == null) {
+                throw new NullPointerException("Null bug instance");
+            }
             this.bugCollection = bugCollection;
             this.bugInstance = bugInstance;
         }
@@ -687,6 +693,11 @@ public final class MarkerUtil {
         final BugCollection bugCollection;
 
         final BugInstance bugInstance;
+
+        @Override
+        public String toString() {
+            return bugInstance.getMessage();
+        }
     }
 
     /**

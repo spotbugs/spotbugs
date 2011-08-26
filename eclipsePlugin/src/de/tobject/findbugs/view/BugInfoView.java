@@ -94,11 +94,11 @@ public class BugInfoView extends AbstractFindbugsView {
 
    private BugInstance bug;
 
-   protected String browserId;
+   private String browserId;
 
    private volatile boolean allowUrlChange;
 
-   protected List annotationList;
+   private List annotationList;
 
    private IMarker marker;
 
@@ -231,7 +231,7 @@ public class BugInfoView extends AbstractFindbugsView {
 
    }
 
-   protected void updateDisplay() {
+   private void updateDisplay() {
        String html = null;
        if (browser != null && !browser.isDisposed()) {
            html = getHtml();
@@ -375,9 +375,9 @@ public class BugInfoView extends AbstractFindbugsView {
           return null;
     }
 
-    volatile boolean showingAnnotation = false;
+    private volatile boolean showingAnnotation = false;
 
-    protected void showAnnotation(IEditorPart activeEditor) {
+    private void showAnnotation(IEditorPart activeEditor) {
         if (showingAnnotation) {
             FindbugsPlugin.getDefault().logInfo("Recursive showAnnotation");
         }
@@ -515,7 +515,7 @@ public class BugInfoView extends AbstractFindbugsView {
         return null;
     }
 
-   protected void copyInfoToClipboard() {
+   private void copyInfoToClipboard() {
        StringBuffer sb = new StringBuffer();
        sb.append(title);
        sb.append("\n");
