@@ -59,11 +59,13 @@ class DetectorProvider extends PathsProvider {
         }
         Collection<Plugin> allPlugins = Plugin.getAllPlugins();
         for (Plugin plugin : allPlugins) {
-            PluginElement element = new PluginElement(plugin);
-            // TODO read the state from prefs
-            element.setEnabled(plugin.isGloballyEnabled());
-            if(!newPaths.contains(element)) {
-                newPaths.add(element);
+            if (!plugin.isCorePlugin()) {
+                PluginElement element = new PluginElement(plugin);
+                // TODO read the state from prefs
+                element.setEnabled(plugin.isGloballyEnabled());
+                if(!newPaths.contains(element)) {
+                    newPaths.add(element);
+                }
             }
         }
         return newPaths;

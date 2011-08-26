@@ -644,21 +644,22 @@ public class Plugin {
         return plugin;
     }
 
-    public static Plugin addCustomPlugin(URL u) throws PluginException {
+    public static @CheckForNull Plugin addCustomPlugin(URL u) throws PluginException {
         return addCustomPlugin(u, PluginLoader.class.getClassLoader());
     }
-    public static Plugin addCustomPlugin(URI u) throws PluginException {
+    public static @CheckForNull  Plugin addCustomPlugin(URI u) throws PluginException {
         return addCustomPlugin(u, PluginLoader.class.getClassLoader());
     }
-    public static Plugin addCustomPlugin(URL u, ClassLoader parent) throws PluginException {
+    public static @CheckForNull Plugin addCustomPlugin(URL u, ClassLoader parent) throws PluginException {
         PluginLoader pluginLoader = PluginLoader.getPluginLoader(u, parent, false, true);
         Plugin plugin = pluginLoader.loadPlugin();
-        // register new clouds
-        DetectorFactoryCollection.instance().loadPlugin(plugin);
+        if (plugin != null) 
+            DetectorFactoryCollection.instance().loadPlugin(plugin);
+        
         return plugin;
     }
 
-    public static Plugin addCustomPlugin(URI u, ClassLoader parent) throws PluginException {
+    public static @CheckForNull Plugin addCustomPlugin(URI u, ClassLoader parent) throws PluginException {
         URL url;
         try {
             url = u.toURL();

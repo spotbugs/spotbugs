@@ -171,8 +171,10 @@ public class PluginLoader {
      * @param uri
      * @param parent
      *            the parent classloader
-     * @param isInitial TODO
-     * @param optional TODO
+     * @param isInitial 
+     *          is this plugin loaded from one of the standard locaions for plugins
+     * @param optional 
+     *          is this an optional plguin
      */
     private PluginLoader(URL url, URI uri, ClassLoader parent, boolean isInitial, boolean optional) throws PluginException {
         classLoader = new URLClassLoader(new URL[] { url }, parent);
@@ -194,7 +196,7 @@ public class PluginLoader {
      * @throws PluginException
      */
     @Deprecated
-    public PluginLoader() {
+    public PluginLoader() throws PluginException {
         classLoader = getClass().getClassLoader();
         classLoaderForResources = classLoader;
         corePlugin = true;
@@ -208,6 +210,8 @@ public class PluginLoader {
             throw new IllegalArgumentException("Failed to parse uri: " + loadedFrom);
         }
         jarName = getJarName(loadedFrom);
+        plugin = init();
+        Plugin.putPlugin(null, plugin);
     }
 
 
@@ -278,11 +282,8 @@ public class PluginLoader {
      * @throws PluginException
      *             if the plugin cannot be fully loaded
      */
-    public synchronized Plugin loadPlugin() throws PluginException {
-        if (plugin == null) {
-            plugin = init();
-        }
-        return plugin;
+    public Plugin loadPlugin() throws PluginException {
+        return getPlugin();
     }
 
     /**
@@ -1075,14 +1076,6 @@ public class PluginLoader {
         return child.getText();
     }
 
-    /**
-     * @deprecated Use {@link #getPluginLoader(URL,ClassLoader,boolean,boolean)} instead
-     */
-    @Deprecated
-    public static PluginLoader getPluginLoader(URL url, ClassLoader parent) throws PluginException {
-        return getPluginLoader(url, parent, false, true);
-    }
-
 
     public static PluginLoader getPluginLoader(URL url, ClassLoader parent, boolean isInitial, boolean optional) throws PluginException {
         URI uri = toUri(url);
@@ -1209,7 +1202,7 @@ public class PluginLoader {
                 throw new IllegalStateException("Already loaded");
             }
             PluginLoader pluginLoader = new PluginLoader();
-            plugin = pluginLoader.loadPlugin();
+            plugin = pluginLoader.getPlugin();
             Plugin.putPlugin(null, plugin);
         } catch (PluginException e1) {
             throw new IllegalStateException("Unable to load core plugin", e1);
@@ -1218,9 +1211,10 @@ public class PluginLoader {
 
     private static void loadInitialPlugin(URL u, boolean initial, boolean optional) {
         try {
-            PluginLoader pluginLoader = getPluginLoader(u, PluginLoader.class.getClassLoader(), initial, optional);
-            pluginLoader.loadPlugin();
-        } catch (PluginException e) {
+            getPluginLoader(u, PluginLoader.class.getClassLoader(), initial, optional);
+        } catch (DuplicatePluginIdException ignored) {
+            assert true;
+        }catch (PluginException e) {
             AnalysisContext.logError("Unable to load plugin from " + u, e);
         }
     }

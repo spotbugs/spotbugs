@@ -243,7 +243,7 @@ public class UpdateCheckerTest extends TestCase {
     }
 
     @SuppressWarnings({"deprecation"})
-    private Plugin createPlugin(String pluginId, Date releaseDate, String version) throws URISyntaxException {
+    private Plugin createPlugin(String pluginId, Date releaseDate, String version) throws URISyntaxException, PluginException {
         Plugin plugin = new Plugin(pluginId, version, releaseDate, new PluginLoader(), true, false);
         plugin.setShortDescription("My Plugin");
         plugin.setUpdateUrl("http://example.com/update");

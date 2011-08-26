@@ -36,7 +36,7 @@ public class PluginElement implements IPathElement {
 
     @Override
     public String toString() {
-        return "System plugin: " + plugin.getPluginId() + (isEnabled() ? "" : " (disabled)");
+        return plugin.getShortDescription() + " [" + plugin.getShortPluginId() + "]"+ (isEnabled() ? "" : " (disabled)");
     }
 
     public String getPath() {

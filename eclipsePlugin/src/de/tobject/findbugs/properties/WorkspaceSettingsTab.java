@@ -27,6 +27,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -62,7 +63,7 @@ public class WorkspaceSettingsTab extends Composite {
         store = page.getPreferenceStore();
 
         TabItem tabDetector = new TabItem(tabFolder, SWT.NONE);
-        tabDetector.setText("Misc. Settings");
+        tabDetector.setText("Plugins and misc. Settings");
         tabDetector.setControl(this);
 
         runAsExtraJob = new Button(this, SWT.CHECK);
@@ -77,6 +78,8 @@ public class WorkspaceSettingsTab extends Composite {
                 "The cache will survive until the next project build.");
 
         if(!isWorkspaceSettings()) {
+            Label lbl = new Label(this,SWT.WRAP );
+            lbl.setText("Currently, plugins can only be updated from the workspace settings");
             return;
         }
         ManagePathsWidget pathsWidget = new ManagePathsWidget(this);
