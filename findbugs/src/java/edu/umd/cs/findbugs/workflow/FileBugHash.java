@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -99,7 +100,7 @@ public class FileBugHash {
         StringBuilder rawHash = hashes.get(sourceFile);
         if (rawHash == null || digest == null)
             return null;
-        byte[] data = digest.digest(rawHash.toString().getBytes());
+        byte[] data = digest.digest(UTF8.getBytes(rawHash.toString()));
         String tmp = new BigInteger(1, data).toString(16);
         if (tmp.length() < 32)
             tmp = "000000000000000000000000000000000".substring(0, 32 - tmp.length()) + tmp;
