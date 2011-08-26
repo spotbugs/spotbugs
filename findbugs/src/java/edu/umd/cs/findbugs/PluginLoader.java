@@ -301,7 +301,7 @@ public class PluginLoader {
         if (path.endsWith(".zip") || path.endsWith(".jar")) {
             return new URL("jar:" + u.toString() + "!/" + args);
         } else if (path.endsWith("/")) {
-            return new URL(u.toString() + "" + args);
+            return new URL(u.toString() + args);
         } else {
             return new URL(u.toString() + "/" + args);
 

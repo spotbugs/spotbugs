@@ -224,7 +224,6 @@ public abstract class AnalysisContext {
     public void setFieldSummary(@NonNull FieldSummary fieldSummary) {
         if (this.fieldSummary != null) {
             AnalysisContext.logError("Field Summary already set", new IllegalStateException());
-            this.fieldSummary = fieldSummary;
         }
         this.fieldSummary = fieldSummary;
     }

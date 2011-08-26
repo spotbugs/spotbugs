@@ -20,8 +20,6 @@ public class NullValueUnconditionalDeref {
 
     private Set<Location> derefLocationSet;
 
-    private Set<IsNullValue> values = new HashSet<IsNullValue>();
-
     public NullValueUnconditionalDeref() {
         this.alwaysOnExceptionPath = true;
         this.alwaysMethodReturnValue = true;
@@ -46,7 +44,6 @@ public class NullValueUnconditionalDeref {
         if (!isNullValue.isReadlineValue()) {
             alwaysReadlineValue = false;
         }
-        values.add(isNullValue);
         derefLocationSet.addAll(unconditionalDerefLocationSet);
     }
 

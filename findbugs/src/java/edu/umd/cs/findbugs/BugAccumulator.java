@@ -92,9 +92,9 @@ public class BugAccumulator {
 
         int priority = bug.getPriority();
         bug.setPriority(Priorities.NORMAL_PRIORITY);
-        String hash = bug.getInstanceHash();
         Data d = map.get(bug);
         if (d == null) {
+            String hash = bug.getInstanceHash();
             BugInstance conflictingBug = hashes.get(hash);
             if (conflictingBug != null) {
                 if (conflictingBug.getPriority() <= priority)
