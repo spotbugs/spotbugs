@@ -87,7 +87,7 @@ public class QueryServlet extends AbstractFlybushServlet {
         query.setClass(persistenceHelper.getDbEvaluationClass());
         query.setFilter("when > " + startTime);
         query.setOrdering("when ascending");
-        query.setRange(0,queryLimit);
+        query.setRange(0, queryLimit);
 
         List<DbEvaluation> evaluations = (List<DbEvaluation>) query.execute();
         int resultCount = evaluations.size();
@@ -160,7 +160,7 @@ public class QueryServlet extends AbstractFlybushServlet {
                     entry = persistenceHelper.createDbClientVersionStats(appName, appVer, midnightToday);
                 } else {
                     entry = results.get(0);
-                    LOGGER.info("Increasing hit count to " + (entry.getHits()+1));
+                    LOGGER.info("Increasing hit count to " + (entry.getHits() + 1));
                 }
                 q.closeAll();
                 entry.incrHits();
@@ -218,12 +218,18 @@ public class QueryServlet extends AbstractFlybushServlet {
 
     private void addEvaluations(Builder issueBuilder, Set<? extends DbEvaluation> evaluations) {
         for (DbEvaluation dbEval : sortAndFilterEvaluations(evaluations)) {
-            issueBuilder.addEvaluations(Evaluation.newBuilder()
+            Evaluation.Builder eval = Evaluation.newBuilder()
                     .setComment(dbEval.getComment())
                     .setDesignation(dbEval.getDesignation())
-                    .setWhen(dbEval.getWhen())
-                    .setWho(dbEval.getEmail())
-                    .build());
+                    .setWhen(dbEval.getWhen());
+            if (dbEval.getEmail() != null)
+                eval.setWho(dbEval.getEmail());
+            else
+                LOGGER.warning("Warning: evaluation has no email address: " +
+                        "issue=" + dbEval.getIssue().getHash()
+                        + ", user=" + dbEval.getWhoId()
+                        + ", date=" + new Date(dbEval.getWhen()));
+            issueBuilder.addEvaluations(eval.build());
         }
     }
 
