@@ -151,7 +151,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
                 showUserAnnotationView();
             }
         };
-        configureAction(actionShowAnnotationsView, "Show Bug Annotations View", "Show Annotations View",
+        configureAction(actionShowAnnotationsView, "Show Bug Reviews View", "Show Bug Reviews View",
                 USER_ANNOTATIONS_VIEW_IMG);
 
         actionShowBugTreeView = new Action() {
@@ -168,7 +168,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
                 showDetailsView();
             }
         };
-        configureAction(actionShowDetailsView, "Show Bug Details View", "Show Bug Details View", DETAILS_VIEW_IMG);
+        configureAction(actionShowDetailsView, "Show Bug Info View", "Show Bug Info View", DETAILS_VIEW_IMG);
 
         actionShowPerspective = new Action() {
             @Override
