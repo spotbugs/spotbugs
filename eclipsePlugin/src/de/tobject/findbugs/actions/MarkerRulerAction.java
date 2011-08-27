@@ -51,7 +51,7 @@ import de.tobject.findbugs.reporter.MarkerUtil;
  * An action that can display a bug marker's details in the FindBugs details
  * view. TODO (PeterF) We should replace this action with a marker resolution or
  * a marker help contribution.
- * 
+ *
  * @author Phil Crosby
  * @author Peter Friese
  * @version 1.0
@@ -156,7 +156,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
     public void update() {
         if (markers.size() > 0) {
             IMarker marker = markers.get(0);
-            if (action.getId().endsWith("Properties")) {
+            if (action.getId().endsWith("showBugInfo")) {
                 FindbugsPlugin.showMarker(marker, FindbugsPlugin.DETAILS_VIEW_ID, editor);
             } else {
                 // TODO show all
@@ -169,7 +169,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
     /**
      * Checks a Position in a document to see whether the line of last mouse
      * activity falls within this region.
-     * 
+     *
      * @param position
      *            Position of the marker
      * @param document
@@ -193,7 +193,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 
     /**
      * Retrieves the AbstractMarkerAnnontationsModel from the editor.
-     * 
+     *
      * @return AbstractMarkerAnnotatiosnModel from the editor
      */
     protected AbstractMarkerAnnotationModel getModel() {
@@ -207,7 +207,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 
     /**
      * Retrieves the document from the editor.
-     * 
+     *
      * @return the document from the editor
      */
     protected IDocument getDocument() {
