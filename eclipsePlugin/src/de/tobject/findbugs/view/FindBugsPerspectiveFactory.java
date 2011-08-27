@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2007, Andrei Loskutov
+ * Copyright (C) 2011, Andrei Loskutov
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,20 +26,13 @@ import org.eclipse.ui.IPerspectiveFactory;
 import de.tobject.findbugs.FindbugsPlugin;
 
 /**
- * @author Andrei Loskutov
+ * @author Andrey Loskutov
  */
 public class FindBugsPerspectiveFactory implements IPerspectiveFactory {
 
     /** perspective id, see plugin.xml */
     public static final String ID = "de.tobject.findbugs.FindBugsPerspective";
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.ui.IPerspectiveFactory#createInitialLayout(org.eclipse.ui
-     * .IPageLayout)
-     */
     public void createInitialLayout(IPageLayout layout) {
         String editorArea = layout.getEditorArea();
         IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, (float) 0.25, editorArea);
@@ -52,7 +45,7 @@ public class FindBugsPerspectiveFactory implements IPerspectiveFactory {
         bottomRightA.addView(FindbugsPlugin.USER_ANNOTATIONS_VIEW_ID);
 
 
-        IFolderLayout bottomRightB = layout.createFolder("bottomRightB", IPageLayout.RIGHT, (float) 0.55, "bottomRightA");
+        IFolderLayout bottomRightB = layout.createFolder("bottomRightB", IPageLayout.RIGHT, (float) 0.45, "bottomRightA");
 
         bottomRightB.addView(FindbugsPlugin.DETAILS_VIEW_ID);
     }
