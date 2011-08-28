@@ -58,9 +58,9 @@ public interface FindBugsMarker {
 
 
     /**
-     * Marker attribute recording the bug rank.
+     * Marker attribute recording the bug rank (as integer).
      */
-    public static final String RANK_TYPE = "RANKTYPE";
+    public static final String RANK = "RANK";
 
 
     /**

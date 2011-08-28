@@ -211,7 +211,7 @@ public final class MarkerUtil {
         }
         if (Reporter.DEBUG) {
             System.out
-                    .println("Creating marker for " + resource.getPath() + ": line " + parameter.primaryLine + bug.getMessage());
+            .println("Creating marker for " + resource.getPath() + ": line " + parameter.primaryLine + bug.getMessage());
         }
         return parameter;
     }
@@ -568,19 +568,19 @@ public final class MarkerUtil {
         return null;
     }
 
-    public static int
-     findBugRankForMarker(IMarker marker) {
+    public static int findBugRankForMarker(IMarker marker) {
         try {
-            Object bugCode = marker.getAttribute(FindBugsMarker.RANK_TYPE);
+            Object bugCode = marker.getAttribute(FindBugsMarker.RANK);
             if (bugCode instanceof Integer) {
-                return (Integer) bugCode;
+                return ((Integer) bugCode).intValue();
             }
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Marker does not contain bug code");
+            FindbugsPlugin.getDefault().logException(e, "Marker does not contain rank");
             return 20;
         }
         return 20;
     }
+
     public static @CheckForNull
     BugPattern findBugPatternForMarker(IMarker marker) {
         try {
@@ -666,7 +666,7 @@ public final class MarkerUtil {
     @SuppressWarnings("restriction")
     private static boolean isDirectChild(String parentId, String childId) {
         return childId.startsWith(parentId) && (childId.length() > (parentId.length() + 1))
-        // if there is NOT a class file separator, then it's not a direct child
+                // if there is NOT a class file separator, then it's not a direct child
                 && childId.charAt(parentId.length()) == JavaElement.JEM_CLASSFILE;
     }
 

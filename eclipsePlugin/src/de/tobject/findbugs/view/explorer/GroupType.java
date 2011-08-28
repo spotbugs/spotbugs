@@ -180,8 +180,7 @@ public enum GroupType {
         @Override
         BugRankCategory getIdentifier(IMarker marker) {
                 int rank = MarkerUtil.findBugRankForMarker(marker);
-                BugRankCategory bc = edu.umd.cs.findbugs.BugRankCategory.getRank(rank);
-                return bc;
+                return BugRankCategory.getRank(rank);
         }
 
         @Override
@@ -191,7 +190,7 @@ public enum GroupType {
 
         @Override
         String getDebugDescription(IMarker marker) throws CoreException {
-            return "priority: " + marker.getAttribute(IMarker.PRIORITY);
+            return "rank: " + marker.getAttribute(FindBugsMarker.RANK);
         }
 
         @Override
