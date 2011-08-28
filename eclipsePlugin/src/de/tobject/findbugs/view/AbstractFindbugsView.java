@@ -160,7 +160,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
                 showBugTreeView();
             }
         };
-        configureAction(actionShowBugTreeView, "Show Bug Tree View", "Show BugTree View", TREE_VIEW_IMG);
+        configureAction(actionShowBugTreeView, "Show Bug Explorer View", "Show Bug Explorer View", TREE_VIEW_IMG);
 
         actionShowDetailsView = new Action() {
             @Override
