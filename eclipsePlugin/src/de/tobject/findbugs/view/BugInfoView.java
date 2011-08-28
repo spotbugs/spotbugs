@@ -86,6 +86,7 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.ba.SignatureParser;
@@ -311,19 +312,39 @@ public class BugInfoView extends AbstractFindbugsView {
     private String getBugDetails() {
         StringBuilder sb = new StringBuilder();
         int rank = 0;
-        int priority = 0;
+        int markerPrio = 0;
         if(bug != null) {
-            priority = bug.getPriority();
+            markerPrio = bug.getPriority();
+            switch (markerPrio) {
+            case Priorities.HIGH_PRIORITY:
+                markerPrio = IMarker.PRIORITY_HIGH;
+                break;
+            case Priorities.NORMAL_PRIORITY:
+                markerPrio = IMarker.PRIORITY_NORMAL;
+                break;
+            default:
+                markerPrio = IMarker.PRIORITY_LOW;
+                break;
+            }
             rank = bug.getBugRank();
         } else if(marker != null) {
-            priority = marker.getAttribute(IMarker.PRIORITY, 0);
+            markerPrio = marker.getAttribute(IMarker.PRIORITY, IMarker.PRIORITY_LOW);
             rank = MarkerUtil.findBugRankForMarker(marker);
         }
         sb.append("\n<b>Confidence</b>: ");
-        sb.append(FindBugsMarker.MarkerRank.label(priority).name());
+        sb.append(getConfidence(markerPrio));
         sb.append(", <b>Rank</b>: ").append(BugRankCategory.getRank(rank));
         sb.append(" (").append(rank).append(")");
         return sb.toString();
+    }
+
+    private static String getConfidence(int markerPrio) {
+        switch(markerPrio) {
+        case IMarker.PRIORITY_HIGH: return "High";
+        case IMarker.PRIORITY_NORMAL: return "Normal";
+        case IMarker.PRIORITY_LOW: return "Low";
+        default: return "Unknown";
+        }
     }
 
     private String getPatternDetails() {
