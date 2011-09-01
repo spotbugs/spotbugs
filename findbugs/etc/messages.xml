@@ -5791,8 +5791,12 @@ your design, as other developers will find it exceptionally confusing.
 <![CDATA[
 <p> This method performs synchronization an object that is an instance of
 a class from the java.util.concurrent package (or its subclasses). Instances
-of these classes have there own concurrency control mechanisms that are distinct from
-and incompatible with the use of the keyword <code>synchronized</code>.
+of these classes have their own concurrency control mechanisms that are orthogonal to
+the synchronization provided by the Java keyword <code>synchronized</code>. For example,
+synchronizing on an <code>AtomicBoolean</code> will not prevent other threads
+from modifying the  <code>AtomicBoolean</code>.</p>
+<p>Such code may be correct, but should be carefully reviewed and documented, 
+and may confuse people who have to maintain the code at a later date.
 </p>
 ]]>
 </Details>
