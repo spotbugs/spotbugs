@@ -118,12 +118,10 @@ public abstract class ClassName {
     }
 
     public static String extractSimpleName(@DottedClassName String className) {
-        int i = className.lastIndexOf('$');
+        int i = className.lastIndexOf('.');
         if (i > 0)
-            return className.substring(i + 1);
-        i = className.lastIndexOf('.');
-        if (i > 0)
-            return className.substring(i + 1);
+            className = className.substring(i + 1);
+        className = className.replace('$', '.');
         return className;
     }
 

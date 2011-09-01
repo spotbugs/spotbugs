@@ -288,7 +288,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         }
         if (!hasEqualsObject && !hasEqualsSelf && !usesDefaultEquals && !obj.isAbstract() && hasFields && inheritedEquals != null
                 && !inheritedEqualsIsFinal && !inheritedEqualsFromAbstractClass
-                && !inheritedEquals.getClassDescriptor().getSimpleName().startsWith("Abstract")
+                && !inheritedEquals.getClassDescriptor().getSimpleName().contains("Abstract")
                 && !inheritedEquals.getClassDescriptor().getClassName().equals("java/lang/Enum")) {
 
             BugInstance bug = new BugInstance(this, "EQ_DOESNT_OVERRIDE_EQUALS", NORMAL_PRIORITY).addClass(this)
