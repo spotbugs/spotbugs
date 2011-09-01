@@ -12,7 +12,7 @@
 </xsl:template>
 
 <!-- This causes the stylesheet to put chapters in a single HTML file,
-     rather than putting individual sections into seperate files. -->
+     rather than putting individual sections into separate files. -->
 <xsl:variable name="chunk.section.depth">0</xsl:variable>
 
 <!-- Put the HTML in the "manual" directory. -->
