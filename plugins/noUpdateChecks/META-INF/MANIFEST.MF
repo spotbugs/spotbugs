@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: noUpdateChecks
-Bundle-SymbolicName: noUpdateChecks;singleton:=true
+Bundle-SymbolicName: edu.umd.cs.findbugs.plugins.noUpdateChecks;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: FindBugs Project

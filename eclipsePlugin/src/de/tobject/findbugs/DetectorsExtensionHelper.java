@@ -55,9 +55,10 @@ public class DetectorsExtensionHelper {
 
     private static final String DEFAULT_USE_PLUGIN_JAR = ".";
 
-    private static final String EXTENSION_POINT_ID = FindbugsPlugin.PLUGIN_ID + ".detectorPlugins";
+    private static final String EXTENSION_POINT_ID = FindbugsPlugin.PLUGIN_ID + ".findbugsPlugins";
 
     private static final String LIBRARY_PATH = "libraryPath";
+    private static final String PLUGIN_ID = "fbPluginId";
 
     private static SortedSet<String> contributedDetectors;
 
@@ -77,11 +78,19 @@ public class DetectorsExtensionHelper {
             IConfigurationElement[] elements = extension.getConfigurationElements();
             for (IConfigurationElement configElt : elements) {
                 String libPathAsString;
+                String pluginId;
                 IContributor contributor = null;
                 try {
                     contributor = configElt.getContributor();
+                    if (contributor == null) {
+                        throw new IllegalArgumentException("Null contributor");
+                    }
+                    pluginId = configElt.getAttribute(PLUGIN_ID);
+                    if (pluginId == null) {
+                        throw new IllegalArgumentException("Missing '" + PLUGIN_ID + "'");
+                    }
                     libPathAsString = configElt.getAttribute(LIBRARY_PATH);
-                    if (libPathAsString == null || contributor == null) {
+                    if (libPathAsString == null) {
                         throw new IllegalArgumentException("Null argument");
                     }
                     libPathAsString = resolveRelativePath(contributor, libPathAsString);
@@ -91,7 +100,7 @@ public class DetectorsExtensionHelper {
                     set.add(libPathAsString);
                 } catch (Throwable e) {
                     String cName = contributor != null ? contributor.getName() : "unknown contributor";
-                    String message = "Failed to read '" + LIBRARY_PATH + "' attribute for '" + EXTENSION_POINT_ID
+                    String message = "Failed to read contribution for '" + EXTENSION_POINT_ID
                             + "' extension point from " + cName;
                     FindbugsPlugin.getDefault().logException(e, message);
                     continue;

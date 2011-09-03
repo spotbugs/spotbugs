@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-   <extension-point id="detectorPlugins" name="Custom FindBugs detector plugins" schema="schema/detectorPlugins.exsd"/>
+   <extension-point id="findbugsPlugins" name="Custom FindBugs detector plugins" schema="schema/detectorPlugins.exsd"/>
    <extension
          point="org.eclipse.core.runtime.adapters">
       <factory

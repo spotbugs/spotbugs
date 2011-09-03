@@ -2,10 +2,10 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="edu.umd.cs.findbugs.plugin.eclipse.detectorPlugins">
-      <detectorPlugin
+         point="edu.umd.cs.findbugs.plugin.eclipse.findbugsPlugins">
+      <findbugsPlugin fbPluginId="edu.umd.cs.findbugs.plugins.noUpdateChecks"
             libraryPath=".">
-      </detectorPlugin>
+      </findbugsPlugin>
    </extension>
 
 </plugin>
