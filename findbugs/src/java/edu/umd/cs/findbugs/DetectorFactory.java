@@ -25,6 +25,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
+import javax.annotation.Nonnull;
+
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
@@ -107,12 +109,11 @@ public class DetectorFactory {
         }
     }
 
-    private final Plugin plugin;
+    private final @Nonnull Plugin plugin;
 
     private final ReflectionDetectorCreator detectorCreator;
 
-    private final @DottedClassName
-    String className;
+    private final @Nonnull @DottedClassName String className;
 
     private int positionSpecifiedInPluginDescriptor;
 
@@ -154,7 +155,8 @@ public class DetectorFactory {
      *            string describing JRE version required to run the the
      *            detector: e.g., "1.5"
      */
-    public DetectorFactory(Plugin plugin, String className, Class<?> detectorClass, boolean enabled, String speed,
+    public DetectorFactory(@Nonnull Plugin plugin, @Nonnull String className,
+            Class<?> detectorClass, boolean enabled, String speed,
             String reports, String requireJRE) {
         this.plugin = plugin;
         this.className = className;
@@ -401,10 +403,35 @@ public class DetectorFactory {
      * Get the full name of the detector. This is the name of the detector
      * class, with package qualification.
      */
-    public @DottedClassName
+    public @Nonnull @DottedClassName
     String getFullName() {
         return className;
     }
-}
 
-// vim:ts=4
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + className.hashCode();
+        result = prime * result + plugin.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof DetectorFactory)) {
+            return false;
+        }
+        DetectorFactory other = (DetectorFactory) obj;
+        if (!className.equals(other.className)) {
+            return false;
+        }
+        if (!plugin.equals(other.plugin)) {
+            return false;
+        }
+        return true;
+    }
+}

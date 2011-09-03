@@ -277,7 +277,12 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         if (FindBugs.DEBUG)
             System.out.println("Registering detector: " + factory.getFullName());
         String detectorName = factory.getShortName();
-        factoryList.add(factory);
+        if(!factoryList.contains(factory)) {
+            factoryList.add(factory);
+        } else {
+            LOGGER.log(Level.WARNING, "Trying to add already registered factory: " + factory +
+                    ", " + factory.getPlugin());
+        }
         factoriesByName.put(detectorName, factory);
         factoriesByDetectorClassName.put(factory.getFullName(), factory);
     }
@@ -588,4 +593,3 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         return updateChecker;
     }
 }
-
