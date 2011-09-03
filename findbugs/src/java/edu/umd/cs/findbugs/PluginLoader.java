@@ -172,9 +172,9 @@ public class PluginLoader {
      * @param parent
      *            the parent classloader
      * @param isInitial 
-     *          is this plugin loaded from one of the standard locaions for plugins
+     *          is this plugin loaded from one of the standard locations for plugins
      * @param optional 
-     *          is this an optional plguin
+     *          is this an optional plugin
      */
     private PluginLoader(URL url, URI uri, ClassLoader parent, boolean isInitial, boolean optional) throws PluginException {
         classLoader = new URLClassLoader(new URL[] { url }, parent);
@@ -248,6 +248,10 @@ public class PluginLoader {
 
     public URL getURL() {
         return loadedFrom;
+    }
+
+    public URI getURI() {
+        return loadedFromUri;
     }
 
     private static URI toUri(URL url) throws PluginException {

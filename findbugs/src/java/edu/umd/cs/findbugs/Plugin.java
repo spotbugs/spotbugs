@@ -519,6 +519,13 @@ public class Plugin {
         return new ArrayList<Plugin>(allPlugins.values());
     }
 
+    /**
+     * @return a copy of the internal plugins collection
+     */
+    public static synchronized Map<URI, Plugin> getAllPluginsMap() {
+        return new LinkedHashMap<URI, Plugin>(allPlugins);
+    }
+
     public static synchronized Set<URI> getAllPluginsURIs() {
         Collection<Plugin> plugins = getAllPlugins();
         Set<URI> uris = new HashSet<URI>();
