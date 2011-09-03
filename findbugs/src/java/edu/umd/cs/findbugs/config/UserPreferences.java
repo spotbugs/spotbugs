@@ -604,9 +604,12 @@ public class UserPreferences implements Cloneable {
      * enabled), or which shouldn't be used (if disabled). If a plugin is not
      * included in the set, it's enablement depends on it's default settings.
      *
-     * @return map with additional third party plugin locations (as absolute
-     *         paths), never null, but might be empty. A value of a particular
-     *         key can be null (same as disabled)
+     * @return map with additional third party plugins, might be empty, never
+     *         null. The keys are either absolute plugin paths or plugin id's.
+     *         <b>Special case</b>: if the path consists of one path segment
+     *         then it represents the plugin id for a plugin to be
+     *         <b>disabled</b>. A value of a particular key can be null (same as
+     *         disabled)
      * @see Plugin#isCorePlugin()
      * @see Plugin#isGloballyEnabled()
      */
@@ -619,8 +622,11 @@ public class UserPreferences implements Cloneable {
      * given argument) by {@link IFindBugsEngine}. If a plugin is not included
      * in the set, it's enablement depends on it's default settings.
      *
-     * @return set with additional third party plugin locations (as absolute
-     *         paths), never null, but might be empty
+     * @return set with additional third party plugins, might be empty, never
+     *         null. The elements are either absolute plugin paths or plugin id's.
+     *         <b>Special case</b>: if the path consists of one path segment
+     *         then it represents the plugin id for a plugin to be
+     *         <b>disabled</b>.
      * @see Plugin#isCorePlugin()
      * @see Plugin#isGloballyEnabled()
      */
