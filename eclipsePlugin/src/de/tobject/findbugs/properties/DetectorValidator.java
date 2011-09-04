@@ -19,16 +19,15 @@
 package de.tobject.findbugs.properties;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+
+import javax.annotation.Nonnull;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import edu.umd.cs.findbugs.PluginLoader;
+import edu.umd.cs.findbugs.PluginLoader.Summary;
 
 /**
  * Quickly validates additional detector packages available for Findbugs.
@@ -36,6 +35,23 @@ import de.tobject.findbugs.FindbugsPlugin;
  * @author Andrei Loskutov
  */
 public class DetectorValidator {
+
+    public static class ValidationStatus extends Status {
+        private final Summary sum;
+
+        public ValidationStatus(int severity, String message, Summary sum, Throwable t) {
+            super(severity, FindbugsPlugin.PLUGIN_ID, "", t);
+            this.sum = sum == null ? new Summary("?", "?", "?", "?") : sum;
+        }
+
+        /**
+         * @return the sum
+         */
+        @Nonnull
+        public Summary getSummary() {
+            return sum;
+        }
+    }
 
     public DetectorValidator() {
         super();
@@ -51,73 +67,18 @@ public class DetectorValidator {
      *         error status in case anything goes wrong or file at given path is
      *         not considered as a valid plugin.
      */
-    @SuppressWarnings("boxing")
-    public IStatus validate(String path) {
+    @Nonnull
+    public ValidationStatus validate(String path) {
         File file = new File(path);
-        if (!file.getName().endsWith(".jar")) {
-            String message = "File " + path + " is not a .jar file";
-            return FindbugsPlugin.createErrorStatus(message, new IllegalArgumentException(message));
-        }
-        if (!file.isFile() || !file.canRead()) {
-            String message = "File " + path + " is not a file or is not readable";
-            return FindbugsPlugin.createErrorStatus(message, new IllegalArgumentException(message));
-        }
-        if (file.length() == 0) {
-            String message = "File " + path + " is empty";
-            return FindbugsPlugin.createErrorStatus(message, new IllegalArgumentException(message));
-        }
-
-        boolean seenBugRank = false;
-        boolean seenFBxml = false;
-        boolean seenFBmessages = false;
-        boolean seenClassFile = false;
-        ZipInputStream zip = null;
+        Summary sum = null;
         try {
-            zip = new ZipInputStream(new FileInputStream(file));
-            ZipEntry entry = null;
-            while ((entry = zip.getNextEntry()) != null) {
-                if (entry.isDirectory()) {
-                    zip.closeEntry();
-                    continue;
-                }
-                String name = entry.getName();
-                if (!seenClassFile) {
-                    seenClassFile |= name.endsWith(".class");
-                }
-                if (!seenBugRank) {
-                    seenBugRank |= name.equals("bugrank.txt");
-                }
-                if (!seenFBxml) {
-                    seenFBxml |= name.equals("findbugs.xml");
-                }
-                if (!seenFBmessages) {
-                    seenFBmessages |= name.equals("messages.xml");
-                }
-                if (seenFBxml && seenFBmessages) {
-                    return Status.OK_STATUS;
-                }
-                zip.closeEntry();
+            sum = PluginLoader.validate(file);
+        } catch (IllegalArgumentException e) {
+            if(FindbugsPlugin.getDefault().isDebugging()) {
+                e.printStackTrace();
             }
-
-        } catch (FileNotFoundException e) {
-            FindbugsPlugin.getDefault().logException(e, "Failed to read jar file " + file);
-        } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e, "Failed to read jar file " + file);
-        } finally {
-            if (zip != null) {
-                try {
-                    zip.closeEntry();
-                    zip.close();
-                } catch (IOException e) {
-                    FindbugsPlugin.getDefault().logException(e, "Failed to close jar file " + file);
-                }
-            }
+            return new ValidationStatus(IStatus.ERROR, "Invalid FindBugs plugin archive", sum, e);
         }
-        String msg = String.format("path: %s, classFiles? %s bugrunk? %s findbugs.xml? %s messages.xml? %s%n", path, seenClassFile, seenBugRank, seenFBxml, seenFBmessages);
-        String message = "Invalid detector archive! " + msg;
-        if(FindbugsPlugin.getDefault().isDebugging()) {
-            System.out.println(message);
-        }
-        return FindbugsPlugin.createStatus(IStatus.ERROR, message, new IllegalArgumentException(message));
+        return new ValidationStatus(IStatus.OK, Status.OK_STATUS.getMessage(), sum, null);
     }
 }

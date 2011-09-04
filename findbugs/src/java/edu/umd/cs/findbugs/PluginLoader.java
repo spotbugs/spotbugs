@@ -96,6 +96,14 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class PluginLoader {
 
+    /**
+     *
+     */
+    private static final String XPATH_PLUGIN_SHORT_DESCRIPTION = "/MessageCollection/Plugin/ShortDescription";
+    private static final String XPATH_PLUGIN_WEBSITE = "/FindbugsPlugin/@website";
+    private static final String XPATH_PLUGIN_PROVIDER = "/FindbugsPlugin/@provider";
+    private static final String XPATH_PLUGIN_PLUGINID = "/FindbugsPlugin/@pluginid";
+
     private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.debug.PluginLoader");
 
     // ClassLoader used to load classes and resources
@@ -113,7 +121,7 @@ public class PluginLoader {
     private final boolean corePlugin;
 
     boolean initialPlugin;
-    
+
     boolean cannotDisable;
 
     private boolean optionalPlugin;
@@ -171,9 +179,9 @@ public class PluginLoader {
      * @param uri
      * @param parent
      *            the parent classloader
-     * @param isInitial 
+     * @param isInitial
      *          is this plugin loaded from one of the standard locations for plugins
-     * @param optional 
+     * @param optional
      *          is this an optional plugin
      */
     private PluginLoader(URL url, URI uri, ClassLoader parent, boolean isInitial, boolean optional) throws PluginException {
@@ -444,7 +452,7 @@ public class PluginLoader {
         // Unique plugin id
         String pluginId;
 
-       
+
         // Read the plugin descriptor
         String name = "findbugs.xml";
         URL findbugsXML_URL = getResource(name);
@@ -475,14 +483,14 @@ public class PluginLoader {
         }
 
         // Get the unique plugin id (or generate one, if none is present)
-        pluginId = pluginDescriptor.valueOf("/FindbugsPlugin/@pluginid");
+        pluginId = pluginDescriptor.valueOf(XPATH_PLUGIN_PLUGINID);
         if (pluginId.equals("")) {
             synchronized (PluginLoader.class) {
                 pluginId = "plugin" + nextUnknownId++;
             }
         }
         cannotDisable = Boolean.parseBoolean(pluginDescriptor.valueOf("/FindbugsPlugin/@cannotDisable"));
-        
+
         String de = pluginDescriptor.valueOf("/FindbugsPlugin/@defaultenabled");
         if (de != null && de.toLowerCase().trim().equals("false")) {
             optionalPlugin = true;
@@ -492,9 +500,9 @@ public class PluginLoader {
         if (!loadedPluginIds.add(pluginId)) {
             Plugin existingPlugin = Plugin.getByPluginId(pluginId);
             URL u = existingPlugin == null ? null : existingPlugin.getPluginLoader().getURL();
-            if (cannotDisable && initialPlugin) 
+            if (cannotDisable && initialPlugin)
                 throw new DuplicatePluginIdError(pluginId, loadedFrom, u);
-            else 
+            else
                 throw new DuplicatePluginIdException(pluginId, loadedFrom, u);
         }
 
@@ -507,10 +515,10 @@ public class PluginLoader {
         Plugin plugin = new Plugin(pluginId, version, parseDate(releaseDate), this, !optionalPlugin, cannotDisable);
 
         // Set provider and website, if specified
-        String provider = pluginDescriptor.valueOf("/FindbugsPlugin/@provider").trim();
+        String provider = pluginDescriptor.valueOf(XPATH_PLUGIN_PROVIDER).trim();
         if (!provider.equals(""))
             plugin.setProvider(provider);
-        String website = pluginDescriptor.valueOf("/FindbugsPlugin/@website").trim();
+        String website = pluginDescriptor.valueOf(XPATH_PLUGIN_WEBSITE).trim();
         if (!website.equals(""))
             try {
                 plugin.setWebsite(website);
@@ -524,14 +532,14 @@ public class PluginLoader {
                 plugin.setUpdateUrl(updateUrl);
             } catch (URISyntaxException e1) {
                 AnalysisContext.logError("Plugin " + pluginId + " has invalid update check URL: " + website, e1);
-                
+
             }
 
-        
+
         // Set short description, if specified
         Node pluginShortDesc = null;
         try {
-            pluginShortDesc = findMessageNode(messageCollectionList, "/MessageCollection/Plugin/ShortDescription",
+            pluginShortDesc = findMessageNode(messageCollectionList, XPATH_PLUGIN_SHORT_DESCRIPTION,
                     "no plugin description");
         } catch (PluginException e) {
             // Missing description is not fatal, so ignore
@@ -555,7 +563,7 @@ public class PluginLoader {
             String value = optionNode.getText().trim();
             plugin.setMyGlobalOption(key, value);
         }
-        
+
         List<Node> cloudNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Cloud");
         for (Node cloudNode : cloudNodeList) {
 
@@ -644,7 +652,7 @@ public class PluginLoader {
 
                     loadComponentPlugin(plugin, componentKind, componentClassname, componentId, disabled, description, details,
                             properties);
-                    
+
                 } catch (RuntimeException e) {
                     AnalysisContext.logError("Unable to load ComponentPlugin " + componentId +
                             " : " + componentClassname + " implementing " + componentKindname, e);
@@ -664,17 +672,17 @@ public class PluginLoader {
                             + " loaded from " + loadedFrom);
                     String kind = main.valueOf("@kind");
                     boolean analysis = Boolean.valueOf(main.valueOf("@analysis"));
-                    Element mainMessageNode = (Element) findMessageNode(messageCollectionList, 
-                            "/MessageCollection/FindBugsMain[@cmd='" + cmd 
-                            // + " and @class='" + className 
+                    Element mainMessageNode = (Element) findMessageNode(messageCollectionList,
+                            "/MessageCollection/FindBugsMain[@cmd='" + cmd
+                            // + " and @class='" + className
                             +"']/Description",
                             "Missing FindBugsMain description for cmd " + cmd);
                     String description = mainMessageNode.getTextTrim();
                     try {
-                       
+
                         Class<?> mainClass =  classLoader.loadClass(className);
                         plugin.addFindBugsMain(mainClass, cmd, description, kind, analysis);
-                        
+
                     } catch (Exception e) {
                         AnalysisContext.logError("Unable to load FindBugsMain " + cmd +
                                 " : " + className + " in plugin " + pluginId
@@ -754,20 +762,20 @@ public class PluginLoader {
         }
 
         // register global Category descriptions
-        
+
         List<Node> categoryNodeListGlobal = pluginDescriptor.selectNodes("/FindbugsPlugin/BugCategory");
         for(Node categoryNode : categoryNodeListGlobal) {
             String key = categoryNode.valueOf("@category");
             if (key.equals(""))
                 throw new PluginException("BugCategory element with missing category attribute");
             BugCategory bc = plugin.addOrCreateBugCategory(key);
-            
+
             boolean hidden = Boolean.valueOf(categoryNode.valueOf("@hidden"));
             if (hidden)
                 bc.setHidden(hidden);
         }
- 
-        
+
+
         for (Document messageCollection : messageCollectionList) {
             List<Node> categoryNodeList = messageCollection.selectNodes("/MessageCollection/BugCategory");
             if (DEBUG)
@@ -929,7 +937,7 @@ public class PluginLoader {
         Locale locale = Locale.getDefault();
         String language = locale.getLanguage();
         String country = locale.getCountry();
-        
+
         List<String> potential = new ArrayList<String>(3);
         if (country != null)
             potential.add("messages_" + language + "_" + country + ".xml");
@@ -958,7 +966,7 @@ public class PluginLoader {
     }
 
 
-    private <T> void loadComponentPlugin(@SuppressWarnings("hiding") Plugin plugin, 
+    private <T> void loadComponentPlugin(@SuppressWarnings("hiding") Plugin plugin,
             Class<T> componentKind, String componentClassname, String filterId,
             boolean disabled, String description, String details, PropertyBundle properties) throws PluginException {
         {
@@ -966,7 +974,7 @@ public class PluginLoader {
         if (!FindBugs.noAnalysis) {
             componentClass = getClass(classLoader, componentClassname, componentKind);
         }
-        
+
         ComponentPlugin<T> componentPlugin = new ComponentPlugin<T>(plugin, filterId, classLoader, componentClass,
                 properties, !disabled, description, details);
         plugin.addComponentPlugin(componentKind, componentPlugin);
@@ -1286,7 +1294,7 @@ public class PluginLoader {
             return String.format("PluginLoader(%s)", loadedFrom);
         return String.format("PluginLoader(%s, %s)", plugin.getPluginId(), loadedFrom);
     }
-    
+
     static public class Summary {
         public final String id;
         public final String description;
@@ -1302,58 +1310,62 @@ public class PluginLoader {
             this.webbsite = website;
         }
     }
-    
-    public static Summary validate(File file) throws IOException {
+
+    public static Summary validate(File file) throws IllegalArgumentException {
         String path = file.getPath();
         if (!file.getName().endsWith(".jar")) {
             String message = "File " + path + " is not a .jar file";
-            throw new IOException(message);
+            throw new IllegalArgumentException(message);
         }
         if (!file.isFile() || !file.canRead()) {
             String message = "File " + path
                     + " is not a file or is not readable";
-            throw new IOException(message);
+            throw new IllegalArgumentException(message);
         }
         if (file.length() == 0) {
             String message = "File " + path + " is empty";
-            throw new IOException(message);
+            throw new IllegalArgumentException(message);
         }
 
         ZipFile zip = null;
         try {
             zip = new ZipFile(file);
-            ZipEntry findbugsXML = zip.getEntry("etc/findbugs.xml");
-            if (findbugsXML == null)
+            ZipEntry findbugsXML = zip.getEntry("findbugs.xml");
+            if (findbugsXML == null) {
                 throw new IllegalArgumentException(
-                        "plugin doesn't contain a etc/findbugs.xml file");
-            Document pluginDocument = parseDocument(zip
-                    .getInputStream(findbugsXML));
-            String pluginId = pluginDocument
-                    .valueOf("/FindbugsPlugin/@pluginid");
-            String provider = pluginDocument
-                    .valueOf("/FindbugsPlugin/@website");
-            String website = pluginDocument.valueOf("/FindbugsPlugin/@url");
+                        "plugin doesn't contain a findbugs.xml file");
+            }
+            ZipEntry messagesXML = zip.getEntry("messages.xml");
+            if (messagesXML == null) {
+                throw new IllegalArgumentException(
+                        "plugin doesn't contain a messages.xml file");
+            }
+            Document pluginDocument = parseDocument(zip.getInputStream(findbugsXML));
+            String pluginId = pluginDocument.valueOf(XPATH_PLUGIN_PLUGINID);
+            String provider = pluginDocument.valueOf(XPATH_PLUGIN_PROVIDER);
+            String website = pluginDocument.valueOf(XPATH_PLUGIN_WEBSITE);
             List<Document> msgDocuments = new ArrayList<Document>(3);
             for (String msgFile : getPotentialMessageFiles()) {
-                ZipEntry msgEntry = zip.getEntry("etc/" + msgFile);
-                if (msgEntry == null)
+                ZipEntry msgEntry = zip.getEntry(msgFile);
+                if (msgEntry == null) {
                     continue;
-                Document msgDocument = parseDocument(zip
-                        .getInputStream(msgEntry));
+                }
+                Document msgDocument = parseDocument(zip.getInputStream(msgEntry));
                 msgDocuments.add(msgDocument);
             }
-
             String shortDesc = findMessageText(msgDocuments,
-                    "/MessageCollection/Plugin/ShortDescription", "");
+                    XPATH_PLUGIN_SHORT_DESCRIPTION, "");
             return new Summary(pluginId, shortDesc, provider, website);
         } catch (DocumentException e) {
-            throw new IllegalStateException(e);
+            throw new IllegalArgumentException(e);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
         } finally {
             Util.closeSilently(zip);
         }
     }
-    
-    
+
+
     private static Document parseDocument(@WillClose InputStream in) throws DocumentException {
         SAXReader reader = new SAXReader();
 
