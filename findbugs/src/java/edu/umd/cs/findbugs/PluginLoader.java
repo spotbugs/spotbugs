@@ -1341,9 +1341,9 @@ public class PluginLoader {
                         "plugin doesn't contain a messages.xml file");
             }
             Document pluginDocument = parseDocument(zip.getInputStream(findbugsXML));
-            String pluginId = pluginDocument.valueOf(XPATH_PLUGIN_PLUGINID);
-            String provider = pluginDocument.valueOf(XPATH_PLUGIN_PROVIDER);
-            String website = pluginDocument.valueOf(XPATH_PLUGIN_WEBSITE);
+            String pluginId = pluginDocument.valueOf(XPATH_PLUGIN_PLUGINID).trim();
+            String provider = pluginDocument.valueOf(XPATH_PLUGIN_PROVIDER).trim();
+            String website = pluginDocument.valueOf(XPATH_PLUGIN_WEBSITE).trim();
             List<Document> msgDocuments = new ArrayList<Document>(3);
             for (String msgFile : getPotentialMessageFiles()) {
                 ZipEntry msgEntry = zip.getEntry(msgFile);
