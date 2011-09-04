@@ -153,7 +153,10 @@ class UnresolvedXMethod extends AbstractMethod {
      * @see edu.umd.cs.findbugs.ba.XMethod#isStub()
      */
     public boolean isStub() {
-        // TODO Auto-generated method stub
+        return false;
+    }
+    
+    public boolean isIdentity() {
         return false;
     }
 

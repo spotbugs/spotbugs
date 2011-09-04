@@ -26,11 +26,12 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+
 import org.apache.bcel.Constants;
 import org.objectweb.asm.Opcodes;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ComparableMethod;
 import edu.umd.cs.findbugs.ba.SignatureParser;
@@ -81,6 +82,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         boolean isStub;
         
         boolean hasBackBranch;
+        
+        boolean isIdentity;
 
         int methodCallCount;
 
@@ -121,6 +124,10 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         public void setThrownExceptions(String[] exceptions) {
             this.exceptions = exceptions;
         }
+        
+        public void setIsIdentity() {
+            this.isIdentity = true;
+        }
 
         public void setAccessFlags(int accessFlags) {
             this.accessFlags = accessFlags;
@@ -147,7 +154,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
         public MethodInfo build() {
             return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags,
-                    isUnconditionalThrower, isUnsupported, usesConcurrency, hasBackBranch, isStub, methodCallCount, exceptions, accessMethodFor,
+                    isUnconditionalThrower, isUnsupported, usesConcurrency, hasBackBranch, isStub, isIdentity, 
+                    methodCallCount, exceptions, accessMethodFor,
                     methodAnnotations, methodParameterAnnotations);
         }
 
@@ -194,11 +202,13 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     static IdentityHashMap<MethodInfo, Void> unsupportedMethods = new IdentityHashMap<MethodInfo, Void>();
 
     static IdentityHashMap<MethodInfo, MethodDescriptor> accessMethodFor = new IdentityHashMap<MethodInfo, MethodDescriptor>();
+    static IdentityHashMap<MethodInfo, Void> identifyMethods = new IdentityHashMap<MethodInfo, Void>();
 
     public static void clearCaches() {
         unsupportedMethods.clear();
         unconditionalThrowers.clear();
         accessMethodFor.clear();
+        identifyMethods.clear();
     }
 
     /**
@@ -219,7 +229,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      */
     MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature,
             int accessFlags, boolean isUnconditionalThrower, boolean isUnsupported, boolean usesConcurrency, 
-            boolean hasBackBranch, boolean isStub,
+            boolean hasBackBranch, boolean isStub, boolean isIdentity,
             int methodCallCount, @CheckForNull String[] exceptions, @CheckForNull MethodDescriptor accessMethodFor,
             Map<ClassDescriptor, AnnotationValue> methodAnnotations,
             Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
@@ -238,6 +248,10 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
             unsupportedMethods.put(this, null);
         if (accessMethodFor != null)
             MethodInfo.accessMethodFor.put(this, accessMethodFor);
+        if (isIdentity) {
+            MethodInfo.identifyMethods.put(this, null);
+        }
+            
         this.usesConcurrency = usesConcurrency;
         this.hasBackBranch = hasBackBranch;
         this.isStub = isStub;
@@ -251,6 +265,10 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     public boolean isUnconditionalThrower() {
         return unconditionalThrowers.containsKey(this);
+    }
+
+    public boolean isIdentity() {
+        return MethodInfo.identifyMethods.containsKey(this);
     }
 
     public boolean isUnsupported() {

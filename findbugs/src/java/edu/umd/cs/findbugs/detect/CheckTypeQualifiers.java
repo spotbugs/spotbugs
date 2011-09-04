@@ -141,6 +141,9 @@ public class CheckTypeQualifiers extends CFGDetector {
             return;
         }
 
+        XMethod xMethod = XFactory.createXMethod(methodDescriptor);
+        if (xMethod.isIdentity())
+            return;
         if (DEBUG) {
             System.out.println("CheckTypeQualifiers: checking " + methodDescriptor.toString());
         }

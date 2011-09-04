@@ -81,4 +81,9 @@ public class ClassData {
         return new ByteArrayInputStream(data);
     }
 
+    
+    @Override
+    public String toString() {
+        return codeBaseEntry + ":" + classDescriptor;
+    }
 }

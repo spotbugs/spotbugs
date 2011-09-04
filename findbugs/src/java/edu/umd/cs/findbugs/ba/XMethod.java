@@ -75,6 +75,10 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
      * @return is the method a synthetic stub method?
      */
     public boolean isStub();
+    
+    /** Is this an identity method */
+    public boolean isIdentity();
+
 
     /**
      * If nonnull, then this method is a synthetic method that overrides a

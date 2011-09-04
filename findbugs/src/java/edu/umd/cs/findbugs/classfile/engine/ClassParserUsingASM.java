@@ -73,14 +73,15 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
     private final ICodeBaseEntry codeBaseEntry;
 
-    enum State {
-        INITIAL, THIS_LOADED, VARIABLE_LOADED, AFTER_METHOD_CALL
-    }
+
 
     enum StubState {
         INITIAL, LOADED_STUB, INITIALIZE_RUNTIME
     }
 
+    enum IdentityMethodState {
+        INITIAL, LOADED_PARAMETER, NOT;
+    }
     public ClassParserUsingASM(ClassReader classReader, @CheckForNull ClassDescriptor expectedClassDescriptor,
             ICodeBaseEntry codeBaseEntry) {
         this.classReader = classReader;
@@ -191,7 +192,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
                     return new AbstractMethodVisitor() {
 
-                        int variable;
+                       
 
                         boolean sawReturn = (access & Opcodes.ACC_NATIVE) != 0;
 
@@ -214,8 +215,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
                         boolean isBridge = (access & Opcodes.ACC_SYNTHETIC) != 0 && (access & Opcodes.ACC_BRIDGE) != 0;
 
                         String bridgedMethodSignature;
-
-                        State state = State.INITIAL;
+                        
+                        IdentityMethodState identityState = 
+                                IdentityMethodState.INITIAL;
 
                         StubState stubState = StubState.INITIAL;
 
@@ -227,58 +229,69 @@ public class ClassParserUsingASM implements ClassParserInterface {
                         
                         HashSet<Label> labelsSeen = new HashSet<Label>();
 
+                        boolean isStatic() {
+                            return (access & Opcodes.ACC_STATIC) != 0;
+                        }
                         @Override
                         public void visitLdcInsn(Object cst) {
                             if (cst.equals("Stub!"))
                                 stubState = StubState.LOADED_STUB;
                             else
                                 stubState = StubState.INITIAL;
+                            identityState = IdentityMethodState.NOT;
                         }
 
                         @Override
                         public void visitInsn(int opcode) {
-                            if (opcode == Opcodes.MONITORENTER)
+                            switch(opcode) {
+                            case Constants.MONITORENTER:
                                 mBuilder.setUsesConcurrency();
-                            if (RETURN_OPCODE_SET.get(opcode))
+                                break;
+                            case Constants.ARETURN:
+                            case Constants.IRETURN:
+                            case Constants.LRETURN:
+                            case Constants.DRETURN:
+                            case Constants.FRETURN:
+                                if (identityState == IdentityMethodState.LOADED_PARAMETER)
+                                    mBuilder.setIsIdentity();
                                 sawReturn = true;
-                            else if (opcode == Opcodes.ATHROW) {
-                                if (stubState == StubState.INITIALIZE_RUNTIME) {
+                                break;
+                            case Constants.RETURN:
+                                sawReturn = true;
+                                break;
+                            case Constants.ATHROW:
+                                if (stubState == StubState.INITIALIZE_RUNTIME)
                                     sawStubThrow = true;
-                                } else if (justSawInitializationOfUnsupportedOperationException)
+                                else if (justSawInitializationOfUnsupportedOperationException)
                                     sawUnsupportedThrow = true;
                                 else
                                     sawNormalThrow = true;
+                                break;
                             }
-                            resetState();
+
+                                 resetState();
                         }
 
                         public void resetState() {
-                            if (state != State.AFTER_METHOD_CALL)
-                                state = State.INITIAL;
                             stubState = StubState.INITIAL;
                         }
 
                         @Override
                         public void visitSomeInsn() {
+                            identityState = IdentityMethodState.NOT;
                             resetState();
                         }
 
                         @Override
                         public void visitVarInsn(int opcode, int var) {
-                            if (opcode == Opcodes.ALOAD && var == 0)
-                                state = State.THIS_LOADED;
-                            else if (state == State.THIS_LOADED)
-                                switch (opcode) {
-                                case Opcodes.ALOAD:
-                                case Opcodes.ILOAD:
-                                case Opcodes.LLOAD:
-                                case Opcodes.DLOAD:
-                                case Opcodes.FLOAD:
-                                    state = State.VARIABLE_LOADED;
-                                    variable = var;
-                                }
-                            else
-                                visitSomeInsn();
+                            
+                            if (identityState == IdentityMethodState.INITIAL) {
+                                if (var > 0 || isStatic())
+                                    identityState = IdentityMethodState.LOADED_PARAMETER;
+                                else
+                                    identityState = IdentityMethodState.NOT;
+                                
+                            } else  visitSomeInsn();
                         }
 
                         public org.objectweb.asm.AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
@@ -289,6 +302,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
                         @Override
                         public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+                            identityState = IdentityMethodState.NOT;
                             methodCallCount++;
                             if (isAccessMethod && methodCallCount == 1) {
                                 this.accessOwner = owner;
@@ -336,10 +350,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                                 return;
                             ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(owner);
                             calledClassSet.add(classDescriptor);
-                            // System.out.println("Added call from " +
-                            // ClassParserUsingASM.this.slashedClassName +
-                            // " to " + owner);
-                            state = State.AFTER_METHOD_CALL;
+                           
                         }
 
                         @Override
@@ -347,6 +358,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                             sawBranch = true;
                             if (labelsSeen.contains(label))
                                 sawBackBranch = true;
+                            identityState = IdentityMethodState.NOT;
                             super.visitJumpInsn(opcode, label);
 
                         }

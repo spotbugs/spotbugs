@@ -105,6 +105,8 @@ public class BackwardTypeQualifierDataflowFactory extends
         // back to the entry of the method.
         // This will contain the effective type qualifier
         // annotations on the method parameters.
+        if (xmethod.isIdentity())
+            return;
 
         BasicBlock entry = dataflow.getCFG().getEntry();
         TypeQualifierValueSet entryFact = dataflow.getAnalysis().getResultFact(entry);
