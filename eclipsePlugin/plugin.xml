@@ -316,18 +316,18 @@
             targetID="#CompilationUnitRulerContext"
             id="de.tobject.findbugs.TextRulerActions">
          <action
+               class="de.tobject.findbugs.actions.MarkerRulerAction"
+               icon="icons/treeView.png"
+               id="de.tobject.findbugs.actions.editor.showInBugExplorer"
+               label="Show Bug in Bug Explorer"
+               menubarPath="additions">
+         </action>
+         <action
                label="Show Bug Info"
                icon="icons/detailsView.png"
                class="de.tobject.findbugs.actions.MarkerRulerAction"
                menubarPath="additions"
                id="de.tobject.findbugs.actions.showBugInfo">
-         </action>
-         <action
-               class="de.tobject.findbugs.actions.MarkerRulerAction"
-               icon="icons/treeView.png"
-               id="de.tobject.findbugs.actions.editor.showInBugExplorer"
-               label="Show in Bug Explorer"
-               menubarPath="additions">
          </action>
       </viewerContribution>
       <viewerContribution
