@@ -22,6 +22,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 
+import de.tobject.findbugs.properties.DetectorValidator.ValidationStatus;
+
 public class PathElement implements IPathElement {
 
     private final IPath path;
@@ -29,6 +31,8 @@ public class PathElement implements IPathElement {
     private IStatus status;
 
     private boolean enabled;
+
+    private boolean system;
 
     public PathElement(IPath path, IStatus status) {
         this.status = status;
@@ -50,9 +54,27 @@ public class PathElement implements IPathElement {
         this.status = status;
     }
 
+    public IStatus getStatus() {
+        return status;
+    }
+
     @Override
     public String toString() {
-        return path.toString() + (status.isOK() ? "" : " (" + status.getMessage() + ")");
+        String id = getId();
+        String string = path.toOSString();
+        if(id != null) {
+            string += " [" + id + "]";
+        }
+        if(system) {
+            string += " (system/";
+            if(enabled) {
+                string += "enabled)";
+            } else {
+                string += "disabled)";
+            }
+        }
+        string += (status.isOK() ? "" : " (invalid entry)");
+        return string;
     }
 
     public String getPath() {
@@ -84,6 +106,21 @@ public class PathElement implements IPathElement {
     }
 
     public boolean isSystem() {
-        return false;
+        return system;
+    }
+
+    public void setSystem(boolean system) {
+        this.system = system;
+    }
+
+    public String getId() {
+        if(status instanceof ValidationStatus) {
+            ValidationStatus vs = (ValidationStatus) status;
+            String id = vs.getSummary().id;
+            if(id != null && !ValidationStatus.UNKNOWN_VALUE.equals(id)) {
+                return id;
+            }
+        }
+        return system? path.toString() : null;
     }
 }

@@ -25,8 +25,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
@@ -60,13 +60,15 @@ public class DetectorsExtensionHelper {
     private static final String LIBRARY_PATH = "libraryPath";
     private static final String PLUGIN_ID = "fbPluginId";
 
-    private static SortedSet<String> contributedDetectors;
+    /** key is the plugin id, value is the plugin library path */
+    private static SortedMap<String, String> contributedDetectors;
 
-    public static synchronized SortedSet<String> getContributedDetectors() {
+    /** key is the plugin id, value is the plugin library path */
+    public static synchronized SortedMap<String, String> getContributedDetectors() {
         if (contributedDetectors != null) {
             return contributedDetectors;
         }
-        TreeSet<String> set = new TreeSet<String>();
+        TreeMap<String, String> set = new TreeMap<String, String>();
 
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint point = registry.getExtensionPoint(EXTENSION_POINT_ID);
@@ -91,13 +93,16 @@ public class DetectorsExtensionHelper {
                     }
                     libPathAsString = configElt.getAttribute(LIBRARY_PATH);
                     if (libPathAsString == null) {
-                        throw new IllegalArgumentException("Null argument");
+                        throw new IllegalArgumentException("Missing '" + LIBRARY_PATH + "'");
                     }
                     libPathAsString = resolveRelativePath(contributor, libPathAsString);
                     if (libPathAsString == null) {
-                        throw new IllegalArgumentException("Failed to resolve library path: " + contributor.getName());
+                        throw new IllegalArgumentException("Failed to resolve library path for: " + pluginId);
                     }
-                    set.add(libPathAsString);
+                    if(set.containsKey(pluginId)) {
+                        throw new IllegalArgumentException("Duplicated '" + pluginId + "' contribution.");
+                    }
+                    set.put(pluginId, libPathAsString);
                 } catch (Throwable e) {
                     String cName = contributor != null ? contributor.getName() : "unknown contributor";
                     String message = "Failed to read contribution for '" + EXTENSION_POINT_ID

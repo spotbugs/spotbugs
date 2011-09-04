@@ -27,16 +27,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javax.annotation.CheckForNull;
 
 import org.dom4j.DocumentException;
 import org.eclipse.core.internal.preferences.EclipsePreferences;
@@ -80,7 +83,9 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.nature.FindBugsNature;
 import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.preferences.FindBugsPreferenceInitializer;
+import de.tobject.findbugs.properties.DetectorProvider;
 import de.tobject.findbugs.properties.DetectorValidator;
+import de.tobject.findbugs.properties.DetectorValidator.ValidationStatus;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.view.IMarkerSelectionHandler;
 import de.tobject.findbugs.view.explorer.BugContentProvider;
@@ -110,7 +115,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     @java.lang.SuppressWarnings("restriction")
     public static final IPath DEFAULT_PREFS_PATH = new Path(EclipsePreferences.DEFAULT_PREFERENCES_DIRNAME)
-            .append("edu.umd.cs.findbugs.core.prefs");
+    .append("edu.umd.cs.findbugs.core.prefs");
 
     public static final IPath DEPRECATED_PREFS_PATH = new Path(PREFS_NAME);
 
@@ -247,6 +252,13 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     /**
+     * The complexity of the code below is partly caused by the fact that we
+     * might have multiple ways to install and/or enable custom plugins. There
+     * are plugins discovered by FB itself, plugins contributed to Eclipse and
+     * plugins added by user manually via properties. Plugins can be disabled
+     * via code or properties. The code below is still work in progress, see
+     * also {@link DetectorProvider#getPluginElements(UserPreferences)}.
+     *
      * @param detectorPaths
      *            list of possible detector plugins
      * @param force
@@ -259,10 +271,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         customDetectorsInitialized = true;
         DetectorValidator validator = new DetectorValidator();
         final SortedSet<String> detectorPaths = new TreeSet<String>();
-        detectorPaths.addAll(DetectorsExtensionHelper.getContributedDetectors());
+        SortedMap<String, String> contributedDetectors = DetectorsExtensionHelper.getContributedDetectors();
         UserPreferences corePreferences = getCorePreferences(null, false);
         detectorPaths.addAll(corePreferences.getCustomPlugins(true));
-        HashSet<Plugin> enabled = new HashSet<Plugin>();
         if(DEBUG) {
             dumpClassLoader(FindbugsPlugin.class);
             dumpClassLoader(Plugin.class);
@@ -271,56 +282,100 @@ public class FindbugsPlugin extends AbstractUIPlugin {
                 System.out.println("\t" + url);
             }
         }
-        Set<URI> pluginsUrls = Plugin.getAllPluginsURIs();
-        for (String path : detectorPaths) {
-            URI url;
-                url = new File(path).toURI();
-            if(pluginsUrls.contains(url)) {
+
+        // disable custom plugins configured via properties, if they are already loaded
+        Set<String> disabledPlugins = corePreferences.getCustomPlugins(false);
+        Map<URI, Plugin> allPlugins = Plugin.getAllPluginsMap();
+        for (Entry<URI, Plugin> entry : allPlugins.entrySet()) {
+            Plugin fbPlugin = entry.getValue();
+            String pluginId = fbPlugin.getPluginId();
+            // ignore all custom plugins with the same plugin id as already loaded
+            if(contributedDetectors.containsKey(pluginId)) {
+                contributedDetectors.remove(pluginId);
+                detectorPaths.remove(pluginId);
+            }
+
+            if (fbPlugin.isCorePlugin() || fbPlugin.isInitialPlugin()) {
                 continue;
             }
-            IStatus status = validator.validate(path);
-            if (status.isOK()) {
-                try {
-                    // bug 3117769 - we must provide our own classloader
-                    // to allow third-party plugins extend the classpath via
-                    // "Buddy" classloading
-                    // see also: Eclipse-BuddyPolicy attribute in MANIFEST.MF
-                    Plugin fbPlugin = Plugin.addCustomPlugin(url, FindbugsPlugin.class.getClassLoader());
-                    enabled.add(fbPlugin);
-                } catch (PluginException e) {
-                    getDefault().logException(e, "Failed to load plugin for custom detector: " + path);
-                    continue;
-                } catch (DuplicatePluginIdException e) {
-                    getDefault().logInfo(e.getPluginId() + " already loaded from " + e.getPreviouslyLoadedFrom()
-                            + ", ignoring: " + path);
-                    continue;
+            if (disabledPlugins.contains(entry.getKey().getPath())
+                    || disabledPlugins.contains(pluginId)) {
+                fbPlugin.setGloballyEnabled(false);
+                Plugin.removeCustomPlugin(fbPlugin);
+                if (DEBUG) {
+                    System.out.println("Removed plugin: " + fbPlugin + " loaded from " + entry.getKey());
                 }
+            }
+        }
+
+        HashSet<Plugin> enabled = new HashSet<Plugin>();
+
+        // adding FindBugs *Eclipse* plugins, key plugin id, value is path
+        for (Entry<String, String> entry : contributedDetectors.entrySet()) {
+            String pluginId = entry.getKey();
+            String pluginPath = entry.getValue();
+            URI uri = new File(pluginPath).toURI();
+            if (disabledPlugins.contains(pluginId)
+                    || disabledPlugins.contains(pluginPath)
+                    || allPlugins.containsKey(uri)) {
+                continue;
+            }
+            addCustomPlugin(enabled, uri);
+        }
+
+        // adding custom plugins configured via properties, but only if they are not loaded yet
+        for (String path : detectorPaths) {
+            // this is plugin id, so we can't use it as URL
+            if(new Path(path).segmentCount() == 1) {
+                continue;
+            }
+            URI uri = new File(path).toURI();
+            if(allPlugins.containsKey(uri)) {
+                continue;
+            }
+            ValidationStatus status = validator.validate(path);
+            if (status.isOK()) {
+                addCustomPlugin(enabled, uri);
             } else {
                 getDefault().getLog().log(status);
             }
         }
 
-        Set<String> disabledCustomPlugins = corePreferences.getCustomPlugins(false);
-        Collection<Plugin> allPlugins = Plugin.getAllPlugins();
-        for(Plugin fbPlugin : allPlugins) {
-            if (!fbPlugin.isInitialPlugin()) {
-                fbPlugin.setGloballyEnabled(enabled.contains(fbPlugin));
-                URL url = fbPlugin.getPluginLoader().getURL();
-                if(url != null && disabledCustomPlugins.contains(url.getPath())) {
-                    Plugin.removeCustomPlugin(fbPlugin);
-                }
-            }
-        }
-        if(DEBUG) {
-            System.out.println("applyCustomDetectors - there was " + detectorPaths.size() + " extra FB plugin urls with "
-                    + enabled.size() + " valid FB plugins and " + allPlugins.size() + " total plugins registered by FB.");
-            for (Plugin fbPlugin : allPlugins) {
+        if (DEBUG) {
+            System.out.println("applyCustomDetectors - there was " + detectorPaths.size()
+                    + " extra FB plugin urls with " + enabled.size()
+                    + " valid FB plugins and " + allPlugins.size()
+                    + " total plugins registered by FB.");
+            for (Entry<URI, Plugin> entry : allPlugins.entrySet()) {
+                Plugin fbPlugin = entry.getValue();
                 if (fbPlugin.isGloballyEnabled()) {
                     System.out.println("IS  enabled:\t" + fbPlugin.getPluginId());
                 } else {
                     System.out.println("NOT enabled:\t" + fbPlugin.getPluginId());
                 }
             }
+        }
+    }
+
+    protected static void addCustomPlugin(HashSet<Plugin> enabled, URI uri) {
+        try {
+            // bug 3117769 - we must provide our own classloader
+            // to allow third-party plugins extend the classpath via
+            // "Buddy" classloading
+            // see also: Eclipse-BuddyPolicy attribute in MANIFEST.MF
+            Plugin fbPlugin = Plugin.addCustomPlugin(uri, FindbugsPlugin.class.getClassLoader());
+            if(fbPlugin != null) {
+                // TODO line below required to enable this *optional* plugin
+                // but it should be taken by FB core from the findbugs.xml,
+                // which currently only works for *core* plugins only
+                fbPlugin.setGloballyEnabled(true);
+                enabled.add(fbPlugin);
+            }
+        } catch (PluginException e) {
+            getDefault().logException(e, "Failed to load plugin for custom detector: " + uri);
+        } catch (DuplicatePluginIdException e) {
+            getDefault().logException(e, e.getPluginId() + " already loaded from " + e.getPreviouslyLoadedFrom()
+                    + ", ignoring: " + uri);
         }
     }
 
@@ -527,7 +582,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         // IPath path = project.getWorkingLocation(PLUGIN_ID); //
         // project-specific but not user-specific?
         IPath path = getDefault().getStateLocation(); // user-specific but not
-                                                      // project-specific
+        // project-specific
         return path.append(project.getName() + ".fbwarnings");
     }
 
@@ -544,14 +599,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION_DIRTY, isDirty ? Boolean.TRUE : Boolean.FALSE);
     }
 
+    @CheckForNull
     public static SortedBugCollection getBugCollectionIfSet(IProject project) {
         try {
-            SortedBugCollection bugs = (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
-            if (bugs != null) {
-                createViews();
-            }
-            return bugs;
+            return (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
         } catch (CoreException ignored) {
+            FindbugsPlugin.getDefault().logException(ignored, "IO Exception reading project bugs.");
             return null;
         }
     }
@@ -587,13 +640,11 @@ public class FindbugsPlugin extends AbstractUIPlugin {
                 bugCollection = createDefaultEmptyBugCollection(project);
             }
         }
-        createViews();
         return bugCollection;
     }
 
     private static void cacheBugCollectionAndProject(IProject project, SortedBugCollection bugCollection, Project fbProject)
             throws CoreException {
-        createViews();
         project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
         markBugCollectionDirty(project, false);
     }
@@ -609,8 +660,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             fbProject.setCloudId(cloudId);
         }
         cacheBugCollectionAndProject(project, bugCollection, fbProject);
-        createViews();
-
         return bugCollection;
     }
 
@@ -644,8 +693,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             // FileNotFoundException(bugCollectionFile.getLocation().toOSString());
             getDefault().logInfo("creating new bug collection: " + bugCollectionPath.toOSString());
             createDefaultEmptyBugCollection(project); // since we no longer
-                                                      // throw, have to do this
-                                                      // here
+            // throw, have to do this
+            // here
             return;
         }
 
@@ -990,19 +1039,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         return loader.loadBugResolutions();
     }
 
-    public static void createViews() {
-        IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        if (activeWorkbenchWindow == null) {
-            return;
-        }
-        IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
-        if (page == null) {
-            return;
-        }
-        page.findView(DETAILS_VIEW_ID);
-        page.findView(USER_ANNOTATIONS_VIEW_ID);
-
-    }
     public static void showMarker(IMarker marker, String viewId, IWorkbenchPart source) {
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         IViewPart view = page.findView(viewId);
@@ -1078,10 +1114,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     public static Set<BugCode> getFilteredPatternTypes() {
-       Set<BugCode> set = new HashSet<BugCode>();
+        Set<BugCode> set = new HashSet<BugCode>();
         Set<String> patternTypes = getFilteredIds();
         for(BugCode next :  DetectorFactoryCollection.instance().getBugCodes()) {
-           String type = next.getAbbrev();
+            String type = next.getAbbrev();
             if (!patternTypes.contains(type)) {
                 continue;
             }

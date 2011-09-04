@@ -18,57 +18,127 @@
  */
 package de.tobject.findbugs.properties;
 
+import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.swt.widgets.FileDialog;
 
+import de.tobject.findbugs.DetectorsExtensionHelper;
+import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.builder.FindBugsWorker;
+import de.tobject.findbugs.properties.DetectorValidator.ValidationStatus;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
-class DetectorProvider extends PathsProvider {
+public class DetectorProvider extends PathsProvider {
 
     protected DetectorProvider(CheckboxTableViewer viewer, FindbugsPropertyPage propertyPage) {
         super(viewer, propertyPage);
         setDetectorPlugins(propertyPage.getCurrentUserPreferences());
     }
 
-    List<IPathElement> getDetectorPluginFiles(UserPreferences userPreferences) {
-        // TODO project is currently not supported (always null).
-        IProject project = propertyPage.getProject();
+    /**
+     * The complexity of the code below is partly caused by the fact that we
+     * might have multiple ways to install and/or enable custom plugins. There
+     * are plugins discovered by FB itself, plugins contributed to Eclipse and
+     * plugins added by user manually via properties. Plugins can be disabled
+     * via code or properties. The code below is still work in progress, see
+     * also {@link FindbugsPlugin#applyCustomDetectors(boolean)}.
+     *
+     * @return a list with all known plugin paths known by FindBugs (they must
+     *         neither be valid nor exists).
+     */
+    public static List<IPathElement> getPluginElements(UserPreferences userPreferences) {
+        DetectorValidator validator = new DetectorValidator();
         final List<IPathElement> newPaths = new ArrayList<IPathElement>();
         Map<String, Boolean> pluginPaths = userPreferences.getCustomPlugins();
-        if (pluginPaths != null) {
-            Set<Entry<String,Boolean>> entrySet = pluginPaths.entrySet();
-            for (Entry<String, Boolean> entry : entrySet) {
-                IPath pluginPath = FindBugsWorker.getFilterPath(entry.getKey(), project);
-                PathElement element = new PathElement(pluginPath, Status.OK_STATUS);
+
+        Set<String> disabledSystemPlugins = new HashSet<String>();
+        Set<URI> customPlugins = new HashSet<URI>();
+        Set<Entry<String,Boolean>> entrySet = pluginPaths.entrySet();
+        for (Entry<String, Boolean> entry : entrySet) {
+            String idOrPath = entry.getKey();
+            if(new Path(idOrPath).segmentCount() == 1) {
+                PathElement element = new PathElement(new Path(idOrPath), Status.OK_STATUS);
+                element.setSystem(true);
+                if (!entry.getValue().booleanValue()) {
+                    element.setEnabled(false);
+                    // this is not a path => this is a disabled plugin id
+                    disabledSystemPlugins.add(idOrPath);
+                    newPaths.add(element);
+                } else {
+                    element.setEnabled(true);
+                }
+                continue;
+            }
+
+            // project is not supported (propertyPage.getProject() == null for workspace prefs).
+            IPath pluginPath = FindBugsWorker.getFilterPath(idOrPath, null);
+            URI uri = pluginPath.toFile().toURI();
+            customPlugins.add(uri);
+            ValidationStatus status = validator.validate(pluginPath.toOSString());
+            PathElement element = new PathElement(pluginPath, status);
+            Plugin plugin = Plugin.getByPluginId(status.getSummary().id);
+            if(plugin != null && !uri.equals(plugin.getPluginLoader().getURI())) {
+                // disable contribution if the plugin is already there
+                // but loaded from different location
+                element.setEnabled(false);
+            } else {
                 element.setEnabled(entry.getValue().booleanValue());
-                newPaths.add(element);
+            }
+            newPaths.add(element);
+        }
+
+        Map<URI, Plugin> allPlugins = Plugin.getAllPluginsMap();
+
+        // List of plugins contributed by Eclipse
+        SortedMap<String, String> contributedDetectors = DetectorsExtensionHelper.getContributedDetectors();
+        for (Entry<String, String> entry : contributedDetectors.entrySet()) {
+            String pluginId = entry.getKey();
+            URI uri = new Path(entry.getValue()).toFile().toURI();
+            Plugin plugin = allPlugins.get(uri);
+            if(plugin != null && !isEclipsePluginDisabled(pluginId, allPlugins)) {
+                PluginElement element = new PluginElement(plugin, true);
+                newPaths.add(0, element);
+                customPlugins.add(uri);
             }
         }
-        Collection<Plugin> allPlugins = Plugin.getAllPlugins();
-        for (Plugin plugin : allPlugins) {
-            if (!plugin.isCorePlugin()) {
-                PluginElement element = new PluginElement(plugin);
-                // TODO read the state from prefs
-                element.setEnabled(plugin.isGloballyEnabled());
-                if(!newPaths.contains(element)) {
-                    newPaths.add(element);
+
+        // Remaining plugins contributed by FB itself
+        for (Plugin plugin : allPlugins.values()) {
+            PluginElement element = new PluginElement(plugin, false);
+            if(!customPlugins.contains(plugin.getPluginLoader().getURI())) {
+                newPaths.add(0, element);
+                if(disabledSystemPlugins.contains(plugin.getPluginId())) {
+                    element.setEnabled(false);
                 }
             }
         }
         return newPaths;
+    }
+
+    /**
+     * Eclipse plugin can be disabled ONLY by user, so it must NOT be in the
+     * list of loaded plugins
+     */
+    static boolean isEclipsePluginDisabled(String pluginId, Map<URI, Plugin> allPlugins) {
+        for (Plugin plugin : allPlugins.values()) {
+            if(pluginId.equals(plugin.getPluginId())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -78,7 +148,7 @@ class DetectorProvider extends PathsProvider {
     }
 
     void setDetectorPlugins(UserPreferences userPreferences) {
-        setFilters(getDetectorPluginFiles(userPreferences));
+        setFilters(getPluginElements(userPreferences));
     }
 
     @Override
@@ -89,10 +159,12 @@ class DetectorProvider extends PathsProvider {
             if(path.isSystem()) {
                 continue;
             }
-            IStatus status = validator.validate(path.getPath());
+            String pathStr = path.getPath();
+            ValidationStatus status = validator.validate(pathStr);
             path.setStatus(status);
-            if (!status.isOK()) {
+            if (!status.isOK() && path.isEnabled()) {
                 bad = status;
+                path.setEnabled(false);
                 break;
             }
         }
@@ -102,6 +174,6 @@ class DetectorProvider extends PathsProvider {
     @Override
     protected void configureDialog(FileDialog dialog) {
         dialog.setFilterExtensions(new String[] { "*.jar" });
-        dialog.setText("Select FindBugs plugins (plugins should have a .jar extension)");
+        dialog.setText("Select FindBugs plugins (file must have '.jar' extension)");
     }
 }

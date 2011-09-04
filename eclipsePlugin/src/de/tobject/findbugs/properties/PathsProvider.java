@@ -251,7 +251,10 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         Map<String, Boolean> result = new TreeMap<String, Boolean>();
         for (IPathElement path : paths) {
             if(path.isSystem()) {
-                // TODO need to use plugin id, and remember the boolean value in the prefs
+                if (!path.isEnabled()) {
+                    // only need to remember *disabled* plugins
+                    result.put(path.getId(), Boolean.valueOf(false));
+                }
                 continue;
             }
             IPath filterPath = FindBugsWorker.toFilterPath(path.getPath(), project);

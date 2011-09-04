@@ -26,17 +26,23 @@ public class PluginElement implements IPathElement {
 
     private final Plugin plugin;
     private boolean enabled;
+    private final boolean eclipsePlugin;
+    private IStatus status;
 
-    public PluginElement(Plugin plugin) {
+    public PluginElement(Plugin plugin, boolean eclipsePlugin) {
         this.plugin = plugin;
-        if(plugin.isCorePlugin()) {
-            enabled = true;
-        }
+        this.eclipsePlugin = eclipsePlugin;
+        enabled = plugin.isGloballyEnabled();
     }
 
     @Override
     public String toString() {
-        return plugin.getShortDescription() + " [" + plugin.getShortPluginId() + "]"+ (isEnabled() ? "" : " (disabled)");
+        String string = "";
+        if(eclipsePlugin) {
+            string = "(Eclipse) ";
+        }
+        string += plugin.getShortDescription() +  " [" + plugin.getPluginId() + "]"+  (isEnabled() ? "" : " (disabled)");
+        return string;
     }
 
     public String getPath() {
@@ -70,7 +76,7 @@ public class PluginElement implements IPathElement {
      * @param enabled the enabled to set
      */
     public void setEnabled(boolean enabled) {
-        if(plugin.isCorePlugin()) {
+        if(plugin.isCorePlugin() || (!enabled && plugin.cannotDisable())) {
             return;
         }
         plugin.setGloballyEnabled(enabled);
@@ -78,10 +84,18 @@ public class PluginElement implements IPathElement {
     }
 
     public void setStatus(IStatus status) {
-        //
+        this.status = status;
+    }
+
+    public IStatus getStatus() {
+        return status;
     }
 
     public boolean isSystem() {
         return true;
+    }
+
+    public String getId() {
+        return plugin.getPluginId();
     }
 }

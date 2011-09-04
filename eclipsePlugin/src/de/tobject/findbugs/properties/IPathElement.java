@@ -26,9 +26,13 @@ public interface IPathElement {
 
     String getPath();
 
+    String getId();
+
     void setEnabled(boolean enabled);
 
     boolean isEnabled();
 
     boolean isSystem();
+
+    IStatus getStatus();
 }

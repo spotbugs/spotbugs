@@ -19,6 +19,7 @@
 package de.tobject.findbugs.properties;
 
 import java.io.File;
+import java.net.URI;
 
 import javax.annotation.Nonnull;
 
@@ -26,6 +27,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.PluginLoader.Summary;
 
@@ -37,11 +39,12 @@ import edu.umd.cs.findbugs.PluginLoader.Summary;
 public class DetectorValidator {
 
     public static class ValidationStatus extends Status {
+        public static final String UNKNOWN_VALUE = "?";
         private final Summary sum;
 
         public ValidationStatus(int severity, String message, Summary sum, Throwable t) {
-            super(severity, FindbugsPlugin.PLUGIN_ID, "", t);
-            this.sum = sum == null ? new Summary("?", "?", "?", "?") : sum;
+            super(severity, FindbugsPlugin.PLUGIN_ID, message, t);
+            this.sum = sum == null ? new Summary(UNKNOWN_VALUE, UNKNOWN_VALUE, UNKNOWN_VALUE, UNKNOWN_VALUE) : sum;
         }
 
         /**
@@ -77,7 +80,15 @@ public class DetectorValidator {
             if(FindbugsPlugin.getDefault().isDebugging()) {
                 e.printStackTrace();
             }
-            return new ValidationStatus(IStatus.ERROR, "Invalid FindBugs plugin archive", sum, e);
+            return new ValidationStatus(IStatus.ERROR,
+                    "Invalid FindBugs plugin archive: " + e.getMessage(), sum, e);
+        }
+        Plugin loadedPlugin = Plugin.getByPluginId(sum.id);
+        URI uri = file.toURI();
+        if(loadedPlugin != null && !uri.equals(loadedPlugin.getPluginLoader().getURI())
+                && loadedPlugin.isGloballyEnabled()) {
+            return new ValidationStatus(IStatus.ERROR, "Duplicated FindBugs plugin: " + sum.id + ", already loaded from: "
+                    + loadedPlugin.getPluginLoader().getURI(), sum, null);
         }
         return new ValidationStatus(IStatus.OK, Status.OK_STATUS.getMessage(), sum, null);
     }

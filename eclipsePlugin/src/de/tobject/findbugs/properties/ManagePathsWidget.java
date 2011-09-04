@@ -23,9 +23,13 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
@@ -84,7 +88,24 @@ public class ManagePathsWidget extends Composite {
         Table table = new Table(this, style);
         CheckboxTableViewer viewer1 = new CheckboxTableViewer(table);
         viewer1.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
+        final PathElementLabelProvider labelProvider = new PathElementLabelProvider();
+        viewer1.setLabelProvider(labelProvider);
         this.viewer = viewer1;
+        viewer1.getControl().addMouseTrackListener(new MouseTrackAdapter() {
+            @Override
+            public void mouseHover(MouseEvent e) {
+                String tooltip = "";
+                ViewerCell cell = viewer.getCell(new Point(e.x, e.y));
+                if(cell != null) {
+                    tooltip = labelProvider.getToolTip(cell.getElement());
+                }
+                viewer.getControl().setToolTipText(tooltip);
+            }
+            @Override
+            public void mouseExit(MouseEvent e) {
+                viewer.getControl().setToolTipText("");
+            }
+        });
         return viewer1;
     }
 
