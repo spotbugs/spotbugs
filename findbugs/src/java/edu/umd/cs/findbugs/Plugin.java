@@ -505,8 +505,12 @@ public class Plugin {
     }
 
     public static synchronized @CheckForNull Plugin getByPluginId(String name) {
+        if(name == null) {
+            return null;
+        }
         for(Plugin plugin : allPlugins.values()) {
-            if (name.equals(plugin.getPluginId()) || name.equals(plugin.getShortPluginId()))
+            // the second part is questionable, as this may lead to id collisions
+            if (name.equals(plugin.getPluginId()) /*|| name.equals(plugin.getShortPluginId())*/)
                 return plugin;
         }
         return null;
@@ -660,9 +664,9 @@ public class Plugin {
     public static @CheckForNull Plugin addCustomPlugin(URL u, ClassLoader parent) throws PluginException {
         PluginLoader pluginLoader = PluginLoader.getPluginLoader(u, parent, false, true);
         Plugin plugin = pluginLoader.loadPlugin();
-        if (plugin != null) 
+        if (plugin != null)
             DetectorFactoryCollection.instance().loadPlugin(plugin);
-        
+
         return plugin;
     }
 
