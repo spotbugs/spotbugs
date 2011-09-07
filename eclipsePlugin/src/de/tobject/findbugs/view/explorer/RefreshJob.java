@@ -84,14 +84,14 @@ class RefreshJob extends Job implements IViewerRefreshJob {
         int totalWork = deltas.size();
         monitor.beginTask("Updating bug markers", totalWork);
 
-        if (viewer != null && !monitor.isCanceled() && !deltas.isEmpty()) {
+        if (!checkCancellation(monitor) && !deltas.isEmpty()) {
 
             final Set<BugGroup> changedParents = contentProvider.updateContent(deltas);
             final boolean fullRefreshNeeded = changedParents.isEmpty();
 
             Display.getDefault().syncExec(new Runnable() {
                 public void run() {
-                    if (viewer == null || monitor.isCanceled() || viewer.getControl().isDisposed()) {
+                    if (checkCancellation(monitor)) {
                         return;
                     }
                     viewer.getControl().setRedraw(false);
@@ -112,25 +112,28 @@ class RefreshJob extends Job implements IViewerRefreshJob {
                                         System.out.println("Refreshing: " + parent);
                                     }
                                 }
+                                if (checkCancellation(monitor)) {
+                                    break;
+                                }
                                 if (isRoot) {
                                     viewer.refresh();
                                 } else {
                                     viewer.refresh(parent, true);
                                 }
-                                if (monitor.isCanceled()) {
-                                    break;
-                                }
                             }
                         }
                     } finally {
-                        viewer.getControl().setRedraw(true);
+                        if(viewer != null && !viewer.getControl().isDisposed()) {
+                            viewer.getControl().setRedraw(true);
+                        }
                     }
                 }
             });
         }
-        monitor.worked(totalWork);
-
-        monitor.done();
+        if(!monitor.isCanceled()) {
+            monitor.worked(totalWork);
+            monitor.done();
+        }
         return monitor.isCanceled() ? Status.CANCEL_STATUS : Status.OK_STATUS;
     }
 
@@ -176,6 +179,10 @@ class RefreshJob extends Job implements IViewerRefreshJob {
 
     CommonViewer getViewer() {
         return viewer;
+    }
+
+    protected boolean checkCancellation(final IProgressMonitor monitor) {
+        return viewer == null || monitor.isCanceled() || viewer.getControl().isDisposed();
     }
 
     /**
