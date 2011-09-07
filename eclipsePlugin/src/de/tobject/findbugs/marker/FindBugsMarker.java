@@ -122,6 +122,24 @@ public interface FindBugsMarker {
             this.rankCategory = rankCategory;
         }
 
+        public static MarkerRank forCategory(BugRankCategory cat) {
+            MarkerRank[] values = MarkerRank.values();
+            for (MarkerRank mr : values) {
+                if (cat == mr.rankCategory) {
+                    return mr;
+                }
+            }
+            throw new IllegalArgumentException("Illegal category " + cat);
+        }
+
+        public static MarkerRank forCategory(int category) {
+            BugRankCategory[] values = BugRankCategory.values();
+            if(category >= 0 && category < values.length) {
+                return forCategory(values[category]);
+            }
+            throw new IllegalArgumentException("Illegal category " + category);
+        }
+
         public static MarkerRank label(int rank) {
 
             MarkerRank[] values = MarkerRank.values();

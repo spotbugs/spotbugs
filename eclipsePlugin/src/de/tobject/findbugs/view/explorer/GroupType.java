@@ -174,6 +174,14 @@ public enum GroupType {
         String getDebugDescription(IMarker marker) throws CoreException {
             return "priority: " + marker.getAttribute(IMarker.PRIORITY);
         }
+
+        @Override
+        FindBugsMarker.MarkerRank getMarkerRank(Integer data) {
+            if(data == null) {
+                return FindBugsMarker.MarkerRank.Unknown;
+            }
+            return FindBugsMarker.MarkerRank.forCategory(data.intValue());
+        }
     }),
 
     BugRank(true, new MarkerMapper<BugRankCategory>() {
