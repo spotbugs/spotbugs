@@ -51,7 +51,7 @@
       </runtime>
    </extension>
    <extension
-         id="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"
+         id="findbugsMarker"
          name="FindBugs Problem"
          point="org.eclipse.core.resources.markers">
       <super type="org.eclipse.core.resources.problemmarker"/>
@@ -102,6 +102,52 @@
       <persistent value="true"/>
    </extension>
 
+<!-- See feature 1926908. This was disabled because it may cause NPE in
+    FieldMarkerGroup.addEntry(FieldMarkerGroup.java:332) in Eclipse 3.3.2 and
+    NPE in MarkerGroup.addEntry(MarkerGroup.java:451) in Eclipse 3.4.0
+    and NPE int MarkerGroup.addEntry(MarkerGroup.java:452) in Eclipse 3.5.0
+
+    Can be uncommented for Eclipse 3.6+
+   <extension
+         point="org.eclipse.ui.ide.markerSupport">
+      <markerAttributeGrouping
+            attribute="priority"
+            defaultGroupingEntry="org.eclipse.jdt.ui.category.potential"
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker">
+         <markerAttributeMapping
+
+               markerGroupingEntry="fb.low"
+               value="0">
+         </markerAttributeMapping>
+         <markerAttributeMapping
+               markerGroupingEntry="fb.normal"
+               value="1">
+         </markerAttributeMapping>
+         <markerAttributeMapping
+               markerGroupingEntry="fb.high"
+               value="2">
+         </markerAttributeMapping>
+      </markerAttributeGrouping>
+      <markerGroupingEntry
+            id="fb.high"
+            label="FindBugs Warnings (High Confidence)"
+            markerGrouping="org.eclipse.jdt.ui.java_marker_category"
+            priority="79">
+      </markerGroupingEntry>
+      <markerGroupingEntry
+            id="fb.normal"
+            label="FindBugs Warnings (Normal Confidence)"
+            markerGrouping="org.eclipse.jdt.ui.java_marker_category"
+            priority="75">
+      </markerGroupingEntry>
+      <markerGroupingEntry
+            id="fb.low"
+            label="FindBugs Warnings (Low Confidence)"
+            markerGrouping="org.eclipse.jdt.ui.java_marker_category"
+            priority="71">
+      </markerGroupingEntry>
+   </extension>
+-->
 
    <!-- specify custom icon for findbugsMarker -->
    <extension point="org.eclipse.ui.editors.annotationTypes">
@@ -1053,48 +1099,6 @@
       </wizard>
    </extension>
 
-<!-- See feature 1926908. This is disabled because it may cause NPE in
-    FieldMarkerGroup.addEntry(FieldMarkerGroup.java:332) in Eclipse 3.3.2 and
-    NPE in MarkerGroup.addEntry(MarkerGroup.java:451) in Eclipse 3.4.0
-   <extension
-         point="org.eclipse.ui.ide.markerSupport">
-      <markerGroupingEntry
-            id="fb.high"
-            label="FindBugs Warnings (High)"
-            markerGrouping="org.eclipse.jdt.ui.java_marker_category"
-            priority="79">
-      </markerGroupingEntry>
-      <markerAttributeGrouping
-            attribute="priority"
-            defaultGroupingEntry="org.eclipse.jdt.ui.category.potential"
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker">
-         <markerAttributeMapping
-               markerGroupingEntry="fb.low"
-               value="0">
-         </markerAttributeMapping>
-         <markerAttributeMapping
-               markerGroupingEntry="fb.normal"
-               value="1">
-         </markerAttributeMapping>
-         <markerAttributeMapping
-               markerGroupingEntry="fb.high"
-               value="2">
-         </markerAttributeMapping>
-      </markerAttributeGrouping>
-      <markerGroupingEntry
-            id="fb.normal"
-            label="FindBugs Warnings (Normal)"
-            markerGrouping="org.eclipse.jdt.ui.java_marker_category"
-            priority="75">
-      </markerGroupingEntry>
-      <markerGroupingEntry
-            id="fb.low"
-            label="FindBugs Warnings (Low)"
-            markerGrouping="org.eclipse.jdt.ui.java_marker_category"
-            priority="71">
-      </markerGroupingEntry>
-   </extension>
--->
     <extension
          point="org.eclipse.ui.commands">
 
