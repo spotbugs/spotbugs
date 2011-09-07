@@ -1,33 +1,39 @@
-Release 1.3.10
+Release 2.0.0
+- feature 1926908: group FindBugs problems according to their confidence under the Java problem types in the Problems view
+  (for Eclipse 3.6+ only, need to be uncommented) (Andrey Loskutov)
+- feature: change bug reporting to use confidence instead of priority (Bill Pugh, Andrey Loskutov)
+- feature: allow to reuse class data for project libraries (speeds up analysis on slow file systems like Clearcase views) (Andrey Loskutov)
+- feature: allow FB analysis run independently from compile/build job (Andrey Loskutov)
 - feature: cloud support for Eclipse plugin (Keith Lea)
-- feature: Bug Annotations view is now called Bug Comments view and can work with the cloud (Keith Lea)
+- feature: Bug Annotations view is now called Bug Review view and can work with the cloud (Keith Lea)
 - feature: bug rank settings control for Eclipse plugin (Keith Lea)
-- feature: allow to specify custom detector packages from Eclipse UI as workspace preference (Andrei Loskutov)
-- feature: added "detectorPlugins" extension point for custom detector Eclipse plugins (Andrei Loskutov)
-- feature: use ".settings/edu.umd.cs.findbugs.core.prefs" as a name for the FB *core* preferences, instead of ".fbprefs"  (Andrei Loskutov)
-- feature: allow to run FB analysis on working sets (Andrei Loskutov)
-- feature: decorate working sets and source root directories with bug counts (Andrei Loskutov)
-- feature: show some previously hidden FB workspace preferences and allow user to change them easily (Andrei Loskutov)
-- feature: exported some findbugs packages as requested by 2974281 (Andrei Loskutov)
-- feature: added context menu on project to open FB analysis results xml in the Eclipse editor (Andrei Loskutov)
-- feature 2818893 and 2855997: allow user to choose which marker type (INFO/WARNING/ERROR) should be generated for different bug priorities (Andrei Loskutov)
+- feature: allow to specify custom FindBugs plugins from Eclipse UI as workspace preference (Andrey Loskutov)
+- feature: allow to enable/disable FindBugs plugins from Eclipse UI as workspace preference (Andrey Loskutov)
+- feature: added "findbugsPlugins" extension point for custom FindBugs Eclipse plugins (Andrey Loskutov)
+- feature: use ".settings/edu.umd.cs.findbugs.core.prefs" as a name for the FB *core* preferences, instead of ".fbprefs"  (Andrey Loskutov)
+- feature: allow to run FB analysis on working sets (Andrey Loskutov)
+- feature: decorate working sets and source root directories with bug counts (Andrey Loskutov)
+- feature: show some previously hidden FB workspace preferences and allow user to change them easily (Andrey Loskutov)
+- feature: exported some findbugs packages as requested by 2974281 (Andrey Loskutov)
+- feature: added context menu on project to open FB analysis results xml in the Eclipse editor (Andrey Loskutov)
+- feature 2818893 and 2855997: allow user to choose which marker type (INFO/WARNING/ERROR) should be generated for different bug priorities (Andrey Loskutov)
 
 - patch 2891041: do not analyze derived "source" folders because they probably contain auto-generated classes (Alessandro Nistico)
 - patch 2911925: for the issue: "eclipse plugin ignores CPE_CONTAINER classpath entries" (Michael Kober)
 
-- bugfix 3046886: allow filter files be stored relative to the workspace (e.g. if they are located in a different project) (Andrei Loskutov)
-- bugfix 3054146: we filter too much (Andrei Loskutov)
-- bugfix 2787728: store filter paths platform independent. Additionally remember last used directory for the filter dialogs (Andrei Loskutov)
-- bugfix 3040465: warn user that "Project->Build Automatically" option is unset (Andrei Loskutov)
-- bugfix: fixed NPE in action while running multiple jobs and starting next FB jobs at same time (Andrei Loskutov)
+- bugfix 3046886: allow filter files be stored relative to the workspace (e.g. if they are located in a different project) (Andrey Loskutov)
+- bugfix 3054146: we filter too much (Andrey Loskutov)
+- bugfix 2787728: store filter paths platform independent. Additionally remember last used directory for the filter dialogs (Andrey Loskutov)
+- bugfix 3040465: warn user that "Project->Build Automatically" option is unset (Andrey Loskutov)
+- bugfix: fixed NPE in action while running multiple jobs and starting next FB jobs at same time (Andrey Loskutov)
 
 Release 1.3.9
-- feature 2734173 (work in progress): allow to analyze classes inside archives, external classes/libraries (Andrei Loskutov)
-- feature: offer user to switch to the FB perspective after analysis (Andrei Loskutov)
-- feature (work in progress): added FindBugs console for debugging/profiling/monitoring FindBugs in production (Andrei Loskutov)
+- feature 2734173 (work in progress): allow to analyze classes inside archives, external classes/libraries (Andrey Loskutov)
+- feature: offer user to switch to the FB perspective after analysis (Andrey Loskutov)
+- feature (work in progress): added FindBugs console for debugging/profiling/monitoring FindBugs in production (Andrey Loskutov)
 - bugfix: enabled quick fix resolutions again (Tomas Pollak)
 
-Release 1.3.8 - Andrei Loskutov
+Release 1.3.8 - Andrey Loskutov
 - feature 1516701: if filter file is located inside workspace/project, do not use
     absolute pathname for it. Solves the issue if projects on different workstations are
     located in different roots, but use shared config file.
@@ -58,7 +64,7 @@ Release 1.3.8 - Andrei Loskutov
 - feature: changes in build.xml and plugin folder structure
 - bugfix: applied patch 2143140 (Unchecked conversion fixes for Eclipse plugin) (Jerry James)
 
-Release 1.3.7 - Andrei Loskutov
+Release 1.3.7 - Andrey Loskutov
 - bugfix: made FindBugs -> Load XML action available for single projects only, make consistent with Save XML
 - feature 2148441: added FindBugs -> Save XML action to projects menu (Tomas Pollak)
 - feature in progress: initial implementation for "Filter Bug by Id..." dialog in bug explorer view
@@ -77,7 +83,7 @@ Release 1.3.7 - Andrei Loskutov
 - feature: refactored reporter algorithm which improves performance on multi-project build
 - feature removed: do NOT automatically link bugs selected in bug explorer view to the opened editor (causes too much side effects)
 
-Release 1.3.6 - Andrei Loskutov
+Release 1.3.6 - Andrey Loskutov
 - fine tuning for reported markers: add only one marker for fields, add marker on right position
 - feature: link bugs selected in bug explorer view to the opened editor and vice versa
 - feature: select bugs selected in editor ruler in the opened bug explorer view
@@ -88,54 +94,54 @@ Release 1.3.6 - Andrei Loskutov
 - fix for CNF exception if loading the backup solution for broken browser widget
 
 Release 1.3.5 - FindBugs team
-- new feature: bug details (path, pattern id and warning) can be copied from marker/but explorer views (Andrei Loskutov)
+- new feature: bug details (path, pattern id and warning) can be copied from marker/but explorer views (Andrey Loskutov)
 - feature 1800221: build automatically allows start FB only for incremental builds (Arnout Engelen)
-- feature: FB plugin will start only limited number (by CPU cores + 1) of parallel jobs (Andrei Loskutov)
-- fixed bug 2032970: Eclipse plugin confused which generics in inner class declarations (Andrei Loskutov)
-- fix for FB warnings reported on inner classes but shown at parent class declaration (Andrei Loskutov)
-- fix for bug 2030157: problem selection is broken on 3.4 (Andrei Loskutov)
-- fix for bug 2023146: annotate from Problems View is broken on 3.4 (Andrei Loskutov)
-- fix for bug 2030167: no working set content shown (Andrei Loskutov)
-- fix for bug 1982455: exclude baseline bugs setting not saved in preferences (Andrei Loskutov)
-- fix for "The following classes needed for FindBugs analysis were missing:" issue on plugin projects (Andrei Loskutov)
+- feature: FB plugin will start only limited number (by CPU cores + 1) of parallel jobs (Andrey Loskutov)
+- fixed bug 2032970: Eclipse plugin confused which generics in inner class declarations (Andrey Loskutov)
+- fix for FB warnings reported on inner classes but shown at parent class declaration (Andrey Loskutov)
+- fix for bug 2030157: problem selection is broken on 3.4 (Andrey Loskutov)
+- fix for bug 2023146: annotate from Problems View is broken on 3.4 (Andrey Loskutov)
+- fix for bug 2030167: no working set content shown (Andrey Loskutov)
+- fix for bug 1982455: exclude baseline bugs setting not saved in preferences (Andrey Loskutov)
+- fix for "The following classes needed for FindBugs analysis were missing:" issue on plugin projects (Andrey Loskutov)
 
 Release 1.3.3 - FindBugs team
-- new feature: export basic FindBugs numbers for projects via File->Export->Java->BugCounts (Andrei Loskutov)
+- new feature: export basic FindBugs numbers for projects via File->Export->Java->BugCounts (Andrey Loskutov)
 - new feature: jobs for different projects will be run in parallel per default if running on a
-  multi-core PC ("fb.allowParallelBuild" system property not used anymore) (Andrei Loskutov)
+  multi-core PC ("fb.allowParallelBuild" system property not used anymore) (Andrey Loskutov)
 - fixed performance slowdown in the multi-threaded build, caused by workspace operation locks during
- assigning marker attributes (Andrei Loskutov)
+ assigning marker attributes (Andrey Loskutov)
 
 Release 1.3.2 - FindBugs team
-- new feature: added Bug explorer view (replacing Bug tree view), based on Common Navigator framework (Andrei Loskutov)
-- bug 1873860 fixed: empty projects are no longer shown in Bug tree view  (Andrei Loskutov)
+- new feature: added Bug explorer view (replacing Bug tree view), based on Common Navigator framework (Andrey Loskutov)
+- bug 1873860 fixed: empty projects are no longer shown in Bug tree view  (Andrey Loskutov)
 - new feature: bug counts decorators for projects, folders and files (has to be activated
-  via Preferences -> general -> appearance -> label decorations)(Andrei Loskutov)
+  via Preferences -> general -> appearance -> label decorations)(Andrey Loskutov)
 - patch 1746499: better icons (Alessandro Nistico)
 - patch 1893685: Find bug actions on change sets bug (Alessandro Nistico)
-- fixed bug 1855384: Bug configuration is broken in Eclipse (Andrei Loskutov)
-- refactored FindBugs properties page (Andrei Loskutov)
-- refactored FindBugs worker/builder/run action (Andrei Loskutov)
+- fixed bug 1855384: Bug configuration is broken in Eclipse (Andrey Loskutov)
+- refactored FindBugs properties page (Andrey Loskutov)
+- refactored FindBugs worker/builder/run action (Andrey Loskutov)
 - partial fix for bug 1186991: FB detects now only bugs from classes on project's classpath (no double work on
-  duplicated class files) (Andrei Loskutov)
+  duplicated class files) (Andrey Loskutov)
 - fixed bug introduced by the bad patch for 1867951: FB cannot be executed incrementally
-  on a folder of file (Andrei Loskutov)
+  on a folder of file (Andrey Loskutov)
 - fixed job rule: now jobs for different projects may run in parallel if running on a
-  multi-core PC and "fb.allowParallelBuild" system property is set to true (Andrei Loskutov)
-- fixed FB auto-build not started if .fbprefs or .classpath was changed (Andrei Loskutov)
+  multi-core PC and "fb.allowParallelBuild" system property is set to true (Andrey Loskutov)
+- fixed FB auto-build not started if .fbprefs or .classpath was changed (Andrey Loskutov)
 - fixed not reporting bugs on secondary types (classes defined in java files with
-  different name) (Andrei Loskutov)
+  different name) (Andrey Loskutov)
 
 
 Release 1.3.1 - FindBugs team
-- fixed bug 1828973: OutOfMemoryError in Eclipse, caused by ThreadLocals usage in FindBugs2 engine (Andrei Loskutov)
+- fixed bug 1828973: OutOfMemoryError in Eclipse, caused by ThreadLocals usage in FindBugs2 engine (Andrey Loskutov)
 
 Release 1.3.0 - FindBugs team
 - User may configure filters based on "baseline" bug instances in an xml file
 - Merged "extended" preferences pane with the main preferences pane
 - Include/Exclude filter-file selector now sanity-checks selection
 
-Release 1.2.2 - major code cleanup and refactoring by Andrei Loskutov
+Release 1.2.2 - major code cleanup and refactoring by Andrey Loskutov
 - fixed non-Eclipse-like behavoir of view selection/activation/opening (work in progress)
 - bud tree view monitors resource changes now
 - refactoring of all FindBugs views
@@ -156,7 +162,7 @@ Notes:
   TODO: make this configurable on the property page (and maybe also on a a preference
   page)
 
-Release 0.0.7 - some enhancements by Andrei Loskutov
+Release 0.0.7 - some enhancements by Andrey Loskutov
 Notes:
 - Added bug codes column and sorting on bug codes column in properties page
 - Reporter reports now what going on while finding bugs
