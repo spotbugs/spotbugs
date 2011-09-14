@@ -533,15 +533,6 @@
                label="Properties"
                menubarPath="group.properties">
          </action>
-           <action
-               class="de.tobject.findbugs.actions.ShowBugInfoAction"
-               enablesFor="1"
-               icon="icons/detailsView.png"
-               id="de.tobject.findbugs.actions.showBugInfo"
-               label="Show Bug Info"
-               menubarPath="fb">
-         </action>
-
          <action
                class="de.tobject.findbugs.actions.ShowInPackageExplorerAction"
                enablesFor="1"

@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Andrei Loskutov
+ * Copyright (C) 2011, Andrey Loskutov
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,6 @@
 package de.tobject.findbugs.actions;
 
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -30,8 +29,6 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.view.explorer.BugGroup;
-import de.tobject.findbugs.view.explorer.GroupType;
 
 /**
  * Show details on a selected FindBugs marker.
@@ -60,11 +57,6 @@ public class ShowBugInfoAction implements IObjectActionDelegate, IEditorActionDe
         this.selection = newSelection;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
-     */
     public final void run(final IAction action) {
         if (targetPart == null) {
             return;
@@ -76,21 +68,8 @@ public class ShowBugInfoAction implements IObjectActionDelegate, IEditorActionDe
                 if (element instanceof IMarker) {
                     IMarker marker = (IMarker) element;
                     FindbugsPlugin.showMarker(marker, FindbugsPlugin.DETAILS_VIEW_ID, targetPart);
-                } else if (element instanceof BugGroup) {
-                    final BugGroup group = (BugGroup) element;
-                    System.out.println(group.getType());
-                    if (group.getType() == GroupType.Pattern) {
-                        Object data = group.getData();
-                        System.out.println(data.getClass().getName() + " " + data);
-                    }
-                    targetPart.getSite().getPage().showView(FindbugsPlugin.DETAILS_VIEW_ID);
-                } else {
-                    System.out.println(element.getClass().getName());
-
                 }
             }
-        } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Exception while parsing content of FindBugs markers.");
         } finally {
             targetPart = null;
         }
