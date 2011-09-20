@@ -70,7 +70,7 @@ public class MethodGenFactory extends AnalysisFactory<MethodGen> {
                 return null;
             }
             if (analysisContext.getBoolProperty(AnalysisFeatures.SKIP_HUGE_METHODS)) {
-                if (codeLength > 3000 || (methodName.equals("<clinit>") || methodName.equals("getContents")) && codeLength > 1000) {
+                if (codeLength > 6000 || (methodName.equals("<clinit>") || methodName.equals("getContents")) && codeLength > 2000) {
                     analysisContext.getLookupFailureCallback().reportSkippedAnalysis(
                             new JavaClassAndMethod(jclass, method).toMethodDescriptor());
                     return null;
