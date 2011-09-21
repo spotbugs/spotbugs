@@ -381,7 +381,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
             for(Info info : collection) {
                 Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
                 if (DEBUG)
-                    System.out.println("Checking call to " + info.interfaceForCall + " : " + invokedMethod);
+                    System.out.println("at " + handle.getPosition() + " Checking call to " + info.interfaceForCall + " : " + invokedMethod);
                 try {
                     if (!subtypes2.isSubtype(invokedMethod.getClassDescriptor(), info.interfaceForCall))
                         continue;

@@ -25,10 +25,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Attribute;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.Signature;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTypeTable;
 import org.apache.bcel.generic.*;
 
 import edu.umd.cs.findbugs.OpcodeStack.Item;
@@ -41,7 +42,7 @@ import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
-import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -89,6 +90,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
     private Set<ReferenceType> typesComputedFromGenerics = Util.newSetFromMap(new IdentityHashMap<ReferenceType, Boolean>());
 
     protected final TypeMerger typeMerger;
+    
+    LocalVariableTypeTable localTypeTable;
 
     /**
      * Constructor.
@@ -118,6 +121,10 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
      */
     public void setValueNumberDataflow(ValueNumberDataflow valueNumberDataflow) {
         this.valueNumberDataflow = valueNumberDataflow;
+    }
+
+    public void setLocalTypeTable(LocalVariableTypeTable localTypeTable) {
+        this.localTypeTable = localTypeTable;
     }
 
     /**
@@ -752,23 +759,53 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         }
     }
 
+    @CheckForNull
+    GenericObjectType getLocalVariable(int index, int pos) {
+        if (localTypeTable == null)
+            return null;
+        for (LocalVariable local : localTypeTable.getLocalVariableTypeTable())
+            if (local.getIndex() == index && local.getStartPC() <= pos
+                    && pos < +local.getStartPC() + local.getLength()) {
+                String signature = local.getSignature();
+                Type t;
+                try {
+                    t = GenericUtilities.getType(signature);
+                    if (t instanceof GenericObjectType)
+                        return (GenericObjectType) t;
+                } catch (RuntimeException e) {
+                    AnalysisContext.logError("Bad signature " + signature
+                            + " for " + local.getName(), e);
+
+                }
+                return null;
+            }
+        return null;
+    }
+
+
     @Override
     public void handleStoreInstruction(StoreInstruction obj) {
-        int numConsumed = obj.consumeStack(cpg);
-        if (numConsumed == 1) {
-            try {
+        try {
+            int numConsumed = obj.consumeStack(cpg);
+            if (numConsumed == 1) {
                 boolean isExact = isTopOfStackExact();
                 TypeFrame frame = getFrame();
-                int index = obj.getIndex();
                 Type value = frame.popValue();
+                int index = obj.getIndex();
+                if (value instanceof ReferenceType) {
+                    GenericObjectType gType = getLocalVariable(index,
+                            getLocation().getHandle().getPosition());
+                    value = GenericUtilities.merge(gType, value);
+                }
                 frame.setValue(index, value);
                 frame.setExact(index, isExact);
-            } catch (DataflowAnalysisException e) {
-                throw new InvalidBytecodeException(e.toString());
-            }
-        } else
-            super.handleStoreInstruction(obj);
+            } else
+                super.handleStoreInstruction(obj);
 
+        } catch (DataflowAnalysisException e) {
+            throw new InvalidBytecodeException(
+                    "error handling store instruction ", e);
+        }
     }
 
     /**
@@ -789,6 +826,11 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         int index = obj.getIndex();
         TypeFrame frame = getFrame();
         Type value = frame.getValue(index);
+        if (value instanceof ReferenceType) {
+            GenericObjectType gType = getLocalVariable(index,
+                    getLocation().getHandle().getPosition());
+            value = GenericUtilities.merge(gType, value);
+        }
         boolean isExact = frame.isExact(index);
         frame.pushValue(value);
         if (isExact)

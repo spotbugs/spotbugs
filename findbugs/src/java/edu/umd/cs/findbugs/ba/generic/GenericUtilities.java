@@ -300,6 +300,16 @@ public class GenericUtilities {
         return t2;
     }
 
+    public static Type merge(GenericObjectType t1, Type t2) {
+        if (t1 == null)
+            return t2;
+        if (t2 instanceof ObjectType)
+            return merge(t1,(ObjectType) t2);
+        if (t2 instanceof NullType)
+            return t1;
+        return t2;
+    }
+
     public static ObjectType merge(GenericObjectType t1, ObjectType t2) {
         if (t2 instanceof GenericObjectType)
             return t2;

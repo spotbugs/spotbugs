@@ -19,15 +19,15 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTypeTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ATHROW;
@@ -45,7 +45,6 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.Analyze;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -62,7 +61,6 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
-import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -173,10 +171,6 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
 
     private TypeFrameModelingVisitor visitor;
 
-    private LocalVariableTypeTable typeTable;
-
-    private BitSet startOfLocalTypedVariables = new BitSet();
-
     private Map<BasicBlock, CachedExceptionSet> thrownExceptionSetMap;
 
     private RepositoryLookupFailureCallback lookupFailureCallback;
@@ -217,14 +211,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
         if (code == null)
             throw new IllegalArgumentException(method.getName() + " has no code");
         for (Attribute a : code.getAttributes()) {
-            if (a instanceof LocalVariableTypeTable) {
-                typeTable = (LocalVariableTypeTable) a;
-                for (LocalVariable v : typeTable.getLocalVariableTypeTable()) {
-                    int startPC = v.getStartPC();
-                    if (startPC >= 0)
-                        startOfLocalTypedVariables.set(startPC);
-                }
-            }
+            if (a instanceof LocalVariableTypeTable) 
+                visitor.setLocalTypeTable((LocalVariableTypeTable) a);
         }
         this.methodGen = methodGen;
         this.cfg = cfg;
@@ -406,30 +394,6 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
     @Override
     public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, TypeFrame fact)
             throws DataflowAnalysisException {
-        if (typeTable != null) {
-            int pos = handle.getPosition();
-            if (pos >= 0 && startOfLocalTypedVariables.get(pos))
-                for (LocalVariable local : typeTable.getLocalVariableTypeTable()) {
-                    if (local.getStartPC() == pos) {
-                        String signature = local.getSignature();
-                        Type t;
-                        try {
-                            t = GenericUtilities.getType(signature);
-                        } catch (RuntimeException e) {
-                            AnalysisContext.logError("Bad signature " + signature + " for " + local.getName() + " in "
-                                    + methodGen.getClassName() + "." + method.getName(), e);
-                            continue;
-                        }
-                        if (t instanceof GenericObjectType) {
-                            int index = local.getIndex();
-                            Type currentValue = fact.getValue(index);
-                            if (!(currentValue instanceof GenericObjectType) && (currentValue instanceof ObjectType))
-                                fact.setValue(index, GenericUtilities.merge((GenericObjectType) t, (ObjectType) currentValue));
-                        }
-
-                    }
-                }
-        }
         visitor.setFrameAndLocation(fact, new Location(handle, basicBlock));
         visitor.analyzeInstruction(handle.getInstruction());
     }
