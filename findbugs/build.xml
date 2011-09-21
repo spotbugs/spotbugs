@@ -502,7 +502,7 @@
     <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
     <findbugs home="."
               output="xml:withMessages"
-              jvmargs="-ea -Xmx900m"
+              jvmargs="-ea -Xmx1200m"
               projectName="Byte code Engineering Library (BCEL)"
               outputFile="${sampleoutput.dir}/bcel.xml"
             >
@@ -511,7 +511,7 @@
     <findbugs home="."
               output="xml:withMessages"
               cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
-              jvmargs="-ea -Xmx900m"
+              jvmargs="-ea -Xmx1200m"
               projectName="Byte code Engineering Library (BCEL)"
               outputFile="${sampleoutput.dir}/bcel-cloud-appengine.xml" >
       <class location="${jar.dir}/bcel.jar" />
@@ -520,7 +520,7 @@
     <findbugs home="."
               output="xml:withMessages"
         cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
-              jvmargs="-ea -Xmx900m"
+              jvmargs="-ea -Xmx1200m"
               projectName="Byte code Engineering Library (BCEL)"
               outputFile="${sampleoutput.dir}/bcel-cloud.xml" >
       <class location="${jar.dir}/bcel.jar" />
@@ -530,7 +530,7 @@
 <!--
 <findbugs home="${findbugs.home}"
               output="xml"
-              jvmargs="-ea -Xmx640m"
+              jvmargs="-ea -Xmx940m"
               outputFile="${sampleoutput.dir}/bcel-3.xml"
               projectFile="${sampleoutput.dir}/bcel.fbp"
         applySuppression="true"
@@ -538,7 +538,7 @@
 
 <convertXmlToText
      home="${findbugs.home}"
-              jvmargs="-ea -Xmx640m"
+              jvmargs="-ea -Xmx940m"
               input="${sampleoutput.dir}/bcel-3.xml"
               output="${sampleoutput.dir}/bcel-3.txt"
               applySuppression="true"
@@ -561,7 +561,7 @@
     <findbugs home="."
               output="xml:withMessages"
               cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
-              jvmargs="-ea -Xmx900m -Dfindbugs.failOnCloudError=true -Dfindbugs.cloud.token=238b6fc80cec17ec"
+              jvmargs="-ea -Xmx1200m -Dfindbugs.failOnCloudError=true -Dfindbugs.cloud.token=238b6fc80cec17ec"
               excludeFilter="findbugsExclude.xml"
               projectName="FindBugs"
               maxRank="20"
@@ -574,7 +574,7 @@
     <filterBugs home="."
               withMessages="true"
               notAProblem="false"
-              jvmargs="-ea -Xmx900m"
+              jvmargs="-ea -Xmx1200m"
               input="${build.dir}/findbugscheckAll.xml" 
               output="${build.dir}/findbugscheck.xml" >
     </filterBugs>
@@ -587,7 +587,7 @@
     <findbugs home="."
               output="xml:withMessages"
               cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
-              jvmargs="-ea -Xmx900m -Dfindbugs.failOnCloudError=true -Dwebcloud.host=example.com"
+              jvmargs="-ea -Xmx1200m -Dfindbugs.failOnCloudError=true -Dwebcloud.host=example.com"
               excludeFilter="findbugsExclude.xml"
               projectName="FindBugs"
               maxRank="20"
@@ -604,7 +604,7 @@
     <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
     <findbugs home="."
               output="xml"
-              jvmargs="-ea -Xmx900m"
+              jvmargs="-ea -Xmx1200m"
               projectName="FindBugsTestCases"
               timeout="1800000"
               outputFile="${sampleoutput.dir}/findbugsTestCases.xml" >
