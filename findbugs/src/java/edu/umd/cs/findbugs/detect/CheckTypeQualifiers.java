@@ -261,10 +261,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 
         for (Iterator<Edge> i = cfg.edgeIterator(); i.hasNext();) {
             Edge edge = i.next();
-            if (DEBUG) {
-                checkLocation = "edge " + edge.getLabel();
-                System.out.println("BEGIN CHECK EDGE " + edge.getLabel());
-            }
+     
 
             // NOTE: when checking forwards and backwards values on an edge,
             // we don't want to apply BOTH edge transfer functions,
@@ -297,9 +294,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 
             checkForConflictingValues(methodDescriptor, typeQualifierValue, forwardFact, backwardFact, locationToReport,
                     edgeTargetLocation, vnaFrame);
-            if (DEBUG) {
-                System.out.println("END CHECK EDGE");
-            }
+   
         }
     }
 
@@ -320,14 +315,13 @@ public class CheckTypeQualifiers extends CFGDetector {
                 TypeQualifierValueSet backwardsFact = backwardDataflow.getFactAtLocation(location);
                 FlowValue backwardsFlowValue = backwardsFact.getValue(vn);
 
+                if (!(backwardsFlowValue == FlowValue.ALWAYS || backwardsFlowValue == FlowValue.NEVER)) {
+                    continue;
+                }
                 if (DEBUG) {
                     System.out.println("Checking value source at " + location.toCompactString());
                     System.out.println("  back=" + backwardsFact);
                     System.out.println("  source=" + source);
-                }
-
-                if (!(backwardsFlowValue == FlowValue.ALWAYS || backwardsFlowValue == FlowValue.NEVER)) {
-                    continue;
                 }
 
                 // Check to see if this warning has already been reported
@@ -411,6 +405,10 @@ public class CheckTypeQualifiers extends CFGDetector {
             FlowValue forward = forwardsFact.getValue(vn);
             FlowValue backward = backwardsFact.getValue(vn);
 
+            if (forward == FlowValue.TOP || backward == FlowValue.TOP) continue;
+            if (forward == FlowValue.UNKNOWN && backward == FlowValue.UNKNOWN)
+                continue;
+            
             if (DEBUG) {
                 System.out.println("Check " + vn + ": forward=" + forward + ", backward=" + backward + " at " + checkLocation);
             }

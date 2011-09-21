@@ -41,8 +41,6 @@ public class TypeQualifierValueSet {
         VALID, TOP, BOTTOM
     }
 
-    private static final FlowValue DEFAULT_FLOW_VALUE = FlowValue.UNKNOWN;
-
     private Map<ValueNumber, FlowValue> valueMap;
 
     private Map<ValueNumber, Set<SourceSinkInfo>> whereAlways;
@@ -64,18 +62,31 @@ public class TypeQualifierValueSet {
         FlowValue flowValue = FlowValue.flowValueFromWhen(sourceSinkInfo.getWhen());
 
         setValue(vn, flowValue);
+        if (true) {
+            switch (flowValue) {
+            case ALWAYS:
+                addSourceSinkInfo(whereAlways, vn, sourceSinkInfo);
+                break;
+            case NEVER:
+                addSourceSinkInfo(whereNever, vn, sourceSinkInfo);
+            }
+        } else {
 
-        if (flowValue.isYes()) {
-            addSourceSinkInfo(whereAlways, vn, sourceSinkInfo);
-        }
+            if (flowValue.isYes()) {
+                addSourceSinkInfo(whereAlways, vn, sourceSinkInfo);
+            }
 
-        if (flowValue.isNo()) {
-            addSourceSinkInfo(whereNever, vn, sourceSinkInfo);
+            if (flowValue.isNo()) {
+                addSourceSinkInfo(whereNever, vn, sourceSinkInfo);
+            }
         }
     }
 
      private void setValue(ValueNumber vn, FlowValue flowValue) {
-        valueMap.put(vn, flowValue);
+         if (flowValue == FlowValue.TOP)
+             pruneValue(vn);
+         else 
+             valueMap.put(vn, flowValue);
     }
 
     static <K, V> void copyMapValue(Map<K, V> map, K from, K to) {
@@ -298,12 +309,15 @@ public class TypeQualifierValueSet {
         StringBuilder buf = new StringBuilder();
 
         buf.append("{");
+        boolean first = true;
 
         for (ValueNumber vn : interesting) {
+            FlowValue value = getValue(vn);
+            if (value == FlowValue.TOP) continue; 
             if (buf.length() > 1) {
                 buf.append(", ");
             }
-            buf.append(valueNumberToString(vn));
+            buf.append(valueNumberToString(vn, value));
         }
 
         buf.append("}");
@@ -311,17 +325,27 @@ public class TypeQualifierValueSet {
         return buf.toString();
     }
 
-    public String valueNumberToString(ValueNumber vn) {
+    public String valueNumberToString(ValueNumber vn ) {
+        return valueNumberToString(vn, getValue(vn));
+    }
+    public String valueNumberToString(ValueNumber vn, FlowValue value ) {
         StringBuilder buf = new StringBuilder();
 
         buf.append(vn.getNumber());
         buf.append("->");
-        buf.append(getValue(vn).toString());
-        buf.append("[");
-        appendSourceSinkInfos(buf, "YES=", getSourceSinkInfoSet(whereAlways, vn));
-        buf.append(",");
-        appendSourceSinkInfos(buf, "NO=", getSourceSinkInfoSet(whereNever, vn));
-        buf.append("]");
+       
+        buf.append(value);
+        if (value != FlowValue.TOP) {
+            Set<? extends SourceSinkInfo> always = getSourceSinkInfoSet(whereAlways, vn);
+            Set<? extends SourceSinkInfo> never = getSourceSinkInfoSet(whereNever, vn);
+            if (value != FlowValue.UNKNOWN || !always.equals(never)) {
+                buf.append("[");
+                appendSourceSinkInfos(buf, "YES=", always);
+                buf.append(",");
+                appendSourceSinkInfos(buf, "NO=", never);
+                buf.append("]");
+            }
+        }
 
         return buf.toString();
     }
