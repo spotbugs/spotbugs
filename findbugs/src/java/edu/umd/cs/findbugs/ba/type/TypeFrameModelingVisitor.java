@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -42,7 +43,6 @@ import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
-import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -91,7 +91,10 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
     protected final TypeMerger typeMerger;
     
-    LocalVariableTypeTable localTypeTable;
+    protected LocalVariableTypeTable localTypeTable;
+    
+    protected BitSet genericLocalVariables;
+    
 
     /**
      * Constructor.
@@ -125,6 +128,18 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
     public void setLocalTypeTable(LocalVariableTypeTable localTypeTable) {
         this.localTypeTable = localTypeTable;
+        if (localTypeTable == null) 
+            genericLocalVariables = null;
+        else {
+            genericLocalVariables = new BitSet();
+            for(LocalVariable lv : localTypeTable.getLocalVariableTypeTable()) {
+                if (lv.getSignature().indexOf('<') > 0)
+                    genericLocalVariables.set(lv.getIndex());
+                
+            }
+        }
+            
+        
     }
 
     /**
@@ -761,12 +776,13 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
     @CheckForNull
     GenericObjectType getLocalVariable(int index, int pos) {
-        if (localTypeTable == null)
+        if (genericLocalVariables == null || !genericLocalVariables.get(index))
             return null;
         for (LocalVariable local : localTypeTable.getLocalVariableTypeTable())
             if (local.getIndex() == index && local.getStartPC() <= pos
                     && pos < +local.getStartPC() + local.getLength()) {
                 String signature = local.getSignature();
+                if (signature.indexOf('<') < 0) continue;
                 Type t;
                 try {
                     t = GenericUtilities.getType(signature);
@@ -792,8 +808,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                 TypeFrame frame = getFrame();
                 Type value = frame.popValue();
                 int index = obj.getIndex();
-                if (value instanceof ReferenceType) {
-                    GenericObjectType gType = getLocalVariable(index,
+                if (value instanceof ReferenceType && !(value instanceof GenericObjectType)) {
+                         GenericObjectType gType = getLocalVariable(index,
                             getLocation().getHandle().getPosition());
                     value = GenericUtilities.merge(gType, value);
                 }
@@ -826,7 +842,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         int index = obj.getIndex();
         TypeFrame frame = getFrame();
         Type value = frame.getValue(index);
-        if (value instanceof ReferenceType) {
+        if (value instanceof ReferenceType && !(value instanceof GenericObjectType)) {
             GenericObjectType gType = getLocalVariable(index,
                     getLocation().getHandle().getPosition());
             value = GenericUtilities.merge(gType, value);
