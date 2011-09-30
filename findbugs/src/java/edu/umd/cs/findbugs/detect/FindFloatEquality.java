@@ -29,9 +29,11 @@ import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.util.Util;
 
 public class FindFloatEquality extends OpcodeStackDetector implements StatelessDetector {
     private static final int SAW_NOTHING = 0;
@@ -131,9 +133,11 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
                     break;
                 // if (first.isInitialParameter() && n2 != null) break;
                 // if (second.isInitialParameter() && n1 != null) break;
-                if (first.getRegisterNumber() == second.getRegisterNumber())
+                if (first.getRegisterNumber() == second.getRegisterNumber() && first.getRegisterNumber() != -1)
                     break;
                 if (first.isInitialParameter() && second.isInitialParameter())
+                    break;
+                if (sameField(first, second))
                     break;
                 if (n1 != null && n2 != null)
                     break;
@@ -169,4 +173,13 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
         }
     }
 
+    static boolean sameField(Item i1, Item i2) {
+        if (i1.getXField() == null)
+            return false;
+        if (!i1.getXField().equals(i2.getXField()))
+            return false;
+        if (i1.getFieldLoadedFromRegister() != i2.getFieldLoadedFromRegister())
+            return false;
+        return true;
+    }
 }
