@@ -548,4 +548,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         return AnalysisContext.currentAnalysisContext().getBridgeTo(this);
 
     }
+    
+    public XMethod resolveAccessMethod() {
+        MethodDescriptor access = getAccessMethodFor();
+        if (access != null) 
+            return XFactory.createXMethod(access);
+        return this;
+
+    }
 }
