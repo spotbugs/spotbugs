@@ -656,10 +656,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                 System.out.println("   for " + targets.size() + " targets: " + targets);
             }
             for (XMethod m : targets) {
-                MethodDescriptor access = m.getAccessMethodFor();
-                if (access != null) 
-                    m = XFactory.createXMethod(access);
-    
+                m = m.resolveAccessMethod();
                 String sourceSignature = m.getSourceSignature();
                 if (DEBUG) {
                     System.out.println(" Call target: " + m);
