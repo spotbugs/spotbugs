@@ -1,9 +1,9 @@
 package sfBugs;
 
-public class Bug6628576 {
+public class Bug06628576 {
     Object address, broadcast, maskLength;
 
-    Bug6628576(Object address, Object broadcast, Object maskLength) {
+    Bug06628576(Object address, Object broadcast, Object maskLength) {
         this.address = address;
         this.broadcast = broadcast;
         this.maskLength = maskLength;
@@ -16,10 +16,10 @@ public class Bug6628576 {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Bug6628576)) {
+        if (!(obj instanceof Bug06628576)) {
             return false;
         }
-        Bug6628576 cmp = (Bug6628576) obj;
+        Bug06628576 cmp = (Bug06628576) obj;
         if ((address != null & cmp.address == null) || (!address.equals(cmp.address)))
             return false;
         if ((broadcast != null & cmp.broadcast == null) || (!broadcast.equals(cmp.broadcast)))

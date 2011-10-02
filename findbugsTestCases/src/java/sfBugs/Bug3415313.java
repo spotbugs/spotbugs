@@ -7,6 +7,8 @@ import java.sql.SQLException;
 
 import javax.annotation.WillClose;
 
+import edu.umd.cs.findbugs.annotations.Confidence;
+import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
@@ -56,6 +58,7 @@ public class Bug3415313 {
 
     }
 
+    @DesireWarning(value="OBL_UNSATISFIED_OBLIGATION", confidence=Confidence.LOW)
     public void maybe(Connection sesscon) throws SQLException {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -71,6 +74,25 @@ public class Bug3415313 {
             WorkflowUtils.baz(ps);
         }
     }
+    
+    @DesireWarning(value="OBL_UNSATISFIED_OBLIGATION", confidence=Confidence.MEDIUM)
+    public void tp2(Connection sesscon) throws SQLException {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = sesscon.prepareStatement("SELECT groupcounter FROM DataGroup");
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                // get the data
+            }
+        } finally {
+            WorkflowUtils.bar();
+            WorkflowUtils.baz();
+        }
+    }
+
+
+    
 
     static class WorkflowUtils {
         private static void baz(PreparedStatement ps) {
@@ -79,6 +101,15 @@ public class Bug3415313 {
         }
 
         public static void bar(ResultSet rs) {
+            // TODO Auto-generated method stub
+
+        }
+        private static void baz() {
+            // TODO Auto-generated method stub
+
+        }
+
+        public static void bar() {
             // TODO Auto-generated method stub
 
         }

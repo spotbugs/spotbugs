@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.annotations.Confidence;
 public class Bug3104124 {
 
     
-    @DesireWarning(value="OS_OPEN_STREAM_EXCEPTION_PATH", priority=Confidence.MEDIUM)
+    @DesireWarning(value="OS_OPEN_STREAM_EXCEPTION_PATH", confidence=Confidence.MEDIUM)
     public static String fileToString(String fileName) {
         StringBuffer output = new StringBuffer();
         try {
