@@ -139,6 +139,8 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
                 handleParameter: if (entryFact.isUnconditionallyDereferenced(paramVN)) {
                     TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications
                             .getDirectTypeQualifierAnnotation(xmethod, i, nonnullTypeQualifierValue);
+                    TypeQualifierAnnotation typeQualifierAnnotation = TypeQualifierApplications
+                            .getEffectiveTypeQualifierAnnotation(xmethod, i, nonnullTypeQualifierValue);
                     boolean implicitNullCheckForEquals = false;
                     if (directTypeQualifierAnnotation == null && method.getName().equals("equals")
                             && method.getSignature().equals("(Ljava/lang/Object;)Z") && !method.isStatic()) {
@@ -159,23 +161,25 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
                                 return;
                             }
                         }
-                        directTypeQualifierAnnotation = TypeQualifierAnnotation.getValue(nonnullTypeQualifierValue, When.MAYBE);
+                        typeQualifierAnnotation = TypeQualifierAnnotation.getValue(nonnullTypeQualifierValue, When.MAYBE);
                     }
 
-                    if (directTypeQualifierAnnotation != null && directTypeQualifierAnnotation.when == When.ALWAYS)
+                    if (typeQualifierAnnotation != null && typeQualifierAnnotation.when == When.ALWAYS)
                         unconditionalDerefSet.set(i);
                     else if (isCaught(classContext, method, entryFact, paramVN)) {
                         // ignore
-                    } else if (directTypeQualifierAnnotation == null)
+                    } else if (typeQualifierAnnotation == null)
                         unconditionalDerefSet.set(i);
                     else {
                         int paramLocal = xmethod.isStatic() ? i : i + 1;
                         int priority = Priorities.NORMAL_PRIORITY;
-                        if (directTypeQualifierAnnotation.when != When.UNKNOWN)
+                        if (typeQualifierAnnotation.when != When.UNKNOWN)
                             priority--;
                         if (xmethod.isStatic() || xmethod.isFinal() || xmethod.isPrivate() || xmethod.getName().equals("<init>")
                                 || jclass.isFinal())
                             priority--;
+                        if (directTypeQualifierAnnotation == null)
+                            priority++;
                         String bugPattern = implicitNullCheckForEquals ? "NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT"
                                 : "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE";
                         reportBug(new BugInstance(this, bugPattern, priority).addClassAndMethod(jclass, method).add(
