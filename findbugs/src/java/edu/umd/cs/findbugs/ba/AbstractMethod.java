@@ -58,5 +58,13 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
         return DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(getClassName()), getName(),
                 getSignature(), isStatic());
     }
+    
+    public XMethod resolveAccessMethod() {
+        MethodDescriptor access = getAccessMethodFor();
+        if (access != null) 
+            return XFactory.createXMethod(access);
+        return this;
+
+    }
 
 }

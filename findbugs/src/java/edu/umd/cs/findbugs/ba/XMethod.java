@@ -96,6 +96,9 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
     
     public @CheckForNull
     MethodDescriptor getAccessMethodFor();
+    
+    public 
+    XMethod resolveAccessMethod();
   
 
     /**
