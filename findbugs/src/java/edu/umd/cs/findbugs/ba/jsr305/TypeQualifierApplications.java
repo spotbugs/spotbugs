@@ -27,12 +27,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.meta.When;
 
 import org.objectweb.asm.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.InnerClassAccess;
 import edu.umd.cs.findbugs.ba.InnerClassAccessMap;

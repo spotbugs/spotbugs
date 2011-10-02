@@ -7,5 +7,4 @@
  * which represents symbolic information parsed from the class data.
  */
 @javax.annotation.ParametersAreNonnullByDefault
-@edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters(edu.umd.cs.findbugs.annotations.NonNull.class)
 package edu.umd.cs.findbugs.classfile.analysis;
