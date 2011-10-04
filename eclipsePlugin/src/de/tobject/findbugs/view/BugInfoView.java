@@ -541,8 +541,10 @@ public class BugInfoView extends AbstractFindbugsView {
                     FindbugsPlugin.getDefault().logException(e, "Could not open editor for " + theAnnotation);
                 }
             }
-            int line = marker.getAttribute(IMarker.LINE_NUMBER, EditorUtil.DEFAULT_LINE_IN_EDITOR);
-            EditorUtil.goToLine(activeEditor, line);
+            if(marker != null) {
+                int line = marker.getAttribute(IMarker.LINE_NUMBER, EditorUtil.DEFAULT_LINE_IN_EDITOR);
+                EditorUtil.goToLine(activeEditor, line);
+            }
         } finally {
             showingAnnotation = false;
         }
