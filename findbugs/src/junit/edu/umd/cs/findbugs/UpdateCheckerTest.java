@@ -3,8 +3,10 @@ package edu.umd.cs.findbugs;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -244,7 +246,13 @@ public class UpdateCheckerTest extends TestCase {
 
     @SuppressWarnings({"deprecation"})
     private Plugin createPlugin(String pluginId, Date releaseDate, String version) throws URISyntaxException, PluginException {
-        Plugin plugin = new Plugin(pluginId, version, releaseDate, new PluginLoader(), true, false);
+        PluginLoader fakeLoader;
+        try {
+            fakeLoader = new PluginLoader(true, new URL("http://" + pluginId + ".findbugs.cs.umd.edu"));
+        } catch (MalformedURLException e) {
+           throw new RuntimeException(e);
+        }
+        Plugin plugin = new Plugin(pluginId, version, releaseDate, fakeLoader,  true, false);
         plugin.setShortDescription("My Plugin");
         plugin.setUpdateUrl("http://example.com/update");
         return plugin;

@@ -221,8 +221,31 @@ public class PluginLoader {
         plugin = init();
         Plugin.putPlugin(null, plugin);
     }
+    
+    /**
+     * Constructor. Loads a plugin using the caller's class loader. This
+     * constructor should only be used to load the "core" findbugs detectors,
+     * which are built into findbugs.jar.
+     * @throws PluginException
+     */
+    @Deprecated
+    public PluginLoader(boolean fake, URL url) throws PluginException {
+        classLoader = getClass().getClassLoader();
+        classLoaderForResources = classLoader;
+        corePlugin = false;
+        initialPlugin = true;
+        optionalPlugin = false;
 
+        loadedFrom = url;
+        try {
+            loadedFromUri = loadedFrom.toURI();
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Failed to parse uri: " + loadedFrom);
+        }
+        jarName = getJarName(loadedFrom);
+    }
 
+    
     private URL computeCoreUrl() {
         URL from;
         String findBugsClassFile = ClassName.toSlashedClassName(FindBugs.class) + ".class";
