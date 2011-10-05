@@ -67,7 +67,7 @@ public class InstructionActionCache {
                 if (signature.indexOf(';') >= -1) {
                     actionList = new LinkedList<ObligationPolicyDatabaseAction>();
 
-                    if (signature.substring(0, signature.indexOf(')')).indexOf("Ljava/io/Closeable;") >= 0 || methodName.startsWith("close")) {
+                    if (signature.substring(0, signature.indexOf(')')).indexOf("Ljava/io/Closeable;") >= 0 || false &&  methodName.startsWith("close")) {
                         actionList.add(ObligationPolicyDatabaseAction.CLEAR);
                     } else {
 
