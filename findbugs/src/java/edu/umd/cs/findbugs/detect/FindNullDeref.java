@@ -472,9 +472,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     }
 
     private void examinePutfieldInstruction(Location location, PUTFIELD ins, ConstantPoolGen cpg)
-            throws DataflowAnalysisException, CFGBuilderException {
+            throws DataflowAnalysisException {
 
-        IsNullValueDataflow invDataflow = classContext.getIsNullValueDataflow(method);
         IsNullValueFrame frame = invDataflow.getFactAtLocation(location);
         if (!frame.isValid())
             return;
@@ -866,11 +865,21 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                 if (m.isPrivate() && priority == HIGH_PRIORITY)
                     priority = NORMAL_PRIORITY;
                 String description = definitelyNull ? "INT_NULL_ARG" : "INT_MAYBE_NULL_ARG";
+                WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
+                Set<Location> derefLocationSet = Collections.singleton(location);
+
+                addPropertiesForDereferenceLocations(propertySet, derefLocationSet, false);
+
+                boolean duplicated = isDuplicated(propertySet, location.getHandle().getPosition(), false);
+
+                if (duplicated) 
+                    return;
                 BugInstance warning = new BugInstance(this, "NP_NONNULL_PARAM_VIOLATION", priority)
                         .addClassAndMethod(classContext.getJavaClass(), method).addMethod(m)
                         .describe(MethodAnnotation.METHOD_CALLED).addParameterAnnotation(i, description)
                         .addOptionalAnnotation(variableAnnotation).addSourceLine(classContext, method, location);
 
+                propertySet.decorateBugInstance(warning);
                 bugReporter.reportBug(warning);
             }
         }
@@ -916,22 +925,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                     && iins.getSignature(classContext.getConstantPoolGen()).equals("()V"))
                 propertySet.addProperty(NullDerefProperty.CLOSING_NULL);
         }
-        boolean duplicated = false;
-        if (!isConsistent) {
-            if (propertySet.containsProperty(NullDerefProperty.DEREFS_ARE_CLONED))
-                duplicated = true;
-
-            else
-                try {
-                    CFG cfg = classContext.getCFG(method);
-                    if (cfg.getLocationsContainingInstructionWithOffset(pc).size() > 1) {
-                        propertySet.addProperty(NullDerefProperty.DEREFS_ARE_INLINED_FINALLY_BLOCKS);
-                        duplicated = true;
-                    }
-                } catch (CFGBuilderException e) {
-                    AnalysisContext.logError("Error while analyzing " + classContext.getFullyQualifiedMethodName(method), e);
-                }
-        }
+        boolean duplicated = isDuplicated(propertySet, pc, isConsistent);
 
         if (inExplictCatchNullBlock(location))
             return;
@@ -971,6 +965,32 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
             reportNullDeref(propertySet, location, type, priority, variable);
         }
+    }
+
+    /**
+     * @param propertySet
+     * @param pc
+     * @param isConsistent
+     * @return
+     */
+    public boolean isDuplicated(WarningPropertySet<WarningProperty> propertySet, int pc, boolean isConsistent) {
+        boolean duplicated = false;
+        if (!isConsistent) {
+            if (propertySet.containsProperty(NullDerefProperty.DEREFS_ARE_CLONED))
+                duplicated = true;
+
+            else
+                try {
+                    CFG cfg = classContext.getCFG(method);
+                    if (cfg.getLocationsContainingInstructionWithOffset(pc).size() > 1) {
+                        propertySet.addProperty(NullDerefProperty.DEREFS_ARE_INLINED_FINALLY_BLOCKS);
+                        duplicated = true;
+                    }
+                } catch (CFGBuilderException e) {
+                    AnalysisContext.logError("Error while analyzing " + classContext.getFullyQualifiedMethodName(method), e);
+                }
+        }
+        return duplicated;
     }
 
     private void reportNullDeref(WarningPropertySet<WarningProperty> propertySet, Location location, String type, int priority,
