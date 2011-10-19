@@ -21,9 +21,9 @@ Allows storing "Cloud" bug reviews alongside the bugs in the FindBugs analysis X
 
 
   <Cloud id="edu.umd.cs.findbugs.cloud.bugCollectionCloud">
-	<Description>Analysis XML File Pseudo-Cloud</Description>
-	<Details>Reviews are stored alongside bugs in the bug collection XML file itself</Details>
-	</Cloud>
+    <Description>Analysis XML File Pseudo-Cloud</Description>
+    <Details>Reviews are stored alongside bugs in the bug collection XML file itself</Details>
+    </Cloud>
 
 
   </MessageCollection>
