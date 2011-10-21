@@ -23,12 +23,15 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
@@ -172,6 +175,17 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         addCheckedCall(Map.class.getName(), "containsValue", 1);
         addCheckedCall(Map.class.getName(), "get", 0);
         addCheckedCall(Map.class.getName(), "remove", 0);
+        
+        // Hashtable<K,V>
+        addCheckedCall(Hashtable.class.getName(), "contains", 1);
+        
+        // ConcurrentHashMap<K,V>
+        addCheckedCall(ConcurrentHashMap.class.getName(), "contains", 1);
+     
+        // ConcurrentMap<K,V>
+        addCheckedCall(ConcurrentMap.class.getName(), "remove", "(Ljava/lang/Object;Ljava/lang/Object;)", 0, 0);
+        addCheckedCall(ConcurrentMap.class.getName(), "remove", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);
+       
 
         // Multimap<K,V>
         addCheckedCall("com.google.common.collect.Multimap", "containsEntry", "(Ljava/lang/Object;Ljava/lang/Object;)", 0, 0);
@@ -486,7 +500,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
                 int expectedTypeParameters = 1;
                 String simpleName = info.interfaceForCall.getSimpleName();
-                if ( simpleName.equals("Map") || simpleName.equals("Multimap"))
+                if ( simpleName.toLowerCase().endsWith("map") || simpleName.equals("Hashtable"))
                     expectedTypeParameters = 2;
                 else if (simpleName.equals("Table"))
                     expectedTypeParameters = 3;
