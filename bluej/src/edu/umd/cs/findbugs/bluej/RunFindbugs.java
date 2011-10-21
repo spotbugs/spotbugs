@@ -16,15 +16,15 @@ public class RunFindbugs {
 
     /**
      * Returns a SortBugCollection of bugs that are in the classes that
-	 * are passed to it.
+     * are passed to it.
      * @param classes String[] of classes in the project
      * @return
      * @throws IOException
-	 * @throws InterruptedException
+     * @throws InterruptedException
      */
     public static SortedBugCollection getBugs(String[] classes) throws IOException, InterruptedException {
         Project findBugsProject = new Project();
-		for(String f : classes)
+        for(String f : classes)
             findBugsProject.addFile(f);
         final SortedBugCollection bugs = new SortedBugCollection();
         BugReporter reporter = new MyReporter(bugs);
@@ -47,6 +47,6 @@ public class RunFindbugs {
 
         findBugs.execute();
 
-		return bugs;		
+        return bugs;
     }
 }

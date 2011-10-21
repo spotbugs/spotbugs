@@ -17,42 +17,42 @@ public class Log
     //If true will pop a window with the stackTrace in it.
     //If false will simply log onto logFile.
     private final static boolean DEBUG = true;
-	private static File logFile;
+    private static File logFile;
 
     /**
      * Set where Log will log any exceptions.
      * @param logFile
-	 */
+     */
     static void setPath(File logFile)
     {
         Log.logFile = logFile;
-	}
+    }
 
     /**
      * Takes the exception and dependi on DEBUG either posts onto a dialog box
      * or will record it for later use.
-	 * 
+     *
      * @param e
      */
     static void recordBug(Exception e)
-	{
+    {
         StringBuffer msg = new StringBuffer();
         msg.append(e.getClass().getName() + ": " + e.getMessage() + "\n");
         for (StackTraceElement i : e.getStackTrace())
-			msg.append(i + "\n");
+            msg.append(i + "\n");
 
         if (DEBUG)
             JOptionPane.showMessageDialog(null, msg);
         else
-		{
+        {
             try
             {
                 logFile.createNewFile();
-				PrintWriter pw = new PrintWriter(new FileOutputStream(logFile));
+                PrintWriter pw = new PrintWriter(new FileOutputStream(logFile));
                 pw.println(msg);
                 pw.close();
             }
-			catch (IOException ohWell) {}
+            catch (IOException ohWell) {}
         }
     }
 }

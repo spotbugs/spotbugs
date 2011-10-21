@@ -41,75 +41,75 @@ public class ResultsFrame extends JFrame
     private BProject currProject;
 
     private static HashMap<BProject, ResultsFrame> instanceMap = new HashMap<BProject, ResultsFrame>();
-	/**
+    /**
      * "Multipleton" design pattern: return one ResultsFrame per BProject.
      * @param project The BProject to get the frame for
      * @param createIfNeeded If there's not already a frame, should one be created?
-	 * @return A ResultsFrame, or null if none exists and createIfNeeded is false
+     * @return A ResultsFrame, or null if none exists and createIfNeeded is false
      */
     public static ResultsFrame getInstance(BProject project, boolean createIfNeeded)
     {
-		if (!instanceMap.containsKey(project))
+        if (!instanceMap.containsKey(project))
         {
             if (createIfNeeded)
                 instanceMap.put(project, new ResultsFrame());
-			else
+            else
                 return null;
         }
         return instanceMap.get(project);
-	}
+    }
     private ResultsFrame() {}
 
     /**
-	 * Update the view
+     * Update the view
      */
     public void update(final SortedBugCollection bugs, BProject project)
     {
-		try
+        try
         {
             setTitle("FindBugs results [" + project.getName() + "]");
         }
-		catch (ProjectNotOpenException e)
+        catch (ProjectNotOpenException e)
         {
             setTitle("FindBugs results");
         }
-		try
+        try
         {
             setIconImage(ImageIO.read(ResultsFrame.class.getResource("/smallBuggy.png")));
         }
-		catch (IOException e)
+        catch (IOException e)
         {
             Log.recordBug(e);
         }
-		
+
         currProject = project;
         final ArrayList<BugInstance> bugList = new ArrayList<BugInstance>(bugs
                 .getCollection());
-		
+
         final JTable table = new JTable(new MyTableModel(bugList));
 
         for (int i = 0; i < columnNames.length; i++)
-			table.getColumn(columnNames[i]).setPreferredWidth(columnWidths[i]);
+            table.getColumn(columnNames[i]).setPreferredWidth(columnWidths[i]);
 
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		table.addMouseListener(new MouseAdapter()
+        table.addMouseListener(new MouseAdapter()
                 {
             @Override
             public void mouseClicked(MouseEvent evt)
-			{
+            {
                 if (evt.getClickCount() == 2)
                     showEditorAndHighlight(bugList.get(table.getSelectedRow()));
                 else
-				{
+                {
                     description.setText(bugList.get(table.getSelectedRow()).getBugPattern().getDetailHTML());
                     SwingUtilities.invokeLater(new Runnable()
                     {
-						public void run()
+                        public void run()
                         {
                             bottomScroll.getVerticalScrollBar().setValue(bottomScroll.getVerticalScrollBar().getMinimum());
                         }
-					});
+                    });
                 }
             }
         });
@@ -120,31 +120,31 @@ public class ResultsFrame extends JFrame
         description = new JEditorPane();
         description.setContentType("text/html");
         description.setEditable(false);
-		
+
         boolean allCompiled = true;
         for (BugInstance bug : bugs.getCollection())
         {
-			try
+            try
             {
                 if (!project.getPackage(bug.getPrimarySourceLineAnnotation().getPackageName()).getBClass(getClassName(bug.getPrimarySourceLineAnnotation())).isCompiled())
                 {
-					allCompiled = false;
+                    allCompiled = false;
                     break;
                 }
             }
-			catch (ExtensionException e)
+            catch (ExtensionException e)
             {
                 Log.recordBug(e);
                 continue;
-			}
+            }
         }
 
             try {
-				description.setPage(ResultsFrame.class.getResource("about.html"));
+                description.setPage(ResultsFrame.class.getResource("about.html"));
             } catch (IOException e) {
                 description.setText("<html><body><p>XXXX Click on a bug to view a detailed description.</p><p>Double-click to be " +
                     "taken to its location in the source code.</p>" + (allCompiled ? "" : "<p>* Classes marked with an " +
-					"asterisk were not compiled when Findbugs ran, so this list may not reflect recent changes in the " +
+                    "asterisk were not compiled when Findbugs ran, so this list may not reflect recent changes in the " +
                     "source code.</p>"
                     + "<p>Bug: " + e.toString()));
             }
@@ -160,24 +160,24 @@ public class ResultsFrame extends JFrame
         pack();
         setDefaultCloseOperation(HIDE_ON_CLOSE);
         setVisible(true);
-	}
+    }
 
     /*
      * Finds the editor that corresponds with the class the bug in the
      * BugInstance is in. Opens the editor and then highlights the bug and
-	 * places the cursor at the beginning if class is compiled. If the class
+     * places the cursor at the beginning if class is compiled. If the class
      * is not compiled than just opens the editor and moves the caret to the
      * last known startline of that bug.
      */
-	private void showEditorAndHighlight(BugInstance instance)
+    private void showEditorAndHighlight(BugInstance instance)
     {
         SourceLineAnnotation srcLine = instance
                 .getPrimarySourceLineAnnotation();
-		try
+        try
         {
             BClass srcClass = currProject.getPackage(srcLine.getPackageName())
             .getBClass(getClassName(srcLine));
-			Editor srcEditor = srcClass.getEditor();
+            Editor srcEditor = srcClass.getEditor();
             srcEditor.setVisible(true);
 
             // srcStartLine in case returned -1
@@ -186,29 +186,29 @@ public class ResultsFrame extends JFrame
             srcEditor.setCaretLocation(new TextLocation(srcStartLine - 1, 0));
 
             if (srcStartLine > 0 && srcClass.isCompiled())
-			{				
+            {
                 srcEditor.setSelection(new TextLocation(srcStartLine - 1, 0),
                         new TextLocation(srcLine.getEndLine(), 0));
             }
-		}
+        }
         catch (ProjectNotOpenException e)
         {
             Log.recordBug(e);
-		}
+        }
         catch (PackageNotFoundException e)
         {
             Log.recordBug(e);
-		}
+        }
     }
 
     /*
      * Gets the source file and gets the name of the class from that.
      */
-	private String getClassName(SourceLineAnnotation srcLine)
+    private String getClassName(SourceLineAnnotation srcLine)
     {
         String str = srcLine.getSourceFile();
         return str.substring(0, str.indexOf("."));
-	}
+    }
 
     private class MyTableModel extends AbstractTableModel
     {
@@ -217,52 +217,52 @@ public class ResultsFrame extends JFrame
         public MyTableModel(ArrayList<BugInstance> bugList)
         {
             this.bugList = bugList;
-		}
+        }
 
         public int getRowCount()
         {
             return bugList.size();
-		}
+        }
 
         public int getColumnCount()
         {
             return 3;
-		}
+        }
 
         @Override
         public String getColumnName(int column)
         {
-			return columnNames[column];
+            return columnNames[column];
         }
 
         public Object getValueAt(int row, int column)
         {
             SourceLineAnnotation annotation = bugList.get(row).getPrimarySourceLineAnnotation();
-			
+
             switch (column)
             {
             case 0:
-				boolean notCompiled = false;
+                boolean notCompiled = false;
 
                 try
                 {
-					BClass srcClass = currProject.getPackage(annotation.getPackageName()).getBClass(getClassName(annotation));
+                    BClass srcClass = currProject.getPackage(annotation.getPackageName()).getBClass(getClassName(annotation));
                     notCompiled = !srcClass.isCompiled();
                 }
                 catch (ExtensionException e)
-				{
+                {
                     Log.recordBug(e);
                 }
 
-				return (notCompiled ? "*" : "") + annotation.getSourceFile();
+                return (notCompiled ? "*" : "") + annotation.getSourceFile();
             case 1:
                 int line = annotation.getStartLine();
                 return (line != -1 ? String.valueOf(line) : "");
-			case 2:
+            case 2:
                 return bugList.get(row).getMessageWithoutPrefix();
             default:
                 throw new ArrayIndexOutOfBoundsException("Column " + column
-						+ " must be < 3");
+                        + " must be < 3");
             }
         }
 
