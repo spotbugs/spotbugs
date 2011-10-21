@@ -397,26 +397,26 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
                     if (issuesInDatabase > 10 * sendToDatabase.size()) {
                         if (CloudFactory.DEBUG) {
                             System.out.printf("Loading %d individual bugs from database%n", sendToDatabase.size());
-						}
+                        }
                         for (String hash : sendToDatabase.keySet()) {
                             ps = c.prepareStatement("SELECT id, firstSeen, lastSeen FROM findbugs_issue WHERE hash=?");
                             ps.setString(1, hash);
-							rs = ps.executeQuery();
+                            rs = ps.executeQuery();
                             if (rs.next()) {
                                 int col = 1;
                                 int id = rs.getInt(col++);
-								Timestamp firstSeen = rs.getTimestamp(col++);
+                                Timestamp firstSeen = rs.getTimestamp(col++);
                                 Timestamp lastSeen = rs.getTimestamp(col++);
                                 loadDatabaseInfo(hash, id, firstSeen.getTime(),
                                         lastSeen.getTime());
-							}
+                            }
                             rs.close();
                             ps.close();
 
                         }
                     } else {
                         if (CloudFactory.DEBUG) {
-							System.out.printf("Bulk loading all %d bugs from database%n", issuesInDatabase);						
+                            System.out.printf("Bulk loading all %d bugs from database%n", issuesInDatabase);
                         }
                         ps = c.prepareStatement("SELECT id, hash, firstSeen, lastSeen FROM findbugs_issue");
                         rs = ps.executeQuery();
@@ -424,14 +424,14 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
                         while (rs.next()) {
                             int col = 1;
                             int id = rs.getInt(col++);
-							String hash = rs.getString(col++);
+                            String hash = rs.getString(col++);
                             Timestamp firstSeen = rs.getTimestamp(col++);
                             Timestamp lastSeen = rs.getTimestamp(col++);
 
                             loadDatabaseInfo(hash, id, firstSeen.getTime(),
                                     lastSeen.getTime());
                         }
-						rs.close();
+                        rs.close();
                         ps.close();
                     }
                 }
