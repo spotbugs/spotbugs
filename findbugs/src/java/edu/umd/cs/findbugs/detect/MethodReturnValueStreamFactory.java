@@ -123,6 +123,8 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
                 return null;
 
             String streamClass = type.getClassName();
+            if (streamClass.equals("java.sql.CallableStatement"))
+                streamClass = "java.sql.PreparedStatement";
             Stream result = new Stream(location, streamClass, streamClass).setIgnoreImplicitExceptions(true).setIsOpenOnCreation(
                     true);
             if (!isUninteresting)
