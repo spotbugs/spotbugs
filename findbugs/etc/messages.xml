@@ -1604,7 +1604,7 @@ factory pattern to create these objects.</p>
     <BugPattern type="DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE">
         <ShortDescription>BigDecimal constructed from double that isn't represented precisely</ShortDescription>
         <LongDescription>BigDecimal constructed from {4} in {1}</LongDescription>
-		<Details>
+        <Details>
       <![CDATA[
     <p>
 This code creates a BigDecimal from a double value that doesn't translate well to a
@@ -1621,7 +1621,7 @@ of the double to create the BigDecimal (e.g., BigDecimal.valueOf(0.1) gives 0.1)
     <BugPattern type="DMI_DOH">
         <ShortDescription>D'oh! A nonsensical method invocation</ShortDescription>
         <LongDescription>D'oh! A nonsensical invocation of {2.nameAndSignature} in {1}</LongDescription>
-		<Details>
+        <Details>
       <![CDATA[
     <p>
 This partical method invocation doesn't make sense, for reasons that should be apparent from inspection.
