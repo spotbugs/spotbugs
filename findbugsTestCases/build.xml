@@ -13,7 +13,7 @@
             This value is likely to be different for each checkout of the plugin,
             so the local.properties file is not managed by cvs
 
-	-->
+    -->
     <property file="local.properties" />
         <property name="fb-ant.jar" value="${findbugs.home}/lib/findbugs-ant.jar" />
         <property name="fb-baseline-ant.jar" value="${findbugs-baseline.home}/lib/findbugs-ant.jar" />
@@ -23,11 +23,11 @@
         <pathelement location="${findbugs.home}/lib/annotations.jar" />
         <pathelement location="${findbugs.home}/lib/jsr305.jar"/>
         <pathelement location="${junit.home}/junit.jar"/>
-		<pathelement location="lib/guava.jar"/>
+        <pathelement location="lib/guava.jar"/>
         <pathelement location="lib/joda-time-1.6.jar"/>
         <pathelement location="lib/intellij-annotations.jar"/>
         <pathelement location="lib/j2ee.jar"/>
-	</path>
+    </path>
 
     <target name="build" depends="classes,runfindbugs" />
 
@@ -52,18 +52,18 @@
             >
             <src path="src/java"/>
             <src path="src/fakeAnnotations"/>
-			<src path="src/fakeLibraries"/>
+            <src path="src/fakeLibraries"/>
             <classpath>
                 <path refid="build.classpath"/>
             </classpath>
-		</javac>
+        </javac>
     </target>
 
    <target name="jarFile" depends ="classes">
         <delete quiet="true">
             <fileset dir="build/all.jar"/>
         </delete>
-		<jar destfile="build/all.jar">
+        <jar destfile="build/all.jar">
             <fileset dir="build/classes"/>
 
         </jar>
@@ -84,19 +84,19 @@
         <parallel threadsPerProcessor="1">
             <antcall target="historyNormal"/> <!--   run findbugs effort=default, then merge or copy results -->       <!-- run findbugs effort=max, then merge or copy results -->
         </parallel>
-	</target>
+    </target>
 
     <target name="runBaseline" depends="classes" if="findbugs-baseline.home">
     <echo>Home is ${findbugs-baseline.home}</echo>
     <echo>fb-ant jar is ${fb-baseline-ant.jar}</echo>
-	 <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" 
+     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
            classpath="${fb-baseline-ant.jar}"/>
     <findbugs home="${findbugs-baseline.home}"  jvmargs="-ea -Xmx600m"
                          output="xml" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/baseline.xml">
             <sourcePath path="${basedir}/src/java" />
             <auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar:lib/guava.jar"/>
             <class location="${basedir}/build/classes" />
-		</findbugs>
+        </findbugs>
     </target>
 
 
@@ -108,14 +108,14 @@
             <sourcePath path="${basedir}/src/java" />
             <auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar:lib/guava.jar"/>
             <class location="${basedir}/build/classes" />
-		</findbugs>
+        </findbugs>
         <mkdir dir="${basedir}/classesEclipse" />
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx600m"
                          output="xml:withMessages" timestampNow="true" 
             reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/normalEclipse.xml"
             noClassOk="true">
             <sourcePath path="${basedir}/src/java" />
-			<auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar:lib/guava.jar"/>
+            <auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar:lib/guava.jar"/>
             <class location="${basedir}/classesEclipse" />
         </findbugs>
     </target>
@@ -126,16 +126,16 @@
     <target name="mergeNormal" depends="runNormal,existance" if="exists.normal">
         <exec dir="." executable="${findbugs.home}/bin/computeBugHistory">
                     <arg value="-output" />
-					<arg file="${history.dir}/normal.xml" />
+                    <arg file="${history.dir}/normal.xml" />
                     <arg file="${history.dir}/normal.xml" />
                     <arg file="build/normal.xml" />
         </exec>
-	</target>
+    </target>
 
 
     <target name="existance">
         <available property="exists.normal" file="${history.dir}/normal.xml"/>
-	</target>
+    </target>
 
     <target name="copyNormal" depends="runNormal,existance" unless="exists.normal">
         <copy file="build/normal.xml" todir="${history.dir}"/>
