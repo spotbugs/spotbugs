@@ -108,8 +108,15 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
         case DCMPL:
             if (stack.getStackDepth() >= 2) {
                 OpcodeStack.Item first = stack.getStackItem(0);
-                OpcodeStack.Item second = stack.getStackItem(1);
-
+                OpcodeStack.Item second = stack.getStackItem(1);      
+                    
+                if (first.getRegisterNumber() == second.getRegisterNumber() && first.getRegisterNumber() != -1)
+                    break;
+                if (first.isInitialParameter() && second.isInitialParameter())
+                    break;
+                if (sameField(first, second))
+                    break;
+            
                 Number n1 = (Number) first.getConstant();
                 Number n2 = (Number) second.getConstant();
                 if (n1 != null && Double.isNaN(n1.doubleValue()) || n2 != null && Double.isNaN(n2.doubleValue())) {
@@ -133,13 +140,7 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
                     break;
                 // if (first.isInitialParameter() && n2 != null) break;
                 // if (second.isInitialParameter() && n1 != null) break;
-                if (first.getRegisterNumber() == second.getRegisterNumber() && first.getRegisterNumber() != -1)
-                    break;
-                if (first.isInitialParameter() && second.isInitialParameter())
-                    break;
-                if (sameField(first, second))
-                    break;
-                if (n1 != null && n2 != null)
+                  if (n1 != null && n2 != null)
                     break;
 
                 if (okValueToCompareAgainst(n1) || okValueToCompareAgainst(n2))
