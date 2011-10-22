@@ -6,6 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.AccessFlags;
+
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -22,15 +25,10 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  * the access flags).
  */
 class UnresolvedXMethod extends AbstractMethod {
-    protected UnresolvedXMethod(@DottedClassName String className, String methodName, String methodSig, int accessFlags) {
-        super(className, methodName, methodSig, accessFlags);
-        if (XFactory.DEBUG_UNRESOLVED) {
-            System.out.println("Unresolved xmethod: " + this);
-        }
-    }
 
     protected UnresolvedXMethod(MethodDescriptor m) {
-        super(m.getClassDescriptor().getDottedClassName(), m.getName(), m.getSignature(), 0);
+        super(m.getClassDescriptor().getDottedClassName(), m.getName(), m.getSignature(), 
+                m.isStatic() ? Constants.ACC_STATIC : 0);
         if (XFactory.DEBUG_UNRESOLVED) {
             System.out.println("Unresolved xmethod: " + this);
         }

@@ -42,6 +42,10 @@ import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.obl.Obligation;
+import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
+import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseEntry;
+import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseEntryType;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -51,9 +55,11 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
 import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
+import edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.SplitCamelCaseIdentifier;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
@@ -355,7 +361,49 @@ public class XFactory {
         } catch (RuntimeException e) {
             assert true;
         }
-        return new UnresolvedXMethod(originalDescriptor);
+        UnresolvedXMethod xmethod = new UnresolvedXMethod(originalDescriptor);
+        
+        ObligationPolicyDatabase database = Global.getAnalysisCache().getDatabase(ObligationPolicyDatabase.class);
+        if (BuildObligationPolicyDatabase.INFER_CLOSE_METHODS && database != null 
+                && !xmethod.getClassName().startsWith("java")) {
+            boolean methodHasCloseInName = false;
+            String methodName = xmethod.getName();
+            SplitCamelCaseIdentifier splitter = new SplitCamelCaseIdentifier(methodName);
+            methodHasCloseInName = splitter.split().contains("close");
+            Obligation[] paramObligationTypes = database.getFactory().getParameterObligationTypes(xmethod);
+
+            for (int i = 0; i < xmethod.getNumParams(); i++) {
+                Obligation obligationType = paramObligationTypes[i];
+                if (obligationType == null)
+                    continue;
+                if (methodHasCloseInName) {
+                    // Method has "close" in its name.
+                    // Assume that it deletes the obligation.
+                    ObligationPolicyDatabaseEntry entry = database.addParameterDeletesObligationDatabaseEntry(xmethod,
+                            obligationType, ObligationPolicyDatabaseEntryType.STRONG);
+                   
+                } else {
+
+                    /*
+                     * // Interesting case: we have a parameter which is // an
+                     * Obligation type, but no annotation or other indication //
+                     * what is done by the method with the obligation. // We'll
+                     * create a "weak" database entry deleting the //
+                     * obligation. If strict checking is performed, // weak
+                     * entries are ignored.
+                     */
+                    if (methodName.equals("<init>") || methodName.startsWith("access$") || xmethod.isStatic()
+                            || methodName.toLowerCase().indexOf("close") >= 0
+                            || xmethod.getSignature().toLowerCase().indexOf("Closeable") >= 0) {
+                        ObligationPolicyDatabaseEntry entry = database.addParameterDeletesObligationDatabaseEntry(xmethod,
+                                obligationType, ObligationPolicyDatabaseEntryType.WEAK);
+                    }
+                }
+            }
+
+        }
+
+        return xmethod;
     }
 
     public static XMethod createXMethod(MethodAnnotation ma) {

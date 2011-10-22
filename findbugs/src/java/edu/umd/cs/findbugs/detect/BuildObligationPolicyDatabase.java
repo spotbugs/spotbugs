@@ -100,7 +100,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 
     }
 
-    private static final boolean INFER_CLOSE_METHODS = SystemProperties.getBoolean("oa.inferclose", true);
+    public static final boolean INFER_CLOSE_METHODS = SystemProperties.getBoolean("oa.inferclose", true);
 
     private static final boolean DEBUG_ANNOTATIONS = SystemProperties.getBoolean("oa.debug.annotations");
 
@@ -186,74 +186,77 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
                 }
             }
 
-            // See what obligation parameters there are
-            Obligation[] paramObligationTypes = database.getFactory().getParameterObligationTypes(xmethod);
+            addObligations(xmethod);
+        }
+    }
 
-            //
-            // Check for @WillCloseWhenClosed, @WillClose, @WillNotClose, or
-            // other
-            // indications of how obligation parameters are handled.
-            //
+    /**
+     * @param xmethod
+     */
+    public void addObligations(XMethod xmethod) {
+        // See what obligation parameters there are
+        Obligation[] paramObligationTypes = database.getFactory().getParameterObligationTypes(xmethod);
 
-            boolean methodHasCloseInName = false;
-            if (INFER_CLOSE_METHODS) {
-                SplitCamelCaseIdentifier splitter = new SplitCamelCaseIdentifier(xmethod.getName());
-                methodHasCloseInName = splitter.split().contains("close");
+        //
+        // Check for @WillCloseWhenClosed, @WillClose, @WillNotClose, or
+        // other
+        // indications of how obligation parameters are handled.
+        //
+
+        boolean methodHasCloseInName = false;
+        if (INFER_CLOSE_METHODS) {
+            SplitCamelCaseIdentifier splitter = new SplitCamelCaseIdentifier(xmethod.getName());
+            methodHasCloseInName = splitter.split().contains("close");
+        }
+
+        for (int i = 0; i < xmethod.getNumParams(); i++)
+            if (paramObligationTypes[i] != null) {
+                if (xmethod.getParameterAnnotation(i, willCloseWhenClosed) != null) {
+                    //
+                    // Calling this method deletes a parameter obligation
+                    // and
+                    // creates a new obligation for the object returned by
+                    // the method.
+                    //
+                    handleWillCloseWhenClosed(xmethod, paramObligationTypes[i]);
+                } else if (xmethod.getParameterAnnotation(i, willClose) != null) {
+                    if (paramObligationTypes[i] == null) {
+                        // Hmm...
+                        if (DEBUG_ANNOTATIONS) {
+                            System.out.println("Method " + xmethod.toString() + " has param " + i + " annotated @WillClose, "
+                                    + "but its type is not an obligation type");
+                        }
+                    } else {
+                        addParameterDeletesObligationDatabaseEntry(xmethod, paramObligationTypes[i],
+                                ObligationPolicyDatabaseEntryType.STRONG);
+                    }
+                    sawAnnotationsInApplicationCode = true;
+                } else if (xmethod.getParameterAnnotation(i, willNotClose) != null) {
+                    // No database entry needs to be added
+                    sawAnnotationsInApplicationCode = true;
+                } else if (INFER_CLOSE_METHODS && methodHasCloseInName) {
+                    // Method has "close" in its name.
+                    // Assume that it deletes the obligation.
+                    addParameterDeletesObligationDatabaseEntry(xmethod, paramObligationTypes[i],
+                            ObligationPolicyDatabaseEntryType.STRONG);
+                } else {
+                    /*
+                     * // Interesting case: we have a parameter which is // an
+                     * Obligation type, but no annotation or other indication //
+                     * what is done by the method with the obligation. // We'll
+                     * create a "weak" database entry deleting the //
+                     * obligation. If strict checking is performed, // weak
+                     * entries are ignored.
+                     */
+                    if (xmethod.getName().equals("<init>") || xmethod.isStatic()
+                            || xmethod.getName().toLowerCase().indexOf("close") >= 0
+                            || xmethod.getSignature().toLowerCase().indexOf("Closeable") >= 0)
+                        addParameterDeletesObligationDatabaseEntry(xmethod, paramObligationTypes[i],
+                                ObligationPolicyDatabaseEntryType.WEAK);
+                }
             }
 
-            for (int i = 0; i < xmethod.getNumParams(); i++)
-                if (paramObligationTypes[i] != null) {
-                    if (xmethod.getParameterAnnotation(i, willCloseWhenClosed) != null) {
-                        //
-                        // Calling this method deletes a parameter obligation
-                        // and
-                        // creates a new obligation for the object returned by
-                        // the method.
-                        //
-                        handleWillCloseWhenClosed(xmethod, paramObligationTypes[i]);
-                    } else if (xmethod.getParameterAnnotation(i, willClose) != null) {
-                        if (paramObligationTypes[i] == null) {
-                            // Hmm...
-                            if (DEBUG_ANNOTATIONS) {
-                                System.out.println("Method " + xmethod.toString() + " has param " + i + " annotated @WillClose, "
-                                        + "but its type is not an obligation type");
-                            }
-                        } else {
-                            addParameterDeletesObligationDatabaseEntry(xmethod, paramObligationTypes[i],
-                                    ObligationPolicyDatabaseEntryType.STRONG);
-                        }
-                        sawAnnotationsInApplicationCode = true;
-                    } else if (xmethod.getParameterAnnotation(i, willNotClose) != null) {
-                        // No database entry needs to be added
-                        sawAnnotationsInApplicationCode = true;
-                    } else if (paramObligationTypes[i] != null) {
-                        if (INFER_CLOSE_METHODS && methodHasCloseInName) {
-                            // Method has "close" in its name.
-                            // Assume that it deletes the obligation.
-                            addParameterDeletesObligationDatabaseEntry(xmethod, paramObligationTypes[i],
-                                    ObligationPolicyDatabaseEntryType.STRONG);
-                        } else {
-                            // not yet...
-
-                            /*
-                             * // Interesting case: we have a parameter which is
-                             * // an Obligation type, but no annotation or other
-                             * indication // what is done by the method with the
-                             * obligation. // We'll create a "weak" database
-                             * entry deleting the // obligation. If strict
-                             * checking is performed, // weak entries are
-                             * ignored.
-                             */
-                            if (xmethod.getName().equals("<init>") || xmethod.isStatic()
-                                    || xmethod.getName().toLowerCase().indexOf("close") >= 0
-                                    || xmethod.getSignature().toLowerCase().indexOf("Closeable") >= 0)
-                                addParameterDeletesObligationDatabaseEntry(xmethod, paramObligationTypes[i],
-                                        ObligationPolicyDatabaseEntryType.WEAK);
-                        }
-                    }
-
-                }
-        }
+            
     }
 
     public void finishPass() {
@@ -355,11 +358,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
      */
     private void addParameterDeletesObligationDatabaseEntry(XMethod xmethod, Obligation obligation,
             ObligationPolicyDatabaseEntryType entryType) {
-        // Add a policy database entry noting that this method
-        // will delete one instance of the obligation type.
-        ObligationPolicyDatabaseEntry entry = new MatchMethodEntry(xmethod, ObligationPolicyDatabaseActionType.DEL, entryType,
-                obligation);
-        database.addEntry(entry);
+        ObligationPolicyDatabaseEntry entry = database.addParameterDeletesObligationDatabaseEntry(xmethod, obligation, entryType);
         if (DEBUG_ANNOTATIONS) {
             System.out.println("Added entry: " + entry);
         }

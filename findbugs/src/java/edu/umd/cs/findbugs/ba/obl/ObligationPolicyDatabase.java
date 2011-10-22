@@ -27,6 +27,7 @@ import java.util.List;
 import org.apache.bcel.generic.ReferenceType;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * Policy database which defines which methods create and remove obligations.
@@ -58,10 +59,35 @@ public class ObligationPolicyDatabase {
     }
 
     public void addEntry(ObligationPolicyDatabaseEntry entry) {
+        if (DEBUG) 
+            System.out.println("Adding entry " + entry);
         entryList.add(entry);
     }
 
+    /**
+     * Add an appropriate policy database entry for parameters marked with the
+     * WillClose annotation.
+     * 
+     * @param xmethod
+     *            a method
+     * @param obligation
+     *            the Obligation deleted by the method
+     * @param entryType
+     *            type of entry (STRONG or WEAK)
+     */
+    public ObligationPolicyDatabaseEntry addParameterDeletesObligationDatabaseEntry(XMethod xmethod, Obligation obligation,
+            ObligationPolicyDatabaseEntryType entryType) {
+        // Add a policy database entry noting that this method
+        // will delete one instance of the obligation type.
+        ObligationPolicyDatabaseEntry entry = new MatchMethodEntry(xmethod, ObligationPolicyDatabaseActionType.DEL, entryType,
+                obligation);
+        addEntry(entry);
+        return entry;
+    }
+    
     public void setStrictChecking(boolean strictChecking) {
+        if (DEBUG)
+            System.out.println("Setting strict checking to " + strictChecking );
         this.strictChecking = strictChecking;
     }
 
@@ -76,14 +102,13 @@ public class ObligationPolicyDatabase {
         }
         for (ObligationPolicyDatabaseEntry entry : entryList) {
 
-            if (DEBUG) {
-                System.out.print("  Entry " + entry + "...");
-            }
-
             boolean matched = entry.getActions(receiverType, methodName, signature, isStatic, actionList);
 
             if (DEBUG) {
-                System.out.println(matched ? " ==> MATCH" : " ==> no match");
+                if (matched) 
+                    System.out.println(" Entry " + entry + "  ==> MATCH");
+//                else
+//                    System.out.println("  ==> no match");                                
             }
         }
         if (DEBUG) {

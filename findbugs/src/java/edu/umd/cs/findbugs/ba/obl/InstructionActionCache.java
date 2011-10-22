@@ -54,7 +54,7 @@ public class InstructionActionCache {
     }
 
     public Collection<ObligationPolicyDatabaseAction> getActions(InstructionHandle handle, ConstantPoolGen cpg) {
-        Collection<ObligationPolicyDatabaseAction> actionList = actionCache.get(handle);
+         Collection<ObligationPolicyDatabaseAction> actionList = actionCache.get(handle);
         if (actionList == null) {
             Instruction ins = handle.getInstruction();
             actionList = Collections.emptyList();
@@ -63,11 +63,14 @@ public class InstructionActionCache {
                 InvokeInstruction inv = (InvokeInstruction) ins;
                 String signature = inv.getSignature(cpg);
                 String methodName = inv.getName(cpg);
-
+                if (DEBUG_LOOKUP) {
+                    System.out.println("Looking up actions for call to " + methodName +signature);
+                }
+             
                 if (signature.indexOf(';') >= -1) {
                     actionList = new LinkedList<ObligationPolicyDatabaseAction>();
 
-                    if (signature.substring(0, signature.indexOf(')')).indexOf("Ljava/io/Closeable;") >= 0 || false &&  methodName.startsWith("close")) {
+                    if (signature.substring(0, signature.indexOf(')')).indexOf("Ljava/io/Closeable;") >= 0 ||  false && methodName.startsWith("close")) {
                         actionList.add(ObligationPolicyDatabaseAction.CLEAR);
                     } else {
 
@@ -87,6 +90,7 @@ public class InstructionActionCache {
                 }
             }
 
+            
             actionCache.put(handle, actionList);
         }
 

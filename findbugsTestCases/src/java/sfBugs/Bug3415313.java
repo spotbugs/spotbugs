@@ -14,29 +14,40 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3415313 {
 
-
     @NoWarning("OBL_UNSATISFIED_OBLIGATION")
     public void fp1(Connection sesscon) throws SQLException {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            StringBuffer sql = new StringBuffer();
-            sql.append("SELECT groupcounter,");
-            sql.append(" grouppoolcode,");
-            sql.append(" groupdescription");
-            sql.append(" FROM DataGroup");
-            sql.append(" ORDER BY groupcounter");
-            ps = sesscon.prepareStatement(sql.toString());
-            int col = 1;
+            ps = sesscon.prepareStatement("query");
+            try {
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                // get the data
+            }
+            } finally {
+                WorkflowUtils.closeResultSet(rs);
+            }
+        } finally {
+            WorkflowUtils.closeStatement(ps);
+        }
+    }
+    
+    
+    @NoWarning("OBL_UNSATISFIED_OBLIGATION")
+    public void fp1(PreparedStatement ps) throws SQLException {
+        ResultSet rs = null;
+        try {
             rs = ps.executeQuery();
             while (rs.next()) {
                 // get the data
             }
         } finally {
             WorkflowUtils.closeResultSet(rs);
-            WorkflowUtils.closeStatement(ps);
         }
     }
+
+    
 
     @ExpectWarning("OBL_UNSATISFIED_OBLIGATION")
     public void tp(Connection sesscon) throws SQLException {
@@ -65,28 +76,34 @@ public class Bug3415313 {
         try {
             ps = sesscon.prepareStatement("SELECT groupcounter FROM DataGroup");
             rs = ps.executeQuery();
-            while (rs.next()) {
-                // get the data
+            try {
+                while (rs.next()) {
+                    // get the data
+                }
+            } finally {
+                WorkflowUtils.bar(rs);
             }
         } finally {
             System.out.println("yo");
-            WorkflowUtils.bar(rs);
             WorkflowUtils.baz(ps);
         }
     }
-    
-    @DesireWarning(value="OBL_UNSATISFIED_OBLIGATION", confidence=Confidence.MEDIUM)
+
+    @DesireWarning(value = "OBL_UNSATISFIED_OBLIGATION", confidence = Confidence.MEDIUM)
     public void tp2(Connection sesscon) throws SQLException {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
             ps = sesscon.prepareStatement("SELECT groupcounter FROM DataGroup");
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                // get the data
+            try {
+                rs = ps.executeQuery();
+                while (rs.next()) {
+                    // get the data
+                }
+            } finally {
+                WorkflowUtils.bar();
             }
         } finally {
-            WorkflowUtils.bar();
             WorkflowUtils.baz();
         }
     }
@@ -95,23 +112,16 @@ public class Bug3415313 {
     
 
     static class WorkflowUtils {
-        private static void baz(PreparedStatement ps) {
-            // TODO Auto-generated method stub
-
+        private static void baz(PreparedStatement ps) {         
         }
 
         public static void bar(ResultSet rs) {
-            // TODO Auto-generated method stub
-
         }
+        
         private static void baz() {
-            // TODO Auto-generated method stub
-
         }
 
         public static void bar() {
-            // TODO Auto-generated method stub
-
         }
 
         public static void closeStatement(@WillClose PreparedStatement ps) {
@@ -119,17 +129,14 @@ public class Bug3415313 {
                 if (ps != null)
                     ps.close();
             } catch (SQLException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-
         }
 
         private static void closeResultSet(ResultSet rs) {
             try {
                 rs.close();
             } catch (SQLException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
