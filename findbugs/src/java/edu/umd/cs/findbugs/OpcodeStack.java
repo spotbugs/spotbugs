@@ -152,6 +152,10 @@ public class OpcodeStack implements Constants2 {
         @Retention(RetentionPolicy.RUNTIME)
         public @interface SpecialKind {
         }
+        
+        static @SpecialKind int asSpecialKind(int kind) {
+            return kind;
+        }
 
         public static final @SpecialKind
         int NOT_SPECIAL = 0;
@@ -227,12 +231,12 @@ public class OpcodeStack implements Constants2 {
 
         public static HashMap<Integer, String> specialKindNames = new HashMap<Integer, String>();
 
-        private static int nextSpecialKind = SERVLET_OUTPUT + 1;
+        private static @SpecialKind int nextSpecialKind = asSpecialKind(SERVLET_OUTPUT + 1);
 
         public static @SpecialKind
         int defineNewSpecialKind(String name) {
             specialKindNames.put(nextSpecialKind, name);
-            return nextSpecialKind++;
+            return asSpecialKind( nextSpecialKind++);
         }
 
         private static final int IS_INITIAL_PARAMETER_FLAG = 1;
