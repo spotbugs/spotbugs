@@ -273,12 +273,11 @@ public class NewProjectWizard extends FBDialog {
                 if (keepGoing) {
                     mainFrame.setProject(p);
                 }
-                if (project == null
-                        || (projectChanged && JOptionPane.showConfirmDialog(NewProjectWizard.this, edu.umd.cs.findbugs.L10N
+                if (projectChanged && JOptionPane.showConfirmDialog(NewProjectWizard.this, edu.umd.cs.findbugs.L10N
                                 .getLocalString("dlg.project_settings_changed_lbl",
                                         "Project settings have been changed.  Perform a new analysis with the changed files?"),
                                 edu.umd.cs.findbugs.L10N.getLocalString("dlg.redo_analysis_question_lbl", "Redo analysis?"),
-                                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)) {
+                                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     new AnalyzingDialog(p, resetSettings);
                 } else if (!Util.nullSafeEquals(newCloudId, oldCloudId)) {
                     BugCollection bugs = mainFrame.getBugCollection();

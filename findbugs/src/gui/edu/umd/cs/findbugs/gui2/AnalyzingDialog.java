@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Nonnull;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -37,7 +38,7 @@ import javax.swing.SwingUtilities;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.FindBugsProgress;
 import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.annotations.NonNull;
+
 
 @SuppressWarnings("serial")
 // Note: Don't remove the final, if anyone extends this class, bad things could
@@ -48,7 +49,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 public final class AnalyzingDialog extends FBDialog implements FindBugsProgress {
     private volatile boolean analysisFinished = false;
 
-    @NonNull
+    @Nonnull
     private Project project;
 
     private AnalysisCallback callback;
@@ -65,7 +66,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
 
     private JButton cancelButton;
 
-    public AnalyzingDialog(@NonNull final Project project, final boolean changeSettings) {
+    public AnalyzingDialog(@Nonnull final Project project, final boolean changeSettings) {
         this(project, new AnalysisCallback() {
             public void analysisFinished(BugCollection results) {
                 if (changeSettings)
@@ -101,7 +102,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
      *            analysis is complete. If true, the constructor does not return
      *            until the analysis is either finished or interrupted.
      */
-    public AnalyzingDialog(@NonNull Project project, AnalysisCallback callback, boolean joinThread) {
+    public AnalyzingDialog(@Nonnull Project project, AnalysisCallback callback, boolean joinThread) {
         if (project == null)
             throw new NullPointerException("null project");
         this.project = project;
