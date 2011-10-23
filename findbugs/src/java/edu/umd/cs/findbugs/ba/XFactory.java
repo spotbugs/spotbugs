@@ -363,7 +363,9 @@ public class XFactory {
         }
         UnresolvedXMethod xmethod = new UnresolvedXMethod(originalDescriptor);
         
-        ObligationPolicyDatabase database = Global.getAnalysisCache().getDatabase(ObligationPolicyDatabase.class);
+
+        ObligationPolicyDatabase database = Global.getAnalysisCache().getOptionalDatabase(ObligationPolicyDatabase.class);
+
         if (BuildObligationPolicyDatabase.INFER_CLOSE_METHODS && database != null 
                 && !xmethod.getClassName().startsWith("java")) {
             boolean methodHasCloseInName = false;

@@ -514,6 +514,12 @@ public class AnalysisCache implements IAnalysisCache {
      * edu.umd.cs.findbugs.classfile.IAnalysisCache#getDatabase(java.lang.Class)
      */
     public <E> E getDatabase(Class<E> databaseClass) {
+        return getDatabase(databaseClass, false);
+    }
+    public @CheckForNull <E> E getOptionalDatabase(Class<E> databaseClass) {
+        return getDatabase(databaseClass, true);
+    }
+    public <E> E getDatabase(Class<E> databaseClass, boolean optional) {
         Object database = databaseMap.get(databaseClass);
 
         if (database == null) {
@@ -521,6 +527,7 @@ public class AnalysisCache implements IAnalysisCache {
                 // Find the database factory
                 IDatabaseFactory<?> databaseFactory = databaseFactoryMap.get(databaseClass);
                 if (databaseFactory == null) {
+                    if (optional) return null;
                     throw new IllegalArgumentException("No database factory registered for " + databaseClass.getName());
                 }
 
