@@ -132,14 +132,15 @@ public enum FlowValue {
      *            backwards flow value
      * @param typeQualifierValue
      *            TypeQualifierValue being checked
+     * @param isIdentity TODO
      * @return true if backwards value conflicts with source, false if not
      */
     public static boolean backwardsValueConflictsWithSource(FlowValue backwardsFlowValue, SourceSinkInfo source,
-            TypeQualifierValue typeQualifierValue) {
+            TypeQualifierValue typeQualifierValue, boolean isIdentity) {
 
         When sourceWhen = source.getWhen();
 
-        if (typeQualifierValue.isStrictQualifier()) {
+        if (typeQualifierValue.isStrictQualifier() && !isIdentity) {
             // strict checking
             return (backwardsFlowValue == ALWAYS && sourceWhen != When.ALWAYS)
                     || (backwardsFlowValue == NEVER && sourceWhen != When.NEVER);

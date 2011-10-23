@@ -140,10 +140,11 @@ public class CheckTypeQualifiers extends CFGDetector {
         if (METHOD != null && !methodDescriptor.getName().equals(METHOD)) {
             return;
         }
+        
+        if (methodDescriptor.getName().startsWith("access$"))
+            return;
 
         XMethod xMethod = XFactory.createXMethod(methodDescriptor);
-        if (xMethod.isIdentity())
-            return;
         if (DEBUG) {
             System.out.println("CheckTypeQualifiers: checking " + methodDescriptor.toString());
         }
@@ -168,7 +169,7 @@ public class CheckTypeQualifiers extends CFGDetector {
         for (TypeQualifierValue typeQualifierValue : relevantQualifiers) {
 
             try {
-                checkQualifier(methodDescriptor, cfg, typeQualifierValue, forwardDataflowFactory, backwardDataflowFactory,
+                checkQualifier(xMethod, cfg, typeQualifierValue, forwardDataflowFactory, backwardDataflowFactory,
                         vnaDataflow);
             } catch (MissingClassException e) {
                 AnalysisContext.reportMissingClass(e);
@@ -184,7 +185,7 @@ public class CheckTypeQualifiers extends CFGDetector {
     /**
      * Check a specific TypeQualifierValue on a method.
      *
-     * @param methodDescriptor
+     * @param xmethod
      *            MethodDescriptor of method
      * @param cfg
      *            CFG of method
@@ -199,7 +200,7 @@ public class CheckTypeQualifiers extends CFGDetector {
      * @param vnaDataflow
      *            ValueNumberDataflow for the method
      */
-    private void checkQualifier(MethodDescriptor methodDescriptor, CFG cfg, TypeQualifierValue typeQualifierValue,
+    private void checkQualifier(XMethod xmethod, CFG cfg, TypeQualifierValue typeQualifierValue,
             ForwardTypeQualifierDataflowFactory forwardDataflowFactory,
             BackwardTypeQualifierDataflowFactory backwardDataflowFactory, ValueNumberDataflow vnaDataflow)
             throws CheckedAnalysisException {
@@ -207,7 +208,7 @@ public class CheckTypeQualifiers extends CFGDetector {
         if (DEBUG) {
             System.out.println("----------------------------------------------------------------------");
             System.out.println("Checking type qualifier " + typeQualifierValue.toString() + " on method "
-                    + methodDescriptor.toString());
+                    + xmethod.toString());
             if (typeQualifierValue.isStrictQualifier()) {
                 System.out.println("  Strict type qualifier");
             }
@@ -232,11 +233,11 @@ public class CheckTypeQualifiers extends CFGDetector {
             p.print(System.out);
         }
 
-        checkDataflow(methodDescriptor, cfg, typeQualifierValue, vnaDataflow, forwardDataflow, backwardDataflow);
-        checkValueSources(methodDescriptor, cfg, typeQualifierValue, vnaDataflow, forwardDataflow, backwardDataflow);
+        checkDataflow(xmethod, cfg, typeQualifierValue, vnaDataflow, forwardDataflow, backwardDataflow);
+        checkValueSources(xmethod, cfg, typeQualifierValue, vnaDataflow, forwardDataflow, backwardDataflow);
     }
 
-    private void checkDataflow(MethodDescriptor methodDescriptor, CFG cfg, TypeQualifierValue typeQualifierValue,
+    private void checkDataflow(XMethod xmethod, CFG cfg, TypeQualifierValue typeQualifierValue,
             ValueNumberDataflow vnaDataflow, ForwardTypeQualifierDataflow forwardDataflow,
             BackwardTypeQualifierDataflow backwardDataflow) throws DataflowAnalysisException, CheckedAnalysisException {
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
@@ -252,7 +253,7 @@ public class CheckTypeQualifiers extends CFGDetector {
             if (DEBUG) {
                 checkLocation = "location " + loc.toCompactString();
             }
-            checkForConflictingValues(methodDescriptor, typeQualifierValue, forwardsFact, backwardsFact, loc, // location
+            checkForConflictingValues(xmethod, typeQualifierValue, forwardsFact, backwardsFact, loc, // location
                                                                                                               // to
                                                                                                               // report
                     loc, // location where doomed value is observed
@@ -292,13 +293,13 @@ public class CheckTypeQualifiers extends CFGDetector {
                 locationToReport = edgeTargetLocation;
             }
 
-            checkForConflictingValues(methodDescriptor, typeQualifierValue, forwardFact, backwardFact, locationToReport,
+            checkForConflictingValues(xmethod, typeQualifierValue, forwardFact, backwardFact, locationToReport,
                     edgeTargetLocation, vnaFrame);
    
         }
     }
 
-    private void checkValueSources(MethodDescriptor methodDescriptor, CFG cfg, TypeQualifierValue typeQualifierValue,
+    private void checkValueSources(XMethod xMethod, CFG cfg, TypeQualifierValue typeQualifierValue,
             ValueNumberDataflow vnaDataflow, ForwardTypeQualifierDataflow forwardDataflow,
             BackwardTypeQualifierDataflow backwardDataflow) throws DataflowAnalysisException {
 
@@ -333,23 +334,22 @@ public class CheckTypeQualifiers extends CFGDetector {
                     continue;
                 }
 
-                if (FlowValue.backwardsValueConflictsWithSource(backwardsFlowValue, source, typeQualifierValue)) {
+                if (FlowValue.backwardsValueConflictsWithSource(backwardsFlowValue, source, typeQualifierValue, xMethod.isIdentity())) {
                     String bugType = (backwardsFlowValue == FlowValue.NEVER) ? "TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK"
                             : "TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK";
 
-                    emitSourceWarning(bugType, methodDescriptor, typeQualifierValue, backwardsFlowValue, backwardsFact, source,
+                    emitSourceWarning(bugType, xMethod, typeQualifierValue, backwardsFlowValue, backwardsFact, source,
                             vn, location);
                 } else if (source.getWhen() == When.UNKNOWN && source.getType() == SourceSinkType.PARAMETER) {
 
-                    XMethod xmethod = XFactory.createXMethod(methodDescriptor);
-                    int p = source.getParameter();
+                   int p = source.getParameter();
                     TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications
-                            .getDirectTypeQualifierAnnotation(xmethod, p, typeQualifierValue);
+                            .getDirectTypeQualifierAnnotation(xMethod, p, typeQualifierValue);
                     if (directTypeQualifierAnnotation != null && directTypeQualifierAnnotation.when == When.UNKNOWN) {
                         String bugType = (backwardsFlowValue == FlowValue.NEVER) ? "TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK"
                                 : "TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK";
 
-                        emitSourceWarning(bugType, methodDescriptor, typeQualifierValue, backwardsFlowValue, backwardsFact,
+                        emitSourceWarning(bugType, xMethod, typeQualifierValue, backwardsFlowValue, backwardsFact,
                                 source, vn, location);
                     }
 
@@ -394,7 +394,7 @@ public class CheckTypeQualifiers extends CFGDetector {
         return (sourceBlock.getLastInstruction() != null) ? new Location(sourceBlock.getLastInstruction(), sourceBlock) : null;
     }
 
-    private void checkForConflictingValues(MethodDescriptor methodDescriptor, TypeQualifierValue typeQualifierValue,
+    private void checkForConflictingValues(XMethod xMethod, TypeQualifierValue typeQualifierValue,
             TypeQualifierValueSet forwardsFact, TypeQualifierValueSet backwardsFact, Location locationToReport,
             Location locationWhereDoomedValueIsObserved, ValueNumberFrame vnaFrame) throws CheckedAnalysisException {
         Set<ValueNumber> valueNumberSet = new HashSet<ValueNumber>();
@@ -417,13 +417,13 @@ public class CheckTypeQualifiers extends CFGDetector {
                 if (DEBUG) {
                     System.out.println("Emitting warning at " + checkLocation);
                 }
-                emitDataflowWarning(methodDescriptor, typeQualifierValue, forwardsFact, backwardsFact, vn, forward, backward,
+                emitDataflowWarning(xMethod, typeQualifierValue, forwardsFact, backwardsFact, vn, forward, backward,
                         locationToReport, locationWhereDoomedValueIsObserved, vnaFrame);
             }
         }
     }
 
-    private void emitDataflowWarning(MethodDescriptor methodDescriptor, TypeQualifierValue typeQualifierValue,
+    private void emitDataflowWarning(XMethod xMethod, TypeQualifierValue typeQualifierValue,
             TypeQualifierValueSet forwardsFact, TypeQualifierValueSet backwardsFact, ValueNumber vn, FlowValue forward,
             FlowValue backward, Location locationToReport, Location locationWhereDoomedValueIsObserved, ValueNumberFrame vnaFrame)
             throws CheckedAnalysisException {
@@ -431,26 +431,26 @@ public class CheckTypeQualifiers extends CFGDetector {
                 : "TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED";
 
         // Issue warning
-        BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY).addClassAndMethod(methodDescriptor);
+        BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY).addClassAndMethod(xMethod);
         annotateWarningWithTypeQualifier(warning, typeQualifierValue);
 
         Set<? extends SourceSinkInfo> sourceSet = (forward == FlowValue.ALWAYS) ? forwardsFact.getWhereAlways(vn) : forwardsFact
                 .getWhereNever(vn);
         for (SourceSinkInfo source : sourceSet) {
-            annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, source);
+            annotateWarningWithSourceSinkInfo(warning, xMethod, vn, source);
         }
         Set<? extends SourceSinkInfo> sinkSet = (backward == FlowValue.ALWAYS) ? backwardsFact.getWhereAlways(vn) : backwardsFact
                 .getWhereNever(vn);
 
         Location sinkLocation = getSinkLocation(sinkSet);
         if (sinkLocation == null) {
-            AnalysisContext.logError("Unable to compute sink location for " + methodDescriptor);
+            AnalysisContext.logError("Unable to compute sink location for " + xMethod);
             return;
         }
 
         // Hopefully we can find the conflicted value in a local variable
         if (locationWhereDoomedValueIsObserved != null) {
-            Method method = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor);
+            Method method = Global.getAnalysisCache().getMethodAnalysis(Method.class, xMethod.getMethodDescriptor());
 
             LocalVariableAnnotation localVariable = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method,
                     locationWhereDoomedValueIsObserved, vn, vnaFrame);
@@ -469,7 +469,7 @@ public class CheckTypeQualifiers extends CFGDetector {
                 // The only reason to use a different reporting location
                 // is to produce a more informative report for the user,
                 // since the edge source is where the branch is found.
-                SourceLineAnnotation observedLocation = SourceLineAnnotation.fromVisitedInstruction(methodDescriptor,
+                SourceLineAnnotation observedLocation = SourceLineAnnotation.fromVisitedInstruction(xMethod.getMethodDescriptor(),
                         locationToReport);
                 observedLocation.setDescription("SOURCE_LINE_VALUE_DOOMED");
                 warning.add(observedLocation);
@@ -478,25 +478,25 @@ public class CheckTypeQualifiers extends CFGDetector {
 
         // Add value sinks
         for (SourceSinkInfo sink : sinkSet) {
-            annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, sink);
+            annotateWarningWithSourceSinkInfo(warning, xMethod, vn, sink);
         }
 
         bugReporter.reportBug(warning);
     }
 
-    private void emitSourceWarning(String bugType, MethodDescriptor methodDescriptor, TypeQualifierValue typeQualifierValue,
+    private void emitSourceWarning(String bugType, XMethod xMethod, TypeQualifierValue typeQualifierValue,
             FlowValue backwardsFlowValue, TypeQualifierValueSet backwardsFact, SourceSinkInfo source, ValueNumber vn,
             Location location) {
 
-        BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY).addClassAndMethod(methodDescriptor);
+        BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY).addClassAndMethod(xMethod);
         annotateWarningWithTypeQualifier(warning, typeQualifierValue);
 
-        annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, source);
+        annotateWarningWithSourceSinkInfo(warning, xMethod, vn, source);
 
         Set<? extends SourceSinkInfo> sinkSet = (backwardsFlowValue == FlowValue.NEVER) ? backwardsFact.getWhereNever(vn) : backwardsFact
                 .getWhereAlways(vn);
         for (SourceSinkInfo sink : sinkSet) {
-            annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, sink);
+            annotateWarningWithSourceSinkInfo(warning, xMethod, vn, sink);
         }
 
         bugReporter.reportBug(warning);
@@ -520,8 +520,9 @@ public class CheckTypeQualifiers extends CFGDetector {
 
     }
 
-    private void annotateWarningWithSourceSinkInfo(BugInstance warning, MethodDescriptor methodDescriptor, ValueNumber vn,
+    private void annotateWarningWithSourceSinkInfo(BugInstance warning, XMethod xMethod, ValueNumber vn,
             SourceSinkInfo sourceSinkInfo) {
+        MethodDescriptor methodDescriptor = xMethod.getMethodDescriptor();
         switch (sourceSinkInfo.getType()) {
         case PARAMETER:
             try {
