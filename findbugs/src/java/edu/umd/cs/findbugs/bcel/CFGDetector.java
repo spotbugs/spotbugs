@@ -56,6 +56,8 @@ public abstract class CFGDetector implements Detector2 {
         return getClass().getName();
     }
 
+    protected ClassContext classContext;
+    protected Method method;
     /*
      * (non-Javadoc)
      * 
@@ -67,12 +69,13 @@ public abstract class CFGDetector implements Detector2 {
         IAnalysisCache analysisCache = Global.getAnalysisCache();
 
         JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, classDescriptor);
-        ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
+        classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
 
-        for (Method method : classContext.getMethodsInCallOrder()) {
-            if (method.getCode() == null) {
+        for (Method m : classContext.getMethodsInCallOrder()) {
+            if (m.getCode() == null) {
                 continue;
             }
+            method = m;
 
             MethodDescriptor methodDescriptor = BCELUtil.getMethodDescriptor(jclass, method);
 
