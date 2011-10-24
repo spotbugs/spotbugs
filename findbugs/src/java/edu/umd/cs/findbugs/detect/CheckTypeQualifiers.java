@@ -326,7 +326,11 @@ public class CheckTypeQualifiers extends CFGDetector {
         }
         if (isTest) {
             ValueNumber top = factAtLocation.getStackValue(0);
+            if (top.hasFlag(ValueNumber.CONSTANT_VALUE))
+                return;
             ValueNumber next = factAtLocation.getStackValue(1);
+            if (next.hasFlag(ValueNumber.CONSTANT_VALUE))
+                return;
             FlowValue topTQ = forwardsFact.getValue(top);
             FlowValue nextTQ = forwardsFact.getValue(next);
             if (DEBUG) {
@@ -334,16 +338,17 @@ public class CheckTypeQualifiers extends CFGDetector {
                 System.out.println(" Comparing " + topTQ + " and " + nextTQ);
             }
             if (topTQ.equals(nextTQ)) return;
-            if (FlowValue.valuesConflict(topTQ, nextTQ) || typeQualifierValue.isStrictQualifier()) {
+            if (FlowValue.valuesConflict(typeQualifierValue, topTQ, nextTQ)) {
                 BugInstance warning = new BugInstance(this,"TESTING", HIGH_PRIORITY).addClassAndMethod(methodDescriptor);
                 annotateWarningWithTypeQualifier(warning, typeQualifierValue);
                 for(SourceSinkInfo s : forwardsFact.getWhere(top))
-                annotateWarningWithSourceSinkInfo(warning, methodDescriptor, top, s);
+                   annotateWarningWithSourceSinkInfo(warning, methodDescriptor, top, s);
                 for(SourceSinkInfo s : forwardsFact.getWhere(next))
                     annotateWarningWithSourceSinkInfo(warning, methodDescriptor, next, s);
                 SourceLineAnnotation observedLocation = SourceLineAnnotation.fromVisitedInstruction(methodDescriptor.getMethodDescriptor(),
                         loc);
                 warning.add(observedLocation);
+                warning.addSomeSourceForTopTwoStackValues(classContext, method, loc);
                 bugReporter.reportBug(warning);
 
             }
@@ -384,7 +389,7 @@ public class CheckTypeQualifiers extends CFGDetector {
                 // the dataflow values conflict directly with each other.
                 TypeQualifierValueSet forwardsFact = forwardDataflow.getFactAfterLocation(location);
                 FlowValue forwardsFlowValue = forwardsFact.getValue(vn);
-                if (FlowValue.valuesConflict(forwardsFlowValue, backwardsFlowValue)) {
+                if (FlowValue.valuesConflict(typeQualifierValue, forwardsFlowValue, backwardsFlowValue)) {
                     continue;
                 }
 
@@ -468,7 +473,7 @@ public class CheckTypeQualifiers extends CFGDetector {
                 System.out.println("Check " + vn + ": forward=" + forward + ", backward=" + backward + " at " + checkLocation);
             }
 
-            if (FlowValue.valuesConflict(forward, backward)) {
+            if (FlowValue.valuesConflict(typeQualifierValue, forward, backward)) {
                 if (DEBUG) {
                     System.out.println("Emitting warning at " + checkLocation);
                 }

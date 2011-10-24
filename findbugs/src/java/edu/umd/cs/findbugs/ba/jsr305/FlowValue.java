@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.meta.When;
 
 /**
@@ -86,17 +87,21 @@ public enum FlowValue {
 
     /**
      * Determine whether given flow values conflict.
-     * 
+     * @param typeQualifierValue TODO
      * @param forward
      *            a forwards flow value
      * @param backward
      *            a backwards flow value
+     * 
      * @return true if values conflict, false otherwise
      */
-    public static boolean valuesConflict(FlowValue forward, FlowValue backward) {
-        if (forward == TOP || backward == TOP) {
+    public static boolean valuesConflict(@CheckForNull TypeQualifierValue typeQualifierValue, FlowValue forward, FlowValue backward) {
+        if (forward == TOP || backward == TOP || forward == backward) {
             return false;
         }
+        if (typeQualifierValue != null && typeQualifierValue.isStrictQualifier())
+            return true;
+        
         return (forward == ALWAYS && backward == NEVER) || (forward == NEVER && backward == ALWAYS);
     }
 
