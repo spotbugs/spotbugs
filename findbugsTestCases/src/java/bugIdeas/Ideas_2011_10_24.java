@@ -27,11 +27,11 @@ public class Ideas_2011_10_24 {
             System.out.println("true");
         return v;
     }
-    @NoWarning("TQ")
+    @NoWarning("TESTING,TQ")
     boolean isFive(@PK int v) {
         return v == 5;
     }
-    @ExpectWarning("TQ")
+    @ExpectWarning("TESTING")
     boolean isFive(@PK int v, int x) {
         return v == x;
     }
