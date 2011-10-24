@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SuppressionMatcher;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.AnalysisFeatures.AnalysisFeature;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
@@ -593,7 +594,7 @@ public abstract class AnalysisContext {
      * @param value
      *            the value of the property
      */
-    public final void setBoolProperty(int prop, boolean value) {
+    public final void setBoolProperty(@AnalysisFeature int prop, boolean value) {
         boolPropertySet.set(prop, value);
     }
 
@@ -605,7 +606,7 @@ public abstract class AnalysisContext {
      * @return value of the property; defaults to false if the property has not
      *         had a value assigned explicitly
      */
-    public final boolean getBoolProperty(int prop) {
+    public final boolean getBoolProperty(@AnalysisFeature int prop) {
         return boolPropertySet.get(prop);
     }
 

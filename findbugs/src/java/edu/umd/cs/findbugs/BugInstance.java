@@ -43,6 +43,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.meta.When;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
@@ -244,7 +245,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
                 BugPattern bugPattern = getBugPattern();
                 if (SystemProperties.ASSERTIONS_ENABLED && !bugPattern.getCategory().equals("EXPERIMENTAL")
                         && !detectorFactory.getReportedBugPatterns().contains(bugPattern))
-                    AnalysisContext.logError(detectorFactory.getShortName() + " doesn't note that it reports " + bugPattern);
+                    AnalysisContext.logError(detectorFactory.getShortName() + " doesn't note that it reports " 
+                        + bugPattern + " in category " + bugPattern.getCategory());
 
             }
         }
@@ -1097,7 +1099,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      *            the name of the class
      * @return this object
      */
-    public BugInstance addClass(@DottedClassName String className) {
+    public BugInstance addClass(@SlashedClassName(when = When.UNKNOWN)  String className) {
         ClassAnnotation classAnnotation = new ClassAnnotation(ClassName.toDottedClassName(className));
         add(classAnnotation);
         return this;
