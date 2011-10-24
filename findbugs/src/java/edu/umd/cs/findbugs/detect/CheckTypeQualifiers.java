@@ -28,6 +28,11 @@ import javax.annotation.CheckForNull;
 import javax.annotation.meta.When;
 
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.IfInstruction;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -253,11 +258,9 @@ public class CheckTypeQualifiers extends CFGDetector {
             if (DEBUG) {
                 checkLocation = "location " + loc.toCompactString();
             }
-            checkForConflictingValues(xmethod, typeQualifierValue, forwardsFact, backwardsFact, loc, // location
-                                                                                                              // to
-                                                                                                              // report
-                    loc, // location where doomed value is observed
-                    vnaDataflow.getFactAtLocation(loc));
+            checkForConflictingValues(xmethod, cfg, typeQualifierValue, forwardsFact, backwardsFact, loc,
+                    loc, vnaDataflow.getFactAtLocation(loc));
+            checkForEqualityTest(xmethod, cfg, typeQualifierValue, forwardsFact, loc, vnaDataflow.getFactAtLocation(loc));
         }
 
         for (Iterator<Edge> i = cfg.edgeIterator(); i.hasNext();) {
@@ -293,10 +296,61 @@ public class CheckTypeQualifiers extends CFGDetector {
                 locationToReport = edgeTargetLocation;
             }
 
-            checkForConflictingValues(xmethod, typeQualifierValue, forwardFact, backwardFact, locationToReport,
-                    edgeTargetLocation, vnaFrame);
+            checkForConflictingValues(xmethod, cfg, typeQualifierValue, forwardFact, backwardFact,
+                    locationToReport, edgeTargetLocation, vnaFrame);
    
         }
+    }
+
+    /**
+     * @param methodDescriptor2
+     * @param cfg2
+     * @param typeQualifierValue
+     * @param forwardsFact
+     * @param loc
+     * @param factAtLocation
+     * @throws DataflowAnalysisException 
+     */
+    private void checkForEqualityTest(XMethod  methodDescriptor, CFG cfg, TypeQualifierValue typeQualifierValue,
+            TypeQualifierValueSet forwardsFact, Location loc, ValueNumberFrame factAtLocation) throws DataflowAnalysisException {
+        InstructionHandle handle = loc.getHandle();
+        Instruction ins = handle.getInstruction();
+        boolean isTest = false;
+        
+        ConstantPoolGen cpg = cfg.getMethodGen().getConstantPool();
+        if (ins instanceof IfInstruction && ins.consumeStack(cpg) == 2) {
+            isTest = true;
+        }  else if (ins instanceof InvokeInstruction && ins.consumeStack(cpg) == 2) {
+            InvokeInstruction invoke = (InvokeInstruction) ins;
+            isTest = invoke.getMethodName(cpg).equals("equals") &&invoke.getSignature(cpg).equals("(Ljava/lang/Object;)Z") ;
+        }
+        if (isTest) {
+            ValueNumber top = factAtLocation.getStackValue(0);
+            ValueNumber next = factAtLocation.getStackValue(1);
+            FlowValue topTQ = forwardsFact.getValue(top);
+            FlowValue nextTQ = forwardsFact.getValue(next);
+            if (DEBUG) {
+                System.out.println("Comparing values at " + loc.toCompactString());
+                System.out.println(" Comparing " + topTQ + " and " + nextTQ);
+            }
+            if (topTQ.equals(nextTQ)) return;
+            if (FlowValue.valuesConflict(topTQ, nextTQ) || typeQualifierValue.isStrictQualifier()) {
+                BugInstance warning = new BugInstance(this,"TESTING", HIGH_PRIORITY).addClassAndMethod(methodDescriptor);
+                annotateWarningWithTypeQualifier(warning, typeQualifierValue);
+                for(SourceSinkInfo s : forwardsFact.getWhere(top))
+                annotateWarningWithSourceSinkInfo(warning, methodDescriptor, top, s);
+                for(SourceSinkInfo s : forwardsFact.getWhere(next))
+                    annotateWarningWithSourceSinkInfo(warning, methodDescriptor, next, s);
+                SourceLineAnnotation observedLocation = SourceLineAnnotation.fromVisitedInstruction(methodDescriptor.getMethodDescriptor(),
+                        loc);
+                warning.add(observedLocation);
+                bugReporter.reportBug(warning);
+
+            }
+            
+        }
+
+        
     }
 
     private void checkValueSources(XMethod xMethod, CFG cfg, TypeQualifierValue typeQualifierValue,
@@ -394,13 +448,14 @@ public class CheckTypeQualifiers extends CFGDetector {
         return (sourceBlock.getLastInstruction() != null) ? new Location(sourceBlock.getLastInstruction(), sourceBlock) : null;
     }
 
-    private void checkForConflictingValues(XMethod xMethod, TypeQualifierValue typeQualifierValue,
-            TypeQualifierValueSet forwardsFact, TypeQualifierValueSet backwardsFact, Location locationToReport,
-            Location locationWhereDoomedValueIsObserved, ValueNumberFrame vnaFrame) throws CheckedAnalysisException {
+    private void checkForConflictingValues(XMethod xMethod, CFG cfg,
+            TypeQualifierValue typeQualifierValue, TypeQualifierValueSet forwardsFact, TypeQualifierValueSet backwardsFact,
+            Location locationToReport, Location locationWhereDoomedValueIsObserved, ValueNumberFrame vnaFrame) throws CheckedAnalysisException {
         Set<ValueNumber> valueNumberSet = new HashSet<ValueNumber>();
         valueNumberSet.addAll(forwardsFact.getValueNumbers());
         valueNumberSet.addAll(backwardsFact.getValueNumbers());
-
+        
+       
         for (ValueNumber vn : valueNumberSet) {
             FlowValue forward = forwardsFact.getValue(vn);
             FlowValue backward = backwardsFact.getValue(vn);

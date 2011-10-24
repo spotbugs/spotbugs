@@ -120,6 +120,15 @@ public class TypeQualifierValueSet {
         whereNever.remove(vn);
     }
 
+    public Set<? extends SourceSinkInfo> getWhere(ValueNumber vn) {
+        FlowValue f = getValue(vn);
+        switch (f) {
+        case ALWAYS:  return getSourceSinkInfoSet(whereAlways, vn);
+        case NEVER:  return getSourceSinkInfoSet(whereNever, vn);
+        }
+        return Collections.emptySet();
+       
+    }
     public Set<? extends SourceSinkInfo> getWhereAlways(ValueNumber vn) {
         return getSourceSinkInfoSet(whereAlways, vn);
     }
