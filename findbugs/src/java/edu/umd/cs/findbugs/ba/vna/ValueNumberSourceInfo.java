@@ -110,7 +110,10 @@ public abstract class ValueNumberSourceInfo {
         for (int i = 0; i < vnaFrame.getNumLocals(); i++) {
             if (valueNumber.equals(vnaFrame.getValue(i))) {
                 InstructionHandle handle = location.getHandle();
-                int position1 = handle.getPrev().getPosition();
+                InstructionHandle prev = handle.getPrev();
+                if (prev == null) 
+                    continue;
+                int position1 = prev.getPosition();
                 int position2 = handle.getPosition();
                 localAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(method, i, position1, position2);
                 if (localAnnotation != null)

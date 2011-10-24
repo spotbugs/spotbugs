@@ -311,7 +311,7 @@ public class CheckTypeQualifiers extends CFGDetector {
      * @param factAtLocation
      * @throws DataflowAnalysisException 
      */
-    private void checkForEqualityTest(XMethod  methodDescriptor, CFG cfg, TypeQualifierValue typeQualifierValue,
+    private void checkForEqualityTest(XMethod  xmethod, CFG cfg, TypeQualifierValue typeQualifierValue,
             TypeQualifierValueSet forwardsFact, Location loc, ValueNumberFrame factAtLocation) throws DataflowAnalysisException {
         InstructionHandle handle = loc.getHandle();
         Instruction ins = handle.getInstruction();
@@ -338,14 +338,14 @@ public class CheckTypeQualifiers extends CFGDetector {
                 System.out.println(" Comparing " + topTQ + " and " + nextTQ);
             }
             if (topTQ.equals(nextTQ)) return;
-            if (FlowValue.valuesConflict(typeQualifierValue, topTQ, nextTQ)) {
-                BugInstance warning = new BugInstance(this,"TESTING", HIGH_PRIORITY).addClassAndMethod(methodDescriptor);
+            if (FlowValue.valuesConflict(typeQualifierValue.isStrictQualifier() && !xmethod.isIdentity(), topTQ, nextTQ)) {
+                BugInstance warning = new BugInstance(this,"TESTING", HIGH_PRIORITY).addClassAndMethod(xmethod);
                 annotateWarningWithTypeQualifier(warning, typeQualifierValue);
                 for(SourceSinkInfo s : forwardsFact.getWhere(top))
-                   annotateWarningWithSourceSinkInfo(warning, methodDescriptor, top, s);
+                   annotateWarningWithSourceSinkInfo(warning, xmethod, top, s);
                 for(SourceSinkInfo s : forwardsFact.getWhere(next))
-                    annotateWarningWithSourceSinkInfo(warning, methodDescriptor, next, s);
-                SourceLineAnnotation observedLocation = SourceLineAnnotation.fromVisitedInstruction(methodDescriptor.getMethodDescriptor(),
+                    annotateWarningWithSourceSinkInfo(warning, xmethod, next, s);
+                SourceLineAnnotation observedLocation = SourceLineAnnotation.fromVisitedInstruction(xmethod.getMethodDescriptor(),
                         loc);
                 warning.add(observedLocation);
                 warning.addSomeSourceForTopTwoStackValues(classContext, method, loc);
@@ -389,7 +389,7 @@ public class CheckTypeQualifiers extends CFGDetector {
                 // the dataflow values conflict directly with each other.
                 TypeQualifierValueSet forwardsFact = forwardDataflow.getFactAfterLocation(location);
                 FlowValue forwardsFlowValue = forwardsFact.getValue(vn);
-                if (FlowValue.valuesConflict(typeQualifierValue, forwardsFlowValue, backwardsFlowValue)) {
+                if (FlowValue.valuesConflict(typeQualifierValue.isStrictQualifier() && !xMethod.isIdentity(), forwardsFlowValue, backwardsFlowValue)) {
                     continue;
                 }
 
@@ -464,22 +464,17 @@ public class CheckTypeQualifiers extends CFGDetector {
         for (ValueNumber vn : valueNumberSet) {
             FlowValue forward = forwardsFact.getValue(vn);
             FlowValue backward = backwardsFact.getValue(vn);
-
-            if (forward == FlowValue.TOP || backward == FlowValue.TOP) continue;
-            if (forward == FlowValue.UNKNOWN && backward == FlowValue.UNKNOWN)
+            if (!FlowValue.valuesConflict(typeQualifierValue.isStrictQualifier() && !xMethod.isIdentity(), forward, backward))
                 continue;
-            
+
             if (DEBUG) {
                 System.out.println("Check " + vn + ": forward=" + forward + ", backward=" + backward + " at " + checkLocation);
             }
 
-            if (FlowValue.valuesConflict(typeQualifierValue, forward, backward)) {
-                if (DEBUG) {
-                    System.out.println("Emitting warning at " + checkLocation);
-                }
+            
                 emitDataflowWarning(xMethod, typeQualifierValue, forwardsFact, backwardsFact, vn, forward, backward,
                         locationToReport, locationWhereDoomedValueIsObserved, vnaFrame);
-            }
+            
         }
     }
 

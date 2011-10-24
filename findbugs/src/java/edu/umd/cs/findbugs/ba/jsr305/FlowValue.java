@@ -95,11 +95,11 @@ public enum FlowValue {
      * 
      * @return true if values conflict, false otherwise
      */
-    public static boolean valuesConflict(@CheckForNull TypeQualifierValue typeQualifierValue, FlowValue forward, FlowValue backward) {
+    public static boolean valuesConflict(boolean strictChecking, FlowValue forward, FlowValue backward) {
         if (forward == TOP || backward == TOP || forward == backward) {
             return false;
         }
-        if (typeQualifierValue != null && typeQualifierValue.isStrictQualifier())
+        if (strictChecking)
             return true;
         
         return (forward == ALWAYS && backward == NEVER) || (forward == NEVER && backward == ALWAYS);
@@ -144,6 +144,7 @@ public enum FlowValue {
             TypeQualifierValue typeQualifierValue, boolean isIdentity) {
 
         When sourceWhen = source.getWhen();
+
 
         if (typeQualifierValue.isStrictQualifier() && !isIdentity) {
             // strict checking
