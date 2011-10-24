@@ -20,10 +20,10 @@ public abstract class StrictTest {
 
     Object g;
 
-    @ExpectWarning("TQ")
+    @NoWarning("TQ")
     public 
     @Strict
-    Object violation1(Object unknown) {
+    Object coercionFunction(Object unknown) {
         return unknown;
     }
 
