@@ -28,6 +28,7 @@ import org.apache.bcel.generic.ACONST_NULL;
 import org.apache.bcel.generic.ArrayInstruction;
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.ConstantPushInstruction;
 import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.IINC;
@@ -225,6 +226,8 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
             flags = ValueNumber.RETURN_VALUE;
         else if (ins instanceof ArrayInstruction)
             flags = ValueNumber.ARRAY_VALUE;
+        else if (ins instanceof ConstantPushInstruction)
+            flags = ValueNumber.CONSTANT_VALUE;
 
         // Get the input operands to this instruction.
         ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
