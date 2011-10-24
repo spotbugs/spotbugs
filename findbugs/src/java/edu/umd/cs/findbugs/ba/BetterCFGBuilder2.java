@@ -385,7 +385,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
          * @param edgeType
          *            the type of control edge
          */
-        public void addEdgeAndExplore(BasicBlock sourceBlock, InstructionHandle target, int edgeType) {
+        public void addEdgeAndExplore(BasicBlock sourceBlock, InstructionHandle target, @Edge.Type int edgeType) {
             if (usedInstructionSet.get(target.getPosition()) && !containsInstruction(target)) {
                 // Control escapes this subroutine
                 List<EscapeTarget> escapeTargetList = escapeTargetListMap.get(sourceBlock);
@@ -411,7 +411,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
          * @param edgeType
          *            the type of edge
          */
-        public void addEdge(BasicBlock sourceBlock, BasicBlock destBlock, int edgeType) {
+        public void addEdge(BasicBlock sourceBlock, BasicBlock destBlock, @Edge.Type int edgeType) {
             if (VERIFY_INTEGRITY) {
                 if (destBlock.isExceptionHandler() && edgeType != HANDLED_EXCEPTION_EDGE)
                     throw new IllegalStateException("In method " + SignatureConverter.convertMethodSignature(methodGen)
