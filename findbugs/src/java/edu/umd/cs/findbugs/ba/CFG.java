@@ -31,6 +31,7 @@ import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.ba.Edge.Type;
 import edu.umd.cs.findbugs.graph.AbstractGraph;
 import edu.umd.cs.findbugs.util.NullIterator;
 
@@ -497,7 +498,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
         return getEdgeWithType(outgoingEdgeIterator(basicBlock), edgeType);
     }
 
-    private Edge getEdgeWithType(Iterator<Edge> iter, int edgeType) {
+    private Edge getEdgeWithType(Iterator<Edge> iter,  @Type int edgeType) {
         while (iter.hasNext()) {
             Edge edge = iter.next();
             if (edge.getType() == edgeType)
