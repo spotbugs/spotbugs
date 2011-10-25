@@ -27,7 +27,7 @@ import org.apache.bcel.generic.InstructionHandle;
 public class Target {
     private InstructionHandle targetInstruction;
 
-    private int edgeType;
+    private @Edge.Type int edgeType;
 
     /**
      * Constructor.
@@ -37,7 +37,7 @@ public class Target {
      * @param edgeType
      *            type of CFG edge; see EdgeTypes interface
      */
-    public Target(InstructionHandle targetInstruction, int edgeType) {
+    public Target(InstructionHandle targetInstruction, @Edge.Type int edgeType) {
         this.targetInstruction = targetInstruction;
         this.edgeType = edgeType;
     }
@@ -52,7 +52,7 @@ public class Target {
     /**
      * Get the control flow edge type.
      */
-    public int getEdgeType() {
+    public @Edge.Type int getEdgeType() {
         return edgeType;
     }
 }

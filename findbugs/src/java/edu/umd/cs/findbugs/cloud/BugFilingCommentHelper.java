@@ -90,10 +90,11 @@ public class BugFilingCommentHelper {
 
         SourceLineAnnotation primarySource = primaryClass.getSourceLines();
         if (primarySource.isSourceFileKnown() && firstLine >= 1 && firstLine <= lastLine && lastLine - firstLine < 50) {
+            BufferedReader in = null;
             try {
                 Project project = cloud.getBugCollection().getProject();
                 SourceFile sourceFile = project.getSourceFinder().findSourceFile(primarySource);
-                BufferedReader in = UTF8.bufferedReader(sourceFile.getInputStream());
+                in = UTF8.bufferedReader(sourceFile.getInputStream());
                 int lineNumber = 1;
                 String commonWhiteSpace = null;
                 List<SourceLine> source = new ArrayList<SourceLine>();
@@ -114,7 +115,6 @@ public class BugFilingCommentHelper {
                     }
                     lineNumber++;
                 }
-                in.close();
                 if (commonWhiteSpace == null)
                     commonWhiteSpace = "";
                 out.println("\nRelevant source code:");
@@ -128,6 +128,8 @@ public class BugFilingCommentHelper {
                 out.println();
             } catch (IOException e) {
                 assert true;
+            } finally {
+                Util.closeSilently(in);
             }
             out.close();
             return stringWriter.toString();

@@ -668,13 +668,16 @@ public class TextUICommandLine extends FindBugsCommandLine {
     public void handleXArgs() throws IOException {
         if (getXargs()) {
             BufferedReader in = UTF8.bufferedReader(System.in);
+            try {
             while (true) {
                 String s = in.readLine();
                 if (s == null)
                     break;
                 project.addFile(s);
             }
-            in.close();
+            } finally {
+             Util.closeSilently(in);
+            }
         }
     }
 

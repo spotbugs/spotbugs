@@ -35,6 +35,8 @@ import java.util.regex.Pattern;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.io.IO;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * @author pwilliam
@@ -195,8 +197,9 @@ public class ProjectPackagePrefixes {
         URL u = DetectorFactoryCollection.getCoreResource("projectPaths.properties");
         if (u != null) {
 
+            BufferedReader in = null;
             try {
-                BufferedReader in = UTF8.bufferedReader(u.openStream());
+                 in = UTF8.bufferedReader(u.openStream());
                 while (true) {
                     String s = in.readLine();
                     if (s == null)
@@ -205,10 +208,11 @@ public class ProjectPackagePrefixes {
                     if (parts.length == 2 && !map.containsKey(parts[0]))
                         map.put(parts[0], new PrefixFilter(parts[1]));
                 }
-                in.close();
             } catch (IOException e1) {
 
                 AnalysisContext.logError("Error loading projects paths", e1);
+            } finally {
+               Util.closeSilently(in);
             }
 
         }
