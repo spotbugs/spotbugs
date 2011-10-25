@@ -13,6 +13,28 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3415313 {
+    
+    public void original(Connection sesscon) throws SQLException {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            StringBuffer sql = new StringBuffer();
+            sql.append("SELECT groupcounter,");
+            sql.append(" grouppoolcode,");
+            sql.append(" groupdescription");
+            sql.append(" FROM DataGroup");
+            sql.append(" ORDER BY groupcounter");
+            ps = sesscon.prepareStatement(sql.toString());
+            int col = 1;
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                // get the data
+            }
+        } finally {
+            WorkflowUtils.closeResultSet(rs);
+            WorkflowUtils.closeStatement(ps);
+        }
+    }
 
     @NoWarning("OBL_UNSATISFIED_OBLIGATION")
     public void fp1(Connection sesscon) throws SQLException {
