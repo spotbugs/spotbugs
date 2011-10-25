@@ -121,7 +121,7 @@ public class CountClassVersions {
         List<String> fileList;
 
         if (commandLine.inputFileList != null)
-            fileList = readFrom(new FileReader(commandLine.inputFileList));
+            fileList = readFrom(UTF8.fileReader(commandLine.inputFileList));
         else if (argCount == args.length)
             fileList = readFromStandardInput();
         else

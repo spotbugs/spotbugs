@@ -22,14 +22,17 @@ package edu.umd.cs.findbugs.charsets;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
@@ -40,12 +43,26 @@ import javax.annotation.WillCloseWhenClosed;
  */
 public class UTF8 {
 
+    /**
+     * 
+     */
+    private static final String UTF_8 = "UTF-8";
     public static final Charset charset;
 
     static {
-        charset = Charset.forName("UTF-8");
+        charset = Charset.forName(UTF_8);
     }
 
+    public static PrintStream printStream(OutputStream out) {
+       return printStream(out, false);
+    }
+    public static PrintStream printStream(OutputStream out, boolean autoflush) {
+        try {
+            return new PrintStream(out,autoflush, UTF_8);
+        } catch (UnsupportedEncodingException e) {
+           throw new AssertionError("UTF-8 not supported");
+        }
+    }
     public static Writer writer(OutputStream out) {
         return new OutputStreamWriter(out, charset);
     }
@@ -55,8 +72,25 @@ public class UTF8 {
     public static BufferedWriter bufferedWriter(File fileName) throws IOException {
         return new BufferedWriter(fileWriter(fileName));
     }
+
     public static PrintWriter printWriter(File fileName) throws IOException {
         return new PrintWriter(bufferedWriter(fileName));
+    }
+
+
+    public static PrintWriter printWriter(PrintStream printStream)  {
+        try {
+            return new PrintWriter(new OutputStreamWriter(printStream, UTF_8));
+        } catch (UnsupportedEncodingException e) {
+            throw new AssertionError("UTF-8 not supported");
+        }
+    }
+    public static PrintWriter printWriter(PrintStream printStream, boolean autoflush)  {
+        try {
+            return new PrintWriter(new OutputStreamWriter(printStream, UTF_8), autoflush);
+        } catch (UnsupportedEncodingException e) {
+            throw new AssertionError("UTF-8 not supported");
+        }
     }
 
     public static Writer fileWriter(String fileName) throws IOException {
@@ -64,6 +98,14 @@ public class UTF8 {
     }
     public static BufferedWriter bufferedWriter(String fileName) throws IOException {
         return new BufferedWriter(fileWriter(fileName));
+    }
+
+    public static Reader fileReader(String fileName) throws IOException {
+        return  reader(new FileInputStream(fileName));
+    }
+
+    public static Reader fileReader(File fileName) throws IOException {
+        return  reader(new FileInputStream(fileName));
     }
     public static PrintWriter printWriter(String fileName) throws IOException {
         return new PrintWriter(bufferedWriter(fileName));

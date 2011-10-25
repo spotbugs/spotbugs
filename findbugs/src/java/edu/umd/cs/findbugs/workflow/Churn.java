@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.config.CommandLine;
 
 /**
@@ -221,7 +222,7 @@ public class Churn {
         PrintStream out = System.out;
         try {
             if (argCount < args.length) {
-                out = new PrintStream(new FileOutputStream(args[argCount++]), true);
+                out = UTF8.printStream(new FileOutputStream(args[argCount++]), true);
             }
             churn.dump(out);
         } finally {

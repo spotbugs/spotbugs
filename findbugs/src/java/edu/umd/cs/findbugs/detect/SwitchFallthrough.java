@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.detect;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashSet;
@@ -48,6 +47,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 public class SwitchFallthrough extends OpcodeStackDetector implements StatelessDetector {
@@ -292,7 +292,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                 int numLines = srcLine.getEndLine() - startLine - 1;
                 if (numLines <= 0)
                     return false;
-                r = new BufferedReader(new InputStreamReader(sourceFile.getInputStream()));
+                r = UTF8.bufferedReader(sourceFile.getInputStream());
                 for (int i = 0; i < startLine; i++) {
                     String line = r.readLine();
                     if (line == null)

@@ -124,7 +124,7 @@ public class CFGPrinter {
     // String methodName = SystemProperties.getProperty("cfg.method");
     // PrintStream out = System.err;
     // if (argv.length == 2)
-    // out = new PrintStream(new FileOutputStream(argv[1]));
+    // out = UTF8.printStream(new FileOutputStream(argv[1]));
     // for (Method method : methods) {
     // MethodGen methodGen = classContext.getMethodGen(method);
     // if (methodGen == null)

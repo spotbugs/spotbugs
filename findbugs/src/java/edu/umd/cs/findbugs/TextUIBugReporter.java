@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.umd.cs.findbugs.charsets.UTF8;
+
 /**
  * Base class for BugReporters which provides convenient formatting and
  * reporting of warnings and analysis errors.
@@ -53,7 +55,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
     static final String OTHER_CATEGORY_ABBREV = "X";
 
-   protected PrintWriter outputStream = new PrintWriter(System.out, true);
+   protected PrintWriter outputStream = UTF8.printWriter(System.out, true);
 
     public TextUIBugReporter() {
         reportStackTrace = true;
@@ -66,7 +68,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
      *            the PrintStream to write bug output to
      */
     public void setOutputStream(PrintStream outputStream) {
-        this.outputStream = new PrintWriter(outputStream, true);
+        this.outputStream = UTF8.printWriter(outputStream, true);
     }
 
     public void setWriter(PrintWriter writer) {

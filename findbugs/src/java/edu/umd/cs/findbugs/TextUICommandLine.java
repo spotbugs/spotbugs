@@ -37,11 +37,13 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.annotation.CheckForNull;
 
+import org.dom4j.DocumentException;
+
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.util.Util;
-import org.dom4j.DocumentException;
 
 /**
  * Helper class to parse the command line and configure the IFindBugsEngine
@@ -319,7 +321,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
             setExitCode = true;
         } else if (option.equals("-auxclasspathFromInput")) {
             try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+                BufferedReader in = UTF8.bufferedReader(System.in);
                 while (true) {
                     String s = in.readLine();
                     if (s == null)
@@ -369,7 +371,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 OutputStream oStream = new BufferedOutputStream(new FileOutputStream(outputFile));
                 if (fileName.endsWith(".gz"))
                     oStream = new GZIPOutputStream(oStream);
-                outputStream = new PrintStream(oStream);
+                outputStream = UTF8.printStream(oStream);
             } catch (IOException e) {
                 System.err.println("Couldn't open " + outputFile + " for output: " + e.toString());
                 System.exit(1);
@@ -665,7 +667,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
      */
     public void handleXArgs() throws IOException {
         if (getXargs()) {
-            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            BufferedReader in = UTF8.bufferedReader(System.in);
             while (true) {
                 String s = in.readLine();
                 if (s == null)

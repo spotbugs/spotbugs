@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.charsets.UTF8;
 
 public class PlainPrintBugDescriptions extends PrintBugDescriptions {
     private String docTitle;
@@ -32,7 +33,7 @@ public class PlainPrintBugDescriptions extends PrintBugDescriptions {
 
     public PlainPrintBugDescriptions(String docTitle, OutputStream out) {
         this.docTitle = docTitle;
-        this.out = new PrintStream(out);
+        this.out = UTF8.printStream(out);
     }
 
     protected String getDocTitle() {

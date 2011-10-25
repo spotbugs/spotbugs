@@ -22,11 +22,9 @@ package edu.umd.cs.findbugs.config;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -188,8 +186,7 @@ public abstract class CommandLine {
 
             BufferedReader reader = null;
             try {
-                reader = new BufferedReader(
-                        new InputStreamReader(new FileInputStream(arg.substring(1))));
+                reader = UTF8.bufferedReader(new FileInputStream(arg.substring(1)));
                 addCommandLineOptions(expandedOptionsList, reader, ignoreComments, ignoreBlankLines);
             } finally {
                 Util.closeSilently(reader);
@@ -371,7 +368,7 @@ public abstract class CommandLine {
      */
     public void printUsage(OutputStream os) {
         int count = 0;
-        PrintStream out = new PrintStream(os);
+        PrintStream out = UTF8.printStream(os);
         for (String option : optionList) {
 
             if (optionGroups.containsKey(count)) {

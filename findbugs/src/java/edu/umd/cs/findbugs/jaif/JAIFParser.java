@@ -19,10 +19,11 @@
 
 package edu.umd.cs.findbugs.jaif;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Locale;
+
+import edu.umd.cs.findbugs.charsets.UTF8;
 
 /**
  * Parse an external annotation file.
@@ -402,7 +403,7 @@ public class JAIFParser {
             }
         };
 
-        JAIFParser parser = new JAIFParser(new FileReader(args[0]), callback);
+        JAIFParser parser = new JAIFParser(UTF8.fileReader(args[0]), callback);
         parser.parse();
     }
 }

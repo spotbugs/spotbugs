@@ -52,6 +52,7 @@ import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.charsets.UserTextFile;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -303,14 +304,14 @@ public class RejarClassesForAnalysis {
         TreeSet<String> fileList = new TreeSet<String>();
 
         if (commandLine.inputFileList != null)
-            readFrom(fileList, new FileReader(commandLine.inputFileList));
+            readFrom(fileList, UTF8.fileReader(commandLine.inputFileList));
         else if (argCount == args.length)
              readFromStandardInput(fileList);
         else
             fileList.addAll(Arrays.asList(args).subList(argCount, args.length));
         TreeSet<String> auxFileList = new TreeSet<String>();
         if (commandLine.auxFileList != null) {
-            readFrom(auxFileList, new FileReader(commandLine.auxFileList));
+            readFrom(auxFileList, UTF8.fileReader(commandLine.auxFileList));
             auxFileList.removeAll(fileList);
         }
 

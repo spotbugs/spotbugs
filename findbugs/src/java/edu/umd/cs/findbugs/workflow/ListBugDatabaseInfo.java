@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.config.CommandLine;
 
 /**
@@ -74,7 +75,7 @@ public class ListBugDatabaseInfo {
         ListBugDatabaseInfoCommandLine commandLine = new ListBugDatabaseInfoCommandLine();
         int argCount = commandLine.parse(args, 0, Integer.MAX_VALUE, USAGE);
 
-        PrintWriter out = new PrintWriter(System.out, true);
+        PrintWriter out = UTF8.printWriter(System.out, true);
         if (argCount == args.length)
             listVersion(out, null, commandLine.formatDates);
         else {

@@ -37,7 +37,6 @@ import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
@@ -47,6 +46,7 @@ import java.net.URLConnection;
 
 import javax.annotation.WillNotClose;
 
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.util.Util;
 
 public class IO {
@@ -65,7 +65,7 @@ public class IO {
     };
 
     public static String readAll(InputStream in) throws IOException {
-        return readAll(new InputStreamReader(in));
+        return readAll(UTF8.reader(in));
     }
 
     public static String readAll(Reader reader) throws IOException {

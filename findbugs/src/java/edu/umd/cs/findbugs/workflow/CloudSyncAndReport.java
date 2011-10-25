@@ -115,7 +115,7 @@ public class CloudSyncAndReport {
         csr.load();
 
         csr.sync();
-        PrintWriter out = new PrintWriter(System.out);
+        PrintWriter out = UTF8.printWriter(System.out);
         csr.report(out);
         out.flush();
         csr.shutdown();

@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.tools;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -33,6 +32,7 @@ import java.util.Queue;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.charsets.SourceCharset;
+import edu.umd.cs.findbugs.charsets.UTF8;
 
 /**
  * @author pugh
@@ -109,7 +109,7 @@ public class FixIndentation {
     static int updated = 0;
     static void fix(File fileToUpdate, boolean partial) throws IOException {
         boolean anyChanges = false;
-        BufferedReader in = new BufferedReader(new FileReader(fileToUpdate));
+        BufferedReader in = new BufferedReader(UTF8.fileReader(fileToUpdate));
         examined++;
         StringWriter stringWriter = new StringWriter();
         PrintWriter out = new PrintWriter(stringWriter);

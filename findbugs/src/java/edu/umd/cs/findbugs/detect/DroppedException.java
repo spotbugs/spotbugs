@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.ListIterator;
@@ -46,6 +45,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
@@ -372,7 +372,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
             int offset = sourceFile.getLineOffset(scanStartLine - 1);
             if (offset < 0)
                 return false; // Source file has changed?
-            Tokenizer tokenizer = new Tokenizer(new InputStreamReader(sourceFile.getInputStreamFromOffset(offset)));
+            Tokenizer tokenizer = new Tokenizer(UTF8.reader(sourceFile.getInputStreamFromOffset(offset)));
 
             // Read the tokens into an ArrayList,
             // keeping track of where the catch block is reported

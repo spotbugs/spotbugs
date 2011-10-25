@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.cloud;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
@@ -37,6 +36,7 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.SourceFile;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -93,7 +93,7 @@ public class BugFilingCommentHelper {
             try {
                 Project project = cloud.getBugCollection().getProject();
                 SourceFile sourceFile = project.getSourceFinder().findSourceFile(primarySource);
-                BufferedReader in = new BufferedReader(new InputStreamReader(sourceFile.getInputStream()));
+                BufferedReader in = UTF8.bufferedReader(sourceFile.getInputStream());
                 int lineNumber = 1;
                 String commonWhiteSpace = null;
                 List<SourceLine> source = new ArrayList<SourceLine>();

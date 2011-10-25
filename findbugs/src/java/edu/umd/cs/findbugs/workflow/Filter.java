@@ -19,7 +19,6 @@
 package edu.umd.cs.findbugs.workflow;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Date;
@@ -57,6 +56,7 @@ import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SloppyBugComparator;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.filter.FilterException;
@@ -615,7 +615,7 @@ public class Filter {
                 hashesFromFile = new HashSet<String>();
                 BufferedReader in = null;
                 try {
-                    in = new BufferedReader(new FileReader(argument));
+                    in = new BufferedReader(UTF8.fileReader(argument));
                     while (true) {
                         String h = in.readLine();
                         if (h == null)

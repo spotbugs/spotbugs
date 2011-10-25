@@ -23,8 +23,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -34,6 +32,7 @@ import java.util.TreeMap;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.util.Bag;
@@ -169,7 +168,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
             bugCollection.readXML(System.in);
 
         if (argCount < args.length)
-            reporter.setOutputStream(new PrintStream(new FileOutputStream(args[argCount++]), true));
+            reporter.setOutputStream(UTF8.printStream(new FileOutputStream(args[argCount++]), true));
         RuntimeException storedException = null;
         if (commandLine.annotationUploadFormat) {
             bugCollection.computeBugHashes();
@@ -242,7 +241,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
             bugCollection.readXML(System.in);
 
         if (argCount < args.length)
-            reporter.setOutputStream(new PrintStream(new FileOutputStream(args[argCount++]), true));
+            reporter.setOutputStream(UTF8.printStream(new FileOutputStream(args[argCount++]), true));
 
         reporter.finish();
         Exception e = reporter.getFatalException();

@@ -26,6 +26,7 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.charsets.UTF8;
 
 /**
  * Java main application to compute update a historical bug collection with
@@ -56,7 +57,7 @@ public class CloudReport {
         else
             bugs.readXML(args[0]);
         bugs.getCloud().waitUntilIssueDataDownloaded();
-        PrintWriter out = new PrintWriter(System.out);
+        PrintWriter out = UTF8.printWriter(System.out);
         bugs.getCloud().printCloudSummary(out, bugs, new String[0]);
         out.close();
 
