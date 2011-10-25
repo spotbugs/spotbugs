@@ -461,17 +461,13 @@ public class WebCloudNetworkClient {
     public void signOut(boolean background) {
         if (sessionId != null) {
             final long oldSessionId = sessionId;
+            sessionId = null;
             Runnable logoutRequest = new Runnable() {
                 public void run() {
                     try {
                         openPostUrl("/log-out/" + oldSessionId, null);
                     } catch (Exception e) {
-                        getGuiCallback().showMessageDialog(
-                                "A network error occurred while attempting to sign out of the "
-                                        + cloudClient.getCloudName() + ". \n"
-                                        + "Please check your internet settings and try again.\n\n"
-                                        + Util.getNetworkErrorMessage(e));
-                        LOGGER.log(Level.SEVERE, "Could not sign out", e);
+                        LOGGER.log(Level.INFO, "Could not sign out", e);
                     }
                 }
             };
@@ -479,7 +475,7 @@ public class WebCloudNetworkClient {
                 cloudClient.getBackgroundExecutor().execute(logoutRequest);
             else
                 logoutRequest.run();
-            sessionId = null;
+            
             WebCloudNameLookup.clearSavedSessionInformation();
         }
     }
