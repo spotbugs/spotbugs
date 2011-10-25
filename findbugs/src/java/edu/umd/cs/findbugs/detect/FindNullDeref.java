@@ -1491,20 +1491,26 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                     priority = NORMAL_PRIORITY;
                 }
 
-            } else if (pu.getNonNullField() != null) {
-                storedField = FieldAnnotation.fromXField(pu.getNonNullField());
-                bugType = "NP_STORE_INTO_NONNULL_FIELD";
-            } else if (pu.getNonNullParameter() != null) {
-                XMethodParameter mp = pu.getNonNullParameter();
-                invokedXMethod = mp.getMethod();
-                for (Location derefLoc : derefLocationSet)
-                    if (safeCallToPrimateParseMethod(invokedXMethod, derefLoc))
-                        return;
-                invokedMethod = MethodAnnotation.fromXMethod(mp.getMethod());
-                if (mp.getParameterNumber() == 0 && NullnessAnnotationDatabase.assertsFirstParameterIsNonnull(invokedXMethod))
-                    return;
-                parameterNumber = mp.getParameterNumber();
-                bugType = "NP_NULL_PARAM_DEREF";
+            } else {
+                XField f = pu.getNonNullField();
+                if (f != null) {
+                    storedField = FieldAnnotation.fromXField(f);
+                    bugType = "NP_STORE_INTO_NONNULL_FIELD";
+                } else {
+                    XMethodParameter mp = pu.getNonNullParameter();
+                    if (mp != null) {
+                        invokedXMethod = mp.getMethod();
+                        for (Location derefLoc : derefLocationSet)
+                            if (safeCallToPrimateParseMethod(invokedXMethod, derefLoc))
+                                return;
+                        invokedMethod = MethodAnnotation.fromXMethod(mp.getMethod());
+                        if (mp.getParameterNumber() == 0
+                                && NullnessAnnotationDatabase.assertsFirstParameterIsNonnull(invokedXMethod))
+                            return;
+                        parameterNumber = mp.getParameterNumber();
+                        bugType = "NP_NULL_PARAM_DEREF";
+                    }
+                }
             }
         }
 

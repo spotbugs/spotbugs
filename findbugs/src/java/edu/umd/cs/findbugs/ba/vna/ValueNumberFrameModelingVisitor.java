@@ -87,8 +87,6 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 
     private HashMap<ValueNumber, String> stringConstantMap;
 
-    private RepositoryLookupFailureCallback lookupFailureCallback;
-
     private InstructionHandle handle;
 
     /*
@@ -121,7 +119,6 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
         this.loadedFieldSet = loadedFieldSet;
         this.constantValueMap = new HashMap<Object, ValueNumber>();
         this.stringConstantMap = new HashMap<ValueNumber, String>();
-        this.lookupFailureCallback = lookupFailureCallback;
     }
 
     @Override

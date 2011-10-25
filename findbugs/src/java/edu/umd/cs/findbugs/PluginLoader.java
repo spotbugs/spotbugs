@@ -1390,15 +1390,16 @@ public class PluginLoader {
 
 
     private static Document parseDocument(@WillClose InputStream in) throws DocumentException {
+        Reader r = UTF8.bufferedReader(in);
         try {
+           
             SAXReader reader = new SAXReader();
 
-            Reader r = UTF8.bufferedReader(in);
             Document d = reader.read(r);
 
             return d;
         } finally {
-            Util.closeSilently(in);
+            Util.closeSilently(r);
         }
     }
 }

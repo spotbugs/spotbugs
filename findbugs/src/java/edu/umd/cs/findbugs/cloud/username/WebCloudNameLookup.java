@@ -130,9 +130,11 @@ public class WebCloudNameLookup implements NameLookup {
     private void checkResolveHost() throws UnknownHostException {
         try {
             String host = new URL(url).getHost();
-            @SuppressWarnings({"UnusedDeclaration"})
-            InetAddress ignored = InetAddress.getByName(host);
-        } catch (MalformedURLException e) { /* this will come out later */ }
+            InetAddress.getByName(host);
+        } catch (MalformedURLException e) { 
+            assert true;
+            /* this will come out later */
+            }
     }
 
     private URL getAuthCheckUrl(long sessionId) throws MalformedURLException {

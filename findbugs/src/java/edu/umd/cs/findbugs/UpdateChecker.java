@@ -179,44 +179,48 @@ public class UpdateChecker {
     /** protected for testing */
     protected final void writeXml(OutputStream out, Collection<Plugin> plugins, String entryPoint) throws IOException {
         OutputStreamXMLOutput xmlOutput = new OutputStreamXMLOutput(out);
-        xmlOutput.beginDocument();
-        xmlOutput.startTag("findbugs-invocation");
-        xmlOutput.addAttribute("version", Version.RELEASE);
-        String applicationName = Version.getApplicationName();
-        if (applicationName == null || applicationName.equals("")) {
-            int lastDot = entryPoint.lastIndexOf('.');
-            if (lastDot == -1)
-                applicationName = entryPoint;
-            else
-                applicationName = entryPoint.substring(lastDot + 1);
-        }
-        xmlOutput.addAttribute("app-name", applicationName);
-        String applicationVersion = Version.getApplicationVersion();
-        if (applicationVersion == null)
-            applicationVersion = "";
-        xmlOutput.addAttribute("app-version", applicationVersion);
-        xmlOutput.addAttribute("entry-point", entryPoint);
-        xmlOutput.addAttribute("os", SystemProperties.getProperty("os.name", ""));
-        xmlOutput.addAttribute("java-version", getMajorJavaVersion());
-        Locale locale = Locale.getDefault();
-        xmlOutput.addAttribute("language", locale.getLanguage());
-        xmlOutput.addAttribute("country", locale.getCountry());
-        xmlOutput.addAttribute("uuid", getUuid());
-        xmlOutput.stopTag(false);
-        for (Plugin plugin : plugins) {
-            xmlOutput.startTag("plugin");
-            xmlOutput.addAttribute("id", plugin.getPluginId());
-            xmlOutput.addAttribute("name", plugin.getShortDescription());
-            xmlOutput.addAttribute("version", plugin.getVersion());
-            Date date = plugin.getReleaseDate();
-            if (date != null)
-                xmlOutput.addAttribute("release-date", Long.toString(date.getTime()));
-            xmlOutput.stopTag(true);
-        }
+        try {
+            xmlOutput.beginDocument();
 
-        xmlOutput.closeTag("findbugs-invocation");
-        xmlOutput.flush();
-        xmlOutput.finish();
+            xmlOutput.startTag("findbugs-invocation");
+            xmlOutput.addAttribute("version", Version.RELEASE);
+            String applicationName = Version.getApplicationName();
+            if (applicationName == null || applicationName.equals("")) {
+                int lastDot = entryPoint.lastIndexOf('.');
+                if (lastDot == -1)
+                    applicationName = entryPoint;
+                else
+                    applicationName = entryPoint.substring(lastDot + 1);
+            }
+            xmlOutput.addAttribute("app-name", applicationName);
+            String applicationVersion = Version.getApplicationVersion();
+            if (applicationVersion == null)
+                applicationVersion = "";
+            xmlOutput.addAttribute("app-version", applicationVersion);
+            xmlOutput.addAttribute("entry-point", entryPoint);
+            xmlOutput.addAttribute("os", SystemProperties.getProperty("os.name", ""));
+            xmlOutput.addAttribute("java-version", getMajorJavaVersion());
+            Locale locale = Locale.getDefault();
+            xmlOutput.addAttribute("language", locale.getLanguage());
+            xmlOutput.addAttribute("country", locale.getCountry());
+            xmlOutput.addAttribute("uuid", getUuid());
+            xmlOutput.stopTag(false);
+            for (Plugin plugin : plugins) {
+                xmlOutput.startTag("plugin");
+                xmlOutput.addAttribute("id", plugin.getPluginId());
+                xmlOutput.addAttribute("name", plugin.getShortDescription());
+                xmlOutput.addAttribute("version", plugin.getVersion());
+                Date date = plugin.getReleaseDate();
+                if (date != null)
+                    xmlOutput.addAttribute("release-date", Long.toString(date.getTime()));
+                xmlOutput.stopTag(true);
+            }
+
+            xmlOutput.closeTag("findbugs-invocation");
+            xmlOutput.flush();
+        } finally {
+            xmlOutput.finish();
+        }
     }
 
     // package-private for testing

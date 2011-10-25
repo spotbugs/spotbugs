@@ -204,6 +204,8 @@ public class NewProjectWizard extends FBDialog {
         for (CloudPlugin c : DetectorFactoryCollection.instance().getRegisteredClouds().values()) {
             String fbid = c.getFindbugsPluginId();
             Plugin plugin = Plugin.getByPluginId(fbid);
+            if (plugin == null) 
+                continue;
             Boolean fbPluginStatus = project.getPluginStatus(plugin);
             if ((!c.isHidden() || c.getId().equals(cloudId)) && !Boolean.FALSE.equals(fbPluginStatus))
                 cloudSelector.addItem(c);
