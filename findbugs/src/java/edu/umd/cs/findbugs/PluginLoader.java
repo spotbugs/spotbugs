@@ -41,7 +41,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.Attributes.Name;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -184,9 +189,10 @@ public class PluginLoader {
      * @param optional
      *          is this an optional plugin
      */
-    private PluginLoader(URL url, URI uri, ClassLoader parent, boolean isInitial, boolean optional) throws PluginException {
-        classLoader = new URLClassLoader(new URL[] { url }, parent);
-        classLoaderForResources = new URLClassLoader(new URL[] { url });
+    private PluginLoader(@Nonnull URL url, URI uri, ClassLoader parent, boolean isInitial, boolean optional) throws PluginException {
+        URL[] loaderURLs = createClassloaderUrls(url);
+        classLoader = new URLClassLoader(loaderURLs, parent);
+        classLoaderForResources = new URLClassLoader(loaderURLs);
         loadedFrom = url;
         loadedFromUri = uri;
         jarName = getJarName(url);
@@ -195,6 +201,58 @@ public class PluginLoader {
         optionalPlugin = optional;
         plugin = init();
         Plugin.putPlugin(loadedFromUri, plugin);
+    }
+
+
+    /**
+     * Patch for issue 3429143: allow plugins load classes/resources from 3rd
+     * party jars
+     *
+     * @param url
+     *            plugin jar location as url
+     * @return non empty list with url to be used for loading classes from given
+     *         plugin. If plugin jar contains standard Java manifest file, all
+     *         entries of its "Class-Path" attribute will be translated to the
+     *         jar-relative url's and added to the returned list. If plugin jar
+     *         does not contains a manifest, or manifest does not have
+     *         "Class-Path" attribute, the given argument will be the only entry
+     *         in the array.
+     * @throws PluginException
+     */
+    private @Nonnull URL[] createClassloaderUrls(@Nonnull URL url) throws PluginException {
+        List<URL> urls = new ArrayList<URL>();
+        urls.add(url);
+
+        JarInputStream jis = null;
+        try {
+            jis = new JarInputStream(url.openStream());
+            Manifest mf = jis.getManifest();
+            Attributes atts = mf.getMainAttributes();
+            if (atts != null) {
+                String classPath = atts.getValue(Attributes.Name.CLASS_PATH);
+                if (classPath != null) {
+                    String jarRoot = url.toString();
+                    jarRoot = jarRoot.substring(0, jarRoot.lastIndexOf("/") + 1);
+                    String[] jars = classPath.split(",");
+                    for (String jar : jars) {
+                        jar = jarRoot + jar.trim();
+                        urls.add(new URL(jar));
+                    }
+                }
+            }
+        } catch (IOException ioe) {
+           throw new PluginException("Failed loading manifest for plugin jar: " + url, ioe);
+        } finally {
+            if (jis != null) {
+                try {
+                    jis.close();
+                } catch (IOException ioe) {
+                }
+            }
+        }
+
+        URL[] loaderURLs = urls.toArray(new URL[urls.size()]);
+        return loaderURLs;
     }
 
     /**
@@ -221,7 +279,7 @@ public class PluginLoader {
         plugin = init();
         Plugin.putPlugin(null, plugin);
     }
-    
+
     /**
      * Constructor. Loads a plugin using the caller's class loader. This
      * constructor should only be used to load the "core" findbugs detectors,
@@ -245,7 +303,6 @@ public class PluginLoader {
         jarName = getJarName(loadedFrom);
     }
 
-    
     private URL computeCoreUrl() {
         URL from;
         String findBugsClassFile = ClassName.toSlashedClassName(FindBugs.class) + ".class";
@@ -1392,7 +1449,7 @@ public class PluginLoader {
     private static Document parseDocument(@WillClose InputStream in) throws DocumentException {
         Reader r = UTF8.bufferedReader(in);
         try {
-           
+
             SAXReader reader = new SAXReader();
 
             Document d = reader.read(r);

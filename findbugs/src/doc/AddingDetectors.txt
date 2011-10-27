@@ -202,8 +202,16 @@ of the findbugs source distribution. Both files must be UTF-8 encoded.
 For the detailed and up to date information, please read the javadoc of the
 edu.umd.cs.findbugs.BugRanker class.
 
+============================================
+7. Using 3rd party libraries in the detector
+============================================
+
+FindBugs plugins may extend the default FindBugs classpath and use custom 3rd party
+libraries during the analysis. This libraries must be part of standard jar class path
+specified via "ClassPath" attribute in the META-INF/MANIFEST.MF file.
+
 ======================================
-7. Adding detectors to Eclipse plugin
+8. Adding detectors to Eclipse plugin
 ======================================
 
 Since version 2.0.0 Eclipse plugin allows to configure or contribute custom detectors.
