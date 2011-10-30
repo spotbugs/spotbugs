@@ -227,6 +227,9 @@ public class PluginLoader {
         try {
             jis = new JarInputStream(url.openStream());
             Manifest mf = jis.getManifest();
+            if(mf == null) {
+                return urls.toArray(new URL[urls.size()]);
+            }
             Attributes atts = mf.getMainAttributes();
             if (atts != null) {
                 String classPath = atts.getValue(Attributes.Name.CLASS_PATH);
@@ -251,8 +254,7 @@ public class PluginLoader {
             }
         }
 
-        URL[] loaderURLs = urls.toArray(new URL[urls.size()]);
-        return loaderURLs;
+        return urls.toArray(new URL[urls.size()]);
     }
 
     /**
