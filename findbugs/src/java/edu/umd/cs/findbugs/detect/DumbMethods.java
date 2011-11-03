@@ -978,8 +978,13 @@ public class DumbMethods extends OpcodeStackDetector {
                 int priority  = Priorities.HIGH_PRIORITY;
                 if (value == Integer.MAX_VALUE+1 || value == Integer.MIN_VALUE -1)
                     priority = Priorities.NORMAL_PRIORITY;
+                String stringValue = Long.toString(value);
+                if (value == 0xffffffffL)
+                    stringValue = "0xffffffff";
+                else if (value == 0x80000000L)
+                    stringValue = "0x80000000L";
                 accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_INT_VALUE", priority ).addClassAndMethod(this)
-                        .addString(Long.toString(value)).describe(StringAnnotation.STRING_NONSTRING_CONSTANT_ROLE)
+                        .addString(stringValue+"L").describe(StringAnnotation.STRING_NONSTRING_CONSTANT_ROLE)
                         .addValueSource(left, this) , this);
             }
         }
