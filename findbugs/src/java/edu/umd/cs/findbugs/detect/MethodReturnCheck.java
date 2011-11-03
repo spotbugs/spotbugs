@@ -158,6 +158,9 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                 callSeen = XFactory.createReferencedXMethod(this);
                 callPC = getPC();
                 sawMethodCallWithIgnoredReturnValue();
+                state = SCAN;
+                previousOpcodeWasNEW = false;
+                return;
 
             }
         }
