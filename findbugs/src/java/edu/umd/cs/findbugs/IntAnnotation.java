@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -90,9 +92,29 @@ public class IntAnnotation implements BugAnnotation {
     }
 
     public String format(String key, ClassAnnotation primaryClass) {
-        if (key.equals("hash") && !isSignificant())
-            return "";
-        return String.valueOf(value);
+        if (key.equals("hash")) {
+            if (isSignificant())
+                return Integer.toString(value);
+            else
+                return "";
+        }
+        return getShortInteger(value);
+    }
+    
+    public static String getShortInteger(int value) {
+        String base16 = Integer.toHexString(value);
+        int unique = uniqueDigits(base16);
+        String base10 = Integer.toString(value);
+        
+        if (unique <= 3 && base16.length() - unique >= 3 && base10.length() > base16.length())
+            return "0x"+base16;
+        return base10;
+    }
+    private static int uniqueDigits(String value) {
+        Set<Character> used = new HashSet<Character>();
+        for(int i = 0; i < value.length(); i++)
+            used.add(value.charAt(i));
+        return used.size();
     }
 
     public void setDescription(String description) {
