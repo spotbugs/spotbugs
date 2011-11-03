@@ -238,19 +238,26 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         this(type, priority);
         if (detector != null) {
             // Adjust priority if required
-            detectorFactory = DetectorFactoryCollection.instance().getFactoryByClassName(detector.getClass().getName());
-            if (detectorFactory != null) {
-                this.priority += detectorFactory.getPriorityAdjustment();
-                boundPriority();
-                BugPattern bugPattern = getBugPattern();
-                if (SystemProperties.ASSERTIONS_ENABLED && !bugPattern.getCategory().equals("EXPERIMENTAL")
-                        && !detectorFactory.getReportedBugPatterns().contains(bugPattern))
-                    AnalysisContext.logError(detectorFactory.getShortName() + " doesn't note that it reports " 
-                        + bugPattern + " in category " + bugPattern.getCategory());
-
-            }
+            String detectorName = detector.getClass().getName();
+            adjustForDetector(detectorName);
         }
 
+    }
+
+    /**
+     * @param detectorName
+     */
+    public void adjustForDetector(String detectorName) {
+        detectorFactory = DetectorFactoryCollection.instance().getFactoryByClassName(detectorName);
+        if (detectorFactory != null) {
+            this.priority += detectorFactory.getPriorityAdjustment();
+            boundPriority();
+            BugPattern bugPattern = getBugPattern();
+            if (SystemProperties.ASSERTIONS_ENABLED && !bugPattern.getCategory().equals("EXPERIMENTAL")
+                    && !detectorFactory.getReportedBugPatterns().contains(bugPattern))
+                AnalysisContext.logError(detectorFactory.getShortName() + " doesn't note that it reports " 
+                    + bugPattern + " in category " + bugPattern.getCategory());
+        }
     }
 
     /**
@@ -269,14 +276,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
         if (detector != null) {
             // Adjust priority if required
-            detectorFactory = DetectorFactoryCollection.instance().getFactoryByClassName(detector.getDetectorClassName());
-            if (detectorFactory != null) {
-                this.priority += detectorFactory.getPriorityAdjustment();
-                boundPriority();
-                if (SystemProperties.ASSERTIONS_ENABLED && !detectorFactory.getReportedBugPatterns().contains(getBugPattern()))
-                    AnalysisContext.logError(detectorFactory.getShortName() + " doesn't note that it reports " + getBugPattern());
-
-            }
+            String detectorName = detector.getDetectorClassName();
+            adjustForDetector(detectorName);
         }
 
     }
