@@ -92,7 +92,9 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
                 kind = EqualsKindSummary.KindOfEquals.RETURNS_SUPER;
             else if (sawSuperEquals)
                 kind = EqualsKindSummary.KindOfEquals.INVOKES_SUPER;
-            else if (sawInstanceOf || sawInstanceOfSupertype)
+            else if (sawInstanceOfSupertype)
+                kind = EqualsKindSummary.KindOfEquals.INSTANCE_OF_SUPERCLASS_EQUALS;
+            else if (sawInstanceOf)
                 kind = getThisClass().isAbstract() ? EqualsKindSummary.KindOfEquals.ABSTRACT_INSTANCE_OF
                         : EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS;
             else if (sawGetClass && sawGoodEqualsClass)
@@ -466,7 +468,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             ClassAnnotation parentClass = e.getValue();
             EqualsKindSummary.KindOfEquals parentKind = equalsKindSummary.get(parentClass);
 
-            if (parentKind != null && childKind == EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS
+            if (childKind == EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS
                     && parentKind == EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS)
                 bugReporter.reportBug(new BugInstance(this, "EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC", NORMAL_PRIORITY)
                         .add(childClass).add(equalsMethod.get(childClass)).add(equalsMethod.get(parentClass))

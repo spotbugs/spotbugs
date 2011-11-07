@@ -1,5 +1,7 @@
 package sfBugs;
 
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 public class Bug3433530 {
 
     int x;
@@ -29,6 +31,7 @@ public class Bug3433530 {
     static class Subclass extends Bug3433530 {
         static int equalsCalls = 0;
 
+        @NoWarning("EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC")
         @Override
         public boolean equals(Object obj) {
             equalsCalls++;
