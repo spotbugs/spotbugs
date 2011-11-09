@@ -202,7 +202,9 @@
         </jar>
         <copy todir="${dist.dir}" >
             <fileset dir="${fbeclipse.dir}" >
+                <!-- content is invalid right now
                 <include name="welcome.xml"/>
+                -->
                 <include name="RELEASENOTES"/>
                 <include name="plugin.xml"/>
                 <include name=".options"/>
