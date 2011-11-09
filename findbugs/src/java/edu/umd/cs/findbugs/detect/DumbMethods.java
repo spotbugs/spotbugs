@@ -984,7 +984,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 else if (value == 0x80000000L)
                     stringValue = "0x80000000L";
                 accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_INT_VALUE", priority ).addClassAndMethod(this)
-                        .addString(stringValue+"L").describe(StringAnnotation.STRING_NONSTRING_CONSTANT_ROLE)
+                        .addString(stringValue).describe(StringAnnotation.STRING_NONSTRING_CONSTANT_ROLE)
                         .addValueSource(left, this) , this);
             }
         }
