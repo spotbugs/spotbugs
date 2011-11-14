@@ -126,11 +126,11 @@ public class Version {
     static {
         Class<Version> c = Version.class;
         URL u = c.getResource(c.getSimpleName() + ".class");
-        boolean fromJarFile = u.toString().contains("\\!");
+        boolean fromFile = u.getProtocol().equals("file");
         InputStream in = null;
         String release = null;
         String date = null;
-        if (fromJarFile)
+        if (!fromFile)
             try {
                 Properties versionProperties = new Properties();
                 in = Version.class.getResourceAsStream("version.properties");
