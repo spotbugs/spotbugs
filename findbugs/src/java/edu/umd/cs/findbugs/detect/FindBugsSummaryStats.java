@@ -138,7 +138,7 @@ public class FindBugsSummaryStats extends PreorderVisitor implements Detector, B
     }
 
     public void reportBug(BugInstance bug) {
-        stats.addBug(bug);
+        // already added when bug was added to bug collection
     }
 
 }

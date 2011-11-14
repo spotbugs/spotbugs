@@ -43,6 +43,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.WillClose;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -51,7 +52,6 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import edu.umd.cs.findbugs.PackageStats.ClassStats;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.workflow.FileBugHash;

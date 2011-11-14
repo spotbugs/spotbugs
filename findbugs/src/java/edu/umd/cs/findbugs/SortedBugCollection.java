@@ -1012,6 +1012,8 @@ public class SortedBugCollection implements BugCollection {
         }
 
         invalidateHashes();
+        if (!bugInstance.isDead())
+            projectStats.addBug(bugInstance);
         return bugSet.add(bugInstance);
     }
 

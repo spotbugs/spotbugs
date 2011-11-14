@@ -692,8 +692,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             } else if (outerElement.equals(BUG_COLLECTION)) {
                 if (qName.equals("BugInstance")) {
                     bugCollection.add(bugInstance, false);
-                    if (!bugInstance.isDead())
-                        bugCollection.getProjectStats().addBug(bugInstance);
                 }
             } else if (outerElement.equals(PROJECT)) {
                 if (qName.equals("Jar"))

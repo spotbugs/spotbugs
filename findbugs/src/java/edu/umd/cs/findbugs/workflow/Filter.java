@@ -767,8 +767,6 @@ public class Filter {
                     }
                 }
                 resultCollection.add(bug, false);
-                if (!bug.isDead())
-                    projectStats.addBug(bug);
                 passed++;
             } else
                 dropped++;

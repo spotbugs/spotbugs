@@ -323,7 +323,6 @@ public class AbstractCloudTest extends TestCase {
             bugCollection.add(bug);
             ClassAnnotation cls = bug.getPrimaryClass();
             projectStats.addClass(cls.getClassName(), cls.getSourceFileName(), false, 100);
-            projectStats.addBug(bug);
         }
 
         cloud.printCloudSummary(new PrintWriter(summary), Arrays.asList(bugs), new String[0]);
