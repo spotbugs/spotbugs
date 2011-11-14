@@ -53,6 +53,7 @@ public class Bug3368029 {
         return total2;
     }
 
+    @DesireNoWarning("IS")
     private void countOne2(String thing) {
         assert Thread.holdsLock(this);
         total2 += thing.length();
