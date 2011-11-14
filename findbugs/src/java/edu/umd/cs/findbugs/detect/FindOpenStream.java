@@ -93,7 +93,6 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 
         // Examine InputStreams, OutputStreams, Readers, and Writers,
         // ignoring byte array, char array, and String variants.
-        // What about object streams? We had ignored them. Why?
         streamFactoryCollection.add(new IOStreamFactory("java.io.InputStream", new String[] { "java.io.ByteArrayInputStream",
                 "java.io.StringBufferInputStream", "java.io.PipedInputStream" }, "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new IOStreamFactory("java.io.OutputStream", new String[] { "java.io.ByteArrayOutputStream",
@@ -112,6 +111,16 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.net.Socket", "getOutputStream",
                 "()Ljava/io/OutputStream;"));
 
+        // Ignore servlet streams
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("javax.servlet.ServletRequest", "getInputStream",
+                "()Ljavax/servlet/ServletInputStream;"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("javax.servlet.ServletRequest", "getReader",
+                "()Ljava/io/BufferedReader;"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("javax.servlet.ServletResponse", "getOutputStream",
+                "()Ljavax/servlet/ServletOutputStream;"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("javax.servlet.ServletResponse", "getWriter",
+                "()Ljava/io/PrintWriter;"));
+        
         // Ignore System.{in,out,err}
         streamFactoryCollection.add(new StaticFieldLoadStreamFactory("java.io.InputStream", "java.lang.System", "in",
                 "Ljava/io/InputStream;"));

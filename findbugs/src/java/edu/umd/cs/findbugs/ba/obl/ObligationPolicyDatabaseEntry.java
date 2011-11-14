@@ -55,4 +55,6 @@ public interface ObligationPolicyDatabaseEntry {
      */
     public boolean getActions(ReferenceType receiverType, String methodName, String signature, boolean isStatic,
             Collection<ObligationPolicyDatabaseAction> actionList);
+    
+    public Collection<Obligation> getAllObligations();
 }

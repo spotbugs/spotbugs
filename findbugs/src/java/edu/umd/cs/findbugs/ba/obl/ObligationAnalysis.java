@@ -26,8 +26,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.WillClose;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
@@ -87,7 +90,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
 
     private StateSet cachedEntryFact;
 
-    static final ClassDescriptor willClose = DescriptorFactory.createClassDescriptor("javax/annotation/WillClose");
+    static final ClassDescriptor willClose = DescriptorFactory.createClassDescriptor(WillClose.class);
 
     /**
      * Constructor.
@@ -117,7 +120,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
         this.typeDataflow = typeDataflow;
         this.invDataflow = invDataflow;
         this.errorLogger = errorLogger;
-        this.actionCache = new InstructionActionCache(database);
+        this.actionCache = new InstructionActionCache(database, xmethod, cpg, typeDataflow);
     }
 
     public InstructionActionCache getActionCache() {
@@ -136,7 +139,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
     @Override
     public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StateSet fact)
             throws DataflowAnalysisException {
-        Collection<ObligationPolicyDatabaseAction> actionList = actionCache.getActions(handle, cpg);
+         Collection<ObligationPolicyDatabaseAction> actionList = actionCache.getActions(basicBlock, handle);
         if (DEBUG && actionList.size() > 0) {
             System.out.println("Applying actions at " + handle + " to " + fact);
         }
@@ -176,8 +179,9 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
 
     @Override
     public void edgeTransfer(Edge edge, StateSet fact) throws DataflowAnalysisException {
+
         if (edge.isExceptionEdge()) {
-            if (!edge.isFlagSet(EdgeTypes.CHECKED_EXCEPTIONS_FLAG)) {
+            if ( !edge.isFlagSet(EdgeTypes.CHECKED_EXCEPTIONS_FLAG)) {
                 //
                 // Ignore all exception edges except those on which
                 // checked exceptions are thrown.
@@ -192,9 +196,10 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
                 //
                 BasicBlock sourceBlock = edge.getSource();
                 InstructionHandle handle = sourceBlock.getExceptionThrower();
+                fact.setOnExceptionEdge(true);
 
                 // Apply only the actions which delete obligations
-                Collection<ObligationPolicyDatabaseAction> actions = actionCache.getActions(handle, cpg);
+                Collection<ObligationPolicyDatabaseAction> actions = actionCache.getActions(sourceBlock, handle);
                 for (ObligationPolicyDatabaseAction action : actions) {
                     if (action.getActionType() == ObligationPolicyDatabaseActionType.DEL) {
                         action.apply(fact, edge.getTarget().getLabel());
@@ -417,15 +422,24 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
         }
 
         // Handle easy top and bottom cases
-        if (inputFact.isTop() || result.isBottom()) {
-            // Nothing to do
+        if (inputFact.isTop() || result.isBottom() ) {
+         // Nothing to do
         } else if (inputFact.isBottom() || result.isTop()) {
+            copy(inputFact, result);
+         } else if (inputFact.isOnExceptionEdge() && !result.isOnExceptionEdge()) {
+            if (DEBUG)
+                System.out.println("Ignoring " + inputFact + " in favor of " + result);
+            // Nothing to do
+         } else if(!inputFact.isOnExceptionEdge() && !inputFact.getAllObligationSets().isEmpty() 
+                 && result.isOnExceptionEdge()) {
+            if (DEBUG)
+                System.out.println("overwriting " + result + " with " + inputFact);
             copy(inputFact, result);
         } else {
             // We will destructively replace the state map of the result fact
             // we're building.
             final Map<ObligationSet, State> updatedStateMap = result.createEmptyMap();
-
+           
             // Build a Set of all ObligationSets.
             Set<ObligationSet> allObligationSets = new HashSet<ObligationSet>();
             allObligationSets.addAll(inputFact.getAllObligationSets());

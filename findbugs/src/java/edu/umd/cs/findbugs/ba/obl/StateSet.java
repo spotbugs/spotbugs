@@ -49,6 +49,8 @@ public class StateSet {
     private boolean isTop;
 
     private boolean isBottom;
+    
+    private boolean onExceptionEdge;
 
     private Map<ObligationSet, State> stateMap;
 
@@ -63,6 +65,7 @@ public class StateSet {
     public void setTop() {
         this.isTop = true;
         this.isBottom = false;
+        this.onExceptionEdge = false;
         this.stateMap.clear();
     }
 
@@ -83,8 +86,16 @@ public class StateSet {
         return !this.isTop && !this.isBottom;
     }
 
+    public boolean isOnExceptionEdge() {
+        return onExceptionEdge;
+    }
+
+    public void setOnExceptionEdge(boolean onExceptionEdge) {
+        this.onExceptionEdge = onExceptionEdge;
+    }
+
     public void clear() {
-        this.isTop = this.isBottom = false;
+        this.isTop = this.isBottom = this.onExceptionEdge = false;
         stateMap.clear();
     }
 
@@ -143,6 +154,7 @@ public class StateSet {
     public void copyFrom(StateSet other) {
         this.isTop = other.isTop;
         this.isBottom = other.isBottom;
+        this.onExceptionEdge = other.onExceptionEdge;
         this.stateMap.clear();
         for (State state : other.stateMap.values()) {
             State dup = state.duplicate();
@@ -205,8 +217,10 @@ public class StateSet {
         for (Iterator<State> i = stateIterator(); i.hasNext();) {
             State state = i.next();
             checkCircularity(state, obligation, basicBlockId);
-            state.getObligationSet().remove(obligation);
-            updatedStateMap.put(state.getObligationSet(), state);
+            ObligationSet obligationSet = state.getObligationSet();
+            obligationSet.remove(obligation);
+            if (!obligationSet.isEmpty())
+              updatedStateMap.put(obligationSet, state);
         }
         replaceMap(updatedStateMap);
     }
@@ -262,7 +276,8 @@ public class StateSet {
         if (o == null || o.getClass() != this.getClass())
             return false;
         StateSet other = (StateSet) o;
-        return this.isTop == other.isTop && this.isBottom == other.isBottom && this.stateMap.equals(other.stateMap);
+        return this.isTop == other.isTop && this.isBottom == other.isBottom 
+                && this.onExceptionEdge == other.onExceptionEdge && this.stateMap.equals(other.stateMap);
     }
 
     @Override
@@ -278,15 +293,10 @@ public class StateSet {
             return "BOTTOM";
         else {
             StringBuilder buf = new StringBuilder();
-            boolean first = true;
-            for (Iterator<State> i = stateIterator(); i.hasNext();) {
-                State state = i.next();
-                if (first)
-                    first = false;
-                else
-                    buf.append(",");
-                buf.append(state.toString());
-            }
+            buf.append(stateMap);
+           
+            if (onExceptionEdge)
+                buf.append(" On exception edge");
             return buf.toString();
         }
     }

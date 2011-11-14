@@ -51,6 +51,10 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
     private final Obligation[] obligations;
 
     private final ObligationPolicyDatabaseEntryType entryType;
+    
+    public Collection<Obligation> getAllObligations() {
+        return Arrays.asList(obligations);
+    }
 
     /**
      * Constructor. Creates an entry which matches the given XMethod.

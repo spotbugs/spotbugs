@@ -55,7 +55,6 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
         this.location = new Location(handle, basicBlock);
 
         final Instruction ins = handle.getInstruction();
-        final ConstantPoolGen cpg = getCPG();
         final ResourceValueFrame frame = getFrame();
 
         int status = -1;

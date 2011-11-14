@@ -21,8 +21,10 @@ package edu.umd.cs.findbugs.ba.obl;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.bcel.generic.ReferenceType;
 
@@ -45,6 +47,8 @@ public class ObligationPolicyDatabase {
     private ObligationFactory factory;
 
     private LinkedList<ObligationPolicyDatabaseEntry> entryList;
+    
+    private HashSet<Obligation> allObligations = new HashSet<Obligation>();
 
     private boolean strictChecking;
 
@@ -57,10 +61,15 @@ public class ObligationPolicyDatabase {
     public ObligationFactory getFactory() {
         return factory;
     }
+    
+    public Set<Obligation> getAllObligations() {
+        return allObligations;
+    }
 
     public void addEntry(ObligationPolicyDatabaseEntry entry) {
         if (DEBUG) 
             System.out.println("Adding entry " + entry);
+        allObligations.addAll(entry.getAllObligations());
         entryList.add(entry);
     }
 

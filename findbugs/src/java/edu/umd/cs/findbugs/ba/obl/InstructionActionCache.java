@@ -26,13 +26,26 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.generic.ARETURN;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.PUTFIELD;
+import org.apache.bcel.generic.PUTSTATIC;
 import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.classfile.Global;
 
 /**
  * A cache for looking up the collection of ObligationPolicyDatabaseActions
@@ -44,16 +57,25 @@ import edu.umd.cs.findbugs.SystemProperties;
 public class InstructionActionCache {
     private static final boolean DEBUG_LOOKUP = SystemProperties.getBoolean("oa.debug.lookup");
 
-    private ObligationPolicyDatabase database;
+    private final ObligationPolicyDatabase database;
 
-    private Map<InstructionHandle, Collection<ObligationPolicyDatabaseAction>> actionCache;
+    private final Map<InstructionHandle, Collection<ObligationPolicyDatabaseAction>> actionCache;
+    
+    private final XMethod xmethod;
+    private final TypeDataflow typeDataflow;
+    private final ConstantPoolGen cpg;
+   
 
-    public InstructionActionCache(ObligationPolicyDatabase database) {
+
+    public InstructionActionCache(ObligationPolicyDatabase database, XMethod xmethod, ConstantPoolGen cpg, TypeDataflow typeDataflow) {
         this.database = database;
         this.actionCache = new HashMap<InstructionHandle, Collection<ObligationPolicyDatabaseAction>>();
+        this.xmethod = xmethod;
+        this.cpg = cpg;
+        this.typeDataflow = typeDataflow;
     }
 
-    public Collection<ObligationPolicyDatabaseAction> getActions(InstructionHandle handle, ConstantPoolGen cpg) {
+    public Collection<ObligationPolicyDatabaseAction> getActions(BasicBlock block, InstructionHandle handle) {
          Collection<ObligationPolicyDatabaseAction> actionList = actionCache.get(handle);
         if (actionList == null) {
             Instruction ins = handle.getInstruction();
@@ -88,8 +110,26 @@ public class InstructionActionCache {
                         System.out.println("  At " + handle + ": " + actionList);
                     }
                 }
-            }
+            } else if (ins instanceof PUTFIELD || ins instanceof PUTSTATIC || ins instanceof ARETURN) {
+                Location loc = new Location(handle, block);
+                try {
+                    TypeFrame typeFrame = typeDataflow.getFactAtLocation(loc);
+                    if (typeFrame.isValid()) {
+                        Type tosType = typeFrame.getTopValue();
+                        if (tosType instanceof ObjectType) {
+                            ObligationFactory factory = database.getFactory();
+                            Obligation obligation = factory.getObligationByType((ObjectType) tosType);
+                            if (obligation != null) {
+                                actionList = Collections.singleton(new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.DEL,
+                                        obligation));
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    AnalysisContext.logError("oops", e);
+                }
 
+            }
             
             actionCache.put(handle, actionList);
         }
@@ -97,17 +137,17 @@ public class InstructionActionCache {
         return actionList;
     }
 
-    public boolean addsObligation(InstructionHandle handle, ConstantPoolGen cpg, Obligation obligation) {
-        return hasAction(handle, cpg, obligation, ObligationPolicyDatabaseActionType.ADD);
+    public boolean addsObligation(BasicBlock block,InstructionHandle handle,  Obligation obligation) {
+        return hasAction(block, handle, obligation, ObligationPolicyDatabaseActionType.ADD);
     }
 
-    public boolean deletesObligation(InstructionHandle handle, ConstantPoolGen cpg, Obligation obligation) {
-        return hasAction(handle, cpg, obligation, ObligationPolicyDatabaseActionType.DEL);
+    public boolean deletesObligation(BasicBlock block,InstructionHandle handle, Obligation obligation) {
+        return hasAction(block, handle, obligation, ObligationPolicyDatabaseActionType.DEL);
     }
 
-    private boolean hasAction(InstructionHandle handle, ConstantPoolGen cpg, Obligation obligation,
+    private boolean hasAction(BasicBlock block, InstructionHandle handle,Obligation obligation,
             ObligationPolicyDatabaseActionType actionType) {
-        Collection<ObligationPolicyDatabaseAction> actionList = getActions(handle, cpg);
+        Collection<ObligationPolicyDatabaseAction> actionList = getActions(block, handle);
         for (ObligationPolicyDatabaseAction action : actionList) {
             if (action.getActionType() == actionType && action.getObligation().equals(obligation)) {
                 return true;

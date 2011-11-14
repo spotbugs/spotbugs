@@ -270,7 +270,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
             for (Map.Entry<Obligation, State> entry : leakedObligationMap.entrySet()) {
                 Obligation obligation = entry.getKey();
                 State state = entry.getValue();
-                reportWarning(obligation, state);
+                reportWarning(obligation, state, factAtExit);
             }
             // TODO: closing of nonexistent resources
 
@@ -307,17 +307,18 @@ public class FindUnsatisfiedObligation extends CFGDetector {
             }
         }
 
-        private void reportWarning(Obligation obligation, State state) {
+        private void reportWarning(Obligation obligation, State state, StateSet factAtExit) {
             String className = obligation.getClassName();
 
             if (methodDescriptor.isStatic() && methodDescriptor.getName().equals("main")
                     && methodDescriptor.getSignature().equals("([Ljava/lang/String;)V")
-                    && (className.contains("InputStream") || className.contains("Reader"))) {
+                    && (className.contains("InputStream") || className.contains("Reader") || factAtExit.isOnExceptionEdge())) {
                 // Don't report unclosed input streams and readers in main()
                 // methods
                 return;
             }
-            BugInstance bugInstance = new BugInstance(FindUnsatisfiedObligation.this, "OBL_UNSATISFIED_OBLIGATION",
+            String bugPattern = factAtExit.isOnExceptionEdge() ? "OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE" : "OBL_UNSATISFIED_OBLIGATION";
+            BugInstance bugInstance = new BugInstance(FindUnsatisfiedObligation.this, bugPattern,
                     NORMAL_PRIORITY).addClassAndMethod(methodDescriptor).addClass(className).describe("CLASS_REFTYPE");
 
             // Report how many instances of the obligation are remaining
@@ -396,6 +397,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                 try {
                     Instruction ins = handle.getInstruction();
                     short opcode = ins.getOpcode();
+                    if (DEBUG) System.out.printf("%3d %s%n", handle.getPosition(),Constants.OPCODE_NAMES[opcode]);
 
                     if (opcode == Constants.PUTFIELD || opcode == Constants.PUTSTATIC || opcode == Constants.ARETURN) {
                         //
@@ -414,6 +416,8 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                                         possiblyLeakedObligation.getType())) {
                             // Remove one obligation of this type
                             adjustedLeakCount--;
+                            if (DEBUG)
+                                System.out.println("removing obligation to close " + tosType + " at " + handle.getPosition());
                         }
                     }
 
@@ -666,7 +670,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                 }
 
                 public void visitInstructionHandle(InstructionHandle handle) {
-                    boolean isCreation = (dataflow.getAnalysis().getActionCache().addsObligation(handle, cpg, obligation));
+                    boolean isCreation = (dataflow.getAnalysis().getActionCache().addsObligation(curBlock, handle, obligation));
 
                     if (!sawFirstCreation && !isCreation) {
                         return;

@@ -935,7 +935,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
         if (refValue.isDefinitelyNull()) {
             String type = "NP_ALWAYS_NULL";
-            if (propertySet.containsProperty(NullDerefProperty.CLOSING_NULL))
+            if (propertySet.containsProperty(NullDerefProperty.CLOSING_NULL)
+                    && !propertySet.containsProperty(NullDerefProperty.DEREFS_ARE_CLONED))
                 type = "NP_CLOSING_NULL";
             else if (onExceptionPath)
                 type = "NP_ALWAYS_NULL_EXCEPTION";

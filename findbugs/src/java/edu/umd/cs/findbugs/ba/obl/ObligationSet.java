@@ -48,6 +48,13 @@ public class ObligationSet {
         invalidate();
     }
 
+    
+    public boolean isEmpty() {
+        for(short s : countList) 
+            if (s > 0)
+                return false;
+        return true;
+    }
     public void add(Obligation obligation) {
         invalidate();
         countList[obligation.getId()]++;
