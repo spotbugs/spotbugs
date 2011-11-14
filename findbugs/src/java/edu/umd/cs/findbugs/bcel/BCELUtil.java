@@ -150,4 +150,8 @@ public abstract class BCELUtil {
     public static ObjectType getObjectTypeInstance(@DottedClassName String className) {
         return ObjectType.getInstance(className);
     }
+    
+    public static ObjectType getObjectTypeInstance(Class<?> clazz) {
+        return  getObjectTypeInstance(clazz.getName());
+    }
 }
