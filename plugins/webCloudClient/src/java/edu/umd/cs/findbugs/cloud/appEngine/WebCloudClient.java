@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,9 +56,13 @@ import edu.umd.cs.findbugs.util.Util;
 @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
 public class WebCloudClient extends AbstractCloud implements OnlineCloud {
 
+ 
+
     private static final Logger LOGGER = Logger.getLogger(WebCloudClient.class.getPackage().getName());
 
-    private static final int EVALUATION_CHECK_SECS = 5 * 60;
+    private static final int EVALUATION_CHECK_SECS_MIN_SECS = 5 * 60;
+    private static final int EVALUATION_CHECK_SECS_MAX_SECS = 2*60 * 60;
+    
     private static final int MAX_RECENT_EVALUATION_PAGES = 30;
 
     protected ExecutorService backgroundExecutorService;
@@ -566,27 +571,41 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
         return evals;
     }
 
+    volatile int updateInternal = EVALUATION_CHECK_SECS_MIN_SECS;
+    
+    private final class GetUpdatedEvaluations extends TimerTask {
+        @Override
+        public void run() {
+            try {
+                int count = updateEvaluationsFromServer();
+                if (count > 0)
+                    updateInternal = Math.min(updateInternal*2, EVALUATION_CHECK_SECS_MAX_SECS);
+                else
+                    updateInternal = EVALUATION_CHECK_SECS_MIN_SECS;
+            } catch (ServerReturnedErrorCodeException e) {
+                updateInternal = Math.min(updateInternal*2, EVALUATION_CHECK_SECS_MAX_SECS);
+                LOGGER.log(Level.WARNING, "Error during periodic review update check");
+                LOGGER.log(Level.FINEST, "", e);
+            } catch (IOException e) {
+                updateInternal = Math.min(updateInternal*2, EVALUATION_CHECK_SECS_MAX_SECS);
+                LOGGER.log(Level.WARNING, "Error during periodic review update check", e);
+                LOGGER.log(Level.FINEST, "", e);
+            } finally {
+                scheduleUpdateEvaluationsFromServer();
+            }
+        }
+    }
+    
+    private void scheduleUpdateEvaluationsFromServer() {
+        timer.schedule(new GetUpdatedEvaluations(), TimeUnit.MILLISECONDS.convert(updateInternal, TimeUnit.SECONDS) );
+    }
+        
+    
     private void startEvaluationCheckThread() {
         if (timer != null)
             timer.cancel();
         timer = new Timer("App Engine Cloud review update checker", true);
-        int periodMillis = EVALUATION_CHECK_SECS * 1000;
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    updateEvaluationsFromServer();
-                    
-                } catch (ServerReturnedErrorCodeException e) {
-                    LOGGER.log(Level.WARNING, "Error during periodic review update check");
-                    LOGGER.log(Level.FINEST, "", e);
-
-                } catch (IOException e) {
-                    LOGGER.log(Level.WARNING, "Error during periodic review update check", e);
-                    LOGGER.log(Level.FINEST, "", e);
-                }
-            }
-        }, periodMillis, periodMillis);
+        scheduleUpdateEvaluationsFromServer();
     }
 
     private static long dateMin(long timestamp1, long timestamp2) {
@@ -685,7 +704,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     }
 
     /** package-private for testing */
-    void updateEvaluationsFromServer() throws IOException {
+    int updateEvaluationsFromServer() throws IOException {
         MutableCloudTask task = createTask("Checking " + getCloudName() + " for updates");
 
         int count = 0;
@@ -727,6 +746,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
         }
         if (count > 0)
             setStatusMsg(getCloudName() + ": found " + count + " updated bug reviews");
+        return count;
     }
 
     private int mergeUpdatedEvaluations(RecentEvaluations evals) {
