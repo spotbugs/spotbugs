@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.channels.FileChannel;
 
+import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class OpenStream {
@@ -76,7 +77,8 @@ public class OpenStream {
         ps.println("Hello");
     }
 
-    @NoWarning("OBL_UNSATISFIED_OBLIGATION,OS_OPEN_STREAM")
+    @NoWarning("OBL_UNSATISFIED_OBLIGATION")
+    @DesireNoWarning("OpenStream.OS_OPEN_STREAM")
     public void wrappedStreamClosedDoNotReport() throws IOException {
         FileOutputStream f = null;
         try {
