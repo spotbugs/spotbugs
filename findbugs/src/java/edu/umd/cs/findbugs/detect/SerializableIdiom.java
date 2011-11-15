@@ -558,6 +558,9 @@ public class SerializableIdiom extends OpcodeStackDetector {
     @Override
     public void visit(Field obj) {
         int flags = obj.getAccessFlags();
+        String genericSignature = obj.getGenericSignature();
+        if (genericSignature != null && genericSignature.startsWith("T"))
+            return;
         FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
         Item summary = fieldSummary.getSummary(getXField());
         String fieldSig = summary.getSignature();

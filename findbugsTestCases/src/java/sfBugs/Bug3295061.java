@@ -2,18 +2,27 @@ package sfBugs;
 
 import java.io.Serializable;
 
-import edu.umd.cs.findbugs.annotations.DesireNoWarning;
+import edu.umd.cs.findbugs.annotations.DesireWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
-@DesireNoWarning("SE_BAD_FIELD")
-public class Bug3295061<T extends Bug3295061.FooBar &  Comparable<T> & Cloneable & Serializable> implements Serializable {
+
+public class Bug3295061<T extends Bug3295061.FooBar &  Comparable<T> & Cloneable & Serializable, S extends Bug3295061.FooBar &  Comparable<S>> implements Serializable {
     
     interface FooBar {}
 
     private static final long serialVersionUID = 1L;
-    T field;
+    @NoWarning("SE_BAD_FIELD")
+    T foo;
     
-    public void setField(T field) {
-        this.field = field;
+    @DesireWarning("SE_BAD_FIELD")
+    S bar;
+    
+    public void setFoo(T foo) {
+        this.foo = foo;
+    }
+    public void setBar(S bar) {
+        this.bar = bar;
     }
 }
+
 
