@@ -110,6 +110,15 @@ public class IntAnnotation implements BugAnnotation {
             return "0x"+base16;
         return base10;
     }
+    public static String getShortInteger(long value) {
+        String base16 = Long.toHexString(value);
+        int unique = uniqueDigits(base16);
+        String base10 = Long.toString(value);
+        
+        if (unique <= 3 && base16.length() - unique >= 3 && base10.length() > base16.length())
+            return "0x"+base16;
+        return base10;
+    }
     private static int uniqueDigits(String value) {
         Set<Character> used = new HashSet<Character>();
         for(int i = 0; i < value.length(); i++)
