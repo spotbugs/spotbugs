@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
@@ -120,8 +122,16 @@ public class InstructionActionCache {
                             ObligationFactory factory = database.getFactory();
                             Obligation obligation = factory.getObligationByType((ObjectType) tosType);
                             if (obligation != null) {
-                                actionList = Collections.singleton(new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.DEL,
+                                if (obligation.getClassName().equals("java.sql.ResultSet")) {
+                                    ObjectType sType = ObjectTypeFactory.getInstance(java.sql.Statement.class);
+                                    Obligation sObligation = factory.getObligationByType(sType);
+                                    actionList = Arrays.asList(
+                                            new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.DEL, obligation),
+                                            new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.DEL, sObligation));                  
+                                } else 
+                                  actionList = Collections.singleton(new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.DEL,
                                         obligation));
+                               
                             }
                         }
                     }
