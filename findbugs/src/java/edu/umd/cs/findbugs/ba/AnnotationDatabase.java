@@ -352,6 +352,10 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
         addDirectAnnotation(m, annotation);
     }
 
+    protected void addMethodAnnotation(Class<?> clazz, String mName, String mSig, boolean isStatic,
+            AnnotationEnum annotation) {
+        addMethodAnnotation(clazz.getName(), mName, mSig, isStatic, annotation);
+    }
     protected void addMethodAnnotation(@DottedClassName String cName, String mName, String mSig, boolean isStatic,
             AnnotationEnum annotation) {
         if (addClassOnly)
