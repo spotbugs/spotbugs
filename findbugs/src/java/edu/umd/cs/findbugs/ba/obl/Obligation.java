@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba.obl;
 import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * An obligation that must be cleaned up by error handling code. Examples
@@ -35,7 +36,7 @@ import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
  * @author David Hovemeyer
  */
 public class Obligation {
-    private final String className;
+    private final @DottedClassName String className;
 
     private final ObjectType type;
 
@@ -43,13 +44,13 @@ public class Obligation {
 
     private boolean userObligationType;
 
-    public Obligation(String className, int id) {
+    public Obligation(@DottedClassName  String className, int id) {
         this.className = className;
         this.type = ObjectTypeFactory.getInstance(className);
         this.id = id;
     }
 
-    public String getClassName() {
+    public @DottedClassName String getClassName() {
         return className;
     }
 
