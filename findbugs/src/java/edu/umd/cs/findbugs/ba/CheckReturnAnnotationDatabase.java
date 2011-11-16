@@ -177,6 +177,16 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
         addMethodAnnotation("java.lang.ProcessBuilder", "redirectErrorStream", "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 
+        addMethodAnnotation("java.lang.ProcessBuilder", "redirectErrorStream", "()Z", false,
+                CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
+        addMethodAnnotation("java.lang.ProcessBuilder", "redirectErrorStream", "()Z", false,
+                CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
+        
+        addDefaultMethodAnnotation("jsr166z.forkjoin.ParallelArray", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
+        addDefaultMethodAnnotation("jsr166z.forkjoin.ParallelLongArray", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
+        addDefaultMethodAnnotation("jsr166z.forkjoin.ParallelDoubleArray", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
+        
+        
         addMethodAnnotation(java.sql.Statement.class, "executeQuery", "(Ljava/lang/String;)Ljava/sql/ResultSet;", false, 
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
         addMethodAnnotation(java.sql.PreparedStatement.class, "executeQuery", "()Ljava/sql/ResultSet;", false, 
