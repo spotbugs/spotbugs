@@ -74,8 +74,6 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
 
     private XMethod xmethod;
 
-    private ConstantPoolGen cpg;
-
     private ObligationFactory factory;
 
     private ObligationPolicyDatabase database;
@@ -114,7 +112,6 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
             IErrorLogger errorLogger) {
         super(dfs);
         this.xmethod = xmethod;
-        this.cpg = cpg;
         this.factory = factory;
         this.database = database;
         this.typeDataflow = typeDataflow;
