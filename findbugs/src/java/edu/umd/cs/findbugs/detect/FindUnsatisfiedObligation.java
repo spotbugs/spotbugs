@@ -312,12 +312,12 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 
             if (methodDescriptor.isStatic() && methodDescriptor.getName().equals("main")
                     && methodDescriptor.getSignature().equals("([Ljava/lang/String;)V")
-                    && (className.contains("InputStream") || className.contains("Reader") || factAtExit.isOnExceptionEdge())) {
+                    && (className.contains("InputStream") || className.contains("Reader") || factAtExit.isOnExceptionPath())) {
                 // Don't report unclosed input streams and readers in main()
                 // methods
                 return;
             }
-            String bugPattern = factAtExit.isOnExceptionEdge() ? "OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE" : "OBL_UNSATISFIED_OBLIGATION";
+            String bugPattern = factAtExit.isOnExceptionPath() ? "OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE" : "OBL_UNSATISFIED_OBLIGATION";
             BugInstance bugInstance = new BugInstance(FindUnsatisfiedObligation.this, bugPattern,
                     NORMAL_PRIORITY).addClassAndMethod(methodDescriptor).addClass(className).describe("CLASS_REFTYPE");
 

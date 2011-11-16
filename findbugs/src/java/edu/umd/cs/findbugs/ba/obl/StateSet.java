@@ -50,9 +50,13 @@ public class StateSet {
 
     private boolean isBottom;
     
-    private boolean onExceptionEdge;
+    private boolean onExceptionPath;
 
     private Map<ObligationSet, State> stateMap;
+    
+    public boolean isEmpty() {
+        return stateMap.isEmpty();
+    }
 
     private final ObligationFactory factory;
 
@@ -65,7 +69,7 @@ public class StateSet {
     public void setTop() {
         this.isTop = true;
         this.isBottom = false;
-        this.onExceptionEdge = false;
+        this.onExceptionPath = false;
         this.stateMap.clear();
     }
 
@@ -86,16 +90,16 @@ public class StateSet {
         return !this.isTop && !this.isBottom;
     }
 
-    public boolean isOnExceptionEdge() {
-        return onExceptionEdge;
+    public boolean isOnExceptionPath() {
+        return onExceptionPath;
     }
 
-    public void setOnExceptionEdge(boolean onExceptionEdge) {
-        this.onExceptionEdge = onExceptionEdge;
+    public void setOnExceptionPath(boolean onExceptionPath) {
+        this.onExceptionPath = onExceptionPath;
     }
 
     public void clear() {
-        this.isTop = this.isBottom = this.onExceptionEdge = false;
+        this.isTop = this.isBottom = this.onExceptionPath = false;
         stateMap.clear();
     }
 
@@ -154,7 +158,7 @@ public class StateSet {
     public void copyFrom(StateSet other) {
         this.isTop = other.isTop;
         this.isBottom = other.isBottom;
-        this.onExceptionEdge = other.onExceptionEdge;
+        this.onExceptionPath = other.onExceptionPath;
         this.stateMap.clear();
         for (State state : other.stateMap.values()) {
             State dup = state.duplicate();
@@ -273,7 +277,7 @@ public class StateSet {
             return false;
         StateSet other = (StateSet) o;
         return this.isTop == other.isTop && this.isBottom == other.isBottom 
-                && this.onExceptionEdge == other.onExceptionEdge && this.stateMap.equals(other.stateMap);
+                && this.onExceptionPath == other.onExceptionPath && this.stateMap.equals(other.stateMap);
     }
 
     @Override
@@ -291,8 +295,8 @@ public class StateSet {
             StringBuilder buf = new StringBuilder();
             buf.append(stateMap);
            
-            if (onExceptionEdge)
-                buf.append(" On exception edge");
+            if (onExceptionPath)
+                buf.append(" On exception path");
             return buf.toString();
         }
     }

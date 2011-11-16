@@ -7712,8 +7712,8 @@ public @NonNegative Integer example(@Negative Integer value) {
 
 
   <BugPattern type="OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE">
-    <ShortDescription>Method may fail to clean up stream or resource on uncaught checked exception</ShortDescription>
-    <LongDescription>{1} may fail to clean up {2} on uncaught checked exception</LongDescription>
+    <ShortDescription>Method may fail to clean up stream or resource on checked exception</ShortDescription>
+    <LongDescription>{1} may fail to clean up {2} on checked exception</LongDescription>
     <Details>
           <![CDATA[
           <p>
