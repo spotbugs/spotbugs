@@ -978,7 +978,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 int priority  = Priorities.HIGH_PRIORITY;
                 if (value == Integer.MAX_VALUE+1 || value == Integer.MIN_VALUE -1)
                     priority = Priorities.NORMAL_PRIORITY;
-                String stringValue = Long.toString(value)+"L";
+                String stringValue = IntAnnotation.getShortInteger(value)+"L";
                 if (value == 0xffffffffL)
                     stringValue = "0xffffffffL";
                 else if (value == 0x80000000L)
