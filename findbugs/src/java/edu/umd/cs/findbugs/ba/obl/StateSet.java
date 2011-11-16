@@ -187,10 +187,8 @@ public class StateSet {
         if (stateMap.isEmpty()) {
             State s = new State(factory);
             s.getObligationSet().add(obligation);
-            updatedStateMap.put(s.getObligationSet(), s);
-            
-        } else  for (Iterator<State> i = stateIterator(); i.hasNext();) {
-            State state = i.next();
+            updatedStateMap.put(s.getObligationSet(), s);  
+        } else for (State state : stateMap.values()) {
             checkCircularity(state, obligation, basicBlockId);
             state.getObligationSet().add(obligation);
             updatedStateMap.put(state.getObligationSet(), state);
