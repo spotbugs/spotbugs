@@ -682,7 +682,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                             : SourceLineAnnotation.ROLE_PATH_CONTINUES);
 
                     boolean isInteresting = (sourceLine.getStartLine() > 0)
-                            && (lastSourceLine == null || sourceLine.getStartLine() != lastSourceLine.getStartLine());
+                            && (lastSourceLine == null || isCreation || sourceLine.getStartLine() != lastSourceLine.getStartLine());
 
                     if (REPORT_PATH_DEBUG) {
                         System.out.println("  " + handle.getPosition() + " --> " + sourceLine + (isInteresting ? " **" : ""));

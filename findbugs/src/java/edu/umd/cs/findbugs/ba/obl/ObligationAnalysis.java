@@ -140,7 +140,9 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
     public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StateSet fact)
             throws DataflowAnalysisException {
          Collection<ObligationPolicyDatabaseAction> actionList = actionCache.getActions(basicBlock, handle);
-        if (DEBUG && actionList.size() > 0) {
+         if (actionList.isEmpty())
+             return;
+        if (DEBUG) {
             System.out.println("Applying actions at " + handle + " to " + fact);
         }
         for (ObligationPolicyDatabaseAction action : actionList) {
