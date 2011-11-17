@@ -934,7 +934,7 @@ public class SortedBugCollection implements BugCollection {
     private String releaseName;
 
     /**
-     * Current analysis timestamp.
+     * Current timestamp for the code being analyzed
      */
     private long timestamp;
 

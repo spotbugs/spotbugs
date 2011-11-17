@@ -144,7 +144,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
                     ZipEntry zipEntry = zipEntryEnumerator.nextElement();
 
                     if (!zipEntry.isDirectory()) {
-                        setLastModifiedTime(zipEntry.getTime());
+                        addLastModifiedTime(zipEntry.getTime());
                         nextEntry = new ZipFileCodeBaseEntry(ZipFileCodeBase.this, zipEntry);
                         break;
                     }

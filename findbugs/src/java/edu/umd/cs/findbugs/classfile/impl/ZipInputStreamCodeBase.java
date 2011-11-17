@@ -155,7 +155,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
         }
         IO.copy(zis, out);
         byte[] bytes = out.toByteArray();
-        setLastModifiedTime(ze.getTime());
+        addLastModifiedTime(ze.getTime());
         return new ZipInputStreamCodeBaseEntry(this, ze, bytes);
     }
 

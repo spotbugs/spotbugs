@@ -67,10 +67,8 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
 
             // Update last modified time
             File file = new File(fileName);
-            long modTime = file.lastModified();
-            if (modTime > 0 && modTime > getLastModifiedTime()) {
-                setLastModifiedTime(modTime);
-            }
+           long modTime = file.lastModified();
+           addLastModifiedTime(modTime);
 
             return new DirectoryCodeBaseEntry(DirectoryCodeBase.this, resourceName);
         }
