@@ -72,6 +72,8 @@
 
         <target name="clean">
                 <delete dir="build/classes"/>
+        	<delete dir="${basedir}/classesEclipse" />
+        	<mkdir dir="${basedir}/classesEclipse" />
                 <delete file="build/all.jar"/>
         </target>
 
