@@ -36,7 +36,11 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.EditDistance;
 
@@ -152,7 +156,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
             if (potentialSuperCall == null) {
                 String role = ClassAnnotation.SUPERCLASS_ROLE;
 
-                String superclassName = ClassName.toDottedClassName(getSuperclassName());
+                @DottedClassName String superclassName =  ClassName.toDottedClassName(getSuperclassName());
                 if (superclassName.equals("java.lang.Object")) {
 
                     try {
@@ -166,6 +170,28 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                     }
                 }
                 pendingBug.addClass(superclassName).describe(role);
+                try {
+                    XClass from = Global.getAnalysisCache().getClassAnalysis(XClass.class, 
+                            DescriptorFactory.createClassDescriptorFromDottedClassName(superclassName));
+                    XMethod  potentialMatch = null;
+                    for(XMethod m : from.getXMethods()) 
+                        if (!m.isStatic() && !m.isPrivate() && m.getName().toLowerCase().equals(obj.getName().toLowerCase())) {
+                            if (potentialMatch == null)
+                                potentialMatch = m;
+                            else {
+                                // multiple matches; ignore all
+                                potentialMatch = null;
+                                break;
+                            }
+                    }
+                     if (potentialMatch != null)
+                         pendingBug.addMethod(potentialMatch)
+                         .describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
+                         
+                } catch (CheckedAnalysisException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             } else {
                 pendingBug.setPriority(pendingBug.getPriority() - 1);
                 pendingBug.addMethod(potentialSuperCall).describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
@@ -212,8 +238,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                         break;
                     }
                 if (code != null && code.getLength() == 1)
-                    priority++; // TODO: why didn't FindBugs give a warning here
-                                // before the null check was added?
+                    priority++;
 
                 pendingBug = new BugInstance(this, "UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS", priority).addClassAndMethod(this);
                 potentialSuperCall = null;
