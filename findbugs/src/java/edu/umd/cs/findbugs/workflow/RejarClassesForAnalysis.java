@@ -24,18 +24,18 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -124,6 +124,7 @@ public class RejarClassesForAnalysis {
         public String auxFileList;
 
         boolean onlyAnalyze = false;
+        boolean ignoreTimestamps = false;
 
         RejarClassesForAnalysisCommandLine() {
             addSwitch("-analyzeOnly",  "only read the jars files and analyze them; don't produce new jar files");
@@ -134,6 +135,8 @@ public class RejarClassesForAnalysis {
 
             addOption("-maxClasses", "num", "maximum number of classes per analysis*.jar file");
             addOption("-outputDir", "dir", "directory for the generated jar files");
+            addSwitch("-ignoreTimestamps", "ignore timestamps on zip entries; use first version found");
+            
             addOption("-prefix", "class name prefix",
                     "comma separated list of class name prefixes that should be analyzed (e.g., edu.umd.cs.)");
             addOption("-exclude", "class name prefix",
@@ -156,7 +159,9 @@ public class RejarClassesForAnalysis {
         protected void handleOption(String option, String optionExtraPart) throws IOException {
             if (option.equals("-analyzeOnly")) {
                 onlyAnalyze = true;
-            } else
+            } else  if (option.equals("-ignoreTimestamps")) {
+                ignoreTimestamps = true;
+            }else
                 throw new IllegalArgumentException("Unknown option : " + option);
         }
 
@@ -264,7 +269,10 @@ public class RejarClassesForAnalysis {
         return result;
     }
 
-    Set<String> copied = new HashSet<String>();
+    /** For each file, give the latest timestamp */
+    Map<String, Long> copied = new HashMap<String, Long>();
+    /** While file should we copy it from */
+    Map<String, File> copyFrom = new HashMap<String, File>();
 
     Set<String> excluded = new HashSet<String>();
 
@@ -301,7 +309,7 @@ public class RejarClassesForAnalysis {
     boolean classFileFound;
     public void execute() throws IOException {
 
-        TreeSet<String> fileList = new TreeSet<String>();
+        ArrayList<String> fileList = new ArrayList<String>();
 
         if (commandLine.inputFileList != null)
             readFrom(fileList, UTF8.fileReader(commandLine.inputFileList));
@@ -309,7 +317,7 @@ public class RejarClassesForAnalysis {
              readFromStandardInput(fileList);
         else
             fileList.addAll(Arrays.asList(args).subList(argCount, args.length));
-        TreeSet<String> auxFileList = new TreeSet<String>();
+        ArrayList<String> auxFileList = new ArrayList<String>();
         if (commandLine.auxFileList != null) {
             readFrom(auxFileList, UTF8.fileReader(commandLine.auxFileList));
             auxFileList.removeAll(fileList);
@@ -318,12 +326,12 @@ public class RejarClassesForAnalysis {
         List<File> inputZipFiles = new ArrayList<File>(fileList.size());
         List<File> auxZipFiles = new ArrayList<File>(auxFileList.size());
         for (String fInName : fileList) {
-            File f = new File(fInName);
+            final File f = new File(fInName);
             if (f.lastModified() < commandLine.maxAge) {
                 System.err.println("Skipping " + fInName + ", too old (" + new Date(f.lastModified()) + ")");
                 continue;
             }
-
+            
             int oldSize = copied.size();
             classFileFound = false;
             if (processZipEntries(f, new ZipElementHandler() {
@@ -348,9 +356,17 @@ public class RejarClassesForAnalysis {
                     if (!commandLine.prefix.matches(dottedName))
                         return;
                     classFileFound = true;
-                    if (copied.add(name)) {
+                    long timestamp = ze.getTime();
+                    Long oldTimestamp = copied.get(name);
+                    if (oldTimestamp == null) {
+                        copied.put(name, timestamp);
+                        copyFrom.put(name, f);
                         filesToAnalyze.add(name);
                         numFilesToAnalyze++;
+                    } else if (!commandLine.ignoreTimestamps && oldTimestamp < timestamp) {
+                        System.out.printf("Found later version of %s; switching from %s to %s%n", name, copyFrom.get(name), f);
+                        copied.put(name, timestamp);
+                        copyFrom.put(name, f);
                     }
                 }
 
@@ -367,7 +383,7 @@ public class RejarClassesForAnalysis {
                 System.err.println("Skipping " + fInName  + ", no classes found");
         }
         for (String fInName : auxFileList) {
-            File f = new File(fInName);
+            final File f = new File(fInName);
             if (f.lastModified() < commandLine.maxAge) {
                 System.err.println("Skipping " + fInName + ", too old (" + new Date(f.lastModified()) + ")");
                 continue;
@@ -383,7 +399,15 @@ public class RejarClassesForAnalysis {
                     String dottedName = name.replace('/', '.');
                     if (!exclude(dottedName)) {
                         classFileFound = true;
-                        copied.add(ze.getName());
+                        long timestamp = ze.getTime();
+                        Long oldTimestamp = copied.get(name);
+                        if (oldTimestamp == null) {
+                            copied.put(name, timestamp);
+                            copyFrom.put(name, f);
+                        } else if (!commandLine.ignoreTimestamps && oldTimestamp < timestamp) {
+                            copied.put(name, timestamp);
+                            copyFrom.put(name, f);
+                        }
                     }
                 }
             }) && oldSize < copied.size())
@@ -408,8 +432,6 @@ public class RejarClassesForAnalysis {
 
         if (numFilesToAnalyze < copied.size() || numFilesToAnalyze > commandLine.maxClasses)
             auxilaryOut = createZipFile(getNextAuxilaryFileOutput());
-
-        copied.clear();
 
         int count = Integer.MAX_VALUE;
         String oldBaseClass = "x x";
@@ -443,20 +465,24 @@ public class RejarClassesForAnalysis {
 
         for (File f : inputZipFiles) {
             System.err.println("Reading " + f);
+            final File ff = f;
             processZipEntries(f, new ZipElementHandler() {
 
                 public void handle(ZipFile zipInputFile, ZipEntry ze) throws IOException {
                     if (commandLine.skip(ze))
                         return;
 
+                    
                     String name = ze.getName();
                     String dottedName = name.replace('/', '.');
                     if (exclude(dottedName))
                         return;
-                    if (!copied.add(name)) {
+                    if (!ff.equals(copyFrom.get(name))) {
                         return;
-
                     }
+                    if (name.contains("DefaultProblem.class"))
+                        System.out.printf("%40s %40s%n", name, ff);
+                    
                     boolean writeToAnalyzeOut = false;
                     boolean writeToAuxilaryOut = false;
                     if (commandLine.prefix.matches(dottedName)) {
@@ -487,6 +513,7 @@ public class RejarClassesForAnalysis {
         }
 
         for (File f : auxZipFiles) {
+            final File ff = f;
             System.err.println("Opening aux file " + f);
             processZipEntries(f, new ZipElementHandler() {
 
@@ -499,7 +526,7 @@ public class RejarClassesForAnalysis {
 
                     if (exclude(dottedName))
                         return;
-                    if (!copied.add(name)) {
+                    if (!ff.equals(copyFrom.get(name))) {
                         return;
                     }
 
