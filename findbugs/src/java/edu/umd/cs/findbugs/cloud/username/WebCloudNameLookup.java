@@ -45,7 +45,7 @@ public class WebCloudNameLookup implements NameLookup {
 
     private static final String APPENGINE_HOST_PROPERTY_NAME = "webcloud.host";
     private static final String KEY_SAVE_SESSION_INFO = "save_session_info";
-    private static final String KEY_APPENGINECLOUD_SESSION_ID = "webcloud_session_id";
+    static final String KEY_APPENGINECLOUD_SESSION_ID = "webcloud_session_id";
     /** if "true", prevents session info from being saved between launches. */
     private static final String SYSPROP_NEVER_SAVE_SESSION = "webcloud.never_save_session";
 
