@@ -234,7 +234,8 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
             // (Basically, we may not see the exact original stream class,
             // even though it's the same instance.)
             try {
-                return Hierarchy.isSubtype(inv.getClassName(cpg), streamBase);
+                String classClosed = inv.getClassName(cpg);
+                return Hierarchy.isSubtype(classClosed, streamBase) || Hierarchy.isSubtype(streamBase, classClosed) ;
             } catch (ClassNotFoundException e) {
                 lookupFailureCallback.reportMissingClass(e);
                 return false;

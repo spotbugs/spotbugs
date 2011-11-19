@@ -79,7 +79,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
     static final ObjectType[] streamBaseList = { ObjectTypeFactory.getInstance("java.io.InputStream"),
             ObjectTypeFactory.getInstance("java.io.OutputStream"), ObjectTypeFactory.getInstance("java.util.zip.ZipFile"),
             ObjectTypeFactory.getInstance("java.io.Reader"), ObjectTypeFactory.getInstance("java.io.Writer"),
-            ObjectTypeFactory.getInstance("java.sql.Connection"), ObjectTypeFactory.getInstance("java.sql.PreparedStatement"),
+            ObjectTypeFactory.getInstance("java.sql.Connection"), 
             ObjectTypeFactory.getInstance("java.sql.Statement"), ObjectTypeFactory.getInstance("java.sql.ResultSet") };
 
     /**
@@ -439,6 +439,11 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
     public void inspectResult(ClassContext classContext, MethodGen methodGen, CFG cfg,
             Dataflow<ResourceValueFrame, ResourceValueAnalysis<Stream>> dataflow, Stream stream) {
 
+        if (DEBUG) {
+            System.out.printf("Result for %s in %s%n", stream, methodGen);
+            dataflow.dumpDataflow(dataflow.getAnalysis());
+            
+        }
         ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
 
         int exitStatus = exitFrame.getStatus();

@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug2382279 {
     private Connection con;
@@ -42,7 +43,8 @@ public class Bug2382279 {
      * 
      * ********************
      */
-    @DesireNoWarning("OBL,ODR")
+    @DesireNoWarning("ODR")
+    @NoWarning("OBL_UNSATISFIED_OBLIGATION")
     public ResultSet execute(String query) throws SQLException {
         // test code adapted from bug report
         ResultSet rs;
