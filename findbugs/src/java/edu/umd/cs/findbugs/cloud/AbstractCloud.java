@@ -252,6 +252,7 @@ public abstract class AbstractCloud implements Cloud {
         if (!isInCloud(b)) {
             return notInCloudMsg(b);
         }
+        initiateCommunication();
         SimpleDateFormat format = new SimpleDateFormat("MM/dd, yyyy");
         StringBuilder builder = new StringBuilder();
         long firstSeen = getFirstSeen(b);

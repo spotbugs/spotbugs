@@ -70,7 +70,7 @@ public class CloudFactory {
             LOGGER.log(Level.FINE, "constructed cloud plugin " + plugin.getId());
             if (!cloud.availableForInitialization())
                 handleInitializationException(bc, plugin, 
-                        new IllegalStateException("Cloud doesn't have information needed for initialization"));
+                        new IllegalStateException(cloud.getClass().getName() + " cloud " + plugin.getId()+ " doesn't have information needed for initialization"));
             return cloud;
         } catch (InvocationTargetException e) {
            return handleInitializationException(bc, plugin, e.getCause());
