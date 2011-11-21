@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
@@ -71,11 +72,12 @@ public class QueryServlet extends AbstractFlybushServlet {
         issueProtos.build().writeTo(resp.getOutputStream());
     }
 
+    static final long ONE_DAY = TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS);
     @SuppressWarnings("unchecked")
     private void getRecentEvaluations(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm)
             throws IOException {
         GetRecentEvaluations recentEvalsRequest = GetRecentEvaluations.parseFrom(req.getInputStream());
-        long startTime = recentEvalsRequest.getTimestamp();
+        long startTime = Math.max(recentEvalsRequest.getTimestamp(), System.currentTimeMillis() - ONE_DAY);
 
         String limitParam = req.getParameter("_debug_max");
         int limit = limitParam != null ? Integer.parseInt(limitParam) : 10;

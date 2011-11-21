@@ -234,7 +234,7 @@ public class AuthServlet extends AbstractFlybushServlet {
         }
 
         if (req.getParameter("generate") != null) {
-            user.setUploadToken(BigInteger.valueOf(Math.abs(new SecureRandom().nextLong())).toString(16));
+            user.setUploadToken(generateUploadToken());
             Transaction tx = pm.currentTransaction();
             try {
                 pm.makePersistent(user);
@@ -259,6 +259,16 @@ public class AuthServlet extends AbstractFlybushServlet {
                     "</form>");
         }
         out.println("</body>");
+    }
+
+    
+    private SecureRandom random = new SecureRandom();
+    /**
+     * @return
+     */
+    public String generateUploadToken() {
+        long nextLong = random.nextLong() & Long.MAX_VALUE;
+        return BigInteger.valueOf(nextLong).toString(16);
     }
 
     @SuppressWarnings({ "unchecked" })

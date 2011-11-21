@@ -20,7 +20,9 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringEscapeUtils;
 
 public class WebPageServlet extends AbstractFlybushServlet {
-    private static final DateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("MMM d, ''yy 'at' h:mm aa z");
+    private static  DateFormat TIMESTAMP_FORMAT() {
+        return new SimpleDateFormat("MMM d, ''yy 'at' h:mm aa z");
+    }
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -70,7 +72,7 @@ public class WebPageServlet extends AbstractFlybushServlet {
         for (DbEvaluation evaluation : list) {
             out.println("<tr>");
             out.println("<td>" + StringEscapeUtils.escapeHtml(evaluation.getEmail())
-                    + "<br><span class=timestamp>" + TIMESTAMP_FORMAT.format(new Date(evaluation.getWhen())) + " </span></td>");
+                    + "<br><span class=timestamp>" + TIMESTAMP_FORMAT().format(new Date(evaluation.getWhen())) + " </span></td>");
 
             out.println("<td><strong>" + StringEscapeUtils.escapeHtml(evaluation.getDesignation()) + "</strong>" +
                     " &mdash; " + StringEscapeUtils.escapeHtml(evaluation.getComment()) + "</td>");

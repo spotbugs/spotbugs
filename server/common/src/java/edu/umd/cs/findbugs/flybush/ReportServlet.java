@@ -51,11 +51,17 @@ import org.apache.commons.lang.StringEscapeUtils;
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 public class ReportServlet extends AbstractFlybushServlet {
-    private static final DateFormat DATE_TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG);
+    private static  DateFormat DATE_TIME_FORMAT() {
+        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG);
+    }
 
-    private static final SimpleDateFormat DF_M_D_Y = new SimpleDateFormat("M/d/yy");
+    private static  SimpleDateFormat DF_M_D_Y() {
+        return new SimpleDateFormat("M/d/yy");
+    }
 
-    private static final SimpleDateFormat DF_M_D = new SimpleDateFormat("M/d");
+    private static  SimpleDateFormat DF_M_D() {
+        return new SimpleDateFormat("M/d");
+    }
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
@@ -294,7 +300,7 @@ public class ReportServlet extends AbstractFlybushServlet {
 
     private static String createEvalsTableEntry(HttpServletRequest req, DbEvaluation eval) {
         return String.format("<td>%s</td>" + "<td><a href='%s'>%s</a></td>" + "<td>%s</td>" + "<td>%s</td>" + "<td>%s</td>",
-                DATE_TIME_FORMAT.format(new Date(eval.getWhen())).replaceAll(" UTC", ""), req.getRequestURI() + "?user="
+                DATE_TIME_FORMAT().format(new Date(eval.getWhen())).replaceAll(" UTC", ""), req.getRequestURI() + "?user="
                         + escapeHtml(eval.getEmail()), escapeHtml(eval.getEmail()),
                 /* eval.getIssue().getBugPattern(), */
                 printPackageLinks(req, eval.getPrimaryClass()), escapeHtml(eval.getDesignation()), escapeHtml(eval.getComment()));
@@ -633,9 +639,9 @@ public class ReportServlet extends AbstractFlybushServlet {
 
     private String formatDate(Calendar cal, boolean firstDateSoFar) {
         if (firstDateSoFar || cal.get(Calendar.MONTH) == Calendar.JANUARY) {
-            return DF_M_D_Y.format(new Date(cal.getTimeInMillis()));
+            return DF_M_D_Y().format(new Date(cal.getTimeInMillis()));
         } else {
-            return DF_M_D.format(new Date(cal.getTimeInMillis()));
+            return DF_M_D().format(new Date(cal.getTimeInMillis()));
         }
     }
 
