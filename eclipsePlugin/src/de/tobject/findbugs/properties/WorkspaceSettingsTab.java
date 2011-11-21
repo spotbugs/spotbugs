@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
 import de.tobject.findbugs.preferences.FindBugsConstants;
+import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
@@ -65,6 +66,9 @@ public class WorkspaceSettingsTab extends Composite {
         TabItem tabDetector = new TabItem(tabFolder, SWT.NONE);
         tabDetector.setText("Plugins and misc. Settings");
         tabDetector.setControl(this);
+
+        Label versionLabel = new Label(this, SWT.NONE);
+        versionLabel.setText("FindBugs version: " + Version.RELEASE);
 
         runAsExtraJob = new Button(this, SWT.CHECK);
         runAsExtraJob.setSelection(store.getBoolean(FindBugsConstants.KEY_RUN_ANALYSIS_AS_EXTRA_JOB));
