@@ -85,7 +85,7 @@ public class DoNothingCloud implements Cloud {
     }
 
     public boolean availableForInitialization() {
-        return false;
+        return true;
     }
 
     public boolean initialize() {
