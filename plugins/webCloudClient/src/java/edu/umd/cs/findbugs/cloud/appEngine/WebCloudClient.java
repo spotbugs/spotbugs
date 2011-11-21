@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,6 +43,7 @@ import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.BugFiler;
+import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.MutableCloudTask;
 import edu.umd.cs.findbugs.cloud.OnlineCloud;
@@ -123,6 +125,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     // ====================== initialization =====================
 
     public void waitUntilNewIssuesUploaded() {
+        checkInitialized();
         try {
             newIssuesUploaded.await();
         } catch (InterruptedException e) {
@@ -131,6 +134,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     }
 
     public void waitUntilIssueDataDownloaded() {
+        checkInitialized();
         try {
             bugsPopulated.await();
 
@@ -165,31 +169,24 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
         try {
             if (!super.initialize()) {
                 setSigninState(SigninState.SIGNIN_FAILED);
-
                 return false;
             }
-            try {
-                if (networkClient.initialize()) {
 
-                    setSigninState(SigninState.SIGNED_IN);
-
-                } else {
-                    // soft init didn't work
-                    setSigninState(SigninState.UNAUTHENTICATED);
-                }
-            } catch (Throwable e) {
-                setSigninState(SigninState.SIGNIN_FAILED);
+            if (networkClient.initialize()) {
+                setSigninState(SigninState.SIGNED_IN);
+            } else {
+                // soft init didn't work
+                setSigninState(SigninState.UNAUTHENTICATED);
             }
+            
+            initialized = true;
+            return true;
+
         } catch (IOException e) {
             setSigninState(SigninState.SIGNIN_FAILED);
             throw e;
         }
 
-        if (!getGuiCallback().isHeadless()) {
-            startEvaluationCheckThread();
-        }
-        initialized = true;
-        return true;
     }
 
     /**
@@ -239,7 +236,13 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
         }
     }
 
+    
+    private void checkInitialized() {
+        if (!initialized)
+            throw new IllegalStateException("Cloud not initialized");
+    }
     public void bugsPopulated() {
+        checkInitialized();
         evaluationsFromXmlUploader.tryUploadingLocalAnnotations(false);
         bugsPopulated.countDown();
     }
@@ -247,8 +250,17 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     private final Object initiationLock = new Object();
 
     private volatile boolean communicationInitiated = false;
+    
+    private void mockFailure() throws ServerReturnedErrorCodeException {
+        File check = new File("/tmp/mockFindBugsCloudFailure");
+        if (!check.canRead()) 
+            return;
+        if ( check.lastModified() + 15 * 60 * 1000 > System.currentTimeMillis())
+            throw new ServerReturnedErrorCodeException(503, "mock failure due to presence of " + check);
+    }
 
     public void initiateCommunication() {
+        checkInitialized();
         bugsPopulated();
 
         if (communicationInitiated)
@@ -263,6 +275,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
             backgroundExecutorService.execute(new Runnable() {
                 public void run() {
                     try {
+                        mockFailure();
                         actuallyCheckBugsAgainstCloud();
                     } catch (RejectedExecutionException e) {
                         // I think this only happens on purpose -Keith
@@ -271,7 +284,8 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
                             e = e.getCause();
                         String errorMsg = Util.getNetworkErrorMessage(e);
                         getGuiCallback().showMessageDialog("Could not connect to " + getCloudName()
-                                + "\n\n" + errorMsg);
+                                + "\n\n" +  errorMsg 
+                                + "\nsignin status: " + getSigninState());
                         LOGGER.log(Level.SEVERE, "Error while checking bugs against cloud in background" , e);
                     }
                 }
@@ -313,6 +327,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     private final Object signInLock = new Object();
 
     public void signIn() throws IOException {
+        checkInitialized();
         SigninState oldState = getSigninState();
         synchronized (signInLock) {
             if (getSigninState() == SigninState.SIGNED_IN)
@@ -352,6 +367,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     }
 
     public BugDesignation getPrimaryDesignation(BugInstance b) {
+        checkInitialized();
         Evaluation e = networkClient.getMostRecentEvaluationBySelf(b);
         return e == null ? null : createBugDesignation(e);
     }
@@ -475,6 +491,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
 
     @SuppressWarnings("deprecation")
     public void storeUserAnnotation(BugInstance bugInstance) {
+        checkInitialized();
         SigninState state = getSigninState();
         if (state == SigninState.SIGNED_IN || state == SigninState.UNAUTHENTICATED) {
             // no need to do this if we're not signed in yet, because it will
@@ -576,9 +593,13 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     private final class GetUpdatedEvaluations extends TimerTask {
         @Override
         public void run() {
+            if (CloudFactory.DEBUG)
+                System.out.printf("checking for updates from server%n");
+           
             try {
                 int count = updateEvaluationsFromServer();
-                if (count > 0)
+                System.out.printf("got %d for updates from server%n", count);
+                if (count == 0)
                     updateInternal = Math.min(updateInternal*2, EVALUATION_CHECK_SECS_MAX_SECS);
                 else
                     updateInternal = EVALUATION_CHECK_SECS_MIN_SECS;
@@ -597,11 +618,14 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     }
     
     private void scheduleUpdateEvaluationsFromServer() {
+        if (CloudFactory.DEBUG)
+            System.out.printf("Scheduling check for new evaluations from the server in %d seconds%n", updateInternal);
         timer.schedule(new GetUpdatedEvaluations(), TimeUnit.MILLISECONDS.convert(updateInternal, TimeUnit.SECONDS) );
     }
         
     
     private void startEvaluationCheckThread() {
+        checkInitialized();
         if (timer != null)
             timer.cancel();
         timer = new Timer("App Engine Cloud review update checker", true);
@@ -618,6 +642,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     }
 
     private void actuallyCheckBugsAgainstCloud() throws ExecutionException, InterruptedException {
+        checkInitialized();
         ConcurrentHashMap<String, BugInstance> bugsByHash = new ConcurrentHashMap<String, BugInstance>();
 
         for (BugInstance b : bugCollection.getCollection()) {
@@ -657,6 +682,9 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
         Collection<BugInstance> newBugs = bugsByHash.values();
         boolean hasTimestampsToUpdate = !networkClient.getTimestampsToUpdate().isEmpty();
         boolean hasBugsToUpload = !newBugs.isEmpty();
+        if (!getGuiCallback().isHeadless()) {
+            startEvaluationCheckThread();
+        };
         String cloudTokenProperty = getCloudTokenProperty();
         if ((hasBugsToUpload || hasTimestampsToUpdate)
                 && (cloudTokenProperty != null
@@ -705,6 +733,11 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
 
     /** package-private for testing */
     int updateEvaluationsFromServer() throws IOException {
+        checkInitialized();
+        if (!networkClient.ready())
+            return 0;
+        if (issueDataDownloaded.getCount() > 0)
+            return 0;
         MutableCloudTask task = createTask("Checking " + getCloudName() + " for updates");
 
         int count = 0;
@@ -749,22 +782,50 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
         return count;
     }
 
+    long lastEvaluation(Issue issue) {
+        long when = Long.MIN_VALUE;
+        for(Evaluation e : issue.getEvaluationsList()) {
+            if (when < e.getWhen())
+                when = e.getWhen();
+        }
+        return when;
+    }
     private int mergeUpdatedEvaluations(RecentEvaluations evals) {
         int found = 0;
+        System.out.println("got " + evals.getIssuesCount() + " issues from server");
         for (Issue updatedIssue : evals.getIssuesList()) {
             String protoHash = WebCloudProtoUtil.decodeHash(updatedIssue.getHash());
             BugInstance bugInstance = getBugByHash(protoHash);
-            if (bugInstance == null)
+            if (bugInstance == null) {
+                if (CloudFactory.DEBUG) 
+                    System.out.printf("No match for %s in %s, updated %tc%n", updatedIssue.getBugPattern(), updatedIssue.getPrimaryClass(), 
+                            lastEvaluation(updatedIssue));
                 continue;
+            }
             Issue existingIssue = networkClient.getIssueByHash(protoHash);
             Issue issueToStore;
             if (existingIssue != null) {
+                Issue oldIssue = Issue.newBuilder(existingIssue).build();
                 issueToStore = mergeIssues(existingIssue, updatedIssue);
                 String newHash = WebCloudProtoUtil.decodeHash(issueToStore.getHash());
                 assert newHash.equals(protoHash) : newHash + " vs " + protoHash;
+                if (oldIssue.equals(issueToStore)) {
+                    if (CloudFactory.DEBUG) 
+                        System.out.println("no new information");
+                    continue;
+                } else {
+                    if (CloudFactory.DEBUG) 
+                        System.out.printf("Got new information for %s in %s @ %tc : %s%n", issueToStore.getBugPattern(), issueToStore.getPrimaryClass() ,
+                                lastEvaluation(updatedIssue), issueToStore.getHash());
+                }
 
             } else {
                 issueToStore = updatedIssue;
+                System.out.printf("Got new issue %s in %s @ %tc : %s%n", issueToStore.getBugPattern(), 
+                        issueToStore.getPrimaryClass() , 
+                        lastEvaluation(updatedIssue), issueToStore.getHash());
+                
+                
             }
             networkClient.storeIssueDetails(protoHash, issueToStore);
             updateBugInstanceAndNotify(bugInstance);
@@ -774,6 +835,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     }
 
     private void uploadAndUpdateBugsInBackground(final List<BugInstance> newBugs) {
+        checkInitialized();
         backgroundExecutorService.execute(new Runnable() {
             public void run() {
                 List<Callable<Void>> callables = new ArrayList<Callable<Void>>();
