@@ -10,7 +10,7 @@ public class FlybushDataClearer {
     public static void main(String[] args) throws IOException {
         System.out.println("Are you sure you want to clear all data on theflybush.appspot.com? (y/n) ");
         String typedLine = new BufferedReader(new InputStreamReader(System.in)).readLine();
-        if (!typedLine.equals("y"))
+        if (!"y".equals(typedLine))
             return;
         while (true) {
             if (!clearAllData())
