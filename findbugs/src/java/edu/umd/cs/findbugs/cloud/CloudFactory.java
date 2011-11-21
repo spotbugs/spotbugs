@@ -68,6 +68,9 @@ public class CloudFactory {
             if (DEBUG)
                 bc.getProject().getGuiCallback().showMessageDialog("constructed " + cloud.getClass().getName());
             LOGGER.log(Level.FINE, "constructed cloud plugin " + plugin.getId());
+            if (!cloud.availableForInitialization())
+                handleInitializationException(bc, plugin, 
+                        new IllegalStateException("Cloud doesn't have information needed for initialization"));
             return cloud;
         } catch (InvocationTargetException e) {
            return handleInitializationException(bc, plugin, e.getCause());
