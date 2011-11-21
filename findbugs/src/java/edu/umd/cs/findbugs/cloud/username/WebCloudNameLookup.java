@@ -127,7 +127,7 @@ public class WebCloudNameLookup implements NameLookup {
         return authorized;
     }
 
-    private void checkResolveHost() throws UnknownHostException {
+    public void checkResolveHost() throws UnknownHostException {
         try {
             String host = new URL(url).getHost();
             InetAddress.getByName(host);
