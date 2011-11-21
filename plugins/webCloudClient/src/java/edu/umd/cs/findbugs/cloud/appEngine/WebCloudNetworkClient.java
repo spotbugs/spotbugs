@@ -91,8 +91,8 @@ public class WebCloudNetworkClient {
 
     private String username;
 
-    private volatile long earliestSeenServerTime = 0;
-    private volatile long mostRecentEvaluationMillis = 0;
+    private volatile long earliestSeenServerTime = System.currentTimeMillis();
+    private volatile long maxRecentEvaluationMillis = 0;
 
     private CopyOnWriteArrayList<String> timestampsToUpdate = new CopyOnWriteArrayList<String>();
 
@@ -103,18 +103,10 @@ public class WebCloudNetworkClient {
     /** returns whether soft initialization worked and the user is now signed in */
     public boolean initialize() throws IOException {
         lookerupper = createNameLookup();
-        IOException throwLater = null;
-        try {
-            lookerupper.softSignin();
-        } catch (IOException e) {
-            throwLater = e;
-            return false;
-        }
+        lookerupper.softSignin();
         this.sessionId = lookerupper.getSessionId();
         this.username = lookerupper.getUsername();
         this.host = lookerupper.getHost();
-        if (throwLater != null)
-            throw throwLater;
         return this.sessionId != null;
     }
 
@@ -357,8 +349,8 @@ public class WebCloudNetworkClient {
 
     public void storeIssueDetails(String hash, Issue issue) {
         for (Evaluation eval : issue.getEvaluationsList()) {
-            if (eval.getWhen() > mostRecentEvaluationMillis) {
-                mostRecentEvaluationMillis = eval.getWhen();
+            if (eval.getWhen() > maxRecentEvaluationMillis) {
+                maxRecentEvaluationMillis = eval.getWhen();
             }
         }
         issuesByHash.put(hash, issue);
@@ -374,7 +366,7 @@ public class WebCloudNetworkClient {
                 }
                 // I'm not sure if we really need mostRecentEvaluationMillis
                 // anymore, as earliestSeenServerTime should always be later
-                msgb.setTimestamp(Math.max(earliestSeenServerTime, mostRecentEvaluationMillis));
+                msgb.setTimestamp(Math.max(earliestSeenServerTime, maxRecentEvaluationMillis));
 
                 msgb.build().writeTo(out);
             }
@@ -499,14 +491,14 @@ public class WebCloudNetworkClient {
     private void updateMostRecentEvaluationField(RecentEvaluations evaluations) {
         for (Issue issue : evaluations.getIssuesList())
             for (Evaluation evaluation : issue.getEvaluationsList())
-                if (evaluation.getWhen() > mostRecentEvaluationMillis)
-                    mostRecentEvaluationMillis = evaluation.getWhen();
+                if (evaluation.getWhen() > maxRecentEvaluationMillis)
+                    maxRecentEvaluationMillis = evaluation.getWhen();
     }
 
     private void checkHashesPartition(List<String> hashes, Map<String, BugInstance> bugsByHash) throws IOException {
         FindIssuesResponse response = submitHashes(hashes);
         if (response.hasCurrentServerTime()
-                && (earliestSeenServerTime == 0 || response.getCurrentServerTime() < earliestSeenServerTime))
+                && (response.getCurrentServerTime() < earliestSeenServerTime))
             earliestSeenServerTime = response.getCurrentServerTime();
 
         for (int j = 0; j < hashes.size(); j++) {
