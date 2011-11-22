@@ -956,6 +956,12 @@ public final class MarkerUtil {
      *         Exception will be logged
      */
     public static IMarker[] getMarkers(IResource fileOrFolder, int depth) {
+        if(fileOrFolder.getType() == IResource.PROJECT) {
+            if(!fileOrFolder.isAccessible()) {
+                // user just closed the project decorator is working on, avoid exception here
+                return EMPTY;
+            }
+        }
         try {
             return fileOrFolder.findMarkers(FindBugsMarker.NAME, true, depth);
         } catch (CoreException e) {
