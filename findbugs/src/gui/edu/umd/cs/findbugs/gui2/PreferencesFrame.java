@@ -46,7 +46,6 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -60,6 +59,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -79,6 +79,8 @@ import javax.swing.tree.TreeModel;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
@@ -443,35 +445,37 @@ public class PreferencesFrame extends FBDialog {
         PreferencesFrame.this.pack();
     }
 
+    private void addField(JPanel p, GridBagConstraints c, int y, String lbl, JComponent field) {
+        c.gridy = y;
+         JLabel l = new JLabel(lbl, JLabel.TRAILING);
+        l.setLabelFor(field);
+        c.anchor = GridBagConstraints.LINE_END;
+        c.gridx = 0;
+        p.add(l, c);
+        c.anchor = GridBagConstraints.LINE_START;
+        c.gridx = 1;
+        p.add(field, c);
+    }
     private JPanel createPropertiesPane() {
         JPanel contentPanel = new JPanel(new BorderLayout());
-        JPanel mainPanel = new JPanel();
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.ipadx = c.ipady = 5;
+        
 
         float currFS = Driver.getFontSize();
 
-        JPanel temp = new JPanel();
-        temp.add(new JLabel("Tab size"));
         tabTextField = new JTextField(Integer.toString(GUISaveState.getInstance().getTabSize()));
         tabTextField.setPreferredSize(new Dimension((int) (currFS * 4), (int) (currFS * 2)));
-        temp.add(tabTextField);
-        mainPanel.add(temp);
-        mainPanel.add(Box.createVerticalStrut(5));
-
-        temp = new JPanel();
-        temp.add(new JLabel("Font size"));
+        addField(mainPanel, c, 0, "Tab size", tabTextField);
+        
         fontTextField = new JTextField(Float.toString(GUISaveState.getInstance().getFontSize()));
         fontTextField.setPreferredSize(new Dimension((int) (currFS * 6), (int) (currFS * 2)));
-        temp.add(fontTextField);
-        mainPanel.add(temp);
-        mainPanel.add(Box.createVerticalGlue());
+        addField(mainPanel, c, 1, "Font size", fontTextField);
 
-        temp = new JPanel();
-        temp.add(new JLabel("Package prefix length"));
         packagePrefixLengthTextField = new JTextField(Integer.toString(GUISaveState.getInstance().getPackagePrefixSegments()));
         packagePrefixLengthTextField.setPreferredSize(new Dimension((int) (currFS * 4), (int) (currFS * 2)));
-        temp.add(packagePrefixLengthTextField);
-        mainPanel.add(temp);
-        mainPanel.add(Box.createVerticalGlue());
+        addField(mainPanel, c, 2, "Package prefix length", packagePrefixLengthTextField);
 
         contentPanel.add(mainPanel, BorderLayout.CENTER);
 
@@ -495,6 +499,20 @@ public class PreferencesFrame extends FBDialog {
         return contentPanel;
     }
 
+    static class PluginWithDescription {
+
+        public PluginWithDescription(String description, CloudPlugin plugin) {
+            this.description = description;
+            this.plugin = plugin;
+        }
+        final String description;
+        final CloudPlugin plugin;
+        @Override
+        public String toString() {
+            return description;
+        }
+        
+    }
     private void changeTabSize() {
         int tabSize;
 
