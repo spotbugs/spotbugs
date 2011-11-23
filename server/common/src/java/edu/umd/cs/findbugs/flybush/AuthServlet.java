@@ -155,13 +155,19 @@ public class AuthServlet extends AbstractFlybushServlet {
     }
 
     private void checkAuth(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
-        long id = Long.parseLong(req.getRequestURI().substring("/check-auth/".length()));
-        SqlCloudSession sqlCloudSession = lookupCloudSessionById(id, pm);
-        if (sqlCloudSession == null) {
+        String idString = req.getRequestURI().substring("/check-auth/".length());
+        if (idString.isEmpty()) {
+            LOGGER.warning("empty session id");
             setResponse(resp, 418, "FAIL");
         } else {
-            DbUser user = persistenceHelper.getObjectById(pm, persistenceHelper.getDbUserClass(), sqlCloudSession.getUser());
-            setResponse(resp, 200, "OK\n" + sqlCloudSession.getRandomID() + "\n" + user.getEmail());
+            long id = Long.parseLong(idString);
+            SqlCloudSession sqlCloudSession = lookupCloudSessionById(id, pm);
+            if (sqlCloudSession == null) {
+                setResponse(resp, 418, "FAIL");
+            } else {
+                DbUser user = persistenceHelper.getObjectById(pm, persistenceHelper.getDbUserClass(), sqlCloudSession.getUser());
+                setResponse(resp, 200, "OK\n" + sqlCloudSession.getRandomID() + "\n" + user.getEmail());
+            }
         }
         resp.flushBuffer();
     }
