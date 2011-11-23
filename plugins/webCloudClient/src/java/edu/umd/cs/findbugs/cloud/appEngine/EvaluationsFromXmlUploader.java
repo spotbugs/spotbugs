@@ -140,10 +140,12 @@ public class EvaluationsFromXmlUploader {
         PrintWriter out = new PrintWriter(w);
         int count = 0;
         for (Map.Entry<String, Integer> e : users.entrySet()) {
-            if (count == users.numKeys() - 1)
-                out.print(" and ");
-            else if (count > 0)
-                out.print(", ");
+            if (count > 0) {
+                if (count == users.numKeys() - 1)
+                    out.print(" and ");
+                else
+                    out.print(", ");
+            }
             out.printf("%d reviews by %s", e.getValue(), e.getKey());
             count++;
         }
