@@ -12,17 +12,16 @@
         <sourceRoots>
           <root url="file://$MODULE_DIR$/src/java" />
         </sourceRoots>
-        <context-artifact name="webCloudServerAppEngine" />
       </configuration>
       <facet type="google-app-engine" name="Google App Engine">
         <configuration>
-          <password>dfc1dfcbdfc4dfc5dfc7dfc1</password>
+          <password>dfcedfdcdfd8dfdbdfd0dfc4dfd8dfc7dfdfdfc3dfc5dfdfdfcbdfcedfc0dfdd</password>
           <files-to-enhance>
             <file path="$MODULE_DIR$/src/java" />
           </files-to-enhance>
           <run-enhancer-on-make>true</run-enhancer-on-make>
-          <sdk-home-path>$CODE_DIR$/Libraries/appengine-java-sdk-1.3.4</sdk-home-path>
-          <email>keithl</email>
+          <sdk-home-path>$USER_HOME$/tools/appengine-java-sdk-1.6.0</sdk-home-path>
+          <email>bill.pugh@gmail.com</email>
         </configuration>
       </facet>
     </facet>
@@ -36,7 +35,7 @@
       <excludeFolder url="file://$MODULE_DIR$/war/WEB-INF/classes" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="jdk" jdkName="JavaSE-1.6" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="module" module-name="webCloudServerCommon" />
     <orderEntry type="module" module-name="webCloudProtocol" />
     <orderEntry type="module-library" scope="TEST">
@@ -168,7 +167,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/appengine-api-labs.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/appengine-api-1.0-sdk-1.6.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -177,7 +176,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/datanucleus-appengine-1.0.7.final.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/appengine-api-labs-1.6.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -186,13 +185,12 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/appengine-api-1.0-sdk-1.3.4.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/datanucleus-appengine-1.0.10.final.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="AppEngine Dev 1.3.4" level="application_server_libraries" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">
