@@ -226,6 +226,10 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
 
     @Override
     public void shutdown() {
+        switch(getSigninState()) {
+        case SIGNED_IN:
+            signOut();
+        }
 
         super.shutdown();
         if (timer != null)
@@ -352,6 +356,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
                 task.finished();
             }
         }
+        initiateCommunication();
         SigninState newState = getSigninState();
         if (oldState == SigninState.SIGNED_OUT && newState == SigninState.SIGNED_IN) {
             evaluationsFromXmlUploader.tryUploadingLocalAnnotations(true);
@@ -368,6 +373,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
 
     public BugDesignation getPrimaryDesignation(BugInstance b) {
         checkInitialized();
+        initiateCommunication();
         Evaluation e = networkClient.getMostRecentEvaluationBySelf(b);
         return e == null ? null : createBugDesignation(e);
     }
@@ -376,7 +382,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
 
     @Override
     public long getFirstSeen(BugInstance b) {
-
+        initiateCommunication();
         long firstSeenFromCloud = networkClient.getFirstSeenFromCloud(b);
         long firstSeenLocally = getLocalFirstSeen(b);
         long firstSeen = dateMin(firstSeenFromCloud, firstSeenLocally);
@@ -410,6 +416,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
 
     @Override
     public String getBugStatus(final BugInstance b) {
+        initiateCommunication();
         if (bugFilingHelper == null)
             return null;
         final String hash = b.getInstanceHash();
@@ -422,6 +429,8 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
 
     @Override
     public URL getBugLink(BugInstance b) {
+        checkInitialized();
+        initiateCommunication();
         if (getBugLinkStatus(b) == BugFilingStatus.FILE_BUG) {
             try {
                 return fileBug(b);
@@ -455,6 +464,10 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
 
     @Override
     public URL fileBug(BugInstance bug) {
+        checkInitialized();
+        if (bugFilingHelper == null)
+            return null;
+        initiateCommunication();
         try {
             return bugFilingHelper.fileBug(bug);
         } catch (SignInCancelledException e) {
@@ -468,6 +481,8 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
 
     @Override
     public BugFilingStatus getBugLinkStatus(BugInstance b) {
+        checkInitialized();
+        initiateCommunication();
         Issue issue = networkClient.getIssueByHash(b.getInstanceHash());
         if (issue == null)
             return BugFilingStatus.NA;
@@ -484,6 +499,8 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
 
     public void setBugLinkOnCloudAndStoreIssueDetails(BugInstance b, String viewUrl, String linkType) throws IOException,
     SignInCancelledException {
+        checkInitialized();
+        initiateCommunication();
         getNetworkClient().setBugLinkOnCloudAndStoreIssueDetails(b,viewUrl, linkType);
     }
 
@@ -598,7 +615,6 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
            
             try {
                 int count = updateEvaluationsFromServer();
-                System.out.printf("got %d for updates from server%n", count);
                 if (count == 0)
                     updateInternal = Math.min(updateInternal*2, EVALUATION_CHECK_SECS_MAX_SECS);
                 else
@@ -711,8 +727,10 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     }
 
     private <T> void executeAndWaitForAll(List<Callable<T>> tasks) throws ExecutionException, InterruptedException {
-        if (backgroundExecutorService != null && backgroundExecutorService.isShutdown())
+        if (backgroundExecutorService != null && backgroundExecutorService.isShutdown()) {
             LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown in executeAndWaitForAll");
+            return;
+        }
 
         try {
             List<Future<T>> results = backgroundExecutorService.invokeAll(tasks);
@@ -792,7 +810,6 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     }
     private int mergeUpdatedEvaluations(RecentEvaluations evals) {
         int found = 0;
-        System.out.println("got " + evals.getIssuesCount() + " issues from server");
         for (Issue updatedIssue : evals.getIssuesList()) {
             String protoHash = WebCloudProtoUtil.decodeHash(updatedIssue.getHash());
             BugInstance bugInstance = getBugByHash(protoHash);
