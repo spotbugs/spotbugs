@@ -52,7 +52,7 @@ public class Bug3019763 {
 
     }
 
-    @ExpectWarning("UL_UNRELEASED_LOCK_EXCEPTION_PATH")
+    @ExpectWarning("UL_UNRELEASED_LOCK")
     public void doTest2(boolean b) {
         rwLock.readLock().lock();
 
