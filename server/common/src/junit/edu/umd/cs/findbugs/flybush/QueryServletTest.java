@@ -1,7 +1,10 @@
 package edu.umd.cs.findbugs.flybush;
 
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil.encodeHashes;
+
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
@@ -10,8 +13,6 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesRespo
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.GetRecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
-
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil.encodeHashes;
 
 @SuppressWarnings({ "UnusedDeclaration" })
 public abstract class QueryServletTest extends AbstractFlybushServletTest {
@@ -22,6 +23,18 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
         return new QueryServlet();
     }
 
+    long startTime;
+    
+    @Override 
+    public void setUp() {
+        startTime = System.currentTimeMillis() - TimeUnit.MILLISECONDS.convert(5, TimeUnit.HOURS);
+    }
+    @Override
+    protected DbEvaluation createEvaluation(DbIssue issue, String who, long when) {
+        return createEvaluation(issue, who, startTime+when, "MUST_FIX", "my comment");
+    }
+
+    
     public void testFindIssuesOneFoundNoEvaluations() throws Exception {
         DbIssue foundIssue = createDbIssue("FAD1");
         getPersistenceManager().makePersistent(foundIssue);
@@ -215,7 +228,7 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
     }
 
     private GetRecentEvaluations createRecentEvalsRequest(int timestamp) {
-        return GetRecentEvaluations.newBuilder().setTimestamp(timestamp).build();
+        return GetRecentEvaluations.newBuilder().setTimestamp(startTime+timestamp).build();
     }
 
     private void checkEvaluationsEqual(DbEvaluation dbEval, Evaluation protoEval) {
