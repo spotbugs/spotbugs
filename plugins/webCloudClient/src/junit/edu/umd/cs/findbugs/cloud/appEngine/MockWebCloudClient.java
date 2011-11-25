@@ -72,6 +72,7 @@ class MockWebCloudClient extends WebCloudClient {
         }).when(mockGuiCallback).invokeInGUIThread(Matchers.isA(Runnable.class));
 
         initStatusBarHistory();
+        initialized = true;
     }
 
     @Override

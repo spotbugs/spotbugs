@@ -49,6 +49,7 @@
         <mkdir dir="build/testClasses"/>
     </target>
     <target name="compile">
+        <echo>compiling web cloud client</echo>
         <echo>Base ${findbugsBase.dir}</echo>
         <echo>protocol ${protocol.home}</echo>
         <ant dir="${protocol.home}" target="classes" inheritAll="false"/>

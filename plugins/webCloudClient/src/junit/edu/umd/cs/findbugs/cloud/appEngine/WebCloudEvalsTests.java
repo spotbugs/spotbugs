@@ -18,6 +18,8 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 public class WebCloudEvalsTests extends AbstractWebCloudTest {
+    
+    protected static final long SAMPLE_DATE = System.currentTimeMillis() - 5 * 3600 * 1000;
     protected MockWebCloudClient cloud;
 
     private Issue responseIssue;
@@ -84,6 +86,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
         // execute
         cloud.initialize();
+        cloud.pretendIssuesSyncedAndUploaded();
         cloud.updateEvaluationsFromServer();
 
         // verify
@@ -117,6 +120,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
         // execute
         cloud.initialize();
+        cloud.pretendIssuesSyncedAndUploaded();
         cloud.updateEvaluationsFromServer();
 
         // verify
@@ -140,6 +144,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
         // execute
         cloud.initialize();
+        cloud.pretendIssuesSyncedAndUploaded();
         cloud.updateEvaluationsFromServer();
 
         // verify
@@ -156,6 +161,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
         // execute
         cloud.initialize();
+        cloud.pretendIssuesSyncedAndUploaded();
         try {
             cloud.updateEvaluationsFromServer();
             fail();
@@ -430,7 +436,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
     }
 
     private static void checkStoredEvaluationMatches(Evaluation expectedEval, BugDesignation designation) {
-        assertNotNull(designation);
+        assertNotNull("Did not get any designation", designation);
         assertEquals(expectedEval.getComment(), designation.getAnnotationText());
         assertEquals(expectedEval.getDesignation(), designation.getDesignationKey());
         assertEquals(expectedEval.getWho(), designation.getUser());
