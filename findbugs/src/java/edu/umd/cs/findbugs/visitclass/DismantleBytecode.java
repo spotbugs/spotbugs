@@ -127,7 +127,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
     private static final int INVALID_OFFSET = Integer.MIN_VALUE;
 
-    private static final String NOT_AVAILABLE = "./.";
+    private static final String NOT_AVAILABLE = SlashedClassName.NOT_AVAILABLE;
 
     static String replaceSlashesWithDots(String c) {
         return c.replace('/', '.');

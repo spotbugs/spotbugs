@@ -38,6 +38,8 @@ import javax.annotation.meta.When;
 @TypeQualifier(applicableTo = CharSequence.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SlashedClassName {
+    
+    public static final String NOT_AVAILABLE = "./.";
 
     When when() default When.ALWAYS;
 
@@ -56,6 +58,9 @@ public @interface SlashedClassName {
 
             if (pattern.matcher((String) value).matches())
                 return When.ALWAYS;
+            
+            if (value.equals(NOT_AVAILABLE))
+                return When.MAYBE;
 
             return When.NEVER;
 
