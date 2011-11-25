@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -33,9 +34,7 @@ import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil.dec
 
 public abstract class AbstractFlybushServletTest extends TestCase {
 
-    /** Wed, 31 Mar 2010 18:44:40 GMT */
-    protected static final long SAMPLE_TIMESTAMP = 1270061080000L;
-
+  
     protected HttpServletResponse mockResponse;
 
     protected ByteArrayOutputStream outputCollector;
@@ -50,12 +49,18 @@ public abstract class AbstractFlybushServletTest extends TestCase {
 
     protected FlybushServletTestHelper testHelper;
 
+    /** Start time for timestamps (5 hours before current time)
+     * All created evaluations, etc are created relative to this timestamp.
+     */
+    protected long startTime;
+    
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         testHelper.setUp();
         persistenceHelper = testHelper.createPersistenceHelper(testHelper.getPersistenceManager());
-        initServletAndMocks();
+        startTime = System.currentTimeMillis() - TimeUnit.MILLISECONDS.convert(5, TimeUnit.HOURS);
+        initServletAndMocks(); 
     }
 
     @Override
@@ -183,7 +188,7 @@ public abstract class AbstractFlybushServletTest extends TestCase {
     }
 
     protected DbEvaluation createEvaluation(DbIssue issue, String who, long when) {
-        return createEvaluation(issue, who, when, "MUST_FIX", "my comment");
+        return createEvaluation(issue, who, startTime+when, "MUST_FIX", "my comment");
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -229,8 +234,8 @@ public abstract class AbstractFlybushServletTest extends TestCase {
         foundIssue.setBugPattern(patternAndHash);
         foundIssue.setPriority(2);
         foundIssue.setPrimaryClass("my.class");
-        foundIssue.setFirstSeen(SAMPLE_TIMESTAMP + 100);
-        foundIssue.setLastSeen(SAMPLE_TIMESTAMP + 200);
+        foundIssue.setFirstSeen(startTime + 10);
+        foundIssue.setLastSeen(startTime + 20);
         foundIssue.setBugLinkType("JIRA");
         foundIssue.setBugLink("http://bug.link");
         return foundIssue;
