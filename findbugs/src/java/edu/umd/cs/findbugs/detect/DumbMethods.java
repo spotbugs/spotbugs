@@ -311,7 +311,7 @@ public class DumbMethods extends OpcodeStackDetector {
         
         if (seen == INVOKESTATIC && getClassConstantOperand().equals("com/google/common/base/Preconditions")
              && getNameConstantOperand().equals("checkNotNull")) {
-                      int args = PreorderVisitor.getNumberArguments(getSigConstantOperand());
+            int args = PreorderVisitor.getNumberArguments(getSigConstantOperand());
 
             OpcodeStack.Item item = stack.getStackItem(args - 1);
             Object o = item.getConstant();
@@ -334,10 +334,34 @@ public class DumbMethods extends OpcodeStackDetector {
 
                 accumulator.accumulateBug(bug, this);
             }
-
-            
         }
 
+        if (seen == INVOKESTATIC && getClassConstantOperand().equals("junit/framework/Assert")
+                && getNameConstantOperand().equals("assertNotNull")) {
+               int args = PreorderVisitor.getNumberArguments(getSigConstantOperand());
+
+               OpcodeStack.Item item = stack.getStackItem(0);
+               Object o = item.getConstant();
+               if (o instanceof String) {
+
+                   OpcodeStack.Item secondArgument = null;
+                   String bugPattern = "DMI_DOH";
+                   if (args == 2) {
+                       secondArgument = stack.getStackItem(1);
+                       Object secondConstant = secondArgument.getConstant();
+                       if (!(secondConstant instanceof String)) {
+                           bugPattern = "DMI_ARGUMENTS_WRONG_ORDER";
+                       }
+                   }
+
+                   BugInstance bug = new BugInstance(this, bugPattern, NORMAL_PRIORITY).addClassAndMethod(this)
+                           .addCalledMethod(this).addString((String) o).describe(StringAnnotation.STRING_CONSTANT_ROLE);
+                   if (secondArgument != null)
+                           bug.addValueSource(secondArgument, this);
+
+                   accumulator.accumulateBug(bug, this);
+               }
+           }
         if ((seen == INVOKESTATIC || seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKEINTERFACE)
                 && getSigConstantOperand().indexOf("Ljava/lang/Runnable;") >= 0) {
             SignatureParser parser = new SignatureParser(getSigConstantOperand());
