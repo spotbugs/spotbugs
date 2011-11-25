@@ -41,7 +41,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
         // execute
         cloud.initialize();
-        cloud.pretendIssuesSyncedAndUploaded();
+        cloud.pretendIssuesSyncedAndDownloadedAndUploaded();
         cloud.storeUserAnnotation(foundIssue);
 
         // verify
@@ -86,7 +86,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
         // execute
         cloud.initialize();
-        cloud.pretendIssuesSyncedAndUploaded();
+        cloud.pretendIssuesSyncedAndDownloadedAndUploaded();
         cloud.updateEvaluationsFromServer();
 
         // verify
@@ -120,7 +120,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
         // execute
         cloud.initialize();
-        cloud.pretendIssuesSyncedAndUploaded();
+        cloud.pretendIssuesSyncedAndDownloaded();
         cloud.updateEvaluationsFromServer();
 
         // verify
@@ -144,7 +144,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
         // execute
         cloud.initialize();
-        cloud.pretendIssuesSyncedAndUploaded();
+        cloud.pretendIssuesSyncedAndDownloadedAndUploaded();
         cloud.updateEvaluationsFromServer();
 
         // verify
@@ -161,7 +161,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
         // execute
         cloud.initialize();
-        cloud.pretendIssuesSyncedAndUploaded();
+        cloud.pretendIssuesSyncedAndDownloadedAndUploaded();
         try {
             cloud.updateEvaluationsFromServer();
             fail();
@@ -180,7 +180,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
         // execute
         cloud.initialize();
-        cloud.pretendIssuesSyncedAndUploaded();
+        cloud.pretendIssuesSyncedAndDownloadedAndUploaded();
         cloud.setSigninState(Cloud.SigninState.SIGNED_IN);
         try {
             cloud.updateEvaluationsFromServer();
@@ -202,7 +202,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
         // execute
         cloud.initialize();
-        cloud.pretendIssuesSyncedAndUploaded();
+        cloud.pretendIssuesSyncedAndDownloadedAndUploaded();
         cloud.setSigninState(Cloud.SigninState.SIGNED_OUT);
         try {
             cloud.updateEvaluationsFromServer();

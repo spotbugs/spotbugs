@@ -578,10 +578,16 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     }
 
     /** for testing */
-    void pretendIssuesSyncedAndUploaded() {
+    void pretendIssuesSyncedAndDownloaded() {
         communicationInitiated = true;
         bugsPopulated.countDown();
         issueDataDownloaded.countDown();
+       
+    }
+
+    /** for testing */
+    void pretendIssuesSyncedAndDownloadedAndUploaded() {
+        pretendIssuesSyncedAndDownloaded();
         fireNewIssuesUploadedEvent();
     }
 
@@ -840,7 +846,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
                 issueToStore = updatedIssue;
                 System.out.printf("Got new issue %s in %s @ %tc : %s%n", issueToStore.getBugPattern(), 
                         issueToStore.getPrimaryClass() , 
-                        lastEvaluation(updatedIssue), issueToStore.getHash());
+                        lastEvaluation(updatedIssue), issueToStore.getHash().toStringUtf8());
                 
                 
             }
