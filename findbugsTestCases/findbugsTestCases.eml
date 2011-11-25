@@ -8,6 +8,9 @@
 	<lib name="intellij-annotations.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/findbugsTestCases/lib/intellij-annotations.jar!/"/>
 	</lib>
+	<lib name="jcip-annotations.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/findbugsTestCases/lib/jcip-annotations.jar!/"/>
+	</lib>
 	<lib name="jsr305.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/findbugsTestCases/lib/jsr305.jar!/"/>
 	</lib>
@@ -16,8 +19,5 @@
 	</lib>
 	<lib name="guava.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/findbugsTestCases/lib/guava.jar!/"/>
-	</lib>
-	<lib name="jcip-annotations.jar" scope="COMPILE">
-		<relative-module-cls project-related="jar://$PROJECT_DIR$/findbugs/lib/jcip-annotations.jar!/"/>
 	</lib>
 </component>

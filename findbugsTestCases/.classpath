@@ -11,6 +11,7 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/j2ee.jar"/>
 	<classpathentry kind="lib" path="lib/intellij-annotations.jar"/>
+	<classpathentry kind="lib" path="lib/jcip-annotations.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/jsr305.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
