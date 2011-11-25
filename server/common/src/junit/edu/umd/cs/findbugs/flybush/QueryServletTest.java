@@ -26,7 +26,8 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
     long startTime;
     
     @Override 
-    public void setUp() {
+    protected void setUp() throws Exception {
+        super.setUp();
         startTime = System.currentTimeMillis() - TimeUnit.MILLISECONDS.convert(5, TimeUnit.HOURS);
     }
     @Override
