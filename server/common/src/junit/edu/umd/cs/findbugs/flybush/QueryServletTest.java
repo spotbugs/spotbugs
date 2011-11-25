@@ -2,7 +2,6 @@ package edu.umd.cs.findbugs.flybush;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
@@ -18,8 +17,7 @@ import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil.enc
 public abstract class QueryServletTest extends AbstractFlybushServletTest {
     private static final Logger LOGGER = Logger.getLogger(QueryServletTest.class.getName());
 
-    
-      @Override
+    @Override
     protected AbstractFlybushServlet createServlet() {
         return new QueryServlet();
     }
@@ -187,8 +185,8 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
     }
 
     private void checkTerseIssue(Issue issue, DbEvaluation... evals) {
-        assertEquals(startTime + 10, issue.getFirstSeen());
-        assertEquals(startTime + 20, issue.getLastSeen());
+        assertEquals(SAMPLE_TIMESTAMP + 100, issue.getFirstSeen());
+        assertEquals(SAMPLE_TIMESTAMP + 200, issue.getLastSeen());
         assertEquals("http://bug.link", issue.getBugLink());
         assertEquals("JIRA", issue.getBugLinkTypeStr());
         assertFalse(issue.hasBugPattern());
@@ -216,8 +214,8 @@ public abstract class QueryServletTest extends AbstractFlybushServletTest {
         return FindIssues.newBuilder().addAllMyIssueHashes(encodeHashes(Arrays.asList(hashes)));
     }
 
-    private GetRecentEvaluations createRecentEvalsRequest(long timestamp) {
-        return GetRecentEvaluations.newBuilder().setTimestamp(startTime + timestamp).build();
+    private GetRecentEvaluations createRecentEvalsRequest(int timestamp) {
+        return GetRecentEvaluations.newBuilder().setTimestamp(timestamp).build();
     }
 
     private void checkEvaluationsEqual(DbEvaluation dbEval, Evaluation protoEval) {
