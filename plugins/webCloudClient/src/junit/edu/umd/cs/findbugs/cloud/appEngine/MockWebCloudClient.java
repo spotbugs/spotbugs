@@ -141,7 +141,7 @@ class MockWebCloudClient extends WebCloudClient {
             public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
                 String message = (String) invocationOnMock.getArguments()[0];
                 boolean match = Pattern.compile(dialogRegex).matcher(message).find();
-                System.out.println("QQQ: " + " " + match + "\n\"" + dialogRegex + "\"\n\"" + message + "\"");
+                System.out.println("QQQ match: " + " " + match + "\nexpecting \"" + dialogRegex + "\"\nsaw \"" + message + "\"");
                 if (match)
                     latch.countDown();
                 return null;
@@ -231,6 +231,7 @@ class MockWebCloudClient extends WebCloudClient {
     private class MockWebCloudNetworkClient extends WebCloudNetworkClient {
         @Override
         HttpURLConnection openConnection(String url) {
+            System.out.println("request " + url);
             ExpectedConnection connection = null;
             if (nextConnection >= expectedConnections.size()) {
                 ExpectedConnection lastConnection = expectedConnections.get(expectedConnections.size() - 1);
