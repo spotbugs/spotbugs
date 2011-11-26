@@ -101,6 +101,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
     @SuppressWarnings("deprecation")
     public void testGetRecentEvaluationsAsksAgain() throws Exception {
         // setup
+        foundIssue.setUserDesignation(null);
         Issue prototype = createIssueToReturn(createEvaluation("NOT_A_BUG", SAMPLE_DATE + 200, "first comment",
                 "test@example.com"));
 
