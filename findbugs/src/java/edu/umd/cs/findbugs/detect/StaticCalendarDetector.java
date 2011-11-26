@@ -48,6 +48,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * Detector for static fields of type {@link java.util.Calendar} or
@@ -136,9 +137,23 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
         for (Constant constant : pool.getConstantPool()) {
             if (constant instanceof ConstantClass) {
                 ConstantClass cc = (ConstantClass) constant;
-                String className = cc.getBytes(pool);
-                if (className.equals("java/util/Calendar") || className.equals("java/text/DateFormat"))
+                @SlashedClassName String className = cc.getBytes(pool);
+                if (className.equals("java/util/Calendar") || className.equals("java/text/DateFormat")) {
                     sawDateClass = true;
+                    break;
+                }
+                try {
+                    ClassDescriptor cDesc = DescriptorFactory.createClassDescriptor(className);
+                    
+                    if (subtypes2.isSubtype(cDesc, calendarType) || subtypes2.isSubtype(cDesc, dateFormatType)) {
+                        sawDateClass = true;
+                        break;
+                    }
+                } catch (ClassNotFoundException e) {
+                  reporter.reportMissingClass(e);
+                }
+              
+                  
             }
         }
     }
@@ -248,7 +263,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
         }
 
         try {
-            String className = getClassConstantOperand();
+            @SlashedClassName String className = getClassConstantOperand();
 
             if (className.startsWith("[")) {
                 // Ignore array classes
