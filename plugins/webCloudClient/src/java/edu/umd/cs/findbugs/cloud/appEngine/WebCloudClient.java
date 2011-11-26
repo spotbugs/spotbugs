@@ -582,7 +582,6 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
         communicationInitiated = true;
         bugsPopulated.countDown();
         issueDataDownloaded.countDown();
-       
     }
 
     /** for testing */
