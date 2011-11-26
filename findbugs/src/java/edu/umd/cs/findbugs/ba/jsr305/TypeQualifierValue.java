@@ -19,6 +19,10 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.security.Permission;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,12 +31,12 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifierValidator;
 import javax.annotation.meta.When;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.XClass;
@@ -56,7 +60,7 @@ import edu.umd.cs.findbugs.util.Util;
  *
  * @author William Pugh
  */
-public class TypeQualifierValue {
+public class TypeQualifierValue<A extends Annotation> {
     public static final boolean DEBUG = SystemProperties.getBoolean("tqv.debug");
 
     private static final ClassDescriptor EXCLUSIVE_ANNOTATION = DescriptorFactory.instance().getClassDescriptor(
@@ -66,6 +70,9 @@ public class TypeQualifierValue {
             javax.annotation.meta.Exhaustive.class);
 
     public final ClassDescriptor typeQualifier;
+    public final Class<A> typeQualifierClass;
+    
+    public final A proxy;
 
     public final @CheckForNull Object value;
 
@@ -76,9 +83,10 @@ public class TypeQualifierValue {
     private final boolean isExhaustive;
 
     private final @CheckForNull
-    TypeQualifierValidator<?> validator;
+    TypeQualifierValidator<A> validator;
 
     private final static ClassLoader validatorLoader = new ValidatorClassLoader();
+
 
     private TypeQualifierValue(ClassDescriptor typeQualifier, @CheckForNull Object value) {
         this.typeQualifier = typeQualifier;
@@ -89,7 +97,10 @@ public class TypeQualifierValue {
                                      // exclusive type qualifier value
         boolean isExhaustive = false; // will be set to true if this is an
                                       // exhaustive type qualifier value
+        
         TypeQualifierValidator validator = null;
+        Class<A> qualifierClass = null;
+        A proxy = null;
         try {
             XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, typeQualifier);
 
@@ -133,9 +144,20 @@ public class TypeQualifierValue {
             if (m == null)
                 System.setSecurityManager(new ValidationSecurityManager());
             Class<?> c = validatorLoader.loadClass(checkerName.getDottedClassName());
-            if (TypeQualifierValidator.class.isAssignableFrom(c)) {
+             if (TypeQualifierValidator.class.isAssignableFrom(c)) {
                 Class<? extends TypeQualifierValidator> checkerClass = c.asSubclass(TypeQualifierValidator.class);
                 validator = checkerClass.newInstance();
+                qualifierClass = (Class<A>) validatorLoader.loadClass(typeQualifier.getDottedClassName());           
+                
+                InvocationHandler handler = new InvocationHandler() {
+
+                    public Object invoke(Object arg0, Method arg1, Object[] arg2) throws Throwable {
+                       if (arg1.getName() == "value")
+                           return TypeQualifierValue.this.value;
+                       throw new UnsupportedOperationException("Can't handle " + arg1);
+                    }};
+                
+                proxy =  qualifierClass.cast(Proxy.newProxyInstance(validatorLoader, new Class[] {qualifierClass}, handler));
             }
         } catch (ClassNotFoundException e) {
             assert true; // ignore
@@ -147,6 +169,8 @@ public class TypeQualifierValue {
             AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName, e);
         }
         this.validator = validator;
+        this.typeQualifierClass = qualifierClass;
+        this.proxy = proxy;
     }
 
     static class Data {
@@ -212,7 +236,8 @@ public class TypeQualifierValue {
             if (!performing.compareAndSet(false, true)) {
                 throw new IllegalStateException("recursive validation");
             }
-            return validator.forConstantValue(null, constantValue);
+            
+            return validator.forConstantValue(proxy, constantValue);
         } catch (Exception e) {
             AnalysisContext.logError("Error executing custom validator for " + typeQualifier + " " + constantValue, e);
             return When.UNKNOWN;
@@ -235,7 +260,7 @@ public class TypeQualifierValue {
      *            a value
      * @return an interned TypeQualifierValue object
      */
-    public static @NonNull
+    public static @Nonnull
     TypeQualifierValue getValue(ClassDescriptor desc, Object value) {
         DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue> map = instance.get().typeQualifierMap;
         TypeQualifierValue result = map.get(desc, value);
