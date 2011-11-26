@@ -38,6 +38,9 @@ public class SwitchHandler {
         switchOffsetStack = new ArrayList<SwitchDetails>();
     }
     
+    public int stackSize() {
+        return switchOffsetStack.size();
+    }
     int numEnumValues(@CheckForNull XClass c) {
         if (c == null)
             return -1;
@@ -118,6 +121,9 @@ public class SwitchHandler {
             int uniqueOffsets = 0;
             int lastValue = -1;
             for (int offset : offsets) {
+                if (offset == defOffset) {
+                    exhaustive = false;
+                }
                 if (offset != lastValue) {
                     uniqueOffsets++;
                     lastValue = offset;

@@ -95,6 +95,8 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
     @Override
     public void visit(Code obj) {
+        if (DEBUG)
+            System.out.printf("%nVisiting %s%n", getMethodDescriptor());
         reachable = false;
         lastPC = 0;
         found.clear();
@@ -114,8 +116,9 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                 bugAccumulator.accumulateBug(new BugInstance(this, "SF_SWITCH_FALLTHROUGH", priority).addClassAndMethod(this), s);
         }
 
+
+        LineNumberTable table = obj.getLineNumberTable();
         for (SourceLineAnnotation s : foundDefault) {
-            LineNumberTable table = obj.getLineNumberTable();
             if (table != null) {
                 int startLine = s.getStartLine();
                 int prev = Integer.MIN_VALUE;
@@ -129,7 +132,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                     continue;
             }
 
-            bugAccumulator.accumulateBug(new BugInstance(this, "SF_SWITCH_NO_DEFAULT", LOW_PRIORITY).addClassAndMethod(this), s);
+            bugAccumulator.accumulateBug(new BugInstance(this, "SF_SWITCH_NO_DEFAULT", NORMAL_PRIORITY).addClassAndMethod(this), s);
         }
 
         bugAccumulator.reportAccumulatedBugs();
@@ -141,9 +144,14 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         boolean isDefaultOffset = switchHdlr.getDefaultOffset() == getPC();
         boolean isCaseOffset = switchHdlr.isOnSwitchOffset(this);
 
-        if (DEBUG)
-            System.out
-                    .println(getPC() + ": " + OPCODE_NAMES[seen] + " " + reachable + " " + isCaseOffset + " " + isDefaultOffset);
+        if (DEBUG) {
+            if (seen == GOTO)
+                System.out
+                .printf("%4d: goto %-7d %s %s %s %d%n", getPC() , getBranchTarget(),  reachable , isCaseOffset , isDefaultOffset, switchHdlr.stackSize());
+
+            else  System.out
+                    .printf("%4d: %-12s %s %s %s %d%n", getPC() , OPCODE_NAMES[seen],  reachable , isCaseOffset , isDefaultOffset, switchHdlr.stackSize());
+        }
 
         if (reachable && (isDefaultOffset || isCaseOffset)) {
             if (DEBUG) {
@@ -156,6 +164,8 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                 if (isDefaultOffset) {
                     SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(
                             getClassContext(), this, getPC(), getPC());
+                    if (DEBUG)
+                        System.out.printf("Found fallthrough to default offset at %d%n", getPC());
                     foundDefault.add(sourceLineAnnotation);
                 } else {
                     SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(
@@ -244,6 +254,8 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         case LOOKUPSWITCH:
             reachable = false;
             switchHdlr.enterSwitch(this, enumType);
+            if (DEBUG)
+                System.out.printf("  entered switch, default is %d%n", switchHdlr.getDefaultOffset());
             break;
 
         case ATHROW:
