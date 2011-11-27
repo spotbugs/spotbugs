@@ -105,12 +105,20 @@ public class SwitchHandler {
         return details.getDefaultOffset();
     }
 
+    public SourceLineAnnotation getCurrentSwitchStatement(BytecodeScanningDetector detector) {
+        if (switchOffsetStack.isEmpty())
+            throw new IllegalStateException("No current switch statement");
+        SwitchDetails details = switchOffsetStack.get(switchOffsetStack.size()-1);
+        return SourceLineAnnotation.fromVisitedInstructionRange(
+                detector.getClassContext(), detector, details.switchPC, details.switchPC + details.maxOffset-1);
+    }
     public static class SwitchDetails {
         final int switchPC;
 
         final int[] swOffsets;
 
         final int defaultOffset;
+        final int maxOffset;
 
         int nextOffset;
         
@@ -120,7 +128,10 @@ public class SwitchHandler {
             switchPC = pc;
             int uniqueOffsets = 0;
             int lastValue = -1;
+            int maxOffset = defOffset;
             for (int offset : offsets) {
+                if (maxOffset < offset)
+                    maxOffset = offset;
                 if (offset == defOffset) {
                     exhaustive = false;
                 }
@@ -130,6 +141,7 @@ public class SwitchHandler {
                 }
             }
 
+            this.maxOffset = maxOffset;
             swOffsets = new int[uniqueOffsets];
             int insertPos = 0;
             lastValue = -1;

@@ -59,8 +59,6 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
     private boolean reachable;
 
-    private final BugReporter bugReporter;
-
     private final BugAccumulator bugAccumulator;
 
     private int lastPC;
@@ -80,7 +78,6 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
     private int fallthroughDistance;
 
     public SwitchFallthrough(BugReporter bugReporter) {
-        this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
@@ -91,8 +88,6 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
     Collection<SourceLineAnnotation> found = new LinkedList<SourceLineAnnotation>();
 
-    Collection<SourceLineAnnotation> foundDefault = new LinkedList<SourceLineAnnotation>();
-
     @Override
     public void visit(Code obj) {
         if (DEBUG)
@@ -100,7 +95,6 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         reachable = false;
         lastPC = 0;
         found.clear();
-        foundDefault.clear();
         switchHdlr = new SwitchHandler();
         clearAll();
         deadStore = null;
@@ -115,29 +109,31 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             for (SourceLineAnnotation s : found)
                 bugAccumulator.accumulateBug(new BugInstance(this, "SF_SWITCH_FALLTHROUGH", priority).addClassAndMethod(this), s);
         }
-
-
-        LineNumberTable table = obj.getLineNumberTable();
-        for (SourceLineAnnotation s : foundDefault) {
-            if (table != null) {
-                int startLine = s.getStartLine();
-                int prev = Integer.MIN_VALUE;
-                for(LineNumber ln : table.getLineNumberTable()) {
-                    int thisLineNumber = ln.getLineNumber();
-                    if (thisLineNumber < startLine && thisLineNumber > prev && ln.getStartPC() < s.getStartBytecode())
-                        prev = thisLineNumber;
-                }
-                int diff = startLine - prev;
-                if (diff > 5)
-                    continue;
-            }
-
-            bugAccumulator.accumulateBug(new BugInstance(this, "SF_SWITCH_NO_DEFAULT", NORMAL_PRIORITY).addClassAndMethod(this), s);
-        }
-
+        
         bugAccumulator.reportAccumulatedBugs();
     }
 
+    
+    private void foundSwitchNoDefault(SourceLineAnnotation s) {
+        LineNumberTable table = getCode().getLineNumberTable();
+
+        if (table != null) {
+            int startLine = s.getStartLine();
+            int prev = Integer.MIN_VALUE;
+            for (LineNumber ln : table.getLineNumberTable()) {
+                int thisLineNumber = ln.getLineNumber();
+                if (thisLineNumber < startLine && thisLineNumber > prev && ln.getStartPC() < s.getStartBytecode())
+                    prev = thisLineNumber;
+            }
+            int diff = startLine - prev;
+            if (diff > 5)
+                return;
+
+            bugAccumulator.accumulateBug(new BugInstance(this, "SF_SWITCH_NO_DEFAULT", NORMAL_PRIORITY).addClassAndMethod(this),
+                    s);
+        }
+
+    }
     XClass enumType = null;
     @Override
     public void sawOpcode(int seen) {
@@ -162,15 +158,16 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             potentiallyDeadFieldsFromBeforeFallthrough = new HashSet<XField>(potentiallyDeadFields);
             if (!hasFallThruComment(lastPC + 1, getPC() - 1)) {
                 if (isDefaultOffset) {
-                    SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(
-                            getClassContext(), this, getPC(), getPC());
+                    SourceLineAnnotation sourceLineAnnotation = switchHdlr.getCurrentSwitchStatement(this);
                     if (DEBUG)
                         System.out.printf("Found fallthrough to default offset at %d%n", getPC());
-                    foundDefault.add(sourceLineAnnotation);
+                    
+                    foundSwitchNoDefault(sourceLineAnnotation);
+                    
                 } else {
                     SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(
                             getClassContext(), this, lastPC, getPC());
-                    found.add(sourceLineAnnotation);
+                     found.add(sourceLineAnnotation);
 
                 }
             }
