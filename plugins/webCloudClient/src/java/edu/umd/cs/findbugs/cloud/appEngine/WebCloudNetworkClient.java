@@ -316,6 +316,7 @@ public class WebCloudNetworkClient {
             return null;
         if (cloudClient.getCloudTokenProperty() == null && cloudClient.getSigninState() != SigninState.SIGNED_IN)
             cloudClient.signInIfNecessary("Some bugs were not found on the " + cloudClient.getCloudName() + ".\n"
+                    + "Your signin status is " +  cloudClient.getSigninState()  +"\n"
                     + "Would you like to sign in and upload them to the Cloud?");
         final MutableCloudTask task = cloudClient.createTask("Uploading to the " + cloudClient.getCloudName());
         final AtomicInteger bugsUploaded = new AtomicInteger(0);
