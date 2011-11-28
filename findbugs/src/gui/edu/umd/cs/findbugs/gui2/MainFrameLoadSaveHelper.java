@@ -147,6 +147,8 @@ public class MainFrameLoadSaveHelper implements Serializable {
                     continue tryAgain;
                 }
                 break;
+            default:
+                assert false;
             }
         }
     }
@@ -303,6 +305,8 @@ public class MainFrameLoadSaveHelper implements Serializable {
                             "This FB analysis file already exists.\nDo you want to replace it?"), L10N.getLocalString(
                             "dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
                     break;
+                default:
+                    assert false;
                 }
 
                 if (response == JOptionPane.OK_OPTION)
