@@ -9,7 +9,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
+import java.util.logging.Filter;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+
+import junit.framework.TestCase;
+
+import org.mockito.Mockito;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.PropertyBundle;
@@ -18,8 +25,6 @@ import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.CloudPluginBuilder;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup;
-import junit.framework.TestCase;
-import org.mockito.Mockito;
 
 public abstract class AbstractWebCloudTest extends TestCase {
     protected static final long SAMPLE_DATE = 1200000000L * 1000L; // Thu, 10
@@ -51,16 +56,18 @@ public abstract class AbstractWebCloudTest extends TestCase {
                 .setClassLoader(WebCloudClient.class.getClassLoader()).setCloudClass(WebCloudClient.class)
                 .setUsernameClass(WebCloudNameLookup.class).setProperties(new PropertyBundle()).setDescription("none")
                 .setDetails("none").createCloudPlugin();
-        // Logger logger = Logger.getLogger("edu.umd.cs.findbugs.cloud");
-        // logger.setLevel(Level.FINEST);
-        // logHandler = new ConsoleHandler();
-        // logHandler.setLevel(Level.FINER);
-        // logHandler.setFilter(new Filter() {
-        // public boolean isLoggable(LogRecord record) {
-        // return record.getLevel().intValue() < Level.INFO.intValue();
-        // }
-        // });
-        // logger.addHandler(logHandler);
+        if (true) {
+            Logger logger = Logger.getLogger("edu.umd.cs.findbugs.cloud");
+            logger.setLevel(Level.FINEST);
+            logHandler = new ConsoleHandler();
+            logHandler.setLevel(Level.FINER);
+            logHandler.setFilter(new Filter() {
+                public boolean isLoggable(LogRecord record) {
+                    return record.getLevel().intValue() < Level.INFO.intValue();
+                }
+            });
+            logger.addHandler(logHandler);
+        }
     }
 
     @Override
