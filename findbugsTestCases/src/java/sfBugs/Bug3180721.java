@@ -1,9 +1,9 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.NoWarning;
+import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 
 public class Bug3180721 {
-    @NoWarning("SF_SWITCH_NO_DEFAULT")
+    @DesireNoWarning("SF_SWITCH_NO_DEFAULT")
     public String myMethod(String formBe, Integer typeDecl) {
         String error = "";
 
