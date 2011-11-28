@@ -1348,12 +1348,18 @@ public class OpcodeStack implements Constants2 {
                 
                 Object lConstant = left.getConstant();
                 Object rConstant = right.getConstant();
-                if (lConstant instanceof Integer && rConstant instanceof Integer) {
-                    boolean takeJump = false;
-                    boolean handled = false;
-                    int lC = ((Integer)lConstant).intValue();
-                    int rC = ((Integer)rConstant).intValue();
-                    switch(seen) {
+                boolean takeJump = false;
+                boolean handled = false;
+                if (seen == IF_ACMPNE || seen == IF_ACMPEQ) {
+                    if (lConstant != null && rConstant != null && !lConstant.equals(rConstant) || lConstant != null
+                            && right.isNull() || rConstant != null && left.isNull()) {
+                        handled = true;
+                        takeJump = seen == IF_ACMPNE;
+                    }
+                } else if (lConstant instanceof Integer && rConstant instanceof Integer) {
+                    int lC = ((Integer) lConstant).intValue();
+                    int rC = ((Integer) rConstant).intValue();
+                    switch (seen) {
                     case IF_ICMPEQ:
                         takeJump = lC == rC;
                         handled = true;
@@ -1363,9 +1369,9 @@ public class OpcodeStack implements Constants2 {
                         handled = true;
                         break;
                     case IF_ICMPGE:
-                         takeJump = lC >= rC;
-                         handled = true;
-                         break;
+                        takeJump = lC >= rC;
+                        handled = true;
+                        break;
                     case IF_ICMPGT:
                         takeJump = lC > rC;
                         handled = true;
@@ -1374,22 +1380,24 @@ public class OpcodeStack implements Constants2 {
                         takeJump = lC <= rC;
                         handled = true;
                         break;
-                   case IF_ICMPLT:
-                       takeJump = lC < rC;
-                       handled = true;
-                       break;
+                    case IF_ICMPLT:
+                        takeJump = lC < rC;
+                        handled = true;
+                        break;
+                    default:
+                        assert false;
                     }
-                    if (handled) {
-                        if (takeJump) {
-                            int branchTarget = dbc.getBranchTarget();
-                            addJumpValue(dbc.getPC(), branchTarget);
-                            setTop(true);
-                            break;
-                        } else {
-                            break;
-                        }
+
+                }
+                if (handled) {
+                    if (takeJump) {
+                        int branchTarget = dbc.getBranchTarget();
+                        addJumpValue(dbc.getPC(), branchTarget);
+                        setTop(true);
+                        break;
+                    } else {
+                        break;
                     }
-                    
                 }
                 if (right.hasConstantValue(Integer.MIN_VALUE) && left.mightRarelyBeNegative()
                         || left.hasConstantValue(Integer.MIN_VALUE) && right.mightRarelyBeNegative()) {
