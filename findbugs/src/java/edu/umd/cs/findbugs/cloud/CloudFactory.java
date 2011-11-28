@@ -26,6 +26,8 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Nonnull;
+
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.IGuiCallback;
@@ -51,7 +53,7 @@ public class CloudFactory {
 
     private static final Logger LOGGER = Logger.getLogger(CloudFactory.class.getName());
 
-    public static Cloud createCloudWithoutInitializing(BugCollection bc) {
+    public static @Nonnull Cloud createCloudWithoutInitializing(BugCollection bc) {
         CloudPlugin plugin = getCloudPlugin(bc);
         if (plugin == null) {
             LOGGER.log(Level.FINE, "default cloud " + DEFAULT_CLOUD + " not registered");
@@ -138,7 +140,7 @@ public class CloudFactory {
     }
 
 
-    public static Cloud getPlainCloud(BugCollection bc) {
+    public static @Nonnull Cloud getPlainCloud(BugCollection bc) {
         DoNothingCloud cloud = new DoNothingCloud(bc);
         if (cloud.initialize())
             return cloud;
