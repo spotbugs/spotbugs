@@ -29,6 +29,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
     protected void setUp() throws Exception {
         super.setUp();
         foundIssue.setUserDesignation(new BugDesignation("BAD_ANALYSIS", SAMPLE_DATE + 200, "my eval", "test@example.com"));
+        foundIssue.setUserAnnotationDirty(true);
         cloud = createWebCloudClient();
         responseIssue = createIssueToReturn(createEvaluation("NOT_A_BUG", SAMPLE_DATE + 100, "comment", "first"));
     }
@@ -312,7 +313,8 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
 
         // setup 3
         foundIssue.setUserDesignation(new BugDesignation("I_WILL_FIX", SAMPLE_DATE + 300, "new", "test@example.com"));
-
+        foundIssue.setUserAnnotationDirty(true);
+        
         cloud.expectConnection("log-in");
         cloud.expectConnection("upload-evaluation");
 
