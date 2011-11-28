@@ -20,6 +20,8 @@
 
 package de.tobject.findbugs;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -33,6 +35,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.MissingResourceException;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.SortedMap;
@@ -107,17 +110,27 @@ import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
  * The main plugin class to be used in the desktop.
  */
 public class FindbugsPlugin extends AbstractUIPlugin {
+    /**
+     * The plug-in identifier of the FindBugs Plug-in (value
+     * "edu.umd.cs.findbugs.plugin.eclipse", was
+     * <code>"de.tobject.findbugs"</code>).
+     */
+    public static final String PLUGIN_ID = "edu.umd.cs.findbugs.plugin.eclipse"; //$NON-NLS-1$
+
     private static final String DEFAULT_CLOUD_ID = "edu.umd.cs.findbugs.cloud.doNothingCloud";
 
     public static final String ICON_PATH = "icons/";
 
-    public static final String PREFS_NAME = ".fbprefs";
+    @SuppressWarnings("restriction")
+    private static final IPath WORKSPACE_PREFS_PATH = Platform.getStateLocation(Platform.getBundle(Platform.PI_RUNTIME))
+            .append(EclipsePreferences.DEFAULT_PREFERENCES_DIRNAME)
+            .append(PLUGIN_ID + "." + EclipsePreferences.PREFS_FILE_EXTENSION);
 
     @java.lang.SuppressWarnings("restriction")
     public static final IPath DEFAULT_PREFS_PATH = new Path(EclipsePreferences.DEFAULT_PREFERENCES_DIRNAME)
     .append("edu.umd.cs.findbugs.core.prefs");
 
-    public static final IPath DEPRECATED_PREFS_PATH = new Path(PREFS_NAME);
+    public static final IPath DEPRECATED_PREFS_PATH = new Path(".fbprefs");
 
     public static final String DETAILS_VIEW_ID = "de.tobject.findbugs.view.buginfoview";
 
@@ -133,12 +146,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /** Controls debugging of the plugin */
     public static boolean DEBUG;
 
-    /**
-     * The plug-in identifier of the FindBugs Plug-in (value
-     * "edu.umd.cs.findbugs.plugin.eclipse", was
-     * <code>"de.tobject.findbugs"</code>).
-     */
-    public static final String PLUGIN_ID = "edu.umd.cs.findbugs.plugin.eclipse"; //$NON-NLS-1$
 
     /**
      * The identifier for the FindBugs builder (value
@@ -905,10 +912,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     private static UserPreferences getWorkspacePreferences() {
-        IPath path = getDefault().getStateLocation().append(PREFS_NAME);
         // create initially default settings
         UserPreferences userPrefs = FindBugsPreferenceInitializer.createDefaultUserPreferences();
-        File prefsFile = path.toFile();
+        File prefsFile = WORKSPACE_PREFS_PATH.toFile();
         if (!prefsFile.isFile()) {
             return userPrefs;
         }
@@ -966,10 +972,25 @@ public class FindbugsPlugin extends AbstractUIPlugin {
                 getDefault().logWarning(message);
             }
         } else {
-            // write file to the workspace area
-            IPath path = getDefault().getStateLocation();
-            path = path.append(PREFS_NAME);
-            IO.writeFile(path.toFile(), userPrefsOutput, null);
+            // write the workspace preferences to the eclipse preference store
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+            try {
+                userPrefs.write(bos);
+            } catch (IOException e) {
+                getDefault().logException(e, "Failed to write user preferences");
+                return;
+            }
+            Properties props = new Properties();
+            try {
+                props.load(new ByteArrayInputStream(bos.toByteArray()));
+            } catch (IOException e) {
+                getDefault().logException(e, "Failed to save user preferences");
+                return;
+            }
+            IPreferenceStore store = getDefault().getPreferenceStore();
+            for (Entry<Object, Object> entry : props.entrySet()) {
+                store.putValue((String) entry.getKey(), (String) entry.getValue());
+            }
         }
     }
 

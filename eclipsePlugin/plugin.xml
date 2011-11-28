@@ -1329,4 +1329,20 @@
     </extension>
 -->
 
+   <extension
+         point="org.eclipse.ui.preferenceTransfer">
+       <transfer
+            icon="icons/buggy-tiny.png"
+            name="FindBugs Preferences"
+            id="edu.umd.cs.findbugs.plugin.eclipse">
+            <mapping scope="instance">
+                <entry node="edu.umd.cs.findbugs.plugin.eclipse"/>
+            </mapping>
+      <description>
+             Java &gt; FindBugs preferences.
+      </description>
+    </transfer>
+   </extension>
+
+
 </plugin>
