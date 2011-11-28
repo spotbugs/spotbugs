@@ -84,8 +84,12 @@ public class EvaluationsFromXmlUploader {
                     + "Do you wish to upload these reviews as your reviews?";
 
         int result = cloud.getGuiCallback().showConfirmDialog(message, "Upload reviews", "Upload", "Skip");
-        if (result != IGuiCallback.YES_OPTION)
+        if (result != IGuiCallback.YES_OPTION) {
+            for(BugInstance b : cloud.getBugCollection()){
+                b.setUserAnnotationDirty(false);
+            }
             return;
+        }
         System.out.println(result);
         try {
             cloud.signInIfNecessary("To store your reviews on the " + cloud.getCloudName()
