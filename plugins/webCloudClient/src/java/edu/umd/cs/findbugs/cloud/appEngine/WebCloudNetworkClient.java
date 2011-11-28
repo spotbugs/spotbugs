@@ -501,8 +501,12 @@ public class WebCloudNetworkClient {
         if (response.hasCurrentServerTime()
                 && (response.getCurrentServerTime() < earliestSeenServerTime))
             earliestSeenServerTime = response.getCurrentServerTime();
+        int count = Math.min(hashes.size(), response.getFoundIssuesCount());
+        if (hashes.size() != response.getFoundIssuesCount()) {
+            LOGGER.severe(String.format("Requested %d issues, got %d responses", hashes.size(),  response.getFoundIssuesCount()));
+        }
 
-        for (int j = 0; j < hashes.size(); j++) {
+        for (int j = 0; j < count; j++) {
             String hash = hashes.get(j);
             Issue issue = response.getFoundIssues(j);
 
