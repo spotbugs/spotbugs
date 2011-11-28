@@ -32,6 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
@@ -67,7 +68,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     
     private static final int MAX_RECENT_EVALUATION_PAGES = 30;
 
-    protected ExecutorService backgroundExecutorService;
+    protected final @Nonnull ExecutorService backgroundExecutorService;
 
     private Timer timer;
 
@@ -215,6 +216,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
             }
 
         } else if (getSigninState() == SigninState.SIGNING_IN) {
+            // thread that set state to signing in should already hold lock
             synchronized (signInLock) {
             }
         } else if (getSigninState() == SigninState.SIGNED_IN) {
@@ -237,9 +239,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
         if (timer != null)
             timer.cancel();
 
-        if (backgroundExecutorService != null) {
-            backgroundExecutorService.shutdownNow();
-        }
+        backgroundExecutorService.shutdownNow();
     }
 
     
@@ -735,7 +735,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     }
 
     private <T> void executeAndWaitForAll(List<Callable<T>> tasks) throws ExecutionException, InterruptedException {
-        if (backgroundExecutorService != null && backgroundExecutorService.isShutdown()) {
+        if (backgroundExecutorService.isShutdown()) {
             LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown in executeAndWaitForAll");
             return;
         }
