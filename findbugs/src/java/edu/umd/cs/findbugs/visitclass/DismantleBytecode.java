@@ -664,6 +664,11 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                         case M_UINT:
                         case M_INT:
                             intConstant = v;
+                            break;
+                        case M_PAD:
+                            break;
+                        default:
+                            throw new IllegalStateException("Unexpecting meaning " + m);
                         }
                     }
 
