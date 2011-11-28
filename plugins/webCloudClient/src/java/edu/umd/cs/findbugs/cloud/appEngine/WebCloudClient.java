@@ -681,7 +681,8 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
             boolean exceptionThrown = true;
             try {
                 List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
-                networkClient.generateHashCheckRunnables(task, new ArrayList<String>(bugsByHash.keySet()), tasks, bugsByHash);
+                ArrayList<String> hashes = new ArrayList<String>(bugsByHash.keySet());
+                networkClient.generateHashCheckRunnables(task, hashes, tasks, bugsByHash);
                 executeAndWaitForAll(tasks);
                 exceptionThrown = false;
 
@@ -710,11 +711,14 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
             startEvaluationCheckThread();
         };
         String cloudTokenProperty = getCloudTokenProperty();
-        if ((hasBugsToUpload || hasTimestampsToUpdate)
-                && (cloudTokenProperty != null
-                || !getGuiCallback().isHeadless()
-                || getSigninState() == SigninState.SIGNED_IN)) {
-            uploadAndUpdateBugsInBackground(new ArrayList<BugInstance>(newBugs));
+        boolean canUpload = cloudTokenProperty != null
+        || !getGuiCallback().isHeadless()
+        || getSigninState() == SigninState.SIGNED_IN;
+        if ((hasBugsToUpload || hasTimestampsToUpdate)) {
+            if (canUpload) 
+                uploadAndUpdateBugsInBackground(new ArrayList<BugInstance>(newBugs));
+            else
+                setStatusMsg("not able to automatically upload bugs to the " + getCloudName());     
         } else {
             fireNewIssuesUploadedEvent();
             setStatusMsg("All " + numBugs + " bugs are already stored in the " + getCloudName());

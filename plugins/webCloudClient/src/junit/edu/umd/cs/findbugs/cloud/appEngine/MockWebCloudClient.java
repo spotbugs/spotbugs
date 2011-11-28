@@ -225,6 +225,8 @@ class MockWebCloudClient extends WebCloudClient {
                 }
             }
         }
+        if (statusMsgHistory.isEmpty())
+            Assert.fail("Expected " + regex + ", didn't see any status messages");
         Assert.fail("Did not see status message " + regex + " in:\n" + statusMsgHistory);
     }
 
