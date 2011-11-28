@@ -105,6 +105,8 @@ public class EmacsBugReporter extends TextUIBugReporter {
         case Priorities.HIGH_PRIORITY:
             outputStream.print(" (H) ");
             break;
+        default:
+            throw new IllegalArgumentException("Invalid priority " + bugInstance.getPriority() + " for " + bugInstance);
         }
 
         outputStream.println();

@@ -109,6 +109,8 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
         case Priorities.HIGH_PRIORITY:
             outputStream.print("H ");
             break;
+        default:
+            assert false;
         }
 
         BugPattern pattern = bugInstance.getBugPattern();

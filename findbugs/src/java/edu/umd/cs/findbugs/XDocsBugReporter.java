@@ -196,6 +196,8 @@ public class XDocsBugReporter extends TextUIBugReporter {
         case Priorities.HIGH_PRIORITY:
             element.addAttribute("priority", "High");
             break;
+        default:
+            assert false;
         }
 
         element.addAttribute("message", xmlEscape(bugInstance.getMessage()));

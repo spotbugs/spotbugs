@@ -155,8 +155,9 @@ public abstract class WarningPropertyUtil {
                 case 3:
                     prop = GeneralWarningProperty.CALLED_METHOD_4;
                     break;
+                default:
+                    continue;
                 }
-                // XXX: encode class name? signature? break down as words?
                 propertySet.setProperty(prop, call.getMethodName());
             }
         } catch (CFGBuilderException e) {
