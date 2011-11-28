@@ -21,13 +21,15 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.awt.Color;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
+import javax.annotation.Nonnull;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
@@ -36,8 +38,6 @@ import javax.swing.text.StyledDocument;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.charsets.SourceCharset;
 import edu.umd.cs.findbugs.sourceViewer.JavaSourceDocument;
@@ -68,25 +68,27 @@ public final class SourceCodeDisplay implements Runnable {
         t.start();
     }
 
-    private boolean pendingUpdate;
 
-    @CheckForNull
-    private BugInstance bugToDisplay;
+    static class DisplayMe {
+        public DisplayMe(BugInstance bug, SourceLineAnnotation source) {
+            this.bug = bug;
+            this.source = source;
+        }
+        final BugInstance bug;
+        final SourceLineAnnotation source;
+    }
 
-    private SourceLineAnnotation sourceToHighlight;
-
-    public synchronized void displaySource(BugInstance bug, SourceLineAnnotation source) {
-        bugToDisplay = bug;
-        sourceToHighlight = source;
-        pendingUpdate = true;
-        notifyAll();
+    final BlockingQueue<DisplayMe> queue = new   LinkedBlockingQueue<DisplayMe>();
+  
+    public  void displaySource(BugInstance bug, SourceLineAnnotation source) {
+        queue.add(new DisplayMe(bug, source));
     }
 
     public void clearCache() {
         map.clear();
     }
 
-    @NonNull
+    @Nonnull
     private JavaSourceDocument getDocument(SourceLineAnnotation source) {
         try {
             SourceFile sourceFile = frame.getProject().getSourceFinder().findSourceFile(source);
@@ -115,29 +117,24 @@ public final class SourceCodeDisplay implements Runnable {
 
     public void run() {
         while (true) {
-            BugInstance myBug;
-            SourceLineAnnotation mySourceLine;
-            synchronized (this) {
-                while (!pendingUpdate) {
-                    try {
-                        wait();
-                    } catch (InterruptedException e) {
-                        // we don't use these
-                    }
-                }
-                myBug = bugToDisplay;
-                mySourceLine = sourceToHighlight;
-                bugToDisplay = null;
-                sourceToHighlight = null;
-                pendingUpdate = false;
+            DisplayMe display;
+            try {
+                display = queue.take();
+            } catch (InterruptedException e1) {
+                assert false;
+                Debug.println(e1);
+                continue;
             }
+            BugInstance myBug = display.bug;
+            SourceLineAnnotation mySourceLine = display.source;
+         
             if (myBug == null || mySourceLine == null) {
                 frame.clearSourcePane();
                 continue;
             }
 
             try {
-                final JavaSourceDocument src = getDocument(mySourceLine);
+                JavaSourceDocument src = getDocument(mySourceLine);
                 this.myDocument = src;
                 src.getHighlightInformation().clear();
                 String primaryKind = mySourceLine.getDescription();
@@ -155,49 +152,60 @@ public final class SourceCodeDisplay implements Runnable {
                     }
                 }
                 highlight(src, mySourceLine, MAIN_HIGHLIGHT);
-                final BugInstance thisBug = myBug;
-                final SourceLineAnnotation thisSource = mySourceLine;
-                javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        frame.getSourceCodeTextPane().setEditorKit(src.getEditorKit());
-                        StyledDocument document = src.getDocument();
-                        frame.getSourceCodeTextPane().setDocument(document);
-                        String sourceFile = thisSource.getSourceFile();
-                        if (sourceFile == null || sourceFile.equals("<Unknown>")) {
-                            sourceFile = thisSource.getSimpleClassName();
-                        }
-                        int startLine = thisSource.getStartLine();
-                        int endLine = thisSource.getEndLine();
-                        frame.setSourceTab(sourceFile + " in " + thisSource.getPackageName(), thisBug);
-
-                        int originLine = (startLine + endLine) / 2;
-                        LinkedList<Integer> otherLines = new LinkedList<Integer>();
-                        // show(frame.getSourceCodeTextPane(), document,
-                        // thisSource);
-                        for (Iterator<BugAnnotation> i = thisBug.annotationIterator(); i.hasNext();) {
-                            BugAnnotation annotation = i.next();
-                            if (annotation instanceof SourceLineAnnotation) {
-                                SourceLineAnnotation sourceAnnotation = (SourceLineAnnotation) annotation;
-                                if (sourceAnnotation != thisSource) {
-                                    // show(frame.getSourceCodeTextPane(),
-                                    // document, sourceAnnotation);
-                                    int otherLine = sourceAnnotation.getStartLine();
-                                    if (otherLine > originLine)
-                                        otherLine = sourceAnnotation.getEndLine();
-                                    otherLines.add(otherLine);
-                                }
-                            }
-                        }
-                        // show(frame.getSourceCodeTextPane(), document,
-                        // thisSource);
-
-                        if (startLine >= 0 && endLine >= 0)
-                            frame.getSourceCodeTextPane().scrollLinesToVisible(startLine, endLine, otherLines);
-                    }
-                });
+                javax.swing.SwingUtilities.invokeLater(new DisplayBug(src, myBug, mySourceLine));
             } catch (Exception e) {
                 Debug.println(e); // e.printStackTrace();
             }
+        }
+    }
+
+
+    private final class DisplayBug implements Runnable {
+
+        private final SourceLineAnnotation mySourceLine;
+        private final JavaSourceDocument src;
+        private final BugInstance myBug;
+
+
+        private DisplayBug(JavaSourceDocument src, BugInstance myBug, SourceLineAnnotation mySourceLine) {
+            this.mySourceLine = mySourceLine;
+            this.src = src;
+            this.myBug = myBug;
+        }
+
+        public void run() {
+            frame.getSourceCodeTextPane().setEditorKit(src.getEditorKit());
+            StyledDocument document = src.getDocument();
+            frame.getSourceCodeTextPane().setDocument(document);
+            String sourceFile = mySourceLine.getSourceFile();
+            if (sourceFile == null || sourceFile.equals("<Unknown>")) {
+                sourceFile = mySourceLine.getSimpleClassName();
+            }
+            int startLine = mySourceLine.getStartLine();
+            int endLine = mySourceLine.getEndLine();
+            frame.setSourceTab(sourceFile + " in " + mySourceLine.getPackageName(), myBug);
+
+            int originLine = (startLine + endLine) / 2;
+            LinkedList<Integer> otherLines = new LinkedList<Integer>();
+            // show(frame.getSourceCodeTextPane(), document,
+            // thisSource);
+            for (Iterator<BugAnnotation> i = myBug.annotationIterator(); i.hasNext();) {
+                BugAnnotation annotation = i.next();
+                if (annotation instanceof SourceLineAnnotation) {
+                    SourceLineAnnotation sourceAnnotation = (SourceLineAnnotation) annotation;
+                    if (sourceAnnotation != mySourceLine) {
+                        // show(frame.getSourceCodeTextPane(),
+                        // document, sourceAnnotation);
+                        int otherLine = sourceAnnotation.getStartLine();
+                        if (otherLine > originLine)
+                            otherLine = sourceAnnotation.getEndLine();
+                        otherLines.add(otherLine);
+                    }
+                }
+            }
+                       
+            if (startLine >= 0 && endLine >= 0)
+                frame.getSourceCodeTextPane().scrollLinesToVisible(startLine, endLine, otherLines);
         }
     }
 

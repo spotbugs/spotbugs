@@ -169,6 +169,10 @@ public class NavigableTextPane extends JTextPane {
                 }
             }
         }
+        
+        if (endY - startY > max) {
+            endY = startY + max;
+        }
         scrollYToVisibleImpl((startY + endY) / 2, max / 2);
     }
 
