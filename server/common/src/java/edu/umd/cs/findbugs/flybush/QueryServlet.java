@@ -132,6 +132,7 @@ public class QueryServlet extends AbstractFlybushServlet {
 
     @SuppressWarnings({"unchecked"})
     protected void recordAppVersionStats(String ip, PersistenceManager pm, ProtoClasses.VersionInfo loginMsg) {
+        try {
         String appName = loginMsg.getAppName();
         String appVer = loginMsg.getAppVersion();
         if (appVer == null)
@@ -173,6 +174,9 @@ public class QueryServlet extends AbstractFlybushServlet {
                     tx.rollback();
                 }
             }
+        }
+        } catch (Exception e) {
+            LOGGER.log(Level.INFO, "Ignoring exception that occurs while recording app version", e);
         }
     }
 
