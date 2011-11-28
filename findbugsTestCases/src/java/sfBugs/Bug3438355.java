@@ -1,7 +1,7 @@
 /*
  * Name:    $Id: SwingDeclarationDeleter.java,v 1.1 2006-12-08 13:16:34 t724z Exp $
  * Project: RM90
- * (C) 2004 Bundesamt für Informatik und Telekommunikation
+ * (C) 2004 Bundesamt  Informatik und Telekommunikation
  *
  */
 package sfBugs;
@@ -49,7 +49,7 @@ public class Bug3438355 extends JFrame {
         JLabel statusLabel = new JLabel("status: ");
         final JLabel statusText = new JLabel("");
 
-        JButton deleteButton = new JButton("Lösche Deklaration");
+        JButton deleteButton = new JButton("Lsche Deklaration");
 
         JPanel panel = new JPanel(new GridLayout(4, 2));
         panel.add(traderDeclarationNumberLabel);
