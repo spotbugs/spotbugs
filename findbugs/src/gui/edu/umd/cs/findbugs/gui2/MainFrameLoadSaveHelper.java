@@ -331,6 +331,9 @@ public class MainFrameLoadSaveHelper implements Serializable {
             case FBP_FILE:
                 successful = saveFBPFile(f);
                 break;
+            default:
+                JOptionPane.showMessageDialog(mainFrame, "Unknown save file type");
+                return false;
             }
 
             if (successful != SaveReturn.SAVE_SUCCESSFUL) {
@@ -392,6 +395,10 @@ public class MainFrameLoadSaveHelper implements Serializable {
         case FBP_FILE:
             result = saveFBPFile(sFile);
             break;
+        default:
+            JOptionPane.showMessageDialog(mainFrame, "Unknown save file type");
+            return;
+
         }
 
         if (result != SaveReturn.SAVE_SUCCESSFUL) {
