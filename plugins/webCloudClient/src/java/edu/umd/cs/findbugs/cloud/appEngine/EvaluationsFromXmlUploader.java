@@ -31,7 +31,7 @@ public class EvaluationsFromXmlUploader {
             return;
         if (cloud.getGuiCallback().isHeadless())
             return;
-        if (cloud.getSigninState() != Cloud.SigninState.SIGNED_IN && !cloud.couldSignIn())
+        if (cloud.getSigninState().askToSignIn() && !cloud.couldSignIn())
             return;
         localAnnotations = getDesignationsFromXML();
 
@@ -168,14 +168,12 @@ public class EvaluationsFromXmlUploader {
             }
 
             String statusMsg = designationsLoadedFromXML.size() + " issues from XML uploaded to cloud";
-            System.out.println(statusMsg);
-            cloud.setStatusMsg(statusMsg);
+           cloud.setStatusMsg(statusMsg);
 
         } catch (Exception e) {
             cloud.getGuiCallback().showMessageDialog(
                     "Unable to upload " + (designationsLoadedFromXML.size() - uploaded)
                             + " issues from XML to cloud due to error\n" + e.getMessage());
-
         }
     }
 
@@ -184,6 +182,10 @@ public class EvaluationsFromXmlUploader {
         final IdentityHashMap<BugInstance, BugDesignation> designationsLoadedFromXML = new IdentityHashMap<BugInstance, BugDesignation>();
 
         for (BugInstance b : cloud.getBugCollection().getCollection()) {
+            if (!cloud.canStoreUserAnnotation(b))
+                continue;
+            if (!b.isUserAnnotationDirty())
+                continue;
             BugDesignation bd = b.getUserDesignation();
             if (bd != null)
                 designationsLoadedFromXML.put(b, new BugDesignation(bd));

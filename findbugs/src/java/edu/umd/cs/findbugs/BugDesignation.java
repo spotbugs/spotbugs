@@ -22,10 +22,10 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.io.Serializable;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
+
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -47,7 +47,7 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
      * user designation -- value should be one of the keys returned by
      * I18N.getInstance().getUserDesignations()
      */
-    @NonNull
+    @Nonnull
     private String designation = UNCLASSIFIED;
 
     @Override
@@ -68,6 +68,9 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
 
     public void cleanDirty() {
         dirty = false;
+    }
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
     }
 
     private @javax.annotation.CheckForNull
@@ -108,7 +111,7 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
      *
      * @see I18N#getUserDesignation(String key)
      */
-    @NonNull
+    @Nonnull
     public String getDesignationKey() {
         return designation;
     }
@@ -180,6 +183,8 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
             attributeList.addAttribute("designation", designation);
         if (user != null && !"".equals(user))
             attributeList.addAttribute("user", user);
+        if (dirty)
+            attributeList.addAttribute("needsSync", "true");
         if (timestamp > 0)
             attributeList.addAttribute("timestamp", String.valueOf(timestamp));
 

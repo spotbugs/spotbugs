@@ -102,6 +102,8 @@ public class SortedBugCollection implements BugCollection {
     private boolean withMessages = false;
 
     private boolean minimalXML = false;
+    
+    private boolean synced = false;
 
     private boolean applySuppressions = false;
 
@@ -452,7 +454,6 @@ public class SortedBugCollection implements BugCollection {
         
 
         if (withMessages) {
-            Cloud cloud = getCloud();
             cloud.bugsPopulated();
             cloud.initiateCommunication();
             cloud.waitUntilIssueDataDownloaded();

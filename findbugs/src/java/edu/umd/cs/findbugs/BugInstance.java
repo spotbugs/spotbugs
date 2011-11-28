@@ -744,7 +744,18 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         BugDesignation userDesignation = getNonnullUserDesignation();
         userDesignation.setTimestamp(timestamp);
     }
+    
+    public void setUserAnnotationDirty(boolean dirty) {
+        BugDesignation userDesignation = getNonnullUserDesignation();
+        userDesignation.setDirty(dirty);
+    }
 
+    public boolean isUserAnnotationDirty() {
+        BugDesignation userDesignation = getUserDesignation();
+        if (userDesignation == null)
+            return false;
+        return userDesignation.isDirty();
+    }
     /**
      * Determine whether or not the annotation text contains the given word.
      *

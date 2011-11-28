@@ -200,14 +200,17 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
             if (reason != null) {
                 IGuiCallback callback = getGuiCallback();
                 int result = callback.showConfirmDialog(reason, getCloudName(), "Sign in", "Cancel");
-                if (result != 0)
+                if (result != 0) {
+                    setSigninState(SigninState.SIGNIN_DECLINED);
                     throw new SignInCancelledException();
+                }
             }
             try {
                 signIn();
             } catch (Exception e) {
                 getGuiCallback().showMessageDialog("Could not sign into " + getCloudName() + ": "
                         + Util.getNetworkErrorMessage(e));
+                setSigninState(SigninState.SIGNIN_FAILED);
                 throw new SignInCancelledException(e);
             }
 
@@ -220,8 +223,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     }
 
     public boolean couldSignIn() {
-        return getSigninState() == SigninState.UNAUTHENTICATED || getSigninState() == SigninState.SIGNIN_FAILED
-                || getSigninState() == SigninState.SIGNED_OUT;
+        return getSigninState().couldSignIn();
     }
 
     @Override
@@ -517,6 +519,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
             try {
                 try {
                     networkClient.storeUserAnnotation(bugInstance);
+                    bugInstance.setUserAnnotationDirty(false);
                 } catch (IOException e) {
                     throw new IllegalStateException(e);
                 }

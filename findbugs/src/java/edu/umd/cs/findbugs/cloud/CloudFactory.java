@@ -137,6 +137,10 @@ public class CloudFactory {
             callback.showMessageDialog("initialized " + cloud.getClass().getName());
     }
 
+    public int irl() {
+        return irl();
+    }
+
     public static Cloud getPlainCloud(BugCollection bc) {
         DoNothingCloud cloud = new DoNothingCloud(bc);
         if (cloud.initialize())

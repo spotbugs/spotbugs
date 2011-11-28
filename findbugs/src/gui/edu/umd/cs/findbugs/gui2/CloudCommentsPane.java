@@ -352,33 +352,42 @@ public abstract class CloudCommentsPane extends JPanel {
                 changeClicked();
             }
             switch (cloud.getSigninState()) {
-                case SIGNED_OUT:
-                case SIGNIN_FAILED:
-                case UNAUTHENTICATED:
-                    backgroundExecutor.execute(new Runnable() {
-                        public void run() {
-                            try {
-                                cloud.signIn();
-                            } catch (Exception e) {
-                                _bugCollection.getProject().getGuiCallback().showMessageDialog(
-                                        "The FindBugs Cloud could not be contacted at this time.\n\n"
-                                                + Util.getNetworkErrorMessage(e));
-                            }
-                            refresh();
+            case SIGNED_IN:
+                backgroundExecutor.execute(new Runnable() {
+                    public void run() {
+                        cloud.signOut();
+                        refresh();
+                    }
+                });
+                refresh();
+                break;
+
+            case NO_SIGNIN_REQUIRED:
+            case SIGNING_IN:
+                break;
+
+            case SIGNED_OUT:
+            case SIGNIN_FAILED:
+            case SIGNIN_DECLINED:
+            case UNAUTHENTICATED:
+                backgroundExecutor.execute(new Runnable() {
+                    public void run() {
+                        try {
+                            cloud.signIn();
+                        } catch (Exception e) {
+                            _bugCollection
+                                    .getProject()
+                                    .getGuiCallback()
+                                    .showMessageDialog(
+                                            "The FindBugs Cloud could not be contacted at this time.\n\n"
+                                                    + Util.getNetworkErrorMessage(e));
                         }
-                    });
-                    refresh();
-                    break;
-                case SIGNED_IN:
-                    backgroundExecutor.execute(new Runnable() {
-                        public void run() {
-                            cloud.signOut();
-                            refresh();
-                        }
-                    });
-                    refresh();
-                    break;
-                default:
+                        refresh();
+                    }
+                });
+                refresh();
+                break;
+            default:
             }
         }
     }
@@ -758,6 +767,7 @@ public abstract class CloudCommentsPane extends JPanel {
                 break;
             case SIGNED_OUT:
             case SIGNIN_FAILED:
+            case SIGNIN_DECLINED:
             case UNAUTHENTICATED:
                 setSignInOutText("sign in");
                 signInOutLink.setVisible(true);

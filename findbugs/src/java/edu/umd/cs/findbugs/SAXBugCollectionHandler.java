@@ -590,6 +590,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     // designation.
                     // but is there anyplace to report this?
                 }
+            s = getOptionalAttribute(attributes, "needsSync"); // optional
+            if (s == null || s.equals("false"))
+                bugInstance.setUserAnnotationDirty(false);
+            
         } else
             throw new SAXException("Unknown bug annotation named " + qName);
 

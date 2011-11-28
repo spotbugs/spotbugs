@@ -335,7 +335,30 @@ public interface Cloud {
     }
 
     enum SigninState {
-        NO_SIGNIN_REQUIRED, UNAUTHENTICATED, SIGNING_IN, SIGNED_IN, SIGNIN_FAILED, SIGNED_OUT;
+        NO_SIGNIN_REQUIRED, UNAUTHENTICATED, SIGNING_IN, SIGNED_IN, SIGNIN_FAILED, SIGNIN_DECLINED, SIGNED_OUT;
+        
+        public boolean askToSignIn() {
+            switch (this) {
+            case UNAUTHENTICATED:
+            case SIGNED_OUT:
+            case SIGNIN_FAILED:
+                return true;
+            default:
+                return false;
+            }
+        }
+
+        public boolean couldSignIn() {
+            switch (this) {
+            case UNAUTHENTICATED:
+            case SIGNED_OUT:
+            case SIGNIN_FAILED:
+            case SIGNIN_DECLINED:
+                return true;
+            default:
+                return false;
+            }
+        }
         static final ResourceBundle names = ResourceBundle.getBundle(Cloud.class.getName(), Locale.getDefault());
 
         @Override

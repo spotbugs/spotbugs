@@ -308,13 +308,13 @@ public class WebCloudNetworkClient {
         }
         return task;
     }
-
+    
     public MutableCloudTask generateUploadRunnables(final List<BugInstance> newBugs, List<Callable<Void>> callables)
             throws SignInCancelledException {
         final int bugCount = newBugs.size();
         if (bugCount == 0)
             return null;
-        if (cloudClient.getCloudTokenProperty() == null && cloudClient.getSigninState() != SigninState.SIGNED_IN)
+        if (cloudClient.getCloudTokenProperty() == null && cloudClient.getSigninState().askToSignIn())
             cloudClient.signInIfNecessary("Some bugs were not found on the " + cloudClient.getCloudName() + ".\n"
                     + "Your signin status is " +  cloudClient.getSigninState()  +"\n"
                     + "Would you like to sign in and upload them to the Cloud?");
