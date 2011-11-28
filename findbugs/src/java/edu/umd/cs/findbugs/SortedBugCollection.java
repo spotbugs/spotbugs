@@ -107,7 +107,7 @@ public class SortedBugCollection implements BugCollection {
 
     private boolean applySuppressions = false;
 
-    private Cloud cloud;
+    private @CheckForNull Cloud cloud;
 
     boolean shouldNotUsePlugin;
 
@@ -152,25 +152,26 @@ public class SortedBugCollection implements BugCollection {
         if (shouldNotUsePlugin) {
             return CloudFactory.getPlainCloud(this);
         }
-        if (cloud == null) {
+        Cloud result = cloud;
+        if (result == null) {
             IGuiCallback callback = getProject().getGuiCallback();
+            result = cloud = CloudFactory.createCloudWithoutInitializing(this);
+            callback.registerCloud(getProject(), this, result);
             try {
-                cloud = CloudFactory.createCloudWithoutInitializing(this);
-                callback.registerCloud(getProject(), this, cloud);
-                CloudFactory.initializeCloud(this, cloud);
+                CloudFactory.initializeCloud(this, result);
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Could not load cloud plugin "+ cloud.getCloudName(), e);
-                callback.showMessageDialog("Unable to connect to " + cloud.getCloudName() + ": " + Util.getNetworkErrorMessage(e));
+                LOGGER.log(Level.SEVERE, "Could not load cloud plugin "+ result.getCloudName(), e);
+                callback.showMessageDialog("Unable to connect to " + result.getCloudName() + ": " + Util.getNetworkErrorMessage(e));
                 if (CloudFactory.FAIL_ON_CLOUD_ERROR)
                     throw new IllegalStateException("Could not load FindBugs Cloud plugin - to avoid this message, " +
                             "set -D" + CloudFactory.FAIL_ON_CLOUD_ERROR_PROP + "=false", e);
-                cloud = CloudFactory.getPlainCloud(this);
+                result = cloud = CloudFactory.getPlainCloud(this);
             }
             
         }
         if (bugsPopulated)
-            cloud.bugsPopulated();
-        return cloud;
+            result.bugsPopulated();
+        return result;
     }
 
     public boolean isApplySuppressions() {
@@ -453,7 +454,7 @@ public class SortedBugCollection implements BugCollection {
         // if (project == null) throw new NullPointerException("No project");
         
 
-        if (withMessages) {
+        if (withMessages && cloud != null) {
             cloud.bugsPopulated();
             cloud.initiateCommunication();
             cloud.waitUntilIssueDataDownloaded();
