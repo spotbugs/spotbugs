@@ -448,23 +448,23 @@ public class SerializableIdiom extends OpcodeStackDetector {
                 && isSerializable) {
             sawReadObject = true;
             if (!obj.isPrivate())
-                bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", HIGH_PRIORITY).addClassAndMethod(this));
+                bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", isExternalizable ? NORMAL_PRIORITY : HIGH_PRIORITY).addClassAndMethod(this));
 
         } else if (getMethodName().equals("readObjectNoData") && getMethodSig().equals("()V") && isSerializable) {
 
             if (!obj.isPrivate())
-                bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", HIGH_PRIORITY).addClassAndMethod(this));
+                bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", isExternalizable ? NORMAL_PRIORITY : HIGH_PRIORITY).addClassAndMethod(this));
 
         } else if (getMethodName().equals("writeObject") && getMethodSig().equals("(Ljava/io/ObjectOutputStream;)V")
                 && isSerializable) {
             sawWriteObject = true;
             if (!obj.isPrivate())
-                bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", HIGH_PRIORITY).addClassAndMethod(this));
+                bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", isExternalizable ? NORMAL_PRIORITY : HIGH_PRIORITY).addClassAndMethod(this));
         }
 
         if (isSynchronized) {
             if (getMethodName().equals("readObject") && getMethodSig().equals("(Ljava/io/ObjectInputStream;)V") && isSerializable)
-                bugReporter.reportBug(new BugInstance(this, "RS_READOBJECT_SYNC", NORMAL_PRIORITY).addClassAndMethod(this));
+                bugReporter.reportBug(new BugInstance(this, "RS_READOBJECT_SYNC",isExternalizable ? LOW_PRIORITY :  NORMAL_PRIORITY).addClassAndMethod(this));
             else if (getMethodName().equals("writeObject") && getMethodSig().equals("(Ljava/io/ObjectOutputStream;)V")
                     && isSerializable)
                 writeObjectIsSynchronized = true;
