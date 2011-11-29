@@ -14,6 +14,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -45,6 +47,13 @@ public class EclipseGuiCallback implements IGuiCallback {
     private final AbstractExecutorService guiExecutor = new EclipseDisplayThreadExecutor();
 
     private CloudListener cloudListener;
+
+    private final IProject iproject;
+
+    public EclipseGuiCallback(IProject iproject) {
+        super();
+        this.iproject = iproject;
+    }
 
     public void registerCloud(Project project, BugCollection collection, final Cloud cloud) {
         cloudListener = new CloudListener() {
@@ -133,9 +142,25 @@ public class EclipseGuiCallback implements IGuiCallback {
         cloud.removeListener(cloudListener);
     }
 
+    public String getProjectName() {
+        try {
+            return iproject.getDescription().getName();
+        } catch (CoreException e) {
+            return iproject.getName();
+        }
+    }
+
+    public String getDialogTitle() {
+        return getProjectName() + ": FindBugs";
+    }
+
+    public String getDialogTitle(String title) {
+        return getProjectName() + ": " + title;
+    }
+
     public String showQuestionDialog(String message, String title, final String defaultValue) {
         final AtomicReference<Text> textBoxRef = new AtomicReference<Text>();
-        MessageDialog dlg = new MessageDialog(FindbugsPlugin.getShell(), title, null, message, MessageDialog.QUESTION,
+        MessageDialog dlg = new MessageDialog(FindbugsPlugin.getShell(), getDialogTitle(title), null, message, MessageDialog.QUESTION,
                 new String[] { "OK", "Cancel" }, 1) {
             @Override
             protected Control createCustomArea(Composite parent) {
@@ -152,13 +177,13 @@ public class EclipseGuiCallback implements IGuiCallback {
     }
 
     public void showMessageDialogAndWait(String message) throws InterruptedException {
-        MessageDialog.openInformation(FindbugsPlugin.getShell(), null, message);
+        MessageDialog.openInformation(FindbugsPlugin.getShell(), getDialogTitle(), message);
     }
 
     public void showMessageDialog(final String message) {
         FindbugsPlugin.getShell().getDisplay().asyncExec(new Runnable() {
             public void run() {
-                MessageDialog.openInformation(FindbugsPlugin.getShell(), null, message);
+                MessageDialog.openInformation(FindbugsPlugin.getShell(), getDialogTitle(), message);
             }
         });
     }
@@ -175,7 +200,7 @@ public class EclipseGuiCallback implements IGuiCallback {
         final AtomicInteger result = new AtomicInteger(-1);
         FindbugsPlugin.getShell().getDisplay().syncExec(new Runnable() {
             public void run() {
-                MessageDialog dialog = new MessageDialog(FindbugsPlugin.getShell(), title, null, message, MessageDialog.NONE,
+                MessageDialog dialog = new MessageDialog(FindbugsPlugin.getShell(), getDialogTitle(title), null, message, MessageDialog.NONE,
                         new String[] { ok, cancel }, 0) /*
                                                          * { { // the code below
                                                          * requires Eclipse 3.5
@@ -212,7 +237,7 @@ public class EclipseGuiCallback implements IGuiCallback {
     public void displayNonmodelMessage(final String title, final String message) {
         invokeInGUIThread(new Runnable() {
             public void run() {
-                MessageDialog.openInformation(FindbugsPlugin.getShell(), title, message);
+                MessageDialog.openInformation(FindbugsPlugin.getShell(), getDialogTitle(title), message);
             }
         });
     }

@@ -339,7 +339,7 @@ public class FindBugsWorker {
 
             st.newPoint("mergeBugCollections");
             SortedBugCollection resultCollection = mergeBugCollections(oldBugCollection, newBugCollection, incremental);
-            resultCollection.getProject().setGuiCallback(new EclipseGuiCallback());
+            resultCollection.getProject().setGuiCallback(new EclipseGuiCallback(project));
             resultCollection.setTimestamp(System.currentTimeMillis());
             resultCollection.setDoNotUseCloud(false);
             resultCollection.reinitializeCloud();

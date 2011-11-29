@@ -707,7 +707,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
         UserPreferences prefs = getUserPreferences(project);
         bugCollection = new SortedBugCollection();
-        bugCollection.getProject().setGuiCallback(new EclipseGuiCallback());
+        bugCollection.getProject().setGuiCallback(new EclipseGuiCallback(project));
         bugCollection.setDoNotUseCloud(!useCloud);
 
         bugCollection.readXML(bugCollectionFile);
