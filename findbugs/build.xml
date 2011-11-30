@@ -298,7 +298,9 @@
         </jar>
 
         <!-- Annotations jar file. -->
-        <jar destfile="${annotations.jar}">
+        <jar destfile="${annotations.jar}"
+		manifest="${etc.dir}/MANIFEST-findbugs-annotations.MF"
+		>
             <fileset dir="${classes.dir}">
                 <include name="**/annotations/*.class"/>
             </fileset>
@@ -306,6 +308,7 @@
                 <include name="**/annotations/*.java"/>
             </fileset>
             <zipfileset src="${jar.dir}/jcip-annotations.jar" excludes="META-INF/**,**/*.html"/>
+            <zipfileset src="${jar.dir}/jsr305.jar" excludes="META-INF/**,**/*.html"/>
         </jar>
     </target>
 
