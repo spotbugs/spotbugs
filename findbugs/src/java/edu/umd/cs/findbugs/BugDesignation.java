@@ -25,7 +25,6 @@ import java.io.Serializable;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -67,10 +66,19 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
     }
 
     public void cleanDirty() {
-        dirty = false;
+        setDirty(false);
     }
     public void setDirty(boolean dirty) {
+        if (this.dirty == dirty)
+            return;
         this.dirty = dirty;
+//        if (dirty) {
+//            System.out.println("Setting dirty bit");
+//            new RuntimeException("Setting dirty bit").printStackTrace(System.out);
+//        } else {
+//            System.out.println("Clearing dirty bit");
+//            new RuntimeException("Clearing dirty bit").printStackTrace(System.out);
+//        }
     }
 
     private @javax.annotation.CheckForNull
@@ -116,6 +124,9 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
         return designation;
     }
 
+    public boolean hasDesignationKey() {
+        return designation != null && designation.length() > 0;
+    }
     /**
      * set the user designation E.g., "MOSTLY_HARMLESS", "CRITICAL",
      * "NOT_A_BUG", etc.
@@ -131,7 +142,7 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
     public void setDesignationKey(String designationKey) {
         if (designation.equals(designationKey))
             return;
-        dirty = true;
+        setDirty(true);
         timestamp = System.currentTimeMillis();
         designation = (designationKey != null ? designationKey : UNCLASSIFIED);
     }
@@ -152,13 +163,19 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
     public void setTimestamp(long ts) {
         if (timestamp != ts) {
             timestamp = ts;
-            dirty = true;
+            if (false && !hasAnnotationText() && !hasDesignationKey())
+                new RuntimeException("Setting timestamp on bug designation without annotation or designation").printStackTrace(System.out);
+            setDirty(true);
         }
     }
 
     @CheckForNull
     public String getAnnotationText() {
         return annotationText;
+    }
+
+    public boolean hasAnnotationText() {
+        return annotationText != null && annotationText.length() > 0;
     }
 
     @Nonnull
@@ -171,7 +188,7 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
     public void setAnnotationText(String s) {
         if (s.equals(annotationText))
             return;
-        dirty = true;
+        setDirty(true);
         annotationText = s;
         timestamp = System.currentTimeMillis();
     }
@@ -208,13 +225,13 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
         if ((annotationText == null || annotationText.length() == 0) && other.annotationText != null
                 && other.annotationText.length() > 0) {
             annotationText = other.annotationText;
-            dirty = true;
+            setDirty(true);
             changed = true;
         }
         if ((designation == null || UNCLASSIFIED.equals(designation) || designation.length() == 0) && other.designation != null
                 && other.designation.length() > 0) {
             designation = other.designation;
-            dirty = true;
+            setDirty(true);
             changed = true;
         }
         if (!changed)

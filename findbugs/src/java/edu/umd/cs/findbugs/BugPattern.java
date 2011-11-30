@@ -240,7 +240,7 @@ public class BugPattern implements Comparable<BugPattern> {
 
     @Override
     public String toString() {
-        return "Bugpattern[" + type + "]";
+        return "BugPattern[" + type + "]";
     }
 
     /**

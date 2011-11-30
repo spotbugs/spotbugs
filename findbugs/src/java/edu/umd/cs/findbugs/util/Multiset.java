@@ -105,7 +105,8 @@ public class Multiset<K> {
         TreeSet<Map.Entry<K, Integer>> result = new TreeSet<Map.Entry<K, Integer>>(new EntryComparator<K>());
         result.addAll(map.entrySet());
         if (result.size() != map.size())
-            throw new IllegalStateException();
+            throw new IllegalStateException("Map " + map.getClass().getSimpleName() 
+                    + " reuses Map.Entry objects; entrySet can't be passed to addAll");
         return result;
     }
 

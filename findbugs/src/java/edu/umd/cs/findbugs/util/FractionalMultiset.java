@@ -82,18 +82,22 @@ public class FractionalMultiset<K> {
         TreeSet<Map.Entry<K, Double>> result = new TreeSet<Map.Entry<K, Double>>(new DecreasingOrderEntryComparator<K>());
         result.addAll(map.entrySet());
         if (result.size() != map.size())
-            throw new IllegalStateException();
+            throw new IllegalStateException("Map " + map.getClass().getSimpleName() 
+                    + " reuses Map.Entry objects; entrySet can't be passed to addAll");
         return result;
     }
-
+    
+    
     public Iterable<Map.Entry<K, Double>> entriesInIncreasingOrder() {
         TreeSet<Map.Entry<K, Double>> result = new TreeSet<Map.Entry<K, Double>>(new DecreasingOrderEntryComparator<K>());
         result.addAll(map.entrySet());
         if (result.size() != map.size())
-            throw new IllegalStateException();
+            throw new IllegalStateException("Map " + map.getClass().getSimpleName() 
+                    + " reuses Map.Entry objects; entrySet can't be passed to addAll");
         return result;
     }
 
+    
     private static <E> int compareValues(Entry<E, Double> o1, Entry<E, Double> o2) {
         double c1 = o1.getValue();
         double c2 = o2.getValue();

@@ -126,7 +126,6 @@ public class Obfuscate {
                 m.isStatic());
         result.setDescription(m.getDescription());
         return result;
-
     }
 
     static FieldAnnotation obfuscate(FieldAnnotation m) {
@@ -136,12 +135,12 @@ public class Obfuscate {
         return result;
 
     }
+    
 
     static ClassAnnotation obfuscate(ClassAnnotation m) {
         ClassAnnotation result = new ClassAnnotation(hashClass(m.getClassName()));
         result.setDescription(m.getDescription());
         return result;
-
     }
 
     static TypeAnnotation obfuscate(TypeAnnotation m) {

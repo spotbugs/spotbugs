@@ -619,6 +619,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     @Deprecated
     @Nullable
     public BugDesignation getUserDesignation() {
+        if (userDesignation == null)
+            return null;
+        if (!userDesignation.hasAnnotationText() && !userDesignation.hasDesignationKey())
+            return null;
         return userDesignation;
     }
 
@@ -680,7 +684,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      *            TODO
      */
     public void setUserDesignationKey(String key, @CheckForNull BugCollection bugCollection) {
-        BugDesignation userDesignation = getNonnullUserDesignation();
+        BugDesignation userDesignation = key.length() > 0 ? getNonnullUserDesignation() : getUserDesignation();
+        if (userDesignation == null)
+            return;
         if (userDesignation.getDesignationKey().equals(key))
             return;
         userDesignation.setDesignationKey(key);
@@ -709,9 +715,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      *            TODO
      */
     public void setAnnotationText(String annotationText, @CheckForNull BugCollection bugCollection) {
-        final BugDesignation u = getNonnullUserDesignation();
-        String existingText = u.getAnnotationText();
-        if (existingText != null && existingText.equals(annotationText))
+        BugDesignation u = annotationText.length() > 0 ? getNonnullUserDesignation() : getUserDesignation();
+        if (u == null)
+            return;
+        String existingText = u.getNonnullAnnotationText();
+        if (existingText.equals(annotationText))
             return;
         u.setAnnotationText(annotationText);
         Cloud plugin = bugCollection != null ? bugCollection.getCloud() : null;
@@ -746,7 +754,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     }
     
     public void setUserAnnotationDirty(boolean dirty) {
-        BugDesignation userDesignation = getNonnullUserDesignation();
+        BugDesignation userDesignation = getUserDesignation();
+        if (userDesignation == null)
+            return;
         userDesignation.setDirty(dirty);
     }
 
