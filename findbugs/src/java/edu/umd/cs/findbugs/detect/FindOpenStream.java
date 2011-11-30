@@ -208,6 +208,11 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         public final int priority;
 
         public final Stream stream;
+        
+        @Override
+        public String toString() {
+            return stream.toString();
+        }
 
         public PotentialOpenStream(String bugType, int priority, Stream stream) {
             this.bugType = bugType;
@@ -344,13 +349,13 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
             for (Type type : parameterTypeList) {
                 if (type instanceof ObjectType) {
                     ObjectType objectType = (ObjectType) type;
+                    
                     for (ObjectType streamBase : streamBaseList) {
                         if (Hierarchy.isSubtype(objectType, streamBase)) {
                             // OK, found a parameter that is a resource.
                             // Create a Stream object to represent it.
                             // The Stream will be uninteresting, so it will
                             // inhibit reporting for any stream that wraps it.
-
                             Stream paramStream = new Stream(firstLocation, objectType.getClassName(), streamBase.getClassName());
                             paramStream.setIsOpenOnCreation(true);
                             paramStream.setOpenLocation(firstLocation);
