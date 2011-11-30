@@ -24,7 +24,7 @@ import java.security.MessageDigest;
 import java.util.Iterator;
 
 import edu.umd.cs.findbugs.ba.SignatureParser;
-import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * @author pugh
@@ -55,7 +55,7 @@ public class Obfuscate {
         return hashData(fileName);
     }
 
-    public static String hashClass(@SlashedClassName String className) {
+    public static String hashClass(@DottedClassName String className) {
         if (className.startsWith("java"))
             return className;
         return "obfuscated.H" + hashData(className);
@@ -82,16 +82,19 @@ public class Obfuscate {
         case 'L':
             if (!signature.endsWith(";"))
                 throw new IllegalArgumentException("bad signature: " + signature);
-            signature = signature.substring(1, signature.length() - 1);
-            signature = hashClass(signature);
-            return "L" + signature + ";";
+            return hashFieldSignature(signature);
         default:
             throw new IllegalArgumentException("bad signature: " + signature);
-
         }
-
     }
 
+    public static String hashFieldSignature(String signature) {
+        signature = signature.substring(1, signature.length() - 1);
+        if (!signature.startsWith("java"))
+                signature = "obfuscated/H" + hashData(signature);
+        return "L" + signature + ";";
+    }
+    
     public static String hashMethodSignature(String signature) {
         SignatureParser parser = new SignatureParser(signature);
         StringBuilder buf = new StringBuilder("(");
