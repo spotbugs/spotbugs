@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.io.File;
 import java.io.IOException;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import org.apache.bcel.classfile.Code;
@@ -32,8 +33,6 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
@@ -47,6 +46,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -90,7 +90,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     private String description;
 
-    final private String className;
+    final private @DottedClassName String className;
 
     private String sourceFile;
 
@@ -124,7 +124,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      * @param endBytecode
      *            the end bytecode offset (inclusive)
      */
-    public SourceLineAnnotation(@NonNull String className, @NonNull String sourceFile, int startLine, int endLine,
+    public SourceLineAnnotation(@Nonnull @DottedClassName String className, @Nonnull String sourceFile, int startLine, int endLine,
             int startBytecode, int endBytecode) {
         if (className == null)
             throw new IllegalArgumentException("class name is null");
@@ -157,7 +157,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      *            the source file name
      * @return the SourceLineAnnotation
      */
-    public static SourceLineAnnotation createUnknown(String className, String sourceFile) {
+    public static SourceLineAnnotation createUnknown(@DottedClassName String className, String sourceFile) {
         return createUnknown(className, sourceFile, -1, -1);
     }
 
@@ -170,7 +170,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      *            the class name
      * @return the SourceLineAnnotation
      */
-    public static SourceLineAnnotation createUnknown(String className) {
+    public static SourceLineAnnotation createUnknown(@DottedClassName String className) {
         return createUnknown(className, AnalysisContext.currentAnalysisContext().lookupSourceFile(className), -1, -1);
     }
 
@@ -182,7 +182,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      *            the class name
      * @return the SourceLineAnnotation
      */
-    public static SourceLineAnnotation createReallyUnknown(String className) {
+    public static SourceLineAnnotation createReallyUnknown(@DottedClassName String className) {
         return createUnknown(className, SourceLineAnnotation.UNKNOWN_SOURCE_FILE, -1, -1);
     }
 
@@ -196,7 +196,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      *            the source file name
      * @return the SourceLineAnnotation
      */
-    public static SourceLineAnnotation createUnknown(String className, String sourceFile, int startBytecode, int endBytecode) {
+    public static SourceLineAnnotation createUnknown(@DottedClassName String className, String sourceFile, int startBytecode, int endBytecode) {
         SourceLineAnnotation result = new SourceLineAnnotation(className, sourceFile, -1, -1, startBytecode, endBytecode);
         // result.setDescription("SOURCE_LINE_UNKNOWN");
         return result;
@@ -248,7 +248,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      *            size in bytes of the method's code
      * @return a SourceLineAnnotation covering the entire method
      */
-    public static SourceLineAnnotation forEntireMethod(String className, String sourceFile, LineNumberTable lineNumberTable,
+    public static SourceLineAnnotation forEntireMethod(@DottedClassName String className, String sourceFile, LineNumberTable lineNumberTable,
             int codeSize) {
         LineNumber[] table = lineNumberTable.getLineNumberTable();
         if (table != null && table.length > 0) {
@@ -561,7 +561,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      *         information for the instruction
      */
     public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, MethodGen methodGen, String sourceFile,
-            @NonNull InstructionHandle handle) {
+            @Nonnull InstructionHandle handle) {
         LineNumberTable table = methodGen.getLineNumberTable(methodGen.getConstantPool());
         String className = methodGen.getClassName();
 
@@ -610,7 +610,7 @@ public class SourceLineAnnotation implements BugAnnotation {
     /**
      * Get the class name.
      */
-    public String getClassName() {
+    public @DottedClassName String getClassName() {
         return className;
     }
 
