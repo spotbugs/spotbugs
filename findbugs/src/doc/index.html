@@ -1,277 +1,291 @@
 <html>
-	<head>
-		<title>FindBugs&trade; - Find Bugs in Java Programs</title>
-		<link rel="stylesheet" type="text/css" href="findbugs.css" />
-		@GOOGLE_ANALYTICS@
-	</head>
+<head>
+<title>FindBugs&trade; - Find Bugs in Java Programs</title>
+<link rel="stylesheet" type="text/css" href="findbugs.css" />
+@GOOGLE_ANALYTICS@
+</head>
 
-	<body>
+<body>
 
-		<table width="100%">
-			<tr>
+	<table width="100%">
+		<tr>
 
-				@HTML_SIDEBAR@
+			@HTML_SIDEBAR@
 
-				<td align="left" valign="top">
+			<td align="left" valign="top">
 
+				<p>
+				<table>
+					<tr>
+						<td valign="center"><a href="@WEBSITE@/"><img
+								src="buggy-sm.png" alt="FindBugs logo" border="0" /> </a>
+						<td valign="center"><a href="http://www.umd.edu/"><img
+								src="informal.png" alt="UMD logo" border="0" /> </a>
+					</tr>
+				</table>
+
+				<h1>FindBugs&trade; - Find Bugs in Java Programs</h1>
+
+				<p>
+					This is the web page for FindBugs, a program which uses static
+					analysis to look for bugs in Java code.&nbsp; It is free software,
+					distributed under the terms of the <a
+						href="http://www.gnu.org/licenses/lgpl.html">Lesser GNU Public
+						License</a>. The name FindBugs&trade; and the <a href="buggy-sm.png">FindBugs
+						logo</a> are trademarked by <a href="http://www.umd.edu">The
+						University of Maryland</a>. As of July, 2008, FindBugs has been
+					downloaded more than 700,000 times.
+				</p>
+
+
+				<p>
+					FindBugs requires JRE (or JDK) 1.5.0 or later to run.&nbsp;
+					However, it can analyze programs compiled for any version of Java.
+					The current version of FindBugs is @VERSION@, released on
+					@RELEASE_DATE@. <a href="reportingBugs.html">We are very
+						interested in getting feedback on how to improve FindBugs</a>.
+				</p>
+
+				<p>
+					<a href="#changes">Changes</a> | <a href="#talks">Talks</a> | <a
+						href="#papers">Papers </a> | <a href="#sponsors">Sponsors</a> | <a
+						href="#support">Support</a>
+				</p>
+				<h1>New</h1>
+
+				<ul>
+					<li><p>
+							<b>JavaOne talk</b>: <a
+								href="http://www.cs.umd.edu/~pugh/MistakesThatMatter.pdf">Slides</a>
+							from my JavaOne talk, Mistakes That Matter.
+					<li><p>
+							<b>FindBugs community review</b>: We are previewing <a
+								href="communityReview.html">FindBugs community review</a>, in
+							which anyone can review issues in open source projects (i.e.,
+							mark issues as "must fix" or "mostly harmless"), and those
+							reviews are automatically shared with other reviewers.
+						<p>Initially, we are posting results for:
+						<ul>
+							<li><a href="http://findbugs.cs.umd.edu/cloud/jdk.jnlp">Sun's
+									JDK 8</a>
+							<li><a href="http://findbugs.cs.umd.edu/cloud/eclipse.jnlp">Eclipse
+									3.8</a>
+							<li><a href="http://findbugs.cs.umd.edu/cloud/tomcat.jnlp">Apache
+									Tomcat 7.0</a>
+							<li><a
+								href="http://findbugs.cs.umd.edu/cloud/intellij.jnlp.jnlp">IntelliJ
+									IDEA</a>
+						</ul>
+					<li><b>Google FindBugs Fixit</b>: Google has a tradition of <a
+						href="http://www.nytimes.com/2007/10/21/jobs/21pre.html">engineering
+							fixits</a>, special days where they try to get all of their engineers
+						focused on some specific problem or technique for improving the
+						systems at Google. A fixit might work to improve web
+						accessibility, internal testing, removing TODO's from internal
+						software, etc.
+
+						<p>On May 13-14, Google held a global fixit for UMD's FindBugs
+							tool a static analysis tool for finding coding mistakes in Java
+							software. The focus of the fixit was to get feedback on the 4,000
+							highest confidence issues found by FindBugs at Google, and let
+							Google engineers decide which issues, if any, needed fixing.
+						<p>More than 700 engineers ran FindBugs from dozens of
+							offices. More than 250 of them entered more than 8,000 reviews of
+							the issues. A review is a classification of an issue as must-fix,
+							should-fix, mostly-harmless, not-a-bug, and several other
+							categories. More than 75% of the reviews classified issues as
+							must fix, should fix or I will fix. Many of the scariest issues
+							received more than 10 reviews each.
+						<p>Engineers have already submitted changes that made more
+							than 1,100 of the 3,800 issues go away. Engineers filed more than
+							1,700 bug reports, of which 600 have already been marked as fixed
+							Work continues on addressing the issues raised by the fixit, and
+							on supporting the integration of FindBugs into the software
+							development process at Google.
+						<p>The fixit at Google showcased new capabilities of FindBugs
+							that provide a cloud computing / social networking backdrop.
+							Reviews of issues are immediately persisted into a central store,
+							where they can be seen by other developers, and FindBugs is
+							integrated into the internal Google tools for filing and viewing
+							bug reports and for viewing the version control history of source
+							files. For the Fixit, FindBugs was configured in a mode where
+							engineers could not see reviews from other engineers until they
+							had entered their own; after the fixit, the configuration will be
+							changed to a more open configuration where engineers can see
+							reviews from others without having to provide their own review
+							first. These capabilities have all been contributed to UMD's open
+							source FindBugs tool, although a fair bit of engineering remains
+							to prepare the capabilities for general release and make sure
+							they can integrate into systems outside of Google. The new
+							capabilities are expected to be ready for general release in Fall
+							2009.
+				</ul>
+
+				<h1>
+					<a name="changes">Change history</a>
+				</h1>
+				<p>The current version of FindBugs is @VERSION@.</p>
+
+
+				<h2>Changes since version 1.3.9</h2>
+				<ul>
+					<li>New bug patterns:
+						<ul>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION">AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#BX_UNBOXING_IMMEDIATELY_REBOXED">BX_UNBOXING_IMMEDIATELY_REBOXED</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#CO_COMPARETO_RESULTS_MIN_VALUE">CO_COMPARETO_RESULTS_MIN_VALUE</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD">DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_ARGUMENTS_WRONG_ORDER">DMI_ARGUMENTS_WRONG_ORDER</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE">DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_DOH">DMI_DOH</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS">DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_DEFAULT_ENCODING">DM_DEFAULT_ENCODING</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#ICAST_INT_2_LONG_AS_INSTANT">ICAST_INT_2_LONG_AS_INSTANT</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#INT_BAD_COMPARISON_WITH_INT_VALUE">INT_BAD_COMPARISON_WITH_INT_VALUE</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT">JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD">NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE">OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS">PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE">RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_NEGATING_RESULT_OF_COMPARETO">RV_NEGATING_RESULT_OF_COMPARETO</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_RETURN_VALUE_IGNORED_INFERRED">RV_RETURN_VALUE_IGNORED_INFERRED</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD">SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD">URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD">UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD">UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#VA_FORMAT_STRING_USES_NEWLINE">VA_FORMAT_STRING_USES_NEWLINE</a>
+							<li><a
+								href="http://findbugs.sourceforge.net/bugDescriptions.html#VO_VOLATILE_INCREMENT">VO_VOLATILE_INCREMENT</a>
+						</ul>
+					<li>Web-based storage cloud
+					<li>Initial efforts to allow linkages to bug trackers such as
+						jira and Google code. These efforts are still under development
+						and are ready for experimentation but not deployment.
+					<li>Support for easily adding/configuring/installing FindBugs
+						plugins.</li>
+				</ul>
+
+				<p>
+					<a href="Changes.html">Older versions...</a>
+				</p>
+
+				<h1>
+					<a name="talks">Talks about FindBugs</a>
+				</h1>
+				<ul>
 					<p>
-					<table><tr>
-					<td valign="center">
-						<a href="@WEBSITE@/"><img src="buggy-sm.png"
-								alt="FindBugs logo" border="0" /> </a>
-					<td valign="center">	<a href="http://www.umd.edu/"><img src="informal.png"
-								alt="UMD logo" border="0" /> </a>
-					</tr></table>
-
-					<h1>
-						FindBugs&trade; - Find Bugs in Java Programs
-					</h1>
-
-					<p>
-						This is the web page for FindBugs, a program which uses static analysis
-						to  look for bugs
-						in Java code.&nbsp; It is free software, distributed under the
-						terms of the
-						<a href="http://www.gnu.org/licenses/lgpl.html">Lesser GNU
-							Public License</a>. The name FindBugs&trade; and the
-						<a href="buggy-sm.png">FindBugs logo</a> are trademarked by
-						<a href="http://www.umd.edu">The University of Maryland</a>.
-						As of July, 2008, FindBugs has been downloaded more than 700,000 times. 
-							</p>
-					
-				
-								<p>
-						FindBugs requires JRE (or JDK) 1.5.0 or later to run.&nbsp;
-						However, it can analyze programs compiled for any version of Java.
-						The current version of FindBugs is @VERSION@, released on
-						@RELEASE_DATE@.
-						<a href="reportingBugs.html">We are very interested in getting feedback on how to improve
-						FindBugs</a>.
-					</p>
-
-					<p>
-						<a href="#changes">Changes</a> |
-						<a href="#talks">Talks</a> |
-						<a href="#papers">Papers </a> |
-						<a href="#sponsors">Sponsors</a> |
-						<a href="#support">Support</a> 
-					</p>
-					<h1>New</h1>
-
-<ul>
-<li><p><b>JavaOne talk</b>: 
-					<a href="http://www.cs.umd.edu/~pugh/MistakesThatMatter.pdf">Slides</a> from my JavaOne talk, 
-					Mistakes That Matter.
-					<li><p><b>FindBugs community review</b>: We are previewing <a href="communityReview.html">FindBugs community review</a>, 
-					in which anyone can review issues in open source projects (i.e., mark
-					issues as "must fix" or "mostly harmless"), and those reviews
-					are automatically shared with other reviewers.
-
-					<p>Initially, we are posting results for:
-					<ul>
-					<li>
-					<a href="http://findbugs.cs.umd.edu/cloud/jdk.jnlp">Sun's JDK 8</a>  
-					<li>
-					<a href="http://findbugs.cs.umd.edu/cloud/eclipse.jnlp">Eclipse 3.8</a>
-					<li>
-					<a href="http://findbugs.cs.umd.edu/cloud/tomcat.jnlp">Apache Tomcat 7.0</a>
-					<li>
-					<a href="http://findbugs.cs.umd.edu/cloud/intellij.jnlp.jnlp">IntelliJ IDEA</a>
-					</ul>
-					
-					
-<li><b>Google FindBugs Fixit</b>: Google has a tradition of <a href="http://www.nytimes.com/2007/10/21/jobs/21pre.html">engineering fixits</a>, special days where they try to get all of their engineers focused on some specific problem or technique for improving the systems at Google. A fixit might work to improve web accessibility, internal testing, removing TODO's from internal software, etc.
-
-<p>On May 13-14, Google held a global fixit for UMD's FindBugs tool  a static analysis tool for finding coding mistakes in Java software. The focus of the fixit was to get feedback on the 4,000 highest confidence issues found by FindBugs at Google, and let Google engineers decide which issues, if any, needed fixing.
+						<a href="http://www.cs.umd.edu/~pugh/MistakesThatMatter.pdf">Mistakes
+							That Matter</a>, JavaOne, 2009
+					<li><a href="http://findbugs.cs.umd.edu/talks/findbugs.mov">Quicktime
+							movie</a> showing of demo of our new GUI to view some of the null
+						pointer bugs in Eclipse (Big file warning: 23 Megabytes)</li>
+					<li><a
+						href="http://findbugs.cs.umd.edu/talks/JavaOne2007-TS2007.pdf">JavaOne
+							2007 talk on Improving Software Quality Using Static Analysis</a>
+					<li><a
+						href="http://findbugs.cs.umd.edu/talks/fb-sdbp-2006.pdf">Talk</a>
+						Bill Pugh gave at <a href="http://www.sdexpo.com/2006/sdbp/">SD
+							Best Practices</a>, Sept 14th (more of a handle on tutorial about
+						using FindBugs)</li>
+					<li><a
+						href="http://findbugs.cs.umd.edu/talks/fb-Sept1213-2006.pdf">Talk</a>
+						Bill Pugh gave at <a href="http://itasoftware.com/">ITA
+							Software</a> and <a href="http://www.csail.mit.edu/">MIT</a>, Sept
+						12th and 13th (more of a research focus)</li>
+					<li><a
+						href="http://video.google.com/videoplay?docid=-8150751070230264609">Video
+							of talk</a> Bill Pugh gave at <a href="http://www.google.com">Google</a>,
+						July 6th, 2006</li>
+					<li><a href="http://javaposse.com/index.php?post_id=95780">Java
+							Posse podcast interview with Bill Pugh and Brian Goetz</a>
+					</li>
+				</ul>
+				<h1>
+					<a name="papers">Papers about FindBugs</a>
+				</h1>
+				<ul>
+					<li><a
+						href="http://findbugs.cs.umd.edu/papers/MoreNullPointerBugs07.pdf">Finding
+							More Null Pointer Bugs, But Not Too Many</a>, by <a
+						href="http://faculty.ycp.edu/~dhovemey/">David Hovemeyer</a>, York
+						College of Pennsylvania and <a href="http://www.cs.umd.edu/~pugh/">William
+							Pugh</a>, Univ. of Maryland, <a
+						href="http://paste07.cs.washington.edu/">7th ACM
+							SIGPLAN-SIGSOFT Workshop on Program Analysis for Software Tools
+							and Engineering</a>, June, 2007
+					<li><a
+						href="http://findbugs.cs.umd.edu/papers/FindBugsExperiences07.pdf">Evaluating
+							Static Analysis Defect Warnings On Production Software,</a> <a
+						href="http://www.cs.umd.edu/~nat/">Nathaniel Ayewah and <a
+							href="http://www.cs.umd.edu/~pugh/">William Pugh</a>, Univ. of
+							Maryland, and J. David Morgenthaler, John Penix and YuQian Zhou,
+							Google, Inc., <a href="http://paste07.cs.washington.edu/">7th
+								ACM SIGPLAN-SIGSOFT Workshop on Program Analysis for Software
+								Tools and Engineering</a>, June, 2007 
+				</ul>
 
 
-	
-<p>More than 700 engineers ran FindBugs from dozens of offices. More than 250 of them entered more than 8,000 reviews of the issues. A review is a classification of an issue as must-fix, should-fix, mostly-harmless, not-a-bug, and several other categories. More than 75% of the reviews classified issues as must fix, should fix or I will fix. Many of the scariest issues received more than 10 reviews each.
+				<h1>
+					<a name="sponsors">Sponsors</a>
+				</h1>
+				<p>None, at the moment. We'd be very interested in any offers of
+					support or sponsorship.
+				<h1>
+					<a name="support">Additional Support</a>
+				</h1>
+				<p>
+					YourKit is kindly supporting open source projects with its
+					full-featured Java Profiler. YourKit, LLC is creator of innovative
+					and intelligent tools for profiling Java and .NET applications.
+					Take a look at YourKit's leading software products: <a
+						href="http://www.yourkit.com/java/profiler/index.jsp">YourKit
+						Java Profiler</a> and <a
+						href="http://www.yourkit.com/.net/profiler/index.jsp">YourKit
+						.NET Profiler</a>.
+				</p>
+				<p>
+					The FindBugs project also uses <a
+						href="http://www.atlassian.com/software/fisheye/">FishEye</a> and
+					<a href="http://www.atlassian.com/software/clover/">Clover</a>,
+					which are generously provided by <a href="http://www.cenqua.com/">Cenqua/Atlassian</a>.
+				</p>
+				<p>
+					Additional financial support for the FindBugs project has been
+					provided by <a href="http://www.google.com">Google</a> and <a
+						href="http://www.nsf.gov">National Science Foundation</a> grants
+					ASC9720199 and CCR-0098162,
 
-<p>Engineers have already submitted changes that made more than 1,100 of the 3,800 issues go away. Engineers filed more than 1,700 bug reports, of which 600 have already been marked as fixed Work continues on addressing the issues raised by the fixit, and on supporting the integration of FindBugs into the software development process at Google.
+				</p>
+				<p>Any opinions, findings and conclusions or recommendations
+					expressed in this material are those of the author(s) and do not
+					necessarily reflect the views of the National Science Foundation
+					(NSF). @HTML_FOOTER@</p>
+			</td>
+		</tr>
+	</table>
 
-<p>The fixit at Google showcased new capabilities of FindBugs that provide a cloud computing / social networking backdrop. Reviews of issues are immediately persisted into a central store, where they can be seen by other developers, and FindBugs is integrated into the internal Google tools for filing and viewing bug reports and for viewing the version control history of source files. For the Fixit, FindBugs was configured in a mode where engineers could not see reviews from other engineers until they had entered their own; after the fixit, the configuration will be changed to a more open configuration where engineers can see reviews from others without having to provide their own review first. These capabilities have all been contributed to UMD's open source FindBugs tool, although a fair bit of engineering remains to prepare the capabilities for general release and make sure they can integrate into systems outside of Google.  The new capabilities are expected to be ready for general release in Fall 2009.
-					
-									
-									</ul>
-					  
-									<h1>
-						<a name="changes">Change history</a>
-					</h1>
-					<p> The current version of FindBugs is @VERSION@.</p>
-
-
-<h2>Changes since version 1.3.9</h2>
-<ul>
-<li>New bug patterns:
-<ul>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION">AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#BX_UNBOXING_IMMEDIATELY_REBOXED">BX_UNBOXING_IMMEDIATELY_REBOXED</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#CO_COMPARETO_RESULTS_MIN_VALUE">CO_COMPARETO_RESULTS_MIN_VALUE</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD">DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_ARGUMENTS_WRONG_ORDER">DMI_ARGUMENTS_WRONG_ORDER</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE">DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_DOH">DMI_DOH</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS">DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_DEFAULT_ENCODING">DM_DEFAULT_ENCODING</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#ICAST_INT_2_LONG_AS_INSTANT">ICAST_INT_2_LONG_AS_INSTANT</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#INT_BAD_COMPARISON_WITH_INT_VALUE">INT_BAD_COMPARISON_WITH_INT_VALUE</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT">JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD">NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE">OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS">PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE">RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_NEGATING_RESULT_OF_COMPARETO">RV_NEGATING_RESULT_OF_COMPARETO</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_RETURN_VALUE_IGNORED_INFERRED">RV_RETURN_VALUE_IGNORED_INFERRED</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD">SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD">URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD">UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD">UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#VA_FORMAT_STRING_USES_NEWLINE">VA_FORMAT_STRING_USES_NEWLINE</a>
-<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#VO_VOLATILE_INCREMENT">VO_VOLATILE_INCREMENT</a>
-</ul>
-<li>Web-based storage cloud
-<li>Initial efforts to allow linkages to bug trackers such as jira and Google code. These efforts are still under development and 
-are ready for experimentation but not deployment.
-<li>Support for easily adding/configuring/installing FindBugs plugins.
-</li></ul>
-                                        <h2> Changes since version 1.3.8</h2>
-					<ul>
-                         <li>New bug patterns; in some cases, bugs previous reported as other bug patterns are reported as instances
-                                          of these new bug patterns in order to make it easier for developers to understand the bug reports</li>
-                                          <ul>
-                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#BC_IMPOSSIBLE_DOWNCAST ">BC_IMPOSSIBLE_DOWNCAST </a>
-                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY ">BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY </a>
-                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#EC_INCOMPATIBLE_ARRAY_COMPARE ">EC_INCOMPATIBLE_ARRAY_COMPARE </a>
-                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#JLM_JSR166_UTILCONCURRENT_MONITORENTER ">JLM_JSR166_UTILCONCURRENT_MONITORENTER </a>
-                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE ">LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE </a>
-                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#NP_CLOSING_NULL ">NP_CLOSING_NULL </a>                              
-                                  <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#RC_REF_COMPARISON_BAD_PRACTICE ">RC_REF_COMPARISON_BAD_PRACTICE </a>                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN ">RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN </a>                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED ">RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED </a>                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#SIC_THREADLOCAL_DEADLY_EMBRACE ">SIC_THREADLOCAL_DEADLY_EMBRACE </a>                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR ">UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR </a>                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED ">VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED </a>
-                                          </ul>
-                                          <li>Providing a bug rank (1-20), and the ability to filter by bug rank. Eventually, 
-                                              it will be possible to specify your own rules for ranking bugs, but the procedure for doing so hasn't been specified yet.
-                                          <li>Fixed about <a href="https://sourceforge.net/search/index.php?group_id=96405&search_summary=1&search_details=1&type_of_search=artifact&group_artifact_id%5B%5D=614693&open_date_start=2009-03-16&open_date_end=2009-08-20&form_submit=Search">45 bugs filed</a> through SourceForge
-                                          <li>Various reclassifications and priority tweaks
-                                          <li>Added more bug annotations to a variety of bug reports.
-                                            This provides more context for understanding bug reports
-                                            (e.g., if the value in question was is the return value
-                                            of a method, the method is described as the source of
-                                            the value in a bug annotation). This also provide more
-                                            accurate tracking of issues across versions of the code
-                                            being analyzed, but has the downside that when comparing
-                                            results from FindBugs 1.3.8 and FindBugs 1.3.9 on the
-                                            same version of code being analyzed, 
-                                            FindBugs may think that mistakenly believe that the 
-                                            issue reported by 1.3.8 was fixed and a new issue was
-                                            introduced that was reported by FindBugs 1.3.9. While 
-                                            annoying, it would be unusual for more than a dozen 
-                                            issues per million
-                                            lines of codes to be mistracked. 
-                                           <li> Lots of internal changes moving towards FindBugs 2.0, but these
-                                           features are undocumented, not yet officially supported, and subject to
-                                           radical changes before FindBugs 2.0 is released.
-                                  
-             
-                            </ul>
-
-
-                                        <p>
-						<a href="Changes.html">Older versions...</a>
-					</p>
-					
-					<h1>
-						<a name="talks">Talks about FindBugs</a>
-					</h1>
-					<ul>
-					<p><a href="http://www.cs.umd.edu/~pugh/MistakesThatMatter.pdf">Mistakes That Matter</a>, JavaOne, 2009
-					
-						<li>
-							<a href="http://findbugs.cs.umd.edu/talks/findbugs.mov">Quicktime
-								movie</a> showing of demo of our new GUI to view some of the null
-							pointer bugs in Eclipse (Big file warning: 23 Megabytes)
-
-						</li>
-						<li><a href="http://findbugs.cs.umd.edu/talks/JavaOne2007-TS2007.pdf">JavaOne 2007 talk on Improving Software Quality Using Static Analysis</a>
-						<li>
-							<a href="http://findbugs.cs.umd.edu/talks/fb-sdbp-2006.pdf">Talk</a>
-							Bill Pugh gave at
-							<a href="http://www.sdexpo.com/2006/sdbp/">SD Best Practices</a>,
-							Sept 14th (more of a handle on tutorial about using FindBugs)
-						</li>
-						<li>
-							<a href="http://findbugs.cs.umd.edu/talks/fb-Sept1213-2006.pdf">Talk</a>
-							Bill Pugh gave at
-							<a href="http://itasoftware.com/">ITA Software</a> and
-							<a href="http://www.csail.mit.edu/">MIT</a>, Sept 12th and 13th
-							(more of a research focus)
-						</li>
-						<li>
-							<a
-								href="http://video.google.com/videoplay?docid=-8150751070230264609">Video
-								of talk</a> Bill Pugh gave at
-							<a href="http://www.google.com">Google</a>, July 6th, 2006
-						</li>
-						<li>
-							<a href="http://javaposse.com/index.php?post_id=95780">Java
-								Posse podcast interview with Bill Pugh and Brian Goetz</a>
-						</li>
-					</ul>
-					<h1><a name="papers">Papers about FindBugs</a></h1>
-					<ul>
-					<li><a href="http://findbugs.cs.umd.edu/papers/MoreNullPointerBugs07.pdf">Finding More Null Pointer Bugs, 
-					But Not Too Many</a>, by
-					<a href="http://faculty.ycp.edu/~dhovemey/">David Hovemeyer</a>, York College of Pennsylvania 
-					and <a href="http://www.cs.umd.edu/~pugh/">William Pugh</a>, Univ. of Maryland,
-					 <a href="http://paste07.cs.washington.edu/">7th ACM SIGPLAN-SIGSOFT Workshop on Program Analysis for Software Tools and Engineering</a>, 
-                     June, 2007
-                     
-					<li><a href="http://findbugs.cs.umd.edu/papers/FindBugsExperiences07.pdf">Evaluating Static Analysis 
-					Defect Warnings On Production Software,</a>
- 			 		<a href="http://www.cs.umd.edu/~nat/">Nathaniel Ayewah and <a href="http://www.cs.umd.edu/~pugh/">William Pugh</a>, Univ. of Maryland, and 
- 					 J. David Morgenthaler, John Penix and YuQian Zhou, Google, Inc.,
- 					 <a href="http://paste07.cs.washington.edu/">7th ACM SIGPLAN-SIGSOFT Workshop on Program Analysis for Software Tools and Engineering</a>, 
-                     June, 2007
-					</ul>
-					
-
-					<h1>
-						<a name="sponsors">Sponsors</a>
-					</h1>
-					<p>None, at the moment. We'd be very interested in any offers of support or
-					sponsorship.
-					
-	<h1><a name="support">Additional Support</a></h1>
-					<p>
-	                    YourKit is kindly supporting open source projects with its full-featured Java Profiler.
-                        YourKit, LLC is creator of innovative and intelligent tools for profiling
-                        Java and .NET applications. Take a look at YourKit's leading software products:
-                        <a href="http://www.yourkit.com/java/profiler/index.jsp">YourKit Java Profiler</a> and
-                        <a href="http://www.yourkit.com/.net/profiler/index.jsp">YourKit .NET Profiler</a>. 
-					</p>
-					<p>
-					    The FindBugs project also uses
-					    <a href="http://www.atlassian.com/software/fisheye/">FishEye</a> and 
-					    <a href="http://www.atlassian.com/software/clover/">Clover</a>,
-					    which are generously provided by
-					    <a href="http://www.cenqua.com/">Cenqua/Atlassian</a>.
-					</p>
-					<p>
-						Additional financial support for the FindBugs project has been provided by 
-						<a href="http://www.google.com">Google</a>
-						and <a href="http://www.nsf.gov">National Science Foundation</a>
-						grants ASC9720199 and CCR-0098162, 
-
-					</p>
-					<p>
-						Any opinions, findings and conclusions or recommendations
-						expressed in this material are those of the author(s) and do not
-						necessarily reflect the views of the National Science Foundation
-						(NSF). @HTML_FOOTER@
-
-					</p>
-				</td>
-			</tr>
-		</table>
-
-	</body>
+</body>
 </html>
