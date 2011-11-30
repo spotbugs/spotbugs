@@ -20,41 +20,41 @@ public class TestTestFields extends TestCase {
     public void testTP1() {
         try {
             for (int i = -1; i <= 5; i++)
-				test.tp1(i);
+                test.tp1(i);
         } catch (NullPointerException e) {
             return;
         }
-		fail();
+        fail();
     }
 
     public void testFP1() {
         for (int i = -1; i <= 5; i++)
             test.fp1(i);
-	}
+    }
 
     public void testTP2() {
         try {
             test.tp2(true);
-			test.tp2(false);
+            test.tp2(false);
         } catch (NullPointerException e) {
             return;
         }
-		fail();
+        fail();
     }
 
     public void testFP2() {
         test.fp2(true);
         test.fp2(false);
-	}
+    }
 
     public void testTP3() {
         try {
             test.x = null;
-			test.tp3();
+            test.tp3();
             test.x = "x";
             test.tp3();
         } catch (NullPointerException e) {
-			return;
+            return;
         }
         fail();
     }
@@ -62,33 +62,33 @@ public class TestTestFields extends TestCase {
     public void testTF3() {
         test.x = null;
         test.fp3();
-		test.x = "x";
+        test.x = "x";
         test.fp3();
     }
 
     public void testTP4() {
         try {
             test.tp4(true);
-			test.tp4(false);
+            test.tp4(false);
         } catch (NullPointerException e) {
             return;
         }
-		fail();
+        fail();
     }
 
     public void testFP4() {
         test.fp4(true);
         test.fp4(false);
-	}
+    }
 
     public void testTP5() {
         try {
             test.x = null;
-			test.tp5();
+            test.tp5();
             test.x = "x";
             test.tp5();
         } catch (NullPointerException e) {
-			return;
+            return;
         }
         fail();
     }
@@ -96,11 +96,11 @@ public class TestTestFields extends TestCase {
     public void testTP6() {
         try {
             test.x = null;
-			test.tp6();
+            test.tp6();
             test.x = "x";
             test.tp6();
         } catch (NullPointerException e) {
-			return;
+            return;
         }
         fail();
     }
@@ -108,35 +108,35 @@ public class TestTestFields extends TestCase {
     public void testIFP1() {
         test.ifp1(false);
         test.ifp1(true);
-	}
+    }
 
     public void testITP1() {
         try {
             test.itp1(false);
-			test.itp1(true);
+            test.itp1(true);
         } catch (NullPointerException e) {
             return;
         }
-		fail();
+        fail();
     }
 
     public void testITP2() {
         try {
             test.itp2();
-		} catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             return;
         }
         fail();
-	}
+    }
 
     public void testITP3() {
         try {
             test.itp3(true);
-			test.itp3(false);
+            test.itp3(false);
         } catch (NullPointerException e) {
             return;
         }
-		fail();
+        fail();
     }
 
 }
