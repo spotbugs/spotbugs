@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.charsets.SourceCharset;
 import edu.umd.cs.findbugs.charsets.UTF8;
 
@@ -40,12 +41,17 @@ import edu.umd.cs.findbugs.charsets.UTF8;
 public class FixIndentation {
     static final String SPACES = "                                                                                                                                            ";
 
+    static final boolean performUpdate = SystemProperties.getBoolean("fix.identation");
+    
     public static void main(String args[]) throws Exception {
         File root = new File(args[0]);
         if (!root.exists() || !root.canRead())
             throw new IllegalArgumentException("Unable to read " +root);
         recursiveFix(root, true);
         System.out.printf("Updated %d/%d files%n", updated, examined);
+        System.out.printf("%d nonblank lines", lines);
+        if (!performUpdate)
+            System.out.println("No update actually performed");
     }
 
     static void recursiveFix(File root, boolean partial) throws IOException {
@@ -107,6 +113,7 @@ public class FixIndentation {
 
     static int examined = 0;
     static int updated = 0;
+    static  int lines = 0;
     static void fix(File fileToUpdate, boolean partial) throws IOException {
         boolean anyChanges = false;
         BufferedReader in = new BufferedReader(UTF8.fileReader(fileToUpdate));
@@ -119,6 +126,8 @@ public class FixIndentation {
                 String s = in.readLine();
                 if (s == null)
                     break;
+                if (s.trim().length() > 0)
+                    lines++;
                 String s2 = fix(s);
                 if (!s2.equals(s)) {
                     consecutiveFixes++;
@@ -137,12 +146,14 @@ public class FixIndentation {
         if (!anyChanges)
             return;
         updated++;
-        System.out.println("Updating " + fileToUpdate);
-        if (false)
+        if (!performUpdate) {
+            System.out.println("Would update " + fileToUpdate);
             return;
+        }
+        System.out.println("Updating " + fileToUpdate);
         StringReader stringReader = new StringReader(stringWriter.toString());
         Writer outFile = SourceCharset.fileWriter(fileToUpdate);
-        char[] buffer = new char[1000];
+        char[] buffer = new char[4000];
         try {
             while (true) {
                 int sz = stringReader.read(buffer);
