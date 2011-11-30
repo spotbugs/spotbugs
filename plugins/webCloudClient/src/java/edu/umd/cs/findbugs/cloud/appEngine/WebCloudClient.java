@@ -512,7 +512,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     public void storeUserAnnotation(BugInstance bugInstance) {
         checkInitialized();
         SigninState state = getSigninState();
-        if (state == SigninState.SIGNED_IN || state == SigninState.UNAUTHENTICATED) {
+        if (state.canUpload() || state.askToSignIn()) {
             // no need to do this if we're not signed in yet, because it will
             // get picked up during the
             // upload-evals-from-XML step
@@ -697,7 +697,9 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
             }
 
             if (getSigninState() == SigninState.SIGNIN_FAILED) {
-                fireNewIssuesUploadedEvent();
+               // TODO: Why would we do this?
+               if (false) 
+                   fireNewIssuesUploadedEvent();
                 return;
             }
         } finally {
