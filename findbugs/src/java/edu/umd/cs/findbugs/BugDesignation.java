@@ -125,7 +125,7 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
     }
 
     public boolean hasDesignationKey() {
-        return designation != null && designation.length() > 0;
+        return designation.length() > 0 && !designation.equals(UNCLASSIFIED);
     }
     /**
      * set the user designation E.g., "MOSTLY_HARMLESS", "CRITICAL",
@@ -140,6 +140,10 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
      * @see I18N#getUserDesignationKeys()
      */
     public void setDesignationKey(String designationKey) {
+        if ("".equals(designationKey)) {
+            assert false;
+            designationKey = null;
+        }
         if (designation.equals(designationKey))
             return;
         setDirty(true);
@@ -196,7 +200,7 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList();
         // all three of these xml attributes are optional
-        if (designation != null && !UNCLASSIFIED.equals(designation))
+        if (hasDesignationKey())
             attributeList.addAttribute("designation", designation);
         if (user != null && !"".equals(user))
             attributeList.addAttribute("user", user);
@@ -228,8 +232,7 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
             setDirty(true);
             changed = true;
         }
-        if ((designation == null || UNCLASSIFIED.equals(designation) || designation.length() == 0) && other.designation != null
-                && other.designation.length() > 0) {
+        if (!hasDesignationKey() && other.hasDesignationKey()) {
             designation = other.designation;
             setDirty(true);
             changed = true;
@@ -250,8 +253,7 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
         int hash = (int) this.timestamp;
         if (user != null)
             hash += user.hashCode();
-        if (designation != null)
-            hash += designation.hashCode();
+        hash += designation.hashCode();
         if (annotationText != null)
             hash += annotationText.hashCode();
         return hash;
@@ -275,7 +277,7 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
         if (result != 0)
             return result;
 
-        result = Util.nullSafeCompareTo(this.designation, o.designation);
+        result = this.designation.compareTo(o.designation);
         if (result != 0)
             return result;
         result = Util.nullSafeCompareTo(this.annotationText, o.annotationText);
