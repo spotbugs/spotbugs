@@ -66,14 +66,17 @@
 					in which anyone can review issues in open source projects (i.e., mark
 					issues as "must fix" or "mostly harmless"), and those reviews
 					are automatically shared with other reviewers.
-					<p>This is a pre-beta release, not ready for deployment. The implementation
-					will be undergoing significant changes before general availability. 
+
 					<p>Initially, we are posting results for:
 					<ul>
 					<li>
-					<a href="http://findbugs.cs.umd.edu/cloud/jdk7.jnlp">Sun's JDK 7</a>  
+					<a href="http://findbugs.cs.umd.edu/cloud/jdk.jnlp">Sun's JDK 8</a>  
 					<li>
-					<a href="http://findbugs.cs.umd.edu/cloud/eclipse.jnlp">Eclipse 3.5</a>
+					<a href="http://findbugs.cs.umd.edu/cloud/eclipse.jnlp">Eclipse 3.8</a>
+					<li>
+					<a href="http://findbugs.cs.umd.edu/cloud/tomcat.jnlp">Apache Tomcat 7.0</a>
+					<li>
+					<a href="http://findbugs.cs.umd.edu/cloud/intellij.jnlp.jnlp">IntelliJ IDEA</a>
 					</ul>
 					
 					
@@ -95,15 +98,49 @@
 									<h1>
 						<a name="changes">Change history</a>
 					</h1>
-					<p> The current version of FindBugs is s @VERSION@.</p>
+					<p> The current version of FindBugs is @VERSION@.</p>
 
 
-                                        <p> Changes since version 1.3.8</p>
+<h2>Changes since version 1.3.9</h2>
+<ul>
+<li>New bug patterns:
+<ul>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION">AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#BX_UNBOXING_IMMEDIATELY_REBOXED">BX_UNBOXING_IMMEDIATELY_REBOXED</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#CO_COMPARETO_RESULTS_MIN_VALUE">CO_COMPARETO_RESULTS_MIN_VALUE</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD">DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_ARGUMENTS_WRONG_ORDER">DMI_ARGUMENTS_WRONG_ORDER</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE">DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_DOH">DMI_DOH</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS">DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_DEFAULT_ENCODING">DM_DEFAULT_ENCODING</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#ICAST_INT_2_LONG_AS_INSTANT">ICAST_INT_2_LONG_AS_INSTANT</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#INT_BAD_COMPARISON_WITH_INT_VALUE">INT_BAD_COMPARISON_WITH_INT_VALUE</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT">JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD">NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE">OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS">PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE">RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_NEGATING_RESULT_OF_COMPARETO">RV_NEGATING_RESULT_OF_COMPARETO</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_RETURN_VALUE_IGNORED_INFERRED">RV_RETURN_VALUE_IGNORED_INFERRED</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD">SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD">URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD">UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD">UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#VA_FORMAT_STRING_USES_NEWLINE">VA_FORMAT_STRING_USES_NEWLINE</a>
+<li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#VO_VOLATILE_INCREMENT">VO_VOLATILE_INCREMENT</a>
+</ul>
+<li>Web-based storage cloud
+<li>Initial efforts to allow linkages to bug trackers such as jira and Google code. These efforts are still under development and 
+are ready for experimentation but not deployment.
+<li>Support for easily adding/configuring/installing FindBugs plugins.
+</li></ul>
+                                        <h2> Changes since version 1.3.8</h2>
 					<ul>
                          <li>New bug patterns; in some cases, bugs previous reported as other bug patterns are reported as instances
                                           of these new bug patterns in order to make it easier for developers to understand the bug reports</li>
                                           <ul>
-                                          <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#BC_IMPOSSIBLE_DOWNCAST ">BC_IMPOSSIBLE_DOWNCAST </a>
+                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#BC_IMPOSSIBLE_DOWNCAST ">BC_IMPOSSIBLE_DOWNCAST </a>
                                 <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY ">BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY </a>
                                 <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#EC_INCOMPATIBLE_ARRAY_COMPARE ">EC_INCOMPATIBLE_ARRAY_COMPARE </a>
                                 <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#JLM_JSR166_UTILCONCURRENT_MONITORENTER ">JLM_JSR166_UTILCONCURRENT_MONITORENTER </a>
