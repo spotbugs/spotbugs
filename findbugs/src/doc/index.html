@@ -14,13 +14,13 @@
 
 			<td align="left" valign="top">
 
-				<p>
+				<p></p>
 				<table>
 					<tr>
 						<td valign="center"><a href="@WEBSITE@/"><img
-								src="buggy-sm.png" alt="FindBugs logo" border="0" /> </a>
+								src="buggy-sm.png" alt="FindBugs logo" border="0" /> </a></td>
 						<td valign="center"><a href="http://www.umd.edu/"><img
-								src="informal.png" alt="UMD logo" border="0" /> </a>
+								src="informal.png" alt="UMD logo" border="0" /> </a></td>
 					</tr>
 				</table>
 
@@ -58,24 +58,27 @@
 							<b>JavaOne talk</b>: <a
 								href="http://www.cs.umd.edu/~pugh/MistakesThatMatter.pdf">Slides</a>
 							from my JavaOne talk, Mistakes That Matter.
+						</p>
+					</li>
 					<li><p>
 							<b>FindBugs community review</b>: We are previewing <a
 								href="communityReview.html">FindBugs community review</a>, in
 							which anyone can review issues in open source projects (i.e.,
 							mark issues as "must fix" or "mostly harmless"), and those
 							reviews are automatically shared with other reviewers.
-						<p>Initially, we are posting results for:
+						</p>
+						<p>Initially, we are posting results for:</p>
 						<ul>
 							<li><a href="http://findbugs.cs.umd.edu/cloud/jdk.jnlp">Sun's
-									JDK 8</a>
+									JDK 8</a></li>
 							<li><a href="http://findbugs.cs.umd.edu/cloud/eclipse.jnlp">Eclipse
-									3.8</a>
+									3.8</a></li>
 							<li><a href="http://findbugs.cs.umd.edu/cloud/tomcat.jnlp">Apache
-									Tomcat 7.0</a>
+									Tomcat 7.0</a></li>
 							<li><a
 								href="http://findbugs.cs.umd.edu/cloud/intellij.jnlp.jnlp">IntelliJ
-									IDEA</a>
-						</ul>
+									IDEA</a></li>
+						</ul></li>
 					<li><b>Google FindBugs Fixit</b>: Google has a tradition of <a
 						href="http://www.nytimes.com/2007/10/21/jobs/21pre.html">engineering
 							fixits</a>, special days where they try to get all of their engineers
@@ -88,20 +91,20 @@
 							tool a static analysis tool for finding coding mistakes in Java
 							software. The focus of the fixit was to get feedback on the 4,000
 							highest confidence issues found by FindBugs at Google, and let
-							Google engineers decide which issues, if any, needed fixing.
+							Google engineers decide which issues, if any, needed fixing.</p>
 						<p>More than 700 engineers ran FindBugs from dozens of
 							offices. More than 250 of them entered more than 8,000 reviews of
 							the issues. A review is a classification of an issue as must-fix,
 							should-fix, mostly-harmless, not-a-bug, and several other
 							categories. More than 75% of the reviews classified issues as
 							must fix, should fix or I will fix. Many of the scariest issues
-							received more than 10 reviews each.
+							received more than 10 reviews each.</p>
 						<p>Engineers have already submitted changes that made more
 							than 1,100 of the 3,800 issues go away. Engineers filed more than
 							1,700 bug reports, of which 600 have already been marked as fixed
 							Work continues on addressing the issues raised by the fixit, and
 							on supporting the integration of FindBugs into the software
-							development process at Google.
+							development process at Google.</p>
 						<p>The fixit at Google showcased new capabilities of FindBugs
 							that provide a cloud computing / social networking backdrop.
 							Reviews of issues are immediately persisted into a central store,
@@ -118,7 +121,8 @@
 							to prepare the capabilities for general release and make sure
 							they can integrate into systems outside of Google. The new
 							capabilities are expected to be ready for general release in Fall
-							2009.
+							2009.</p>
+					</li>
 				</ul>
 
 				<h1>
@@ -133,57 +137,81 @@
 						<ul>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION">AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#BX_UNBOXING_IMMEDIATELY_REBOXED">BX_UNBOXING_IMMEDIATELY_REBOXED</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#CO_COMPARETO_RESULTS_MIN_VALUE">CO_COMPARETO_RESULTS_MIN_VALUE</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD">DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_ARGUMENTS_WRONG_ORDER">DMI_ARGUMENTS_WRONG_ORDER</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE">DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_DOH">DMI_DOH</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS">DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_DEFAULT_ENCODING">DM_DEFAULT_ENCODING</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#ICAST_INT_2_LONG_AS_INSTANT">ICAST_INT_2_LONG_AS_INSTANT</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#INT_BAD_COMPARISON_WITH_INT_VALUE">INT_BAD_COMPARISON_WITH_INT_VALUE</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT">JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD">NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE">OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS">PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE">RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_NEGATING_RESULT_OF_COMPARETO">RV_NEGATING_RESULT_OF_COMPARETO</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_RETURN_VALUE_IGNORED_INFERRED">RV_RETURN_VALUE_IGNORED_INFERRED</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD">SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD">URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD">UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD">UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#VA_FORMAT_STRING_USES_NEWLINE">VA_FORMAT_STRING_USES_NEWLINE</a>
+							</li>
 							<li><a
 								href="http://findbugs.sourceforge.net/bugDescriptions.html#VO_VOLATILE_INCREMENT">VO_VOLATILE_INCREMENT</a>
-						</ul>
-					<li>Web-based storage cloud
+							</li>
+						</ul></li>
+					<li>Web-based storage cloud</li>
 					<li>Initial efforts to allow linkages to bug trackers such as
 						jira and Google code. These efforts are still under development
-						and are ready for experimentation but not deployment.
+						and are ready for experimentation but not deployment.</li>
 					<li>Support for easily adding/configuring/installing FindBugs
 						plugins.</li>
 				</ul>
@@ -199,12 +227,13 @@
 					<p>
 						<a href="http://www.cs.umd.edu/~pugh/MistakesThatMatter.pdf">Mistakes
 							That Matter</a>, JavaOne, 2009
+					</p>
 					<li><a href="http://findbugs.cs.umd.edu/talks/findbugs.mov">Quicktime
 							movie</a> showing of demo of our new GUI to view some of the null
 						pointer bugs in Eclipse (Big file warning: 23 Megabytes)</li>
 					<li><a
 						href="http://findbugs.cs.umd.edu/talks/JavaOne2007-TS2007.pdf">JavaOne
-							2007 talk on Improving Software Quality Using Static Analysis</a>
+							2007 talk on Improving Software Quality Using Static Analysis</a></li>
 					<li><a
 						href="http://findbugs.cs.umd.edu/talks/fb-sdbp-2006.pdf">Talk</a>
 						Bill Pugh gave at <a href="http://www.sdexpo.com/2006/sdbp/">SD
@@ -220,8 +249,7 @@
 							of talk</a> Bill Pugh gave at <a href="http://www.google.com">Google</a>,
 						July 6th, 2006</li>
 					<li><a href="http://javaposse.com/index.php?post_id=95780">Java
-							Posse podcast interview with Bill Pugh and Brian Goetz</a>
-					</li>
+							Posse podcast interview with Bill Pugh and Brian Goetz</a></li>
 				</ul>
 				<h1>
 					<a name="papers">Papers about FindBugs</a>
@@ -235,7 +263,7 @@
 							Pugh</a>, Univ. of Maryland, <a
 						href="http://paste07.cs.washington.edu/">7th ACM
 							SIGPLAN-SIGSOFT Workshop on Program Analysis for Software Tools
-							and Engineering</a>, June, 2007
+							and Engineering</a>, June, 2007</li>
 					<li><a
 						href="http://findbugs.cs.umd.edu/papers/FindBugsExperiences07.pdf">Evaluating
 							Static Analysis Defect Warnings On Production Software,</a> <a
@@ -244,7 +272,8 @@
 							Maryland, and J. David Morgenthaler, John Penix and YuQian Zhou,
 							Google, Inc., <a href="http://paste07.cs.washington.edu/">7th
 								ACM SIGPLAN-SIGSOFT Workshop on Program Analysis for Software
-								Tools and Engineering</a>, June, 2007 
+								Tools and Engineering</a>, June, 2007 </a>
+					</li>
 				</ul>
 
 
@@ -252,7 +281,7 @@
 					<a name="sponsors">Sponsors</a>
 				</h1>
 				<p>None, at the moment. We'd be very interested in any offers of
-					support or sponsorship.
+					support or sponsorship.</p>
 				<h1>
 					<a name="support">Additional Support</a>
 				</h1>
@@ -282,8 +311,7 @@
 				<p>Any opinions, findings and conclusions or recommendations
 					expressed in this material are those of the author(s) and do not
 					necessarily reflect the views of the National Science Foundation
-					(NSF). @HTML_FOOTER@</p>
-			</td>
+					(NSF). @HTML_FOOTER@</p></td>
 		</tr>
 	</table>
 
