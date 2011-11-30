@@ -337,6 +337,17 @@ public interface Cloud {
     enum SigninState {
         NO_SIGNIN_REQUIRED, UNAUTHENTICATED, SIGNING_IN, SIGNED_IN, SIGNIN_FAILED, SIGNIN_DECLINED, SIGNED_OUT;
         
+        public boolean canUpload() {
+            switch (this) {
+            case NO_SIGNIN_REQUIRED:
+            case SIGNING_IN:
+            case SIGNED_IN:
+                return true;
+            default:
+                return false;
+            }
+            
+        }
         public boolean askToSignIn() {
             switch (this) {
             case UNAUTHENTICATED:
