@@ -7,7 +7,7 @@ public class SimpleTests {
 
     int f(@CheckForNull Object x) {
         return x.hashCode();
-	}
+    }
     @Nonnull Object g() {
         return null;
     }
