@@ -31,7 +31,7 @@ public class EvaluationsFromXmlUploader {
             return;
         if (cloud.getGuiCallback().isHeadless())
             return;
-        if (cloud.getSigninState().askToSignIn() && !cloud.couldSignIn())
+        if (cloud.getSigninState().shouldAskToSignIn() && !cloud.couldSignIn())
             return;
         localAnnotations = getDesignationsFromXML();
 

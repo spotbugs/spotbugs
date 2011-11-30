@@ -314,7 +314,7 @@ public class WebCloudNetworkClient {
         final int bugCount = newBugs.size();
         if (bugCount == 0)
             return null;
-        if (cloudClient.getCloudTokenProperty() == null && cloudClient.getSigninState().askToSignIn())
+        if (cloudClient.getCloudTokenProperty() == null && cloudClient.getSigninState().shouldAskToSignIn())
             cloudClient.signInIfNecessary("Some bugs were not found on the " + cloudClient.getCloudName() + ".\n"
                     + "Your signin status is " +  cloudClient.getSigninState()  +"\n"
                     + "Would you like to sign in and upload them to the Cloud?");

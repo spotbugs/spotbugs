@@ -337,6 +337,7 @@ public interface Cloud {
     enum SigninState {
         NO_SIGNIN_REQUIRED, UNAUTHENTICATED, SIGNING_IN, SIGNED_IN, SIGNIN_FAILED, SIGNIN_DECLINED, SIGNED_OUT;
         
+        /** Can upload issues without asking to sign in */
         public boolean canUpload() {
             switch (this) {
             case NO_SIGNIN_REQUIRED:
@@ -348,7 +349,8 @@ public interface Cloud {
             }
             
         }
-        public boolean askToSignIn() {
+        /** Should ask to sign in if new issues to upload found */
+        public boolean shouldAskToSignIn() {
             switch (this) {
             case UNAUTHENTICATED:
             case SIGNED_OUT:
@@ -359,6 +361,7 @@ public interface Cloud {
             }
         }
 
+        /** Could ask to sign in if new issues to upload found */
         public boolean couldSignIn() {
             switch (this) {
             case UNAUTHENTICATED:
