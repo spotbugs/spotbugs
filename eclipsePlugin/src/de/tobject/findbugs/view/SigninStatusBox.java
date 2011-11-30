@@ -117,7 +117,7 @@ public class SigninStatusBox extends Composite {
             }
         });
 
-        if (state == SigninState.UNAUTHENTICATED || state == SigninState.SIGNED_OUT || state == SigninState.SIGNIN_FAILED) {
+        if (state.couldSignIn()) {
             MenuItem signInItem = new MenuItem(popupMenu, SWT.NONE);
             signInItem.setText("Sign in");
             signInItem.addSelectionListener(new SelectionAdapter() {
