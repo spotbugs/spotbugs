@@ -1,6 +1,7 @@
 package sfBugs;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3442048 {
     enum Day {
@@ -23,6 +24,7 @@ public class Bug3442048 {
         System.out.println("How is your number?");
     }
 
+    @NoWarning("SF_SWITCH_NO_DEFAULT")
     public void tellItLikeItIs(Day day) {
         switch (day) {
         case SUNDAY:
