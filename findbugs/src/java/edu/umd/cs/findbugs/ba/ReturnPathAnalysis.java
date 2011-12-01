@@ -69,6 +69,8 @@ public class ReturnPathAnalysis extends ForwardDataflowAnalysis<ReturnPath> impl
         case EXIT_EDGE:
             fact = new ReturnPath(ReturnPath.EXIT);
             break;
+        default:
+            break;
         }
 
         result.mergeWith(fact);
