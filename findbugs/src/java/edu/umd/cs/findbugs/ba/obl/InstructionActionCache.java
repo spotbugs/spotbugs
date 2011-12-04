@@ -44,10 +44,8 @@ import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
-import edu.umd.cs.findbugs.classfile.Global;
 
 /**
  * A cache for looking up the collection of ObligationPolicyDatabaseActions
@@ -135,8 +133,10 @@ public class InstructionActionCache {
                             }
                         }
                     }
+                } catch (ClassNotFoundException e) {
+                    AnalysisContext.reportMissingClass(e);
                 } catch (Exception e) {
-                    AnalysisContext.logError("oops", e);
+                    AnalysisContext.logError("Error in checking obligation analysis for " + xmethod, e);
                 }
 
             }
