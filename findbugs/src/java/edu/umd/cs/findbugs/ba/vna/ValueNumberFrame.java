@@ -29,8 +29,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.Frame;
@@ -113,7 +114,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
      * @param value
      *            the value(s) loaded
      */
-    public void addAvailableLoad(AvailableLoad availableLoad, @NonNull ValueNumber[] value) {
+    public void addAvailableLoad(AvailableLoad availableLoad, @Nonnull ValueNumber[] value) {
         if (value == null)
             throw new IllegalStateException();
         getUpdateableAvailableLoadMap().put(availableLoad, value);
