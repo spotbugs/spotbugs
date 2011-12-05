@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.EmptyStackException;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -115,6 +116,8 @@ public class Profiler implements XMLWriteable {
         final AtomicLong totalSquareMicroseconds = new AtomicLong();
 
         private final String className;
+        
+        Object maxContext;
 
         /**
          * @param className
@@ -124,12 +127,14 @@ public class Profiler implements XMLWriteable {
             this.className = className;
         }
 
-        public void handleCall(long nanoTime) {
+        public void handleCall(long nanoTime, Object context) {
             totalCalls.incrementAndGet();
             totalTime.addAndGet(nanoTime);
             long oldMax = maxTime.get();
-            if (nanoTime > oldMax)
+            if (nanoTime > oldMax) {
                 maxTime.compareAndSet(oldMax, nanoTime);
+                maxContext = context;
+            }
             long microseconds = TimeUnit.MICROSECONDS.convert(nanoTime, TimeUnit.NANOSECONDS);
             totalSquareMicroseconds.addAndGet(microseconds * microseconds);
         }
@@ -162,6 +167,7 @@ public class Profiler implements XMLWriteable {
                 xmlOutput.addAttribute("invocations", String.valueOf(callCount));
                 xmlOutput.addAttribute("avgMicrosecondsPerInvocation", String.valueOf(averageTimeMicros));
                 xmlOutput.addAttribute("maxMicrosecondsPerInvocation", String.valueOf(maxTimeMicros));
+                xmlOutput.addAttribute("maxContext", String.valueOf(maxContext));
                 xmlOutput.addAttribute("standardDeviationMircosecondsPerInvocation", String.valueOf(timeStandardDeviation));
                 xmlOutput.stopTag(true);
             }
@@ -193,7 +199,27 @@ public class Profiler implements XMLWriteable {
     final Stack<Clock> startTimes;
 
     final ConcurrentHashMap<Class<?>, Profile> profile;
+    
+    final Stack<Object> context = new Stack<Object>();
+    
+    public void startContext(Object context) {
+        this.context.push(context);
+    }
+    
+    public void endContext(Object context) {
+        Object o = this.context.pop();
+        assert o == context;
+    }
 
+    private Object getContext() {
+        if (context.size() == 0)
+            return "";
+        try {
+            return context.peek();
+        } catch (EmptyStackException e) {
+            return "";
+        }
+    }
     public void start(Class<?> c) {
         long currentNanoTime = System.nanoTime();
 
@@ -233,7 +259,7 @@ public class Profiler implements XMLWriteable {
                 counter = counter2;
             }
         }
-        counter.handleCall(accumulatedTime);
+        counter.handleCall(accumulatedTime, getContext());
 
     }
 

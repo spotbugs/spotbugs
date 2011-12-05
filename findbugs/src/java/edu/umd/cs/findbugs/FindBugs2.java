@@ -1170,13 +1170,14 @@ public class FindBugs2 implements IFindBugsEngine {
                     }
                     currentClassName = ClassName.toDottedClassName(classDescriptor.getClassName());
                     notifyClassObservers(classDescriptor);
+                    profiler.startContext(currentClassName);
 
+                    try {
                     for (Detector2 detector : detectorList) {
                         if (Thread.interrupted()) {
                             throw new InterruptedException();
                         }
                         if (isHuge && !FirstPassDetector.class.isAssignableFrom(detector.getClass())) {
-
                             continue;
                         }
                         if (DEBUG) {
@@ -1200,8 +1201,11 @@ public class FindBugs2 implements IFindBugsEngine {
                             profiler.end(detector.getClass());
                         }
                     }
+                    } finally {
 
-                    progress.finishClass();
+                        progress.finishClass();
+                        profiler.endContext(currentClassName);
+                    }
                 }
 
                 if (!passIterator.hasNext())
