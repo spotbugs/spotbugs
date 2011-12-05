@@ -253,80 +253,52 @@ public class NullDerefAndRedundantComparisonFinder {
         HashSet<ValueNumber> npeIfStatementCovered = new HashSet<ValueNumber>(nullValueGuaranteedDerefMap.keySet());
         Map<ValueNumber, SortedSet<Location>> bugEdgeLocationMap = new HashMap<ValueNumber, SortedSet<Location>>();
 
-        // Check every non-exception control edge
-        for (Iterator<Edge> i = cfg.edgeIterator(); i.hasNext();) {
-            Edge edge = i.next();
-
-            if (edge.isExceptionEdge()) {
-                if (DEBUG_DEREFS) {
-                    System.out.println("On exception edge " + edge.formatAsString(false));
-                }
-
-                // continue;
-            }
-
-            if (DEBUG_DEREFS) {
-                System.out.println("On edge " + edge.formatAsString(false));
-            }
-
-            BasicBlock source = edge.getSource();
-            BasicBlock target = edge.getTarget();
-            ValueNumberFrame vnaFact = vnaDataflow.getResultFact(source);
-            ValueNumberFrame vnaEdgeFact = vnaDataflow.getFactOnEdge(edge);
-            ValueNumberFrame vnaTargetFact = vnaDataflow.getStartFact(target);
-            IsNullValueFrame invFact = invDataflow.getFactAtMidEdge(edge);
-
-            IsNullValueFrame invSourceFact = invDataflow.getResultFact(source);
-            IsNullValueFrame invTargetFact = invDataflow.getStartFact(target);
-            UnconditionalValueDerefSet uvdSourceFact = uvdDataflow.getStartFact(source);
-            UnconditionalValueDerefSet uvdTargetFact = uvdDataflow.getResultFact(target);
-            Location location = null;
-            if (edge.isExceptionEdge()) {
-                BasicBlock b = cfg.getSuccessorWithEdgeType(source, EdgeTypes.FALL_THROUGH_EDGE);
-                if (b != null)
-                    location = new Location(source.getExceptionThrower(), b);
-            } else
-                location = Location.getLastLocation(source);
-
-            UnconditionalValueDerefSet uvdFact = uvdDataflow.getFactOnEdge(edge);
-            // UnconditionalValueDerefSet uvdFact =
-            // uvdDataflow.getStartFact(edge.getTarget());
-
-            if (uvdFact.isEmpty())
-                continue;
-            if (location != null) {
-
-                Instruction in = location.getHandle().getInstruction();
-                if (assertionMethods.isAssertionInstruction(in, classContext.getConstantPoolGen())) {
-                    if (DEBUG_DEREFS)
-                        System.out.println("Skipping because it is an assertion method ");
-                    continue;
-                }
-
-                checkForUnconditionallyDereferencedNullValues(location, bugEdgeLocationMap, nullValueGuaranteedDerefMap, vnaFact,
-                        invFact, uvdFact, true);
-            }
-        }
+        checkEdges(cfg, nullValueGuaranteedDerefMap, bugEdgeLocationMap);
+        
         Map<ValueNumber, SortedSet<Location>> bugLocationMap = bugEdgeLocationMap;
         bugLocationMap.putAll(bugStatementLocationMap);
+        
         // For each value number that is null somewhere in the
         // method, collect the set of locations where it becomes null.
         // FIXME: we may see some locations that are not guaranteed to be
         // dereferenced (how to fix this?)
+        Map<ValueNumber, Set<Location>> nullValueAssignmentMap = findNullAssignments(locationWhereValueBecomesNullSet);
+
+        reportBugs(nullValueGuaranteedDerefMap, npeIfStatementCovered, bugLocationMap, nullValueAssignmentMap);
+    }
+
+    /**
+     * @param locationWhereValueBecomesNullSet
+     * @return
+     */
+    public Map<ValueNumber, Set<Location>> findNullAssignments(Set<LocationWhereValueBecomesNull> locationWhereValueBecomesNullSet) {
         Map<ValueNumber, Set<Location>> nullValueAssignmentMap = new HashMap<ValueNumber, Set<Location>>();
         for (LocationWhereValueBecomesNull lwvbn : locationWhereValueBecomesNullSet) {
             if (DEBUG_DEREFS)
                 System.out.println("OOO " + lwvbn);
             Set<Location> locationSet = nullValueAssignmentMap.get(lwvbn.getValueNumber());
             if (locationSet == null) {
-                locationSet = new HashSet<Location>();
+                locationSet = new HashSet<Location>(4);
                 nullValueAssignmentMap.put(lwvbn.getValueNumber(), locationSet);
             }
             locationSet.add(lwvbn.getLocation());
             if (DEBUG_DEREFS)
                 System.out.println(lwvbn.getValueNumber() + " becomes null at " + lwvbn.getLocation());
         }
+        return nullValueAssignmentMap;
+    }
 
+    /**
+     * @param nullValueGuaranteedDerefMap
+     * @param npeIfStatementCovered
+     * @param bugLocationMap
+     * @param nullValueAssignmentMap
+     * @throws CFGBuilderException
+     * @throws DataflowAnalysisException
+     */
+    public void reportBugs(Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap,
+            HashSet<ValueNumber> npeIfStatementCovered, Map<ValueNumber, SortedSet<Location>> bugLocationMap,
+            Map<ValueNumber, Set<Location>> nullValueAssignmentMap) throws CFGBuilderException, DataflowAnalysisException {
         // Report
         for (Map.Entry<ValueNumber, NullValueUnconditionalDeref> e : nullValueGuaranteedDerefMap.entrySet()) {
             ValueNumber valueNumber = e.getKey();
@@ -392,6 +364,61 @@ public class NullDerefAndRedundantComparisonFinder {
 
             collector.foundGuaranteedNullDeref(assignedNullLocationSet, derefLocationSet, knownNullAndDoomedAt, vnaDataflow,
                     valueNumber, variableAnnotation, e.getValue(), npeIfStatementCovered.contains(valueNumber));
+        }
+    }
+
+    /**
+     * @param cfg
+     * @param nullValueGuaranteedDerefMap
+     * @param bugEdgeLocationMap
+     * @throws DataflowAnalysisException
+     */
+    public void checkEdges(CFG cfg, Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap,
+            Map<ValueNumber, SortedSet<Location>> bugEdgeLocationMap) throws DataflowAnalysisException {
+        // Check every non-exception control edge
+        for (Iterator<Edge> i = cfg.edgeIterator(); i.hasNext();) {
+            Edge edge = i.next();
+
+            UnconditionalValueDerefSet uvdFact = uvdDataflow.getFactOnEdge(edge);
+
+            if (uvdFact.isEmpty())
+                continue;
+            
+            if (edge.isExceptionEdge()) {
+                if (DEBUG_DEREFS) {
+                    System.out.println("On exception edge " + edge.formatAsString(false));
+                }
+
+                // continue;
+            }
+
+            if (DEBUG_DEREFS) {
+                System.out.println("On edge " + edge.formatAsString(false));
+            }
+
+            BasicBlock source = edge.getSource();
+            ValueNumberFrame vnaFact = vnaDataflow.getResultFact(source);
+            IsNullValueFrame invFact = invDataflow.getFactAtMidEdge(edge);
+
+            Location location = null;
+            if (edge.isExceptionEdge()) {
+                BasicBlock b = cfg.getSuccessorWithEdgeType(source, EdgeTypes.FALL_THROUGH_EDGE);
+                if (b != null)
+                    location = new Location(source.getExceptionThrower(), b);
+            } else
+                location = Location.getLastLocation(source);
+
+            if (location != null) {
+                Instruction in = location.getHandle().getInstruction();
+                if (assertionMethods.isAssertionInstruction(in, classContext.getConstantPoolGen())) {
+                    if (DEBUG_DEREFS)
+                        System.out.println("Skipping because it is an assertion method ");
+                    continue;
+                }
+
+                checkForUnconditionallyDereferencedNullValues(location, bugEdgeLocationMap, nullValueGuaranteedDerefMap, vnaFact,
+                        invFact, uvdFact, true);
+            }
         }
     }
 
