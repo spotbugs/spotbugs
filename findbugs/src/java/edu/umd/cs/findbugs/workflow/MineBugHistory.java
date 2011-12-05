@@ -95,7 +95,7 @@ public class MineBugHistory {
         }
     }
 
-    BugCollection bugCollection;
+    SortedBugCollection bugCollection;
 
     Version[] versionList;
 
@@ -112,11 +112,11 @@ public class MineBugHistory {
     public MineBugHistory() {
     }
 
-    public MineBugHistory(BugCollection bugCollection) {
+    public MineBugHistory(SortedBugCollection bugCollection) {
         this.bugCollection = bugCollection;
     }
 
-    public void setBugCollection(BugCollection bugCollection) {
+    public void setBugCollection(SortedBugCollection bugCollection) {
         this.bugCollection = bugCollection;
     }
 
@@ -216,6 +216,9 @@ public class MineBugHistory {
             if (paddingNeeded > 0)
                 b.append("                                                     ".substring(0, paddingNeeded));
         }
+        int errors = bugCollection.getErrors().size();
+        if (errors > 0)
+            b.append("     ").append(errors).append(" errors");
 
         out.println(b.toString());
     }
