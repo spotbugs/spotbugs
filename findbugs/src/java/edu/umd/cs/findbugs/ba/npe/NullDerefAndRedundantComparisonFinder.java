@@ -245,34 +245,6 @@ public class NullDerefAndRedundantComparisonFinder {
             if (DEBUG_DEREFS) {
                 System.out.println("At location " + location);
             }
-            if (false) {
-                Instruction in = location.getHandle().getInstruction();
-
-                if (in instanceof InvokeInstruction && in.produceStack(classContext.getConstantPoolGen()) == 1
-                        || in instanceof GETFIELD || in instanceof GETSTATIC) {
-                    IsNullValueFrame invFrame = invDataflow.getFactAfterLocation(location);
-                    if (invFrame.getStackDepth() > 0) {
-                        IsNullValue isNullValue = invFrame.getTopValue();
-                        if (isNullValue.isNullOnSomePath()) {
-                            // OK, must be from return value
-                            ValueNumber vn = vnaDataflow.getFactAfterLocation(location).getTopValue();
-                            UnconditionalValueDerefSet uvd = uvdDataflow.getFactAfterLocation(location);
-                            if (uvd.isUnconditionallyDereferenced(vn)) {
-                                SortedSet<Location> knownNullAndDoomedAt = bugStatementLocationMap.get(vn);
-                                noteUnconditionallyDereferencedNullValue(location, bugStatementLocationMap,
-                                        nullValueGuaranteedDerefMap, uvd, isNullValue, vn);
-                            }
-                        }
-                    }
-                }
-
-                if (assertionMethods.isAssertionHandle(location.getHandle(), classContext.getConstantPoolGen())) {
-                    if (DEBUG_DEREFS)
-                        System.out.println("Skipping because it is an assertion method ");
-                    continue;
-                }
-
-            }
 
             checkForUnconditionallyDereferencedNullValues(location, bugStatementLocationMap, nullValueGuaranteedDerefMap,
                     vnaDataflow.getFactAtLocation(location), invDataflow.getFactAtLocation(location),
