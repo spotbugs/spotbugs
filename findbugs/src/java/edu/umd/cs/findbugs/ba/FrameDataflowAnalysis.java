@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.Iterator;
 
-import edu.umd.cs.findbugs.annotations.Nullable;
+import javax.annotation.CheckForNull;
 
 /**
  * A convenient base class for dataflow analysis classes which use Frames as
@@ -154,7 +154,7 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
      *            modifyFrame() is being called
      * @return a modifiable copy of fact
      */
-    final protected FrameType modifyFrame(FrameType orig, @Nullable FrameType copy) {
+    final protected FrameType modifyFrame(FrameType orig, @CheckForNull FrameType copy) {
         if (copy == null) {
             copy = createFact();
             copy.copyFrom(orig);
