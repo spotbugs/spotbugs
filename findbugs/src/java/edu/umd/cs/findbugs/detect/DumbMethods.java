@@ -328,7 +328,9 @@ public class DumbMethods extends OpcodeStackDetector {
                 }
 
                 BugInstance bug = new BugInstance(this, bugPattern, NORMAL_PRIORITY).addClassAndMethod(this)
-                        .addCalledMethod(this).addString((String) o).describe(StringAnnotation.STRING_CONSTANT_ROLE);
+                        .addCalledMethod(this)
+                        .addString("Passing String constant as value that should be null checked").describe(StringAnnotation.STRING_MESSAGE)
+                        .addString((String) o).describe(StringAnnotation.STRING_CONSTANT_ROLE);
                 if (secondArgument != null)
                         bug.addValueSource(secondArgument, this);
 
@@ -355,7 +357,8 @@ public class DumbMethods extends OpcodeStackDetector {
                    }
 
                    BugInstance bug = new BugInstance(this, bugPattern, NORMAL_PRIORITY).addClassAndMethod(this)
-                           .addCalledMethod(this).addString((String) o).describe(StringAnnotation.STRING_CONSTANT_ROLE);
+                           .addCalledMethod(this).addString("Passing String constant as value that should be null checked").describe(StringAnnotation.STRING_MESSAGE)
+                           .addString((String) o).describe(StringAnnotation.STRING_CONSTANT_ROLE);
                    if (secondArgument != null)
                            bug.addValueSource(secondArgument, this);
 
