@@ -20,9 +20,14 @@
 package edu.umd.cs.findbugs.tools;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.zip.GZIPInputStream;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -37,7 +42,7 @@ public class ComparePerfomance {
     final int num;
     final Map<String, int[]> performance = new TreeMap<String, int[]>();
     
-    ComparePerfomance(String [] args) throws DocumentException {
+    ComparePerfomance(String [] args) throws DocumentException, IOException {
         num = args.length;
         for(int i = 0; i < args.length; i++) {
             foo(new File(args[i]), i);
@@ -54,11 +59,15 @@ public class ComparePerfomance {
         performance.put(className, result);
         return result;
     }
-    public  void foo(File f, int i) throws DocumentException {
+    public  void foo(File f, int i) throws DocumentException, IOException {
         Document doc;
         SAXReader reader = new SAXReader();
 
-        doc = reader.read(f);
+        String fName = f.getName();
+        InputStream in = new FileInputStream(f);
+        if (fName.endsWith(".gz"))
+            in = new GZIPInputStream(in);
+        doc = reader.read(in);
         Node summary = doc.selectSingleNode("/BugCollection/FindBugsSummary");
         double cpu_seconds = Double.parseDouble(summary.valueOf("@cpu_seconds"));
         putStats("cpu_seconds", i, (int) (cpu_seconds * 1000));
