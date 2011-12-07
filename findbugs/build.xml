@@ -1058,6 +1058,8 @@
 
     <!-- Generate binary distribution (both .zip and .tar.gz) -->
     <target name="bindist" depends="clean,validate,rebuild,docs" description="Binary distribution">
+        <ant dir="${pluginsSrc.dir}/webCloudClient" target="install" inheritAll="false" />
+        <ant dir="${pluginsSrc.dir}/noUpdateChecks" target="install" inheritAll="false" />
         <java classpathref="tools.classpath"
             classname="edu.umd.cs.findbugs.tools.CheckClassfileVersion"
             failonerror="true">
@@ -1121,6 +1123,42 @@
             </tarfileset>
         </tar>
 
+        <move file="optionalPlugin/noUpdateChecks.jar" todir="plugin"/>
+
+        <zip destfile="${build.dir}/findbugs-noUpdateChecks-${release.number}.zip" compress="true">
+            <zipfileset prefix="findbugs-${release.number}" dir=".">
+                <patternset refid="bindist.miscfile.pats"/>
+            </zipfileset>
+            <zipfileset prefix="findbugs-${release.number}" dir="." filemode="555">
+                <patternset refid="bindist.unixscript.pats"/>
+            </zipfileset>
+            <zipfileset prefix="findbugs-${release.number}" dir=".">
+                <patternset refid="bindist.jar.pats"/>
+            </zipfileset>
+            <zipfileset prefix="findbugs-${release.number}/doc" dir="${doc.dir}">
+                <patternset refid="doc.src.pats"/>
+                <patternset refid="doc.img.pats"/>
+            </zipfileset>
+        </zip>
+
+        <tar destfile="${build.dir}/findbugs-noUpdateChecks-${release.number}.tar.gz" compression="gzip">
+            <tarfileset prefix="findbugs-${release.number}" dir=".">
+                <patternset refid="bindist.miscfile.pats"/>
+            </tarfileset>
+            <tarfileset prefix="findbugs-${release.number}" dir="." mode="555">
+                <patternset refid="bindist.unixscript.pats"/>
+            </tarfileset>
+            <tarfileset prefix="findbugs-${release.number}" dir=".">
+                <patternset refid="bindist.jar.pats"/>
+            </tarfileset>
+            <tarfileset prefix="findbugs-${release.number}/doc" dir="${doc.dir}">
+                <patternset refid="doc.src.pats"/>
+                <patternset refid="doc.img.pats"/>
+            </tarfileset>
+        </tar>
+
+        <move file="plugin/noUpdateChecks.jar" todir="optionalPlugin"/>
+
     </target>
 
     <!-- Build source distribution. -->
@@ -1158,8 +1196,12 @@
         <delete file="${engine.jar}"/>
         <delete dir="${annotationDoc.dir}"/>
         <delete file="${anttask.jar}" failonerror="false"/>
-        <delete file="plugin/webCloudClient.jar"/>
-        <delete file="plugin/webCloudClient-full.jar"/>
+        <delete failonerror="false">
+           <fileset dir="plugin" includes="*.jar"/>
+        </delete>
+        <delete failonerror="false">
+           <fileset dir="optionalPlugin" includes="*.jar"/>
+        </delete>
     </target>
 
     <target name="init" depends="properties">
