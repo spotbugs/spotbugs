@@ -60,9 +60,9 @@ public class ComparePerfomance {
 
         doc = reader.read(f);
         Node summary = doc.selectSingleNode("/BugCollection/FindBugsSummary");
-        double cpu_seconds = Integer.parseInt(summary.valueOf("@cpu_seconds"));
+        double cpu_seconds = Double.parseDouble(summary.valueOf("@cpu_seconds"));
         putStats("cpu_seconds", i, (int) (cpu_seconds * 1000));
-        double gc_seconds = Integer.parseInt(summary.valueOf("@gc_seconds"));
+        double gc_seconds = Double.parseDouble(summary.valueOf("@gc_seconds"));
         putStats("gc_seconds", i, (int) (gc_seconds * 1000));
         
         List<Node> profileNodes = doc.selectNodes("/BugCollection/FindBugsSummary/FindBugsProfile/ClassProfile");
