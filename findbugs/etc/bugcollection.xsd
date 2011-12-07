@@ -340,6 +340,8 @@
 												type="xs:unsignedInt" use="required"/>
 												<xs:attribute name="maxMicrosecondsPerInvocation"
 												type="xs:unsignedInt" use="optional"/>
+												<xs:attribute name="maxContext" type="xs:string"
+													use="optional"/>
 												<xs:attribute
 												name="standardDeviationMircosecondsPerInvocation"
 												type="xs:unsignedInt" use="optional"/>
