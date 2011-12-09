@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 public class Profiler implements XMLWriteable {
 
     final static boolean REPORT = SystemProperties.getBoolean("profiler.report");
+    final static boolean MAX_CONTEXT = SystemProperties.getBoolean("findbugs.profiler.maxcontext");
 
     public Profiler() {
         startTimes = new Stack<Clock>();
@@ -133,7 +134,8 @@ public class Profiler implements XMLWriteable {
             long oldMax = maxTime.get();
             if (nanoTime > oldMax) {
                 maxTime.compareAndSet(oldMax, nanoTime);
-                maxContext = context;
+                if (MAX_CONTEXT)
+                    maxContext = context;
             }
             long microseconds = TimeUnit.MICROSECONDS.convert(nanoTime, TimeUnit.NANOSECONDS);
             totalSquareMicroseconds.addAndGet(microseconds * microseconds);
@@ -147,6 +149,7 @@ public class Profiler implements XMLWriteable {
          * @param xmlOutput
          * @throws IOException
          */
+        @Override
         public void writeXML(XMLOutput xmlOutput) throws IOException {
             long time = totalTime.get();
             int callCount = totalCalls.get();
@@ -167,7 +170,8 @@ public class Profiler implements XMLWriteable {
                 xmlOutput.addAttribute("invocations", String.valueOf(callCount));
                 xmlOutput.addAttribute("avgMicrosecondsPerInvocation", String.valueOf(averageTimeMicros));
                 xmlOutput.addAttribute("maxMicrosecondsPerInvocation", String.valueOf(maxTimeMicros));
-                xmlOutput.addAttribute("maxContext", String.valueOf(maxContext));
+                if (maxContext != null)
+                  xmlOutput.addAttribute("maxContext", String.valueOf(maxContext));
                 xmlOutput.addAttribute("standardDeviationMircosecondsPerInvocation", String.valueOf(timeStandardDeviation));
                 xmlOutput.stopTag(true);
             }
