@@ -132,6 +132,8 @@ public class QueryServlet extends AbstractFlybushServlet {
 
     @SuppressWarnings({"unchecked"})
     protected void recordAppVersionStats(String ip, PersistenceManager pm, ProtoClasses.VersionInfo loginMsg) {
+        String msg = "Ignoring exception that occurs while recording app version";
+        
         try {
         String appName = loginMsg.getAppName();
         String appVer = loginMsg.getAppVersion();
@@ -143,9 +145,11 @@ public class QueryServlet extends AbstractFlybushServlet {
                 fbVersion = "<notgiven>";
             LOGGER.info("FindBugs " + fbVersion + (appName != null ? " via " + appName + " " + appVer : ""));
         }
-
+        
         if (appName != null) {
             long midnightToday = getMidnightToday();
+            msg = String.format("Ignoring exception that occurs while recording app %s version %s from %s on %tD",  
+                    appName,  appVer,ip, midnightToday);
             if (!persistenceHelper.shouldRecordClientStats(ip, appName, appVer, midnightToday)) {
                 return;
             }
@@ -176,7 +180,7 @@ public class QueryServlet extends AbstractFlybushServlet {
             }
         }
         } catch (Exception e) {
-            LOGGER.log(Level.INFO, "Ignoring exception that occurs while recording app version", e);
+            LOGGER.log(Level.INFO, msg, e);
         }
     }
 
