@@ -164,7 +164,7 @@ public class MainFrameMenu implements Serializable {
 
         // Edit fileMenu JMenu object.
         JMenuItem openMenuItem = newJMenuItem("menu.open_item", "Open...", KeyEvent.VK_O);
-        recentMenu = newJMenu("menu.recent", "Recent");
+        recentMenu = newJMenu("menu.recent_menu", "Recent");
         recentMenuCache = new RecentMenu(recentMenu);
         saveAsMenuItem = newJMenuItem("menu.saveas_item", "Save As...", KeyEvent.VK_A);
         JMenuItem importFilter = newJMenuItem("menu.importFilter_item", "Import bug filters...");
@@ -351,7 +351,7 @@ public class MainFrameMenu implements Serializable {
         if (windowMenu != null)
             menuBar.add(windowMenu);
 
-        viewMenu = newJMenu("menu.view", "View");
+        viewMenu = newJMenu("menu.view_menu", "View");
         setViewMenu();
         menuBar.add(viewMenu);
 
