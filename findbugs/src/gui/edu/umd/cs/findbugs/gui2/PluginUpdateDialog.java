@@ -115,15 +115,33 @@ public class PluginUpdateDialog implements Serializable {
         return label;
     }
 
+    private long dontWarnAgainUntil() {
+        Preferences prefs = Preferences.userNodeForPackage(MainFrame.class);
+        
+        String oldSeen = prefs.get("last-plugin-update-seen", "");
+        if (oldSeen == null || oldSeen.equals(""))
+            return 0;
+        try {
+        return Long.parseLong(oldSeen) + DONT_REMIND_WINDOW;
+        } catch (Exception e) {
+            return 0;
+        }
+        
+        
+    }
+    static final long DONT_REMIND_WINDOW = 3L*24*60*60*1000;
     private boolean updatesHaveBeenSeenBefore(List<UpdateChecker.PluginUpdate> sortedUpdates) {
+        long now = System.currentTimeMillis();
         Preferences prefs = Preferences.userNodeForPackage(MainFrame.class);
         String oldHash = prefs.get("last-plugin-update-hash", "");
+        
         String newHash = buildPluginUpdateHash(sortedUpdates);
-        if (oldHash.equals(newHash)) {
+        if (oldHash.equals(newHash) && dontWarnAgainUntil() > now) {
             LOGGER.fine("Skipping update dialog because these updates have been seen before");
             return true;
         }
         prefs.put("last-plugin-update-hash", newHash);
+        prefs.put("last-plugin-update-seen", Long.toString(now));
         return false;
     }
 
