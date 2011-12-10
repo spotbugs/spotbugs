@@ -100,7 +100,6 @@
     <servlet-mapping>
         <servlet-name>UpdateCheckServlet</servlet-name>
         <url-pattern>/update-check</url-pattern>
-        <url-pattern>/track</url-pattern> <!-- obsolete -->
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateXmlUploadServlet</servlet-name>
