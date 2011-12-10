@@ -99,6 +99,8 @@ public class ReportServlet extends AbstractFlybushServlet {
                 + " where packages.contains(:pkg)" + " order by when asc");
         List<DbEvaluation> evals = (List<DbEvaluation>) query.execute(desiredPackage);
 
+        long startTime = startTime();
+
         Map<Long, Integer> evalsPerWeek = Maps.newHashMap();
         Map<Long, Integer> newIssuesPerWeek = Maps.newHashMap();
         Multimap<String, String> issuesByPkg = HashMultimap.create();
@@ -112,10 +114,13 @@ public class ReportServlet extends AbstractFlybushServlet {
             if (!isPackageOrSubPackage(desiredPackage, epkg)) {
                 continue;
             }
+            long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
+            if (beginningOfWeek < startTime)
+                continue;
+           
             String issueHash = eval.getIssue().getHash();
             issuesByPkg.put(epkg, issueHash);
             increment(evalsByPkg, epkg);
-            long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
             increment(evalsPerWeek, beginningOfWeek);
             if (seenIssues.add(issueHash))
                 increment(newIssuesPerWeek, beginningOfWeek);
@@ -180,6 +185,7 @@ public class ReportServlet extends AbstractFlybushServlet {
                 + sum(evalsByPkg.values()) + ")");
         page.println("<ul>");
         Set<String> alreadyPrinted = Sets.newHashSet();
+        
         for (String pkg : Sets.newTreeSet(evalsByPkg.keySet())) {
             if (pkg.equals(desiredPackage))
                 continue;
@@ -245,12 +251,16 @@ public class ReportServlet extends AbstractFlybushServlet {
         if (evals.isEmpty()) {
             setResponse(resp, 404, "No such user");
         }
+        long startTime = startTime();
+
         Map<Long, Integer> evalsPerWeek = Maps.newHashMap();
         Set<String> seenIssues = Sets.newHashSet();
         Map<Long, Integer> newIssuesByWeek = Maps.newHashMap();
         List<String> table = Lists.newArrayList();
         for (DbEvaluation eval : evals) {
             long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
+            if (beginningOfWeek < startTime)
+                continue;
             increment(evalsPerWeek, beginningOfWeek);
             if (seenIssues.add(eval.getIssue().getHash()))
                 increment(newIssuesByWeek, beginningOfWeek);
@@ -372,6 +382,9 @@ public class ReportServlet extends AbstractFlybushServlet {
         return chart;
     }
 
+    long startTime() {
+        return System.currentTimeMillis() - 4L*30*24*3600*1000;
+    }
     @SuppressWarnings({ "unchecked" })
     private void showSummaryStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
         Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClassname() + " order by when ascending");
@@ -391,12 +404,16 @@ public class ReportServlet extends AbstractFlybushServlet {
         Multimap<String, String> issuesByPkg = HashMultimap.create();
         Set<String> seenIssues = Sets.newHashSet();
         Set<String> seenUsers = Sets.newHashSet();
+        long startTime = startTime();
 
         for (DbEvaluation eval : evals) {
             String email = eval.getEmail();
             if (email == null)
                 continue;
 
+            long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
+            if (beginningOfWeek < startTime)
+                continue;
             String issueHash = eval.getIssue().getHash();
             issuesByUser.put(email, issueHash);
             increment(totalCountByUser, email);
@@ -408,8 +425,7 @@ public class ReportServlet extends AbstractFlybushServlet {
                 issuesByPkg.put(pkg, issueHash);
             }
 
-            long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
-            increment(evalsByWeek, beginningOfWeek);
+             increment(evalsByWeek, beginningOfWeek);
             seenIssues.add(issueHash);
             issueCountByWeek.put(beginningOfWeek, seenIssues.size());
             seenUsers.add(email);
