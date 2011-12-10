@@ -149,7 +149,7 @@ public class Profiler implements XMLWriteable {
          * @param xmlOutput
          * @throws IOException
          */
-        @Override
+
         public void writeXML(XMLOutput xmlOutput) throws IOException {
             long time = totalTime.get();
             int callCount = totalCalls.get();
