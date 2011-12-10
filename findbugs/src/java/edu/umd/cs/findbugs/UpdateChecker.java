@@ -6,14 +6,15 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -23,14 +24,17 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
+
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 
 public class UpdateChecker {
     private static final Logger LOGGER = Logger.getLogger(UpdateChecker.class.getName());
@@ -224,21 +228,22 @@ public class UpdateChecker {
     }
 
     // package-private for testing
-    @SuppressWarnings({"unchecked"})
-    void parseUpdateXml(URI url, Collection<Plugin> plugins, @WillClose InputStream inputStream) {
-//        for (Plugin plugin : plugins) {
-//            pluginUpdates.add(new PluginUpdate(plugin, "200.0", "http://example.com/url", "THIS IS MY\nMESSAGE\nME!"));
-//        }
+    @SuppressWarnings({ "unchecked" })
+    void parseUpdateXml(URI url, Collection<Plugin> plugins, @WillClose
+    InputStream inputStream) {
         try {
             Document doc = new SAXReader().read(inputStream);
             List<Element> pluginEls = (List<Element>) doc.selectNodes("fb-plugin-updates/plugin");
+            Map<String, Plugin> map = new HashMap<String, Plugin>();
+            for (Plugin p : plugins)
+                map.put(p.getPluginId(), p);
             for (Element pluginEl : pluginEls) {
                 String id = pluginEl.attributeValue("id");
-                for (Plugin plugin : plugins) {
-                    if (plugin.getPluginId().equals(id)) {
-                        checkPlugin(pluginEl, plugin);
-                    }
+                Plugin plugin = map.get(id);
+                if (plugin != null) {
+                    checkPlugin(pluginEl, plugin);
                 }
+
             }
         } catch (Exception e) {
             logError(e, "Could not parse plugin version update for " + url);
@@ -249,33 +254,24 @@ public class UpdateChecker {
 
     @SuppressWarnings({"unchecked"})
     private void checkPlugin(Element pluginEl, Plugin plugin) {
-        Date max = null;
-        Element maxEl = null;
         for (Element release : (List<Element>) pluginEl.elements("release")) {
-            Date date = parseReleaseDate(release);
-            if (max == null || date.after(max)) {
-                max = date;
-                maxEl = release;
-            }
-        }
-        if (maxEl != null) {
-            printPluginUpdateMsg(plugin, maxEl);
+            printPluginUpdateMsg(plugin, release);
         }
     }
 
     private void printPluginUpdateMsg(Plugin plugin, Element maxEl) {
+        @CheckForNull Date date = parseReleaseDate(maxEl);
+        @CheckForNull Date releaseDate = plugin.getReleaseDate();
+        if (date != null && releaseDate != null && date.before(releaseDate))
+            return;
         String version = maxEl.attributeValue("version");
         if (version.equals(plugin.getVersion()))
             return;
 
         String url = maxEl.attributeValue("url");
-
         String message = maxEl.element("message").getTextTrim();
-        Date date = parseReleaseDate(maxEl);
-        Date releaseDate = plugin.getReleaseDate();
-        if (releaseDate == null || date.after(releaseDate)) {
-            pluginUpdates.add(new PluginUpdate(plugin, version, url, message));
-        }
+
+        pluginUpdates.add(new PluginUpdate(plugin, version, url, message));
     }
 
     // protected for testing
@@ -288,9 +284,11 @@ public class UpdateChecker {
         LOGGER.log(Level.INFO, msg, e);
     }
 
-    private Date parseReleaseDate(Element releaseEl) {
+    private @CheckForNull Date parseReleaseDate(Element releaseEl) {
         SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm aa z");
         String dateStr = releaseEl.attributeValue("date");
+        if (dateStr == null)
+            return null;
         try {
             return format.parse(dateStr);
         } catch (Exception e) {
@@ -348,10 +346,10 @@ public class UpdateChecker {
     public static class PluginUpdate {
         private final Plugin plugin;
         private final String version;
-        private final String url;
-        private final String message;
+        private final @CheckForNull String url;
+        private final @Nonnull String message;
 
-        private PluginUpdate(Plugin plugin, String version, String url, String message) {
+        private PluginUpdate(Plugin plugin, String version, @CheckForNull String url, @Nonnull String message) {
             this.plugin = plugin;
             this.version = version;
             this.url = url;
@@ -366,7 +364,7 @@ public class UpdateChecker {
             return version;
         }
 
-        public String getUrl() {
+        public @CheckForNull String getUrl() {
             return url;
         }
 
