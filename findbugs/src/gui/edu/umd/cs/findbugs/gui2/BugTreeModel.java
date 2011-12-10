@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.gui2;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
@@ -162,13 +163,25 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
     }
 
     public Object getChild(Object o, int index) {
-        BugAspects a = (BugAspects) o;
+        int childCount = getChildCount(o);
+        if (index < 0 || index >= childCount)
+            return null;
+        Object result = getChild((BugAspects) o, index);
+        assert result != null;
+        return result;
+    }
+        
+    private @Nonnull Object getChild(BugAspects a, int index) {
+    
         int treeLevels = st.getOrderBeforeDivider().size();
         int queryDepth = a.size();
         assert queryDepth <= treeLevels;
 
-        if (treeLevels == 0 && a.size() == 0)// Root without any sortables
-            return bugSet.get(index);
+        if (treeLevels == 0 && a.size() == 0) {
+            BugLeafNode bugLeafNode = bugSet.get(index);
+            assert bugLeafNode != null;
+            return bugLeafNode;
+        }
         if (SystemProperties.ASSERTIONS_ENABLED)
             for (int i = 0; i < queryDepth; i++) {
                 Sortables treeSortable = st.getOrderBeforeDivider().get(i);
@@ -181,8 +194,11 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
                 BugAspects child = a.addToNew(enumsThatExist(a).get(index));
                 child.setCount(bugSet.query(child).size());
                 return child;
-            } else
-                return bugSet.query(a).get(index);
+            } else {
+                BugLeafNode bugLeafNode = bugSet.query(a).get(index);
+                assert bugLeafNode != null;
+                return bugLeafNode;
+            }
         } catch (IndexOutOfBoundsException e) {
             assert false;
             return null;
