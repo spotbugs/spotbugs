@@ -82,6 +82,7 @@ public class ComparePerfomance {
             putStats(name, i, totalMilliseconds);
 //            System.out.printf("%6d %10d %s%n", invocations, totalMilliseconds, simpleName);
         }
+        in.close();
     }
 
 
