@@ -161,6 +161,16 @@ public class DefaultNullnessAnnotations {
                 "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 1, NullnessAnnotation.NONNULL);
         database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentHashMap", "remove",
                 "(Ljava/lang/Object;Ljava/lang/Object;)Z", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
+        database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentHashMap", "setEntryAt",
+                "([Ljava/util/concurrent/ConcurrentHashMap$HashEntry;ILjava/util/concurrent/ConcurrentHashMap$HashEntry;)V", false, 1, NullnessAnnotation.NULLABLE);
+        database.addMethodParameterAnnotation("java.util.concurrent.ForkJoinPool", "<init>",
+                "(ILjava/util/concurrent/ForkJoinPool$ForkJoinWorkerThreadFactory;Ljava/lang/Thread$UncaughtExceptionHandler;Z)V", false, 1, NullnessAnnotation.NULLABLE);
+        database.addMethodParameterAnnotation("java.util.concurrent.PriorityBlockingQueue", "<init>",
+                "(ILjava/util/Comparator;)V", false, 1, NullnessAnnotation.NULLABLE);
+       
+        database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.ConcurrentLinkedDeque$Node",
+                NullnessAnnotation.UNKNOWN_NULLNESS);    
+        
         database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentMap", "remove",
                 "(Ljava/lang/Object;Ljava/lang/Object;)Z", false, 1, NullnessAnnotation.NULLABLE);
 
