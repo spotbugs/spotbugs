@@ -28,7 +28,7 @@ public class YourKitController {
 
     Object controller;
 
-    Method advanceGeneration, captureMemorySnapshot;
+    Method advanceGeneration, captureMemorySnapshot, getStatus;
 
     public YourKitController() {
         try {
@@ -36,8 +36,10 @@ public class YourKitController {
             controller = c.newInstance();
             advanceGeneration = c.getMethod("advanceGeneration", String.class);
             captureMemorySnapshot = c.getMethod("captureMemorySnapshot");
+            getStatus = c.getMethod("getStatus");
+
         } catch (RuntimeException e) {
-            throw e;
+            e.printStackTrace();
         } catch (Exception e) {
             controller = null;
         }
@@ -53,12 +55,25 @@ public class YourKitController {
             assert true;
         }
     }
+    
+    public long getStatus() {
+        if (getStatus == null)
+            return 0;
+        try {
+            return (Long) getStatus.invoke(controller);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 
     public void captureMemorySnapshot() {
         if (controller == null)
             return;
         try {
             captureMemorySnapshot.invoke(controller);
+            System.err.println("Captured snapshot");
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
