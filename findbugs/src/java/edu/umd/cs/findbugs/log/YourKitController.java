@@ -29,6 +29,8 @@ public class YourKitController {
     Object controller;
 
     Method advanceGeneration, captureMemorySnapshot, getStatus;
+    
+     public static final long ALLOCATION_RECORDING = 2L;
 
     public YourKitController() {
         try {
@@ -72,8 +74,7 @@ public class YourKitController {
         if (controller == null)
             return;
         try {
-            captureMemorySnapshot.invoke(controller);
-            System.err.println("Captured snapshot");
+            captureMemorySnapshot.invoke(controller);          
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
