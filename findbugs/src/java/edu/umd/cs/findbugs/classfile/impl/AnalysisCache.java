@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -235,7 +236,7 @@ public class AnalysisCache implements IAnalysisCache {
      * .Class, edu.umd.cs.findbugs.classfile.ClassDescriptor)
      */
     @SuppressWarnings("unchecked")
-    public <E> E getClassAnalysis(Class<E> analysisClass, ClassDescriptor classDescriptor) throws CheckedAnalysisException {
+    public <E> E getClassAnalysis(Class<E> analysisClass, @Nonnull ClassDescriptor classDescriptor) throws CheckedAnalysisException {
         if (classDescriptor == null) {
             throw new NullPointerException("classDescriptor is null");
         }
@@ -305,7 +306,7 @@ public class AnalysisCache implements IAnalysisCache {
      * edu.umd.cs.findbugs.classfile.IAnalysisCache#probeClassAnalysis(java.
      * lang.Class, edu.umd.cs.findbugs.classfile.ClassDescriptor)
      */
-    public <E> E probeClassAnalysis(Class<E> analysisClass, ClassDescriptor classDescriptor) {
+    public <E> E probeClassAnalysis(Class<E> analysisClass, @Nonnull ClassDescriptor classDescriptor) {
         Map<ClassDescriptor, Object> descriptorMap = classAnalysisMap.get(analysisClass);
         if (descriptorMap == null) {
             return null;
@@ -324,7 +325,7 @@ public class AnalysisCache implements IAnalysisCache {
      * edu.umd.cs.findbugs.classfile.IAnalysisCache#getMethodAnalysis(java.lang
      * .Class, edu.umd.cs.findbugs.classfile.MethodDescriptor)
      */
-    public <E> E getMethodAnalysis(Class<E> analysisClass, MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
+    public <E> E getMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
         if (methodDescriptor == null) {
             throw new NullPointerException("methodDescriptor is null");
         }
@@ -394,7 +395,7 @@ public class AnalysisCache implements IAnalysisCache {
      * (java.lang.Class, edu.umd.cs.findbugs.classfile.MethodDescriptor,
      * java.lang.Object)
      */
-    public <E> void eagerlyPutMethodAnalysis(Class<E> analysisClass, MethodDescriptor methodDescriptor, Object analysisObject) {
+    public <E> void eagerlyPutMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor, Object analysisObject) {
         try {
             ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
             classContext.putMethodAnalysis(analysisClass, methodDescriptor, analysisObject);
@@ -413,7 +414,7 @@ public class AnalysisCache implements IAnalysisCache {
      * edu.umd.cs.findbugs.classfile.IAnalysisCache#purgeMethodAnalyses(edu.
      * umd.cs.findbugs.classfile.MethodDescriptor)
      */
-    public void purgeMethodAnalyses(MethodDescriptor methodDescriptor) {
+    public void purgeMethodAnalyses(@Nonnull MethodDescriptor methodDescriptor) {
         try {
 
             ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());

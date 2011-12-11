@@ -1442,7 +1442,7 @@ public class SortedBugCollection implements BugCollection {
      *
      * @see edu.umd.cs.findbugs.BugCollection#reinitializeCloud()
      */
-    public Cloud reinitializeCloud() {
+    public @Nonnull Cloud reinitializeCloud() {
         Cloud oldCloud = cloud;
         IGuiCallback callback = project.getGuiCallback();
         if (oldCloud != null) {

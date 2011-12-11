@@ -24,6 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifier;
 import javax.annotation.meta.TypeQualifierValidator;
 import javax.annotation.meta.When;
@@ -52,7 +53,8 @@ public @interface SlashedClassName {
 
         final static Pattern pattern = Pattern.compile(slashedClassName);
 
-        public When forConstantValue(SlashedClassName annotation, Object value) {
+        @Nonnull
+        public When forConstantValue(@Nonnull SlashedClassName annotation, Object value) {
             if (!(value instanceof String))
                 return When.NEVER;
 

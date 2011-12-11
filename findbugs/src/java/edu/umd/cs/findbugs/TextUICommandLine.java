@@ -36,6 +36,7 @@ import java.util.StringTokenizer;
 import java.util.zip.GZIPOutputStream;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import org.dom4j.DocumentException;
 
@@ -206,7 +207,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
     }
 
     @Override
-    public Project getProject() {
+    public @Nonnull Project getProject() {
         return project;
     }
 

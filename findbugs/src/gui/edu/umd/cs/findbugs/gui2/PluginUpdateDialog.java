@@ -75,7 +75,8 @@ public class PluginUpdateDialog implements Serializable {
                 comp.add(label, gbc);
                 gbc.weightx = 0;
                 gbc.gridx = 2;
-                if (update.getUrl() != null && update.getUrl().length() > 0) {
+                String url = update.getUrl();
+                if (url != null && url.length() > 0) {
                     JButton button = createPluginUpdateButton(comp, update);
                     comp.add(button, gbc);
                 }
@@ -169,13 +170,14 @@ public class PluginUpdateDialog implements Serializable {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 boolean failed;
+                String url = update.getUrl();
                 try {
-                    failed = !LaunchBrowser.showDocument(new URL(update.getUrl()));
+                    failed = url == null || !LaunchBrowser.showDocument(new URL(url));
                 } catch (MalformedURLException e1) {
                     failed = true;
                 }
                 if (failed)
-                    JOptionPane.showMessageDialog(comp, "Could not open URL " + update.getUrl());
+                    JOptionPane.showMessageDialog(comp, "Could not open URL " + url);
             }
         });
         return button;

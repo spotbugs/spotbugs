@@ -182,28 +182,23 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
             assert bugLeafNode != null;
             return bugLeafNode;
         }
-        if (SystemProperties.ASSERTIONS_ENABLED)
+        if (SystemProperties.ASSERTIONS_ENABLED) {
             for (int i = 0; i < queryDepth; i++) {
                 Sortables treeSortable = st.getOrderBeforeDivider().get(i);
                 Sortables querySortable = a.get(i).key;
                 assert treeSortable.equals(querySortable) : treeSortable + " vs " + querySortable;
             }
-
-        try {
-            if (queryDepth < treeLevels) {
-                BugAspects child = a.addToNew(enumsThatExist(a).get(index));
-                child.setCount(bugSet.query(child).size());
-                return child;
-            } else {
-                BugLeafNode bugLeafNode = bugSet.query(a).get(index);
-                assert bugLeafNode != null;
-                return bugLeafNode;
-            }
-        } catch (IndexOutOfBoundsException e) {
-            assert false;
-            return null;
         }
 
+        if (queryDepth < treeLevels) {
+            BugAspects child = a.addToNew(enumsThatExist(a).get(index));
+            child.setCount(bugSet.query(child).size());
+            return child;
+        } else {
+            BugLeafNode bugLeafNode = bugSet.query(a).get(index);
+            assert bugLeafNode != null;
+            return bugLeafNode;
+        }
     }
 
     public int getChildCount(Object o) {
