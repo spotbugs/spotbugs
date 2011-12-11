@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.Plugin;
  */
 public class FB {
     
-    public static void main(String args[]) throws Exception {
+    public static void main(String args[]) throws Throwable {
         String cmd = args[0];
         String a [] = new String[args.length-1];
         for(int i = 1; i < args.length; i++)
@@ -37,7 +37,11 @@ public class FB {
         for(Plugin plugin : Plugin.getAllPlugins()) {
             FindBugsMain main = plugin.getFindBugsMain(cmd);
             if (main != null) {
-                main.invoke(a);
+                try {
+                    main.invoke(a);
+                } catch (java.lang.reflect.InvocationTargetException e) {
+                    throw e.getCause();
+                }
                 return;
             }
             
