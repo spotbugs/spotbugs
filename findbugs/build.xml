@@ -299,8 +299,8 @@
 
         <!-- Annotations jar file. -->
         <jar destfile="${annotations.jar}"
-		manifest="${etc.dir}/MANIFEST-findbugs-annotations.MF"
-		>
+        manifest="${etc.dir}/MANIFEST-findbugs-annotations.MF"
+        >
             <fileset dir="${classes.dir}">
                 <include name="**/annotations/*.class"/>
             </fileset>
@@ -1058,6 +1058,7 @@
 
     <!-- Generate binary distribution (both .zip and .tar.gz) -->
     <target name="bindist" depends="clean,validate,rebuild,docs" description="Binary distribution">
+        <ant dir="${pluginsSrc.dir}/bugCollectionCloud" target="install" inheritAll="false" />
         <ant dir="${pluginsSrc.dir}/webCloudClient" target="install" inheritAll="false" />
         <ant dir="${pluginsSrc.dir}/noUpdateChecks" target="install" inheritAll="false" />
         <java classpathref="tools.classpath"
@@ -1076,9 +1077,27 @@
 
         <patternset id="bindist.jar.pats">
             <include name="lib/*.jar"/>
-            <include name="plugin/*.jar"/>
+            <include name="plugin/webCloudClient.jar"/>
             <include name="plugin/README"/>
             <include name="plugin"/>
+            <include name="optionalPlugin/noUpdateChecks.jar"/>
+            <include name="optionalPlugin/bugCollectionCloud.jar"/>
+            <include name="optionalPlugin/README"/>
+            <include name="optionalPlugin"/>
+            <exclude name="lib/AppleJavaExtensions.jar"/>
+            <exclude name="lib/junit.jar"/>
+            <exclude name="lib/plastic.jar"/>
+        </patternset>
+
+        <patternset id="bindist2.jar.pats">
+            <include name="lib/*.jar"/>
+            <include name="plugin/noUpdateChecks.jar"/>
+            <include name="plugin/README"/>
+            <include name="plugin"/>
+            <include name="optionalPlugin/webCloudClient.jar"/>
+            <include name="optionalPlugin/bugCollectionCloud.jar"/>
+            <include name="optionalPlugin/README"/>
+            <include name="optionalPlugin"/>
             <exclude name="lib/AppleJavaExtensions.jar"/>
             <exclude name="lib/junit.jar"/>
             <exclude name="lib/plastic.jar"/>
@@ -1133,7 +1152,7 @@
                 <patternset refid="bindist.unixscript.pats"/>
             </zipfileset>
             <zipfileset prefix="findbugs-${release.number}" dir=".">
-                <patternset refid="bindist.jar.pats"/>
+                <patternset refid="bindist2.jar.pats"/>
             </zipfileset>
             <zipfileset prefix="findbugs-${release.number}/doc" dir="${doc.dir}">
                 <patternset refid="doc.src.pats"/>
@@ -1149,7 +1168,7 @@
                 <patternset refid="bindist.unixscript.pats"/>
             </tarfileset>
             <tarfileset prefix="findbugs-${release.number}" dir=".">
-                <patternset refid="bindist.jar.pats"/>
+                <patternset refid="bindist2.jar.pats"/>
             </tarfileset>
             <tarfileset prefix="findbugs-${release.number}/doc" dir="${doc.dir}">
                 <patternset refid="doc.src.pats"/>
