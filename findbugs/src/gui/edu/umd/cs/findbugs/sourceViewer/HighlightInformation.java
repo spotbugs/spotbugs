@@ -23,7 +23,8 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import javax.annotation.CheckForNull;
+
 
 public class HighlightInformation {
 

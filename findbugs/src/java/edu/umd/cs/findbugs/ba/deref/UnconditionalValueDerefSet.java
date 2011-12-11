@@ -29,7 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFactory;

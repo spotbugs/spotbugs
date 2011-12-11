@@ -24,10 +24,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Constants;
 import org.objectweb.asm.Opcodes;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.ComparableField;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;

@@ -28,11 +28,11 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.util.Util;
 
 /**

@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.Repository;
@@ -51,7 +52,6 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ClassMember;

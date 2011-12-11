@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
@@ -41,7 +43,6 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.TypeAnnotation;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.EqualsKindSummary;
 import edu.umd.cs.findbugs.ba.XClass;

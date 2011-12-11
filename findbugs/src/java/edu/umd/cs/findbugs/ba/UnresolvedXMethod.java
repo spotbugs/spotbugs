@@ -6,12 +6,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.AccessFlags;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;

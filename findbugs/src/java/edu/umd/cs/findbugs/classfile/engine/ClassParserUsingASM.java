@@ -23,6 +23,8 @@ import java.util.BitSet;
 import java.util.HashSet;
 import java.util.TreeSet;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Constants;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
@@ -32,7 +34,6 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;

@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.AALOAD;
@@ -43,7 +45,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;

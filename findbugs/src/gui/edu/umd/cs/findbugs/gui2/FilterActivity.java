@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
+import javax.annotation.CheckForNull;
 import javax.swing.tree.TreePath;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * @author pugh

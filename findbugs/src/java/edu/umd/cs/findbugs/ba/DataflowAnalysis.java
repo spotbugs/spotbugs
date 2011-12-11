@@ -19,9 +19,10 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.generic.InstructionHandle;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * A dataflow analysis to be used with the {@link Dataflow} class.

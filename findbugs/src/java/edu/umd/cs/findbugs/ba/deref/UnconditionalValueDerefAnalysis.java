@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ARETURN;
@@ -41,7 +43,6 @@ import org.apache.bcel.generic.PUTSTATIC;
 import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.BackwardDataflowAnalysis;

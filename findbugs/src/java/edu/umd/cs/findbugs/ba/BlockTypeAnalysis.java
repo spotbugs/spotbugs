@@ -20,11 +20,12 @@
 package edu.umd.cs.findbugs.ba;
 
 //import org.apache.bcel.classfile.Method;
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.ObjectType;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * Dataflow analysis to determine the nesting of catch and finally blocks within

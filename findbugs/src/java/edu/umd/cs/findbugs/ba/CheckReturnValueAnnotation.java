@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * @author pugh

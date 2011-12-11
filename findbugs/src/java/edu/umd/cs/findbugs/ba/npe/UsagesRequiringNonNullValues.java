@@ -24,7 +24,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.MergeTree;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;

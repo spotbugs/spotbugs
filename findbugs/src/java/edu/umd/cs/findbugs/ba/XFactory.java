@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import org.apache.bcel.Constants;
@@ -41,7 +42,6 @@ import org.objectweb.asm.Opcodes;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.obl.Obligation;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseEntry;

@@ -25,7 +25,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;

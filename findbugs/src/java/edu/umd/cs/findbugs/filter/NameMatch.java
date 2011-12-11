@@ -21,7 +21,8 @@ package edu.umd.cs.findbugs.filter;
 
 import java.util.regex.Pattern;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.util.Util;
 
 /**

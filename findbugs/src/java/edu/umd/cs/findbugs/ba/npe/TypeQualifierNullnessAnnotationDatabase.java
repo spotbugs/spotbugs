@@ -19,13 +19,13 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.meta.When;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase.Target;

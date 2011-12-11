@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 
+import javax.annotation.CheckForNull;
+
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.AppVersion;
@@ -30,7 +32,6 @@ import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.config.CommandLine;
 

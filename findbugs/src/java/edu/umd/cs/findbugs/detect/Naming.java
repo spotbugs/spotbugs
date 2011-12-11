@@ -28,6 +28,8 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
@@ -41,7 +43,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Hierarchy2;

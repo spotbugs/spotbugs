@@ -19,7 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.ch;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 

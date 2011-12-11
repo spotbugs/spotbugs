@@ -29,6 +29,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.BasicType;
@@ -37,7 +39,6 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.XClass;

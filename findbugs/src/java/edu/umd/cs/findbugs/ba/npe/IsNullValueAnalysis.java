@@ -23,6 +23,8 @@ import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.CodeExceptionGen;
@@ -34,7 +36,6 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.AssertionMethods;

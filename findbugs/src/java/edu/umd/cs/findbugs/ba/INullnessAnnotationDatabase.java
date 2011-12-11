@@ -19,7 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**

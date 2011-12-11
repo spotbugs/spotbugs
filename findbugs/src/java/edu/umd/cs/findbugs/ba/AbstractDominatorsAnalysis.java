@@ -22,9 +22,10 @@ package edu.umd.cs.findbugs.ba;
 import java.util.BitSet;
 import java.util.Iterator;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.generic.InstructionHandle;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * A dataflow analysis to compute dominator relationships between basic blocks.

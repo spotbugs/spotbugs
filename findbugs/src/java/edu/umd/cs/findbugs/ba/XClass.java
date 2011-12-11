@@ -22,7 +22,8 @@ package edu.umd.cs.findbugs.ba;
 import java.util.Collection;
 import java.util.List;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;

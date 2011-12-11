@@ -24,6 +24,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.text.NumberFormat;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
@@ -40,7 +42,6 @@ import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.LineNumberTable;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.Hierarchy2;

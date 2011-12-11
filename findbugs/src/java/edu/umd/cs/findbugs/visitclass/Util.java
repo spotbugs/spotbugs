@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
@@ -33,7 +35,6 @@ import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * @author pugh

@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.ba.generic;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Signature;
@@ -30,7 +32,6 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * A simple class to parse method signatures that include generic information.

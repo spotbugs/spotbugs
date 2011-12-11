@@ -55,13 +55,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipFile;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 import javax.annotation.WillCloseWhenClosed;
 import javax.annotation.WillNotClose;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.charsets.UTF8;
 
 /**

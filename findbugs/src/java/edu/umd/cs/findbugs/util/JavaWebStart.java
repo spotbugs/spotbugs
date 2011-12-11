@@ -24,9 +24,9 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.annotation.CheckForNull;
 import javax.swing.JOptionPane;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * @author pugh

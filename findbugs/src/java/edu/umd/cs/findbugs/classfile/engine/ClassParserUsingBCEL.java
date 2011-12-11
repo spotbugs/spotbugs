@@ -23,13 +23,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
