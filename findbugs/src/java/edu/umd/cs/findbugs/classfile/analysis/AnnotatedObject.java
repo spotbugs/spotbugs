@@ -22,8 +22,9 @@ package edu.umd.cs.findbugs.classfile.analysis;
 import java.lang.annotation.ElementType;
 import java.util.Collection;
 
+import javax.annotation.Nullable;
+
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**

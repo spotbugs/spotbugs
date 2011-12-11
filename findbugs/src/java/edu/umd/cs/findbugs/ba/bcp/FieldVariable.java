@@ -19,7 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import edu.umd.cs.findbugs.annotations.Nullable;
+import javax.annotation.Nullable;
+
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 public class FieldVariable implements Variable {

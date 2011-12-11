@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.ClassParser;
@@ -63,7 +64,6 @@ import org.apache.bcel.generic.PUTSTATIC;
 import org.apache.bcel.generic.ReturnInstruction;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.bcel.generic.NONNULL2Z;
 import edu.umd.cs.findbugs.bcel.generic.NULL2Z;
 import edu.umd.cs.findbugs.visitclass.PrintClass;

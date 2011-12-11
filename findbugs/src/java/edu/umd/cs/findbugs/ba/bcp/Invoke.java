@@ -21,13 +21,14 @@ package edu.umd.cs.findbugs.ba.bcp;
 
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 
-import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
