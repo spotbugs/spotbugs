@@ -179,7 +179,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         pm.makePersistentAll(issue1, issue1);
 
         UpdateIssueTimestamps tsCmd = UpdateIssueTimestamps.newBuilder().setSessionId(555)
-                .addIssueGroups(IssueGroup.newBuilder().setTimestamp(SAMPLE_TIMESTAMP + 50).addIssueHashes(encodeHash("fad1")).build()).build();
+                .addIssueGroups(IssueGroup.newBuilder().setTimestamp(SAMPLE_TIMESTAMP + 150).addIssueHashes(encodeHash("fad1")).build()).build();
         executePost("/update-issue-timestamps", tsCmd.toByteArray());
         pm.refreshAll(issue1);
         checkResponse(200);
