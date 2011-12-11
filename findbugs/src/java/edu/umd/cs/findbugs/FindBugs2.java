@@ -77,6 +77,7 @@ import edu.umd.cs.findbugs.log.YourKitController;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
+import edu.umd.cs.findbugs.updates.UpdateChecker;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.FutureValue;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;

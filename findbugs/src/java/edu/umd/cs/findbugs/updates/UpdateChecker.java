@@ -1,4 +1,4 @@
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.updates;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +32,11 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
@@ -55,28 +60,11 @@ public class UpdateChecker {
             return;
         }
 
-        String redirect = dfc.getGlobalOption(KEY_REDIRECT_ALL_UPDATE_CHECKS);
-        String sysprop = System.getProperty("findbugs.redirectUpdateChecks");
-        if (sysprop != null)
-            redirect = sysprop;
-        Plugin setter = dfc.getGlobalOptionSetter(KEY_REDIRECT_ALL_UPDATE_CHECKS);
-        URI redirectUri = null;
-        String pluginName = setter == null ? "<unknown plugin>" : setter.getShortDescription();
-        if (redirect != null && !redirect.trim().equals("")) {
-            try {
-                redirectUri = new URI(redirect);
-            } catch (URISyntaxException e) {
-                String error = "Invalid update check redirect URI in " + pluginName + ": " + redirect;
-                logError(Level.SEVERE, error);
-                dfc.pluginUpdateCheckComplete(pluginUpdates, force);
-                throw new IllegalStateException(error);
-            }
-        }
+        URI redirectUri = getRedirectURL(force);
 
         final CountDownLatch latch;
         if (redirectUri != null) {
             latch = new CountDownLatch(1);
-            logError(Level.INFO, "Redirecting all plugin update checks to " + redirectUri + " (" + pluginName + ")");
             startUpdateCheckThread(redirectUri, plugins, latch);
         } else {
             MultiMap<URI,Plugin> pluginsByUrl = new MultiMap<URI, Plugin>(HashSet.class);
@@ -96,6 +84,33 @@ public class UpdateChecker {
         }
         
         waitForCompletion(latch, force);
+    }
+
+    /**
+     * @param force
+     * @return
+     */
+    public @CheckForNull  URI getRedirectURL(final boolean force) {
+        String redirect = dfc.getGlobalOption(KEY_REDIRECT_ALL_UPDATE_CHECKS);
+        String sysprop = System.getProperty("findbugs.redirectUpdateChecks");
+        if (sysprop != null)
+            redirect = sysprop;
+        Plugin setter = dfc.getGlobalOptionSetter(KEY_REDIRECT_ALL_UPDATE_CHECKS);
+        URI redirectUri = null;
+        String pluginName = setter == null ? "<unknown plugin>" : setter.getShortDescription();
+        if (redirect != null && !redirect.trim().equals("")) {
+            try {
+                redirectUri = new URI(redirect);
+                logError(Level.INFO, "Redirecting all plugin update checks to " + redirectUri + " (" + pluginName + ")");
+                
+            } catch (URISyntaxException e) {
+                String error = "Invalid update check redirect URI in " + pluginName + ": " + redirect;
+                logError(Level.SEVERE, error);
+                dfc.pluginUpdateCheckComplete(pluginUpdates, force);
+                throw new IllegalStateException(error);
+            }
+        }
+        return redirectUri;
     }
 
     private long dontWarnAgainUntil() {
@@ -423,5 +438,19 @@ public class UpdateChecker {
                 buf.append("\nVisit " + url + " for details.");
             return buf.toString();
         }
+    }
+    
+    public static void main(String args[]) throws Exception {
+        FindBugs.setNoAnalysis();
+        DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
+        UpdateChecker checker = dfc.getUpdateChecker();
+        if (checker.updateChecksGloballyDisabled())
+            System.out.println("Update checkes are globally disabled");
+        URI redirect = checker.getRedirectURL(false);
+        if (redirect != null)
+            System.out.println("All update checks redirected to " + redirect);
+        checker.writeXml(System.out, dfc.plugins(), "UpdateChecker");
+        
+        
     }
 }

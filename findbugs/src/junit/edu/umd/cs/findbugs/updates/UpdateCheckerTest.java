@@ -1,4 +1,4 @@
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.updates;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -21,6 +21,10 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
+import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.PluginException;
+import edu.umd.cs.findbugs.PluginLoader;
+import edu.umd.cs.findbugs.Version;
 
 public class UpdateCheckerTest extends TestCase {
     private static final Date KEITHS_BIRTHDAY_2011;

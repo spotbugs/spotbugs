@@ -30,11 +30,11 @@ import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.UpdateChecker;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui2.FilterListener.Action;
+import edu.umd.cs.findbugs.updates.UpdateChecker;
 
 import static edu.umd.cs.findbugs.gui2.MainFrameHelper.attachAcceleratorKey;
 import static edu.umd.cs.findbugs.gui2.MainFrameHelper.newJMenu;

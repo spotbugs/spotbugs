@@ -31,7 +31,6 @@ import java.util.logging.Logger;
 
 import org.dom4j.DocumentException;
 
-import edu.umd.cs.findbugs.UpdateChecker.PluginUpdate;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
@@ -39,6 +38,8 @@ import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
+import edu.umd.cs.findbugs.updates.UpdateChecker;
+import edu.umd.cs.findbugs.updates.UpdateChecker.PluginUpdate;
 import edu.umd.cs.findbugs.util.FutureValue;
 
 /**

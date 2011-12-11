@@ -43,6 +43,9 @@ import javax.annotation.Nonnull;
 import javax.swing.JOptionPane;
 
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.updates.PluginUpdateListener;
+import edu.umd.cs.findbugs.updates.UpdateCheckCallback;
+import edu.umd.cs.findbugs.updates.UpdateChecker;
 import edu.umd.cs.findbugs.util.ClassPathUtil;
 import edu.umd.cs.findbugs.util.FutureValue;
 

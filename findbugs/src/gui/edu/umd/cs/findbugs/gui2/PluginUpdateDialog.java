@@ -28,8 +28,8 @@ import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.PluginUpdateListener;
-import edu.umd.cs.findbugs.UpdateChecker;
+import edu.umd.cs.findbugs.updates.PluginUpdateListener;
+import edu.umd.cs.findbugs.updates.UpdateChecker;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 public class PluginUpdateDialog implements Serializable {
