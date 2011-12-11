@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,6 +31,7 @@ import java.util.logging.Logger;
 
 import org.dom4j.DocumentException;
 
+import edu.umd.cs.findbugs.UpdateChecker.PluginUpdate;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
@@ -37,6 +39,7 @@ import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
+import edu.umd.cs.findbugs.util.FutureValue;
 
 /**
  * Static methods and fields useful for working with instances of
@@ -323,7 +326,8 @@ public abstract class FindBugs {
         commandLine.handleXArgs();
 
         commandLine.configureEngine(findBugs);
-        if (commandLine.getProject().getFileCount() == 0 && !commandLine.justPrintConfiguration()) {
+        if (commandLine.getProject().getFileCount() == 0 &&
+                !commandLine.justPrintConfiguration() && !commandLine.justPrintVersion()) {
             System.out.println("No files to be analyzed");
 
             showHelp(commandLine);
@@ -354,7 +358,13 @@ public abstract class FindBugs {
      */
     @SuppressWarnings("DM_EXIT")
     public static void runMain(IFindBugsEngine findBugs, TextUICommandLine commandLine) throws IOException {
-        try {
+        boolean verbose = !commandLine.quiet() || commandLine.setExitCode();
+         
+          FutureValue<Collection<UpdateChecker.PluginUpdate>> 
+        updateHolder = null;
+        if (verbose)
+            updateHolder  = DetectorFactoryCollection.instance().getUpdates();
+      try {
             findBugs.execute();
         } catch (InterruptedException e) {
             assert false; // should not occur
@@ -372,13 +382,25 @@ public abstract class FindBugs {
         int missingClassCount = findBugs.getMissingClassCount();
         int errorCount = findBugs.getErrorCount();
 
-        if (!commandLine.quiet() || commandLine.setExitCode()) {
+        if (verbose) {
             if (bugCount > 0)
                 System.err.println("Warnings generated: " + bugCount);
             if (missingClassCount > 0)
                 System.err.println("Missing classes: " + missingClassCount);
             if (errorCount > 0)
                 System.err.println("Analysis errors: " + errorCount);
+            if (updateHolder.isDone()) {
+               try {
+                Collection<PluginUpdate> updates = updateHolder.get();
+                if (!DetectorFactoryCollection.instance().getUpdateChecker().updatesHaveBeenSeenBefore(updates))
+                for(UpdateChecker.PluginUpdate u : updates) {
+                       System.err.println(u);
+                   }
+            } catch (InterruptedException e) {
+                assert true;
+            }
+                
+            }
         }
 
         if (commandLine.setExitCode()) {

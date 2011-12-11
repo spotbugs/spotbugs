@@ -137,6 +137,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
     private boolean applySuppression;
 
     private boolean printConfiguration;
+    
+    private boolean printVersion;
 
     /**
      * Constructor.
@@ -204,6 +206,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         addOption("-bugReporters", "name,name2,-name3", "bug reporter decorators to explicitly enable/disable");
 
         addSwitch("-printConfiguration", "print configuration and exit, without running analysis");
+        addSwitch("-version", "print version, check for updates and exit, without running analysis");
     }
 
     @Override
@@ -232,6 +235,10 @@ public class TextUICommandLine extends FindBugsCommandLine {
     }
     public boolean justPrintConfiguration() {
         return printConfiguration;
+    }
+
+    public boolean justPrintVersion() {
+        return printVersion;
     }
 
     Map<String, String> parsedOptions = new LinkedHashMap<String, String>();
@@ -341,6 +348,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
             throw new RuntimeException("textui options are: " + parsedOptions);
         } else if (option.equals("-printConfiguration")) {
             printConfiguration = true;
+        } else if (option.equals("-version")) {
+            printVersion = true;
         } else {
             if(DEBUG) {
                 System.out.println("XXX: " + option);

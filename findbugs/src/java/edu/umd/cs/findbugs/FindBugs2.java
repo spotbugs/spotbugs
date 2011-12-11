@@ -30,9 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.TimeoutException;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -79,6 +78,7 @@ import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.FutureValue;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
 
 /**
@@ -1275,69 +1275,69 @@ public class FindBugs2 implements IFindBugsEngine {
         FindBugs.processCommandLine(commandLine, args, findBugs);
 
 
-        if (commandLine.justPrintConfiguration()) {
+        if (commandLine.justPrintConfiguration() || commandLine.justPrintVersion()) {
             System.out.println("FindBugs " + Version.COMPUTED_RELEASE);
-            for(Plugin plugin : Plugin.getAllPlugins()) {
-                System.out.printf("Plugin %s, version %s, loaded from %s%n", plugin.getPluginId(),
-                        plugin.getVersion(),
-                        plugin.getPluginLoader().getURL());
-                if (plugin.isCorePlugin())
-                    System.out.println("  is core plugin");
-                if (plugin.isInitialPlugin())
-                    System.out.println("  is initial plugin");
-                if (plugin.isEnabledByDefault())
-                    System.out.println("  is enabled by default");
-                if (plugin.isGloballyEnabled())
-                    System.out.println("  is globally enabled");
-                for(CloudPlugin cloudPlugin : plugin.getCloudPlugins()) {
-                    System.out.printf("  cloud %s%n", cloudPlugin.getId());
-                    System.out.printf("     %s%n", cloudPlugin.getDescription());
+            if (commandLine.justPrintConfiguration()) {
+                for (Plugin plugin : Plugin.getAllPlugins()) {
+                    System.out.printf("Plugin %s, version %s, loaded from %s%n", plugin.getPluginId(), plugin.getVersion(),
+                            plugin.getPluginLoader().getURL());
+                    if (plugin.isCorePlugin())
+                        System.out.println("  is core plugin");
+                    if (plugin.isInitialPlugin())
+                        System.out.println("  is initial plugin");
+                    if (plugin.isEnabledByDefault())
+                        System.out.println("  is enabled by default");
+                    if (plugin.isGloballyEnabled())
+                        System.out.println("  is globally enabled");
+                    for (CloudPlugin cloudPlugin : plugin.getCloudPlugins()) {
+                        System.out.printf("  cloud %s%n", cloudPlugin.getId());
+                        System.out.printf("     %s%n", cloudPlugin.getDescription());
+                    }
+                    for (DetectorFactory factory : plugin.getDetectorFactories()) {
+                        System.out.printf("  detector %s%n", factory.getShortName());
+                    }
+                    System.out.println();
                 }
-                for(DetectorFactory factory : plugin.getDetectorFactories()) {
-                    System.out.printf("  detector %s%n", factory.getShortName());
-                }
-                System.out.println();
-            }
+                printPluginUpdates(true, 10);
+            } else
+                printPluginUpdates(false, 3);
 
-            printPluginUpdates();
             return;
         }
         // Away we go!
         FindBugs.runMain(findBugs, commandLine);
     }
 
-    private static void printPluginUpdates() throws InterruptedException {
-        System.out.println();
-        System.out.print("Checking for plugin updates...");
-        final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Collection<UpdateChecker.PluginUpdate>> updatesHolder
-                = new AtomicReference<Collection<UpdateChecker.PluginUpdate>>();
-        DetectorFactoryCollection.instance().addPluginUpdateListener(new PluginUpdateListener() {
-            public void pluginUpdateCheckComplete(Collection<UpdateChecker.PluginUpdate> updates, boolean force) {
-                updatesHolder.set(updates);
-                latch.countDown();
-            }
-        });
-        if (latch.await(15,TimeUnit.SECONDS)) {
-        Collection<UpdateChecker.PluginUpdate> updates = updatesHolder.get();
-        if (updates.isEmpty()) {
-            System.out.println("none!");
-        } else {
+    private static void printPluginUpdates(boolean verbose, int secondsToWait) throws InterruptedException {
+        DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
+        
+        if (dfc.getUpdateChecker().updateChecksGloballyDisabled())
+            return;
+        if (verbose) {
             System.out.println();
-            for (UpdateChecker.PluginUpdate update : updates) {
-                String name = update.getPlugin().isCorePlugin() ? "FindBugs" : update.getPlugin().getShortDescription();
-                System.out.println("PLUGIN UPDATE: " + name + " "
-                        + update.getVersion() + " has been released (you have "
-                        + update.getPlugin().getVersion() + ")");
-                if (update.getMessage() != null) {
-                    System.out.println("   " + update.getMessage().replaceAll("\n", "\n   "));
-                }
-                System.out.println("Visit " + update.getUrl() + " for details.");
-                System.out.println("");
-            }
-        }} else {
-            System.out.println("Timeout while trying to get updates");
+            System.out.print("Checking for plugin updates...");
         }
+        FutureValue<Collection<UpdateChecker.PluginUpdate>> 
+        updateHolder  = dfc.getUpdates();
+      
+        try {
+            Collection<UpdateChecker.PluginUpdate> updates = updateHolder.get(secondsToWait, TimeUnit.SECONDS);
+            if (updates.isEmpty()) {
+                if (verbose)
+                    System.out.println("none!");
+            } else {
+                System.out.println();
+                for (UpdateChecker.PluginUpdate update : updates) {
+                    System.out.println(update);
+                    System.out.println();
+                    
+                }
+            }
+        } catch (TimeoutException e) {
+            if (verbose)
+                System.out.println("Timeout while trying to get updates");
+        }
+
     }
 
     public void setAbridgedMessages(boolean xmlWithAbridgedMessages) {

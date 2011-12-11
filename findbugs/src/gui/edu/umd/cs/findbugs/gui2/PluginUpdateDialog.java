@@ -27,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.PluginUpdateListener;
 import edu.umd.cs.findbugs.UpdateChecker;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
@@ -40,7 +41,8 @@ public class PluginUpdateDialog implements Serializable {
         List<UpdateChecker.PluginUpdate> sortedUpdates = new ArrayList<UpdateChecker.PluginUpdate>();
         UpdateChecker.PluginUpdate core = sortUpdates(updates, sortedUpdates);
 
-        if (updatesHaveBeenSeenBefore(sortedUpdates) && !force)
+        if (DetectorFactoryCollection.instance().getUpdateChecker()
+                .updatesHaveBeenSeenBefore(sortedUpdates) && !force)
             return;
 
         String headline;
@@ -116,48 +118,12 @@ public class PluginUpdateDialog implements Serializable {
         return label;
     }
 
-    private long dontWarnAgainUntil() {
-        Preferences prefs = Preferences.userNodeForPackage(MainFrame.class);
-        
-        String oldSeen = prefs.get("last-plugin-update-seen", "");
-        if (oldSeen == null || oldSeen.equals(""))
-            return 0;
-        try {
-        return Long.parseLong(oldSeen) + DONT_REMIND_WINDOW;
-        } catch (Exception e) {
-            return 0;
-        }
-        
-        
-    }
-    static final long DONT_REMIND_WINDOW = 3L*24*60*60*1000;
-    private boolean updatesHaveBeenSeenBefore(List<UpdateChecker.PluginUpdate> sortedUpdates) {
-        long now = System.currentTimeMillis();
-        Preferences prefs = Preferences.userNodeForPackage(MainFrame.class);
-        String oldHash = prefs.get("last-plugin-update-hash", "");
-        
-        String newHash = buildPluginUpdateHash(sortedUpdates);
-        if (oldHash.equals(newHash) && dontWarnAgainUntil() > now) {
-            LOGGER.fine("Skipping update dialog because these updates have been seen before");
-            return true;
-        }
-        prefs.put("last-plugin-update-hash", newHash);
-        prefs.put("last-plugin-update-seen", Long.toString(now));
-        return false;
-    }
-
+   
     public PluginUpdateListener createListener() {
         return new MyPluginUpdateListener();
     }
 
-    private String buildPluginUpdateHash(Collection<UpdateChecker.PluginUpdate> updates) {
-        StringBuilder builder = new StringBuilder();
-        for (UpdateChecker.PluginUpdate update : updates) {
-            builder.append(update.getPlugin().getPluginId());
-            builder.append(update.getVersion());
-        }
-        return builder.toString();
-    }
+ 
 
     private JButton createPluginUpdateButton(final JPanel comp, final UpdateChecker.PluginUpdate update) {
         JButton button = new JButton("<html><u><font color=#0000ff>More info...");
@@ -184,23 +150,23 @@ public class PluginUpdateDialog implements Serializable {
     }
 
     private UpdateChecker.PluginUpdate sortUpdates(Collection<UpdateChecker.PluginUpdate> updates,
-                                                   List<UpdateChecker.PluginUpdate> updates2) {
+                                                   List<UpdateChecker.PluginUpdate> sorted) {
         UpdateChecker.PluginUpdate core = null;
         for (UpdateChecker.PluginUpdate update : updates) {
             if (update.getPlugin().isCorePlugin())
                 core = update;
             else
-                updates2.add(update);
+                sorted.add(update);
         }
         // sort by name
-        Collections.sort(updates2, new Comparator<UpdateChecker.PluginUpdate>() {
+        Collections.sort(sorted, new Comparator<UpdateChecker.PluginUpdate>() {
             public int compare(UpdateChecker.PluginUpdate o1, UpdateChecker.PluginUpdate o2) {
                 return o1.getPlugin().getShortDescription().compareTo(o2.getPlugin().getShortDescription());
             }
         });
         // place core plugin first, if present
         if (core != null)
-            updates2.add(0, core);
+            sorted.add(0, core);
         return core;
     }
 

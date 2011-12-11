@@ -7,7 +7,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,6 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -43,7 +43,7 @@ public class UpdateChecker {
     private static final boolean ENV_FB_NO_UPDATE_CHECKS = System.getenv("FB_NO_UPDATE_CHECKS") != null;
 
     private final UpdateCheckCallback dfc;
-    private List<PluginUpdate> pluginUpdates = new ArrayList<PluginUpdate>();
+    private final List<PluginUpdate> pluginUpdates = new CopyOnWriteArrayList<PluginUpdate>();
 
     public UpdateChecker(UpdateCheckCallback dfc) {
         this.dfc = dfc;
@@ -98,6 +98,42 @@ public class UpdateChecker {
         waitForCompletion(latch, force);
     }
 
+    private long dontWarnAgainUntil() {
+        Preferences prefs = Preferences.userNodeForPackage(UpdateChecker.class);
+        
+        String oldSeen = prefs.get("last-plugin-update-seen", "");
+        if (oldSeen == null || oldSeen.equals(""))
+            return 0;
+        try {
+        return Long.parseLong(oldSeen) + DONT_REMIND_WINDOW;
+        } catch (Exception e) {
+            return 0;
+        }  
+    }
+    static final long DONT_REMIND_WINDOW = 3L*24*60*60*1000;
+    public boolean updatesHaveBeenSeenBefore(Collection<UpdateChecker.PluginUpdate> updates) {
+        long now = System.currentTimeMillis();
+        Preferences prefs = Preferences.userNodeForPackage(UpdateChecker.class);
+        String oldHash = prefs.get("last-plugin-update-hash", "");
+        
+        String newHash = Integer.toString(buildPluginUpdateHash(updates));
+        if (oldHash.equals(newHash) && dontWarnAgainUntil() > now) {
+            LOGGER.fine("Skipping update dialog because these updates have been seen before");
+            return true;
+        }
+        prefs.put("last-plugin-update-hash", newHash);
+        prefs.put("last-plugin-update-seen", Long.toString(now));
+        return false;
+    }
+
+    private int buildPluginUpdateHash(Collection<UpdateChecker.PluginUpdate> updates) {
+        HashSet<String> builder = new HashSet<String>();
+        for (UpdateChecker.PluginUpdate update : updates) {
+            builder.add( update.getPlugin().getPluginId() + update.getVersion());
+        }
+        return builder.hashCode();
+    }
+    
     private void waitForCompletion(final CountDownLatch latch, final boolean force) {
         Util.runInDameonThread(new Runnable() {
             public void run() {
@@ -368,8 +404,24 @@ public class UpdateChecker {
             return url;
         }
 
-        public String getMessage() {
+        public @Nonnull String getMessage() {
             return message;
+        }
+        
+        @Override
+        public String toString() {
+
+            StringBuilder buf = new StringBuilder();
+            String name = getPlugin().isCorePlugin() ? "FindBugs" : "FindBugs plugin " + getPlugin().getShortDescription();
+            buf.append( name + " " + getVersion() + " has been released (you have " + getPlugin().getVersion()
+                    + ")");
+            buf.append("\n");
+
+            buf.append("   " + message.replaceAll("\n", "\n   "));
+
+            if (url != null)
+                buf.append("\nVisit " + url + " for details.");
+            return buf.toString();
         }
     }
 }

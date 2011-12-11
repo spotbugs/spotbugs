@@ -25,7 +25,6 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,6 +44,7 @@ import javax.swing.JOptionPane;
 
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.util.ClassPathUtil;
+import edu.umd.cs.findbugs.util.FutureValue;
 
 /**
  * The DetectorFactoryCollection stores all of the DetectorFactory objects used
@@ -76,7 +76,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
     private final UpdateChecker updateChecker;
     private final CopyOnWriteArrayList<PluginUpdateListener> pluginUpdateListeners
             = new CopyOnWriteArrayList<PluginUpdateListener>();
-    private List<UpdateChecker.PluginUpdate> updates;
+    private volatile List<UpdateChecker.PluginUpdate> updates;
     private boolean updatesForced;
     private final Collection<Plugin> pluginsToUpdate;
     final Map<String, String> globalOptions = new HashMap<String,String>();
@@ -446,6 +446,17 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         }
     }
 
+    public FutureValue<Collection<UpdateChecker.PluginUpdate>> getUpdates() {
+        final FutureValue<Collection<UpdateChecker.PluginUpdate>> results = new FutureValue<Collection<UpdateChecker.PluginUpdate>>();
+        addPluginUpdateListener(new PluginUpdateListener() {
+            public void pluginUpdateCheckComplete(Collection<UpdateChecker.PluginUpdate> u, boolean force) {
+                results.set(u);
+            }
+        });
+        return results;
+    }
+
+    
     public  Map<String, CloudPlugin> getRegisteredClouds() {
         return Collections.unmodifiableMap(registeredClouds);
     }
