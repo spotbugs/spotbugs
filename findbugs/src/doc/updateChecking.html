@@ -1,0 +1,79 @@
+<html>
+<head>
+<title>Update checking in FindBugs</title>
+<link rel="stylesheet" type="text/css" href="findbugs.css" />
+@GOOGLE_ANALYTICS@
+</head>
+
+<body>
+
+	<table width="100%">
+		<tr>
+
+			@HTML_SIDEBAR@
+
+			<td align="left" valign="top">
+            
+            <p>When FindBugs is run, it now checks for updated versions of FindBugs or plugins. As a side effect
+            of this, our server sees a request for whether there are any updated version of FindBugs available.
+            Third party plugins can independently receive this same information.  We are recording
+            information about the operating system, Java version, locale, and Findbugs entry point (ant, command line,
+            GUI, etc), in order to better understand our users. 
+            
+            <p>For example, here is an example of the information that would be sent to the server:
+            <pre>
+&lt;?xml version="1.0" encoding="UTF-8"?>
+
+&lt;findbugs-invocation version="2.0.0-rc1" app-name="UpdateChecker" app-version="" entry-point="UpdateChecker" os="Mac OS X" 
+     java-version="1.6" language="en" country="US" uuid="-4bcf8f48ba2842d2"&gt;
+  &lt;plugin id="edu.umd.cs.findbugs.plugins.core" name="Core FindBugs plugin" version="2.0.0-rc1"/&gt;
+  &lt;plugin id="edu.umd.cs.findbugs.plugins.appengine" name="FindBugs Cloud Plugin" version=""/&gt;
+  &lt;plugin id="edu.umd.cs.findbugs.plugins.poweruser" name="Power user commnand line tools" version=""/&gt;
+&lt;/findbugs-invocation&gt;
+</pre>
+
+<p>You can run the main method of edu.umd.cs.findbugs.updates.UpdateChecker to see what would be reported
+for you, and whether update checking is disabled and/or redirected (e.g., run
+<pre> java -classpath ~/findbugs/lib/findbugs.jar  edu.umd.cs.findbugs.updates.UpdateChecker</pre>
+
+<p>There is one element of the information sent that needs explanation: the uuid. Since we don't report anything like username,
+when we receive a bunch of update checks from a particular ip address, we don't know if that is one person running FindBugs many times
+on a single machine, or many users running FindBugs on many different machines  So we generate a random 64 bit integer, 
+store it in the Java user preferences, and report that on each use.
+
+<h2>Disabling or redirecting update checks</h2>
+<p>Some organizations or individuals may have policies or preferences to not let us know any information about 
+their running of FindBugs. Note that we do not collect any information about the code being analuzed. 
+Even so, we understand that is very important for a few of our users,
+ and provide several ways for you to disable or redirect FindBugs update checks.
+<ul>
+<li>There is a FindBugs plugin, noUpdateChecks.jar, which is in findbugs/optionalPlugin in the standard distribution.
+If this plugin enabled, all update checks are disabled. You can move that plugin from findbugs/optionalPlugin to findbugs/plugin,
+to disable it for all users of that distribution. You can also copy it to <pre>~/.findbugs/plugin</pre>,
+which will disable it for your account for any distribution of FindBugs you invoke (NOTE: double check location
+of personal FindBugs plugin installation for Windows User).
+<li>There are noUpdateChecks distributions of FindBugs available from SourceForge. This come with the noUpdateChecks plugin
+already moved to findbugs/plugin, and the webCloudClient.jar plug in the optional plugin directory (where it is disabled by default).
+
+<li>You can also redirect all update checks to a local server. This allows you to collect information about who is using
+what versions of FindBugs in your organization, and keep all of that information private.
+<li>All of the plugins from the FindBugs project use <pre>http://update.findbugs.org/update-check</pre> as the 
+host we use for update checks. If you wish to ensure that no one from your organization accidently reports any usage
+information to the FindBugs project, you can blacklist that URL in your firewall 
+<ul>
+<li>You can also block <pre>http://findbugs-cloud.appspot.com</pre>, the host we use for our publicly hosted
+repository of bug evaluations (e.g., evaluations in open source projects such as the JDK, Eclipse and GlassFish).
+While people have to explicitly request that their evaluations be stored into the FindBugs cloud, you 
+can block it to ensure that no one accidently shares evaluations of your own code to the FindBugs cloud. You can also
+remove the WebCloudClient 
+
+</ul>
+</li>
+</ul>
+
+			
+		</tr>
+	</table>
+
+</body>
+</html>

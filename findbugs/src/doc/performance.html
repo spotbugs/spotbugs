@@ -1,0 +1,62 @@
+<html>
+<head>
+<title>FindBugs Performance Improvements and Regressions</title>
+<link rel="stylesheet" type="text/css" href="findbugs.css">
+@GOOGLE_ANALYTICS@
+</head>
+<body>
+
+    <table width="100%">
+        <tr>
+
+            @HTML_SIDEBAR@
+
+            <td align="left" valign="top">
+
+                <h1>FindBugs Performance Improvements and Regressions</h1> I did a performance check against 179
+                benchmarks applications I regularly test against. Overall (total the total time to analyze all 179
+                benchmarks), FindBugs 2.0 gives a 9% performance improvement over 1.3.9. 154 of the 179 benchmarks saw
+                performance improvements; 24 saw regressions. All of the benchmarks that saw regressions of more than
+                10% were small benchmarks (analyzed in less than 60 seconds), which makes consistent benchmarking
+                particularly difficult. I'm working to repeat the benchmarks, see if the results are consistent. I took
+                a look, and couldn't find anything that stood out as being a performance glitch in FindBugs. I haven't
+                yet done benchmarking with constrained memory. It is possible that you may need to increase the heap
+                size for FindBugs 2.0.
+
+                <h2>Important Request</h2>h2> If you are seeing any significant performance regressions in FindBugs 2.0,
+                I very much need your help. Please either email <a href="mailto:findbugs@cs.umd.edu">findbugs@cs.umd.edu</a>
+                or file <a href="http://sourceforge.net/tracker/?atid=614693&amp;group_id=96405&amp;func=browse">a
+                    bug report</a>.&nbsp;with the following information from the xml file for your project (from both the
+                1.3.9 and 2.0.0 version if possible). Sending me your code or pointing me to a open source repository
+                would be great, but I know that isn't feasible for a lot of projects. The information I'm requesting
+                doesn't include any information about the code being analyzed other than the total size of the code
+                being analyzed and the total number of issues found at the different confidence levels. The
+                &lt;FindBugsSummary ... &gt; start tag. For example: <quote> <pre>
+   &lt;FindBugsSummary timestamp="Tue, 30 Dec 2008 21:29:52 -0500" 
+      total_classes="206" referenced_classes="325" total_bugs="72" total_size="7654" num_packages="21" 
+      vm_version="20.4-b02-402" cpu_seconds="62.52" clock_seconds="22.01" 
+      peak_mbytes="112.21" alloc_mbytes="1683.38" gc_seconds="1.19" 
+      priority_3="56" priority_2="14" priority_1="2"&gt;
+</pre> </quote> The &lt;FindBugsProfile&gt;...&lt;/FindBugsProfile&gt; element. For example: <quote>
+                <pre>
+   &lt;FindBugsProfile&gt;
+      &lt;ClassProfile name="edu.umd.cs.findbugs.detect.IncompatMask" totalMilliseconds="11" 
+        invocations="206" avgMicrosecondsPerInvocation="55" maxMicrosecondsPerInvocation="475" 
+        standardDeviationMircosecondsPerInvocation="75"/&gt;
+      &lt;ClassProfile name="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" totalMilliseconds="11" 
+        invocations="206" avgMicrosecondsPerInvocation="55" maxMicrosecondsPerInvocation="402" 
+        standardDeviationMircosecondsPerInvocation="69"/&gt;
+      &lt;ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LockDataflowFactory" totalMilliseconds="11" 
+        invocations="23" avgMicrosecondsPerInvocation="515" maxMicrosecondsPerInvocation="2637" 
+        standardDeviationMircosecondsPerInvocation="639"/&gt;
+   ...
+ &lt;/FindBugsProfile&gt;
+</pre> </quote> @HTML_FOOTER@
+
+            </td>
+
+        </tr>
+    </table>
+
+</body>
+</html>
