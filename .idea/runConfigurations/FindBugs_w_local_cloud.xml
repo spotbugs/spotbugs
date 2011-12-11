@@ -6,7 +6,6 @@
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <extension name="snapshooter" />
     <option name="MAIN_CLASS_NAME" value="edu.umd.cs.findbugs.gui2.Driver" />
     <option name="VM_PARAMETERS" value="-Xmx1024m -ea  -Dfindbugs.cloud.default=edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud -Dwebcloud.host=http://localhost:8080 -Dfindbugs.redirectUpdateChecks=http://localhost:8080/update-check" />
     <option name="PROGRAM_PARAMETERS" value="" />

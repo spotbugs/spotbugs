@@ -1,7 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="All Web Cloud Client Tests" type="JUnit" factoryName="JUnit">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-    <extension name="snapshooter" />
     <module name="webCloudClient" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="ALTERNATIVE_JRE_PATH" value="C:/Program Files (x86)/Java/jdk1.6.0_16_x32" />
@@ -18,6 +17,7 @@
       <value defaultName="moduleWithDependencies" />
     </option>
     <envs />
+    <patterns />
     <RunnerSettings RunnerId="Profile ">
       <option name="myExternalizedOptions" value="&#13;&#10;snapshots-dir=&#13;&#10;additional-options2=onexit\=snapshot&#13;&#10;" />
     </RunnerSettings>

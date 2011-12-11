@@ -6,7 +6,6 @@
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <extension name="snapshooter" />
     <option name="MAIN_CLASS_NAME" value="edu.umd.cs.findbugs.FindBugs2" />
     <option name="VM_PARAMETERS" value="-Xmx512m -ea  -Dfindbugs.cloud.default=edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud -Dfindbugs.plugin.appengine=file:../plugins/webCloudClient/etc  -Dfindbugs.cloud.token=238b6fc80cec17ec -DfailOnCloudError=true  " />
     <option name="PROGRAM_PARAMETERS" value="-experimental -output msgs.xml  -xml:withMessages  ..\findbugsTestCases\classesEclipse\sfBugs\Bug3368029.class" />

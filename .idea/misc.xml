@@ -15,6 +15,15 @@
   </component>
   <component name="FacetAutodetectingManager">
     <autodetection-disabled>
+      <facet-type id="google-app-engine">
+        <modules>
+          <module name="webCloudServerAppEngine">
+            <files>
+              <file url="file://$PROJECT_DIR$/server/appengine/war/WEB-INF/appengine-web.xml" />
+            </files>
+          </module>
+        </modules>
+      </facet-type>
       <facet-type id="web">
         <modules>
           <module name="localCloud">
@@ -29,17 +38,9 @@
           </module>
         </modules>
       </facet-type>
-      <facet-type id="google-app-engine">
-        <modules>
-          <module name="webCloudServerAppEngine">
-            <files>
-              <file url="file://$PROJECT_DIR$/server/appengine/war/WEB-INF/appengine-web.xml" />
-            </files>
-          </module>
-        </modules>
-      </facet-type>
     </autodetection-disabled>
   </component>
+  <component name="IdProvider" IDEtalkID="35E5727E86668CE4E2C1BA4E57BF320A" />
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" />
     <option name="OPTION_SCOPE" value="protected" />
@@ -57,10 +58,31 @@
     <option name="LOCALE" />
     <option name="OPEN_IN_BROWSER" value="true" />
   </component>
+  <component name="NullableNotNullManager">
+    <option name="myDefaultNullable" value="org.jetbrains.annotations.Nullable" />
+    <option name="myDefaultNotNull" value="org.jetbrains.annotations.NotNull" />
+    <option name="myNullables">
+      <value>
+        <list size="0" />
+      </value>
+    </option>
+    <option name="myNotNulls">
+      <value>
+        <list size="3">
+          <item index="0" class="java.lang.String" itemvalue="org.jetbrains.annotations.NotNull" />
+          <item index="1" class="java.lang.String" itemvalue="javax.annotation.Nonnull" />
+          <item index="2" class="java.lang.String" itemvalue="edu.umd.cs.findbugs.annotations.NonNull" />
+        </list>
+      </value>
+    </option>
+  </component>
   <component name="ProjectDetails">
     <option name="projectName" value="findbugs" />
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="JavaSE-1.6" project-jdk-type="JavaSDK">
+  <component name="ProjectResources">
+    <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="SvnBranchConfigurationManager">

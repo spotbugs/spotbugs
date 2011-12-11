@@ -6,7 +6,6 @@
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <extension name="snapshooter" />
     <option name="MAIN_CLASS_NAME" value="edu.umd.cs.findbugs.FindBugs2" />
     <option name="VM_PARAMETERS" value="-Xmx512m" />
     <option name="PROGRAM_PARAMETERS" value="-experimental -output msgs.xml  -xml:withMessages ..\findbugsTestCases\classesEclipse\sfBugs\Bug3368029.class" />

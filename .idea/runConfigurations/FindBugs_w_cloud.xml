@@ -6,7 +6,6 @@
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <extension name="snapshooter" />
     <option name="MAIN_CLASS_NAME" value="edu.umd.cs.findbugs.gui2.Driver" />
     <option name="VM_PARAMETERS" value="-ea  -Dfindbugs.cloud.default=edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud -Dfindbugs.plugin.appengine=file:../plugins/webCloudClient/etc" />
     <option name="PROGRAM_PARAMETERS" value="" />

@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="AppEngineCloud" type="GoogleAppEngineDevServer" factoryName="Local" APPLICATION_SERVER_NAME="AppEngine Dev 1.3.4">
+  <configuration default="false" name="AppEngineCloud" type="GoogleAppEngineDevServer" factoryName="Local">
     <option name="OPEN_IN_BROWSER" value="false" />
     <option name="OPEN_IN_BROWSER_URL" value="http://127.0.0.1:8080" />
     <option name="COMMON_VM_ARGUMENTS" value="-ea" />
@@ -8,6 +8,7 @@
       <option name="artifact" value="webCloudServerAppEngine" />
       <option name="serverParameters" value="-a 127.0.0.1" />
     </server-settings>
+    <extension name="coverage" enabled="false" merge="false" />
     <RunnerSettings RunnerId="Debug">
       <option name="DEBUG_PORT" value="65093" />
       <option name="TRANSPORT" value="0" />

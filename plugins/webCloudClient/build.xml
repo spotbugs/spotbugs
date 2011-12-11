@@ -16,6 +16,7 @@
     <property name="findbugs.home" value="${findbugsBase.dir}/findbugs"/>
     <property name="protocol.home" value="${findbugsBase.dir}/webCloudProtocol"/>
     <property name="destination.dir" value="${findbugsBase.dir}/findbugs/${plugin.dir}"/>
+    <property name="destination2.dir" value="${findbugsBase.dir}/findbugs/${plugin.dir}"/>
 
 
     <path id="client.classpath">
@@ -81,6 +82,7 @@
 
     <target name="install" depends="plugin-jar">
         <copy todir="${destination.dir}" file="build/webCloudClient.jar" flatten="true"/>
+        <copy todir="${destination2.dir}" file="build/webCloudClient.jar" flatten="true"/>
         <copy todir="${findbugs.home}/jnlp" flatten="true">
             <fileset dir="etc">
                 <include name="*.jnlp"/>

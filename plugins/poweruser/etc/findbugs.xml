@@ -2,7 +2,7 @@
        xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
        pluginid="edu.umd.cs.findbugs.plugins.poweruser" 
        provider="FindBugs project" website="http://findbugs.sourceforge.net"
-	>
+    >
 
 <FindBugsMain cmd="copySource" kind="poweruser" class="edu.umd.cs.findbugs.workflow.CopyBuggySource"/>
 <FindBugsMain cmd="rejar" kind="poweruser" class="edu.umd.cs.findbugs.workflow.RejarClassesForAnalysis"/>
@@ -12,8 +12,6 @@
 <FindBugsMain cmd="backdate" kind="poweruser" class="edu.umd.cs.findbugs.workflow.BackdateHistoryUsingSource"/>
 <FindBugsMain cmd="csr" kind="poweruser" class="edu.umd.cs.findbugs.workflow.CloudSyncAndReport"/>
 <FindBugsMain cmd="appVersion" kind="poweruser" class="edu.umd.cs.findbugs.workflow.PrintAppVersion"/>
-          
-                <FindBugsMain cmd="xpath" kind="utility" class="edu.umd.cs.findbugs.xml.XPathFind"/>
-  
+<FindBugsMain cmd="xpath" kind="utility" class="edu.umd.cs.findbugs.xml.XPathFind"/>
 
 </FindbugsPlugin>
