@@ -49,7 +49,7 @@ public class FixIndentation {
             throw new IllegalArgumentException("Unable to read " +root);
         recursiveFix(root, true);
         System.out.printf("Updated %d/%d files%n", updated, examined);
-        System.out.printf("%d nonblank lines", lines);
+        System.out.printf("%d nonblank lines%n", lines);
         if (!performUpdate)
             System.out.println("No update actually performed");
     }
