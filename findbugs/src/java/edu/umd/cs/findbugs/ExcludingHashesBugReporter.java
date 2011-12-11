@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import org.dom4j.DocumentException;
 
 /**
@@ -58,7 +60,7 @@ public class ExcludingHashesBugReporter extends DelegatingBugReporter {
     }
 
     @Override
-    public void reportBug(BugInstance bugInstance) {
+    public void reportBug(@Nonnull BugInstance bugInstance) {
         String instanceHash = bugInstance.getInstanceHash();
         if (!excludedHashes.contains(instanceHash))
             getDelegate().reportBug(bugInstance);

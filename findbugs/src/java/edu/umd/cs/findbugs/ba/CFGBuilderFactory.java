@@ -19,9 +19,10 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import javax.annotation.Nonnull;
+
 import org.apache.bcel.generic.MethodGen;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * Factory object to create CFGBuilders for methods. Using a CFGBuilderFactory
@@ -41,7 +42,7 @@ public class CFGBuilderFactory {
      *            the method
      * @return a CFGBuilder for the method
      */
-    public static CFGBuilder create(@NonNull MethodGen methodGen) {
+    public static CFGBuilder create(@Nonnull MethodGen methodGen) {
         return new BetterCFGBuilder2(methodGen);
     }
 }

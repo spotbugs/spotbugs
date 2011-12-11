@@ -42,6 +42,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.meta.When;
 
@@ -55,7 +56,6 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.Type;
 import org.objectweb.asm.tree.ClassNode;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -255,7 +255,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             BugPattern bugPattern = getBugPattern();
             if (SystemProperties.ASSERTIONS_ENABLED && !bugPattern.getCategory().equals("EXPERIMENTAL")
                     && !detectorFactory.getReportedBugPatterns().contains(bugPattern))
-                AnalysisContext.logError(detectorFactory.getShortName() + " doesn't note that it reports " 
+                AnalysisContext.logError(detectorFactory.getShortName() + " doesn't note that it reports "
                     + bugPattern + " in category " + bugPattern.getCategory());
         }
     }
@@ -302,7 +302,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Get the BugPattern.
      */
-    public @NonNull
+    public @Nonnull
     BugPattern getBugPattern() {
         BugPattern result = DetectorFactoryCollection.instance().lookupBugPattern(getType());
         if (result != null)
@@ -324,7 +324,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     public int getBugRank() {
         return BugRanker.findRank(this);
     }
-    
+
     public BugRankCategory getBugRankCategory() {
         return BugRankCategory.getRank(getBugRank());
     }
@@ -568,7 +568,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     public List<? extends BugAnnotation> getAnnotations() {
         return annotationList;
     }
-    
+
     /** Get the first bug annotation with the specified class and role; return null if no
      * such annotation exists;
      * @param role
@@ -580,7 +580,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
                 return c.cast(a);
         }
         return null;
-        
+
     }
 
     /**
@@ -634,7 +634,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * @see #getUserDesignation()
      */
     @Deprecated
-    @NonNull
+    @Nonnull
     public BugDesignation getNonnullUserDesignation() {
         if (userDesignation == null)
             userDesignation = new BugDesignation();
@@ -653,7 +653,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * @see I18N#getUserDesignation(String key)
      * @return the user designation key
      */
-    @NonNull
+    @Nonnull
     public String getUserDesignationKey() {
         if (userDesignation == null)
             return BugDesignation.UNCLASSIFIED;
@@ -673,7 +673,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         return userDesignation.getTimestamp();
     }
 
-    @NonNull
     public int getUserDesignationKeyIndex() {
         return I18N.instance().getUserDesignationKeys(true).indexOf(getUserDesignationKey());
     }
@@ -732,7 +731,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      *
      * @return the user annotation text
      */
-    @NonNull
+    @Nonnull
     public String getAnnotationText() {
         BugDesignation userDesignation = this.userDesignation;
         if (userDesignation == null)
@@ -752,7 +751,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         BugDesignation userDesignation = getNonnullUserDesignation();
         userDesignation.setTimestamp(timestamp);
     }
-    
+
     public void setUserAnnotationDirty(boolean dirty) {
         BugDesignation userDesignation = getUserDesignation();
         if (userDesignation == null)
@@ -1770,7 +1769,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * @return this object
      */
     public BugInstance addSourceLine(ClassContext classContext, MethodGen methodGen, String sourceFile,
-            @NonNull InstructionHandle handle) {
+            @Nonnull InstructionHandle handle) {
         SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
                 sourceFile, handle);
         if (sourceLineAnnotation != null)
@@ -2119,16 +2118,16 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
                 }
             } else if (hasXmlProps()) {
                 XmlProps props = getXmlProps();
-                
+
                 if (props.firstSeen != null)
                     attributeList.addOptionalAttribute("firstSeen", firstSeenXMLFormat().format(props.firstSeen));
                 if (props.reviewCount > 0) {
                     if (props.consensus != null)
-                        attributeList.addOptionalAttribute("consensus", props.consensus);  
-                    attributeList.addAttribute("reviews", Integer.toString(props.reviewCount));               
+                        attributeList.addOptionalAttribute("consensus", props.consensus);
+                    attributeList.addAttribute("reviews", Integer.toString(props.reviewCount));
                 }
                 if (!props.isInCloud())
-                    attributeList.addAttribute("isInCloud", "false");               
+                    attributeList.addAttribute("isInCloud", "false");
                 if (addMessages) {
                     UserDesignation consesus = UserDesignation.valueOf(props.consensus);
                     if (consesus.shouldFix())
@@ -2269,7 +2268,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     BugAnnotation getSourceForTopStackValue(ClassContext classContext, Method method, Location location) {
         return getSourceForStackValue(classContext, method, location, 0);
     }
-  
+
     public static @CheckForNull
     BugAnnotation getSourceForStackValue(ClassContext classContext, Method method, Location location, int depth) {
         int pc = location.getHandle().getPosition();
@@ -2463,7 +2462,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         this.firstVersion = firstVersion;
 
     }
-    
+
     public void clearHistory() {
         setFirstVersion(0);
         setLastVersion(-1);

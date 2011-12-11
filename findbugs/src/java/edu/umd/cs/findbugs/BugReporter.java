@@ -20,8 +20,8 @@
 package edu.umd.cs.findbugs;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.classfile.IClassObserver;
 
@@ -69,7 +69,7 @@ public interface BugReporter extends RepositoryLookupFailureCallback, IClassObse
      * @param bugInstance
      *            object describing the bug instance
      */
-    public void reportBug(@NonNull BugInstance bugInstance);
+    public void reportBug(@Nonnull BugInstance bugInstance);
 
     /**
      * Finish reporting bugs. If any bug reports have been queued, calling this

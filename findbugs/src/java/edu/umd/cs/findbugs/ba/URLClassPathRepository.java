@@ -31,7 +31,6 @@ import org.apache.bcel.util.ClassPath;
 import org.apache.bcel.util.Repository;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * BCEL Repository implementation that uses an URLClassPath to find classes.
@@ -44,7 +43,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
  * classes via http URLs, jar URLs, etc.
  * </ol>
  * FindBugs requires and uses both of these capabilities.
- * 
+ *
  * @author David Hovemeyer
  */
 public class URLClassPathRepository implements Repository {
@@ -74,7 +73,7 @@ public class URLClassPathRepository implements Repository {
 
     /**
      * Add a filename or URL to the classpath.
-     * 
+     *
      * @param fileName
      *            filename or URL of classpath entry to add
      * @throws IOException
@@ -85,7 +84,7 @@ public class URLClassPathRepository implements Repository {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.apache.bcel.util.Repository#storeClass(org.apache.bcel.classfile.
      * JavaClass)
@@ -107,7 +106,7 @@ public class URLClassPathRepository implements Repository {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.apache.bcel.util.Repository#removeClass(org.apache.bcel.classfile
      * .JavaClass)
@@ -126,10 +125,10 @@ public class URLClassPathRepository implements Repository {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.bcel.util.Repository#findClass(java.lang.String)
      */
-    public JavaClass findClass(@NonNull String className) {
+    public JavaClass findClass(/*@Nonnull*/ String className) {
         // Make sure we handle class names with slashes.
         // If we don't, we can get into serious trouble: a previously
         // loaded class will appear to be missing (because we're using the
@@ -142,10 +141,10 @@ public class URLClassPathRepository implements Repository {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.bcel.util.Repository#loadClass(java.lang.String)
      */
-    public JavaClass loadClass(@NonNull String className) throws ClassNotFoundException {
+    public JavaClass loadClass(/*@Nonnull*/ String className) throws ClassNotFoundException {
         if (className == null)
             throw new IllegalArgumentException("className is null");
         // if (className.indexOf('/') >= 0) throw new IllegalStateException();
@@ -163,7 +162,7 @@ public class URLClassPathRepository implements Repository {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.bcel.util.Repository#loadClass(java.lang.Class)
      */
     public JavaClass loadClass(Class clazz) throws ClassNotFoundException {
@@ -172,7 +171,7 @@ public class URLClassPathRepository implements Repository {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.bcel.util.Repository#clear()
      */
     public void clear() {
@@ -185,7 +184,7 @@ public class URLClassPathRepository implements Repository {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.bcel.util.Repository#getClassPath()
      */
     public ClassPath getClassPath() {

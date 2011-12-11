@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -34,7 +36,6 @@ import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.visitclass.Util;
 
@@ -44,7 +45,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
 
     ArrayList<BitSet> regModifiedAt = new ArrayList<BitSet>();
 
-    @NonNull
+    @Nonnull
     BitSet getModifiedBitSet(int reg) {
         while (regModifiedAt.size() <= reg)
             regModifiedAt.add(new BitSet());

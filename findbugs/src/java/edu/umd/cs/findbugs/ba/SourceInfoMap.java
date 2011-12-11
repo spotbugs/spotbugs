@@ -28,11 +28,11 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -162,7 +162,7 @@ public class SourceInfoMap {
         /**
          * Constructor for a single line.
          */
-        public SourceLineRange(@NonNull Integer line) {
+        public SourceLineRange(@Nonnull Integer line) {
             this.start = this.end = line;
         }
 
@@ -174,7 +174,7 @@ public class SourceInfoMap {
          * @param end
          *            end line in range
          */
-        public SourceLineRange(@NonNull Integer start, @NonNull Integer end) {
+        public SourceLineRange(@Nonnull Integer start, @Nonnull Integer end) {
             this.start = start;
             this.end = end;
         }
@@ -182,7 +182,7 @@ public class SourceInfoMap {
         /**
          * @return Returns the start.
          */
-        public @NonNull
+        public @Nonnull
         Integer getStart() {
             return start;
         }
@@ -190,7 +190,7 @@ public class SourceInfoMap {
         /**
          * @return Returns the end.
          */
-        public @NonNull
+        public @Nonnull
         Integer getEnd() {
             return end;
         }

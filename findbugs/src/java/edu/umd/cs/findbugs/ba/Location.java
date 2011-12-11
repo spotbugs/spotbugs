@@ -19,9 +19,10 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import javax.annotation.Nonnull;
+
 import org.apache.bcel.generic.InstructionHandle;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * A class representing a location in the CFG for a method. Essentially, it
@@ -53,7 +54,7 @@ public class Location implements Comparable<Location> {
      * @param basicBlock
      *            the basic block containing the instruction
      */
-    public Location(@NonNull InstructionHandle handle, @NonNull BasicBlock basicBlock) {
+    public Location(@Nonnull InstructionHandle handle, @Nonnull BasicBlock basicBlock) {
         if (handle == null)
             throw new NullPointerException("handle cannot be null");
         if (basicBlock == null)
@@ -62,14 +63,14 @@ public class Location implements Comparable<Location> {
         this.basicBlock = basicBlock;
     }
 
-    public static Location getFirstLocation(@NonNull BasicBlock basicBlock) {
+    public static Location getFirstLocation(@Nonnull BasicBlock basicBlock) {
         InstructionHandle location = basicBlock.getFirstInstruction();
         if (location == null)
             return null;
         return new Location(location, basicBlock);
     }
 
-    public static Location getLastLocation(@NonNull BasicBlock basicBlock) {
+    public static Location getLastLocation(@Nonnull BasicBlock basicBlock) {
         InstructionHandle lastInstruction = basicBlock.getLastInstruction();
         /*
          * if (lastInstruction == null) lastInstruction =
@@ -84,6 +85,7 @@ public class Location implements Comparable<Location> {
     /**
      * Get the instruction handle.
      */
+    @Nonnull
     public InstructionHandle getHandle() {
         return handle;
     }
@@ -91,6 +93,7 @@ public class Location implements Comparable<Location> {
     /**
      * Get the basic block.
      */
+    @Nonnull
     public BasicBlock getBasicBlock() {
         return basicBlock;
     }

@@ -29,6 +29,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ArrayType;
@@ -41,7 +42,6 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.type.NullType;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -265,7 +265,7 @@ public class Hierarchy2 {
      * @throws DataflowAnalysisException
      * @throws ClassNotFoundException
      */
-    public static @NonNull
+    public static @Nonnull
     Set<XMethod> resolveMethodCallTargets(InvokeInstruction invokeInstruction, TypeFrame typeFrame, ConstantPoolGen cpg)
             throws DataflowAnalysisException, ClassNotFoundException {
 

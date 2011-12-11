@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import org.dom4j.DocumentException;
@@ -152,7 +153,7 @@ public abstract class AbstractBugReporter implements BugReporter {
     }
 
     // Subclasses must override doReportBug(), not this method.
-    public final void reportBug(BugInstance bugInstance) {
+    public final void reportBug(@Nonnull BugInstance bugInstance) {
         if (priorityThreshold == 0) {
             throw new IllegalStateException("Priority threshold not set");
         }

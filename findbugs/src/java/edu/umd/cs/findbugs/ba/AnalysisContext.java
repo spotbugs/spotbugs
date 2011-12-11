@@ -27,6 +27,7 @@ import java.util.Collection;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nonnull;
 
 import net.jcip.annotations.NotThreadSafe;
 
@@ -39,7 +40,6 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SuppressionMatcher;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures.AnalysisFeature;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
@@ -200,7 +200,7 @@ public abstract class AnalysisContext {
         return classSummary;
     }
 
-    public void setClassSummary(@NonNull ClassSummary classSummary) {
+    public void setClassSummary(@Nonnull ClassSummary classSummary) {
         if (this.classSummary != null)
             throw new IllegalStateException("ClassSummary already set");
         this.classSummary = classSummary;
@@ -222,7 +222,7 @@ public abstract class AnalysisContext {
         return fieldSummary;
     }
 
-    public void setFieldSummary(@NonNull FieldSummary fieldSummary) {
+    public void setFieldSummary(@Nonnull FieldSummary fieldSummary) {
         if (this.fieldSummary != null) {
             AnalysisContext.logError("Field Summary already set", new IllegalStateException());
         }
@@ -246,7 +246,7 @@ public abstract class AnalysisContext {
         return unreadFields != null;
     }
 
-    public void setUnreadFields(@NonNull UnreadFields unreadFields) {
+    public void setUnreadFields(@Nonnull UnreadFields unreadFields) {
         if (this.unreadFields != null)
             throw new IllegalStateException("UnreadFields detector already set");
         this.unreadFields = unreadFields;
@@ -480,7 +480,7 @@ public abstract class AnalysisContext {
      * @throws ClassNotFoundException
      *             (but not really)
      */
-    public abstract JavaClass lookupClass(@NonNull @DottedClassName String className) throws ClassNotFoundException;
+    public abstract JavaClass lookupClass(@Nonnull @DottedClassName String className) throws ClassNotFoundException;
 
     /**
      * Lookup a class.
@@ -492,7 +492,7 @@ public abstract class AnalysisContext {
      * @throws ClassNotFoundException
      *             if the class can't be found
      */
-    public JavaClass lookupClass(@NonNull ClassDescriptor classDescriptor) throws ClassNotFoundException {
+    public JavaClass lookupClass(@Nonnull ClassDescriptor classDescriptor) throws ClassNotFoundException {
         return lookupClass(classDescriptor.toDottedClassName());
     }
 
@@ -509,7 +509,7 @@ public abstract class AnalysisContext {
      * @return the JavaClass representing the class
      * @throws ClassNotFoundException
      */
-    public static JavaClass lookupSystemClass(@NonNull String className) throws ClassNotFoundException {
+    public static JavaClass lookupSystemClass(@Nonnull String className) throws ClassNotFoundException {
         // TODO: eventually we should move to our own thread-safe repository
         // implementation
         if (className == null)
@@ -530,7 +530,7 @@ public abstract class AnalysisContext {
      *         {@link SourceLineAnnotation#UNKNOWN_SOURCE_FILE} if unable to
      *         determine
      */
-    public final String lookupSourceFile(@NonNull @DottedClassName String dottedClassName) {
+    public final String lookupSourceFile(@Nonnull @DottedClassName String dottedClassName) {
         if (dottedClassName == null)
             throw new IllegalArgumentException("className is null");
         try {

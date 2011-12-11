@@ -22,12 +22,13 @@ package edu.umd.cs.findbugs.ba.generic;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -171,7 +172,7 @@ public class GenericObjectType extends ObjectType {
      * @param variable
      *            the type variable e.g. <code>T</code>
      */
-    GenericObjectType(@NonNull String variable) {
+    GenericObjectType(@Nonnull String variable) {
         this(variable, (ReferenceType) null);
     }
 
@@ -181,7 +182,7 @@ public class GenericObjectType extends ObjectType {
      * @param variable
      *            the type variable e.g. <code>T</code>
      */
-    GenericObjectType(@NonNull String wildcard, ReferenceType extension) {
+    GenericObjectType(@Nonnull String wildcard, ReferenceType extension) {
         super(DescriptorFactory.canonicalizeString(Type.OBJECT.getClassName()));
         this.variable = DescriptorFactory.canonicalizeString(wildcard);
         this.extension = extension;

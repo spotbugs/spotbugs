@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
+import javax.annotation.Nonnull;
+
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.XField;
@@ -305,7 +306,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
      * Get the instance representing a value known to be non-null because a NPE
      * would have occurred if it were null.
      */
-    public static IsNullValue noKaboomNonNullValue(@NonNull Location ins) {
+    public static IsNullValue noKaboomNonNullValue(@Nonnull Location ins) {
         if (ins == null)
             throw new NullPointerException("ins cannot be null");
         return new IsNullValue(NO_KABOOM_NN, ins);

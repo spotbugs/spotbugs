@@ -32,6 +32,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.annotation.meta.When;
 
 import org.apache.bcel.Constants;
@@ -67,7 +68,6 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.UseAnnotationDatabase;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -1306,7 +1306,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
      * foundGuaranteedNullDeref(java.util.Set, java.util.Set,
      * edu.umd.cs.findbugs.ba.vna.ValueNumber, boolean)
      */
-    public void foundGuaranteedNullDeref(@NonNull Set<Location> assignedNullLocationSet, @NonNull Set<Location> derefLocationSet,
+    public void foundGuaranteedNullDeref(@Nonnull Set<Location> assignedNullLocationSet, @Nonnull Set<Location> derefLocationSet,
             SortedSet<Location> doomedLocations, ValueNumberDataflow vna, ValueNumber refValue,
             @CheckForNull BugAnnotation variableAnnotation, NullValueUnconditionalDeref deref, boolean npeIfStatementCovered) {
         if (refValue.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))

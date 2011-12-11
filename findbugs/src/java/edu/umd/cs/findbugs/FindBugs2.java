@@ -210,8 +210,8 @@ public class FindBugs2 implements IFindBugsEngine {
 
             progress.reportNumberOfArchives(project.getFileCount() + project.getNumAuxClasspathEntries());
             profiler.start(this.getClass());
-            
-            // The analysis cache object        
+
+            // The analysis cache object
             createAnalysisCache();
 
             // Create BCEL compatibility layer
@@ -220,8 +220,8 @@ public class FindBugs2 implements IFindBugsEngine {
             // Discover all codebases in classpath and
             // enumerate all classes (application and non-application)
             buildClassPath();
-            
-             
+
+
             // Build set of classes referenced by application classes
             buildReferencedClassSet();
 
@@ -256,7 +256,7 @@ public class FindBugs2 implements IFindBugsEngine {
                 bugReporter = new DelegatingBugReporter(bugReporter) {
 
                     @Override
-                    public void reportBug(BugInstance bugInstance) {
+                    public void reportBug(@Nonnull BugInstance bugInstance) {
                         String className = bugInstance.getPrimaryClass().getClassName();
                         String resourceName = className.replace('.', '/') + ".class";
                         if (classScreener.matches(resourceName)) {
@@ -1221,9 +1221,9 @@ public class FindBugs2 implements IFindBugsEngine {
                 passCount++;
             }
 
-            
+
         } finally {
-   
+
             bugReporter.finish();
             bugReporter.reportQueuedErrors();
             profiler.end(this.getClass());
@@ -1311,16 +1311,16 @@ public class FindBugs2 implements IFindBugsEngine {
 
     private static void printPluginUpdates(boolean verbose, int secondsToWait) throws InterruptedException {
         DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
-        
+
         if (dfc.getUpdateChecker().updateChecksGloballyDisabled())
             return;
         if (verbose) {
             System.out.println();
             System.out.print("Checking for plugin updates...");
         }
-        FutureValue<Collection<UpdateChecker.PluginUpdate>> 
+        FutureValue<Collection<UpdateChecker.PluginUpdate>>
         updateHolder  = dfc.getUpdates();
-      
+
         try {
             Collection<UpdateChecker.PluginUpdate> updates = updateHolder.get(secondsToWait, TimeUnit.SECONDS);
             if (updates.isEmpty()) {
@@ -1331,7 +1331,7 @@ public class FindBugs2 implements IFindBugsEngine {
                 for (UpdateChecker.PluginUpdate update : updates) {
                     System.out.println(update);
                     System.out.println();
-                    
+
                 }
             }
         } catch (TimeoutException e) {

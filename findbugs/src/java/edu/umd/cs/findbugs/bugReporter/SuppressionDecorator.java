@@ -26,6 +26,7 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.HashSet;
 
+import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.BugCollection;
@@ -117,7 +118,7 @@ public class SuppressionDecorator extends BugReporterDecorator {
     }
 
     @Override
-    public void reportBug(BugInstance bugInstance) {
+    public void reportBug(@Nonnull BugInstance bugInstance) {
 
         if (!category.equals(bugInstance.getBugPattern().getCategory())) {
             getDelegate().reportBug(bugInstance);

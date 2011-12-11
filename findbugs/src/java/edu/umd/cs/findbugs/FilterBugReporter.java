@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import javax.annotation.Nonnull;
+
 import edu.umd.cs.findbugs.filter.Matcher;
 
 public class FilterBugReporter extends DelegatingBugReporter {
@@ -35,7 +37,7 @@ public class FilterBugReporter extends DelegatingBugReporter {
     }
 
     @Override
-    public void reportBug(BugInstance bugInstance) {
+    public void reportBug(@Nonnull BugInstance bugInstance) {
         if (DEBUG)
             System.out.print("Match ==> ");
         boolean match = filter.match(bugInstance);

@@ -27,6 +27,7 @@ import java.io.StringWriter;
 import java.net.URL;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -44,7 +45,6 @@ import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
@@ -86,7 +86,7 @@ public class BugLoader {
      * @throws InterruptedException
      * @throws IOException
      */
-    public static BugCollection doAnalysis(@NonNull Project p, FindBugsProgress progressCallback) throws IOException,
+    public static BugCollection doAnalysis(@Nonnull Project p, FindBugsProgress progressCallback) throws IOException,
             InterruptedException {
         StringWriter stringWriter = new StringWriter();
         BugCollectionBugReporter pcb = new BugCollectionBugReporter(p, new PrintWriter(stringWriter, true));
@@ -120,7 +120,7 @@ public class BugLoader {
      *            the PrintCallBack
      * @return the IFindBugsEngine
      */
-    private static IFindBugsEngine createEngine(@NonNull Project p, BugReporter pcb) {
+    private static IFindBugsEngine createEngine(@Nonnull Project p, BugReporter pcb) {
         FindBugs2 engine = new FindBugs2();
         engine.setBugReporter(pcb);
         engine.setProject(p);
@@ -283,7 +283,7 @@ public class BugLoader {
      * @return the bugs from the reanalysis, or null if cancelled
      */
     public static @CheckForNull
-    BugCollection doAnalysis(@NonNull Project p) {
+    BugCollection doAnalysis(@Nonnull Project p) {
         if (p == null)
             throw new NullPointerException("null project");
 
@@ -306,7 +306,7 @@ public class BugLoader {
      * @return the bugs from the reanalysis, or null if canceled
      */
     public static @CheckForNull
-    BugCollection redoAnalysisKeepComments(@NonNull Project p) {
+    BugCollection redoAnalysisKeepComments(@Nonnull Project p) {
         if (p == null)
             throw new NullPointerException("null project");
 

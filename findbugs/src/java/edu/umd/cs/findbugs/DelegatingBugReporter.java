@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -28,7 +29,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 /**
  * A BugReporter which delegates all method calls to another BugReporter. This
  * is useful for customizing the behavior of another bug reporter.
- * 
+ *
  * @author David Hovemeyer
  */
 public class DelegatingBugReporter implements BugReporter {
@@ -36,7 +37,7 @@ public class DelegatingBugReporter implements BugReporter {
 
     /**
      * Constructor.
-     * 
+     *
      * @param delegate
      *            another BugReporter to delegate all BugReporter methods to
      */
@@ -60,7 +61,7 @@ public class DelegatingBugReporter implements BugReporter {
         delegate.observeClass(classDescriptor);
     }
 
-    public void reportBug(BugInstance bugInstance) {
+    public void reportBug(@Nonnull BugInstance bugInstance) {
         delegate.reportBug(bugInstance);
     }
 
@@ -100,7 +101,7 @@ public class DelegatingBugReporter implements BugReporter {
 
     /**
      * Report that we skipped some analysis of a method
-     * 
+     *
      * @param method
      */
     public void reportSkippedAnalysis(MethodDescriptor method) {

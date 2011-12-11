@@ -29,7 +29,8 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
+import javax.annotation.Nonnull;
+
 
 /**
  * Singleton responsible for returning localized strings for information
@@ -80,7 +81,7 @@ public class I18N {
      *
      */
     @Deprecated
-    public @NonNull
+    public @Nonnull
     String getMessage(String key) {
         BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
         if (bugPattern == null)
@@ -96,7 +97,7 @@ public class I18N {
      * @param key
      *            which short message to retrieve
      */
-    public @NonNull
+    public @Nonnull
     String getShortMessage(String key) {
         BugPattern bugPattern =  DetectorFactoryCollection.instance().lookupBugPattern(key);
         if (bugPattern == null)
@@ -104,7 +105,7 @@ public class I18N {
         return bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription();
     }
 
-    public @NonNull
+    public @Nonnull
     String getShortMessageWithoutCode(String key) {
         BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
         if (bugPattern == null)
@@ -118,7 +119,7 @@ public class I18N {
      * @param key
      *            which HTML details for retrieve
      */
-    public @NonNull
+    public @Nonnull
     String getDetailHTML(String key) {
         BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
         if (bugPattern == null)
@@ -159,7 +160,7 @@ public class I18N {
      *            the short bug type code
      * @return the description of that short bug type code means
      */
-    public @NonNull
+    public @Nonnull
     String getBugTypeDescription(String shortBugType) {
         BugCode bugCode = DetectorFactoryCollection.instance().lookupBugCode(shortBugType);
         if (bugCode == null)

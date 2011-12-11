@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
@@ -61,7 +63,6 @@ import org.apache.bcel.generic.PUTSTATIC;
 import org.apache.bcel.generic.ReturnInstruction;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.bcel.generic.NONNULL2Z;
 import edu.umd.cs.findbugs.bcel.generic.NULL2Z;
@@ -591,7 +592,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
      * @param methodGen
      *            the method to build a CFG for
      */
-    public BetterCFGBuilder2(@NonNull MethodGen methodGen) {
+    public BetterCFGBuilder2(@Nonnull MethodGen methodGen) {
         this.methodGen = methodGen;
         this.cpg = methodGen.getConstantPool();
         this.exceptionHandlerMap = new ExceptionHandlerMap(methodGen);

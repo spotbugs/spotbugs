@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs;
 
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 /**
  * Filter reported warnings by category.
  */
@@ -35,7 +37,7 @@ public class CategoryFilteringBugReporter extends DelegatingBugReporter {
     }
 
     @Override
-    public void reportBug(BugInstance bugInstance) {
+    public void reportBug(@Nonnull BugInstance bugInstance) {
         BugPattern bugPattern = bugInstance.getBugPattern();
         String category = bugPattern.getCategory();
         if (categorySet.contains(category)) {

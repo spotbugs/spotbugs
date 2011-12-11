@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ObjectType;
@@ -30,7 +32,6 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.Priorities;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -109,7 +110,7 @@ public class IncompatibleTypes {
     public static final IncompatibleTypes UNRELATED_TYPES_BUT_MATCHES_TYPE_PARAMETER = new IncompatibleTypes(
             "Unrelated types but one type matches type parameter of the other", Priorities.HIGH_PRIORITY);
 
-    static public @NonNull
+    static public @Nonnull
     IncompatibleTypes getPriorityForAssumingCompatible(GenericObjectType genericType, Type plainType) {
         IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(genericType.getObjectType(), plainType);
         List<? extends ReferenceType> parameters = genericType.getParameters();
@@ -120,12 +121,12 @@ public class IncompatibleTypes {
 
     }
 
-    static public @NonNull
+    static public @Nonnull
     IncompatibleTypes getPriorityForAssumingCompatible(Type lhsType, Type rhsType) {
         return getPriorityForAssumingCompatible(lhsType, rhsType, false);
     }
 
-    static public @NonNull
+    static public @Nonnull
     IncompatibleTypes getPriorityForAssumingCompatible(Type expectedType, Type actualType, boolean pointerEquality) {
         if (!(expectedType instanceof ReferenceType))
             return SEEMS_OK;
@@ -176,7 +177,7 @@ public class IncompatibleTypes {
         return ARRAY_AND_NON_ARRAY;
     }
 
-    static @NonNull
+    static @Nonnull
     XMethod getInvokedMethod(XClass xClass, String name, String sig, boolean isStatic) throws CheckedAnalysisException {
         IAnalysisCache cache = Global.getAnalysisCache();
         while (true) {
@@ -193,7 +194,7 @@ public class IncompatibleTypes {
 
     }
 
-    static public @NonNull
+    static public @Nonnull
     IncompatibleTypes getPriorityForAssumingCompatible(ObjectType expectedType, ObjectType actualType, boolean pointerEquality) {
         if (expectedType.equals(actualType))
             return SEEMS_OK;

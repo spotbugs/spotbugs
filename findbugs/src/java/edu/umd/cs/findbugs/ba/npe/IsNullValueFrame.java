@@ -25,8 +25,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysisFeatures;
@@ -132,7 +133,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         return decision;
     }
 
-    public void setKnownValue(@NonNull ValueNumber valueNumber, @NonNull IsNullValue knownValue) {
+    public void setKnownValue(@Nonnull ValueNumber valueNumber, @Nonnull IsNullValue knownValue) {
         assert trackValueNumbers;
         if (valueNumber == null || knownValue == null)
             throw new NullPointerException();

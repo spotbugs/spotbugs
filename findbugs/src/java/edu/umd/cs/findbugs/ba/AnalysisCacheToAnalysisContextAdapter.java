@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
@@ -53,7 +54,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 /**
  * An AnalysisContext implementation that uses the IAnalysisCache. This class
  * must only be used by FindBugs2, not the original FindBugs driver.
- * 
+ *
  * @author David Hovemeyer
  */
 public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
@@ -62,7 +63,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.classfile.IErrorLogger#logError(java.lang.String)
          */
@@ -72,7 +73,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.classfile.IErrorLogger#logError(java.lang.String,
          * java.lang.Throwable)
@@ -83,7 +84,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(java
          * .lang.ClassNotFoundException)
@@ -94,7 +95,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu
          * .umd.cs.findbugs.classfile.ClassDescriptor)
@@ -105,7 +106,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.classfile.IErrorLogger#reportSkippedAnalysis(
          * edu.umd.cs.findbugs.classfile.MethodDescriptor)
@@ -136,7 +137,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.AnalysisContext#addClasspathEntry(java.lang.String
      * )
@@ -148,7 +149,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#clearClassContextCache()
      */
     @Override
@@ -158,7 +159,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#clearRepository()
      */
     @Override
@@ -170,7 +171,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.AnalysisContext#getAnnotationRetentionDatabase()
      */
@@ -181,7 +182,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.AnalysisContext#getCheckReturnAnnotationDatabase()
      */
@@ -192,7 +193,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.AnalysisContext#getClassContext(org.apache.bcel
      * .classfile.JavaClass)
@@ -217,7 +218,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#getClassContextStats()
      */
     @Override
@@ -227,7 +228,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#getFieldStoreTypeDatabase()
      */
     @Override
@@ -237,7 +238,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#getJCIPAnnotationDatabase()
      */
     @Override
@@ -247,7 +248,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#getLookupFailureCallback()
      */
     @Override
@@ -259,7 +260,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.AnalysisContext#getNullnessAnnotationDatabase()
      */
@@ -277,7 +278,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#getSourceFinder()
      */
     @Override
@@ -287,7 +288,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#getSourceInfoMap()
      */
     @Override
@@ -308,7 +309,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.AnalysisContext#getUnconditionalDerefParamDatabase
      * ()
@@ -320,7 +321,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#initDatabases()
      */
     @Override
@@ -331,11 +332,11 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#lookupClass(java.lang.String)
      */
     @Override
-    public JavaClass lookupClass(@DottedClassName String className) throws ClassNotFoundException {
+    public JavaClass lookupClass(@Nonnull @DottedClassName String className) throws ClassNotFoundException {
         try {
             if (className.length() == 0)
                 throw new IllegalArgumentException("Class name is empty");
@@ -351,7 +352,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#getInnerClassAccessMap()
      */
     @Override
@@ -362,7 +363,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
     /**
      * Helper method to get a database without having to worry about a
      * CheckedAnalysisException.
-     * 
+     *
      * @param cls
      *            Class of the database to get
      * @return the database
@@ -374,7 +375,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
     /**
      * Set the collection of class descriptors identifying all application
      * classes.
-     * 
+     *
      * @param appClassCollection
      *            List of ClassDescriptors identifying application classes
      */
@@ -409,7 +410,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#updateDatabases(int)
      */
     @Override
@@ -423,7 +424,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.AnalysisContext#getReturnValueNullnessPropertyDatabase
      * ()
@@ -437,7 +438,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#getSubtypes2()
      */
     @Override
@@ -447,7 +448,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AnalysisContext#
      * getDirectlyRelevantTypeQualifiersDatabase()
      */

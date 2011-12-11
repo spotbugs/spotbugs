@@ -53,6 +53,7 @@ import java.util.jar.Manifest;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.xml.sax.InputSource;
@@ -60,7 +61,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.charsets.UTF8;
@@ -198,7 +198,7 @@ public class Project implements XMLWriteable {
 
     private IGuiCallback guiCallback;
 
-    @NonNull
+    @Nonnull
     private Filter suppressionFilter = new Filter();
 
     private SourceFinder sourceFinder;

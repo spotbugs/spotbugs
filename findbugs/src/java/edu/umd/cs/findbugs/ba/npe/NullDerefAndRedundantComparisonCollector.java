@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.ba.Location;
@@ -33,7 +34,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 /**
  * Callback interface for collecting null pointer derefs and redundant null
  * comparisons.
- * 
+ *
  * @see edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder
  * @author David Hovemeyer
  */
@@ -41,7 +42,7 @@ public interface NullDerefAndRedundantComparisonCollector {
     /**
      * Subclasses should override this method to capture locations where a null
      * pointer is dereferenced.
-     * 
+     *
      * @param location
      *            the Location of the null dereference
      * @param valueNumber
@@ -61,7 +62,7 @@ public interface NullDerefAndRedundantComparisonCollector {
     /**
      * Subclasses should override this method to capture locations where a null
      * pointer is dereferenced.
-     * 
+     *
      * @param location
      *            the Location of the null dereference
      * @param valueNumber
@@ -81,7 +82,7 @@ public interface NullDerefAndRedundantComparisonCollector {
     /**
      * Subclasses should override this method to capture locations where a
      * redundant null comparison is performed.
-     * 
+     *
      * @param location
      *            the Location of the redundant null check
      * @param redundantBranch
@@ -93,7 +94,7 @@ public interface NullDerefAndRedundantComparisonCollector {
      * Subclasses should override this method to capture values assigned null
      * (or that become null through a comparison and branch) that are guaranteed
      * to reach a dereference (ignoring implicit exception paths).
-     * 
+     *
      * @param assignedNullLocationSet
      *            set of locations where the value becomes null
      * @param derefLocationSet
@@ -111,7 +112,7 @@ public interface NullDerefAndRedundantComparisonCollector {
      * @param npeIfStatementCovered
      *            true if doom location is a statement
      */
-    public void foundGuaranteedNullDeref(Set<Location> assignedNullLocationSet, Set<Location> derefLocationSet,
+    public void foundGuaranteedNullDeref(@Nonnull Set<Location> assignedNullLocationSet, @Nonnull Set<Location> derefLocationSet,
             SortedSet<Location> doomedLocations, ValueNumberDataflow vna, ValueNumber refValue,
             @CheckForNull BugAnnotation variableAnnotation, NullValueUnconditionalDeref deref, boolean npeIfStatementCovered);
 }
