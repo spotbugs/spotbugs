@@ -35,7 +35,6 @@ import java.util.regex.Pattern;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.util.Util;
 
 /**

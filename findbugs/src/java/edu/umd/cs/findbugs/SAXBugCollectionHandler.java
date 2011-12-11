@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableSet;
+
 import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -32,6 +35,10 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import edu.umd.cs.findbugs.ba.ClassHash;
 import edu.umd.cs.findbugs.filter.AndMatcher;
@@ -53,12 +60,6 @@ import edu.umd.cs.findbugs.filter.RankMatcher;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.util.MapCache;
 import edu.umd.cs.findbugs.util.Strings;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
-import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableSet;
 
 /**
  * Build a BugCollection based on SAX events. This is intended to replace the

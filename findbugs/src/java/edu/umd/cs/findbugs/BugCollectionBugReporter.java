@@ -28,7 +28,6 @@ import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.cloud.Cloud;
 
 public class BugCollectionBugReporter extends TextUIBugReporter implements Debug {
     private final SortedBugCollection bugCollection;

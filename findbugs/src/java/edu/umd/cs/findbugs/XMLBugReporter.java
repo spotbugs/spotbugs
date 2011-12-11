@@ -21,8 +21,6 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 
-import edu.umd.cs.findbugs.cloud.Cloud;
-
 /**
  * Report warnings as an XML document.
  *

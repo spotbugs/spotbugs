@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.DateFormat;
@@ -60,7 +59,7 @@ public class Version {
      * Release candidate number. "0" indicates that the version is not a release
      * candidate.
      */
-    public static final int RELEASE_CANDIDATE = 1;
+    public static final int RELEASE_CANDIDATE = 2;
 
     
     public static final String SVN_REVISION = System.getProperty("svn.revision", "Unknown");
