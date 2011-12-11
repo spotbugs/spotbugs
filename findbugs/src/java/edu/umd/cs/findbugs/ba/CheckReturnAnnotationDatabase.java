@@ -74,6 +74,8 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
                 false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
         addMethodAnnotation("java.util.concurrent.locks.Condition", "await", "(JLjava/util/concurrent/TimeUnit;)Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
+        addMethodAnnotation("java.util.concurrent.CountDownLatch", "await", "(JLjava/util/concurrent/TimeUnit;)Z", false,
+                CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
         addMethodAnnotation("java.util.concurrent.locks.Condition", "awaitUntil", "(Ljava/util/Date;)Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
         addMethodAnnotation("java.util.concurrent.locks.Condition", "awaitNanos", "(J)J", false,
