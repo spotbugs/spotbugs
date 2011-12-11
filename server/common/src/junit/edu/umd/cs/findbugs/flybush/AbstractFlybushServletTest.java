@@ -33,8 +33,8 @@ import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil.dec
 
 public abstract class AbstractFlybushServletTest extends TestCase {
 
-    /** Wed, 31 Mar 2010 18:44:40 GMT */
-    protected static final long SAMPLE_TIMESTAMP = 1270061080000L;
+    protected static final long SAMPLE_TIMESTAMP = System.currentTimeMillis()
+            - 3L*30*24*3600*1000;
 
     protected HttpServletResponse mockResponse;
 
@@ -204,7 +204,7 @@ public abstract class AbstractFlybushServletTest extends TestCase {
         eval.setComment(comment);
         eval.setDesignation(designation);
         eval.setIssue(issue);
-        eval.setWhen(when);
+        eval.setWhen(SAMPLE_TIMESTAMP + when);
         eval.setWho(user.createKeyObject());
         eval.setPrimaryClass(issue.getPrimaryClass());
         eval.setPackages(UpdateServlet.buildPackageList(issue.getPrimaryClass()));
