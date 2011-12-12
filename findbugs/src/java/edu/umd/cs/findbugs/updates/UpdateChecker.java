@@ -153,7 +153,9 @@ public class UpdateChecker {
         Util.runInDameonThread(new Runnable() {
             public void run() {
                 try {
-                    latch.await(15, TimeUnit.SECONDS);
+                    if (! latch.await(15, TimeUnit.SECONDS)) {
+                        logError(Level.INFO, "Update check timed out");
+                    }
                     dfc.pluginUpdateCheckComplete(pluginUpdates, force);
                 } catch (Exception ignored) {
                     assert true;
