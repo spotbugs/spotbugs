@@ -1147,7 +1147,9 @@ public class FindBugs2 implements IFindBugsEngine {
                 Global.getAnalysisCache().purgeAllMethodAnalysis();
                 Global.getAnalysisCache().purgeClassAnalysis(FBClassReader.class);
                 for (ClassDescriptor classDescriptor : classCollection) {
+                    long classStartNanoTime = 0;
                     if (PROGRESS) {
+                        classStartNanoTime = System.nanoTime();
                         System.out.printf("%6d %d/%d  %d/%d %s%n", (System.currentTimeMillis() - startTime)/1000,
                                 passCount, executionPlan.getNumPasses(), count,
                                 classCollection.size(), classDescriptor);
@@ -1206,6 +1208,17 @@ public class FindBugs2 implements IFindBugsEngine {
 
                         progress.finishClass();
                         profiler.endContext(currentClassName);
+                        if (PROGRESS) {
+                            long usecs = (System.nanoTime() - classStartNanoTime)/1000;
+                            if (usecs > 15000) {
+                                int classSize = AnalysisContext.currentAnalysisContext().getClassSize(classDescriptor);
+                                long speed = usecs /classSize;
+                                if (speed > 15)
+                                System.out.printf("  %6d usecs/byte  %6d msec  %6d bytes  %d pass %s%n", speed, usecs/1000, classSize, passCount,
+                                        classDescriptor);
+                            }
+                            
+                        }
                     }
                 }
 
@@ -1306,7 +1319,10 @@ public class FindBugs2 implements IFindBugsEngine {
             return;
         }
         // Away we go!
-        FindBugs.runMain(findBugs, commandLine);
+        
+
+          FindBugs.runMain(findBugs, commandLine);
+        
     }
 
     private static void printPluginUpdates(boolean verbose, int secondsToWait) throws InterruptedException {
