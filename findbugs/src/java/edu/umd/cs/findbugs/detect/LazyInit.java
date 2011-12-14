@@ -23,6 +23,7 @@ import java.util.BitSet;
 import java.util.Iterator;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.AllocationInstruction;
@@ -123,6 +124,11 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
     public boolean prescreen(Method method, ClassContext classContext) {
         if (method.getName().equals("<clinit>"))
             return false;
+        
+        Code code = method.getCode();
+        if (code.getCode().length > 5000)
+            return false;
+        
         BitSet bytecodeSet = classContext.getBytecodeSet(method);
         if (bytecodeSet == null)
             return false;
