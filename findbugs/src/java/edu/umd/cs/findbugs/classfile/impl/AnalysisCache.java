@@ -133,8 +133,11 @@ public class AnalysisCache implements IAnalysisCache {
 
     static final AbnormalAnalysisResult NULL_ANALYSIS_RESULT = new AbnormalAnalysisResult();
 
+    @SuppressWarnings("unchecked")
     static <E> E checkedCast(Class<E> analysisClass, Object o) {
-        return analysisClass.cast(o);
+        if (SystemProperties.ASSERTIONS_ENABLED)
+            return analysisClass.cast(o);
+        return (E) o;
     }
 
     /**
@@ -395,9 +398,10 @@ public class AnalysisCache implements IAnalysisCache {
      * (java.lang.Class, edu.umd.cs.findbugs.classfile.MethodDescriptor,
      * java.lang.Object)
      */
-    public <E> void eagerlyPutMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor, Object analysisObject) {
+    public <E> void eagerlyPutMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor, E analysisObject) {
         try {
             ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
+            assert analysisClass.isInstance(analysisObject);
             classContext.putMethodAnalysis(analysisClass, methodDescriptor, analysisObject);
         } catch (CheckedAnalysisException e) {
             IllegalStateException ise = new IllegalStateException("Unexpected exception adding method analysis to cache");

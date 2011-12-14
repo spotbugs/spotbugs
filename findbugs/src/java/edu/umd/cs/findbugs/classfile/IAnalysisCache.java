@@ -120,7 +120,7 @@ public interface IAnalysisCache {
      * @param analysisObject
      */
     public <E> void eagerlyPutMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor,
-            Object analysisObject);
+            E analysisObject);
 
     /**
      * Purge all analysis results for given method. This can be called when a
