@@ -441,6 +441,24 @@ public abstract class AnalysisContext {
         return getSubtypes2().isApplicationClass(desc);
     }
 
+    public int getClassSize(ClassDescriptor desc) {
+        IAnalysisCache analysisCache = Global.getAnalysisCache();
+
+        try {
+            ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, desc);
+            ClassData classData = analysisCache.getClassAnalysis(ClassData.class, desc);
+            return classData.getData().length;
+
+        } catch (RuntimeException e) {
+            AnalysisContext.logError("Error getting class data for " + desc, e);
+            return 10000;
+        } catch (CheckedAnalysisException e) {
+            AnalysisContext.logError("Could not get class context for "  + desc, e);
+            return 10000;
+        }
+
+    }
+
     public boolean isTooBig(ClassDescriptor desc) {
         IAnalysisCache analysisCache = Global.getAnalysisCache();
 
