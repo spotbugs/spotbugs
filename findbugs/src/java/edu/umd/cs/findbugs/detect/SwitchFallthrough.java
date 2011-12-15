@@ -109,11 +109,10 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             for (SourceLineAnnotation s : found)
                 bugAccumulator.accumulateBug(new BugInstance(this, "SF_SWITCH_FALLTHROUGH", priority).addClassAndMethod(this), s);
         }
-        
+
         bugAccumulator.reportAccumulatedBugs();
     }
 
-    
     private void foundSwitchNoDefault(SourceLineAnnotation s) {
         LineNumberTable table = getCode().getLineNumberTable();
 
@@ -134,7 +133,9 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         }
 
     }
+
     XClass enumType = null;
+
     @Override
     public void sawOpcode(int seen) {
         boolean isDefaultOffset = switchHdlr.getDefaultOffset() == getPC();
@@ -142,11 +143,12 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         if (DEBUG) {
             if (seen == GOTO)
-                System.out
-                .printf("%4d: goto %-7d %s %s %s %d%n", getPC() , getBranchTarget(),  reachable , isCaseOffset , isDefaultOffset, switchHdlr.stackSize());
+                System.out.printf("%4d: goto %-7d %s %s %s %d%n", getPC(), getBranchTarget(), reachable, isCaseOffset,
+                        isDefaultOffset, switchHdlr.stackSize());
 
-            else  System.out
-                    .printf("%4d: %-12s %s %s %s %d%n", getPC() , OPCODE_NAMES[seen],  reachable , isCaseOffset , isDefaultOffset, switchHdlr.stackSize());
+            else
+                System.out.printf("%4d: %-12s %s %s %s %d%n", getPC(), OPCODE_NAMES[seen], reachable, isCaseOffset,
+                        isDefaultOffset, switchHdlr.stackSize());
         }
 
         if (reachable && (isDefaultOffset || isCaseOffset)) {
@@ -161,13 +163,13 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                     SourceLineAnnotation sourceLineAnnotation = switchHdlr.getCurrentSwitchStatement(this);
                     if (DEBUG)
                         System.out.printf("Found fallthrough to default offset at %d%n", getPC());
-                    
+
                     foundSwitchNoDefault(sourceLineAnnotation);
-                    
+
                 } else {
                     SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(
                             getClassContext(), this, lastPC, getPC());
-                     found.add(sourceLineAnnotation);
+                    found.add(sourceLineAnnotation);
 
                 }
             }
@@ -233,15 +235,16 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             }
             potentiallyDeadStores.set(register);
         }
-
+      
+            
         if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("ordinal") && getSigConstantOperand().equals("()I")) {
             XClass c = getXClassOperand();
             if (c != null) {
                 ClassDescriptor superclassDescriptor = c.getSuperclassDescriptor();
                 if (superclassDescriptor != null && superclassDescriptor.getClassName().equals("java/lang/Enum"))
                     enumType = c;
-                if (DEBUG) 
-                    System.out.println("Saw " + enumType+".ordinal()");
+                if (DEBUG)
+                    System.out.println("Saw " + enumType + ".ordinal()");
             }
         } else if (seen != TABLESWITCH && seen != LOOKUPSWITCH && seen != IALOAD)
             enumType = null;
@@ -249,6 +252,8 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         switch (seen) {
         case TABLESWITCH:
         case LOOKUPSWITCH:
+            if (justSawHashcode)
+                break; // javac compiled switch statement
             reachable = false;
             switchHdlr.enterSwitch(this, enumType);
             if (DEBUG)
@@ -270,15 +275,19 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         case INVOKESTATIC:
             reachable = !("exit".equals(getNameConstantOperand()) && "java/lang/System".equals(getClassConstantOperand()));
             break;
-
+       
         default:
             reachable = true;
         }
 
+        justSawHashcode =   seen == INVOKEVIRTUAL && getNameConstantOperand().equals("hashCode") && getSigConstantOperand().equals("()I"); 
+        if (justSawHashcode)
+            System.out.println("Saw hashCode at " + getPC());
         lastPC = getPC();
         fallthroughDistance++;
     }
 
+    boolean justSawHashcode;
     /**
      *
      */
