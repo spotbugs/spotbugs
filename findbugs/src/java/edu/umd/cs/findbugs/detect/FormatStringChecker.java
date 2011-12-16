@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.formatStringChecker.ExtraFormatArgumentsException;
 import edu.umd.cs.findbugs.formatStringChecker.Formatter;
+import edu.umd.cs.findbugs.formatStringChecker.FormatterNumberFormatException;
 import edu.umd.cs.findbugs.formatStringChecker.IllegalFormatConversionException;
 import edu.umd.cs.findbugs.formatStringChecker.MissingFormatArgumentException;
 
@@ -183,6 +184,12 @@ public class FormatStringChecker extends OpcodeStackDetector {
                             .addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE).addInt(e.used)
                             .describe(IntAnnotation.INT_EXPECTED_ARGUMENTS).addInt(e.provided)
                             .describe(IntAnnotation.INT_ACTUAL_ARGUMENTS).addSourceLine(this));
+                } catch (FormatterNumberFormatException e) {
+                    bugReporter.reportBug(new BugInstance(this, "VA_FORMAT_STRING_ILLEGAL", NORMAL_PRIORITY)
+                    .addClassAndMethod(this).addCalledMethod(this).addString(formatString)
+                    .describe(StringAnnotation.FORMAT_STRING_ROLE)
+                    .addString("Can't use " + e.getTxt() + " for " + e.getKind()).describe(StringAnnotation.STRING_MESSAGE)
+                    .addSourceLine(this));
                 }
             }
 
