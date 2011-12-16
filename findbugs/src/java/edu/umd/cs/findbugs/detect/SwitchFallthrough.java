@@ -281,8 +281,6 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         }
 
         justSawHashcode =   seen == INVOKEVIRTUAL && getNameConstantOperand().equals("hashCode") && getSigConstantOperand().equals("()I"); 
-        if (justSawHashcode)
-            System.out.println("Saw hashCode at " + getPC());
         lastPC = getPC();
         fallthroughDistance++;
     }
