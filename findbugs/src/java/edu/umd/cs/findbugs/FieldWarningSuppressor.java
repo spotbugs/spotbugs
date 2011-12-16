@@ -9,6 +9,11 @@ public class FieldWarningSuppressor extends ClassWarningSuppressor {
         this.field = field;
     }
 
+    
+    @Override
+    public String toString() {
+        return String.format("Supress %s in %s.%s", bugPattern, clazz, field);
+    }
     @Override
     public boolean match(BugInstance bugInstance) {
 
