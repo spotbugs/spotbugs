@@ -30,7 +30,6 @@ import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -153,7 +152,9 @@ public class FormatStringChecker extends OpcodeStackDetector {
                         String aSig = e.getArgumentSignature();
                         char conversion = e.getConversion();
                         if ((conversion == 't' || conversion == 'T') && aSig.charAt(0) == 'L') {
-                            String arg = DescriptorFactory.createClassDescriptorFromFieldSignature(aSig).toDottedClassName();
+                            ClassDescriptor argDescriptor = DescriptorFactory.createClassDescriptorFromFieldSignature(aSig);
+                            assert argDescriptor != null : "sig started with L, should get descriptor";
+                            String arg = argDescriptor.toDottedClassName();
                             try {
                                 if (Hierarchy.isSubtype(arg,  java.util.Date.class.getName())
                                         || Hierarchy.isSubtype(arg,  java.util.Calendar.class.getName())) {
