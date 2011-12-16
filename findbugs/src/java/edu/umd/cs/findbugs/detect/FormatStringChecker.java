@@ -28,8 +28,13 @@ import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.TypeAnnotation;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.formatStringChecker.ExtraFormatArgumentsException;
 import edu.umd.cs.findbugs.formatStringChecker.Formatter;
 import edu.umd.cs.findbugs.formatStringChecker.FormatterNumberFormatException;
@@ -144,13 +149,28 @@ public class FormatStringChecker extends OpcodeStackDetector {
                                 .describe(StringAnnotation.FORMAT_SPECIFIER_ROLE).addString(formatString)
                                 .describe(StringAnnotation.FORMAT_STRING_ROLE)
                                 .addValueSource(arguments[e.getArgIndex()], getMethod(), getPC()).addSourceLine(this));
-                    else
+                    else {
+                        String aSig = e.getArgumentSignature();
+                        char conversion = e.getConversion();
+                        if ((conversion == 't' || conversion == 'T') && aSig.charAt(0) == 'L') {
+                            String arg = DescriptorFactory.createClassDescriptorFromFieldSignature(aSig).toDottedClassName();
+                            try {
+                                if (Hierarchy.isSubtype(arg,  java.util.Date.class.getName())
+                                        || Hierarchy.isSubtype(arg,  java.util.Calendar.class.getName())) {
+                                    return;
+                                }
+                            } catch (ClassNotFoundException e1) {
+                               AnalysisContext.reportMissingClass(e1);
+                            }
+                            
+                        }
                         bugReporter.reportBug(new BugInstance(this, "VA_FORMAT_STRING_BAD_CONVERSION", HIGH_PRIORITY)
-                                .addClassAndMethod(this).addCalledMethod(this).addType(e.getArgumentSignature())
+                                .addClassAndMethod(this).addCalledMethod(this).addType(aSig)
                                 .describe(TypeAnnotation.FOUND_ROLE).addString(e.getFormatSpecifier())
                                 .describe(StringAnnotation.FORMAT_SPECIFIER_ROLE).addString(formatString)
                                 .describe(StringAnnotation.FORMAT_STRING_ROLE)
                                 .addValueSource(arguments[e.getArgIndex()], getMethod(), getPC()).addSourceLine(this));
+                    }
                 } catch (IllegalArgumentException e) {
                     bugReporter.reportBug(new BugInstance(this, "VA_FORMAT_STRING_ILLEGAL", HIGH_PRIORITY)
                             .addClassAndMethod(this).addCalledMethod(this).addString(formatString)
