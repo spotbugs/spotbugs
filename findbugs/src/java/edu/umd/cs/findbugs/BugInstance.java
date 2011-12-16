@@ -1674,6 +1674,18 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     }
 
     /**
+     * Add a MethodAnnotation from an MethodDescriptor.
+     *
+     * @param xmethod
+     *            the XMethod
+     * @return this object
+     */
+    @Nonnull
+    public BugInstance addMethod(MethodDescriptor method) {
+        addMethod(MethodAnnotation.fromMethodDescriptor(method));
+        return this;
+    }
+    /**
      * Add a method annotation. If this is the first method annotation added, it
      * becomes the primary method annotation.
      *

@@ -46,6 +46,7 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implements NonReportingDetector {
 
@@ -61,7 +62,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
     Map<ClassAnnotation, ClassAnnotation> parentMap = new TreeMap<ClassAnnotation, ClassAnnotation>();
 
-    Map<ClassAnnotation, MethodAnnotation> equalsMethod = new TreeMap<ClassAnnotation, MethodAnnotation>();
+    Map<ClassAnnotation, MethodDescriptor> equalsMethod = new TreeMap<ClassAnnotation, MethodDescriptor>();
 
     final BugReporter bugReporter;
 
@@ -154,7 +155,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             String superClassName = getSuperclassName().replace('/', '.');
             if (!superClassName.equals("java.lang.Object"))
                 parentMap.put(classAnnotation, new ClassAnnotation(superClassName));
-            equalsMethod.put(classAnnotation, MethodAnnotation.fromVisitedMethod(this));
+            equalsMethod.put(classAnnotation, getMethodDescriptor());
 
         }
         bugAccumulator.reportAccumulatedBugs();
@@ -471,7 +472,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             if (childKind == EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS
                     && parentKind == EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS)
                 bugReporter.reportBug(new BugInstance(this, "EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC", NORMAL_PRIORITY)
-                        .add(childClass).add(equalsMethod.get(childClass)).add(equalsMethod.get(parentClass))
+                        .add(childClass).addMethod(equalsMethod.get(childClass)).addMethod(equalsMethod.get(parentClass))
                         .describe(MethodAnnotation.METHOD_OVERRIDDEN));
 
         }
