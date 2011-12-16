@@ -163,10 +163,10 @@ public class TypeQualifierValue<A extends Annotation> {
             assert true; // ignore
         } catch (CheckedAnalysisException e) {
             assert true; // ignore
-        } catch (InstantiationException e) {
+        } catch (Exception e) {
             AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName, e);
-        } catch (IllegalAccessException e) {
-            AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName, e);
+        } catch (Throwable e) {
+            AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName + " due to " + e.getClass().getSimpleName() + ":" + e.getMessage());
         }
         this.validator = validator;
         this.typeQualifierClass = qualifierClass;
