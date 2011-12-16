@@ -1,8 +1,6 @@
 Release 2.0.0
 - feature 3263230: allow to export/import FindBugs workspace preferences via Eclipse File->Export->Preferences and File->Import->Preferences.
   (work from Dominik Weidemann, Konrad Reiche, Andrey Loskutov)
-- feature 1926908: group FindBugs problems according to their confidence under the Java problem types in the Problems view
-  (for Eclipse 3.6+ only, need to be uncommented) (Andrey Loskutov)
 - feature: change bug reporting to use confidence instead of priority (Bill Pugh, Andrey Loskutov)
 - feature: allow to reuse class data for project libraries (speeds up analysis on slow file systems like Clearcase views) (Andrey Loskutov)
 - feature: allow FB analysis run independently from compile/build job (Andrey Loskutov)

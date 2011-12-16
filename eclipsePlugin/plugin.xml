@@ -102,12 +102,12 @@
       <persistent value="true"/>
    </extension>
 
-<!-- See feature 1926908. This was disabled because it may cause NPE in
+<!-- See feature 1926908, eclipse bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=366991.
+    This is disabled because it may cause NPE in
     FieldMarkerGroup.addEntry(FieldMarkerGroup.java:332) in Eclipse 3.3.2 and
     NPE in MarkerGroup.addEntry(MarkerGroup.java:451) in Eclipse 3.4.0
-    and NPE int MarkerGroup.addEntry(MarkerGroup.java:452) in Eclipse 3.5.0
+    and NPE int MarkerGroup.addEntry(MarkerGroup.java:452) in Eclipse 3.5.0 - 3.8.0
 
-    Can be uncommented for Eclipse 3.6+
    <extension
          point="org.eclipse.ui.ide.markerSupport">
       <markerAttributeGrouping
