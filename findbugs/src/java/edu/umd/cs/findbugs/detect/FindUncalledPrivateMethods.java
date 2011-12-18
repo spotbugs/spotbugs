@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.HashSet;
 
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -54,8 +55,15 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
                 && !getMethodName().equals("writeObject") && getMethodName().indexOf("debug") == -1
                 && getMethodName().indexOf("Debug") == -1 && getMethodName().indexOf("trace") == -1
                 && getMethodName().indexOf("Trace") == -1 && !getMethodName().equals("<init>")
-                && !getMethodName().equals("<clinit>"))
+                && !getMethodName().equals("<clinit>")) {
+            for(AnnotationEntry a : obj.getAnnotationEntries()) {
+                String typeName =  a.getAnnotationType();
+                if (typeName.equals("Ljavax/annotation/PostConstruct;")
+                    || typeName.equals("Ljavax/annotation/PreDestroy;"))
+                    return;
+            }
             definedPrivateMethods.add(MethodAnnotation.fromVisitedMethod(this));
+        }
     }
 
     @Override
