@@ -80,7 +80,7 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
 
     @Override
     public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
-        if (!annotationClass.endsWith("SuppressWarnings"))
+        if (!isSuppressWarnings(annotationClass))
             return;
         String[] suppressed = getAnnotationParameterAsStringArray(map, "value");
         if (suppressed == null || suppressed.length == 0)
@@ -90,9 +90,18 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
                 suppressWarning(s);
     }
 
+    /**
+     * @param annotationClass
+     * @return
+     */
+    public boolean isSuppressWarnings(String annotationClass) {
+        return annotationClass.endsWith("SuppressWarnings")
+                || annotationClass.endsWith("SuppressFBWarnings");
+    }
+
     @Override
     public void visitParameterAnnotation(int p, String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
-        if (!annotationClass.endsWith("SuppressWarnings"))
+        if (!isSuppressWarnings(annotationClass))
             return;
         if (!getMethod().isStatic())
             p++;
