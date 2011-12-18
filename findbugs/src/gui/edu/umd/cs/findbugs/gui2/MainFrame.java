@@ -54,6 +54,7 @@ import javax.swing.SwingUtilities;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugsDisplayFeatures;
@@ -797,7 +798,14 @@ public class MainFrame extends FBFrame implements LogSync {
                 for (BugAnnotation b : bug.getAnnotationsForMessage(true))
                     summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(b, bug));
 
-                summaryHtmlArea.setText(bug.getBugPattern().getDetailHTML());
+
+                BugPattern bugPattern = bug.getBugPattern();
+                String detailText =
+                        bugPattern.getDetailText()
+                        +"<br><p> <b>Bug kind and pattern: " + 
+                                bugPattern.getAbbrev() + " - " + bugPattern.getType();
+                String txt = bugPattern.getDetailHTML(detailText);
+                summaryHtmlArea.setText(txt);
 
                 summaryTopPanel.add(Box.createVerticalGlue());
                 summaryTopPanel.revalidate();

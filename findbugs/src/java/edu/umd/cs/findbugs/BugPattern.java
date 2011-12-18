@@ -45,8 +45,6 @@ public class BugPattern implements Comparable<BugPattern> {
 
     final private String detailText;
 
-    private String detailHTML;
-
     final int cweid;
 
     int priorityAdjustment;
@@ -199,21 +197,32 @@ public class BugPattern implements Comparable<BugPattern> {
      * Get the detail text as a complete HTML document.
      */
     public String getDetailHTML() {
-        if (detailHTML == null) {
+        return getDetailHTML(getDetailText());
+    }
+    
+    public String getDetailHTML(String detailText) {
+
             StringBuilder buf = new StringBuilder();
-            buf.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n");
+            buf.append("<!DOCTYPE HTML\">\n");
             buf.append("<HTML><HEAD><TITLE>");
             buf.append(getShortDescription());
             buf.append("</TITLE></HEAD><BODY><H1>");
-            buf.append(getShortDescription());
+            buf.append(wrapInDescriptionLink(getShortDescription()));
             buf.append("</H1>\n");
-            buf.append(getDetailText());
+            buf.append(detailText);
             buf.append("</BODY></HTML>\n");
-            detailHTML = buf.toString();
-        }
-        return detailHTML;
+            return buf.toString();
+
     }
 
+
+    public String wrapInDescriptionLink(String text) {
+        return 
+                "<a href=\"http://findbugs.sourceforge.net/bugDescriptions.html#"
+                        + type  +"\">"
+                        + text + "</a>";
+                        
+    }
     public int compareTo(BugPattern other) {
         return type.compareTo(other.type);
     }
