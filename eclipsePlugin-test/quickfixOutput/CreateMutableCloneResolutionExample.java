@@ -4,6 +4,6 @@ public class CreateMutableCloneResolutionExample {
     Date myDate = new Date();
 
     public Date getMyDate() {
-        return (Date) myDate.clone();
+        return myDate == null ? null : (Date) myDate.clone();
     }
 }
