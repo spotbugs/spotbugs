@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tomás Pollak
+ * Copyright (C) 2009, Tomï¿½s Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,7 +39,7 @@ import de.tobject.findbugs.view.explorer.GroupType;
 /**
  * This class tests the GroupByAction.
  *
- * @author Tomás Pollak
+ * @author Tomï¿½s Pollak
  */
 public class GroupByActionTest extends AbstractFindBugsTest {
     @BeforeClass
@@ -52,15 +52,15 @@ public class GroupByActionTest extends AbstractFindBugsTest {
         tearDownTestProject();
     }
 
-    private static final String PRIORITY_CATEGORY_PROJECT_PACKAGE_CLASS_PATTERN_TYPE_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Priority.Category.Project.Package.Class.PatternType.Pattern.Marker";
+    private static final String PRIORITY_CATEGORY_PROJECT_PACKAGE_CLASS_PATTERN_TYPE_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Confidence.Category.Project.Package.Class.PatternType.Pattern.Marker";
 
-    private static final String PRIORITY_CATEGORY_PROJECT_PATTERN_TYPE_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Priority.Category.Project.PatternType.Pattern.Marker";
+    private static final String PRIORITY_CATEGORY_PROJECT_PATTERN_TYPE_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Confidence.Category.Project.PatternType.Pattern.Marker";
 
-    private static final String PRIORITY_PROJECT_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Priority.Project.Pattern.Marker";
+    private static final String PRIORITY_PROJECT_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Confidence.Project.Pattern.Marker";
 
-    private static final String PROJECT_PRIORITY_CATEGORY_PATTERN_TYPE_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Project.Priority.Category.PatternType.Pattern.Marker";
+    private static final String PROJECT_PRIORITY_CATEGORY_PATTERN_TYPE_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Project.Confidence.Category.PatternType.Pattern.Marker";
 
-    private static final String PROJECT_PRIORITY_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Project.Priority.Pattern.Marker";
+    private static final String PROJECT_PRIORITY_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Project.Confidence.Pattern.Marker";
 
     private static final String PROJECT_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Project.Pattern.Marker";
 
