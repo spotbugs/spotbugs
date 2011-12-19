@@ -1,0 +1,8 @@
+<fb-plugin-updates> 
+    <plugin id="edu.umd.cs.findbugs.plugins.core"> 
+        <release date="12/18/2011 9:00 pm EST" version="2.0.0-rc3" url="http://findbugs.cs.umd.edu/"> 
+            <message>Minor updates; 2.0.0 release should follow in 24 hours with no planned changes. Sanity checking welcomed</message>
+        </release> 
+    </plugin> 
+
+</fb-plugin-updates> 
