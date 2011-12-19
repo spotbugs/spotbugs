@@ -1,0 +1,8 @@
+<fb-plugin-updates> 
+    <plugin id="edu.umd.cs.findbugs.plugins.core"> 
+        <release date="12/11/2011 8:30 pm EST" version="2.0.0-rc2" url="http://findbugs.cs.umd.edu/"> 
+            <message>Minor FindBugs update and testing of FindBugs update notication</message>
+        </release> 
+    </plugin> 
+
+</fb-plugin-updates> 
