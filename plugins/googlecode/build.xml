@@ -14,9 +14,7 @@
     <property name="classes.dir" value="build/classes-ant"/>
     <property name="lib.dir" value="lib"/>
     <property name="findbugs.home" value="${findbugsBase.dir}/findbugs"/>
-    <!--<property name="webCloud.home" value="${findbugsBase.dir}/plugins/webCloudClient"/>-->
-    <!--<property name="protocol.home" value="${findbugsBase.dir}/webCloudProtocol"/>-->
-
+    
     <path id="client.classpath">
         <fileset dir="${lib.dir}" includes="**/*.jar"/>
 
