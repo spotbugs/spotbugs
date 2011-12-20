@@ -1,0 +1,243 @@
+<html>
+<head>
+<title>FindBugs 2&trade; - Find Bugs in Java Programs</title>
+<link rel="stylesheet" type="text/css" href="findbugs.css" />
+@GOOGLE_ANALYTICS@
+</head>
+
+<body>
+
+    <table width="100%">
+        <tr>
+
+            @HTML_SIDEBAR@
+
+            <td align="left" valign="top">
+
+                <p></p>
+                <table>
+                    <tr>
+                        <td valign="center"><a href="@WEBSITE@/"><img src="buggy-sm.png" alt="FindBugs logo"
+                                border="0" /> </a></td>
+                        <td valign="center"><a href="http://www.umd.edu/"><img src="informal.png"
+                                alt="UMD logo" border="0" /> </a></td>
+                    </tr>
+                </table>
+
+                <h1>FindBugs 2</h1>
+
+                <p>This page describes the major changes in FindBugs 2. We are well aware that the documentation on
+                    the new features in FindBugs 2.0 have not kept up with the implementation. We will be working to
+                    improve the documentation, but don't want to hold up the release any longer to improve the
+                    documentation.</p>
+                <p>Anyone currently using FindBugs 1.3.9 should find FindBugs 2.0 to largely be a drop-in
+                    replacement that offers better accuracy and performance.</p>
+
+
+                <p>
+                    Also check out <a href="http://code.google.com/p/findbugs/w/list">http://code.google.com/p/findbugs/w/list</a>
+                    for more information about some recent features/changes in FindBugs.
+                </p>
+
+                <p>The major new features in FindBug 2 are as follows:</p>
+                <ul>
+                    <li>Bug Rank - bugs are given a rank 1-20, and grouped into the categories scariest (rank 1-4),
+                        scary (rank 5-9), troubling (rank 10-14), and of concern (rank 15-20).
+                        <ul>
+                            <li>priority renamed confidence - many people were confused by the priority reported by
+                                FindBugs, and considered all HIGH priority issues to be important. To reflect the
+                                actually meaning of this attribute of issues, it has been renamed confidence. Issues of
+                                different bug patterns should be compared by there rank, not their confidence.</li>
+                        </ul>
+
+                    </li>
+                    <li><a href="#cloud">Cloud storage</a> - having a convent way for developers to share
+                        information about when an issue was first seen, and whether it is believed to be a serious
+                        problem, is important to successful and cost-effective deployment of static analysis in a large
+                        software project.</li>
+                    <li><a href="#updateChecks">update checks</a> - FindBugs will check for releases of new
+                        versions of FindBugs. Note: we leverage this capability to count the number of FindBugs users.
+                        These update checks can easily be disabled.</li>
+                    <li><a href="#plugins">Plugins</a> - FindBugs 2.0 makes it much easier to define plugins that
+                        provide various capabilities, and install these plugins either on a per user or per installation
+                        basis.</li>
+                    <li><code>fb</code> command - rather than using the rather haphazard collection of command line
+                        scripts developed over the years for running various FindBugs commands, you can now use just
+                        one: <code>fb></code>.
+                        <ul>
+                            <li><code>fb analyze</code> - invokes the FindBugs analysis</li>
+                            <li><code>
+                                    fb gui/code> - launches the FindBugs GUI
+                                    <li><code>fb list</code> - lists the issues from a FindBugs analysis file</li>
+                                    <li><code fb help></code> - lists the command available.</li>
+                                </code>
+                                <p>
+                                    Plugins can be used to extend the commands that can be invoked via
+                                    <code>fb</code>
+                                    .
+
+                                </p></li>
+                        </ul></li>
+                    <li><a href="#newBugPatterns">New bug patterns and detectors</a>, 
+                    and improved accuracy</li>
+                    <li><a href="#performance">Improved performance</a>: overall, we've seen an average 10%
+                        performance improvement over a large range of benchmarks, although a few users have experienced
+                        performance regressions we are still trying to understand.</li>
+                    <li id="guava">Guava support - working with Kevin Bourrillion, we have provided additional support for the
+                        <a href="http://code.google.com/p/guava-libraries/">Guava library</a>, recognizing many common
+                        misuse patterns.
+                    </li>
+                    <li id="jsr305">JSR-305 support - improved detection of problems identified by JSR-305 annotations. In
+                        particular, we've significantly improved both the accuracy and performance of the analysis of
+                        type qualifiers.</li>
+                </ul>
+                
+                <h2 id="cloud">Cloud storage of issue evaluations</h2>
+                <p>For many years, you could store evaluations of FindBugs issues within the XML containing the
+                    analysis results. However, this approach did not work well for a team of distributed developers.
+                    Instead, we now provide a cloud based mechanism for storing this information. We are providing a
+                    free communal cloud (hostied by Google appengine) for storing evaluations of FindBugs issues. You
+                    can set up your own private cloud for storing issues, but at the moment this checking out a copy of
+                    FindBugs, making some modifications and building the cloud storage plugin from source. We hope to
+                    make it easier to have your own private cloud in FindBugs 2.0.1.</p>
+                <p>We have analyzed several large open source projects, and provide Java web start links to allow
+                    you to view the results. We'd be happy to work with projects to make the results available from a
+                    continuous build:</p>
+                <ul>
+                    <li><a href="http://findbugs.cs.umd.edu/cloud/jdk.jnlp">Sun's JDK 8</a></li>
+                    <li><a href="http://findbugs.cs.umd.edu/cloud/eclipse.jnlp">Eclipse 3.8</a></li>
+                    <li><a href="http://findbugs.cs.umd.edu/cloud/tomcat.jnlp">Apache Tomcat 7.0</a></li>
+                    <li><a href="http://findbugs.cs.umd.edu/cloud/intellij.jnlp">IntelliJ IDEA</a></li>
+                    <li><a href="http://findbugs.cs.umd.edu/cloud/jboss.jnlp">JBoss</a></li>
+                </ul>
+
+                <h2 id="updateChecks">FindBugs update checks</h2>
+                <p>
+                    FindBugs now checks to see if a new version of FindBugs or a plugin has been released. We make use
+                    of this check to collect statistics on the operating system, java version, locale and FindBugs entry
+                    point (e.g., ant, command line, GUI). <a href="updateChecking.html">More information is
+                        available</a>, including information about how to disable update checks if your organization has a
+                    policy against allowing the collection of such information. No information about the code being
+                    analyzed is reported.
+
+                </p>
+
+                <h2 id="plugins">Plugins</h2>
+                <p>FindBugs 2.0 makes it much easier to customize FindBugs with plugins.</p>
+                <p>FindBugs looks for plugins in two places: your personal home directory, and in FindBugs home
+                    (plugins installed in your home directory take precedence). In both places, it looks in two places:
+                    the plugin directory, which contains plugins that are enabled by default, and the optionalPlugin
+                    directory, which contains plugins that are disabled by default but can be enabled for a particular
+                    project.</p>
+                <p>The FindBugs project includes several plugins:</p>
+                <ul>
+                    <li><i>Cloud plugins</i>: These plugins provide ways to persist and share information about
+                        issues seen in an analysis (e.g., when was this issue first seen, and any evaluations as to
+                        whether this is harmless or a must fix issue, as well as comments about the issue from
+                        developers)
+                        <ul>
+                            <li><code>bugCollectionCloud</code> - stores issue evaluations in the XML. The way
+                                issue evaluations were always stored before FindBugs 2.0. Distributed in the
+                                optionalPlugin directory.</li>
+                            <li><code>findbugsCommunalCloud</code> Stores issue evaluations in the communal cloud
+                                hosted at findbugs.appspot.com. Distributed in the plugin directory.</li>
+                            <li><code>jdbcCloudClient</code> an older, deprecated cloud that stored information in
+                                an SQL database. Not distributed, most be built from source.</li>
+                        </ul></li>
+                    <li><code>noUpdateChecks</code> - Disables checks for updated versions and usage counting.
+                        Distributed in the optionalPlugin directory.</li>
+                    <li><code>poweruser</code> - provides a number of additional commands for the <code>fb</code>
+                        command. It is believed most of these commands are used by few people outside of the FindBugs
+                        development team. Distributed in the optionalPlugin directory.</li>
+                    <li><i>Bug filing plugins</i>: these plugins assist in the filing of FindBugs issues in built
+                        trackers. The bug filing framework is designed to be extensible to other bug filing systems. At
+                        the moment, these plugins are not supported, and must be built from source.
+                        <ul>
+                            <li><code>jira</code></li>
+                            <li><code>google code</code></li>
+                        </ul></li>
+                </ul>
+                <h2 id="performance">Performance Improvements/regressions</h2>
+                <p>
+                    In our own testing, <a href="performance.html">we've seen an overall improvement of 9% in
+                        FindBugs performance from 1.3.9 to 2.0.0, with the majority of benchmarks seeing improvements</a>. A
+                    few users have reported significant performance regressions and we are <a href="performance.html">asking
+                        for more information from anyone seeing significant performance regressions</a>.
+
+                </p>
+                <h2 id="newBugPatterns">New Bug patterns</h2>
+                <ul>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION">AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION</a>
+                    </li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#BX_UNBOXING_IMMEDIATELY_REBOXED">BX_UNBOXING_IMMEDIATELY_REBOXED</a>
+                    </li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#CO_COMPARETO_RESULTS_MIN_VALUE">CO_COMPARETO_RESULTS_MIN_VALUE</a>
+                    </li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD">DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD</a>
+                    </li>
+                    <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_ARGUMENTS_WRONG_ORDER">DMI_ARGUMENTS_WRONG_ORDER</a>
+                    </li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE">DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE</a>
+                    </li>
+                    <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_DOH">DMI_DOH</a></li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS">DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS</a>
+                    </li>
+                    <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_DEFAULT_ENCODING">DM_DEFAULT_ENCODING</a>
+                    </li>
+                    <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#ICAST_INT_2_LONG_AS_INSTANT">ICAST_INT_2_LONG_AS_INSTANT</a>
+                    </li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#INT_BAD_COMPARISON_WITH_INT_VALUE">INT_BAD_COMPARISON_WITH_INT_VALUE</a>
+                    </li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT">JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT</a>
+                    </li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD">NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD</a>
+                    </li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE">OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE</a>
+                    </li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS">PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS</a>
+                    </li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE">RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE</a>
+                    </li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_NEGATING_RESULT_OF_COMPARETO">RV_NEGATING_RESULT_OF_COMPARETO</a>
+                    </li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_RETURN_VALUE_IGNORED_INFERRED">RV_RETURN_VALUE_IGNORED_INFERRED</a>
+                    </li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD">SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD</a>
+                    </li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD">URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD</a>
+                    </li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD">UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD</a>
+                    </li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD">UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD</a>
+                    </li>
+                    <li><a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#VA_FORMAT_STRING_USES_NEWLINE">VA_FORMAT_STRING_USES_NEWLINE</a>
+                    </li>
+                    <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#VO_VOLATILE_INCREMENT">VO_VOLATILE_INCREMENT</a>
+                    </li>
+                </ul>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>
