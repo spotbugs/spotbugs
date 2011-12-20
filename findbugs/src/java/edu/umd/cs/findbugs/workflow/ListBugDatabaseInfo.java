@@ -80,7 +80,7 @@ public class ListBugDatabaseInfo {
         if (argCount == args.length)
             listVersion(out, null, commandLine.formatDates);
         else {
-            out.println("version\ttime\tclasses\tNCSS\ttotal\thigh\tmedium\tlow\tfile");
+            out.println("version\ttime\tclasses\tNCSS\terrors\ttotal\thigh\tmedium\tlow\tfile");
             while (argCount < args.length) {
                 String fileName = args[argCount++];
                 listVersion(out, fileName, commandLine.formatDates);
@@ -91,7 +91,7 @@ public class ListBugDatabaseInfo {
 
     private static void listVersion(PrintWriter out, @CheckForNull String fileName, boolean formatDates) throws IOException,
             DocumentException {
-        BugCollection origCollection;
+        SortedBugCollection origCollection;
         origCollection = new SortedBugCollection();
 
         if (fileName == null)
@@ -111,6 +111,8 @@ public class ListBugDatabaseInfo {
         out.print(appVersion.getNumClasses());
         out.print('\t');
         out.print(appVersion.getCodeSize());
+        out.print('\t');
+        out.print(origCollection.getErrors().size());
         out.print('\t');
         out.print(stats.getTotalBugs());
         out.print('\t');
