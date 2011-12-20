@@ -667,7 +667,6 @@
             <fileset dir="../sandbox/localCloud/src"/>
     -->
             <fileset dir="../findbugsTestCases/src"/>
-            <fileset dir="../findbugsCommunalCloud/src"/>
 
             <fileset dir="${pluginsSrc.dir}/findbugsCommunalCloud/src"/>
             <fileset dir="${pluginsSrc.dir}/jira/src"/>
