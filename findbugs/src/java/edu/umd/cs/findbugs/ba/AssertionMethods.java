@@ -122,7 +122,11 @@ public class AssertionMethods implements Constants {
 
                     String classNameLC = className.toLowerCase();
                     String methodNameLC = methodName.toLowerCase();
+                  
                     boolean voidReturnType = methodSig.endsWith(")V");
+                    boolean boolReturnType = methodSig.endsWith(")Z");
+                    
+                    
 
                     if (DEBUG) {
                         System.out.print("Is " + className + "." + methodName + " assertion method: " + voidReturnType);
@@ -131,7 +135,7 @@ public class AssertionMethods implements Constants {
                     if (isUserAssertionMethod(className, methodName)
                             || className.endsWith("Assert")
                             && methodName.startsWith("is")
-                            || voidReturnType
+                            || (voidReturnType || boolReturnType)
                             && (classNameLC.indexOf("assert") >= 0 || methodNameLC.startsWith("throw")
                                     || methodName.startsWith("affirm") || methodName.startsWith("panic")
                                     || methodName.equals("logTerminal") || methodName.startsWith("logAndThrow")
@@ -216,13 +220,9 @@ public class AssertionMethods implements Constants {
     }
 
     public boolean isAssertionCall(InvokeInstruction inv) {
-        if (DEBUG) {
-            System.out.print("Checking if " + inv + " is an assertion method: ");
-        }
+
         boolean isAssertionMethod = assertionMethodRefSet.get(inv.getIndex());
-        if (DEBUG) {
-            System.out.println("==> " + isAssertionMethod);
-        }
+
         return isAssertionMethod;
     }
 }
