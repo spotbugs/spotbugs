@@ -41,7 +41,8 @@
 
 				<p>
 					FindBugs requires JRE (or JDK) 1.5.0 or later to run.&nbsp;
-					However, it can analyze programs compiled for any version of Java.
+					However, it can analyze programs compiled for any version of Java, from 1.0
+                    to 1.8. 
 					The current version of FindBugs is @VERSION@, released on
 					@RELEASE_DATE@. <a href="reportingBugs.html">We are very
 						interested in getting feedback on how to improve FindBugs</a>.
@@ -64,6 +65,37 @@
                 <p>As we go through release candidates for 2.0.0, our primary focus is on
                 resolving problems that would present people from upgrading from 1.3.9 to 2.0.0. 
                 
+                <p>
+                    Also check out <a href="http://code.google.com/p/findbugs/w/list">http://code.google.com/p/findbugs/w/list</a>
+                    for more information about some recent features/changes in FindBugs.
+                <h2>Ways to run FindBugs</h2>
+                <p>Here are various ways to run FindBugs. For plugins not supported by the 
+                FindBugs team, check to see what version of FindBugs they provide; it might
+                take a little while for the plugins to update to FindBugs 2.0.
+                <dl>
+                    <dt>Command line, ant, GUI
+                    <dd>Provided in FindBugs download
+                    <dt><a href="http://www.eclipse.org/">Eclipse</a></dt>
+                    <dd>
+                        Update site for Eclipse plugin: <a href="http://findbugs.cs.umd.edu/eclipse">http://findbugs.cs.umd.edu/eclipse</a>.
+                        Supported by the FindBugs project.
+                                          <dt><a href="http://maven.apache.org/">Maven</a></dt>
+                    <dd>
+                        <a href=" <a href="http://maven-plugins.sourceforge.net/maven-findbugs-plugin/index.html">http://maven-plugins.sourceforge.net/maven-findbugs-plugin/index.html</a>
+ 
+                     <dt><a href="http://netbeans.org/">Netbeans</a></dt>
+                    <dd>
+                        <a href="http://kenai.com/projects/sqe/pages/Home">SQE: Software Quality Environment</a>
+                    </dd>
+                    <dt><a href="http://wiki.hudson-ci.org/display/HUDSON/Home">Hudson</a>
+                    <dd><a href="http://wiki.hudson-ci.org/display/HUDSON/FindBugs+Plugin">http://wiki.hudson-ci.org/display/HUDSON/FindBugs+Plugin</a>
+                     <dt><a href="http://www.jetbrains.com/idea/">IntelliJ</a>
+                    <dd>
+                        Several plugins, see <a href="http://code.google.com/p/findbugs/wiki/IntellijFindBugsPlugins">http://code.google.com/p/findbugs/wiki/IntellijFindBugsPlugins</a>
+                        for a descrption.
+                  
+                 </dl>
+
                 <h2>FindBugs update checks</h2>
                 <p>FindBugs now checks to see if a new version of FindBugs or a plugin has been released.
                 We make use of this check to collect statistics on the operating system, java version, locale and
