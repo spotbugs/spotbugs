@@ -11,7 +11,7 @@
    </description>
 
    <copyright>
-      (c) 2006-2007, University of Maryland
+      (c) 2006-2011, University of Maryland
    </copyright>
 
    <license url="http://findbugs.sourceforge.net/manual/license.html">
@@ -40,8 +40,8 @@ http://www.gnu.org/licenses/lgpl.html
 
    <plugin
          id="@PLUGIN_ID@"
-         download-size="4500"
-         install-size="4700"
+         download-size="5676"
+         install-size="5800"
          version="@PLUGIN_VERSION@"/>
 
 </feature>
