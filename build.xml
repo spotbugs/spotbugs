@@ -7,13 +7,14 @@
         <ant dir="plugins/googlecode" />
         <ant dir="plugins/jdbcCloudClient" />
         <ant dir="plugins/jira" />
-        <ant dir="plugins/webCloudClient" />
+        <ant dir="plugins/findbugsCommunalCloud" />
 
         <!-- <ant dir="bluej" /> -->
         <ant dir="eclipsePlugin" />
         <ant dir="findbugs" />
         <ant dir="findbugsTestCases" />
         <ant dir="webCloudProtocol" />
+        <ant dir="plugins/findbugsCommunalCloud" />
         <ant dir="findbugs"  target="smoketest"/>
     </target>
 
@@ -24,7 +25,7 @@
         <ant dir="plugins/googlecode" target="clean"/>
         <ant dir="plugins/jdbcCloudClient" target="clean"/>
         <ant dir="plugins/jira" target="clean"/>
-        <ant dir="plugins/webCloudClient" target="clean"/>
+        <ant dir="plugins/findbugsCommunalCloud"  target="clean"/>
         <ant dir="server/common" target="clean"/>
         <ant dir="eclipsePlugin" target="clean"/>
         <ant dir="findbugsTestCases" target="clean"/>
