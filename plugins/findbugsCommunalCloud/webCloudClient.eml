@@ -3,13 +3,11 @@
 	<exclude-output/>
 	<contentEntry url="file://$MODULE_DIR$">
 		<testFolder url="file://$MODULE_DIR$/src/junit"/>
-		<excludeFolder url="file://$MODULE_DIR$/build/classes"/>
 		<excludeFolder url="file://$MODULE_DIR$/build/classes-ant"/>
 		<excludeFolder url="file://$MODULE_DIR$/build/classes-tests-ant"/>
 		<excludeFolder url="file://$MODULE_DIR$/build/testClasses"/>
 		<excludeFolder url="file://$MODULE_DIR$/classes-ant"/>
 		<excludeFolder url="file://$MODULE_DIR$/classes-tests-ant"/>
-		<excludeFolder url="file://$MODULE_DIR$/build/classes"/>
 	</contentEntry>
 	<lib name="junit3" scope="TEST"/>
 	<lib name="mockito-all-1.8.2.jar" scope="COMPILE">
