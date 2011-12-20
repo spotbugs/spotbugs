@@ -357,29 +357,9 @@
         </jar>
     </target>
 
-    <!-- See if front-end scripts need to be regenerated. -->
-    <target name="checkscripts">
-        <condition property="scripts.uptodate">
-            <and>
-                <!-- Generated scripts must be newer than src scripts -->
-                <uptodate targetfile="${scripts.stamp}">
-                    <srcfiles dir="${scriptsrc.dir}/standard" includes="*"  excludes="CVS"/>
-                </uptodate>
-                <uptodate targetfile="${scripts.stamp}">
-                    <srcfiles dir="${scriptsrc.dir}/windows" includes="*"  excludes="CVS"/>
-                </uptodate>
-                <!-- And, generated scripts must be newer than etc/script.properties -->
-                <uptodate targetfile="${scripts.stamp}">
-                    <srcfiles file="${scripts.props}"/>
-                </uptodate>
-            </and>
-        </condition>
-    </target>
-
+ 
     <!-- Generate front-end scripts. -->
-    <target name="scripts" depends="init,checkscripts"
-                unless="scripts.uptodate"
-                >
+    <target name="scripts" depends="init">
         <loadproperties srcFile="${scripts.props}"/>
 
         <filterset id="script.filters">
