@@ -3,11 +3,9 @@
 	<exclude-output/>
 	<contentEntry url="file://$MODULE_DIR$">
 		<testFolder url="file://$MODULE_DIR$/src/junit"/>
-		<excludeFolder url="file://$MODULE_DIR$/build/classes"/>
 		<excludeFolder url="file://$MODULE_DIR$/build/classes-ant"/>
 		<excludeFolder url="file://$MODULE_DIR$/build/classes-tests-ant"/>
 		<excludeFolder url="file://$MODULE_DIR$/classes-tests-ant"/>
-		<excludeFolder url="file://$MODULE_DIR$/build/classes"/>
 	</contentEntry>
 	<lib name="axis.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/jira/lib/axis.jar!/"/>
