@@ -8,8 +8,6 @@
 
 @SET_DEFAULT_JAVA@
 
-maxheap=768
-
 fb_appjar="$findbugs_home/lib/findbugs.jar"
 
 ShowHelpAndExit() {
@@ -53,7 +51,7 @@ while [ $# -gt 0 ]; do
 
 	-maxHeap)
 		shift
-		maxheap="$1"
+		fb_maxheap="-Xmx$1m"
 		;;
 
 	-javahome)
@@ -103,7 +101,9 @@ while [ $# -gt 0 ]; do
 done
 
 fb_jvmargs="$user_jvmargs $debug_arg $conservespace_arg $workhard_arg $user_props $ea_arg"
-fb_maxheap="-Xmx${maxheap}m"
+if [ $maxheap ]; then
+  fb_maxheap="-Xmx${maxheap}m"
+fi
 
 # Extra JVM args for MacOSX.
 if [ $fb_osname = "Darwin" ]; then

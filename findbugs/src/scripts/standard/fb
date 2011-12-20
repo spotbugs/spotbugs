@@ -1,9 +1,110 @@
 #! /bin/sh
 
+# Launch FindBugs from the command line.
+
+@DEFINE_ESCAPE_ARG@
+
 @GET_FBHOME@
 
 @SET_DEFAULT_JAVA@
 
-fb_mainclass=edu.umd.cs.findbugs.workflow.FB
+
+fb_appjar="$findbugs_home/lib/findbugs.jar"
+
+ShowHelpAndExit() {
+	fb_mainclass="edu.umd.cs.findbugs.ShowHelp"
+	@WRAP_JAVA@
+	exit 0
+}
+
+# Set defaults
+fb_mainclass="edu.umd.cs.findbugs.workflow.FB"
+user_jvmargs=''
+ea_arg=''
+debug_arg=''
+conservespace_arg=''
+workhard_arg=''
+user_props=''
+
+# Handle command line arguments.
+while [ $# -gt 0 ]; do
+	case $1 in
+	-textui)
+		fb_mainclass="edu.umd.cs.findbugs.FindBugs2"
+		;;
+
+	-jvmArgs)
+		shift
+		user_jvmargs="$1"
+		;;
+		
+	-ea)
+		ea_arg='-ea'
+		;;
+
+	-maxHeap)
+		shift
+		fb_maxheap="-Xmx$1m"
+		;;
+
+	-javahome)
+		shift
+		fb_javacmd="$1/bin/java"
+		;;
+
+	-debug)
+		debug_arg="-Dfindbugs.debug=true"
+		;;
+
+	-conserveSpace)
+		conservespace_arg="-Dfindbugs.conserveSpace=true"
+		;;
+
+	-property)
+		shift
+		user_props="-D$1 $user_props"
+		;;
+	
+	-D*=*)
+		user_props="$1 $user_props"
+		;;
+
+	-version)
+		fb_mainclass=edu.umd.cs.findbugs.Version
+		fb_appargs="-release"
+		while [ $# -gt 0 ]; do
+			shift
+		done
+		@WRAP_JAVA@
+		exit 0
+		;;
+
+	-help)
+		ShowHelpAndExit
+		;;
+
+	# All unrecognized arguments will be accumulated and
+	# passed to the application.
+	*)
+		fb_appargs="$fb_appargs `escape_arg "$1"`"
+		;;
+	esac
+
+	shift
+done
+
+fb_jvmargs="$user_jvmargs $debug_arg $conservespace_arg $workhard_arg $user_props $ea_arg"
+if [ $maxheap ]; then
+  fb_maxheap="-Xmx${maxheap}m"
+fi
+
+# Extra JVM args for MacOSX.
+if [ $fb_osname = "Darwin" ]; then
+	fb_jvmargs="$fb_jvmargs \
+		-Xdock:name=FindBugs -Xdock:icon=${findbugs_home}/lib/buggy.icns \
+		-Dapple.laf.useScreenMenuBar=true"
+fi
 
 @WRAP_JAVA@
+
+# vim:ts=3
