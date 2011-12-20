@@ -88,6 +88,13 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
             doBuild(args, monitor, kind);
             break;
         }
+        default: {
+
+            FindbugsPlugin.getDefault()
+            .logWarning("UKNOWN BUILD kind" + kind);
+            doBuild(args, monitor, kind);
+            break;
+        }
         }
         return null;
     }

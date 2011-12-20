@@ -487,6 +487,10 @@ public class BugContentProvider implements ICommonContentProvider {
                 }
                 addMarker(changedMarker, changedParents, patternFilter);
                 break;
+            default:
+                    FindbugsPlugin.getDefault()
+                    .logWarning("UKNOWN delta change kind" + delta.changeKind);
+
             }
         }
         if (rootElement.getMarkersCount() == 0 || rootElement.getChildren().length != oldRootSize) {

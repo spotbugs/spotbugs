@@ -43,7 +43,7 @@ import de.tobject.findbugs.FindbugsPlugin;
 
 /**
  * Utility to find right JDT Java types for anonymous classes
- * 
+ *
  * @author Andrei
  */
 public class JdtUtils {
@@ -96,12 +96,12 @@ public class JdtUtils {
          * static init 4) from deepest inner from static init (deepest first) 5)
          * from deepest inner (deepest first) 7) regular anon classes from main
          * class
-         * 
+         *
          * <br>
          * Note, that nested inner anon. classes which do not have different
          * non-anon. inner class ancestors, are compiled in they nesting order,
          * opposite to rule 2)
-         * 
+         *
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
         public int compare(IType m1, IType m2) {
@@ -185,7 +185,7 @@ public class JdtUtils {
 
         /**
          * First source occurrence wins.
-         * 
+         *
          * @param o1
          *            should be IType
          * @param o2
@@ -248,7 +248,7 @@ public class JdtUtils {
     /**
      * Get the anonymous inner class with given parent type and class number
      * (like Hello$5.class)
-     * 
+     *
      * @param parentType
      *            the parent of anon. type
      * @return may return null, if we cannot find such anonymous class
@@ -301,7 +301,7 @@ public class JdtUtils {
     /**
      * Traverses down the children tree of this parent and collect all child
      * anon. classes
-     * 
+     *
      * @param list
      * @param parent
      * @param allowNested
@@ -326,7 +326,7 @@ public class JdtUtils {
     /**
      * Sort given anonymous classes in order like java compiler would generate
      * output classes, in context of given anonymous type
-     * 
+     *
      * @param anonymous
      */
     private static void sortAnonymous(List<IType> anonymous, IType anonType) {
@@ -345,11 +345,11 @@ public class JdtUtils {
         Comparator<IType> prioComp = new Comparator<IType>() {
 
             public int compare(IType e1, IType e2) {
-                int result = map.get(e1).compareTo(map.get(e2));
+                int result = map.get(e2).compareTo(map.get(e1));
                 if (result == 0) {
                     return e1.toString().compareTo(e2.toString());
                 }
-                return -result;
+                return result;
             }
 
         };
@@ -408,12 +408,12 @@ public class JdtUtils {
      * first) 3) from static init 4) from deepest inner from static init
      * (deepest first) 5) from deepest inner (deepest first) 6) regular anon
      * classes from main class
-     * 
+     *
      * <br>
      * Note, that nested inner anon. classes which do not have different
      * non-anon. inner class ancestors, are compiled in they nesting order,
      * opposite to rule 2)
-     * 
+     *
      * @param javaElement
      * @return priority - lesser mean wil be compiled later, a value > 0
      */
