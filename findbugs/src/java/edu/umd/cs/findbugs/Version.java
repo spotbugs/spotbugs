@@ -24,11 +24,17 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.annotation.CheckForNull;
 
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
+import edu.umd.cs.findbugs.updates.UpdateChecker;
+import edu.umd.cs.findbugs.util.FutureValue;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -53,13 +59,13 @@ public class Version {
     /**
      * Development version or release candidate?
      */
-    public static final boolean IS_DEVELOPMENT = true;
+    public static final boolean IS_DEVELOPMENT = false;
 
     /**
      * Release candidate number. "0" indicates that the version is not a release
      * candidate.
      */
-    public static final int RELEASE_CANDIDATE = 3;
+    public static final int RELEASE_CANDIDATE = 0;
 
     
     public static final String SVN_REVISION = System.getProperty("svn.revision", "Unknown");
@@ -190,14 +196,18 @@ public class Version {
         return applicationVersion;
     }
 
-    public static void main(String[] argv) {
-        if (argv.length != 1)
-            usage();
-
-        String arg = argv[0];
+    public static void main(String[] argv) throws InterruptedException {
+        
         if (!IS_DEVELOPMENT && RELEASE_CANDIDATE != 0) {
             throw new IllegalStateException("Non developmental version, but is release candidate " + RELEASE_CANDIDATE);
         }
+        if (argv.length == 0) {
+            printVersion(false);
+            return;
+        }
+        
+        String arg = argv[0];
+        
         if (arg.equals("-release"))
             System.out.println(RELEASE);
         else if (arg.equals("-date"))
@@ -224,6 +234,8 @@ public class Version {
                   System.out.println("      website: " + website);
                 System.out.println();
             }
+        } else if (arg.equals("-configuration")){
+            printVersion(true);
         } else {
             
             usage();
@@ -232,7 +244,7 @@ public class Version {
     }
 
     private static void usage() {
-        System.err.println("Usage: " + Version.class.getName() + "  (-release|-date|-props)");
+        System.err.println("Usage: " + Version.class.getName() + "  [(-release|-date|-props|-configuration)]");
     }
 
     public static String getReleaseWithDateIfDev() {
@@ -244,6 +256,71 @@ public class Version {
     public static @CheckForNull Date getReleaseDate() {
         return releaseDate;
     }
+    
+    /**
+     * @param justPrintConfiguration
+     * @throws InterruptedException
+     */
+    public static void printVersion(boolean justPrintConfiguration) throws InterruptedException {
+        System.out.println("FindBugs " + Version.COMPUTED_RELEASE);
+        if (justPrintConfiguration) {
+            for (Plugin plugin : Plugin.getAllPlugins()) {
+                System.out.printf("Plugin %s, version %s, loaded from %s%n", plugin.getPluginId(), plugin.getVersion(),
+                        plugin.getPluginLoader().getURL());
+                if (plugin.isCorePlugin())
+                    System.out.println("  is core plugin");
+                if (plugin.isInitialPlugin())
+                    System.out.println("  is initial plugin");
+                if (plugin.isEnabledByDefault())
+                    System.out.println("  is enabled by default");
+                if (plugin.isGloballyEnabled())
+                    System.out.println("  is globally enabled");
+                for (CloudPlugin cloudPlugin : plugin.getCloudPlugins()) {
+                    System.out.printf("  cloud %s%n", cloudPlugin.getId());
+                    System.out.printf("     %s%n", cloudPlugin.getDescription());
+                }
+                for (DetectorFactory factory : plugin.getDetectorFactories()) {
+                    System.out.printf("  detector %s%n", factory.getShortName());
+                }
+                System.out.println();
+            }
+            printPluginUpdates(true, 10);
+        } else
+            printPluginUpdates(false, 3);
+    }
+
+    private static void printPluginUpdates(boolean verbose, int secondsToWait) throws InterruptedException {
+        DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
+
+        if (dfc.getUpdateChecker().updateChecksGloballyDisabled())
+            return;
+        if (verbose) {
+            System.out.println();
+            System.out.print("Checking for plugin updates...");
+        }
+        FutureValue<Collection<UpdateChecker.PluginUpdate>>
+        updateHolder  = dfc.getUpdates();
+
+        try {
+            Collection<UpdateChecker.PluginUpdate> updates = updateHolder.get(secondsToWait, TimeUnit.SECONDS);
+            if (updates.isEmpty()) {
+                if (verbose)
+                    System.out.println("none!");
+            } else {
+                System.out.println();
+                for (UpdateChecker.PluginUpdate update : updates) {
+                    System.out.println(update);
+                    System.out.println();
+
+                }
+            }
+        } catch (TimeoutException e) {
+            if (verbose)
+                System.out.println("Timeout while trying to get updates");
+        }
+
+    }
+
 }
 
 // vim:ts=4

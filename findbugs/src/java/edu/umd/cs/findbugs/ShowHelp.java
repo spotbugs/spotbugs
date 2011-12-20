@@ -18,32 +18,40 @@
  */
 package edu.umd.cs.findbugs;
 
+import java.util.TreeSet;
+
 /**
  * Show command line help.
  * 
  * @author David Hovemeyer
  */
 public class ShowHelp {
+ 
     public static void main(String[] args) {
 
         System.out.println("FindBugs version " + Version.RELEASE + ", " + Version.WEBSITE);
-        showGeneralOptions();
         
         DetectorFactoryCollection.instance();
         System.out.println("Command line options");
         
+        TreeSet<FindBugsMain> cmds = new TreeSet<FindBugsMain>();
         for(Plugin p : Plugin.getAllPlugins()) 
             for(FindBugsMain m : p.getAllFindBugsMain()) 
+                cmds.add(m);
+        for(FindBugsMain m : cmds) 
                 System.out.printf("fb %-12s %-12s %s%n", m.cmd, m.kind, m.description); 
         
+//        System.out.println();
+//        System.out.println("GUI Options:");
+//        FindBugsCommandLine guiCmd = new FindBugsCommandLine(true) {
+//        };
+//        guiCmd.printUsage(System.out);
+//        System.out.println();
+//        System.out.println("TextUI Options:");
+//        FindBugs.showCommandLineOptions();
         System.out.println();
-        System.out.println("GUI Options:");
-        FindBugsCommandLine guiCmd = new FindBugsCommandLine(true) {
-        };
-        guiCmd.printUsage(System.out);
-        System.out.println();
-        System.out.println("TextUI Options:");
-        FindBugs.showCommandLineOptions();
+        showGeneralOptions();
+        
     }
 
     public static void showSynopsis() {
@@ -51,13 +59,11 @@ public class ShowHelp {
     }
 
     public static void showGeneralOptions() {
+      
         System.out.println("General options:");
-        System.out.println("  -gui             Use the Graphical UI (default behavior)");
-        System.out.println("  -textui          Use the Text UI");
         System.out.println("  -jvmArgs args    Pass args to JVM");
         System.out.println("  -maxHeap size    Maximum Java heap size in megabytes (default=768)");
         System.out.println("  -javahome <dir>  Specify location of JRE");
-        System.out.println("  -help            Display command line options");
-        System.out.println("  -debug           Enable debug tracing in FindBugs");
+       
     }
 }

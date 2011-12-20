@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
 /**
  * @author pugh
  */
-public class FindBugsMain {
+public class FindBugsMain implements Comparable<FindBugsMain> {
     
     public FindBugsMain(Class<?> mainClass, String cmd, String description, String kind, boolean analysis) 
             throws SecurityException, NoSuchMethodException {
@@ -47,6 +47,13 @@ public class FindBugsMain {
             FindBugs.setNoAnalysis();
         mainMethod.invoke(null, (Object) args);
     }
-    
+    public int compareTo(FindBugsMain that) {
+        int result = kind.compareTo(that.kind);
+        if (result != 0)
+            return result;
+        return cmd.compareTo(that.cmd);
+                
+    }
+
 
 }

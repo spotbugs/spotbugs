@@ -1289,32 +1289,9 @@ public class FindBugs2 implements IFindBugsEngine {
         FindBugs.processCommandLine(commandLine, args, findBugs);
 
 
-        if (commandLine.justPrintConfiguration() || commandLine.justPrintVersion()) {
-            System.out.println("FindBugs " + Version.COMPUTED_RELEASE);
-            if (commandLine.justPrintConfiguration()) {
-                for (Plugin plugin : Plugin.getAllPlugins()) {
-                    System.out.printf("Plugin %s, version %s, loaded from %s%n", plugin.getPluginId(), plugin.getVersion(),
-                            plugin.getPluginLoader().getURL());
-                    if (plugin.isCorePlugin())
-                        System.out.println("  is core plugin");
-                    if (plugin.isInitialPlugin())
-                        System.out.println("  is initial plugin");
-                    if (plugin.isEnabledByDefault())
-                        System.out.println("  is enabled by default");
-                    if (plugin.isGloballyEnabled())
-                        System.out.println("  is globally enabled");
-                    for (CloudPlugin cloudPlugin : plugin.getCloudPlugins()) {
-                        System.out.printf("  cloud %s%n", cloudPlugin.getId());
-                        System.out.printf("     %s%n", cloudPlugin.getDescription());
-                    }
-                    for (DetectorFactory factory : plugin.getDetectorFactories()) {
-                        System.out.printf("  detector %s%n", factory.getShortName());
-                    }
-                    System.out.println();
-                }
-                printPluginUpdates(true, 10);
-            } else
-                printPluginUpdates(false, 3);
+        boolean justPrintConfiguration = commandLine.justPrintConfiguration();
+        if (justPrintConfiguration || commandLine.justPrintVersion()) {
+            Version.printVersion(justPrintConfiguration);
 
             return;
         }
@@ -1325,38 +1302,7 @@ public class FindBugs2 implements IFindBugsEngine {
         
     }
 
-    private static void printPluginUpdates(boolean verbose, int secondsToWait) throws InterruptedException {
-        DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
-
-        if (dfc.getUpdateChecker().updateChecksGloballyDisabled())
-            return;
-        if (verbose) {
-            System.out.println();
-            System.out.print("Checking for plugin updates...");
-        }
-        FutureValue<Collection<UpdateChecker.PluginUpdate>>
-        updateHolder  = dfc.getUpdates();
-
-        try {
-            Collection<UpdateChecker.PluginUpdate> updates = updateHolder.get(secondsToWait, TimeUnit.SECONDS);
-            if (updates.isEmpty()) {
-                if (verbose)
-                    System.out.println("none!");
-            } else {
-                System.out.println();
-                for (UpdateChecker.PluginUpdate update : updates) {
-                    System.out.println(update);
-                    System.out.println();
-
-                }
-            }
-        } catch (TimeoutException e) {
-            if (verbose)
-                System.out.println("Timeout while trying to get updates");
-        }
-
-    }
-
+   
     public void setAbridgedMessages(boolean xmlWithAbridgedMessages) {
         analysisOptions.abridgedMessages = xmlWithAbridgedMessages;
     }
