@@ -559,7 +559,7 @@
 
   <target name="findbugscheck" depends="anttask,junittests,jars">
     <property name="findbugs.home" value="." />
-    <ant dir="${pluginsSrc.dir}/webCloudClient" target="install" inheritAll="false" />
+    <ant dir="${pluginsSrc.dir}/findbugsCommunalCloud" target="install" inheritAll="false" />
     <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
     <findbugs home="."
               output="xml:withMessages"
@@ -585,7 +585,7 @@
     
   <target name="findbugscheck-cloud-fails" depends="anttask,junittests,jars">
     <property name="findbugs.home" value="." />
-    <ant dir="${pluginsSrc.dir}/webCloudClient" target="install" inheritAll="false" />
+    <ant dir="${pluginsSrc.dir}/findbugsCommunalCloud" target="install" inheritAll="false" />
     <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
     <findbugs home="."
               output="xml:withMessages"
@@ -687,9 +687,9 @@
             <fileset dir="../sandbox/localCloud/src"/>
     -->
             <fileset dir="../findbugsTestCases/src"/>
-            <fileset dir="../webCloudProtocol/src"/>
+            <fileset dir="../findbugsCommunalCloud/src"/>
 
-            <fileset dir="${pluginsSrc.dir}/webCloudClient/src"/>
+            <fileset dir="${pluginsSrc.dir}/findbugsCommunalCloud/src"/>
             <fileset dir="${pluginsSrc.dir}/jira/src"/>
             <fileset dir="${pluginsSrc.dir}/googlecode/src"/>
             <fileset dir="${pluginsSrc.dir}/jdbcCloudClient/src"/>
@@ -1059,7 +1059,7 @@
     <!-- Generate binary distribution (both .zip and .tar.gz) -->
     <target name="bindist" depends="clean,validate,rebuild,docs" description="Binary distribution">
         <ant dir="${pluginsSrc.dir}/bugCollectionCloud" target="install" inheritAll="false" />
-        <ant dir="${pluginsSrc.dir}/webCloudClient" target="install" inheritAll="false" />
+        <ant dir="${pluginsSrc.dir}/findbugsCommunalCloud" target="install" inheritAll="false" />
         <ant dir="${pluginsSrc.dir}/noUpdateChecks" target="install" inheritAll="false" />
         <java classpathref="tools.classpath"
             classname="edu.umd.cs.findbugs.tools.CheckClassfileVersion"
@@ -1077,7 +1077,7 @@
 
         <patternset id="bindist.jar.pats">
             <include name="lib/*.jar"/>
-            <include name="plugin/webCloudClient.jar"/>
+            <include name="plugin/findbugsCommunalCloud.jar"/>
             <include name="plugin/README"/>
             <include name="plugin"/>
             <include name="optionalPlugin/noUpdateChecks.jar"/>
@@ -1094,7 +1094,7 @@
             <include name="plugin/noUpdateChecks.jar"/>
             <include name="plugin/README"/>
             <include name="plugin"/>
-            <include name="optionalPlugin/webCloudClient.jar"/>
+            <include name="optionalPlugin/findbugsCommunalCloud.jar"/>
             <include name="optionalPlugin/bugCollectionCloud.jar"/>
             <include name="optionalPlugin/README"/>
             <include name="optionalPlugin"/>
