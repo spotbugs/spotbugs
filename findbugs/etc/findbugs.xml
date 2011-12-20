@@ -55,7 +55,6 @@
           <FindBugsMain cmd="filter" class="edu.umd.cs.findbugs.workflow.Filter"/>
           <FindBugsMain cmd="set" class="edu.umd.cs.findbugs.workflow.SetBugDatabaseInfo"/> 
           
-          <FindBugsMain cmd="xxxx" kind="history" class="edu.umd.cs.findbugs.workflow.ListBugDatabaseInfo"/>
           <FindBugsMain cmd="history" kind="history" class="edu.umd.cs.findbugs.workflow.MineBugHistory"/>
           <FindBugsMain cmd="union" kind="history" class="edu.umd.cs.findbugs.workflow.UnionResults"/>
           <FindBugsMain cmd="merge" kind="history" class="edu.umd.cs.findbugs.workflow.Update"/>

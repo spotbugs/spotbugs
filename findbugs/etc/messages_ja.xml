@@ -42,9 +42,6 @@
   <FindBugsMain cmd="set" class="edu.umd.cs.findbugs.workflow.SetBugDatabaseInfo">
     <Description>Set project configuration/options</Description>
   </FindBugsMain>
-  <FindBugsMain cmd="xxxx" class="edu.umd.cs.findbugs.workflow.ListBugDatabaseInfo">
-    <Description>XXXXXX</Description>
-  </FindBugsMain>
   <FindBugsMain cmd="history" class="edu.umd.cs.findbugs.workflow.MineBugHistory">
     <Description>List details from  multi-version analysis results</Description>
   </FindBugsMain>
