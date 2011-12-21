@@ -33,6 +33,7 @@ import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -74,6 +75,7 @@ import edu.umd.cs.findbugs.plan.ReportingDetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.SingleDetectorFactorySelector;
 import edu.umd.cs.findbugs.plugins.DuplicatePluginIdError;
 import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
+import edu.umd.cs.findbugs.updates.UpdateChecker;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.JavaWebStart;
 import edu.umd.cs.findbugs.util.Util;
@@ -590,9 +592,12 @@ public class PluginLoader {
         String releaseDate = pluginDescriptor.valueOf("/FindbugsPlugin/@releaseDate");
         List<Document> messageCollectionList = getMessageDocuments();
 
+        if ((releaseDate == null  || releaseDate.length() == 0) && isCorePlugin())
+            releaseDate = Version.CORE_PLUGIN_RELEASE_DATE;
         // Create the Plugin object (but don't assign to the plugin field yet,
         // since we're still not sure if everything will load correctly)
-        Plugin plugin = new Plugin(pluginId, version, parseDate(releaseDate), this, !optionalPlugin, cannotDisable);
+        Date parsedDate = parseDate(releaseDate);
+        Plugin plugin = new Plugin(pluginId, version, parsedDate, this, !optionalPlugin, cannotDisable);
 
         // Set provider and website, if specified
         String provider = pluginDescriptor.valueOf(XPATH_PLUGIN_PROVIDER).trim();
@@ -1062,10 +1067,14 @@ public class PluginLoader {
     }
 
     private Date parseDate(String releaseDate) {
+        if (releaseDate == null || releaseDate.length() == 0)
+            return null;
         try {
-            return DateFormat.getDateTimeInstance().parse(releaseDate);
+            SimpleDateFormat releaseDateFormat = new SimpleDateFormat(UpdateChecker.PLUGIN_RELEASE_DATE);
+            Date result = releaseDateFormat.parse(releaseDate);
+            return result;
         } catch (ParseException e) {
-            //TODO: log exception
+            AnalysisContext.logError("unable to parse date " + releaseDate, e);
             return null;
         }
     }

@@ -75,8 +75,12 @@ public class Version {
     private static final String COMPUTED_DATE;
 
     public static final String DATE;
+    
+    public static final String CORE_PLUGIN_RELEASE_DATE;
 
     private static final String COMPUTED_ECLIPSE_DATE;
+    
+    private static final String COMPUTED_PLUGIN_RELEASE_DATE;
 
     private static String applicationName = "";
 
@@ -85,9 +89,13 @@ public class Version {
     static {
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss z, dd MMMM, yyyy");
         SimpleDateFormat eclipseDateFormat = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat releaseDateFormat = new SimpleDateFormat(UpdateChecker.PLUGIN_RELEASE_DATE);
 
-        COMPUTED_DATE = dateFormat.format(new Date());
-        COMPUTED_ECLIPSE_DATE = eclipseDateFormat.format(new Date());
+        Date now = new Date();
+        COMPUTED_DATE = dateFormat.format(now);
+        COMPUTED_ECLIPSE_DATE = eclipseDateFormat.format(now);
+        String tmp =  releaseDateFormat.format(now);
+        COMPUTED_PLUGIN_RELEASE_DATE = tmp;
     }
 
     /**
@@ -135,6 +143,7 @@ public class Version {
         InputStream in = null;
         String release = null;
         String date = null;
+        String plugin_release_date = null;
         if (!fromFile)
             try {
                 Properties versionProperties = new Properties();
@@ -143,6 +152,7 @@ public class Version {
                     versionProperties.load(in);
                     release = (String) versionProperties.get("release.number");
                     date = (String) versionProperties.get("release.date");
+                    plugin_release_date =  (String) versionProperties.get("plugin.release.date");
                 }     
             } catch (Exception e) {
                 assert true; // ignore
@@ -153,15 +163,19 @@ public class Version {
             release = COMPUTED_RELEASE;
         if (date == null)
             date = COMPUTED_DATE;
+        if (plugin_release_date == null)
+            plugin_release_date = COMPUTED_PLUGIN_RELEASE_DATE;
+        
         RELEASE = release;
         DATE = date;
+        CORE_PLUGIN_RELEASE_DATE = plugin_release_date;
         Date parsedDate;
         try {
-            parsedDate = DateFormat.getDateTimeInstance().parse(DATE); // TODO:
-                                                                       // this
-                                                                       // doesn't
-                                                                       // work!
+            SimpleDateFormat releaseDateFormat = new SimpleDateFormat(UpdateChecker.PLUGIN_RELEASE_DATE);
+
+            parsedDate = releaseDateFormat.parse(CORE_PLUGIN_RELEASE_DATE); 
         } catch (ParseException e) {
+            e.printStackTrace();
             parsedDate = null;
         }
         releaseDate = parsedDate;
@@ -216,6 +230,7 @@ public class Version {
             System.out.println("release.base=" + RELEASE_BASE);
             System.out.println("release.number=" + COMPUTED_RELEASE);
             System.out.println("release.date=" + COMPUTED_DATE);
+            System.out.println("plugin.release.date=" + COMPUTED_PLUGIN_RELEASE_DATE);
             System.out.println("eclipse.ui.version=" + COMPUTED_ECLIPSE_UI_VERSION);
             System.out.println("findbugs.website=" + WEBSITE);
             System.out.println("findbugs.downloads.website=" + DOWNLOADS_WEBSITE);
@@ -292,8 +307,13 @@ public class Version {
     private static void printPluginUpdates(boolean verbose, int secondsToWait) throws InterruptedException {
         DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
 
-        if (dfc.getUpdateChecker().updateChecksGloballyDisabled())
+        if (dfc.getUpdateChecker().updateChecksGloballyDisabled()) {
+            if (verbose) {
+                System.out.println();
+                System.out.print("Update checking globally disabled");
+            }
             return;
+        }
         if (verbose) {
             System.out.println();
             System.out.print("Checking for plugin updates...");

@@ -42,6 +42,8 @@ import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 
 public class UpdateChecker {
+
+    public static final String PLUGIN_RELEASE_DATE = "MM/dd/yyyy hh:mm aa z";
     private static final Logger LOGGER = Logger.getLogger(UpdateChecker.class.getName());
     private static final String KEY_DISABLE_ALL_UPDATE_CHECKS = "noUpdateChecks";
     private static final String KEY_REDIRECT_ALL_UPDATE_CHECKS = "redirectUpdateChecks";
@@ -308,14 +310,14 @@ public class UpdateChecker {
     @SuppressWarnings({"unchecked"})
     private void checkPlugin(Element pluginEl, Plugin plugin) {
         for (Element release : (List<Element>) pluginEl.elements("release")) {
-            printPluginUpdateMsg(plugin, release);
+            checkPluginRelease(plugin, release);
         }
     }
 
-    private void printPluginUpdateMsg(Plugin plugin, Element maxEl) {
-        @CheckForNull Date date = parseReleaseDate(maxEl);
-        @CheckForNull Date releaseDate = plugin.getReleaseDate();
-        if (date != null && releaseDate != null && date.before(releaseDate))
+    private void checkPluginRelease(Plugin plugin, Element maxEl) {
+        @CheckForNull Date updateDate = parseReleaseDate(maxEl);
+        @CheckForNull Date installedDate = plugin.getReleaseDate();
+        if (updateDate != null && installedDate != null && updateDate.before(installedDate))
             return;
         String version = maxEl.attributeValue("version");
         if (version.equals(plugin.getVersion()))
@@ -324,7 +326,7 @@ public class UpdateChecker {
         String url = maxEl.attributeValue("url");
         String message = maxEl.element("message").getTextTrim();
 
-        pluginUpdates.add(new PluginUpdate(plugin, version, url, message));
+        pluginUpdates.add(new PluginUpdate(plugin, version, updateDate, url, message));
     }
 
     // protected for testing
@@ -338,7 +340,7 @@ public class UpdateChecker {
     }
 
     private @CheckForNull Date parseReleaseDate(Element releaseEl) {
-        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm aa z");
+        SimpleDateFormat format = new SimpleDateFormat(PLUGIN_RELEASE_DATE);
         String dateStr = releaseEl.attributeValue("date");
         if (dateStr == null)
             return null;
@@ -399,12 +401,14 @@ public class UpdateChecker {
     public static class PluginUpdate {
         private final Plugin plugin;
         private final String version;
+        private final @CheckForNull Date date;
         private final @CheckForNull String url;
         private final @Nonnull String message;
 
-        private PluginUpdate(Plugin plugin, String version, @CheckForNull String url, @Nonnull String message) {
+        private PluginUpdate(Plugin plugin, String version, @CheckForNull  Date date, @CheckForNull String url, @Nonnull String message) {
             this.plugin = plugin;
             this.version = version;
+            this.date = date;
             this.url = url;
             this.message = message;
         }
@@ -417,6 +421,10 @@ public class UpdateChecker {
             return version;
         }
 
+        public @CheckForNull Date getDate() {
+            return date;
+        }
+
         public @CheckForNull String getUrl() {
             return url;
         }
@@ -427,10 +435,16 @@ public class UpdateChecker {
         
         @Override
         public String toString() {
-
+            SimpleDateFormat format = new SimpleDateFormat(PLUGIN_RELEASE_DATE);
             StringBuilder buf = new StringBuilder();
             String name = getPlugin().isCorePlugin() ? "FindBugs" : "FindBugs plugin " + getPlugin().getShortDescription();
-            buf.append( name + " " + getVersion() + " has been released (you have " + getPlugin().getVersion()
+            buf.append( name + " " + getVersion() );
+            if (date == null)
+                buf.append(" has been released");
+            else
+                buf.append(" was released " + format.format(date));
+            buf.append(
+            		" (you have " + getPlugin().getVersion()
                     + ")");
             buf.append("\n");
 
