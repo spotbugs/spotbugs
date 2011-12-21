@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug2382279 {
@@ -45,6 +46,7 @@ public class Bug2382279 {
      */
     @DesireNoWarning("ODR")
     @NoWarning("OBL_UNSATISFIED_OBLIGATION")
+    @ExpectWarning("OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE")
     public ResultSet execute(String query) throws SQLException {
         // test code adapted from bug report
         ResultSet rs;
