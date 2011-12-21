@@ -1039,6 +1039,7 @@
     <target name="bindist" depends="clean,validate,rebuild,docs" description="Binary distribution">
         <ant dir="${pluginsSrc.dir}/bugCollectionCloud" target="install" inheritAll="false" />
         <ant dir="${pluginsSrc.dir}/findbugsCommunalCloud" target="install" inheritAll="false" />
+        <ant dir="${pluginsSrc.dir}/poweruser" target="install" inheritAll="false" />
         <ant dir="${pluginsSrc.dir}/noUpdateChecks" target="install" inheritAll="false" />
         <java classpathref="tools.classpath"
             classname="edu.umd.cs.findbugs.tools.CheckClassfileVersion"
