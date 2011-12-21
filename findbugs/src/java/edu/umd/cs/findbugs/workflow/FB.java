@@ -27,14 +27,23 @@ import edu.umd.cs.findbugs.Plugin;
  * @author pugh
  */
 public class FB {
-    
+
     public static void main(String args[]) throws Throwable {
-        String cmd = args[0];
-        String a [] = new String[args.length-1];
-        for(int i = 1; i < args.length; i++)
-            a[i-1] = args[i];
+
+        String cmd;
+        String a[];
+        if (args.length == 0) {
+            cmd = "help";
+            a = new String[0];
+        } else {
+            cmd = args[0];
+            a = new String[args.length - 1];
+            for (int i = 1; i < args.length; i++)
+                a[i - 1] = args[i];
+        }
+
         DetectorFactoryCollection.instance();
-        for(Plugin plugin : Plugin.getAllPlugins()) {
+        for (Plugin plugin : Plugin.getAllPlugins()) {
             FindBugsMain main = plugin.getFindBugsMain(cmd);
             if (main != null) {
                 try {
