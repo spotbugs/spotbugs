@@ -25,17 +25,17 @@ Poweruser command line tools
     <Description>List the defect density by package and class</Description>
   </FindBugsMain>
   <FindBugsMain cmd="msv" class="edu.umd.cs.findbugs.workflow.MergeSummarizeAndView">
-    <Description>XXXXXX</Description>
+    <Description>Merge several analysis results, synchronize with cloud, list new high rank issues and optionally open GUI</Description>
   </FindBugsMain>
   <FindBugsMain cmd="backdate" class="edu.umd.cs.findbugs.workflow.BackdateHistoryUsingSource">
     <Description>Use the last-modified date of source files to back date the introduction
             of bugs</Description>
   </FindBugsMain>
   <FindBugsMain cmd="csr" class="edu.umd.cs.findbugs.workflow.CloudSyncAndReport">
-    <Description>XXXXXX</Description>
+    <Description>Synchronize analysis results with cloud and report</Description>
   </FindBugsMain>
   <FindBugsMain cmd="appVersion" class="edu.umd.cs.findbugs.workflow.PrintAppVersion">
-    <Description>XXXXXX</Description>
+    <Description>Print the AppVersion information from a BugCollection</Description>
   </FindBugsMain>
   
     <FindBugsMain cmd="xpath" class="edu.umd.cs.findbugs.xml.XPathFind">
