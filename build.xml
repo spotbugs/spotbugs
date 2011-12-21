@@ -15,6 +15,7 @@
         <ant dir="findbugsTestCases" />
         <ant dir="webCloudProtocol" />
         <ant dir="plugins/findbugsCommunalCloud" />
+        <ant dir="plugins/poweruser" />
         <ant dir="findbugs"  target="smoketest"/>
     </target>
 
