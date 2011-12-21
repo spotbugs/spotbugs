@@ -613,15 +613,11 @@ public class ClassPathBuilder implements IClassPathBuilder {
                 // entries.
                 scanJarManifestForClassPathEntries(workList, discoveredCodeBase.getCodeBase());
             } catch (IOException e) {
-                if (item.isAppCodeBase()) {
-                    throw e;
-                } else if (item.getHowDiscovered() == ICodeBase.SPECIFIED) {
+                if (item.isAppCodeBase() || item.getHowDiscovered() == ICodeBase.SPECIFIED) {
                     errorLogger.logError("Cannot open codebase " + item.getCodeBaseLocator(), e);
                 }
             } catch (ResourceNotFoundException e) {
-                if (item.isAppCodeBase()) {
-                    throw e;
-                } else if (item.getHowDiscovered() == ICodeBase.SPECIFIED) {
+                if (item.getHowDiscovered() == ICodeBase.SPECIFIED) {
                     errorLogger.logError("Cannot open codebase " + item.getCodeBaseLocator(), e);
                 }
             }
