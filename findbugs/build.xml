@@ -1060,6 +1060,7 @@
             <include name="plugin/findbugsCommunalCloud.jar"/>
             <include name="plugin/README"/>
             <include name="plugin"/>
+            <include name="optionalPlugin/poweruser.jar"/>
             <include name="optionalPlugin/noUpdateChecks.jar"/>
             <include name="optionalPlugin/bugCollectionCloud.jar"/>
             <include name="optionalPlugin/README"/>
@@ -1075,6 +1076,7 @@
             <include name="plugin/README"/>
             <include name="plugin"/>
             <include name="optionalPlugin/findbugsCommunalCloud.jar"/>
+            <include name="optionalPlugin/poweruser.jar"/>
             <include name="optionalPlugin/bugCollectionCloud.jar"/>
             <include name="optionalPlugin/README"/>
             <include name="optionalPlugin"/>
