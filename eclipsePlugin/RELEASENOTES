@@ -78,7 +78,7 @@ Release 1.3.7 - Andrey Loskutov
 - feature: added "Group By..." dialog for Bug Explorer view
 - feature: added some predefined "Group By" configurations for Bug Explorer view
 - feature: added "Show In Package Explorer" context menu to bug groups
-- feature: double click on a "Class" group in the Bug Explorer view opens assotiated editor
+- feature: double click on a "Class" group in the Bug Explorer view opens associated editor
 - feature: selection of multiple entries in the Bug Explorer view shows their total bug count in the view status line
 - feature: refactored reporter algorithm which improves performance on multi-project build
 - feature removed: do NOT automatically link bugs selected in bug explorer view to the opened editor (causes too much side effects)
