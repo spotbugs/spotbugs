@@ -29,7 +29,6 @@ import static org.junit.matchers.JUnitMatchers.containsString;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import edu.umd.cs.findbugs.BugInstance;

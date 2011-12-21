@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.util;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.meta.When;
 
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;

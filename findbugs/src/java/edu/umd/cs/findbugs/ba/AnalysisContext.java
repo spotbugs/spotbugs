@@ -27,7 +27,6 @@ import java.util.Collection;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nonnull;
 
 import net.jcip.annotations.NotThreadSafe;
 

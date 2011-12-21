@@ -29,7 +29,6 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
 
-import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.graph.AbstractVertex;
 
 /**

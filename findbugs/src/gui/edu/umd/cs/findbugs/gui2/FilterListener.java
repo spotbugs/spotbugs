@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import javax.swing.tree.TreePath;
 
 /**
  * Implemented by BugTreeModel. Allows the model to clear its cache when the set

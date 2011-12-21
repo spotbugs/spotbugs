@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.workflow;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import org.dom4j.DocumentException;
 

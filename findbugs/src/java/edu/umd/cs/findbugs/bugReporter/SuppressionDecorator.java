@@ -29,14 +29,11 @@ import java.util.HashSet;
 import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 
-import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.ComponentPlugin;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.charsets.UserTextFile;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 

@@ -23,7 +23,6 @@ import java.awt.Frame;
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -43,7 +42,6 @@ import org.apache.commons.lang.StringUtils;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PluginException;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 /**
  * Saves all the stuff that should be saved for each run, like recent projects,

@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.tools.xml;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;

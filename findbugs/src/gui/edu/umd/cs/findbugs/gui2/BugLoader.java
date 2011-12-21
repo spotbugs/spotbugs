@@ -33,6 +33,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.dom4j.DocumentException;
+import org.xml.sax.SAXException;
+
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugCollectionBugReporter;
 import edu.umd.cs.findbugs.BugInstance;
@@ -50,8 +53,6 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.workflow.Update;
-import org.dom4j.DocumentException;
-import org.xml.sax.SAXException;
 
 /**
  * Everything having to do with loading bugs should end up here.

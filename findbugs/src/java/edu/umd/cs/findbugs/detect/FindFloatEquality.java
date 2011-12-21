@@ -33,7 +33,6 @@ import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-import edu.umd.cs.findbugs.util.Util;
 
 public class FindFloatEquality extends OpcodeStackDetector implements StatelessDetector {
     private static final int SAW_NOTHING = 0;

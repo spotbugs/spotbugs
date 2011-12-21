@@ -26,7 +26,6 @@ import javax.annotation.CheckForNull;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.AppVersion;
-import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Priorities;

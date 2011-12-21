@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.meta.When;
 
 /**

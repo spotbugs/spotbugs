@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import static edu.umd.cs.findbugs.util.Util.nullSafeEquals;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -77,8 +79,6 @@ import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.util.Util;
-
-import static edu.umd.cs.findbugs.util.Util.nullSafeEquals;
 
 @edu.umd.cs.findbugs.annotations.SuppressWarnings({"SE_TRANSIENT_FIELD_NOT_RESTORED", "SE_BAD_FIELD", "SE_BAD_FIELD_STORE"})
 public abstract class CloudCommentsPane extends JPanel {

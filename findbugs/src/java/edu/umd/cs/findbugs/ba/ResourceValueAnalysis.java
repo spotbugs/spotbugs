@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import javax.annotation.Nonnull;
-
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.IFNULL;
@@ -31,7 +29,6 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
 
 @javax.annotation.ParametersAreNonnullByDefault
 public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame> implements

@@ -24,10 +24,6 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertSame;
 import static junit.framework.Assert.assertTrue;
 
-import java.util.Arrays;
-
-import junit.framework.Assert;
-
 import org.junit.Test;
 
 import edu.umd.cs.findbugs.BugInstance;

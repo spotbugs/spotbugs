@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class NotMatcher extends CompoundMatcher {

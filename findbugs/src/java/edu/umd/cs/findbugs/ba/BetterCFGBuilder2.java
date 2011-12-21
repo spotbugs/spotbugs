@@ -66,7 +66,6 @@ import org.apache.bcel.generic.ReturnInstruction;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.bcel.generic.NONNULL2Z;
 import edu.umd.cs.findbugs.bcel.generic.NULL2Z;
-import edu.umd.cs.findbugs.visitclass.PrintClass;
 
 /**
  * A CFGBuilder that really tries to construct accurate control flow graphs. The

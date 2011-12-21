@@ -8,8 +8,9 @@ import javax.swing.JButton;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import org.apache.commons.lang.StringUtils;
+
+import edu.umd.cs.findbugs.cloud.CloudPlugin;
 
 public class CloudCommentsPaneSwing extends CloudCommentsPane {
 

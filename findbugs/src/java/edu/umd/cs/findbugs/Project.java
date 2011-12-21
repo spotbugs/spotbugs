@@ -53,7 +53,6 @@ import java.util.jar.Manifest;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.xml.sax.InputSource;

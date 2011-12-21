@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.ba;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 
 /**
  * A data source which can produce a stream for a source file.

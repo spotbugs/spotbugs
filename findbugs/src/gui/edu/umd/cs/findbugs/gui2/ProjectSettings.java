@@ -30,8 +30,6 @@ import java.util.List;
 
 import javax.annotation.WillClose;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.gui2.BugTreeModel.BranchOperationException;
 
 /**

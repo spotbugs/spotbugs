@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs.workflow;
 
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Date;

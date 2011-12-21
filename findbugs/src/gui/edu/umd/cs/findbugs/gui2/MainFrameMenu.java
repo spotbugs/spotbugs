@@ -1,5 +1,9 @@
 package edu.umd.cs.findbugs.gui2;
 
+import static edu.umd.cs.findbugs.gui2.MainFrameHelper.attachAcceleratorKey;
+import static edu.umd.cs.findbugs.gui2.MainFrameHelper.newJMenu;
+import static edu.umd.cs.findbugs.gui2.MainFrameHelper.newJMenuItem;
+
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,10 +39,6 @@ import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui2.FilterListener.Action;
 import edu.umd.cs.findbugs.updates.UpdateChecker;
-
-import static edu.umd.cs.findbugs.gui2.MainFrameHelper.attachAcceleratorKey;
-import static edu.umd.cs.findbugs.gui2.MainFrameHelper.newJMenu;
-import static edu.umd.cs.findbugs.gui2.MainFrameHelper.newJMenuItem;
 
 public class MainFrameMenu implements Serializable {
     private final MainFrame mainFrame;

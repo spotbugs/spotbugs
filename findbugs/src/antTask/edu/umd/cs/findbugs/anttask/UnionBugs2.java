@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.FileSet;
 
-import edu.umd.cs.findbugs.workflow.UnionResults;
-
 /**
  * An ant task that is wraps the behavior of the UnionResults executable into an
  * ant task.

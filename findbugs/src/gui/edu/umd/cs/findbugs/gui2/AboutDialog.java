@@ -28,7 +28,6 @@ package edu.umd.cs.findbugs.gui2;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.regex.Pattern;
