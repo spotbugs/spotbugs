@@ -1,4 +1,4 @@
-<project name="noUpdateChecks" default="install">
+<project name="poweruser" default="install">
 
     <property file="local.properties"/>
 
@@ -23,7 +23,7 @@
     </target>
 
     <target name="plugin-jar">
-        <jar destfile="build/noUpdateChecks.jar">
+        <jar destfile="build/poweruser.jar">
             <fileset dir="etc">
                 <include name="findbugs.xml"/>
                 <include name="messages.xml"/>
@@ -33,7 +33,7 @@
     </target>
 
     <target name="install" depends="plugin-jar">
-        <copy todir="${destination.dir}" file="build/noUpdateChecks.jar" />
+        <copy todir="${destination.dir}" file="build/poweruser.jar" />
     </target>
 
     <target name="clean">
