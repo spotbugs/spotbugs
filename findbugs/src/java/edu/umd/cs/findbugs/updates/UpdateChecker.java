@@ -444,7 +444,7 @@ public class UpdateChecker {
             else
                 buf.append(" was released " + format.format(date));
             buf.append(
-            		" (you have " + getPlugin().getVersion()
+                    " (you have " + getPlugin().getVersion()
                     + ")");
             buf.append("\n");
 
