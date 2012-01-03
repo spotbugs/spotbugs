@@ -66,11 +66,9 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
 
     private JButton cancelButton;
 
-    public AnalyzingDialog(@Nonnull final Project project, final boolean changeSettings) {
+    public AnalyzingDialog(@Nonnull final Project project) {
         this(project, new AnalysisCallback() {
             public void analysisFinished(BugCollection results) {
-                if (changeSettings)
-                    ProjectSettings.newInstance();
                 MainFrame instance = MainFrame.getInstance();
                 assert results.getProject() == project;
                 instance.setBugCollection(results);
@@ -117,12 +115,13 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
                 } catch (InterruptedException e) {
                 }
         } finally {
-            MainFrame.getInstance().releaseDisplayWait();
+            if (joinThread) 
+                MainFrame.getInstance().releaseDisplayWait();
 
         }
     }
 
-    public void initComponents() {
+    private void initComponents() {
         statusLabel = new JLabel(" ");
         progressBar = new JProgressBar();
         progressBar.setStringPainted(true);
@@ -242,6 +241,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
                 // cancel button handler does this already.
                 return;
             } catch (IOException e) {
+                Logger.getLogger(AnalyzingDialog.class.getName()).log(Level.WARNING, "IO Error while performing analysis", e);
                 callback.analysisInterrupted();
                 scheduleDialogCleanup();
                 scheduleErrorDialog("Analysis failed", e.getMessage());

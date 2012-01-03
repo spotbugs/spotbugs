@@ -120,7 +120,7 @@ public class NewProjectWizard extends FBDialog {
     private final JComponent[] wizardComponents = new JComponent[4];
 
     private int currentPanel;
-    private boolean resetSettings;
+    private boolean isNewProject;
 
     static class CloudComboBoxRenderer extends BasicComboBoxRenderer {
         @Override
@@ -158,8 +158,9 @@ public class NewProjectWizard extends FBDialog {
     public NewProjectWizard(Project curProject) {
         project = curProject;
         if (project == null) {
+            ProjectSettings.newInstance();
             project = new Project();
-            resetSettings = true;
+            isNewProject = true;
         }
         boolean temp = false;
 
@@ -275,12 +276,13 @@ public class NewProjectWizard extends FBDialog {
                 if (keepGoing) {
                     mainFrame.setProject(p);
                 }
-                if (projectChanged && JOptionPane.showConfirmDialog(NewProjectWizard.this, edu.umd.cs.findbugs.L10N
+                if (projectChanged && (isNewProject 
+                        || JOptionPane.showConfirmDialog(NewProjectWizard.this, edu.umd.cs.findbugs.L10N
                                 .getLocalString("dlg.project_settings_changed_lbl",
                                         "Project settings have been changed.  Perform a new analysis with the changed files?"),
                                 edu.umd.cs.findbugs.L10N.getLocalString("dlg.redo_analysis_question_lbl", "Redo analysis?"),
-                                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                    new AnalyzingDialog(p, resetSettings);
+                                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)) {
+                    new AnalyzingDialog(p);
                 } else if (!Util.nullSafeEquals(newCloudId, oldCloudId)) {
                     BugCollection bugs = mainFrame.getBugCollection();
                     try {
