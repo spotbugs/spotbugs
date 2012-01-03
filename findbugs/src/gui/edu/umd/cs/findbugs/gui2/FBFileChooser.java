@@ -87,11 +87,11 @@ public class FBFileChooser extends JFileChooser {
             Method m = o.getClass().getMethod("setHorizontalShift", new Class[] { int.class });
             m.invoke(o, 0);
         } catch (NoSuchMethodException e) {
-            assert false;
+            assert true;
         } catch (InvocationTargetException e) {
-            assert false;
+            assert true;
         } catch (IllegalAccessException e) {
-            assert false;
+            assert true;
         }
     }
 
