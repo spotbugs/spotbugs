@@ -1086,10 +1086,8 @@ public class FindBugs2 implements IFindBugsEngine {
             if (!badClasses.isEmpty()) {
                 referencedClassSet = new LinkedHashSet<ClassDescriptor>(referencedClassSet);
                 referencedClassSet.removeAll(badClasses);
-                
             }
 
-            referencedClassSet.removeAll(badClasses);
             long startTime = System.currentTimeMillis();
             bugReporter.getProjectStats().setReferencedClasses(referencedClassSet.size());
             for (Iterator<AnalysisPass> passIterator = executionPlan.passIterator(); passIterator.hasNext();) {
@@ -1218,7 +1216,7 @@ public class FindBugs2 implements IFindBugsEngine {
                                 System.out.printf("  %6d usecs/byte  %6d msec  %6d bytes  %d pass %s%n", speed, usecs/1000, classSize, passCount,
                                         classDescriptor);
                             }
-                            
+
                         }
                     }
                 }
@@ -1297,13 +1295,13 @@ public class FindBugs2 implements IFindBugsEngine {
             return;
         }
         // Away we go!
-        
+
 
           FindBugs.runMain(findBugs, commandLine);
-        
+
     }
 
-   
+
     public void setAbridgedMessages(boolean xmlWithAbridgedMessages) {
         analysisOptions.abridgedMessages = xmlWithAbridgedMessages;
     }
