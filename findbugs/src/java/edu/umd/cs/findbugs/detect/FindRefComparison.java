@@ -791,6 +791,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                     refComparisonList);
         } else if (ins instanceof InvokeInstruction) {
             InvokeInstruction inv = (InvokeInstruction) ins;
+            boolean isStatic = inv instanceof INVOKESTATIC;
             @DottedClassName String className = inv.getClassName(cpg);
             String methodName = inv.getMethodName(cpg);
             String methodSig = inv.getSignature(cpg);
@@ -798,9 +799,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 checkRefComparison(location, jclass, method, methodGen, visitor, typeDataflow, stringComparisonList,
                         refComparisonList);
             }
-            boolean equalsMethod = methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z")
-                    || methodName.equals("assertEquals") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)V")
-                    || methodName.equals("equal") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)Z")
+            boolean equalsMethod = !isStatic && methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z")
+                    || isStatic &&  methodName.equals("assertEquals") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)V")
+                        && !className.equals("org.testng.Assert")
+                    || isStatic && methodName.equals("equal") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)Z")
                        && className.equals("com.google.common.base.Objects");
                        
               if (equalsMethod) {
