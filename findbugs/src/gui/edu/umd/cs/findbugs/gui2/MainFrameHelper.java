@@ -39,7 +39,8 @@ public class MainFrameHelper {
     }
 
     public static boolean isMacLookAndFeel() {
-        return UIManager.getLookAndFeel().getClass().getName().startsWith("apple");
+        String name = UIManager.getLookAndFeel().getClass().getName();
+        return name.startsWith("com.apple");
     }
 
     public static void attachAcceleratorKey(JMenuItem item, int keystroke) {
