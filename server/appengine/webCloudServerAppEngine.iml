@@ -15,12 +15,11 @@
       </configuration>
       <facet type="google-app-engine" name="Google App Engine">
         <configuration>
-          <password>dfcedfdcdfd8dfdbdfd0dfc4dfd8dfc7dfdfdfc3dfc5dfdfdfcbdfcedfc0dfdd</password>
           <files-to-enhance>
             <file path="$MODULE_DIR$/src/java" />
           </files-to-enhance>
           <run-enhancer-on-make>true</run-enhancer-on-make>
-          <sdk-home-path>$USER_HOME$/tools/appengine-java-sdk-1.6.0</sdk-home-path>
+          <sdk-home-path>$CODE_DIR$/lib/appengine-java-sdk-1.6.1</sdk-home-path>
           <email>bill.pugh@gmail.com</email>
         </configuration>
       </facet>
