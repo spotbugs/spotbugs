@@ -57,7 +57,8 @@
             <classpath>
                 <path refid="build.classpath"/>
             </classpath>
-        </javac>
+		    <compilerarg value="-Xlint:none"/>
+		</javac>
     </target>
 
    <target name="jarFile" depends ="classes">
