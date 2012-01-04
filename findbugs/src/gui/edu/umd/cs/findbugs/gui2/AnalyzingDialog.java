@@ -153,7 +153,12 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
                 setLocationRelativeTo(MainFrame.getInstance());
                 setResizable(false);
                 setModal(true);// Why was this set to false before?
-                setVisible(true);
+                try {
+                    setVisible(true);
+                } catch (Throwable e) {
+                    project.getGuiCallback().showMessageDialog("ERROR DURING ANALYSIS:\n\n"
+                            + e.getClass().getSimpleName() + ": " + e.getMessage());
+                }
             }
         });
     }
@@ -244,7 +249,12 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
                 Logger.getLogger(AnalyzingDialog.class.getName()).log(Level.WARNING, "IO Error while performing analysis", e);
                 callback.analysisInterrupted();
                 scheduleDialogCleanup();
-                scheduleErrorDialog("Analysis failed", e.getMessage());
+                scheduleErrorDialog("Analysis failed", e.getClass().getSimpleName()  + ": " + e.getMessage());
+                return;
+            } catch (Throwable e) {
+                callback.analysisInterrupted();
+                scheduleDialogCleanup();
+                scheduleErrorDialog("Analysis failed", e.getClass().getSimpleName()  + ": " + e.getMessage());
                 return;
             }
 
