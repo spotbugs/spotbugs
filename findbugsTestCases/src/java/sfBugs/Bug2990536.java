@@ -4,7 +4,10 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.StringReader;
 
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 public class Bug2990536 {
+    @NoWarning("RCN_REDUNDANT_NULLCHECK_OF_NULL")
     public void foo(Bar bar) throws IOException {
 
         while (true) {
