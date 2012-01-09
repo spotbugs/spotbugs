@@ -373,12 +373,19 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
         return networkClient.getUsername();
     }
 
-    public BugDesignation getPrimaryDesignation(BugInstance b) {
+    public @CheckForNull BugDesignation getPrimaryDesignation(BugInstance b) {
         checkInitialized();
         initiateCommunication();
         Evaluation e = networkClient.getMostRecentEvaluationBySelf(b);
         return e == null ? null : createBugDesignation(e);
     }
+    public @CheckForNull BugDesignation getDesignationByUser(BugInstance b, String user) {
+        checkInitialized();
+        initiateCommunication();
+        Evaluation e = networkClient.getMostRecentEvaluationByUser(b, user);
+        return e == null ? null : createBugDesignation(e);
+    }
+
 
     static final boolean DEBUG_FIRST_SEEN = Boolean.getBoolean("debug.first.seen");
 

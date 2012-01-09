@@ -388,21 +388,24 @@ public class WebCloudNetworkClient {
         return conn.go();
     }
 
-    public Evaluation getMostRecentEvaluationBySelf(BugInstance b) {
+    public Evaluation getMostRecentEvaluationByUser(BugInstance b, String user) {
         Issue issue = issuesByHash.get(b.getInstanceHash());
         if (issue == null)
             return null;
         Evaluation mostRecent = null;
         long when = Long.MIN_VALUE;
-        String myUsername = getUsername();
         for (Evaluation e : issue.getEvaluationsList()) {
-            if (e.getWho().equals(myUsername) && e.getWhen() > when) {
+            if (e.getWho().equals(user) && e.getWhen() > when) {
                 mostRecent = e;
                 when = e.getWhen();
             }
         }
 
         return mostRecent;
+    }
+    public Evaluation getMostRecentEvaluationBySelf(BugInstance b) {
+        String myUsername = getUsername();
+        return getMostRecentEvaluationByUser(b, myUsername);
     }
 
     public String getUsername() {

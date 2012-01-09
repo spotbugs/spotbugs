@@ -64,15 +64,15 @@ public class EvaluationsFromXmlUploader {
             Map.Entry<BugInstance, BugDesignation> e = i.next();
             BugInstance b = e.getKey();
             BugDesignation loaded = e.getValue();
-            BugDesignation inCloud = cloud.getPrimaryDesignation(b);
+            BugDesignation inCloud = cloud.getDesignationByUser(b, loaded.getUser());
             if (!shouldUpload(loaded, inCloud))
                 i.remove();
         }
     }
 
     private void askUserAboutUploadingXMLDesignations() {
-
-        Multiset<String> users = getAuthors(localAnnotations);
+        
+       Multiset<String> users = getAuthors(localAnnotations);
 
         String message;
         if (users.numKeys() == 1 && users.uniqueKeys().iterator().next().equals(cloud.getUser()))
