@@ -15,12 +15,13 @@
       </configuration>
       <facet type="google-app-engine" name="Google App Engine">
         <configuration>
+          <password>dfc1dfcbdfc4dfc5dfc7dfc1df9bdf98</password>
           <files-to-enhance>
             <file path="$MODULE_DIR$/src/java" />
           </files-to-enhance>
           <run-enhancer-on-make>true</run-enhancer-on-make>
           <sdk-home-path>$CODE_DIR$/lib/appengine-java-sdk-1.6.1</sdk-home-path>
-          <email>bill.pugh@gmail.com</email>
+          <email>keithl@gmail.com</email>
         </configuration>
       </facet>
     </facet>
@@ -166,25 +167,34 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/appengine-api-1.0-sdk-1.6.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/appengine-api-labs-1.6.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/datanucleus-appengine-1.0.10.final.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/appengine-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/appengine-api-1.0-sdk-1.6.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/appengine-api-labs-1.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
