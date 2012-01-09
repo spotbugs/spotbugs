@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs;
 
 import java.lang.reflect.Method;
 
+import javax.annotation.Nonnull;
+
 /**
  * @author pugh
  */
@@ -37,9 +39,9 @@ public class FindBugsMain implements Comparable<FindBugsMain> {
     }
     final Class<?> mainClass;
     final Method mainMethod;
-    public final String cmd;
+    public final @Nonnull String cmd;
     public final String description;
-    public final String kind;
+    public final @Nonnull String kind;
     final boolean analysis;
     
     public void invoke(String [] args) throws Exception {
@@ -53,6 +55,19 @@ public class FindBugsMain implements Comparable<FindBugsMain> {
             return result;
         return cmd.compareTo(that.cmd);
                 
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof FindBugsMain))
+            return false;
+        FindBugsMain that = (FindBugsMain) o;
+        return kind.equals(that.kind)&&  cmd.equals(that.cmd);
+    }
+    
+    @Override
+    public int hashCode() {
+        return kind.hashCode() + cmd.hashCode();
     }
 
 
