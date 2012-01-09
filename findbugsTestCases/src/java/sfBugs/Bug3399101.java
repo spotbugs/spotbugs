@@ -22,6 +22,7 @@ public class Bug3399101 {
     @CheckForNull
     @TypeQualifierDefault(ElementType.PARAMETER)
     @Retention(RetentionPolicy.RUNTIME)
+    public
     @interface ParametersAreCheckForNullByDefault {
     }
     
