@@ -10,7 +10,7 @@
       <module fileurl="file://$PROJECT_DIR$/plugins/jdbcCloudClient/jdbcCloudClient.iml" filepath="$PROJECT_DIR$/plugins/jdbcCloudClient/jdbcCloudClient.iml" group="plugins" />
       <module fileurl="file://$PROJECT_DIR$/plugins/jira/jira.iml" filepath="$PROJECT_DIR$/plugins/jira/jira.iml" group="plugins" />
       <module fileurl="file://$PROJECT_DIR$/sandbox/localCloud/localCloud.iml" filepath="$PROJECT_DIR$/sandbox/localCloud/localCloud.iml" group="server" />
-      <module fileurl="file://$PROJECT_DIR$/plugins/webCloudClient/webCloudClient.iml" filepath="$PROJECT_DIR$/plugins/webCloudClient/webCloudClient.iml" group="plugins" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/findbugsCommunalCloud/webCloudClient.iml" filepath="$PROJECT_DIR$/plugins/findbugsCommunalCloud/webCloudClient.iml" group="plugins" />
       <module fileurl="file://$PROJECT_DIR$/webCloudProtocol/webCloudProtocol.iml" filepath="$PROJECT_DIR$/webCloudProtocol/webCloudProtocol.iml" />
       <module fileurl="file://$PROJECT_DIR$/server/appengine/webCloudServerAppEngine.iml" filepath="$PROJECT_DIR$/server/appengine/webCloudServerAppEngine.iml" group="server" />
       <module fileurl="file://$PROJECT_DIR$/server/common/webCloudServerCommon.iml" filepath="$PROJECT_DIR$/server/common/webCloudServerCommon.iml" group="server" />

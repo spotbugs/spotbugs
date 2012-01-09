@@ -23,6 +23,8 @@
     </RunnerSettings>
     <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper RunnerId="Run" />
-    <method />
+    <method>
+      <option name="AntTarget" enabled="true" antfile="file://$PROJECT_DIR$/sandbox/localCloud/build.xml" target="enhance-intellij" />
+    </method>
   </configuration>
 </component>

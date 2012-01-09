@@ -3,13 +3,6 @@
   <component name="BuildJarProjectSettings">
     <option name="BUILD_JARS_ON_MAKE" value="false" />
   </component>
-  <component name="DependencyValidationManager">
-    <scope name="App Engine" pattern="file[AppEngineCloudClient]:*//*||file[AppEngineCloudProtocol]:*//*||file[AppEngineCloudServer]:*//*||file[cloudServlet]:*//*||file[localCloud]:*//*" />
-    <scope name="FindBugs Core" pattern="file[findbugs]:*//*||file[findbugsTestCases]:*//*" />
-    <option name="SKIP_IMPORT_STATEMENTS" value="false" />
-    <unnamed_scope value="src[findbugs]:edu.umd.cs.findbugs..*&amp;&amp;!src[findbugs]:edu.umd.cs.findbugs.gui..*&amp;&amp;!src[findbugs]:edu.umd.cs.findbugs.gui2..*" />
-    <deny_rule from_scope="FindBugs Core" to_scope="App Engine" is_deny="true" />
-  </component>
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
@@ -63,7 +56,11 @@
     <option name="myDefaultNotNull" value="org.jetbrains.annotations.NotNull" />
     <option name="myNullables">
       <value>
-        <list size="0" />
+        <list size="3">
+          <item index="0" class="java.lang.String" itemvalue="org.jetbrains.annotations.Nullable" />
+          <item index="1" class="java.lang.String" itemvalue="javax.annotation.Nullable" />
+          <item index="2" class="java.lang.String" itemvalue="edu.umd.cs.findbugs.annotations.Nullable" />
+        </list>
       </value>
     </option>
     <option name="myNotNulls">
@@ -82,7 +79,7 @@
   <component name="ProjectResources">
     <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="JavaSE-1.6" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="SvnBranchConfigurationManager">
@@ -91,30 +88,6 @@
         <entry key="$PROJECT_DIR$">
           <value>
             <SvnBranchConfiguration>
-              <option name="branchMap">
-                <map>
-                  <entry key="https://findbugs.googlecode.com/svn/branches">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="https://findbugs.googlecode.com/svn/repos">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="https://findbugs.googlecode.com/svn/tags">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="https://findbugs.googlecode.com/svn/wiki">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                </map>
-              </option>
               <option name="branchUrls">
                 <list>
                   <option value="https://findbugs.googlecode.com/svn/branches" />
@@ -130,30 +103,6 @@
         <entry key="$PROJECT_DIR$/findbugs">
           <value>
             <SvnBranchConfiguration>
-              <option name="branchMap">
-                <map>
-                  <entry key="https://findbugs.googlecode.com/svn/branches">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="https://findbugs.googlecode.com/svn/repos">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="https://findbugs.googlecode.com/svn/tags">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="https://findbugs.googlecode.com/svn/wiki">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                </map>
-              </option>
               <option name="branchUrls">
                 <list>
                   <option value="https://findbugs.googlecode.com/svn/branches" />
@@ -169,30 +118,21 @@
         <entry key="$PROJECT_DIR$/sandbox">
           <value>
             <SvnBranchConfiguration>
-              <option name="branchMap">
-                <map>
-                  <entry key="https://findbugs.googlecode.com/svn/branches">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="https://findbugs.googlecode.com/svn/repos">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="https://findbugs.googlecode.com/svn/tags">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="https://findbugs.googlecode.com/svn/wiki">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                </map>
+              <option name="branchUrls">
+                <list>
+                  <option value="https://findbugs.googlecode.com/svn/branches" />
+                  <option value="https://findbugs.googlecode.com/svn/repos" />
+                  <option value="https://findbugs.googlecode.com/svn/tags" />
+                  <option value="https://findbugs.googlecode.com/svn/wiki" />
+                </list>
               </option>
+              <option name="trunkUrl" value="https://findbugs.googlecode.com/svn/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/sandbox/localCloud">
+          <value>
+            <SvnBranchConfiguration>
               <option name="branchUrls">
                 <list>
                   <option value="https://findbugs.googlecode.com/svn/branches" />
@@ -208,30 +148,6 @@
         <entry key="$PROJECT_DIR$/server/common">
           <value>
             <SvnBranchConfiguration>
-              <option name="branchMap">
-                <map>
-                  <entry key="https://findbugs.googlecode.com/svn/branches">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="https://findbugs.googlecode.com/svn/repos">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="https://findbugs.googlecode.com/svn/tags">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="https://findbugs.googlecode.com/svn/wiki">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                </map>
-              </option>
               <option name="branchUrls">
                 <list>
                   <option value="https://findbugs.googlecode.com/svn/branches" />

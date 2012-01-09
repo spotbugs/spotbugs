@@ -11,6 +11,6 @@
 	</contentEntry>
 	<lib name="junit3" scope="TEST"/>
 	<lib name="mockito-all-1.8.2.jar" scope="COMPILE">
-		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/webCloudClient/test-lib/mockito-all-1.8.2.jar!/"/>
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/plugins/findbugsCommunalCloud/test-lib/mockito-all-1.8.2.jar!/"/>
 	</lib>
 </component>

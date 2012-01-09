@@ -11,6 +11,9 @@
 	<lib name="jcip-annotations.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/findbugsTestCases/lib/jcip-annotations.jar!/"/>
 	</lib>
+	<lib name="testng-6.3.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/findbugsTestCases/lib/testng-6.3.1.jar!/"/>
+	</lib>
 	<lib name="jsr305.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/findbugsTestCases/lib/jsr305.jar!/"/>
 	</lib>
