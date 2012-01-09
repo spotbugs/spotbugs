@@ -92,7 +92,7 @@ public class UpdateChecker {
      * @param force
      * @return
      */
-    public @CheckForNull  URI getRedirectURL(final boolean force) {
+    public @CheckForNull URI getRedirectURL(final boolean force) {
         String redirect = dfc.getGlobalOption(KEY_REDIRECT_ALL_UPDATE_CHECKS);
         String sysprop = System.getProperty("findbugs.redirectUpdateChecks");
         if (sysprop != null)
@@ -206,6 +206,8 @@ public class UpdateChecker {
                 try {
                     actuallyCheckforUpdates(url, plugins, entryPoint);
                 } catch (Exception e) {
+                    if (e instanceof IllegalStateException && e.getMessage().contains("Shutdown in progress"))
+                        return;
                     logError(e, "Error doing update check at " + url);
                 } finally {
                     latch.countDown();
