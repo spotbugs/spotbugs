@@ -22,13 +22,15 @@ package edu.umd.cs.findbugs;
 import java.lang.reflect.Method;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * @author pugh
  */
+@ParametersAreNonnullByDefault
 public class FindBugsMain implements Comparable<FindBugsMain> {
-    
-    public FindBugsMain(Class<?> mainClass, String cmd, String description, String kind, boolean analysis) 
+
+    public FindBugsMain(Class<?> mainClass, String cmd, String description, String kind, boolean analysis)
             throws SecurityException, NoSuchMethodException {
         this.mainClass = mainClass;
         mainMethod = mainClass.getMethod("main", String[].class);
@@ -37,38 +39,47 @@ public class FindBugsMain implements Comparable<FindBugsMain> {
         this.kind = kind;
         this.analysis = analysis;
     }
-    final Class<?> mainClass;
+
+    final @Nonnull
+    Class<?> mainClass;
+
     final Method mainMethod;
-    public final @Nonnull String cmd;
+
+    public final @Nonnull
+    String cmd;
+
     public final String description;
-    public final @Nonnull String kind;
+
+    public final @Nonnull
+    String kind;
+
     final boolean analysis;
-    
-    public void invoke(String [] args) throws Exception {
+
+    public void invoke(String[] args) throws Exception {
         if (!analysis)
             FindBugs.setNoAnalysis();
         mainMethod.invoke(null, (Object) args);
     }
+
     public int compareTo(FindBugsMain that) {
         int result = kind.compareTo(that.kind);
         if (result != 0)
             return result;
         return cmd.compareTo(that.cmd);
-                
+
     }
-    
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof FindBugsMain))
             return false;
         FindBugsMain that = (FindBugsMain) o;
-        return kind.equals(that.kind)&&  cmd.equals(that.cmd);
+        return kind.equals(that.kind) && cmd.equals(that.cmd);
     }
-    
+
     @Override
     public int hashCode() {
         return kind.hashCode() + cmd.hashCode();
     }
-
 
 }
