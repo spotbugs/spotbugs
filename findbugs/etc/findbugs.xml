@@ -623,13 +623,13 @@
           <!-- Bug patterns -->
           <BugPattern abbrev="AT" type="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION"
                     category="MT_CORRECTNESS"/>
-          <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SEND_ERROR" category="SECURITY"/>
+          <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SEND_ERROR" category="SECURITY" cweid="81"/>
           <BugPattern abbrev="SKIPPED" type="SKIPPED_CLASS_TOO_BIG" category="EXPERIMENTAL"/>
           <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER"
                     category="SECURITY"/>
           <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_JSP_WRITER" category="SECURITY"/>
-          <BugPattern abbrev="HRS" type="HRS_REQUEST_PARAMETER_TO_HTTP_HEADER" category="SECURITY"/>
-          <BugPattern abbrev="HRS" type="HRS_REQUEST_PARAMETER_TO_COOKIE" category="SECURITY"/>
+          <BugPattern abbrev="HRS" type="HRS_REQUEST_PARAMETER_TO_HTTP_HEADER" category="SECURITY" cweid="113"/>
+          <BugPattern abbrev="HRS" type="HRS_REQUEST_PARAMETER_TO_COOKIE" category="SECURITY" cweid="113" />
           <BugPattern abbrev="STCAL" type="STCAL_STATIC_CALENDAR_INSTANCE" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="STCAL" type="STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE"
                     category="MT_CORRECTNESS"/>
@@ -865,9 +865,9 @@
           <BugPattern abbrev="SF" type="SF_SWITCH_FALLTHROUGH" category="STYLE" cweid="484"/>
           <BugPattern abbrev="SF" type="SF_SWITCH_NO_DEFAULT" category="STYLE"/>
           <BugPattern abbrev="SF" type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH"
-                    category="CORRECTNESS"/>
+                    category="CORRECTNESS" cweid="484"/>
           <BugPattern abbrev="SF" type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW"
-                    category="CORRECTNESS"/>
+                    category="CORRECTNESS" cweid="484"/>
           <BugPattern abbrev="SS" type="SS_SHOULD_BE_STATIC" category="PERFORMANCE"/>
           <BugPattern abbrev="UuF" type="UUF_UNUSED_FIELD" category="PERFORMANCE"/>
           <BugPattern abbrev="UrF" type="URF_UNREAD_FIELD" category="PERFORMANCE"/>
