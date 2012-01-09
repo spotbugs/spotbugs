@@ -569,17 +569,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                     ClassDescriptor c = DescriptorFactory.getClassDescriptor(genericMapType);
                     if (!Subtypes2.instanceOf(c, Map.class))
                         break mapGetCheck;
-                    if (!c.matches(Map.class)) {
-                        XClass xc = c.getXClass();
-                        String sourceSignature = xc.getSourceSignature();
-                        if (sourceSignature == null)
-                            break mapGetCheck;
-                        if (sourceSignature.startsWith("<") && !sourceSignature.contains("Map<TK;TV;>")) {
-                            if (SystemProperties.ASSERTIONS_ENABLED)
-                                AnalysisContext.logError("QQQ: " + c + " has signature " + sourceSignature +" -- type parameters" + parameters);
-                            break mapGetCheck;
-                        }
-                    }
+                    if (!isStraightGenericMap(c))
+                        break mapGetCheck;
 
                     ReferenceType valueType = parameters.get(1);
                     consumeStack(obj);
@@ -587,12 +578,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                     return;
 
                 }
-
             } catch (DataflowAnalysisException e) {
                 AnalysisContext.logError("oops", e);
-            } catch (CheckedAnalysisException e) {
-                AnalysisContext.logError("oops", e);
-            }
+            } 
 
         }
 
@@ -716,6 +704,27 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             pushReturnType(obj);
         else
             pushValue(result);
+    }
+    
+    public static boolean isStraightGenericMap(ClassDescriptor c) {
+        if (c.matches(Map.class))
+            return true;
+
+        XClass xc;
+        try {
+            xc = c.getXClass();
+        } catch (CheckedAnalysisException e) {
+            return false;
+        }
+        String sourceSignature = xc.getSourceSignature();
+        if (sourceSignature == null)
+            return false;
+        if (sourceSignature.startsWith("<") && !sourceSignature.contains("Map<TK;TV;>")) {
+            if (SystemProperties.ASSERTIONS_ENABLED)
+                AnalysisContext.logError("QQQ: " + c + " has signature " + sourceSignature);
+            return false;
+        }
+        return true;
     }
 
     private Type merge(Type prevType, Type newType) throws DataflowAnalysisException {

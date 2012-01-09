@@ -83,6 +83,7 @@ import edu.umd.cs.findbugs.ba.type.NullType;
 import edu.umd.cs.findbugs.ba.type.TopType;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -514,6 +515,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 if (!isGenericCollection(operandClass))
                     continue;
 
+                if (!TypeFrameModelingVisitor.isStraightGenericMap(operandClass))
+                    continue;
                 Type expectedType;
                 if (allMethod)
                     expectedType = operand;
