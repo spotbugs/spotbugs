@@ -12,6 +12,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.collect.Lists;
+import com.googlecode.charts4j.BarChart;
+import com.googlecode.charts4j.GChart;
 import org.mockito.Mockito;
 
 
@@ -32,9 +34,10 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
     protected AbstractFlybushServlet createServlet() {
         return new ReportServlet() {
             @Override
-            protected void showChartImg(HttpServletResponse resp, String url) throws IOException {
-                generatedCharts.add(url);
-                System.out.println(url);
+            protected void showChartImg(HttpServletResponse resp, GChart chart) throws IOException {
+                super.showChartImg(resp, chart);
+                generatedCharts.add(chart.toURLString());
+                System.out.println(chart);
             }
         };
     }

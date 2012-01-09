@@ -12,7 +12,6 @@
         <sourceRoots>
           <root url="file://$MODULE_DIR$/src/java" />
         </sourceRoots>
-        <context-artifact name="localCloud:Web" />
       </configuration>
     </facet>
   </component>

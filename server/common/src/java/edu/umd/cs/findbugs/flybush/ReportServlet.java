@@ -2,6 +2,7 @@ package edu.umd.cs.findbugs.flybush;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -42,6 +43,7 @@ import com.googlecode.charts4j.BarChart;
 import com.googlecode.charts4j.Color;
 import com.googlecode.charts4j.Data;
 import com.googlecode.charts4j.DataEncoding;
+import com.googlecode.charts4j.GChart;
 import com.googlecode.charts4j.GCharts;
 import com.googlecode.charts4j.Line;
 import com.googlecode.charts4j.LineChart;
@@ -51,6 +53,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 public class ReportServlet extends AbstractFlybushServlet {
+    private int form_id = 0;
+
     private static  DateFormat DATE_TIME_FORMAT() {
         return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG);
     }
@@ -99,8 +103,6 @@ public class ReportServlet extends AbstractFlybushServlet {
                 + " where packages.contains(:pkg)" + " order by when asc");
         List<DbEvaluation> evals = (List<DbEvaluation>) query.execute(desiredPackage);
 
-        long startTime = startTime();
-
         Map<Long, Integer> evalsPerWeek = Maps.newHashMap();
         Map<Long, Integer> newIssuesPerWeek = Maps.newHashMap();
         Multimap<String, String> issuesByPkg = HashMultimap.create();
@@ -115,8 +117,6 @@ public class ReportServlet extends AbstractFlybushServlet {
                 continue;
             }
             long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
-            if (beginningOfWeek < startTime)
-                continue;
            
             String issueHash = eval.getIssue().getHash();
             issuesByPkg.put(epkg, issueHash);
@@ -151,9 +151,9 @@ public class ReportServlet extends AbstractFlybushServlet {
         if (timelineChart == null)
             page.print("No reviews for classes in " + escapeHtml(desiredPackage));
         else
-            showChartImg(resp, timelineChart.toURLString());
+            showChartImg(resp, timelineChart);
         if (subpkgChart != null)
-            showChartImg(resp, subpkgChart.toURLString());
+            showChartImg(resp, subpkgChart);
 
         printEvalsTable(resp, lines);
     }
@@ -251,7 +251,6 @@ public class ReportServlet extends AbstractFlybushServlet {
         if (evals.isEmpty()) {
             setResponse(resp, 404, "No such user");
         }
-        long startTime = startTime();
 
         Map<Long, Integer> evalsPerWeek = Maps.newHashMap();
         Set<String> seenIssues = Sets.newHashSet();
@@ -259,8 +258,6 @@ public class ReportServlet extends AbstractFlybushServlet {
         List<String> table = Lists.newArrayList();
         for (DbEvaluation eval : evals) {
             long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
-            if (beginningOfWeek < startTime)
-                continue;
             increment(evalsPerWeek, beginningOfWeek);
             if (seenIssues.add(eval.getIssue().getHash()))
                 increment(newIssuesByWeek, beginningOfWeek);
@@ -284,7 +281,7 @@ public class ReportServlet extends AbstractFlybushServlet {
             page.println("Oops! No reviews uploaded by " + escapeHtml(email));
             return;
         }
-        showChartImg(resp, chart.toURLString());
+        showChartImg(resp, chart);
 
         printEvalsTable(resp, table);
     }
@@ -382,16 +379,13 @@ public class ReportServlet extends AbstractFlybushServlet {
         return chart;
     }
 
-    long startTime() {
-        return System.currentTimeMillis() - 4L*30*24*3600*1000;
-    }
     @SuppressWarnings({ "unchecked" })
     private void showSummaryStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
         Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClassname() + " order by when ascending");
         List<DbEvaluation> evals = (List<DbEvaluation>) query.execute();
         Map<String, Integer> totalCountByUser = Maps.newHashMap();
         Map<String, Integer> issueCountByUser = Maps.newHashMap();
-        Multimap<String, String> issuesByUser = Multimaps.newSetMultimap(Maps.<String, Collection<String>> newHashMap(),
+        Multimap<String, String> issuesByUser = Multimaps.newSetMultimap(Maps.<String, Collection<String>>newHashMap(),
                 new Supplier<Set<String>>() {
                     public Set<String> get() {
                         return Sets.newHashSet();
@@ -404,7 +398,6 @@ public class ReportServlet extends AbstractFlybushServlet {
         Multimap<String, String> issuesByPkg = HashMultimap.create();
         Set<String> seenIssues = Sets.newHashSet();
         Set<String> seenUsers = Sets.newHashSet();
-        long startTime = startTime();
 
         for (DbEvaluation eval : evals) {
             String email = eval.getEmail();
@@ -412,8 +405,6 @@ public class ReportServlet extends AbstractFlybushServlet {
                 continue;
 
             long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
-            if (beginningOfWeek < startTime)
-                continue;
             String issueHash = eval.getIssue().getHash();
             issuesByUser.put(email, issueHash);
             increment(totalCountByUser, email);
@@ -448,20 +439,35 @@ public class ReportServlet extends AbstractFlybushServlet {
         resp.setStatus(200);
 
         ServletOutputStream page = resp.getOutputStream();
-        page.println("<html>" + "<head><title>" + getCloudName() + " Stats</title></head>" + "<body>");
-        showChartImg(resp, evalsOverTimeChart.toURLString());
+        page.println("<html>" +
+                "<head>" +
+                "<title>" + getCloudName() + " Stats</title>" +
+                "<script type='application/javascript'>\n" +
+                "    // Send the POST when the page is loaded,\n" +
+                "    // which will replace this whole page with the retrieved chart.\n" +
+                "    function loadGraph() {\n" +
+                "      for (var i = 1; i < 20; i++) {" +
+                "        var frm = document.getElementById('post_form_' + i);\n" +
+                "        if (!frm) break;\n" +
+                "        frm.submit();\n" +
+                "      }\n" +
+                "    }\n" +
+                "  </script>" +
+                "</head>"
+                + "<body onload='loadGraph()'>");
+        showChartImg(resp, evalsOverTimeChart);
         page.println("<br><br>");
-        showChartImg(resp, cumulativeTimeline.toURLString());
+        showChartImg(resp, cumulativeTimeline);
         page.println("<br><br>");
 
         printUserStatsSelector(req, resp, seenUsers, null);
         printPackageForm(req, resp, "");
 
-        showChartImg(resp, evalsByPkgChart.toURLString());
+        showChartImg(resp, evalsByPkgChart);
         page.println("<br><br>");
-        showChartImg(resp, evalsByUserChart.toURLString());
+        showChartImg(resp, evalsByUserChart);
         page.println("<br><br>");
-        showChartImg(resp, histogram.toURLString());
+        showChartImg(resp, histogram);
     }
 
     private String getPackageName(String className) {
@@ -798,18 +804,32 @@ public class ReportServlet extends AbstractFlybushServlet {
     }
 
     /** protected for testing */
-    protected void showChartImg(HttpServletResponse resp, String url) throws IOException {
-        Matcher m = Pattern.compile("&chs=(\\d+)x(\\d+)").matcher(url);
+    protected void showChartImg(HttpServletResponse resp, GChart chart) throws IOException {
+        Matcher m = Pattern.compile("(\\d+)x(\\d+)").matcher(chart.getParameters().get("chs"));
         String width, height;
         if (m.find()) {
             width = m.group(1);
             height = m.group(2);
         } else {
-            width = "auto";
-            height = "auto";
+            width = "300";
+            height = "200";
         }
 
-        resp.getOutputStream().print("<img src='" + url + "' style=width:" + width + "px;height:" + height + "px>");
+        form_id++;
+        Map<String, String> parameters = chart.getParameters();
+        resp.getOutputStream().print(
+                "<form action='https://chart.googleapis.com/chart' method='POST' " +
+                        "id='post_form_" + form_id + "'\n" +
+                        "target='post_frame_" + form_id + "' " +
+                        "onsubmit=\"this.action = 'https://chart.googleapis.com/chart?chid=' " +
+                        "+ (new Date()).getMilliseconds(); return true;\">\n");
+        for (Entry<String, String> entry : parameters.entrySet()) {
+            resp.getOutputStream().println("<input type='hidden' name='" + entry.getKey()
+                    + "' value='" + StringEscapeUtils.escapeHtml(URLDecoder.decode(entry.getValue(), "UTF-8")) + "'/>");
+        }
+        resp.getOutputStream().print("    </form>");
+        resp.getOutputStream().print("<iframe name='post_frame_" + form_id + "' src=\"/empty.html\" " +
+                "width=\"" + width + "\" height=\"" + height + "\"></iframe>");
     }
 
     @Override
