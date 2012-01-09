@@ -188,6 +188,8 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
      */
     public void addParameterAnnotation(int param, AnnotationValue annotationValue);
 
+    /** Is the variable synthetic? */
+    public boolean isVariableSynthetic(int param);
     /**
      * Destructively add an annotation. We do this for "built-in" annotations
      * that might not be directly evident in the code. It's not a great idea in
@@ -198,5 +200,7 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
      *            an AnnotationValue representing a method annotation
      */
     public void addAnnotation(AnnotationValue annotationValue);
+    
+
 
 }

@@ -135,102 +135,13 @@ public class AnnotationVisitor extends PreorderVisitor {
      */
     public void visitParameterAnnotation(int p, @DottedClassName String annotationClass, Map<String, ElementValue> map,
             boolean runtimeVisible) {
-        // System.out
-        // .println("Parameter " + p + " Annotation: " + annotationClass);
-        // for (Map.Entry<String, Object> e : map.entrySet()) {
-        // System.out.println("    " + e.getKey());
-        // System.out.println(" -> " + e.getValue());
-        // }
+
     }
 
     public void visitSyntheticParameterAnnotation(int p, boolean runtimeVisible) {
     }
 
-    // @Override
-    // public void visit(Unknown obj) {
-    // try {
-    //
-    // String name = obj.getName();
-    // if (DEBUG)
-    // System.out.println("In " + getDottedClassName() + " found "
-    // + name);
-    // byte[] b = obj.getBytes();
-    // DataInputStream bytes = new DataInputStream(
-    // new ByteArrayInputStream(b));
-    // boolean runtimeVisible =
-    // name.equals(RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS);
-    // if (name.equals(RUNTIME_VISIBLE_ANNOTATIONS)
-    // || name.equals(RUNTIME_INVISIBLE_ANNOTATIONS)) {
-    //
-    // int numAnnotations = bytes.readUnsignedShort();
-    // if (DEBUG)
-    // System.out.println("# of annotations: "
-    // + numAnnotations);
-    // for (int i = 0; i < numAnnotations; i++) {
-    // String annotationName = getAnnotationName(bytes);
-    // int numPairs = bytes.readUnsignedShort();
-    // Map<String, Object> values = readAnnotationValues(
-    // bytes, numPairs);
-    // visitAnnotation(annotationName, values, name
-    // .equals(RUNTIME_VISIBLE_ANNOTATIONS));
-    // }
-    //
-    // } else if (runtimeVisible
-    // || name.equals(RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS)) {
-    // int numParameters = bytes.readUnsignedByte();
-    // if (DEBUG) System.out.println("Number of parameters: " + numParameters);
-    // int numParametersToMethod = getNumberMethodArguments();
-    // if (DEBUG) System.out.println("Number of parameters to method: " +
-    // numParametersToMethod);
-    // int offset = 0;
-    // if (numParametersToMethod > numParameters) {
-    // offset = 1;
-    // visitSyntheticParameterAnnotation(
-    // 0,
-    // runtimeVisible);
-    // for(int p = numParameters+1; p < numParametersToMethod; p++) {
-    // visitSyntheticParameterAnnotation(
-    // p,
-    // runtimeVisible);
-    // }
-    // }
-    // for (int p = 0; p < numParameters; p++) {
-    // int numAnnotations = bytes.readUnsignedShort();
-    // if (DEBUG)
-    // System.out.println("# of annotations on parameter " + (offset+p)
-    // + ": "
-    // + numAnnotations);
-    // for (int i = 0; i < numAnnotations; i++) {
-    // String annotationName = getAnnotationName(bytes);
-    // int numPairs = bytes.readUnsignedShort();
-    // Map<String, Object> values = readAnnotationValues(
-    // bytes, numPairs);
-    //
-    // visitParameterAnnotation(
-    // p+offset,
-    // annotationName,
-    // values,
-    // runtimeVisible);
-    // }
-    // }
-    //
-    // }
-    //
-    // if (DEBUG) {
-    // for (byte aB : b)
-    // System.out.print(Integer.toString((aB & 0xff), 16)
-    // + " ");
-    // System.out.println();
-    // }
-    //
-    //
-    // } catch (RuntimeException e) {
-    // assert true; // ignore
-    // } catch (IOException e) {
-    // assert true; // ignore
-    // }
-    // }
-
+  
     private Map<String, Object> readAnnotationValues(DataInputStream bytes, int numPairs) throws IOException {
         Map<String, Object> values = new HashMap<String, Object>();
         for (int j = 0; j < numPairs; j++) {
@@ -349,7 +260,6 @@ public class AnnotationVisitor extends PreorderVisitor {
         int offset = 0;
         if (numParametersToMethod > parameterAnnotationEntries.length) {
             offset = 1;
-            System.out.println("Have synthetic parameters");
         }
         for (int i = 0; i < parameterAnnotationEntries.length; i++) {
             ParameterAnnotationEntry e = parameterAnnotationEntries[i];

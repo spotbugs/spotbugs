@@ -822,14 +822,20 @@ public class TypeQualifierApplications {
             }
             // Check for default (outer scope) annotation
             if (tqa == null) {
-                if (DEBUG) {
-                    System.out.print("  (3) Checking default...");
-                }
+                if (xmethod.isVariableSynthetic((xmethod.isStatic() ? 0 : 1) + parameter)) {
+                    if (DEBUG) {
+                        System.out.print("  (3) Skipping default for synthetic parameter");
+                    }
+                } else {
+                    if (DEBUG) {
+                        System.out.print("  (3) Checking default...");
+                    }
 
-                tqa = getDefaultTypeQualifierAnnotationForParameters(xmethod, typeQualifierValue, overriddenMethod);
+                    tqa = getDefaultTypeQualifierAnnotationForParameters(xmethod, typeQualifierValue, overriddenMethod);
 
-                if (DEBUG) {
-                    System.out.println(tqa != null ? "FOUND" : "none");
+                    if (DEBUG) {
+                        System.out.println(tqa != null ? "FOUND" : "none");
+                    }
                 }
             }
 
@@ -965,7 +971,6 @@ public class TypeQualifierApplications {
                 assert false : "I think this code is dead; it shouldn't find anything";
                 return tqa;
             }
-
             // Check for default annotation
             tqa = getDefaultAnnotation(o, typeQualifierValue, ElementType.PARAMETER);
             if (tqa != null) {

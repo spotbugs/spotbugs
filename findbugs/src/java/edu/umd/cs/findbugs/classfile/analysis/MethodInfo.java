@@ -63,6 +63,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     static public class Builder {
         int accessFlags;
+        
+        long variableHasName;
+        long variableIsSynthetic;
 
         final @SlashedClassName
         String className;
@@ -109,6 +112,16 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
             this.methodSourceSignature = methodSourceSignature;
         }
 
+        public void setVariableHasName(int p) {
+            if (p < 64)
+                variableHasName |= 1 << p;
+        }
+        
+        public void setVariableIsSynthetic(int p) {
+            if (p < 64)
+                variableIsSynthetic |= 1 << p;
+        }
+        
         public void setUsesConcurrency() {
             this.usesConcurrency = true;
         }
@@ -153,10 +166,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         }
 
         public MethodInfo build() {
+            if (variableHasName != 0)
+                variableIsSynthetic |= (~variableHasName);
             return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags,
                     isUnconditionalThrower, isUnsupported, usesConcurrency, hasBackBranch, isStub, isIdentity, 
                     methodCallCount, exceptions, accessMethodFor,
-                    methodAnnotations, methodParameterAnnotations);
+                    methodAnnotations, methodParameterAnnotations, variableIsSynthetic);
         }
 
         public void setIsUnconditionalThrower() {
@@ -179,6 +194,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     }
 
     final int accessFlags;
+    
+    final long variableIsSynthetic;
 
     final int methodCallCount;
 
@@ -211,28 +228,13 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         identifyMethods.clear();
     }
 
-    /**
-     * @param className
-     * @param methodName
-     * @param methodSignature
-     * @param methodSourceSignature
-     * @param isUnsupported
-     * @param usesConcurrency
-     *            TODO
-     * @param isStub
-     *            TODO
-     * @param methodCallCount
-     *            TODO
-     * @param accessMethodFor
-     *            TODO
-     * @param isStatic
-     */
+
     MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature,
             int accessFlags, boolean isUnconditionalThrower, boolean isUnsupported, boolean usesConcurrency, 
             boolean hasBackBranch, boolean isStub, boolean isIdentity,
             int methodCallCount, @CheckForNull String[] exceptions, @CheckForNull MethodDescriptor accessMethodFor,
             Map<ClassDescriptor, AnnotationValue> methodAnnotations,
-            Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
+            Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations, long variableIsSynthetic) {
         super(className, methodName, methodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
         this.accessFlags = accessFlags;
         this.exceptions = exceptions;
@@ -256,6 +258,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         this.hasBackBranch = hasBackBranch;
         this.isStub = isStub;
         this.methodCallCount = methodCallCount;
+        this.variableIsSynthetic = variableIsSynthetic;
     }
 
     public @CheckForNull
@@ -277,6 +280,11 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     public int getNumParams() {
         return new SignatureParser(getSignature()).getNumParameters();
+    }
+    
+    public boolean isVariableSynthetic(int param) {
+        if (param >= 64) return false;
+        return (variableIsSynthetic & (1 << param)) != 0;
     }
 
     public int getMethodCallCount() {

@@ -253,4 +253,11 @@ class UnresolvedXMethod extends AbstractMethod {
     public MethodDescriptor getAccessMethodFor() {
         return null;
     }
+
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.XMethod#isVariableSynthetic(int)
+     */
+    public boolean isVariableSynthetic(int param) {
+        return false;
+    }
 }

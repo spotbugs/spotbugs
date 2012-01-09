@@ -26,6 +26,7 @@ import java.util.TreeSet;
 import javax.annotation.CheckForNull;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.generic.PUTFIELD;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -82,6 +83,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
     enum IdentityMethodState {
         INITIAL, LOADED_PARAMETER, NOT;
+    }
+    enum ParameterLoadState {
+        OTHER, LOADED_THIS, LOADED_THIS_AND_PARAMETER;
     }
     public ClassParserUsingASM(ClassReader classReader, @CheckForNull ClassDescriptor expectedClassDescriptor,
             ICodeBaseEntry codeBaseEntry) {
@@ -193,8 +197,6 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
                     return new AbstractMethodVisitor() {
 
-                       
-
                         boolean sawReturn = (access & Opcodes.ACC_NATIVE) != 0;
 
                         boolean sawNormalThrow = false;
@@ -219,6 +221,10 @@ public class ClassParserUsingASM implements ClassParserInterface {
                         
                         IdentityMethodState identityState = 
                                 IdentityMethodState.INITIAL;
+                        
+                        ParameterLoadState parameterLoadState = ParameterLoadState.OTHER;
+                        
+                        int parameterForLoadState;
 
                         StubState stubState = StubState.INITIAL;
 
@@ -233,6 +239,19 @@ public class ClassParserUsingASM implements ClassParserInterface {
                         boolean isStatic() {
                             return (access & Opcodes.ACC_STATIC) != 0;
                         }
+                        
+                        @Override
+                        public
+                        void visitLocalVariable(String name,
+                                String desc,
+                                String signature,
+                                Label start,
+                                Label end,
+                                int index) {
+                            mBuilder.setVariableHasName(index);
+                            
+                        }
+                        
                         @Override
                         public void visitLdcInsn(Object cst) {
                             if (cst.equals("Stub!"))
@@ -244,7 +263,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
                         @Override
                         public void visitInsn(int opcode) {
-                            switch(opcode) {
+                            switch (opcode) {
                             case Constants.MONITORENTER:
                                 mBuilder.setUsesConcurrency();
                                 break;
@@ -270,7 +289,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                                 break;
                             }
 
-                                 resetState();
+                            resetState();
                         }
 
                         public void resetState() {
@@ -280,21 +299,50 @@ public class ClassParserUsingASM implements ClassParserInterface {
                         @Override
                         public void visitSomeInsn() {
                             identityState = IdentityMethodState.NOT;
+                            parameterLoadState = ParameterLoadState.OTHER;
                             resetState();
                         }
 
                         @Override
                         public void visitVarInsn(int opcode, int var) {
+                               
+                            boolean match = false;
+                            if (parameterLoadState == ParameterLoadState.OTHER && !isStatic() && var == 0) {
+                                    parameterLoadState = ParameterLoadState.LOADED_THIS;
+                                    ;
+                                    match = true;
+                            }
+                            else if (parameterLoadState == ParameterLoadState.LOADED_THIS  && var > 0){
+                                parameterLoadState = ParameterLoadState.LOADED_THIS_AND_PARAMETER;
+                                parameterForLoadState = var;
+                                match = true;
+                            }
                             
                             if (identityState == IdentityMethodState.INITIAL) {
+                                match = true;
                                 if (var > 0 || isStatic())
                                     identityState = IdentityMethodState.LOADED_PARAMETER;
                                 else
                                     identityState = IdentityMethodState.NOT;
                                 
-                            } else  visitSomeInsn();
+                            } 
+                            if (!match)
+                                visitSomeInsn();
                         }
 
+                        @Override
+                        public void visitFieldInsn(int opcode,
+                                            String owner,
+                                            String name,
+                                            String desc) {
+                            if (opcode == Opcodes.PUTFIELD && parameterLoadState == ParameterLoadState.LOADED_THIS_AND_PARAMETER
+                                    && owner.equals(slashedClassName) && name.startsWith("this$")) {
+                                mBuilder.setVariableIsSynthetic(parameterForLoadState);
+                                 
+                            }
+                            visitSomeInsn();
+                        }
+                        
                         public org.objectweb.asm.AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
                             AnnotationValue value = new AnnotationValue(desc);
                             mBuilder.addAnnotation(desc, value);
