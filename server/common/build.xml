@@ -40,7 +40,7 @@
 
             <zipfileset src="../../webCloudProtocol/build/webCloudProtocol.jar"/>
 
-            <zipfileset src="lib/charts4j-1.2.jar"/>
+            <zipfileset src="lib/charts4j-1.3.jar"/>
             <zipfileset src="lib/commons-lang-2.5.jar"/>
             <zipfileset src="lib/dyuproject-openid-1.1.6.jar"/>
             <zipfileset src="lib/dyuproject-util-1.1.6.jar"/>
