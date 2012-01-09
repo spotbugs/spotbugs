@@ -139,8 +139,8 @@ public class ReportServlet extends AbstractFlybushServlet {
 
         resp.setStatus(200);
         ServletOutputStream page = resp.getOutputStream();
-        page.println("<html>\n" + "<head><title>" + escapeHtml(desiredPackage) + " - " + getCloudName() + " Stats</title></head>\n"
-                + "<body>\n" + backButton(req));
+        printHtmlHeader(resp, escapeHtml(desiredPackage) + " - " + getCloudName() + " Stats");
+        page.println(backButton(req));
 
         printPackageForm(req, resp, desiredPackage);
 
@@ -270,9 +270,9 @@ public class ReportServlet extends AbstractFlybushServlet {
             chart = buildEvaluationTimeline("Reviews over Time - " + email, evalsPerWeek, newIssuesByWeek);
 
         resp.setStatus(200);
+        printHtmlHeader(resp, escapeHtml(email) + " - " + getCloudName() + " Stats");
         ServletOutputStream page = resp.getOutputStream();
-        page.println("<html>\n" + "<head><title>" + escapeHtml(email) + " - " + getCloudName() + " Stats</title></head>\n" + "<body>\n"
-                + backButton(req));
+        page.println(backButton(req));
 
         Set<String> users = getAllUserEmails(pm);
         printUserStatsSelector(req, resp, users, email);
@@ -438,23 +438,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         // print results
         resp.setStatus(200);
 
-        ServletOutputStream page = resp.getOutputStream();
-        page.println("<html>" +
-                "<head>" +
-                "<title>" + getCloudName() + " Stats</title>" +
-                "<script type='application/javascript'>\n" +
-                "    // Send the POST when the page is loaded,\n" +
-                "    // which will replace this whole page with the retrieved chart.\n" +
-                "    function loadGraph() {\n" +
-                "      for (var i = 1; i < 20; i++) {" +
-                "        var frm = document.getElementById('post_form_' + i);\n" +
-                "        if (!frm) break;\n" +
-                "        frm.submit();\n" +
-                "      }\n" +
-                "    }\n" +
-                "  </script>" +
-                "</head>"
-                + "<body onload='loadGraph()'>");
+        ServletOutputStream page = printHtmlHeader(resp, getCloudName() + " Stats");
         showChartImg(resp, evalsOverTimeChart);
         page.println("<br><br>");
         showChartImg(resp, cumulativeTimeline);
@@ -468,6 +452,27 @@ public class ReportServlet extends AbstractFlybushServlet {
         showChartImg(resp, evalsByUserChart);
         page.println("<br><br>");
         showChartImg(resp, histogram);
+    }
+
+    private ServletOutputStream printHtmlHeader(HttpServletResponse resp, String title) throws IOException {
+        ServletOutputStream page = resp.getOutputStream();
+        page.println("<html>" +
+                "<head>" +
+                "<title>" + title + "</title>" +
+                "<script type='application/javascript'>\n" +
+                "    // Send the POST when the page is loaded,\n" +
+                "    // which will replace this whole page with the retrieved chart.\n" +
+                "    function loadGraph() {\n" +
+                "      for (var i = 1; i < 40; i++) {" +
+                "        var frm = document.getElementById('post_form_' + i);\n" +
+                "        if (frm) \n" +
+                "          frm.submit();\n" +
+                "      }\n" +
+                "    }\n" +
+                "  </script>" +
+                "</head>"
+                + "<body onload='loadGraph()'>");
+        return page;
     }
 
     private String getPackageName(String className) {
