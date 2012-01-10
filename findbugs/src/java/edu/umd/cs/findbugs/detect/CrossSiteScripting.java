@@ -95,18 +95,16 @@ public class CrossSiteScripting extends OpcodeStackDetector {
             String calledMethodName = getNameConstantOperand();
             String calledMethodSig = getSigConstantOperand();
 
-            if (calledClassName.startsWith("java/io/File")
-                    && calledMethodSig.equals("(Ljava/lang/String;)V")) {
+            if (calledClassName.startsWith("java/io/File") && calledMethodSig.equals("(Ljava/lang/String;)V")) {
                 OpcodeStack.Item path = stack.getStackItem(0);
                 if (isTainted(path)) {
-                    annotateAndReport(new BugInstance(this, "TESTING", taintPriority(path))
-                          .addClassAndMethod(this).addCalledMethod(this)
-                          .addString("Path manipulation"),
-                            path);
+                    String bugPattern = taintPriority(path) == Priorities.HIGH_PRIORITY ? "PT_ABSOLUTE_PATH_TRAVERSAL"
+                            : "PT_RELATIVE_PATH_TRAVERSAL";
+                    annotateAndReport(new BugInstance(this, bugPattern, Priorities.NORMAL_PRIORITY).addClassAndMethod(this)
+                            .addCalledMethod(this), path);
                 }
 
             }
-
 
 
             if (calledClassName.equals("javax/servlet/http/Cookie") && calledMethodName.equals("<init>")
@@ -213,6 +211,19 @@ public class CrossSiteScripting extends OpcodeStackDetector {
         return writing.isServletParameterTainted();
     }
 
+    private boolean isDirectTaint(OpcodeStack.Item writing) {
+        if (writing == null)
+            return false;
+        if (! writing.isServletParameterTainted())
+            return false;
+        XMethod m = writing.getReturnValueOf();
+        if (m == null)
+            return false;
+        if (!m.getName().equals("getParameter"))
+            return false;
+        String clsName = m.getClassName();
+        return  clsName.equals("javax/servlet/http/HttpServletRequest") || clsName.equals("javax/servlet/http/ServletRequest");
+    }
     private int taintPriority(OpcodeStack.Item writing) {
         if (writing == null)
             return Priorities.NORMAL_PRIORITY;
