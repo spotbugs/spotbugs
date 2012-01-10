@@ -617,8 +617,10 @@ public class MainFrame extends FBFrame implements LogSync {
             public void run() {
                 try {
                     updateDesignationDisplay();
-                    BugCollection bc = BugLoader.redoAnalysisKeepComments(getProject());
+                    Project project = getProject();
+                    BugCollection bc = BugLoader.redoAnalysisKeepComments(project);
                     updateProjectAndBugCollection(bc);
+                    setProjectAndBugCollectionInSwingThread(project, bc);
                 } finally {
                     releaseDisplayWait();
                 }
