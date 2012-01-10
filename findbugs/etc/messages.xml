@@ -1731,9 +1731,50 @@ consider using a commercial static analysis or pen-testing tool.
 ]]>
         </Details>
   </BugPattern>
+
+
+
+  <BugPattern type="PT_RELATIVE_PATH_TRAVERSAL">
+    <ShortDescription>Relative path traversal in servlet</ShortDescription>
+    <LongDescription>Relative path traversal in {1}</LongDescription>
+    <Details>
+<![CDATA[
+    <p>The software uses an HTTP request parameter to construct a pathname that should be within a restricted directory, but it does not properly neutralize sequences such as ".." that can resolve to a location that is outside of that directory.
+
+See <a href="http://cwe.mitre.org/data/definitions/23.html">http://cwe.mitre.org/data/definitions/23.html</a>
+for more information.</p>
+<p>FindBugs looks only for the most blatant, obvious cases of relative path traversal.
+If FindBugs found <em>any</em>, you <em>almost certainly</em> have more 
+vulnerabilities that FindBugs doesn't report. If you are concerned about relative path traversal, you should seriously
+consider using a commercial static analysis or pen-testing tool.
+</p>
+
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="PT_ABSOLUTE_PATH_TRAVERSAL">
+    <ShortDescription>Absolute path traversal in servlet</ShortDescription>
+    <LongDescription>Absolute path traversal in {1}</LongDescription>
+    <Details>
+<![CDATA[
+    <p>The software uses an HTTP request parameter to construct a pathname that should be within a restricted directory, 
+but it does not properly neutralize absolute path sequences such as "/abs/path" that can resolve to a location that is outside of that directory.
+
+See <a href="http://cwe.mitre.org/data/definitions/36.html">http://cwe.mitre.org/data/definitions/36.html</a>
+for more information.</p>
+<p>FindBugs looks only for the most blatant, obvious cases of absolute path traversal.
+If FindBugs found <em>any</em>, you <em>almost certainly</em> have more 
+vulnerabilities that FindBugs doesn't report. If you are concerned about absolute path traversal, you should seriously
+consider using a commercial static analysis or pen-testing tool.
+</p>
+
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER">
     <ShortDescription>Servlet reflected cross site scripting vulnerability</ShortDescription>
-    <LongDescription>HTTP parameter written to Servlet output {1}</LongDescription>
+    <LongDescription>HTTP parameter written to Servlet output in {1}</LongDescription>
     <Details>
 <![CDATA[
     <p>This code directly writes an HTTP parameter to Servlet output, which allows for a reflected cross site scripting
@@ -1748,6 +1789,8 @@ consider using a commercial static analysis or pen-testing tool.
 ]]>
     </Details>
   </BugPattern>
+
+
   <BugPattern type="XSS_REQUEST_PARAMETER_TO_SEND_ERROR">
     <ShortDescription>Servlet reflected cross site scripting vulnerability in error page</ShortDescription>
     <LongDescription>HTTP parameter written to Servlet error page in {1}</LongDescription>
@@ -7919,6 +7962,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="IA">Ambiguous invocation</BugCode>
   <BugCode abbrev="HSC">Huge String constants</BugCode>
   <BugCode abbrev="HRS">HTTP Response splitting vulnerability</BugCode>
+  <BugCode abbrev="PT">Path traversal</BugCode>
   <BugCode abbrev="XSS">Cross site scripting vulnerability</BugCode>
   <BugCode abbrev="NP">Null pointer dereference</BugCode>
   <BugCode abbrev="NOISE">Bogus random warning</BugCode>
