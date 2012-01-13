@@ -48,7 +48,7 @@
 		<srcroot url="file://C:/Users/Keith/Code/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar"/>
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/server/common/lib/commons-lang-2.5.jar!/"/>
 	</lib>
-	<lib name="$MODULE_DIR$/lib/charts4j-1.3.jar" scope="COMPILE">
+	<lib name="charts4j-1.3.jar" scope="COMPILE">
 		<srcroot url="file://$CODE_DIR$/lib/charts4j-1.3/src/main/java"/>
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/server/common/lib/charts4j-1.3.jar!/"/>
 	</lib>
