@@ -724,10 +724,13 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
         || !getGuiCallback().isHeadless()
         || getSigninState() == SigninState.SIGNED_IN;
         if ((hasBugsToUpload || hasTimestampsToUpdate)) {
-            if (canUpload) 
+            if (canUpload) {
                 uploadAndUpdateBugsInBackground(new ArrayList<BugInstance>(newBugs));
-            else
-                setStatusMsg("not able to automatically upload bugs to the " + getCloudName());     
+            } else {
+                setStatusMsg("not able to automatically upload bugs to the " + getCloudName());
+
+                fireNewIssuesUploadedEvent();
+            }
         } else {
             fireNewIssuesUploadedEvent();
             setStatusMsg("All " + numBugs + " bugs are already stored in the " + getCloudName());

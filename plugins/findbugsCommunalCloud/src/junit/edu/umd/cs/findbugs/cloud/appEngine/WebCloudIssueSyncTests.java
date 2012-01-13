@@ -195,8 +195,7 @@ public class WebCloudIssueSyncTests extends AbstractWebCloudTest {
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
     }
 
-    // FIXME: Test case seems to be broken.
-    public void doNotTestDontUploadInTextMode() throws IOException, InterruptedException {
+    public void testDontUploadInTextMode() throws IOException, InterruptedException {
         addMissingIssue = true;
 
         // set up mocks
@@ -212,7 +211,7 @@ public class WebCloudIssueSyncTests extends AbstractWebCloudTest {
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
         cloud.bugsPopulated();
         cloud.initiateCommunication();
-        cloud.waitUntilIssuesUploaded(5, TimeUnit.SECONDS);
+        cloud.waitUntilIssuesUploaded(120, TimeUnit.SECONDS);
 
         assertEquals(UNAUTHENTICATED, cloud.getSigninState());
 
