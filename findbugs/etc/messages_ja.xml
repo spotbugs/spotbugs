@@ -1554,16 +1554,27 @@ null の参照解除のためのノイズが多いディテクタです。コー
     <Details>
 <![CDATA[
 <p>
-このディテクタは、HTTP セッションへの直列化できないオブジェクトの格納を探します。
+このディテクタは、HTTP セッションへの非直列化オブジェクトの格納を探します。
 </p>
 ]]>
     </Details>
   </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue">
+    <Details>
+<![CDATA[
+<p>
+このディテクタは、それらが直列化可能であることを要求するコンテキストで、非Serializableなオブジェクトの使用方法を探します。
+</p>
+]]>
+    </Details>
+  </Detector>
+  
   <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableValuePassedToWriteObject">
     <Details>
 <![CDATA[
 <p>
-このディテクタは、<code>ObjectOutput</code> の <code>writeObject</code> メソッドに渡された直列化できないオブジェクトの格納を探します。
+このディテクタは、<code>ObjectOutput</code> の <code>writeObject</code> メソッドに渡された非直列化オブジェクトを探します。
 </p>
 ]]>
     </Details>
@@ -5522,7 +5533,7 @@ if (argv.length == 1);
 
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE">
     <ShortDescription>すでに利用していた値の null チェック</ShortDescription>
-    <LongDescription>すでに利用していた値を {4.lineNumber} の {2.givenClass} で null チェックしています。{1}</LongDescription>
+    <LongDescription>すでに利用していた {2.givenClass} の値を {4.lineNumber} で null チェックしています。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6344,8 +6355,12 @@ For more information, see the
     <Details>
 <![CDATA[
 <p>
-このメソッドは、<code>java.util.concurrent.locks.Lock</code> を実装したオブジェクトで同期化しています。
-そのようなオブジェクトは、<code>synchronized (...)</code> 構造ではなく、<code>acquire()</code>/<code>release()</code> を使用してロック/アンロックをします。
+このメソッドは、java.util.concurrent(またはそのサブクラス) からのクラスのインスタンスであるオブジェクトで同期化しています。
+これらのクラスのインスタンスは、Java キーワード <code>synchronized</code> によって提供される同期化に直交しているそれら自身の並行制御メカニズムがあります。
+例えば、<code>AtomicBoolean</code> で同期化することは、他のスレッドが <code>AtomicBoolean</code> を変更するのを防げません。
+</p>
+<p>
+そのようなコードは正しいかもしれないが、慎重にレビューし、文書化されるべきで、後日コードを維持しなければならない人々を混乱させるかもしれません。
 </p>
 ]]>
     </Details>
@@ -6584,7 +6599,7 @@ JUnit の TestCase クラスで、どんなテストメソッドも実装して�
 
   <BugPattern type="BRSA_BAD_RESULTSET_ACCESS" deprecated="true">  <!-- deprecated in favor of SQL_BAD_RESULTSET_ACCESS -->
     <ShortDescription>Method attempts to access a result set field with index 0</ShortDescription>
-    <LongDescription>Method {1} attempts to access a result set field with index 0</LongDescription>
+    <LongDescription>{1} attempts to access a result set field with index 0</LongDescription>
     <Details>
 <![CDATA[
 <p> A call to getXXX or updateXXX methods of a result set was made where the
@@ -6595,7 +6610,7 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
 
   <BugPattern type="SQL_BAD_RESULTSET_ACCESS">
     <ShortDescription>インデックスが0で ResultSet にアクセスしようとしているメソッド</ShortDescription>
-    <LongDescription>メソッド {1} は、インデックスが0で ResultSet にアクセスしようとしています。</LongDescription>
+    <LongDescription>{1} は、インデックスが0で ResultSet にアクセスしようとしています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6608,7 +6623,7 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
 
   <BugPattern type="SQL_BAD_PREPARED_STATEMENT_ACCESS">
     <ShortDescription>インデックスが0で PreparedStatement にアクセスしようとしているメソッド</ShortDescription>
-    <LongDescription>メソッド {1} は、インデックスが0で PreparedStatement にアクセスしようとしています。</LongDescription>
+    <LongDescription>{1} は、インデックスが0で PreparedStatement にアクセスしようとしています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6621,7 +6636,7 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
 
   <BugPattern type="SIO_SUPERFLUOUS_INSTANCEOF">
     <ShortDescription>instanceof 演算子を使用した不必要な型チェック</ShortDescription>
-    <LongDescription>メソッド {1} は、静的に確定している可能性があるのに instanceof 演算子を使用して不必要な型チェックをしています。</LongDescription>
+    <LongDescription>{1} は、静的に確定している可能性があるのに instanceof 演算子を使用して不必要な型チェックをしています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6689,7 +6704,7 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
 
   <BugPattern type="STI_INTERRUPTED_ON_CURRENTTHREAD">
     <ShortDescription>interrupted メソッドを呼び出すために不要な currentThread メソッドを呼び出している</ShortDescription>
-    <LongDescription>メソッド {1} は、interrupted メソッドを呼び出すために不要な currentThread メソッドを呼び出しています。</LongDescription>
+    <LongDescription>{1} は、interrupted メソッドを呼び出すために不要な currentThread メソッドを呼び出しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6803,7 +6818,7 @@ J2SE 5.0ではそうしません。
 
   <BugPattern type="MF_METHOD_MASKS_FIELD">
     <ShortDescription>フィールドを隠す変数を定義しているメソッド</ShortDescription>
-    <LongDescription>メソッド {1} は、フィールド {2.givenClass} を隠す変数を定義しています。</LongDescription>
+    <LongDescription>{1} は、フィールド {2.givenClass} を隠す変数を定義しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6829,7 +6844,7 @@ J2SE 5.0ではそうしません。
 
   <BugPattern type="WMI_WRONG_MAP_ITERATOR">
     <ShortDescription>entrySet イテレータではなく効率が悪い keySet イテレータを使用している</ShortDescription>
-    <LongDescription>メソッド {1} は、entrySet イテレータではなく効率が悪い keySet イテレータを使用しています。</LongDescription>
+    <LongDescription>{1} は、entrySet イテレータではなく効率が悪い keySet イテレータを使用しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6842,7 +6857,7 @@ Map の entrySet イテレータを使用した方が <code>Map.get(key)</code> 
 
   <BugPattern type="ISC_INSTANTIATE_STATIC_CLASS">
     <ShortDescription>static メソッドだけを提供するクラスの不必要なインスタンス化</ShortDescription>
-    <LongDescription>メソッド {1} は、static メソッドだけを提供するクラスを不必要にインスタンス化しています。</LongDescription>
+    <LongDescription>{1} は、static メソッドだけを提供するクラスを不必要にインスタンス化しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7772,7 +7787,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
 
   <BugPattern type="DB_DUPLICATE_BRANCHES">
     <ShortDescription>2つの分岐のために同じコードを使用しているメソッド</ShortDescription>
-    <LongDescription>メソッド {1} は、2つの分岐のために同じコードを使用しています。</LongDescription>
+    <LongDescription>{1} は、2つの分岐のために同じコードを使用しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7785,7 +7800,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
 
   <BugPattern type="DB_DUPLICATE_SWITCH_CLAUSES">
     <ShortDescription>switch 文の2つの case のために同じコードを使用しているメソッド</ShortDescription>
-    <LongDescription>メソッド {1} は、switch 文の2つの case のために同じコードを使用しています。</LongDescription>
+    <LongDescription>{1} は、switch 文の2つの case のために同じコードを使用しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7798,7 +7813,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
 
   <BugPattern type="IMA_INEFFICIENT_MEMBER_ACCESS">
     <ShortDescription>所有クラスの private メンバー変数にアクセスしているメソッド</ShortDescription>
-    <LongDescription>メソッド {1} は、所有クラスの private メンバー変数にアクセスしています。</LongDescription>
+    <LongDescription>{1} は、所有クラスの private メンバー変数にアクセスしています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7812,7 +7827,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
 
   <BugPattern type="XFB_XML_FACTORY_BYPASS">
     <ShortDescription>XMLインタフェースの特定の実装のインスタンスを作成しているメソッド</ShortDescription>
-    <LongDescription>メソッド {1} は、XMLインタフェースの特定の実装のインスタンスを作成しています。</LongDescription>
+    <LongDescription>{1} は、XMLインタフェースの特定の実装のインスタンスを作成しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7832,7 +7847,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
 
   <BugPattern type="USM_USELESS_SUBCLASS_METHOD">
     <ShortDescription>親クラスのメソッドに過剰に委譲しているメソッド</ShortDescription>
-    <LongDescription>メソッド {1} は、親クラスのメソッドに過剰に委譲しています。</LongDescription>
+    <LongDescription>{1} は、親クラスのメソッドに過剰に委譲しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7872,7 +7887,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
 
   <BugPattern type="QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT">
     <ShortDescription>論理式で boolean リテラル値を代入しているメソッド</ShortDescription>
-    <LongDescription>メソッド {1} は、論理式で boolean リテラル値を代入しています。</LongDescription>
+    <LongDescription>{1} は、論理式で boolean リテラル値を代入しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -8216,18 +8231,18 @@ Jason Mehrens によって寄贈されたバグパターン
 
   <BugPattern type="OBL_UNSATISFIED_OBLIGATION">
     <ShortDescription>ストリームやリソースのクリーンアップに失敗するかもしれないメソッド</ShortDescription>
-    <LongDescription>メソッド {1} は、{2} のクリーンアップに失敗するかもしれません。</LongDescription>
+    <LongDescription>{1} は、{2} のクリーンアップに失敗するかもしれません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このメソッドは、ストリーム、データベースオブジェクト、または明示的にクリーンアップ操作を必要としている他のリソースのクリーンアップ (クローズする、処分する) に失敗するかもしれません。
+このメソッドは、ストリーム、データベースオブジェクト、または明示的にクリーンアップ操作を必要としている他のリソースのクリーンアップ (クローズする、片付ける) に失敗するかもしれません。
 </p>   
 <p>
 通常、メソッドがストリープや他のリソースを開いたなら、メソッドはストリームやリソースがメソッドが戻る前にクリーンアップされることを確認するために、try/finally ブロックを使用するべきです。
 </p>
 <p>
 このバグパターンは、OS_OPEN_STREAM と ODR_OPEN_DATABASE_RESOURCE と基本的に同じですが異なる (そして、うまくいけばより良い) 静的解析技術に基づいています。
-私たちは関心があるのがこのバグパターンの有用性についてのフィードバックを得ることです。
+私たちは、このバグパターンの有用性についてのフィードバックを得ることに関心があります。
 どちらかの方法でフィードバックを送ってください。
 </p>
 <ul>
@@ -8244,6 +8259,36 @@ Jason Mehrens によって寄贈されたバグパターン
     </Details>
   </BugPattern>
 
+  <BugPattern type="OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE">
+    <ShortDescription>チェック例外でストリームやリソースのクリーンアップに失敗するかもしれないメソッド</ShortDescription>
+    <LongDescription>{1} は、チェック例外で {2} のクリーンアップに失敗するかもしれません。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このメソッドは、ストリーム、データベースオブジェクト、または明示的にクリーンアップ操作を必要としている他のリソースのクリーンアップ (クローズする、片付ける) に失敗するかもしれません。
+</p>   
+<p>
+通常、メソッドがストリープや他のリソースを開いたなら、メソッドはストリームやリソースがメソッドが戻る前にクリーンアップされることを確認するために、try/finally ブロックを使用するべきです。
+</p>
+<p>
+このバグパターンは、OS_OPEN_STREAM と ODR_OPEN_DATABASE_RESOURCE と基本的に同じですが異なる (そして、うまくいけばより良い) 静的解析技術に基づいています。
+私たちは、このバグパターンの有用性についてのフィードバックを得ることに関心があります。
+どちらかの方法でフィードバックを送ってください。
+</p>
+<ul>
+<li>send email to findbugs@cs.umd.edu</li>
+<li>file a bug report: <a href="http://findbugs.sourceforge.net/reportingBugs.html">http://findbugs.sourceforge.net/reportingBugs.html</a></li>
+</ul>
+<p>
+特に、このバグパターンの誤検出抑制探索法は詳細にわたって調整されていないので、誤検出についてのレポートは我々の助けになります。 
+</p>
+<p>
+解析技術の説明は、Weimer と Necula による <i>Finding and Preventing Run-Time Error Handling Mistakes</i> を参照してください。 
+</p>
+]]>
+      </Details>
+  </BugPattern>
+  
   <BugPattern type="FB_UNEXPECTED_WARNING">
     <ShortDescription>FindBugs からの予期しない/望ましくない警告</ShortDescription>
     <LongDescription>予期しない/望ましくない {2} FindBugs 警告。{1}</LongDescription>
