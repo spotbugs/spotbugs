@@ -1853,17 +1853,38 @@ In other words, each of the children must be true for the predicate to be true.
  </varlistentry>
 
  <varlistentry>
-    <term><literal>&lt;Priority&gt;</literal></term>
+    <term><literal>&lt;Confidence&gt;</literal></term>
     <listitem>
         <para>
-            This element matches warnings with a particular priority.
+            This element matches warnings with a particular bug confidence.
             The <literal>value</literal> attribute should be an integer value:
-            1 to match high-priority warnings, 2 to match medium-priority warnings,
-            or 3 to match low-priority warnings.
+            1 to match high-confidence warnings, 2 to match normal-confidence warnings,
+            or 3 to match low-confidence warnings. &lt;Confidence&gt; replaced
+            &lt;Priority&gt; in 2.0.0 release.
         </para>
     </listitem>
  </varlistentry>
 
+ <varlistentry>
+    <term><literal>&lt;Priority&gt;</literal></term>
+    <listitem>
+        <para>
+            Same as <literal>&lt;Confidence&gt;</literal>, exists for backward compatibility.
+        </para>
+    </listitem>
+ </varlistentry>
+
+ <varlistentry>
+    <term><literal>&lt;Rank&gt;</literal></term>
+    <listitem>
+        <para>
+            This element matches warnings with a particular bug rank.
+            The <literal>value</literal> attribute should be an integer value
+            between 1 and 20, where 1 to 4 are scariest, 5 to 9 scary, 10 to 14 troubling,
+            and 15 to 20 of concern bugs.
+        </para>
+    </listitem>
+ </varlistentry>
 
  <varlistentry>
    <term><literal>&lt;Package&gt;</literal></term>
@@ -2198,10 +2219,10 @@ as expected.
 <!-- i.e. filter bug if ( classIsJUnitTest && ! bugIsRelatedToJUnit ) -->
 <Match>
   <!-- the Match filter is equivalent to a logical 'And' -->
-  
+
   <Class name="~.*\.*Test" />
   <!-- test classes are suffixed by 'Test' -->
-  
+
   <Not>
       <Bug code="IJU" /> <!-- 'IJU' is the code for bugs related to JUnit test code -->
   </Not>
@@ -2250,7 +2271,7 @@ as expected.
        <Bug pattern="DLS_DEAD_LOCAL_STORE" />
        <Priority value="2" />
      </Match>
-     
+
      <!-- All bugs in test classes, except for JUnit-specific bugs -->
      <Match>
       <Class name="~.*\.*Test" />
@@ -3073,6 +3094,7 @@ the ant call with a <literal>&lt;datafile&gt;</literal> element.  For example:
 <row><entry>-newCode[:truth]</entry>            <entry>newCode="[true|false]"</entry>           <entry>allow only warnings introduced by the addition of a new class</entry></row>
 <row><entry>-removedCode[:truth]</entry>        <entry>removedCode="[true|false]"</entry>       <entry>allow only warnings removed by removal of a class</entry></row>
 <row><entry>-priority &lt;level&gt;</entry>     <entry>priority="&lt;level&gt;"</entry>         <entry>allow only warnings with this priority or higher</entry></row>
+<row><entry>-maxRank &lt;rank&gt;</entry>       <entry>rank="[1..20]"</entry>                   <entry>allow only warnings with this rank or lower</entry></row>
 <row><entry>-class &lt;pattern&gt;</entry>      <entry>class="&lt;class&gt;"</entry>            <entry>allow only bugs whose primary class name matches this pattern</entry></row>
 <row><entry>-bugPattern &lt;pattern&gt;</entry> <entry>bugPattern="&lt;pattern&gt;"</entry>     <entry>allow only bugs whose type matches this pattern</entry></row>
 <row><entry>-category &lt;category&gt;</entry>  <entry>category="&lt;category&gt;"</entry>      <entry>allow only warnings with a category that starts with this string</entry></row>
