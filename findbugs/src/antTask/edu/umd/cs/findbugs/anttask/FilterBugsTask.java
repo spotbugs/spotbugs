@@ -34,7 +34,7 @@ public class FilterBugsTask extends AbstractFindBugsTask {
     private File outputFile;
 
     private String applySuppression;
-    
+
     private String notAProblem;
 
     private String not;
@@ -73,6 +73,8 @@ public class FilterBugsTask extends AbstractFindBugsTask {
 
     private String priority;
 
+    private String maxRank;
+
     private String clazz;
 
     private String bugPattern;
@@ -104,15 +106,16 @@ public class FilterBugsTask extends AbstractFindBugsTask {
     public void setOutput(File output) {
         this.outputFile = output;
     }
+
     public void setOutputFile(File output) {
         this.outputFile = output;
     }
-
 
     public void setInput(String input) {
         this.inputFile = new DataFile();
         this.inputFile.name = input;
     }
+
     public void setInputFile(String input) {
         this.inputFile = new DataFile();
         this.inputFile.name = input;
@@ -121,11 +124,11 @@ public class FilterBugsTask extends AbstractFindBugsTask {
     public void setNot(String arg) {
         this.not = arg;
     }
-    
+
     public void setNotAProblem(String arg) {
         this.notAProblem = arg;
     }
-    
+
     public void setWithSource(String arg) {
         this.withSource = arg;
     }
@@ -196,6 +199,10 @@ public class FilterBugsTask extends AbstractFindBugsTask {
 
     public void setPriority(String arg) {
         this.priority = arg;
+    }
+
+    public void setMaxRank(String arg) {
+        this.maxRank = arg;
     }
 
     public void setClass(String arg) {
@@ -303,6 +310,7 @@ public class FilterBugsTask extends AbstractFindBugsTask {
         addBoolOption("-newCode", newCode);
         addBoolOption("-removedCode", removedCode);
         addOption("-priority", priority);
+        addOption("-maxRank", maxRank);
         addOption("-class", clazz);
         addOption("-bugPattern", bugPattern);
         addOption("-category", category);
