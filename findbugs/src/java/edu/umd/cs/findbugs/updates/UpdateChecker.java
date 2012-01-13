@@ -3,6 +3,8 @@ package edu.umd.cs.findbugs.updates;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -28,10 +30,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
-
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Plugin;
@@ -40,6 +38,10 @@ import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 
 public class UpdateChecker {
 
@@ -226,6 +228,8 @@ public class UpdateChecker {
         conn.connect();
         OutputStream out = conn.getOutputStream();
         writeXml(out, plugins, entryPoint);
+        // for debugging:
+//        writeXml(System.out, plugins, entryPoint);
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) {
             logError(SystemProperties.ASSERTIONS_ENABLED ? Level.WARNING : Level.FINE,
@@ -290,6 +294,11 @@ public class UpdateChecker {
     InputStream inputStream) {
         try {
             Document doc = new SAXReader().read(inputStream);
+//            StringWriter stringWriter = new StringWriter();
+//            XMLWriter xmlWriter = new XMLWriter(stringWriter);
+//            xmlWriter.write(doc);
+//            xmlWriter.close();
+//            System.out.println("UPDATE RESPONSE: " + stringWriter.toString());
             List<Element> pluginEls = (List<Element>) doc.selectNodes("fb-plugin-updates/plugin");
             Map<String, Plugin> map = new HashMap<String, Plugin>();
             for (Plugin p : plugins)
