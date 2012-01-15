@@ -308,8 +308,13 @@ public class DumbMethods extends OpcodeStackDetector {
             accumulator.accumulateBug(new BugInstance(this, "DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD", NORMAL_PRIORITY)
                     .addClassAndMethod(this).addCalledMethod(this), this);
         
-        if (seen == INVOKESTATIC && getClassConstantOperand().equals("com/google/common/base/Preconditions")
-             && getNameConstantOperand().equals("checkNotNull")) {
+        if (seen == INVOKESTATIC && (getClassConstantOperand().equals("com/google/common/base/Preconditions")
+             && getNameConstantOperand().equals("checkNotNull")
+             || getClassConstantOperand().equals("com/google/common/base/Strings") 
+             && (getNameConstantOperand().equals("nullToEmpty") ||
+                     getNameConstantOperand().equals("emptyToNull") || 
+                     getNameConstantOperand().equals("isNullOrEmpty")))
+             ) {
             int args = PreorderVisitor.getNumberArguments(getSigConstantOperand());
 
             OpcodeStack.Item item = stack.getStackItem(args - 1);
