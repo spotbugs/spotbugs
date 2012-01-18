@@ -24,10 +24,9 @@ import javax.jdo.Query;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.text.MaskFormatter;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Supplier;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -39,6 +38,7 @@ import com.googlecode.charts4j.AxisLabelsFactory;
 import com.googlecode.charts4j.AxisStyle;
 import com.googlecode.charts4j.AxisTextAlignment;
 import com.googlecode.charts4j.BarChart;
+import com.googlecode.charts4j.BarChartPlot;
 import com.googlecode.charts4j.Color;
 import com.googlecode.charts4j.Data;
 import com.googlecode.charts4j.DataEncoding;
@@ -71,7 +71,7 @@ public class UsageReportServlet extends AbstractFlybushServlet {
         String uri = req.getRequestURI();
         PersistenceManager pm = getPersistenceManager();
         try {
-            if (uri.equals("/stats")) {
+            if (uri.equals("/usage")) {
                 showStats(req, resp, pm);
 
             } else {
@@ -96,19 +96,42 @@ public class UsageReportServlet extends AbstractFlybushServlet {
      */
 
     private void showStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
+        LOGGER.warning("About to execute query");
         Query query = pm.newQuery("select from " + persistenceHelper.getDbUsageEntryClassname()
-                + " where date < :date order by when ascending");
+                + " where date > :date order by date ascending");
+        query.addExtension("javax.persistence.query.chunkSize", 200);
         @SuppressWarnings("unchecked")
-        List<DbUsageEntry> entries = (List<DbUsageEntry>) query.execute(fourWeeksAgo());
+        List<DbUsageEntry> entries = (List<DbUsageEntry>) query.execute(oneWeekAgo());
 
         Multimap<String, DbUsageEntry> entriesByUuid = newHashSetMultiMap();
+        Multimap<String, String> pluginsByUuid = newHashSetMultiMap();
+        Multimap<String, String> uuidsByPlugin = newHashSetMultiMap();
+        Multimap<String, String> uuidsByVersion = newHashSetMultiMap();
         Multimap<Long, String> usersByWeek = newHashSetMultiMap();
         Multimap<Long, String> usersByDay = newHashSetMultiMap();
+        Multimap<Long, String> ipsByDay = newHashSetMultiMap();
+        LOGGER.warning("Total entries?");
+        int size = entries.size();
+        LOGGER.warning("Total entries: " + size);
+        int count = 0;
         for (DbUsageEntry entry : entries) {
-            usersByWeek.put(weekStart(entry.getDate()).getTime(), entry.getUuid());
-            usersByDay.put(dayStart(entry.getDate()).getTime(), entry.getUuid());
-            entriesByUuid.put(entry.getUuid(), entry);
+            if (++count % 1000 == 0) {
+                LOGGER.warning("Processed " + count + " of " + size + " - " + String.format("%.2f", count*100.0/size) + "%");
+            }
+            String uuid = entry.getUuid();
+            usersByWeek.put(weekStart(entry.getDate()).getTime(), uuid);
+            usersByDay.put(dayStart(entry.getDate()).getTime(), uuid);
+            ipsByDay.put(dayStart(entry.getDate()).getTime(), entry.getIpAddress());
+            entriesByUuid.put(uuid, entry);
+            String plugin = entry.getPlugin();
+            boolean corePlugin = "edu.umd.cs.findbugs.plugins.core".equals(plugin);
+            if (!corePlugin && !"".equals(plugin)) {
+                pluginsByUuid.put(uuid, entry.getPlugin());
+                uuidsByPlugin.put(entry.getPlugin(), uuid);
+            }
+            uuidsByVersion.put(entry.getVersion(), uuid);
         }
+        
         
         query.closeAll();
 
@@ -119,7 +142,10 @@ public class UsageReportServlet extends AbstractFlybushServlet {
 //
 //        BarChart evalsByPkgChart = buildByPkgChart(issuesByPkg, evalCountByPkg);
 
-        LineChart usersByVersionPerDay = createTimelineChart2(usersByDay);
+        LineChart usersByVersionPerDay = createTimelineChart2(usersByDay, "Unique Users");
+        LineChart ipsByVersionPerDay = createTimelineChart2(ipsByDay, "Unique IP Addresses");
+        BarChart pluginsChart = makeBarChart(uuidsByPlugin, "Unique Plugin Users", 600, 200);
+        BarChart versionsChart = makeBarChart(uuidsByVersion, "FindBugs Versions", 600, 400);
 
 //        LineChart cumulativeTimeline = createCumulativeTimelineChart(evalsByWeek, issueCountByWeek, userCountByWeek);
 
@@ -138,8 +164,53 @@ public class UsageReportServlet extends AbstractFlybushServlet {
 //        showChartImg(resp, evalsByPkgChart);
 //        page.println("<br><br>");
 //        showChartImg(resp, evalsByUserChart);
-//        page.println("<br><br>");
-        showChartImg(resp, usersByVersionPerDay);
+        showChartImg(resp, usersByVersionPerDay, true);
+        page.println("<br><br>");
+        showChartImg(resp, ipsByVersionPerDay, true);
+        page.println("<br><br>");
+        showChartImg(resp, versionsChart, false);
+        page.println("<br><br>");
+        showChartImg(resp, pluginsChart, false);
+        page.println("<br><br>");
+    }
+
+    private BarChart makeBarChart(Multimap<String, String> uuidsByPlugin, String title, int width, int height) {
+        double max = 0;
+        for (Collection<String> strings : uuidsByPlugin.asMap().values()) {
+            max = Math.max(max, strings.size());
+        }
+        List<Double> data = Lists.newArrayList();
+        List<String> labels = Lists.newArrayList();
+        for (Entry<String, Collection<String>> entry : uuidsByPlugin.asMap().entrySet()) {
+            int val = entry.getValue().size();
+            data.add(val/max*100);
+            labels.add(entry.getKey());
+        }
+        Collections.reverse(labels);
+        BarChartPlot plot = Plots.newBarChartPlot(Data.newData(data));
+        BarChart chart = GCharts.newBarChart(plot);
+        chart.setHorizontal(true);
+        chart.addYAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
+        chart.addXAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, max, 50));
+//        chart.setLegendMargins(100, 100);
+//        chart.setMargins(100, 0, 100, 0);
+        chart.setSize(width, height);
+        chart.setTitle(title);
+        return chart;
+    }
+
+    private static String shortenFQN(String fqn) {
+        StringBuilder str = new StringBuilder();
+        for (Iterator<String> iterator = Splitter.on(".").split(fqn).iterator(); iterator.hasNext(); ) {
+            String part = iterator.next();
+            if (iterator.hasNext()) {
+                str.append(part.substring(0,1)).append('.');
+            } else {
+                str.append(part);
+            }
+        }
+
+        return str.toString();
     }
 
     private Date weekStart(Date date) {
@@ -172,9 +243,13 @@ public class UsageReportServlet extends AbstractFlybushServlet {
                 });
     }
 
-    private static Date fourWeeksAgo() {
+    private static Date oneWeekAgo() {
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.WEEK_OF_YEAR, -4);
+        cal.add(Calendar.DAY_OF_MONTH, -2);
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
     }
 
@@ -284,7 +359,7 @@ public class UsageReportServlet extends AbstractFlybushServlet {
     }
 
     //TODO: should we just use Google Analytics??
-    private LineChart createTimelineChart2(Multimap<Long, String> byDay) {
+    private LineChart createTimelineChart2(Multimap<Long, String> byDay, String title) {
         Map<Long, Integer> byDayCounts = Maps.newHashMap();
         for (Entry<Long, Collection<String>> entry : byDay.asMap().entrySet()) {
             byDayCounts.put(entry.getKey(), entry.getValue().size());
@@ -308,7 +383,7 @@ public class UsageReportServlet extends AbstractFlybushServlet {
         userCountLine.setFillAreaColor(Color.LIGHTPINK);
 
         LineChart chart = GCharts.newLineChart(userCountLine);
-        chart.setTitle("Unique Users");
+        chart.setTitle(title);
         chart.setDataEncoding(DataEncoding.TEXT);
         chart.setSize(850, 350);
 
@@ -490,7 +565,7 @@ public class UsageReportServlet extends AbstractFlybushServlet {
     private Iterable<Calendar> iterateByDay(Set<Long> unixtimes) {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(Collections.min(unixtimes));
-        cal.add(Calendar.DAY_OF_MONTH, -1);
+//        cal.add(Calendar.DAY_OF_MONTH, -1);
 
         final long first = cal.getTimeInMillis();
         final long last = Collections.max(unixtimes);
@@ -618,32 +693,49 @@ public class UsageReportServlet extends AbstractFlybushServlet {
     }
 
     /** protected for testing */
-    protected void showChartImg(HttpServletResponse resp, GChart chart) throws IOException {
+    protected void showChartImg(HttpServletResponse resp, GChart chart, boolean iframe) throws IOException {
         Matcher m = Pattern.compile("(\\d+)x(\\d+)").matcher(chart.getParameters().get("chs"));
-        String width, height;
+        String margins = chart.getParameters().get("chma");
+        if (margins == null) margins = "";
+        Matcher m2 = Pattern.compile("(\\d+),(\\d+),(\\d+),(\\d+)").matcher(margins);
+        int actualwidth, actualheight;
+        int width, height;
         if (m.find()) {
-            width = m.group(1);
-            height = m.group(2);
+            width = Integer.parseInt(m.group(1));
+            height = Integer.parseInt(m.group(2));
+            actualwidth = width;
+            actualheight = height;
+            if (m2.find()) {
+                actualwidth += Integer.parseInt(m2.group(1));
+                actualwidth += Integer.parseInt(m2.group(3));
+            }
         } else {
-            width = "300";
-            height = "200";
+            width = 300;
+            height = 200;
+            actualwidth = width;
+            actualheight = height;
         }
+        
+        if(iframe) {
 
-        form_id++;
-        Map<String, String> parameters = chart.getParameters();
-        resp.getOutputStream().print(
-                "<form action='https://chart.googleapis.com/chart' method='POST' " +
-                        "id='post_form_" + form_id + "'\n" +
-                        "target='post_frame_" + form_id + "' " +
-                        "onsubmit=\"this.action = 'https://chart.googleapis.com/chart?chid=' " +
-                        "+ (new Date()).getMilliseconds(); return true;\">\n");
-        for (Entry<String, String> entry : parameters.entrySet()) {
-            resp.getOutputStream().println("<input type='hidden' name='" + entry.getKey()
-                    + "' value='" + StringEscapeUtils.escapeHtml(URLDecoder.decode(entry.getValue(), "UTF-8")) + "'/>");
+            form_id++;
+            Map<String, String> parameters = chart.getParameters();
+            resp.getOutputStream().print(
+                    "<form action='https://chart.googleapis.com/chart' method='POST' " +
+                            "id='post_form_" + form_id + "'\n" +
+                            "target='post_frame_" + form_id + "' " +
+                            "onsubmit=\"this.action = 'https://chart.googleapis.com/chart?chid=' " +
+                            "+ (new Date()).getMilliseconds(); return true;\">\n");
+            for (Entry<String, String> entry : parameters.entrySet()) {
+                resp.getOutputStream().println("<input type='hidden' name='" + entry.getKey()
+                        + "' value='" + StringEscapeUtils.escapeHtml(URLDecoder.decode(entry.getValue(), "UTF-8")) + "'/>");
+            }
+            resp.getOutputStream().print("    </form>");
+            resp.getOutputStream().print("<iframe name='post_frame_" + form_id + "' src=\"/empty.html\" " +
+                    "width=\"" + actualwidth + "\" height=\"" + actualheight + "\"></iframe>");
+        } else {
+            resp.getOutputStream().print("<img src='" + chart.toURLForHTML() + "' style=width:" + width + "px;height:" + height + "px>");
         }
-        resp.getOutputStream().print("    </form>");
-        resp.getOutputStream().print("<iframe name='post_frame_" + form_id + "' src=\"/empty.html\" " +
-                "width=\"" + width + "\" height=\"" + height + "\"></iframe>");
     }
 
     @Override
