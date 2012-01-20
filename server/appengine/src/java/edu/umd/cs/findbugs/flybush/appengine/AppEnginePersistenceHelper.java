@@ -21,6 +21,9 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -30,8 +33,11 @@ import edu.umd.cs.findbugs.flybush.DbInvocation;
 import edu.umd.cs.findbugs.flybush.DbIssue;
 import edu.umd.cs.findbugs.flybush.DbPluginUpdateXml;
 import edu.umd.cs.findbugs.flybush.DbUsageEntry;
+import edu.umd.cs.findbugs.flybush.DbUsageSummary;
 import edu.umd.cs.findbugs.flybush.DbUser;
 import edu.umd.cs.findbugs.flybush.PersistenceHelper;
+
+import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 
 public class AppEnginePersistenceHelper extends PersistenceHelper {
     private static final Logger LOGGER = Logger.getLogger(AppEnginePersistenceHelper.class.getName());
@@ -72,6 +78,11 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
     @Override
     public DbPluginUpdateXml createPluginUpdateXml(String value) {
         return new AppEngineDbPluginUpdateXml(value);
+    }
+
+    @Override
+    public DbUsageSummary createDbUsageSummary() {
+        return new AppEngineDbUsageSummary();
     }
 
     public int clearAllData() {
@@ -122,6 +133,11 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
     @Override
     public Class<? extends DbPluginUpdateXml> getDbPluginUpdateXmlClass() {
         return AppEngineDbPluginUpdateXml.class;
+    }
+
+    @Override
+    public Class<? extends DbUsageSummary> getDbUsageSummaryClass() {
+        return AppEngineDbUsageSummary.class;
     }
 
     public <E> E getObjectById(PersistenceManager pm, Class<? extends E> cls, Object key) {
@@ -189,6 +205,16 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
             return false;
         cache.put(id, Boolean.TRUE);
         return true;
+    }
+
+    @Override
+    public void addToQueue(String url, Map<String, String> params) {
+        Queue queue = QueueFactory.getDefaultQueue();
+        TaskOptions taskOptions = withUrl(url);
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            taskOptions.param(entry.getKey(), entry.getValue());
+        }
+        queue.add(taskOptions);
     }
 
     public String getEmail(PersistenceManager pm, Comparable<?> who) {

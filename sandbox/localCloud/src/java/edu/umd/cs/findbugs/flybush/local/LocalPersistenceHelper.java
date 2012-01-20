@@ -19,6 +19,7 @@ import edu.umd.cs.findbugs.flybush.DbInvocation;
 import edu.umd.cs.findbugs.flybush.DbIssue;
 import edu.umd.cs.findbugs.flybush.DbPluginUpdateXml;
 import edu.umd.cs.findbugs.flybush.DbUsageEntry;
+import edu.umd.cs.findbugs.flybush.DbUsageSummary;
 import edu.umd.cs.findbugs.flybush.DbUser;
 import edu.umd.cs.findbugs.flybush.PersistenceHelper;
 import edu.umd.cs.findbugs.flybush.SqlCloudSession;
@@ -88,6 +89,11 @@ public class LocalPersistenceHelper extends PersistenceHelper {
         return new LocalDbPluginUpdateXml();
     }
 
+    @Override
+    public DbUsageSummary createDbUsageSummary() {
+        throw new UnsupportedOperationException();
+    }
+
     public Class<? extends DbUser> getDbUserClass() {
         return LocalDbUser.class;
     }
@@ -123,6 +129,11 @@ public class LocalPersistenceHelper extends PersistenceHelper {
         return LocalDbPluginUpdateXml.class;
     }
 
+    @Override
+    public Class<? extends DbUsageSummary> getDbUsageSummaryClass() {
+        throw new UnsupportedOperationException();
+    }
+
     public int clearAllData() {
         throw new UnsupportedOperationException();
     }
@@ -156,6 +167,11 @@ public class LocalPersistenceHelper extends PersistenceHelper {
     @Override
     public boolean shouldRecordClientStats(String ip, String appName, String appVer, long midnightToday) {
         return true; // currently we don't use memcache for the local cloud server
+    }
+
+    @Override
+    public void addToQueue(String url, Map<String, String> params) {
+        throw new UnsupportedOperationException();
     }
 
     public String getEmail(PersistenceManager pm, Comparable<?> who) {

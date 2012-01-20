@@ -56,6 +56,10 @@
         <servlet-class>edu.umd.cs.findbugs.flybush.UsageReportServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>UsageConsolidatorServlet</servlet-name>
+        <servlet-class>edu.umd.cs.findbugs.flybush.UsageConsolidatorServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateCheckServlet</servlet-name>
         <servlet-class>edu.umd.cs.findbugs.flybush.UpdateCheckServlet</servlet-class>
     </servlet>
@@ -106,6 +110,10 @@
         <url-pattern>/usage</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>UsageConsolidatorServlet</servlet-name>
+        <url-pattern>/consolidate-usage</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateCheckServlet</servlet-name>
         <url-pattern>/update-check</url-pattern>
     </servlet-mapping>
@@ -130,6 +138,10 @@
         <web-resource-collection>
             <web-resource-name>Expire SQL Sessions</web-resource-name>
             <url-pattern>/expire-sql-sessions</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>Consolidate usage</web-resource-name>
+            <url-pattern>/consolidate-usage</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>Update DB: june 29</web-resource-name>
