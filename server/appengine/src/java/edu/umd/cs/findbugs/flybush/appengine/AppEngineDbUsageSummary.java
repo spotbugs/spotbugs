@@ -104,4 +104,47 @@ public class AppEngineDbUsageSummary implements DbUsageSummary {
                 ", lastUpdated=" + lastUpdated +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AppEngineDbUsageSummary that = (AppEngineDbUsageSummary) o;
+
+        if (value != that.value) return false;
+        if (category != null ? !category.equals(that.category) : that.category != null) return false;
+        if (categoryKey != null ? !categoryKey.equals(that.categoryKey) : that.categoryKey != null) return false;
+        if (categorySubkey != null ? !categorySubkey.equals(that.categorySubkey) : that.categorySubkey != null)
+            return false;
+        if (date != null ? !date.equals(that.date) : that.date != null) return false;
+        if (lastUpdated != null ? !lastUpdated.equals(that.lastUpdated) : that.lastUpdated != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = date != null ? date.hashCode() : 0;
+        result = 31 * result + (category != null ? category.hashCode() : 0);
+        result = 31 * result + (categoryKey != null ? categoryKey.hashCode() : 0);
+        result = 31 * result + (categorySubkey != null ? categorySubkey.hashCode() : 0);
+        result = 31 * result + value;
+        result = 31 * result + (lastUpdated != null ? lastUpdated.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public int compareTo(DbUsageSummary o) {
+        if (o.getDate() == null) 
+            return date == null ? -1 : 1;
+        if (date == null) 
+            return -1;
+        int compare = date.compareTo(o.getDate());
+        if (compare != 0)
+            return compare;
+        int a = System.identityHashCode(this);
+        int b = System.identityHashCode(o);
+        return a < b ? -1 : (a > b ? 1 : 0);
+    }
 }

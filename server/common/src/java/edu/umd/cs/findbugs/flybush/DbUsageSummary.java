@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Stores various kinds of usage data for one day in history.
  */
-public interface DbUsageSummary {
+public interface DbUsageSummary extends Comparable<DbUsageSummary> {
 
 
     void setDate(Date date);
