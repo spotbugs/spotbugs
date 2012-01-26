@@ -73,7 +73,17 @@ public class ReportServlet extends AbstractFlybushServlet {
         PersistenceManager pm = getPersistenceManager();
         try {
             if (uri.equals("/stats")) {
-                showStats(req, resp, pm);
+                String user = req.getParameter("user");
+                String pkg = req.getParameter("package");
+                if (user == null) {
+                    if (pkg == null) {
+                        showSummaryStats(req, resp, pm);
+                    } else {
+                        showPackageStats(req, resp, pm, pkg);
+                    }
+                } else {
+                    showUserStats(req, resp, pm, user);
+                }
 
             } else {
                 show404(resp);
@@ -83,19 +93,87 @@ public class ReportServlet extends AbstractFlybushServlet {
         }
     }
 
-    private void showStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
-        if (req.getParameter("user") != null) {
-            showUserStats(req, resp, pm, req.getParameter("user"));
-        } else if (req.getParameter("package") != null) {
-            showPackageStats(req, resp, pm, req.getParameter("package"));
-        } else {
-            showSummaryStats(req, resp, pm);
+    @SuppressWarnings({ "unchecked" })
+    private void showSummaryStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
+        Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClassname() + " order by when ascending");
+        List<DbEvaluation> evals = (List<DbEvaluation>) query.execute();
+        Map<String, Integer> totalCountByUser = Maps.newHashMap();
+        Map<String, Integer> issueCountByUser = Maps.newHashMap();
+        Multimap<String, String> issuesByUser = Multimaps.newSetMultimap(Maps.<String, Collection<String>>newHashMap(),
+                new Supplier<Set<String>>() {
+                    public Set<String> get() {
+                        return Sets.newHashSet();
+                    }
+                });
+        Map<Long, Integer> evalsByWeek = Maps.newHashMap();
+        Map<Long, Integer> issueCountByWeek = Maps.newHashMap();
+        Map<Long, Integer> userCountByWeek = Maps.newHashMap();
+        Map<String, Integer> evalCountByPkg = Maps.newHashMap();
+        Multimap<String, String> issuesByPkg = HashMultimap.create();
+        Set<String> seenIssues = Sets.newHashSet();
+        Set<String> seenUsers = Sets.newHashSet();
+
+        for (DbEvaluation eval : evals) {
+            String email = eval.getEmail();
+            if (email == null)
+                continue;
+
+            long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
+            String issueHash = eval.getIssue().getHash();
+            issuesByUser.put(email, issueHash);
+            increment(totalCountByUser, email);
+            issueCountByUser.put(email, issuesByUser.get(email).size());
+
+            String pkg = getPackageName(eval.getPrimaryClass());
+            if (pkg != null) {
+                increment(evalCountByPkg, pkg);
+                issuesByPkg.put(pkg, issueHash);
+            }
+
+            increment(evalsByWeek, beginningOfWeek);
+            seenIssues.add(issueHash);
+            issueCountByWeek.put(beginningOfWeek, seenIssues.size());
+            seenUsers.add(email);
+            userCountByWeek.put(beginningOfWeek, seenUsers.size());
         }
+        query.closeAll();
+
+        // build charts
+        BarChart histogram = buildEvaluatorsHistogram(issuesByUser);
+
+        BarChart evalsByUserChart = buildByUserChart(totalCountByUser, issueCountByUser);
+
+        BarChart evalsByPkgChart = buildByPkgChart(issuesByPkg, evalCountByPkg);
+
+        LineChart evalsOverTimeChart = createTimelineChart(evalsByWeek, issueCountByWeek, userCountByWeek);
+
+        LineChart cumulativeTimeline = createCumulativeTimelineChart(evalsByWeek, issueCountByWeek, userCountByWeek);
+
+        // print results
+        resp.setStatus(200);
+
+        ServletOutputStream page = printHtmlHeader(resp, getCloudName() + " - Evaluations");
+        resp.getOutputStream().print("<div align=center style='font-size:large; font-weight:bold'>" +
+                "Evaluations - <a href='/usage'>Usage Stats</a></div>");
+
+        printUserStatsSelector(req, resp, seenUsers, null, totalCountByUser);
+        printPackageForm(req, resp, "");
+
+        showChartImg(resp, evalsOverTimeChart);
+        page.println("<br><br>");
+        showChartImg(resp, cumulativeTimeline);
+        page.println("<br><br>");
+
+        showChartImg(resp, evalsByPkgChart);
+        page.println("<br><br>");
+        showChartImg(resp, evalsByUserChart);
+        page.println("<br><br>");
+        showChartImg(resp, histogram);
     }
 
-    @SuppressWarnings({ "unchecked" })
-    private void showPackageStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm, String desiredPackage)
-            throws IOException {
+    @SuppressWarnings({"unchecked" })
+    private void showPackageStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm,
+                                  String desiredPackage) throws IOException {
         if (desiredPackage.equals("*"))
             desiredPackage = "";
 
@@ -139,8 +217,9 @@ public class ReportServlet extends AbstractFlybushServlet {
 
         resp.setStatus(200);
         ServletOutputStream page = resp.getOutputStream();
-        printHtmlHeader(resp, escapeHtml(desiredPackage) + " - " + getCloudName() + " Stats");
-        page.println(backButton(req));
+        printHtmlHeader(resp, escapeHtml(desiredPackage) + " - " + getCloudName() + " - " + desiredPackage);
+        resp.getOutputStream().print("<div align=center style='font-size:large; font-weight:bold'>" +
+                "<a href='/stats'>Evaluations</a> - <a href='/usage'>Usage Stats</a></div>");
 
         printPackageForm(req, resp, desiredPackage);
 
@@ -156,10 +235,6 @@ public class ReportServlet extends AbstractFlybushServlet {
             showChartImg(resp, subpkgChart);
 
         printEvalsTable(resp, lines);
-    }
-
-    private String backButton(HttpServletRequest req) {
-        return "<a href=\"" + req.getRequestURI() + "\">&lt;&lt; Back</a>";
     }
 
     private void printPackageForm(HttpServletRequest req, HttpServletResponse resp, String desiredPackage) throws IOException {
@@ -270,12 +345,13 @@ public class ReportServlet extends AbstractFlybushServlet {
             chart = buildEvaluationTimeline("Reviews over Time - " + email, evalsPerWeek, newIssuesByWeek);
 
         resp.setStatus(200);
-        printHtmlHeader(resp, escapeHtml(email) + " - " + getCloudName() + " Stats");
+        printHtmlHeader(resp, escapeHtml(email) + " - " + getCloudName());
+        resp.getOutputStream().print("<div align=center style='font-size:large; font-weight:bold'>" +
+                "<a href='/stats'>Evaluations</a> - <a href='/usage'>Usage Stats</a></div>");
         ServletOutputStream page = resp.getOutputStream();
-        page.println(backButton(req));
 
         Set<String> users = getAllUserEmails(pm);
-        printUserStatsSelector(req, resp, users, email);
+        printUserStatsSelector(req, resp, users, email, null);
 
         if (chart == null) {
             page.println("Oops! No reviews uploaded by " + escapeHtml(email));
@@ -308,7 +384,7 @@ public class ReportServlet extends AbstractFlybushServlet {
     private static String createEvalsTableEntry(HttpServletRequest req, DbEvaluation eval) {
         return String.format("<td>%s</td>" + "<td><a href='%s'>%s</a></td>" + "<td>%s</td>" + "<td>%s</td>" + "<td>%s</td>",
                 DATE_TIME_FORMAT().format(new Date(eval.getWhen())).replaceAll(" UTC", ""), req.getRequestURI() + "?user="
-                        + escapeHtml(eval.getEmail()), escapeHtml(eval.getEmail()),
+                + escapeHtml(eval.getEmail()), escapeHtml(eval.getEmail()),
                 /* eval.getIssue().getBugPattern(), */
                 printPackageLinks(req, eval.getPrimaryClass()), escapeHtml(eval.getDesignation()), escapeHtml(eval.getComment()));
     }
@@ -365,6 +441,7 @@ public class ReportServlet extends AbstractFlybushServlet {
             labels.add(formatDate(cal, first));
             first = false;
         }
+        cleanLabels(labels);
 
         Line evalsLine = Plots.newLine(Data.newData(evalsData), Color.LIGHTPINK, "Updated reviews");
         evalsLine.setFillAreaColor(Color.LIGHTPINK);
@@ -377,81 +454,6 @@ public class ReportServlet extends AbstractFlybushServlet {
         chart.setDataEncoding(DataEncoding.TEXT);
         chart.setSize(800, 350);
         return chart;
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    private void showSummaryStats(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm) throws IOException {
-        Query query = pm.newQuery("select from " + persistenceHelper.getDbEvaluationClassname() + " order by when ascending");
-        List<DbEvaluation> evals = (List<DbEvaluation>) query.execute();
-        Map<String, Integer> totalCountByUser = Maps.newHashMap();
-        Map<String, Integer> issueCountByUser = Maps.newHashMap();
-        Multimap<String, String> issuesByUser = Multimaps.newSetMultimap(Maps.<String, Collection<String>>newHashMap(),
-                new Supplier<Set<String>>() {
-                    public Set<String> get() {
-                        return Sets.newHashSet();
-                    }
-                });
-        Map<Long, Integer> evalsByWeek = Maps.newHashMap();
-        Map<Long, Integer> issueCountByWeek = Maps.newHashMap();
-        Map<Long, Integer> userCountByWeek = Maps.newHashMap();
-        Map<String, Integer> evalCountByPkg = Maps.newHashMap();
-        Multimap<String, String> issuesByPkg = HashMultimap.create();
-        Set<String> seenIssues = Sets.newHashSet();
-        Set<String> seenUsers = Sets.newHashSet();
-
-        for (DbEvaluation eval : evals) {
-            String email = eval.getEmail();
-            if (email == null)
-                continue;
-
-            long beginningOfWeek = getBeginningOfWeekInMillis(eval.getWhen());
-            String issueHash = eval.getIssue().getHash();
-            issuesByUser.put(email, issueHash);
-            increment(totalCountByUser, email);
-            issueCountByUser.put(email, issuesByUser.get(email).size());
-
-            String pkg = getPackageName(eval.getPrimaryClass());
-            if (pkg != null) {
-                increment(evalCountByPkg, pkg);
-                issuesByPkg.put(pkg, issueHash);
-            }
-
-             increment(evalsByWeek, beginningOfWeek);
-            seenIssues.add(issueHash);
-            issueCountByWeek.put(beginningOfWeek, seenIssues.size());
-            seenUsers.add(email);
-            userCountByWeek.put(beginningOfWeek, seenUsers.size());
-        }
-        query.closeAll();
-
-        // build charts
-        BarChart histogram = buildEvaluatorsHistogram(issuesByUser);
-
-        BarChart evalsByUserChart = buildByUserChart(totalCountByUser, issueCountByUser);
-
-        BarChart evalsByPkgChart = buildByPkgChart(issuesByPkg, evalCountByPkg);
-
-        LineChart evalsOverTimeChart = createTimelineChart(evalsByWeek, issueCountByWeek, userCountByWeek);
-
-        LineChart cumulativeTimeline = createCumulativeTimelineChart(evalsByWeek, issueCountByWeek, userCountByWeek);
-
-        // print results
-        resp.setStatus(200);
-
-        ServletOutputStream page = printHtmlHeader(resp, getCloudName() + " Stats");
-        showChartImg(resp, evalsOverTimeChart);
-        page.println("<br><br>");
-        showChartImg(resp, cumulativeTimeline);
-        page.println("<br><br>");
-
-        printUserStatsSelector(req, resp, seenUsers, null);
-        printPackageForm(req, resp, "");
-
-        showChartImg(resp, evalsByPkgChart);
-        page.println("<br><br>");
-        showChartImg(resp, evalsByUserChart);
-        page.println("<br><br>");
-        showChartImg(resp, histogram);
     }
 
     private ServletOutputStream printHtmlHeader(HttpServletResponse resp, String title) throws IOException {
@@ -487,7 +489,7 @@ public class ReportServlet extends AbstractFlybushServlet {
     }
 
     private void printUserStatsSelector(HttpServletRequest req, HttpServletResponse resp, Collection<String> seenUsers,
-            String selectedEmail) throws IOException {
+                                        String selectedEmail, Map<String, Integer> totalCountByUser) throws IOException {
         ServletOutputStream page = resp.getOutputStream();
         page.println("User stats:" + "<form action=\"" + req.getRequestURI() + "\" method=get>\n" + "<select name=user>\n"
                 + "<option value=\"\"></option>");
@@ -495,8 +497,12 @@ public class ReportServlet extends AbstractFlybushServlet {
         Collections.sort(seenUsersList);
         for (String email : seenUsersList) {
             String escaped = escapeHtml(email);
+            String display = stripAtGmailDotCom(email);
+            display = escapeHtml(display);
+            if (totalCountByUser != null)
+                display += " (" + totalCountByUser.get(email) + ")";
             page.println(String.format("<option value=\"%s\"%s>%s</option>", escaped, email.equals(selectedEmail) ? " selected"
-                    : "", escaped));
+                    : "", display));
         }
         page.println("</select>\n" + "<input type=submit value=Go>\n" + "</form>");
     }
@@ -583,6 +589,7 @@ public class ReportServlet extends AbstractFlybushServlet {
             timelineLabels.add(formatDate(cal, first));
             first = false;
         }
+        cleanLabels(timelineLabels);
 
         Line evalsLine = Plots.newLine(Data.newData(evalsData), Color.LIGHTPINK, "New evals for existing issues");
         evalsLine.setFillAreaColor(Color.LIGHTPINK);
@@ -595,13 +602,21 @@ public class ReportServlet extends AbstractFlybushServlet {
         LineChart chart = GCharts.newLineChart(evalsLine, issuesLine, usersLine);
         chart.setTitle("New Reviews, Issues, & Users Over Time");
         chart.setDataEncoding(DataEncoding.TEXT);
-        chart.setSize(850, 350);
+        chart.setSize(600, 500);
 
         chart.setGrid(100, 10 / (maxEvalsPerWeek / 100.0), 4, 1);
 
         chart.addXAxisLabels(AxisLabelsFactory.newAxisLabels(timelineLabels));
         chart.addYAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, maxEvalsPerWeek));
         return chart;
+    }
+
+    private void cleanLabels(List<String> timelineLabels) {
+        int space = Math.max(timelineLabels.size()/10, 1);
+        for (int i = 0, timelineLabelsSize = timelineLabels.size(); i < timelineLabelsSize; i++) {
+            if (i % space != 0) timelineLabels.set(i, "");
+
+        }
     }
 
     private LineChart createCumulativeTimelineChart(Map<Long, Integer> evalsByWeek, Map<Long, Integer> issueCountByWeek,
@@ -637,6 +652,7 @@ public class ReportServlet extends AbstractFlybushServlet {
             evalsData.add(evalCount * 100.0 / totalEvals);
             first = false;
         }
+        cleanLabels(labels);
 
         Line evalsLine = Plots.newLine(Data.newData(evalsData), Color.LIGHTPINK, "Total Reviews");
         evalsLine.setFillAreaColor(Color.LIGHTPINK);
@@ -651,7 +667,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         chart.setDataEncoding(DataEncoding.TEXT);
         chart.setSize(800, 350);
 
-        chart.setGrid(100, 100 / (totalEvals / 100.0), 8, 2);
+        chart.setGrid(100, (totalEvals / 100)*10, 8, 2);
 
         chart.addXAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
         AxisLabels leftLabels = AxisLabelsFactory.newNumericRangeAxisLabels(0, totalEvals);
@@ -737,14 +753,13 @@ public class ReportServlet extends AbstractFlybushServlet {
         List<Double> evalsData = Lists.newArrayList();
         List<Double> issuesData = Lists.newArrayList();
         int maxPerPkg = Collections.max(evalCountByPkg.values());
-        int count = 0;
         List<Entry<String, Integer>> entries = sortEntriesByValue(evalCountByPkg.entrySet());
         Collections.reverse(entries);
         for (Entry<String, Integer> entry : entries) {
             labels.add(entry.getKey());
             evalsData.add(entry.getValue() * 100.0 / maxPerPkg);
             issuesData.add((double) issuesByPkg.get(entry.getKey()).size());
-            if (count++ >= 19)
+            if (labels.size() >= 19)
                 break;
         }
         Collections.reverse(labels);
@@ -768,21 +783,25 @@ public class ReportServlet extends AbstractFlybushServlet {
         List<Double> totals = Lists.newArrayList();
         List<Double> issues = Lists.newArrayList();
         int max = Collections.max(totalCountByUser.values());
-        for (Entry<String, Integer> entry : sortEntriesByValue(totalCountByUser.entrySet())) {
+        List<Entry<String, Integer>> reversed = sortEntriesByValue(totalCountByUser.entrySet());
+        Collections.reverse(reversed);
+        for (Entry<String, Integer> entry : reversed) {
             String email = entry.getKey();
             int issueCount = issueCountByUser.get(email);
             int evalCount = entry.getValue();
+            email = stripAtGmailDotCom(email);
             labels.add(email);
             totals.add((evalCount - issueCount) * 100.0 / max);
             issues.add(issueCount * 100.0 / max);
+            if (labels.size() >= 10)
+                break;
         }
 
-        Collections.reverse(totals);
-        Collections.reverse(issues);
+        Collections.reverse(labels);
         BarChart chart = GCharts.newBarChart(Plots.newBarChartPlot(Data.newData(issues), Color.DARKORCHID, "Initial review"),
                 Plots.newBarChartPlot(Data.newData(totals), Color.ORCHID, "Updated review"));
 
-        chart.setTitle("Reviews Per Human");
+        chart.setTitle("Top Reviewers");
         chart.setDataStacked(true);
         chart.setGrid(20.0 / (max / 100.0), 100, 4, 1);
         chart.addYAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
@@ -792,6 +811,12 @@ public class ReportServlet extends AbstractFlybushServlet {
         chart.setHorizontal(true);
         chart.setDataEncoding(DataEncoding.TEXT);
         return chart;
+    }
+
+    private String stripAtGmailDotCom(String email) {
+        if (email.endsWith("@gmail.com"))
+            email = email.substring(0,email.length()-"@gmail.com".length());
+        return email;
     }
 
     private List<Entry<String, Integer>> sortEntriesByValue(Collection<Entry<String, Integer>> entries) {

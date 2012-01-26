@@ -117,8 +117,12 @@ public class UsageReportServlet extends AbstractFlybushServlet {
                     version = m.group(1) + "xx";
                 increment(uuidsByVersion, version, value);
             }
-            if (summary.getCategory().equals("plugin"))
-                increment(uuidsByPlugin, summary.getCategoryKey(), value);
+            if (summary.getCategory().equals("plugin")) {
+                String pkg = summary.getCategoryKey();
+                if (pkg.startsWith("edu.umd.cs.findbugs.plugins."))
+                    pkg = pkg.substring(0,pkg.length()-"edu.umd.cs.findbugs.plugins.".length());
+                increment(uuidsByPlugin, pkg, value);
+            }
             if (summary.getCategory().equals("country"))
                 increment(uuidsByCountry, summary.getCategoryKey(), value);
             if (summary.getCategory().equals("language"))
@@ -136,39 +140,56 @@ public class UsageReportServlet extends AbstractFlybushServlet {
         
         LineChart usersByVersionPerDay = createTimelineChart2(usersByDay, ipsByDay, "Unique Users");
 //        LineChart ipsByVersionPerDay = createTimelineChart2(ipsByDay, "Unique IP Addresses");
-        BarChart pluginsChart = makeBarChart(uuidsByPlugin, "Unique Plugin Users", 600, 200);
-        BarChart versionsChart = makeBarChart(uuidsByVersion, "FindBugs Versions", 600, 400);
-        BarChart appNameChart = makeBarChart(uuidsByAppName, "Applications", 600, 400);
-        BarChart entryPointChart = makeBarChart(uuidsByEntryPoint, "Entry Points", 600, 400);
-        BarChart languageChart = makeBarChart(uuidsByLanguage, "Languages", 400, 300);
-        BarChart countryChart = makeBarChart(uuidsByCountry, "Countries", 400, 300);
-        BarChart osChart = makeBarChart(uuidsByOs, "Operating Systems", 400, 300);
-        BarChart javaVersionChart = makeBarChart(uuidsByJavaVersion, "Java Versions", 400, 200);
+        BarChart versionsChart = makeBarChart(uuidsByVersion, "FindBugs Versions", 400, 300, false);
+        BarChart pluginsChart = makeBarChart(uuidsByPlugin, "Unique Plugin 'Visits'", 400, 300, true);
+
+        BarChart appNameChart = makeBarChart(uuidsByAppName, "Applications", 600, 400, false);
+        BarChart entryPointChart = makeBarChart(uuidsByEntryPoint, "Entry Points", 600, 400, false);
+
+        BarChart languageChart = makeBarChart(uuidsByLanguage, "Languages", 400, 300, false);
+        BarChart countryChart = makeBarChart(uuidsByCountry, "Countries", 400, 300, false);
+        BarChart osChart = makeBarChart(uuidsByOs, "Operating Systems", 400, 300, false);
+        BarChart javaVersionChart = makeBarChart(uuidsByJavaVersion, "Java Versions", 400, 300, false);
 
         // print results
         resp.setStatus(200);
 
-        ServletOutputStream page = printHtmlHeader(resp, getCloudName() + " Stats");
+        ServletOutputStream page = printHtmlHeader(resp, getCloudName() + " - Statistics");
+        resp.getOutputStream().print("<div align=center style='font-size:large; font-weight:bold'>" +
+                "<a href='/stats'>Evaluations</a> - Usage Stats</div>");
         showChartImg(resp, usersByVersionPerDay, true);
 //        page.println("<br><br>");
 //        showChartImg(resp, ipsByVersionPerDay, true);
+
         page.println("<br><br>");
+        page.println("<table border=0 cellspacing=20><tr valign=top><td>");
         showChartImg(resp, versionsChart, false);
-        page.println("<br><br>");
+        page.println("</td><td>");
         showChartImg(resp, pluginsChart, false);
+        page.println("<em style='width:500px;display:block'>This plugin chart counts 'visits' from users running each " +
+                "plugin. If a user ran FindBugs 100 times per day for 30 days, it " +
+                "would only show up as 30 visits.</em>");
+        page.println("</td></tr></table>");
+
         page.println("<br><br>");
+
+        page.println("<table border=0 cellspacing=20><tr><td>");
         showChartImg(resp, appNameChart, false);
-        page.println("<br><br>");
+        page.println("</td><td>");
         showChartImg(resp, entryPointChart, false);
+        page.println("</td></tr></table>");
+
         page.println("<br><br>");
+
+        page.println("<table border=0 cellspacing=20><tr><td>");
         showChartImg(resp, languageChart, false);
-        page.println("<br><br>");
+        page.println("</td><td>");
         showChartImg(resp, countryChart, false);
-        page.println("<br><br>");
+        page.println("</td></tr><tr><td>");
         showChartImg(resp, osChart, false);
-        page.println("<br><br>");
+        page.println("</td><td>");
         showChartImg(resp, javaVersionChart, false);
-        page.println("<br><br>");
+        page.println("</td></tr></table>");
     }
 
     private void getPastUsage(PersistenceManager pm, SortedSet<DbUsageSummary> summaries) {
@@ -212,7 +233,7 @@ public class UsageReportServlet extends AbstractFlybushServlet {
         return cal.getTime();
     }
 
-    private BarChart makeBarChart(Map<String, Integer> uuidsByPlugin, String title, int width, int height) {
+    private BarChart makeBarChart(Map<String, Integer> uuidsByPlugin, String title, int width, int height, boolean showActualNumbers) {
         double max = Collections.max(uuidsByPlugin.values());
         List<Double> data = Lists.newArrayList();
         List<String> labels = Lists.newArrayList();
@@ -235,11 +256,14 @@ public class UsageReportServlet extends AbstractFlybushServlet {
         BarChart chart = GCharts.newBarChart(plot);
         chart.setHorizontal(true);
         chart.addYAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
-        chart.addXAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, max, Math.floor(max/30)*10));
+        if (showActualNumbers)
+            chart.addXAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, max, Math.floor(max/30)*10));
+
 //        chart.setLegendMargins(100, 100);
 //        chart.setMargins(100, 0, 100, 0);
         chart.setSize(width, height);
-        chart.setBarWidth(12);
+
+        chart.setBarWidth(BarChart.AUTO_RESIZE);
         chart.setTitle(title);
         return chart;
     }
