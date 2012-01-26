@@ -18,7 +18,12 @@ import com.google.common.collect.Maps;
 
 public class UsageConsolidatorServlet extends AbstractFlybushServlet {
 
-    public static final int CONSOLIDATION_DATA_VERSION = 1;
+    /**
+     * update this when adding a new DbUsageSummary field, or when changing / fixing
+     * bugs in the UsageDataConsolidator
+     */
+    public static final int CONSOLIDATION_DATA_VERSION = 6;
+
     public static final DateFormat DATE_FORMAT = DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH);
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -74,23 +79,20 @@ public class UsageConsolidatorServlet extends AbstractFlybushServlet {
             return;
         }
 
-        Query vquery = pm.newQuery("select from " + persistenceHelper.getDbUsageSummaryClassname() 
-                + " where date == :date && category == 'consolidation-data-version' && value == :ver");
-        @SuppressWarnings("unchecked") 
-        List<DbUsageSummary> ventries = (List<DbUsageSummary>) vquery.execute(dateDate, CONSOLIDATION_DATA_VERSION);
-        if (!ventries.isEmpty()) {
-            DbUsageSummary summary = ventries.iterator().next();
-            String lastUpdatedStr = DateFormat.getDateTimeInstance().format(summary.getLastUpdated());
-            int version = summary.getValue();
-            String msg = "Skipping - already at version " + version + " - last updated " + lastUpdatedStr;
-            LOGGER.info(msg);
-            setResponse(resp, 200, msg);
+        if (dateDate.after(dayStart(new Date()))) {
+            LOGGER.warning("SHOULD NOT BE CONSOLIDATING " + dateStr + " UNTIL END OF DAY! WTF??");
+            setResponse(resp, 200, "SHOULD NOT BE CONSOLIDATING " + dateStr + " UNTIL END OF DAY! WTF??");
             return;
         }
 
+        if (checkVersion(resp, pm, dateStr, dateDate))
+            return;
+
+
+        LOGGER.info("Looking for usage data on " + dateStr + " - initial query starting");
         Query query = pm.newQuery("select from " + persistenceHelper.getDbUsageEntryClassname()
                 + " where date >= :startDate && date < :endDate");
-        query.addExtension("javax.persistence.query.chunkSize", 200);
+        query.addExtension("javax.persistence.query.chunkSize", 50);
         @SuppressWarnings("unchecked")
         List<DbUsageEntry> entries = (List<DbUsageEntry>) query.execute(dateDate, nextDay(dateDate));
 
@@ -103,6 +105,35 @@ public class UsageConsolidatorServlet extends AbstractFlybushServlet {
         }
 
         setResponse(resp, 200, "Done!");
+    }
+
+    private boolean checkVersion(HttpServletResponse resp, PersistenceManager pm, String dateStr, Date dateDate) throws IOException {
+        Query vquery = pm.newQuery("select from " + persistenceHelper.getDbUsageSummaryClassname()
+                + " where date == :date && category == 'consolidation-data-version'");
+        @SuppressWarnings("unchecked")
+        List<DbUsageSummary> ventries = (List<DbUsageSummary>) vquery.execute(dateDate, CONSOLIDATION_DATA_VERSION);
+        if (ventries.isEmpty()) {
+            LOGGER.info("No data found for " + dateStr + ", proceeding to consolidate");
+        } else {
+            for (DbUsageSummary ventry : ventries) {
+                String lastUpdatedStr = DateFormat.getDateTimeInstance().format(ventry.getLastUpdated());
+                if (ventry.getValue() == CONSOLIDATION_DATA_VERSION) {
+                    int version = ventry.getValue();
+                    String msg = "Skipping - already at version " + version + " - last updated " + lastUpdatedStr;
+                    LOGGER.info(msg);
+                    setResponse(resp, 200, msg);
+                    return true;
+                }
+                LOGGER.warning("Found old data - version " + ventry.getValue() + " from " + lastUpdatedStr);
+            }
+            LOGGER.info("Deleting old data...");
+            Query dquery = pm.newQuery("select from " + persistenceHelper.getDbUsageSummaryClassname()
+                    + " where date == :date");
+            long deleted = dquery.deletePersistentAll(dateDate);
+            LOGGER.info("Deleted " + deleted + " entries");
+        }
+        vquery.closeAll();
+        return false;
     }
 
     private Date nextDay(Date date) {
@@ -145,7 +176,7 @@ public class UsageConsolidatorServlet extends AbstractFlybushServlet {
             Map<String, String> parameters = Maps.newHashMap();
             parameters.put("date", DATE_FORMAT.format(cal.getTime()));
             persistenceHelper.addToQueue("/consolidate-usage", parameters);
-            cal.add(Calendar.DAY_OF_YEAR, -1);
+            cal.add(Calendar.DAY_OF_MONTH, -1);
         }
 
         setResponse(resp, 200, "Done");
@@ -157,7 +188,7 @@ public class UsageConsolidatorServlet extends AbstractFlybushServlet {
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        cal.add(Calendar.DAY_OF_YEAR, -1);
+        cal.add(Calendar.DAY_OF_MONTH, -1);
         return cal;
     }
 

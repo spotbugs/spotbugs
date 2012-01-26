@@ -17,14 +17,17 @@ import com.google.common.collect.Sets;
 
 public class UsageDataConsolidator {
     private final PersistenceHelper persistenceHelper;
-    public Multimap<String, String> uuidsByPlugin;
-    public Map<String, Multimap<String, String>> uuidsByPluginVersion;
-    public Multimap<String, String> uuidsByVersion;
-    public Multimap<String, String> uuidsByCountry;
-    public Multimap<String, String> uuidsByOs;
-    public Multimap<String, String> uuidsByJavaVersion;
-    public Set<String> uuidsByDay;
-    public Set<String> ipsByDay;
+    public Multimap<String, Long> uuidsByPlugin = newHashSetMultiMap();
+    public Multimap<String, Long> uuidsByAppName = newHashSetMultiMap();
+    public Multimap<String, Long> uuidsByEntryPoint = newHashSetMultiMap();
+    public Multimap<String, Long> uuidsByLanguage = newHashSetMultiMap();
+    public Map<String, Multimap<String, Long>> uuidsByPluginVersion = Maps.newHashMap();
+    public Multimap<String, Long> uuidsByVersion = newHashSetMultiMap();
+    public Multimap<String, Long> uuidsByCountry = newHashSetMultiMap();
+    public Multimap<String, Long> uuidsByOs = newHashSetMultiMap();
+    public Multimap<String, Long> uuidsByJavaVersion = newHashSetMultiMap();
+    public Set<Long> uuidsByDay = Sets.newHashSet();
+    public Set<String> ipsByDay = Sets.newHashSet();
 
     UsageDataConsolidator(PersistenceHelper persistenceHelper) {
         this.persistenceHelper = persistenceHelper;
@@ -51,36 +54,26 @@ public class UsageDataConsolidator {
     }
 
     public void process(Query query, List<DbUsageEntry> entries) {
-        Multimap<String, DbUsageEntry> entriesByUuid = newHashSetMultiMap();
-        Multimap<String, String> pluginsByUuid = newHashSetMultiMap();
-        uuidsByPlugin = newHashSetMultiMap();
-        uuidsByPluginVersion = Maps.newHashMap();
-        uuidsByVersion = newHashSetMultiMap();
-        uuidsByCountry = newHashSetMultiMap();
-        Multimap<String, String> uuidsByLanguage = newHashSetMultiMap();
-        uuidsByOs = newHashSetMultiMap();
-        uuidsByJavaVersion = newHashSetMultiMap();
-        uuidsByDay = Sets.newHashSet();
-        ipsByDay = Sets.newHashSet();
-        int size = entries.size();
-        AbstractFlybushServlet.LOGGER.info("Total entries: " + size);
+//        int size = entries.size();
+//        AbstractFlybushServlet.LOGGER.info("Total entries: " + size);
         int count = 0;
         for (DbUsageEntry entry : entries) {
             if (++count % 1000 == 0) {
-                AbstractFlybushServlet.LOGGER.info("Processed " + count + " of " + size + " - " + String.format("%.2f", count * 100.0 / size) + "%");
+                AbstractFlybushServlet.LOGGER.info("Processed " + count);
+//                        + " of " + size + " - "
+//                        + String.format("%.2f", count * 100.0 / size) + "%");
             }
-            String uuid = entry.getUuid();
+            String uuidStr = entry.getUuid();
+            Long uuid = Long.parseLong(uuidStr, 16);
             uuidsByDay.add(uuid);
             ipsByDay.add(entry.getIpAddress());
-            entriesByUuid.put(uuid, entry);
             String pluginFqn = entry.getPlugin();
             boolean corePlugin = "edu.umd.cs.findbugs.plugins.core".equals(pluginFqn);
             if (!corePlugin && pluginFqn != null && !pluginFqn.equals("")) {
-                pluginsByUuid.put(uuid, pluginFqn);
                 uuidsByPlugin.put(pluginFqn, uuid);
                 String pluginVersion = entry.getPluginVersion();
                 if (pluginVersion != null) {
-                    Multimap<String, String> byPlugin = uuidsByPluginVersion.get(pluginFqn);
+                    Multimap<String, Long> byPlugin = uuidsByPluginVersion.get(pluginFqn);
                     if (byPlugin == null) {
                         byPlugin = newHashSetMultiMap();
                         uuidsByPluginVersion.put(pluginFqn, byPlugin);
@@ -89,50 +82,53 @@ public class UsageDataConsolidator {
                 }
             }
             uuidsByVersion.put(entry.getVersion(), uuid);
-            uuidsByCountry.put(entry.getCountry().toLowerCase(), uuid);
-            uuidsByLanguage.put(entry.getCountry().toLowerCase(), uuid);
+            String country = entry.getCountry();
+            if (country != null)
+                uuidsByCountry.put(country.toLowerCase(), uuid);
+            String language = entry.getLanguage();
+            if (language != null)
+                uuidsByLanguage.put(language.toLowerCase(), uuid);
             uuidsByOs.put(entry.getOs(), uuid);
             uuidsByJavaVersion.put(entry.getJavaVersion(), uuid);
+            uuidsByAppName.put(entry.getAppName(), uuid);
+            uuidsByEntryPoint.put(entry.getEntryPoint(), uuid);
         }
 
 
         query.closeAll();
     }
 
-    public Set<DbUsageSummary> createSummaryEntries(Date dateDate) {
+    public Set<DbUsageSummary> createSummaryEntries(Date date) {
         Set<DbUsageSummary> list = Sets.newHashSet();
 
-        list.add(createSummaryEntry(dateDate, "ips", null, null, ipsByDay.size()));
+        list.add(createSummaryEntry(date, "ips", null, null, ipsByDay.size()));
 
-        list.add(createSummaryEntry(dateDate, "users", null, null, uuidsByDay.size()));
+        list.add(createSummaryEntry(date, "users", null, null, uuidsByDay.size()));
 
-        for (Map.Entry<String, Collection<String>> entry : uuidsByVersion.asMap().entrySet()) {
-            list.add(createSummaryEntry(dateDate, "version", entry.getKey(), null, entry.getValue().size()));
-        }
+        createSummaries(date, list, "version", uuidsByVersion);
+        createSummaries(date, list, "plugin", uuidsByPlugin);
+        createSummaries(date, list, "appName", uuidsByAppName);
+        createSummaries(date, list, "entryPoint", uuidsByEntryPoint);
 
-        for (Map.Entry<String, Collection<String>> entry : uuidsByPlugin.asMap().entrySet()) {
-            list.add(createSummaryEntry(dateDate, "plugin", entry.getKey(), null, entry.getValue().size()));
-        }
-        for (Map.Entry<String, Collection<String>> entry : uuidsByCountry.asMap().entrySet()) {
-            list.add(createSummaryEntry(dateDate, "country", entry.getKey(), null, entry.getValue().size()));
-        }
+        createSummaries(date, list, "country", uuidsByCountry);
+        createSummaries(date, list, "language", uuidsByLanguage);
+        createSummaries(date, list, "os", uuidsByOs);
+        createSummaries(date, list, "javaVersion", uuidsByJavaVersion);
 
-        for (Map.Entry<String, Collection<String>> entry : uuidsByOs.asMap().entrySet()) {
-            list.add(createSummaryEntry(dateDate, "os", entry.getKey(), null, entry.getValue().size()));
-        }
-
-        for (Map.Entry<String, Collection<String>> entry : uuidsByJavaVersion.asMap().entrySet()) {
-            list.add(createSummaryEntry(dateDate, "javaVersion", entry.getKey(), null, entry.getValue().size()));
-        }
-
-        for (Map.Entry<String, Multimap<String, String>> pentry : uuidsByPluginVersion.entrySet()) {
-            for (Map.Entry<String, Collection<String>> ventry : pentry.getValue().asMap().entrySet()) {
-                list.add(createSummaryEntry(dateDate, "pluginVersion", pentry.getKey(),
+        for (Map.Entry<String, Multimap<String, Long>> pentry : uuidsByPluginVersion.entrySet()) {
+            for (Map.Entry<String, Collection<Long>> ventry : pentry.getValue().asMap().entrySet()) {
+                list.add(createSummaryEntry(date, "pluginVersion", pentry.getKey(),
                         ventry.getKey(), ventry.getValue().size()));
             }
         }
 
-        list.add(createSummaryEntry(dateDate, "consolidation-data-version", null, null, UsageConsolidatorServlet.CONSOLIDATION_DATA_VERSION));
+        list.add(createSummaryEntry(date, "consolidation-data-version", null, null, UsageConsolidatorServlet.CONSOLIDATION_DATA_VERSION));
         return list;
+    }
+
+    private <E> void createSummaries(Date dateDate, Set<DbUsageSummary> list, String category, Multimap<String, E> map) {
+        for (Map.Entry<String, Collection<E>> entry : map.asMap().entrySet()) {
+            list.add(createSummaryEntry(dateDate, category, entry.getKey(), null, entry.getValue().size()));
+        }
     }
 }

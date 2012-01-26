@@ -35,6 +35,7 @@ import com.googlecode.charts4j.Data;
 import com.googlecode.charts4j.DataEncoding;
 import com.googlecode.charts4j.GChart;
 import com.googlecode.charts4j.GCharts;
+import com.googlecode.charts4j.LegendPosition;
 import com.googlecode.charts4j.Line;
 import com.googlecode.charts4j.LineChart;
 import com.googlecode.charts4j.Plots;
@@ -93,48 +94,80 @@ public class UsageReportServlet extends AbstractFlybushServlet {
         Map<Long, Integer> usersByDay = Maps.newHashMap();
         Map<Long, Integer> ipsByDay = Maps.newHashMap();
         Map<String, Integer> uuidsByPlugin = Maps.newHashMap();
+        Map<String, Integer> uuidsByAppName = Maps.newHashMap();
+        Map<String, Integer> uuidsByEntryPoint = Maps.newHashMap();
         Map<String, Integer> uuidsByVersion = Maps.newHashMap();
+        Map<String, Integer> uuidsByCountry = Maps.newHashMap();
+        Map<String, Integer> uuidsByLanguage = Maps.newHashMap();
+        Map<String, Integer> uuidsByJavaVersion = Maps.newHashMap();
+        Map<String, Integer> uuidsByOs = Maps.newHashMap();
         for (DbUsageSummary summary : summaries) {
             long time = summary.getDate().getTime();
             int value = summary.getValue();
-            if (summary.getCategory().equals("users")) {
-                LOGGER.info("users " + new Date(time) + ": " + value);
+            if (summary.getCategory().equals("users"))
                 usersByDay.put(time, value);
-            }
-            if (summary.getCategory().equals("ips")) {
-                LOGGER.info("ips " + new Date(time) + ": " + value);
+
+            if (summary.getCategory().equals("ips"))
                 ipsByDay.put(time, value);
-            }
+
             if (summary.getCategory().equals("version")) {
                 String version = summary.getCategoryKey();
                 Matcher m = DEV_VERSION_REGEX.matcher(version);
                 if (m.matches())
                     version = m.group(1) + "xx";
-                LOGGER.info("version " + version + ": " + value);
                 increment(uuidsByVersion, version, value);
             }
-            if (summary.getCategory().equals("plugin")) {
-                LOGGER.info("plugin " + summary.getCategoryKey() + ": " + value);
+            if (summary.getCategory().equals("plugin"))
                 increment(uuidsByPlugin, summary.getCategoryKey(), value);
-            }
+            if (summary.getCategory().equals("country"))
+                increment(uuidsByCountry, summary.getCategoryKey(), value);
+            if (summary.getCategory().equals("language"))
+                increment(uuidsByLanguage, summary.getCategoryKey(), value);
+            if (summary.getCategory().equals("javaVersion"))
+                increment(uuidsByJavaVersion, summary.getCategoryKey(), value);
+            if (summary.getCategory().equals("os"))
+                increment(uuidsByOs, summary.getCategoryKey(), value);
+            if (summary.getCategory().equals("appName"))
+                increment(uuidsByAppName, summary.getCategoryKey(), value);
+            if (summary.getCategory().equals("entryPoint"))
+                increment(uuidsByEntryPoint, summary.getCategoryKey(), value);
+
         }
         
-        LineChart usersByVersionPerDay = createTimelineChart2(usersByDay, "Unique Users");
-        LineChart ipsByVersionPerDay = createTimelineChart2(ipsByDay, "Unique IP Addresses");
+        LineChart usersByVersionPerDay = createTimelineChart2(usersByDay, ipsByDay, "Unique Users");
+//        LineChart ipsByVersionPerDay = createTimelineChart2(ipsByDay, "Unique IP Addresses");
         BarChart pluginsChart = makeBarChart(uuidsByPlugin, "Unique Plugin Users", 600, 200);
         BarChart versionsChart = makeBarChart(uuidsByVersion, "FindBugs Versions", 600, 400);
+        BarChart appNameChart = makeBarChart(uuidsByAppName, "Applications", 600, 400);
+        BarChart entryPointChart = makeBarChart(uuidsByEntryPoint, "Entry Points", 600, 400);
+        BarChart languageChart = makeBarChart(uuidsByLanguage, "Languages", 400, 300);
+        BarChart countryChart = makeBarChart(uuidsByCountry, "Countries", 400, 300);
+        BarChart osChart = makeBarChart(uuidsByOs, "Operating Systems", 400, 300);
+        BarChart javaVersionChart = makeBarChart(uuidsByJavaVersion, "Java Versions", 400, 200);
 
         // print results
         resp.setStatus(200);
 
         ServletOutputStream page = printHtmlHeader(resp, getCloudName() + " Stats");
         showChartImg(resp, usersByVersionPerDay, true);
-        page.println("<br><br>");
-        showChartImg(resp, ipsByVersionPerDay, true);
+//        page.println("<br><br>");
+//        showChartImg(resp, ipsByVersionPerDay, true);
         page.println("<br><br>");
         showChartImg(resp, versionsChart, false);
         page.println("<br><br>");
         showChartImg(resp, pluginsChart, false);
+        page.println("<br><br>");
+        showChartImg(resp, appNameChart, false);
+        page.println("<br><br>");
+        showChartImg(resp, entryPointChart, false);
+        page.println("<br><br>");
+        showChartImg(resp, languageChart, false);
+        page.println("<br><br>");
+        showChartImg(resp, countryChart, false);
+        page.println("<br><br>");
+        showChartImg(resp, osChart, false);
+        page.println("<br><br>");
+        showChartImg(resp, javaVersionChart, false);
         page.println("<br><br>");
     }
 
@@ -183,20 +216,30 @@ public class UsageReportServlet extends AbstractFlybushServlet {
         double max = Collections.max(uuidsByPlugin.values());
         List<Double> data = Lists.newArrayList();
         List<String> labels = Lists.newArrayList();
-        for (Entry<String, Integer> entry : sortEntries(uuidsByPlugin.entrySet())) {
+        List<Entry<String, Integer>> sorted = sortEntries(uuidsByPlugin.entrySet());
+        for (Entry<String, Integer> entry : sorted.subList(0,Math.min(10, sorted.size()))) {
             int val = entry.getValue();
             data.add(val/max*100);
             labels.add(entry.getKey());
+        }
+        if (sorted.size() > 10) {
+            int total = 0;
+            for (Entry<String, Integer> entry : sorted.subList(10, sorted.size())) {
+                total += entry.getValue();
+            }
+            data.add(total/max*100);
+            labels.add("(other)");
         }
         Collections.reverse(labels);
         BarChartPlot plot = Plots.newBarChartPlot(Data.newData(data));
         BarChart chart = GCharts.newBarChart(plot);
         chart.setHorizontal(true);
         chart.addYAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
-        chart.addXAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, max, Math.floor(max/100)*10));
+        chart.addXAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, max, Math.floor(max/30)*10));
 //        chart.setLegendMargins(100, 100);
 //        chart.setMargins(100, 0, 100, 0);
         chart.setSize(width, height);
+        chart.setBarWidth(12);
         chart.setTitle(title);
         return chart;
     }
@@ -247,6 +290,57 @@ public class UsageReportServlet extends AbstractFlybushServlet {
         return page;
     }
 
+    private LineChart createTimelineChart2(Map<Long, Integer> firstByDay, Map<Long, Integer> secondByDay, String title) {
+        int maxUsersPerDay = Collections.max(firstByDay.values());
+        int maxIpsPerDay = Collections.max(firstByDay.values());
+        int maxPerDay = Math.max(maxUsersPerDay, maxIpsPerDay);
+
+        List<Double> userCountData = new ArrayList<Double>();
+        List<Double> ipCountData = new ArrayList<Double>();
+        List<String> timelineLabels = Lists.newArrayList();
+        boolean first = true;
+        for (Calendar cal : iterateByDay(firstByDay.keySet())) {
+            Integer usersThisWeek = firstByDay.get(cal.getTimeInMillis());
+            if (usersThisWeek == null) 
+                usersThisWeek = 0;
+            Integer ipsThisWeek = secondByDay.get(cal.getTimeInMillis());
+            if (ipsThisWeek == null) 
+                ipsThisWeek = 0;
+
+            userCountData.add(usersThisWeek * 100.0 / maxPerDay);
+            ipCountData.add(ipsThisWeek * 100.0 / maxPerDay);
+            timelineLabels.add(formatDate(cal, first));
+            first = false;
+        }
+        
+        pruneLabels(timelineLabels);
+
+        Line userCountLine = Plots.newLine(Data.newData(userCountData), Color.PINK, "Users");
+        userCountLine.setFillAreaColor(Color.LIGHTPINK);
+        Line ipCountLine = Plots.newLine(Data.newData(ipCountData), Color.MAGENTA, "IP Addresses");
+//        userCountLine.setFillAreaColor(new Color("ADD8E6"));
+
+        LineChart chart = GCharts.newLineChart(userCountLine, ipCountLine);
+        chart.setLegendPosition(LegendPosition.RIGHT);
+        chart.setTitle(title);
+        chart.setDataEncoding(DataEncoding.TEXT);
+        chart.setSize(850, 350);
+
+        chart.setGrid(100, (maxPerDay / 100.0), 4, 1);
+
+        chart.addXAxisLabels(AxisLabelsFactory.newAxisLabels(timelineLabels));
+        chart.addYAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, maxPerDay));
+        return chart;
+    }
+
+    private void pruneLabels(List<String> timelineLabels) {
+        int showLabelEvery = Math.max(1, timelineLabels.size()/10);
+        for (int i = 0, timelineLabelsSize = timelineLabels.size(); i < timelineLabelsSize; i++) {
+            if (i % showLabelEvery != 0)
+                timelineLabels.set(i, "");
+        }
+    }
+
     private LineChart createTimelineChart2(Map<Long, Integer> byDayCounts, String title) {
         int maxPerDay = Collections.max(byDayCounts.values());
 
@@ -255,7 +349,7 @@ public class UsageReportServlet extends AbstractFlybushServlet {
         boolean first = true;
         for (Calendar cal : iterateByDay(byDayCounts.keySet())) {
             Integer usersThisWeek = byDayCounts.get(cal.getTimeInMillis());
-            if (usersThisWeek == null) 
+            if (usersThisWeek == null)
                 usersThisWeek = 0;
 
             userCountData.add(usersThisWeek * 100.0 / maxPerDay);
@@ -271,7 +365,7 @@ public class UsageReportServlet extends AbstractFlybushServlet {
         chart.setDataEncoding(DataEncoding.TEXT);
         chart.setSize(850, 350);
 
-        chart.setGrid(100, 10 / (maxPerDay / 100.0), 4, 1);
+        chart.setGrid(100, 10 / (maxPerDay / 500.0), 4, 1);
 
         chart.addXAxisLabels(AxisLabelsFactory.newAxisLabels(timelineLabels));
         chart.addYAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, maxPerDay));
@@ -364,7 +458,8 @@ public class UsageReportServlet extends AbstractFlybushServlet {
             resp.getOutputStream().print("<iframe name='post_frame_" + form_id + "' src=\"/empty.html\" " +
                     "width=\"" + actualwidth + "\" height=\"" + actualheight + "\"></iframe>");
         } else {
-            resp.getOutputStream().print("<img src='" + chart.toURLForHTML() + "' style=width:" + width + "px;height:" + height + "px>");
+            resp.getOutputStream().print("<img src='" + chart.toURLForHTML() + "' style='width:" + width
+                    + "px;height:" + height + "px;border:1px solid gray'>");
         }
     }
 
