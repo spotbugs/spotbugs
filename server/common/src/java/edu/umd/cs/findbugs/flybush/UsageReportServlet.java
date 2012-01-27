@@ -195,7 +195,7 @@ public class UsageReportServlet extends AbstractFlybushServlet {
     private void getPastUsage(PersistenceManager pm, SortedSet<DbUsageSummary> summaries) {
         LOGGER.info("Getting past month's usage");
         Query squery = pm.newQuery("select from " + persistenceHelper.getDbUsageSummaryClassname()
-                + " where date >= :date");
+                + " where date >= :date && endDate == null");
         squery.addExtension("javax.persistence.query.chunkSize", 200);
         @SuppressWarnings("unchecked")
         List<DbUsageSummary> oldSummaries = (List<DbUsageSummary>) squery.execute(fourWeeksAgo());
@@ -204,17 +204,18 @@ public class UsageReportServlet extends AbstractFlybushServlet {
     }
 
     private void getTodayUsage(PersistenceManager pm, SortedSet<DbUsageSummary> summaries) {
-        LOGGER.warning("Getting today's usage");
-        Query query = pm.newQuery("select from " + persistenceHelper.getDbUsageEntryClassname()
-                + " where date >= :date order by date ascending");
-        query.addExtension("javax.persistence.query.chunkSize", 200);
-        Date date = todayMidnight();
-        @SuppressWarnings("unchecked")
-        List<DbUsageEntry> entries = (List<DbUsageEntry>) query.execute(date);
-        UsageDataConsolidator consolidator = new UsageDataConsolidator(persistenceHelper);
-        consolidator.process(query, entries);
-
-        summaries.addAll(consolidator.createSummaryEntries(date));
+        LOGGER.info("Getting today's usage");
+        //TODO: re-enable!
+//        Query query = pm.newQuery("select from " + persistenceHelper.getDbUsageEntryClassname()
+//                + " where date >= :date order by date ascending");
+//        query.addExtension("javax.persistence.query.chunkSize", 200);
+//        Date date = todayMidnight();
+//        @SuppressWarnings("unchecked")
+//        List<DbUsageEntry> entries = (List<DbUsageEntry>) query.execute(date);
+//        UsageDataConsolidator consolidator = new UsageDataConsolidator(persistenceHelper);
+//        consolidator.process(query, entries);
+//
+//        summaries.addAll(consolidator.createSummaryEntries(date, null));
     }
 
     private void increment(Map<String, Integer> map, String key, int value) {

@@ -22,9 +22,9 @@ public class UsageConsolidatorServlet extends AbstractFlybushServlet {
      * update this when adding a new DbUsageSummary field, or when changing / fixing
      * bugs in the UsageDataConsolidator
      */
-    public static final int CONSOLIDATION_DATA_VERSION = 6;
+    public static final int CONSOLIDATION_DATA_VERSION = 13;
 
-    public static final DateFormat DATE_FORMAT = DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH);
+    public static final DateFormat DATE_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.ENGLISH);
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
@@ -32,11 +32,12 @@ public class UsageConsolidatorServlet extends AbstractFlybushServlet {
         PersistenceManager pm = getPersistenceManager();
         try {
             if (uri.equals("/consolidate-usage")) {
-                String dateStr = req.getParameter("date");
+                String dateStr = req.getParameter("dateStart");
+                String dateEndStr = req.getParameter("dateEnd");
                 if (dateStr == null || dateStr.equals("")) {
-                    startConsolidating(resp);
+                    startConsolidationTasks(resp);
                 } else {
-                    consolidateDate(req, resp, pm, dateStr);
+                    consolidateDate(resp, pm, dateStr, dateEndStr);
                 }
 
             } else {
@@ -68,53 +69,82 @@ public class UsageConsolidatorServlet extends AbstractFlybushServlet {
         return cal.getTime();
     }
 
-    private void consolidateDate(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm, String dateStr) 
+    private void consolidateDate(HttpServletResponse resp, PersistenceManager pm, String dateStr, String dateEndStr)
             throws IOException {
-        LOGGER.info("Consolidating " + dateStr);
-        Date dateDate;
+        LOGGER.info("Consolidating " + dateStr + " - " + (dateEndStr == null ? "full day" : dateEndStr));
+        Date startDate;
         try {
-            dateDate = dayStart(DATE_FORMAT.parse(dateStr));
+            startDate = DATE_FORMAT.parse(dateStr);
+        } catch (ParseException e) {
+            show404(resp);
+            return;
+        }
+        Date endDate;
+        try {
+            endDate = dateEndStr == null ? null : DATE_FORMAT.parse(dateEndStr);
         } catch (ParseException e) {
             show404(resp);
             return;
         }
 
-        if (dateDate.after(dayStart(new Date()))) {
-            LOGGER.warning("SHOULD NOT BE CONSOLIDATING " + dateStr + " UNTIL END OF DAY! WTF??");
-            setResponse(resp, 200, "SHOULD NOT BE CONSOLIDATING " + dateStr + " UNTIL END OF DAY! WTF??");
+        if (endDate == null) {
+            if (startDate.after(dayStart(new Date()))) {
+                String msg = "SHOULD NOT BE CONSOLIDATING " + dateStr + " UNTIL END OF DAY! WTF??";
+                LOGGER.warning(msg);
+                setResponse(resp, 200, msg);
+                return;
+            }
+        } else if (endDate.after(new Date())) {
+            String msg = "SHOULD NOT BE CONSOLIDATING " + dateStr + " UNTIL " + dateEndStr + "! WTF??";
+            LOGGER.warning(msg);
+            setResponse(resp, 200, msg);
             return;
         }
 
-        if (checkVersion(resp, pm, dateStr, dateDate))
+        if (checkVersion(resp, pm, startDate, endDate))
             return;
 
+        if (endDate != null) {
+            LOGGER.info("Looking for usage data from " + dateStr + " to " + dateEndStr + " - initial query starting");
+            Query query = pm.newQuery("select from " + persistenceHelper.getDbUsageEntryClassname()
+                    + " where date >= :startDate && date < :endDate");
+            query.addExtension("javax.persistence.query.chunkSize", 50);
+            @SuppressWarnings("unchecked")
+            List<DbUsageEntry> entries = (List<DbUsageEntry>) query.execute(startDate, endDate);
+    
+            UsageDataConsolidator data = new UsageDataConsolidator(persistenceHelper);
+            data.process(query, entries);
+            LOGGER.info("Storing consolidated data...");
+    
+            for (DbUsageSummary summary : data.createSummaryEntries(startDate, endDate)) {
+                commit(pm, summary);
+            }
+    
+            setResponse(resp, 200, "Done!");
+            
+        } else {
+            Query vquery = pm.newQuery("select from " + persistenceHelper.getDbUsageSummaryClassname()
+                    + " where date >= :date && date < :endDate");
+            @SuppressWarnings("unchecked")
+            List<DbUsageSummary> entries = (List<DbUsageSummary>) vquery.execute(startDate, nextDay(startDate));
 
-        LOGGER.info("Looking for usage data on " + dateStr + " - initial query starting");
-        Query query = pm.newQuery("select from " + persistenceHelper.getDbUsageEntryClassname()
-                + " where date >= :startDate && date < :endDate");
-        query.addExtension("javax.persistence.query.chunkSize", 50);
-        @SuppressWarnings("unchecked")
-        List<DbUsageEntry> entries = (List<DbUsageEntry>) query.execute(dateDate, nextDay(dateDate));
+            UsageDataConsolidator data = new UsageDataConsolidator(persistenceHelper);
+            data.processSummaries(vquery, entries);
+            
+            for (DbUsageSummary summary : data.createSummaryEntries(startDate, null)) {
+                commit(pm, summary);
+            }
 
-        UsageDataConsolidator data = new UsageDataConsolidator(persistenceHelper);
-        data.process(query, entries);
-        LOGGER.info("Storing consolidated data...");
-
-        for (DbUsageSummary summary : data.createSummaryEntries(dateDate)) {
-            commit(pm, summary);
+            setResponse(resp, 200, "Done!");
         }
-
-        setResponse(resp, 200, "Done!");
     }
 
-    private boolean checkVersion(HttpServletResponse resp, PersistenceManager pm, String dateStr, Date dateDate) throws IOException {
+    private boolean checkVersion(HttpServletResponse resp, PersistenceManager pm, Date startDate, Date endDate) throws IOException {
         Query vquery = pm.newQuery("select from " + persistenceHelper.getDbUsageSummaryClassname()
-                + " where date == :date && category == 'consolidation-data-version'");
+                + " where date == :date && endDate == :endDate && category == 'consolidation-data-version'");
         @SuppressWarnings("unchecked")
-        List<DbUsageSummary> ventries = (List<DbUsageSummary>) vquery.execute(dateDate, CONSOLIDATION_DATA_VERSION);
-        if (ventries.isEmpty()) {
-            LOGGER.info("No data found for " + dateStr + ", proceeding to consolidate");
-        } else {
+        List<DbUsageSummary> ventries = (List<DbUsageSummary>) vquery.execute(startDate, endDate, CONSOLIDATION_DATA_VERSION);
+        if (!ventries.isEmpty()) {
             for (DbUsageSummary ventry : ventries) {
                 String lastUpdatedStr = DateFormat.getDateTimeInstance().format(ventry.getLastUpdated());
                 if (ventry.getValue() == CONSOLIDATION_DATA_VERSION) {
@@ -127,10 +157,23 @@ public class UsageConsolidatorServlet extends AbstractFlybushServlet {
                 LOGGER.warning("Found old data - version " + ventry.getValue() + " from " + lastUpdatedStr);
             }
             LOGGER.info("Deleting old data...");
+            // the day summary should only delete old day summaries
+            //TODO: wait is this ok?
+            String endDateClause;
+            if (endDate == null)
+                endDateClause = "endDate == null";
+            else
+                endDateClause = "endDate != null";
             Query dquery = pm.newQuery("select from " + persistenceHelper.getDbUsageSummaryClassname()
-                    + " where date == :date");
-            long deleted = dquery.deletePersistentAll(dateDate);
+                    + " where date >= :date && date < :date2");
+            Date actualEndDate = endDate;
+            if (endDate == null)
+                actualEndDate = nextDay(startDate);
+            long deleted = dquery.deletePersistentAll(startDate, actualEndDate);
             LOGGER.info("Deleted " + deleted + " entries");
+            
+        } else {
+            LOGGER.info("No data found for " + startDate + " - " + endDate + ", proceeding to consolidate");
         }
         vquery.closeAll();
         return false;
@@ -167,19 +210,34 @@ public class UsageConsolidatorServlet extends AbstractFlybushServlet {
      - drill-down: plugin versions
     */
 
-    private void startConsolidating(HttpServletResponse resp) throws IOException {
+    private void startConsolidationTasks(HttpServletResponse resp) throws IOException {
         LOGGER.info("About to execute query");
         Calendar cal = yesterdayMidnight();
         //TODO: change back to six months!
         int SIX_MONTHS = 30;
         for (int i = 0; i < SIX_MONTHS; i++) {
-            Map<String, String> parameters = Maps.newHashMap();
-            parameters.put("date", DATE_FORMAT.format(cal.getTime()));
-            persistenceHelper.addToQueue("/consolidate-usage", parameters);
+            for (int j = 0; j < 12; j++) {
+                Calendar hr = (Calendar) cal.clone();
+                hr.add(Calendar.HOUR, 2*j);
+                Calendar end = (Calendar) hr.clone();
+                end.add(Calendar.HOUR, 2);
+                enqueue(hr.getTime(), end.getTime());
+            }
+
+            // then enqueue the whole-day consolidation
+            enqueue(cal.getTime(), null);
             cal.add(Calendar.DAY_OF_MONTH, -1);
         }
 
         setResponse(resp, 200, "Done");
+    }
+
+    private void enqueue(Date startTime, Date endTime) {
+        Map<String, String> parameters = Maps.newHashMap();
+        parameters.put("dateStart", DATE_FORMAT.format(startTime));
+        if (endTime != null)
+            parameters.put("dateEnd", DATE_FORMAT.format(endTime));
+        persistenceHelper.addToQueue("/consolidate-usage", parameters);
     }
 
     private Calendar yesterdayMidnight() {

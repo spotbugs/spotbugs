@@ -5,7 +5,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,6 +29,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.repackaged.com.google.common.collect.Maps;
 import edu.umd.cs.findbugs.flybush.DbClientVersionStats;
 import edu.umd.cs.findbugs.flybush.DbEvaluation;
 import edu.umd.cs.findbugs.flybush.DbInvocation;
@@ -41,6 +44,7 @@ import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 
 public class AppEnginePersistenceHelper extends PersistenceHelper {
     private static final Logger LOGGER = Logger.getLogger(AppEnginePersistenceHelper.class.getName());
+    private Random random = new Random();
 
     public PersistenceManagerFactory getPersistenceManagerFactory() {
         return PMF.get();
@@ -211,6 +215,8 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
     public void addToQueue(String url, Map<String, String> params) {
         Queue queue = QueueFactory.getDefaultQueue();
         TaskOptions taskOptions = withUrl(url);
+        //[a-zA-Z\d_-]
+        taskOptions.taskName((url + "--" + new TreeMap<String, String>(params).toString()).replaceAll("[^a-zA-Z\\d_-]", "_") + "__" + random.nextInt());
         for (Map.Entry<String, String> entry : params.entrySet()) {
             taskOptions.param(entry.getKey(), entry.getValue());
         }

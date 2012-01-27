@@ -8,6 +8,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Key;
 import edu.umd.cs.findbugs.flybush.DbUsageEntry;
 import edu.umd.cs.findbugs.flybush.DbUsageSummary;
@@ -23,6 +24,8 @@ public class AppEngineDbUsageSummary implements DbUsageSummary {
     @Persistent
     private Date date;
     @Persistent
+    private Date endDate;
+    @Persistent
     private String category;
     @Persistent
     private String categoryKey;
@@ -32,6 +35,8 @@ public class AppEngineDbUsageSummary implements DbUsageSummary {
     private int value;
     @Persistent
     private Date lastUpdated;
+    @Persistent
+    private Blob blob;
 
     public Date getDate() {
         return date;
@@ -39,6 +44,14 @@ public class AppEngineDbUsageSummary implements DbUsageSummary {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
     public String getCategory() {
@@ -75,6 +88,14 @@ public class AppEngineDbUsageSummary implements DbUsageSummary {
 
     public Date getLastUpdated() {
         return lastUpdated;
+    }
+
+    public byte[] getBlob() {
+        return blob.getBytes();
+    }
+
+    public void setBlob(byte[] blob) {
+        this.blob = new Blob(blob);
     }
 
     public void setLastUpdated(Date lastUpdated) {

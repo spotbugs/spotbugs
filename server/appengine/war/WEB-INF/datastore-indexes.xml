@@ -13,8 +13,17 @@
         <property name="application" direction="asc"/>
         <property name="version" direction="asc"/>
     </datastore-index>
-    <datastore-index kind="AppEngineDbUsageSummary" ancestor="false" source="auto">
+    <datastore-index kind="AppEngineDbUsageSummary" ancestor="false" source="manual">
         <property name="date" direction="asc"/>
         <property name="category" direction="asc"/>
+    </datastore-index>
+    <datastore-index kind="AppEngineDbUsageSummary" ancestor="false" source="manual">
+        <property name="date" direction="asc"/>
+        <property name="endDate" direction="asc"/>
+        <property name="category" direction="asc"/>
+    </datastore-index>
+    <datastore-index kind="AppEngineDbUsageSummary" ancestor="false" source="manual">
+        <property name="endDate" direction="asc"/>
+        <property name="date" direction="asc"/>
     </datastore-index>
 </datastore-indexes>
