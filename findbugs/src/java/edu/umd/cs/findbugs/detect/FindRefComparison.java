@@ -1105,11 +1105,13 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 looksLikeTestCase = false;
                 priorityModifier = 0;
             }
-            if (!looksLikeTestCase) {
+            if (true) {
                 Set<XMethod> targets = new HashSet<XMethod>();
                 boolean allOk = checkForWeirdEquals(lhsSig, rhsSig, targets);
                 if (allOk)
                     priorityModifier += 2;
+                if (looksLikeTestCase)
+                    priorityModifier += 1;
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
                                 .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
