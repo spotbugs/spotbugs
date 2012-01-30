@@ -98,7 +98,7 @@ public class TypeQualifierValue<A extends Annotation> {
         boolean isExhaustive = false; // will be set to true if this is an
                                       // exhaustive type qualifier value
         
-        TypeQualifierValidator validator = null;
+        TypeQualifierValidator<A> validator = null;
         Class<A> qualifierClass = null;
         A proxy = null;
         try {
