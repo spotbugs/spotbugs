@@ -75,8 +75,10 @@ import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
@@ -504,7 +506,7 @@ public class FindDeadLocalStores implements Detector {
                         && linesMentionedMultipleTimes.get(sourceLineAnnotation.getStartLine()))
                     propertySet.addProperty(DeadLocalStoreProperty.CLONED_STORE);
                 String sourceFile = javaClass.getSourceFileName();
-                if (javaClass.getClassName().endsWith("_jsp"))
+                if (Subtypes2.isJSP(javaClass))
                     propertySet.addProperty(DeadLocalStoreProperty.IN_JSP_PAGE);
                 else if (javaClass.isSynthetic() || sourceFile != null && !sourceFile.endsWith(".java")) {
                     if (sourceFile.endsWith(".gxp") && (lvName.startsWith("gxp$") || lvName.startsWith("gxp_")))

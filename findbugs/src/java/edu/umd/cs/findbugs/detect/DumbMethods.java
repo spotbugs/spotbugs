@@ -60,6 +60,7 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -835,7 +836,8 @@ public class DumbMethods extends OpcodeStackDetector {
             }
 
             if ((seen == INVOKESPECIAL) && getClassConstantOperand().equals("java/lang/String")
-                    && getNameConstantOperand().equals("<init>") && getSigConstantOperand().equals("(Ljava/lang/String;)V")) {
+                    && getNameConstantOperand().equals("<init>") && getSigConstantOperand().equals("(Ljava/lang/String;)V")
+                    && !Subtypes2.isJSP(getThisClass())) {
 
                 accumulator.accumulateBug(new BugInstance(this, "DM_STRING_CTOR", NORMAL_PRIORITY).addClassAndMethod(this), this);
 

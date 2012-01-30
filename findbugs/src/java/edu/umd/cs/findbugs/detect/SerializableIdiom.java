@@ -74,6 +74,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
     boolean isGUIClass;
 
     boolean isEjbImplClass;
+    
+    boolean isJSPClass;
 
     boolean foundSynthetic;
 
@@ -173,6 +175,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
         directlyImplementsExternalizable = false;
         isGUIClass = false;
         isEjbImplClass = false;
+        isJSPClass = false;
         seenTransientField = false;
         // boolean isEnum = obj.getSuperclassName().equals("java.lang.Enum");
         fieldsThatMightBeAProblem.clear();
@@ -252,6 +255,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
         isEjbImplClass = false;
         if (true || !directlyImplementsExternalizable && !implementsSerializableDirectly) {
             isEjbImplClass = Subtypes2.instanceOf(obj, "javax.ejb.SessionBean");
+            isJSPClass = Subtypes2.isJSP(obj);
             isGUIClass = (Subtypes2.instanceOf(obj, "java.lang.Throwable") || Subtypes2.instanceOf(obj, "java.awt.Component")
                     || Subtypes2.instanceOf(obj, "java.awt.Component$AccessibleAWTComponent")
                     || Subtypes2.instanceOf(obj, "java.awt.event.ActionListener") || Subtypes2.instanceOf(obj,
@@ -321,6 +325,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
             System.out.println("  superClassImplementsSerializable: " + superClassImplementsSerializable);
             System.out.println("  isGUIClass: " + isGUIClass);
             System.out.println("  isEjbImplClass: " + isEjbImplClass);
+            System.out.println("  isJSPClass: " + isJSPClass);
         }
         if (isSerializable && !sawReadObject && !sawReadResolve && seenTransientField && !superClassHasReadObject) {
             for (Map.Entry<XField, Integer> e : transientFieldsUpdates.entrySet()) {
@@ -333,6 +338,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
                 if (isGUIClass)
                     priority++;
                 if (isEjbImplClass)
+                    priority++;
+                if (isJSPClass)
                     priority++;
                 if (e.getValue() < 3)
                     priority++;
@@ -361,16 +368,14 @@ public class SerializableIdiom extends OpcodeStackDetector {
         if (isSerializable && !isExternalizable && !superClassHasVoidConstructor && !superClassImplementsSerializable) {
             int priority = implementsSerializableDirectly || seenTransientField ? HIGH_PRIORITY
                     : (sawSerialVersionUID ? NORMAL_PRIORITY : LOW_PRIORITY);
-            if (isGUIClass)
-                priority++;
-            if (isEjbImplClass)
+            if (isGUIClass || isEjbImplClass || isJSPClass)
                 priority++;
             bugReporter.reportBug(new BugInstance(this, "SE_NO_SUITABLE_CONSTRUCTOR", priority).addClass(getThisClass()
                     .getClassName()));
         }
         // Downgrade class-level warnings if it's a GUI or EJB-implementation
         // class.
-        int priority = (isGUIClass || isEjbImplClass) ? LOW_PRIORITY : NORMAL_PRIORITY;
+        int priority = (isGUIClass || isEjbImplClass || isJSPClass) ? LOW_PRIORITY : NORMAL_PRIORITY;
         if (obj.getClassName().endsWith("_Stub"))
             priority++;
 
@@ -382,7 +387,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
         if (seenTransientField)
             priority--;
         if (!isAnonymousInnerClass && !isExternalizable && !isGUIClass && !obj.isAbstract() && isSerializable && !isAbstract
-                && !sawSerialVersionUID && !isEjbImplClass)
+                && !sawSerialVersionUID && !isEjbImplClass && !isJSPClass)
             bugReporter.reportBug(new BugInstance(this, "SE_NO_SERIALVERSIONID", priority).addClass(this));
 
         if (writeObjectIsSynchronized && !foundSynchronizedMethods)
@@ -624,9 +629,9 @@ public class SerializableIdiom extends OpcodeStackDetector {
                             else
                                 priority += 1;
                         }
-                        if (isGUIClass || isEjbImplClass)
+                        if (isGUIClass || isEjbImplClass || isJSPClass)
                             priority++;
-                    } else if (isGUIClass || isEjbImplClass)
+                    } else if (isGUIClass || isEjbImplClass || isJSPClass)
                         priority = Math.max(priority, NORMAL_PRIORITY);
                     if (DEBUG)
                         System.out.println("SE_BAD_FIELD: " + getThisClass().getClassName() + " " + obj.getName() + " "
@@ -643,7 +648,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                                 .addClass(getThisClass().getClassName())
                                 .addField(xfield).addType(problemType)
                                 .describe("TYPE_FOUND"));
-                } else if (!isGUIClass && !isEjbImplClass && obj.getName().equals("this$0"))
+                } else if (!isGUIClass && !isEjbImplClass && !isJSPClass && obj.getName().equals("this$0"))
                     fieldWarningList.add(new BugInstance(this, "SE_INNER_CLASS", implementsSerializableDirectly ? NORMAL_PRIORITY
                             : LOW_PRIORITY).addClass(getThisClass().getClassName()));
             } catch (ClassNotFoundException e) {

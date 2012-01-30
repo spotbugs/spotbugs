@@ -31,7 +31,9 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ObjectType;
@@ -144,7 +146,23 @@ public class Subtypes2 {
     }
 
 
-    
+    public static boolean isJSP(JavaClass javaClass) {
+        @DottedClassName String className = javaClass.getClassName();
+        if ( className.endsWith("_jsp") || className.endsWith("_tag"))
+            return true;
+        for(Method m : javaClass.getMethods())
+            if (m.getName().startsWith("_jsp"))
+                return true;
+        
+        for(Field f : javaClass.getFields())
+            if (f.getName().startsWith("_jsp"))
+                return true;
+        return Subtypes2.instanceOf(className, "javax.servlet.jsp.JspPage")
+                || Subtypes2.instanceOf(className, "org.apache.jasper.runtime.HttpJspBase")
+                || Subtypes2.instanceOf(className, "javax.servlet.jsp.tagext.SimpleTagSupport")
+                || Subtypes2.instanceOf(className, " org.apache.jasper.runtime.JspSourceDependent");
+    }
+
     public static boolean instanceOf(@DottedClassName String dottedSubtype, @DottedClassName String dottedSupertype) {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
         ClassDescriptor subDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(dottedSubtype);
