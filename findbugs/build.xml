@@ -633,6 +633,8 @@
     </target>
 
     <!-- Run JUnit test cases -->
+    <target name="test" depends="runjunit"/>
+
     <target name="runjunit" depends="junittests,jars,compileFindbugsTestCases">
         <echo>Running JUnit test cases for FindBugs...</echo>
         <delete dir="${junit.dir}"/>
