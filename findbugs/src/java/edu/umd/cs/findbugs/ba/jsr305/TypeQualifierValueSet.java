@@ -322,7 +322,7 @@ public class TypeQualifierValueSet {
 
         for (ValueNumber vn : interesting) {
             FlowValue value = getValue(vn);
-            if (value == FlowValue.TOP) continue; 
+            if (value == FlowValue.TOP || value == FlowValue.UNKNOWN) continue; 
             if (buf.length() > 1) {
                 buf.append(", ");
             }
@@ -349,9 +349,12 @@ public class TypeQualifierValueSet {
             Set<? extends SourceSinkInfo> never = getSourceSinkInfoSet(whereNever, vn);
             if (value != FlowValue.UNKNOWN || !always.equals(never)) {
                 buf.append("[");
-                appendSourceSinkInfos(buf, "YES=", always);
-                buf.append(",");
-                appendSourceSinkInfos(buf, "NO=", never);
+                if (!always.isEmpty()) 
+                    appendSourceSinkInfos(buf, "YES=", always);
+                if (!always.isEmpty() && !never.isEmpty())
+                    buf.append(",");
+                if (!never.isEmpty())
+                    appendSourceSinkInfos(buf, "NO=", never);
                 buf.append("]");
             }
         }
