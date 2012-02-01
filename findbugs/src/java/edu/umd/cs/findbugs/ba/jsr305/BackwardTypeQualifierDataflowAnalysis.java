@@ -286,7 +286,6 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 
             registerSourceSink(info);
 
-            param++;
         }
     }
 
