@@ -1529,7 +1529,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
         BugInstance bugInstance = new BugInstance(this, bugType, priority).addClassAndMethod(classContext.getJavaClass(), method);
         if (invokedMethod != null) {
-            XMethod i = invokedXMethod.resolveAccessMethod();
+            XMethod i = invokedXMethod.resolveAccessMethodForMethod();
             if (i != invokedXMethod) 
                 bugInstance.addMethod(i).describe(MethodAnnotation.METHOD_CALLED);
             else
