@@ -21,7 +21,7 @@
         <ant dir="plugins/poweruser" />
     </target>
 
-    <target name="test" depends="all">
+    <target name="test">
         <ant dir="findbugs"  target="smoketest"/>
         <!--<ant dir="plugins/bugCollectionCloud" />-->
         <!--<ant dir="plugins/noUpdateChecks" />-->
