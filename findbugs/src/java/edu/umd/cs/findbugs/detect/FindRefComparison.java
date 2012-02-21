@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import org.apache.bcel.Constants;
@@ -1028,7 +1029,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         boolean looksLikeTestCase = TestCaseDetector.likelyTestCase(XFactory.createXMethod(methodGen));
         int priorityModifier = 0;
         if (looksLikeTestCase) {
-            priorityModifier = 2;
+            priorityModifier = 1;
         }
 
         if (rhsType_.getType() == T_NULL) {
@@ -1110,10 +1111,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 boolean allOk = checkForWeirdEquals(lhsSig, rhsSig, targets);
                 if (allOk)
                     priorityModifier += 2;
-                if (looksLikeTestCase)
-                    priorityModifier += 1;
+
+                int priority = result.getPriority() + priorityModifier;
                 bugAccumulator.accumulateBug(
-                        new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
+                        new BugInstance(this, "EC_UNRELATED_TYPES", priority)
                                 .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
                                 .addSomeSourceForTopTwoStackValues(classContext, method, location).addEqualsMethodUsed(targets)
                                 .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
@@ -1151,7 +1152,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
      * @param cpg
      * @param inv
      */
-    public MethodAnnotation getMethodCalledAnnotation(ConstantPoolGen cpg, InvokeInstruction inv) {
+    public @CheckForNull MethodAnnotation getMethodCalledAnnotation(ConstantPoolGen cpg, InvokeInstruction inv) {
         MethodDescriptor invokedMethod = getInvokedMethod(cpg, inv);
         boolean standardEquals = invokedMethod.getName().equals("equals")
                 && invokedMethod.getSignature().equals("(Ljava/lang/Object;)Z") && !invokedMethod.isStatic();
