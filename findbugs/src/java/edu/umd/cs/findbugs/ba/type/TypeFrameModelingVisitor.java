@@ -644,7 +644,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                 System.out.println("   for " + targets.size() + " targets: " + targets);
             }
             for (XMethod m : targets) {
-                m = m.resolveAccessMethod();
+                m = m.resolveAccessMethodForMethod();
                 String sourceSignature = m.getSourceSignature();
                 if (DEBUG) {
                     System.out.println(" Call target: " + m);
@@ -719,6 +719,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         String sourceSignature = xc.getSourceSignature();
         if (sourceSignature == null)
             return false;
+        Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
         if (sourceSignature.startsWith("<") && !sourceSignature.contains("Map<TK;TV;>")) {
             if (SystemProperties.ASSERTIONS_ENABLED)
                 AnalysisContext.logError("QQQ: " + c + " has signature " + sourceSignature);
