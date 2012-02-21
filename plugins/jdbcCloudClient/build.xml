@@ -85,37 +85,6 @@
         </copy>
     </target>
 
-    <target name="compile-tests" depends="compile">
-        <mkdir dir="classes-tests-ant"/>
-
-        <javac srcdir="src/junit" destdir="classes-tests-ant" source="1.5" target="1.5" debug="on">
-            <classpath>
-                <path refid="client.classpath"/>
-                <path location="${classes.dir}"/>
-            </classpath>
-        </javac>
-    </target>
-
-    <target name="test" depends="compile-tests">
-        <mkdir dir="build"/>
-        <mkdir dir="build/tests"/>
-        <junit fork="yes" printsummary="true">
-            <jvmarg value="-ea"/>
-            <formatter type="xml"/>   <!-- Hudson reads generated xml -->
-
-            <classpath refid="client.classpath"/>
-            <classpath path="${classes.dir}"/>
-            <classpath path="classes-tests-ant"/>
-
-            <batchtest todir="build/tests">
-                <fileset dir="src/junit">
-                    <include name="**/*Test.java"/>
-                    <include name="**/*Tests.java"/>
-                    <exclude name="**/Abstract*Test.java"/>
-                </fileset>
-            </batchtest>
-        </junit>
-    </target>
     
 </project>
 
