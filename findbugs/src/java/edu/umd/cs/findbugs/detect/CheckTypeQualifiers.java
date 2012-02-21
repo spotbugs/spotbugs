@@ -339,9 +339,7 @@ public class CheckTypeQualifiers extends CFGDetector {
             }
             if (topTQ.equals(nextTQ)) return;
             if (FlowValue.valuesConflict(typeQualifierValue.isStrictQualifier() && !xmethod.isIdentity(), topTQ, nextTQ)) {
-                BugInstance warning = new BugInstance(this,"TESTING", HIGH_PRIORITY).addClassAndMethod(xmethod);
-                warning.addString("Comparing values with incompatible type qualifiers")
-                .describe(StringAnnotation.STRING_MESSAGE);
+                BugInstance warning = new BugInstance(this,"TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS", HIGH_PRIORITY).addClassAndMethod(xmethod);
                 annotateWarningWithTypeQualifier(warning, typeQualifierValue);
                 for(SourceSinkInfo s : forwardsFact.getWhere(top))
                    annotateWarningWithSourceSinkInfo(warning, xmethod, top, s);
