@@ -709,7 +709,6 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
     public static boolean isStraightGenericMap(ClassDescriptor c) {
         if (c.matches(Map.class))
             return true;
-
         XClass xc;
         try {
             xc = c.getXClass();
@@ -719,7 +718,6 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         String sourceSignature = xc.getSourceSignature();
         if (sourceSignature == null)
             return false;
-        Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
         if (sourceSignature.startsWith("<") && !sourceSignature.contains("Map<TK;TV;>")) {
             if (SystemProperties.ASSERTIONS_ENABLED)
                 AnalysisContext.logError("QQQ: " + c + " has signature " + sourceSignature);
