@@ -41,7 +41,7 @@ public class RefComparisonWarningProperty extends AbstractWarningProperty {
 
     /** Compare inside test case */
     public static final RefComparisonWarningProperty COMPARE_IN_TEST_CASE = new RefComparisonWarningProperty(
-            "COMPARE_IN_TEST_CASE", PriorityAdjustment.FALSE_POSITIVE);
+            "COMPARE_IN_TEST_CASE", PriorityAdjustment.AT_MOST_LOW);
 
     /** Comparing static strings using equals operator. */
     public static final RefComparisonWarningProperty COMPARE_STATIC_STRINGS = new RefComparisonWarningProperty(
