@@ -515,7 +515,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 if (!isGenericCollection(operandClass))
                     continue;
 
-                if (!TypeFrameModelingVisitor.isStraightGenericMap(operandClass))
+                if (expectedTypeParameters == 2 && 
+                        Subtypes2.instanceOf(operandClass, Map.class)      
+                        && !TypeFrameModelingVisitor.isStraightGenericMap(operandClass))
                     continue;
                 Type expectedType;
                 if (allMethod)
