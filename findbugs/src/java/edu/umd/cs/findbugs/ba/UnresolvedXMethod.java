@@ -250,7 +250,7 @@ class UnresolvedXMethod extends AbstractMethod {
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.ba.XMethod#getAccessMethodFor()
      */
-    public MethodDescriptor getAccessMethodFor() {
+    public MethodDescriptor getAccessMethodForMethod() {
         return null;
     }
 

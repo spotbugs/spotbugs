@@ -59,8 +59,8 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
                 getSignature(), isStatic());
     }
     
-    public XMethod resolveAccessMethod() {
-        MethodDescriptor access = getAccessMethodFor();
+    public XMethod resolveAccessMethodForMethod() {
+        MethodDescriptor access = getAccessMethodForMethod();
         if (access != null) 
             return XFactory.createXMethod(access);
         return this;

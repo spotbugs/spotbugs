@@ -95,10 +95,10 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
     XMethod bridgeFrom();
     
     public @CheckForNull
-    MethodDescriptor getAccessMethodFor();
+    MethodDescriptor getAccessMethodForMethod();
     
     public 
-    XMethod resolveAccessMethod();
+    XMethod resolveAccessMethodForMethod();
   
 
     /**

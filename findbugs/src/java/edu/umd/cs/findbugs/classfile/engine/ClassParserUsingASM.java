@@ -210,6 +210,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                         boolean sawBackBranch = false;
 
                         int methodCallCount = 0;
+                        int fieldInstructionCount = 0;
 
                         boolean sawStubThrow = false;
 
@@ -232,6 +233,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
                         String accessOwner, accessName, accessDesc;
 
+                        boolean accessForField;
                         boolean accessIsStatic;
                         
                         HashSet<Label> labelsSeen = new HashSet<Label>();
@@ -338,7 +340,15 @@ public class ClassParserUsingASM implements ClassParserInterface {
                             if (opcode == Opcodes.PUTFIELD && parameterLoadState == ParameterLoadState.LOADED_THIS_AND_PARAMETER
                                     && owner.equals(slashedClassName) && name.startsWith("this$")) {
                                 mBuilder.setVariableIsSynthetic(parameterForLoadState);
-                                 
+                            }
+                            fieldInstructionCount++;
+                            
+                            if (isAccessMethod && this.accessOwner == null) {
+                                this.accessOwner = owner;
+                                this.accessName = name;
+                                this.accessDesc = desc;
+                                this.accessIsStatic = opcode == Opcodes.GETSTATIC || opcode == Opcodes.PUTSTATIC;
+                                this.accessForField = true;
                             }
                             visitSomeInsn();
                         }
@@ -353,12 +363,12 @@ public class ClassParserUsingASM implements ClassParserInterface {
                         public void visitMethodInsn(int opcode, String owner, String name, String desc) {
                             identityState = IdentityMethodState.NOT;
                             methodCallCount++;
-                            if (isAccessMethod && methodCallCount == 1) {
+                            if (isAccessMethod && this.accessOwner == null) {
                                 this.accessOwner = owner;
                                 this.accessName = name;
                                 this.accessDesc = desc;
                                 this.accessIsStatic = opcode == Opcodes.INVOKESTATIC;
-
+                                this.accessForField = false;
                             }
                             if (stubState == StubState.LOADED_STUB && opcode == Opcodes.INVOKESPECIAL
                                     && owner.equals("java/lang/RuntimeException") && name.equals("<init>"))
@@ -420,8 +430,12 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
                         public void visitEnd() {
                             labelsSeen.clear();
-                            if (isAccessMethod && methodCallCount == 1) {
-                                mBuilder.setAccessMethodFor(accessOwner, accessName, accessDesc, accessIsStatic);
+                            if (isAccessMethod && accessOwner != null) {
+                                if (!accessForField && methodCallCount == 1) {
+                                    mBuilder.setAccessMethodForMethod(accessOwner, accessName, accessDesc, accessIsStatic);
+                                } else if(accessForField && fieldInstructionCount == 1) {
+                                    mBuilder.setAccessMethodForField(accessOwner, accessName, accessDesc, accessIsStatic);
+                                }
                             }
                             if (sawBackBranch)
                                 mBuilder.setHasBackBranch();

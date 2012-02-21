@@ -41,6 +41,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -90,7 +91,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
         int methodCallCount;
 
-        MethodDescriptor accessMethodFor;
+        MethodDescriptor accessMethodForMethod;
+        FieldDescriptor accessMethodForField;
 
         final Map<ClassDescriptor, AnnotationValue> methodAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(4);
 
@@ -104,8 +106,11 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
             this.accessFlags = accessFlags;
         }
 
-        public void setAccessMethodFor(String owner, String name, String sig, boolean isStatic) {
-            accessMethodFor = new MethodDescriptor(owner, name, sig, isStatic);
+        public void setAccessMethodForMethod(String owner, String name, String sig, boolean isStatic) {
+            accessMethodForMethod = new MethodDescriptor(owner, name, sig, isStatic);
+        }
+        public void setAccessMethodForField(String owner, String name, String sig, boolean isStatic) {
+            accessMethodForField = new FieldDescriptor(owner, name, sig, isStatic);
         }
 
         public void setSourceSignature(String methodSourceSignature) {
@@ -170,7 +175,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
                 variableIsSynthetic |= (~variableHasName);
             return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags,
                     isUnconditionalThrower, isUnsupported, usesConcurrency, hasBackBranch, isStub, isIdentity, 
-                    methodCallCount, exceptions, accessMethodFor,
+                    methodCallCount, exceptions, accessMethodForMethod, accessMethodForField,
                     methodAnnotations, methodParameterAnnotations, variableIsSynthetic);
         }
 
@@ -218,13 +223,15 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     static IdentityHashMap<MethodInfo, Void> unsupportedMethods = new IdentityHashMap<MethodInfo, Void>();
 
-    static IdentityHashMap<MethodInfo, MethodDescriptor> accessMethodFor = new IdentityHashMap<MethodInfo, MethodDescriptor>();
+    static IdentityHashMap<MethodInfo, MethodDescriptor> accessMethodForMethod = new IdentityHashMap<MethodInfo, MethodDescriptor>();
+    static IdentityHashMap<MethodInfo, FieldDescriptor> accessMethodForField = new IdentityHashMap<MethodInfo, FieldDescriptor>();
     static IdentityHashMap<MethodInfo, Void> identifyMethods = new IdentityHashMap<MethodInfo, Void>();
 
     public static void clearCaches() {
         unsupportedMethods.clear();
         unconditionalThrowers.clear();
-        accessMethodFor.clear();
+        accessMethodForMethod.clear();
+        accessMethodForField.clear();
         identifyMethods.clear();
     }
 
@@ -232,7 +239,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature,
             int accessFlags, boolean isUnconditionalThrower, boolean isUnsupported, boolean usesConcurrency, 
             boolean hasBackBranch, boolean isStub, boolean isIdentity,
-            int methodCallCount, @CheckForNull String[] exceptions, @CheckForNull MethodDescriptor accessMethodFor,
+            int methodCallCount, @CheckForNull String[] exceptions, @CheckForNull MethodDescriptor accessMethodForMethod,
+            @CheckForNull FieldDescriptor accessMethodForField,
             Map<ClassDescriptor, AnnotationValue> methodAnnotations,
             Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations, long variableIsSynthetic) {
         super(className, methodName, methodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
@@ -248,8 +256,10 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
             unconditionalThrowers.put(this, null);
         if (isUnsupported)
             unsupportedMethods.put(this, null);
-        if (accessMethodFor != null)
-            MethodInfo.accessMethodFor.put(this, accessMethodFor);
+        if (accessMethodForMethod != null)
+            MethodInfo.accessMethodForMethod.put(this, accessMethodForMethod);
+        if (accessMethodForField!= null)
+            MethodInfo.accessMethodForField.put(this, accessMethodForField);
         if (isIdentity) {
             MethodInfo.identifyMethods.put(this, null);
         }
@@ -534,8 +544,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     }
 
     public @CheckForNull
-    MethodDescriptor getAccessMethodFor() {
-        return accessMethodFor.get(this);
+    MethodDescriptor getAccessMethodForMethod() {
+        return accessMethodForMethod.get(this);
+    }
+    public @CheckForNull
+    FieldDescriptor getAccessMethodForField() {
+        return accessMethodForField.get(this);
     }
 
     /*
@@ -557,11 +571,10 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     }
     
-    public XMethod resolveAccessMethod() {
-        MethodDescriptor access = getAccessMethodFor();
+    public XMethod resolveAccessMethodForMethod() {
+        MethodDescriptor access = getAccessMethodForMethod();
         if (access != null) 
             return XFactory.createXMethod(access);
         return this;
-
     }
 }
