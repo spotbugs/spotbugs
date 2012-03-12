@@ -8111,20 +8111,44 @@ JavaDoc に書かれているように、DateFormat はマルチスレッドで�
     </Details>
   </BugPattern>
 
-  <BugPattern type="TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED">
-    <ShortDescription>型修飾子を付けられた値がその修飾子を付けてはならない値を必要とする場所で使われている</ShortDescription>
-    <LongDescription>型修飾子 {2} を付けられた値がその修飾子を付けてはならない値を必要とする場所で使われています。</LongDescription>
+  <BugPattern type="TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS">
+    <ShortDescription>互換性のない型修飾子による比較値</ShortDescription>
+    <LongDescription>型修飾子 {2.simpleName} でアノテーションされた値がその修飾子がない値と等価性のために比較されています。</LongDescription>
     <Details>
-<![CDATA[
+      <![CDATA[
 <p>
-型修飾子アノテーションを付けられた値がそのアノテーションを付けてはならない値を必要とする場所で使われています。
+型修飾子アノテーションを指定した値がその修飾子のない値と比較しています。
 </p>
 <p>
-より正確に、when=ALWAYS を指定している型修飾子アノテーションが付けられた値は、到達することが保証されているか同じ型修飾子が when=NEVER を指定するところで使用します。
+より正確に、when=ALWAYS を指定した型修飾子でアノテーションされた値が同じ型修飾子で when=NEVER を指定する値と比較しています。
 </p>
 <p>
 たとえば、@NonNegative が型修飾子アノテーション @Negative(when=When.NEVER) の略称だとします。
-以下のコードは、return 文が ＠NonNegative 値を必要とするが ＠Negative としてマークされている引数を受け取るのでこの警告を生成します。
+以下のコードは、return 文が @NonNegative 値を要求するが、@Negative としてマークされている値を受け取るのでこの警告を生成します。
+</p>
+<blockquote><pre>
+public boolean example(@Negative Integer value1, @NonNegative Integer value2) {
+    return value1.equals(value2);
+}
+</pre></blockquote>
+      ]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED">
+    <ShortDescription>型修飾子でアノテーションされた値がその修飾子を付けてはならない値を必要とする場所で使われている</ShortDescription>
+    <LongDescription>型修飾子 {2} でアノテーションされた値がその修飾子を付けてはならない値を必要とする場所で使われています。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+型修飾子アノテーションを指定した値がその修飾子を付けてはならない値を必要とする場所で使われています。
+</p>
+<p>
+より正確に、when=ALWAYS を指定した型修飾子でアノテーションされた値が到達することが保証されているか同じ型修飾子で when=NEVER を指定する場所で使用しています。
+</p>
+<p>
+たとえば、@NonNegative が型修飾子アノテーション @Negative(when=When.NEVER) の略称だとします。
+以下のコードは、return 文が ＠NonNegative 値を要求するが ＠Negative としてマークされている値を受け取るのでこの警告を生成します。
 </p>
 <blockquote><pre>
 public @NonNegative Integer example(@Negative Integer value) {
@@ -8136,15 +8160,15 @@ public @NonNegative Integer example(@Negative Integer value) {
   </BugPattern>
 
   <BugPattern type="TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED">
-    <ShortDescription>型修飾子を付けていない値がその修飾子が付く値を必要とする場所で使われている</ShortDescription>
-    <LongDescription>型修飾子 {2.simpleName} を付けていない値がその修飾子が付く値を必要としている場所で使われています。</LongDescription>
+    <ShortDescription>型修飾子でアノテーションされていない値がその修飾子が付けられた値を必要とする場所で使われている</ShortDescription>
+    <LongDescription>型修飾子 {2.simpleName} でアノテーションされていない値がその修飾子が付けられた値を必要とする場所で使われています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-型修飾子アノテーションを付けていない値がそのアノテーションが付いた値を必要とする場所で使われています。
+型修飾子アノテーションを指定していない値がその修飾子が付けられた値を必要とする場所で使われています。
 </p>
 <p>
-より正確に、when=NEVER を指定している型修飾子アノテーションが付けられた値が同じ型修飾子が when=ALWAYS を指定する場所で使用しています。
+より正確に、when=NEVER を指定した型修飾子でアノテーションされた値が同じ型修飾子で when=ALWAYS を指定する場所で使用しています。
 </p>        
 ]]>
     </Details>
@@ -8152,24 +8176,25 @@ public @NonNegative Integer example(@Negative Integer value) {
 
   <BugPattern type="TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK">
     <ShortDescription>型修飾子を付けていないかもしれない値がその型修飾子を必要とする方法で常に使われている</ShortDescription>
-    <LongDescription>型修飾子 {2.simpleName} を付けていないかもしれない値がその型修飾子を必要とする方法で常に使われています。</LongDescription>
+    <LongDescription>{2.simpleName} アノテーションを付けていないかもしれない値がその型修飾子を必要とする方法で常に使われています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-型修飾子によって示される値のインスタンスではない可能性としてアノテーションが付けられた値です。
-値はその型修飾子によって示された要求方法で使うことが保証されています。
+型修飾子によって示された値のインスタンスではない可能性としてアノテーションされた値です。
+値はその型修飾子によって示された値を必要とする方法で使われることが保証されています。
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK">
-    <ShortDescription>型修飾子を付けているかもしれない値がその型修飾子が禁止する方法で常に使われている</ShortDescription>
-    <LongDescription>{2.simpleName} アノテーションを付けているかもしれない値がその型修飾子があるのを禁止する方法で常に使われています。</LongDescription>
+    <ShortDescription>型修飾子を付けているかもしれない値がその型修飾子を禁止する方法で常に使われている</ShortDescription>
+    <LongDescription>{2.simpleName} アノテーションを付けているかもしれない値がその型修飾子を禁止する方法で常に使われています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-型修飾子によって示される値のインスタンスである可能性としてアノテーションが付つけられた値を禁止する方法で使われています。
+型修飾子によって示された値のインスタンスである可能性としてアノテーションされた値です。
+値はその型修飾子によって示された値を禁止する方法で使われることが保証されています。
 </p>
 ]]>
     </Details>
@@ -8182,7 +8207,7 @@ public @NonNegative Integer example(@Negative Integer value) {
 <![CDATA[
 <p>
 値は、型修飾子によって示された値でないことを必要とする方法で使われています。
-しかし、値はどこでその型修飾子がいるのか禁止されているかわからないと述べている明示的なアノテーションがあります。
+しかし、値はどこでその型修飾子がいるのか禁止されていのるかわからないと述べている明示的なアノテーションがあります。
 使い方かアノテーションのどちらかが間違っています。
 </p>
 ]]>
