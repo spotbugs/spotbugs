@@ -25,6 +25,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -86,9 +87,9 @@ public class Version {
     private static String applicationVersion = "";
 
     static {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss z, dd MMMM, yyyy");
-        SimpleDateFormat eclipseDateFormat = new SimpleDateFormat("yyyyMMdd");
-        SimpleDateFormat releaseDateFormat = new SimpleDateFormat(UpdateChecker.PLUGIN_RELEASE_DATE);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss z, dd MMMM, yyyy", Locale.ENGLISH);
+        SimpleDateFormat eclipseDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+        SimpleDateFormat releaseDateFormat = new SimpleDateFormat(UpdateChecker.PLUGIN_RELEASE_DATE_FMT, Locale.ENGLISH);
 
         Date now = new Date();
         COMPUTED_DATE = dateFormat.format(now);
@@ -170,9 +171,9 @@ public class Version {
         CORE_PLUGIN_RELEASE_DATE = plugin_release_date;
         Date parsedDate;
         try {
-            SimpleDateFormat releaseDateFormat = new SimpleDateFormat(UpdateChecker.PLUGIN_RELEASE_DATE);
+            SimpleDateFormat fmt = new SimpleDateFormat(UpdateChecker.PLUGIN_RELEASE_DATE_FMT, Locale.ENGLISH);
 
-            parsedDate = releaseDateFormat.parse(CORE_PLUGIN_RELEASE_DATE); 
+            parsedDate = fmt.parse(CORE_PLUGIN_RELEASE_DATE);
         } catch (ParseException e) {
             e.printStackTrace();
             parsedDate = null;

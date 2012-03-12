@@ -1069,7 +1069,7 @@ public class PluginLoader {
         if (releaseDate == null || releaseDate.length() == 0)
             return null;
         try {
-            SimpleDateFormat releaseDateFormat = new SimpleDateFormat(UpdateChecker.PLUGIN_RELEASE_DATE);
+            SimpleDateFormat releaseDateFormat = new SimpleDateFormat(UpdateChecker.PLUGIN_RELEASE_DATE_FMT, Locale.ENGLISH);
             Date result = releaseDateFormat.parse(releaseDate);
             return result;
         } catch (ParseException e) {

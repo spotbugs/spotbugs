@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.CheckForNull;
 
@@ -128,7 +129,7 @@ public class MergeSummarizeAndView {
                 options.cloudId = argument;
             else if (option.equals("-baseline"))
                 try {
-                    options.baselineDate = new SimpleDateFormat("MM/dd/yyyy").parse(argument);
+                    options.baselineDate = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH).parse(argument);
                 } catch (ParseException e) {
                     System.err.println("Date " + argument + " not in MM/dd/yyyy format (e.g., 05/13/2009)");
                 }

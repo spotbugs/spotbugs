@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,7 +22,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 public class WebPageServlet extends AbstractFlybushServlet {
     private static  DateFormat TIMESTAMP_FORMAT() {
-        return new SimpleDateFormat("MMM d, ''yy 'at' h:mm aa z");
+        return new SimpleDateFormat("MMM d, ''yy 'at' h:mm aa z", Locale.ENGLISH);
     }
 
     @Override

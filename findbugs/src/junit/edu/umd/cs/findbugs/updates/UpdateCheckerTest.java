@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
@@ -31,7 +32,7 @@ public class UpdateCheckerTest extends TestCase {
 
     static {
         try {
-            KEITHS_BIRTHDAY_2011 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").parse("2011-03-20 02:00:00 EST");
+            KEITHS_BIRTHDAY_2011 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z", Locale.ENGLISH).parse("2011-03-20 02:00:00 EST");
         } catch (ParseException e) {
             throw new IllegalStateException(e);
         }

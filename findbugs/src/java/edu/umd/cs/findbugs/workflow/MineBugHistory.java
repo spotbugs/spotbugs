@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.AppVersion;
@@ -65,7 +66,7 @@ public class MineBugHistory {
 
     static final int TUPLE_SIZE = 7;
 
-    final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
+    final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd", Locale.ENGLISH);
 
     static class Version {
         long sequence;

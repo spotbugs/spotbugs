@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -253,7 +254,7 @@ public abstract class AbstractCloud implements Cloud {
             return notInCloudMsg(b);
         }
         initiateCommunication();
-        SimpleDateFormat format = new SimpleDateFormat("MM/dd, yyyy");
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd, yyyy", Locale.ENGLISH);
         StringBuilder builder = new StringBuilder();
         long firstSeen = getFirstSeen(b);
         builder.append(String.format("First seen %s%n", format.format(new Date(firstSeen))));

@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
@@ -46,11 +47,11 @@ public class UsageReportServlet extends AbstractFlybushServlet {
     private int form_id = 0;
 
     private static  SimpleDateFormat DF_M_D_Y() {
-        return new SimpleDateFormat("M/d/yy");
+        return new SimpleDateFormat("M/d/yy", Locale.ENGLISH);
     }
 
     private static  SimpleDateFormat DF_M_D() {
-        return new SimpleDateFormat("M/d");
+        return new SimpleDateFormat("M/d", Locale.ENGLISH);
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
