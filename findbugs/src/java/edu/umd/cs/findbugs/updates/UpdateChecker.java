@@ -45,7 +45,7 @@ import org.dom4j.io.XMLWriter;
 
 public class UpdateChecker {
 
-    public static final String PLUGIN_RELEASE_DATE = "MM/dd/yyyy hh:mm aa z";
+    public static final String PLUGIN_RELEASE_DATE_FMT = "MM/dd/yyyy hh:mm aa z";
     private static final Logger LOGGER = Logger.getLogger(UpdateChecker.class.getName());
     private static final String KEY_DISABLE_ALL_UPDATE_CHECKS = "noUpdateChecks";
     private static final String KEY_REDIRECT_ALL_UPDATE_CHECKS = "redirectUpdateChecks";
@@ -351,7 +351,7 @@ public class UpdateChecker {
     }
 
     private @CheckForNull Date parseReleaseDate(Element releaseEl) {
-        SimpleDateFormat format = new SimpleDateFormat(PLUGIN_RELEASE_DATE);
+        SimpleDateFormat format = new SimpleDateFormat(PLUGIN_RELEASE_DATE_FMT);
         String dateStr = releaseEl.attributeValue("date");
         if (dateStr == null)
             return null;
@@ -446,7 +446,7 @@ public class UpdateChecker {
         
         @Override
         public String toString() {
-            SimpleDateFormat format = new SimpleDateFormat(PLUGIN_RELEASE_DATE);
+            SimpleDateFormat format = new SimpleDateFormat(PLUGIN_RELEASE_DATE_FMT);
             StringBuilder buf = new StringBuilder();
             String name = getPlugin().isCorePlugin() ? "FindBugs" : "FindBugs plugin " + getPlugin().getShortDescription();
             buf.append( name + " " + getVersion() );
