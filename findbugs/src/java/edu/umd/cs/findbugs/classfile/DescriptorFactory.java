@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.classfile;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,19 +69,17 @@ public class DescriptorFactory {
         this.fieldDescriptorMap = new HashMap<FieldDescriptor, FieldDescriptor>();
     }
 
-    private static MapCache<String, String> stringCache = new MapCache<String, String>(10000);
+    private MapCache<String, String> stringCache = new MapCache<String, String>(10000);
 
     public static String canonicalizeString(@CheckForNull String s) {
         if (s == null)
             return s;
-        String cached = stringCache.get(s);
+        DescriptorFactory df =  instanceThreadLocal.get();
+        String cached = df.stringCache.get(s);
         if (cached != null)
             return cached;
-        stringCache.put(s, s);
+        df.stringCache.put(s, s);
         return s;
-    }
-
-    public static void clearStringCache() {
     }
 
     /**
