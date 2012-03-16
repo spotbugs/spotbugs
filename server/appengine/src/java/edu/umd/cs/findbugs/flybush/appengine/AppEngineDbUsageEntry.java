@@ -48,6 +48,8 @@ public class AppEngineDbUsageEntry implements DbUsageEntry {
     @Persistent
     private String pluginVersion;
     @Persistent
+    private String pluginChannel;
+    @Persistent
     private Date date;
 
     @Override
@@ -153,6 +155,14 @@ public class AppEngineDbUsageEntry implements DbUsageEntry {
 
     public void setPluginName(String pluginName) {
         this.pluginName = pluginName;
+    }
+
+    public void setPluginChannel(String channel) {
+        this.pluginChannel = channel;
+    }
+
+    public String getPluginChannel() {
+        return pluginChannel;
     }
 
     public String getPluginVersion() {

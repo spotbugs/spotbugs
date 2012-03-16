@@ -26,9 +26,36 @@ public class XmlUploadServlet extends AbstractFlybushServlet {
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setStatus(200);
-        printForm(getPersistenceManager(), resp);
+        if (req.getRequestURI().equals("/upload")) {
+            resp.setStatus(200);
+            printForm(getPersistenceManager(), resp);
+
+        } else if (req.getRequestURI().equals("/create-default-versions")) {
+            PersistenceManager pm = getPersistenceManager();
+            DbPluginUpdateXml update = persistenceHelper.createPluginUpdateXml();
+            update.setChannel("channel");
+            update.setDate(new Date());
+            update.setMessage("message");
+            update.setPluginId("com.example.plugin");
+            update.setReleaseDate(new Date());
+            update.setUrl("http://url");
+            update.setUser("keithl@gmail.com");
+            update.setVersion("1.0");
+            pm.currentTransaction().begin();
+            try {
+                pm.makePersistent(update);
+                pm.currentTransaction().commit();
+            } finally {
+                if (pm.currentTransaction().isActive())
+                    pm.currentTransaction().rollback();
+            }
+            setResponse(resp, 200, "OK thanks!");
+        } else {
+            super.doGet(req, resp);
+        }
     }
+
+
 
     @Override
     protected void handlePost(PersistenceManager pm, HttpServletRequest req, HttpServletResponse resp, String uri)

@@ -120,6 +120,7 @@
     <servlet-mapping>
         <servlet-name>UpdateXmlUploadServlet</servlet-name>
         <url-pattern>/upload</url-pattern>
+        <url-pattern>/create-default-versions</url-pattern>
     </servlet-mapping>
 
     <security-constraint>

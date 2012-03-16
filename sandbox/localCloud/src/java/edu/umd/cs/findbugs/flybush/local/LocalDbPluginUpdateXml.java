@@ -27,6 +27,72 @@ public class LocalDbPluginUpdateXml implements DbPluginUpdateXml {
     @Persistent
     private String email;
 
+    @Persistent
+    private String pluginId;
+
+    @Persistent
+    private Date releaseDate;
+
+    @Persistent
+    private String version;
+
+    @Persistent
+    private String channel;
+
+    @Persistent
+    private String message;
+
+    @Persistent
+    private String url;
+
+    public String getPluginId() {
+        return pluginId;
+    }
+
+    public void setPluginId(String pluginId) {
+        this.pluginId = pluginId;
+    }
+
+    public Date getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(Date releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public String getContents() {
         return contents;
     }

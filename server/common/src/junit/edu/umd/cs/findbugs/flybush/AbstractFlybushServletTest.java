@@ -129,8 +129,12 @@ public abstract class AbstractFlybushServletTest extends TestCase {
     }
 
     protected void checkResponse(int responseCode, String expectedOutput) throws UnsupportedEncodingException {
+        checkResponse(responseCode, "text/plain", expectedOutput);
+    }
+
+    protected void checkResponse(int responseCode, String contentType, String expectedOutput) throws UnsupportedEncodingException {
         checkResponse(responseCode);
-        Mockito.verify(mockResponse, Mockito.atLeastOnce()).setContentType("text/plain");
+        Mockito.verify(mockResponse, Mockito.atLeastOnce()).setContentType(contentType);
         String output = new String(outputCollector.toByteArray(), "UTF-8");
         Assert.assertEquals(expectedOutput.trim(), output.replaceAll("\r", "").trim());
     }

@@ -1,0 +1,30 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="FindBugs w/cloud (keith-dev update check)" type="Application" factoryName="Application">
+    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="emma">
+      <pattern>
+        <option name="PATTERN" value="edu.umd.cs.findbugs.gui2.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <option name="MAIN_CLASS_NAME" value="edu.umd.cs.findbugs.gui2.Driver" />
+    <option name="VM_PARAMETERS" value="-Xmx1024m -ea  -Dfindbugs.cloud.default=edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud -Dfindbugs.plugin.appengine=file:../plugins/findbugsCommunalCloud/etc -Dfindbugs.redirectUpdateChecks=http://keith-dev.findbugs-cloud.appspot.com/update-check" />
+    <option name="PROGRAM_PARAMETERS" value="" />
+    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/findbugs" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="ALTERNATIVE_JRE_PATH" value="/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home" />
+    <option name="ENABLE_SWING_INSPECTOR" value="false" />
+    <option name="ENV_VARIABLES" />
+    <option name="PASS_PARENT_ENVS" value="true" />
+    <module name="findbugs" />
+    <envs />
+    <RunnerSettings RunnerId="Debug">
+      <option name="DEBUG_PORT" value="" />
+      <option name="TRANSPORT" value="0" />
+      <option name="LOCAL" value="true" />
+    </RunnerSettings>
+    <RunnerSettings RunnerId="Run" />
+    <ConfigurationWrapper RunnerId="Debug" />
+    <ConfigurationWrapper RunnerId="Run" />
+    <method />
+  </configuration>
+</component>

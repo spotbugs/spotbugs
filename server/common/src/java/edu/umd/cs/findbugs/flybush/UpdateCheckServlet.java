@@ -1,33 +1,38 @@
 package edu.umd.cs.findbugs.flybush;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Random;
+import java.util.Locale;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-import javax.jdo.annotations.Join;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
-import com.boxysystems.jgoogleanalytics.FocusPoint;
-import com.boxysystems.jgoogleanalytics.GoogleAnalytics_v1_URLBuildingStrategy;
-import com.boxysystems.jgoogleanalytics.JGoogleAnalyticsTracker;
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class UpdateCheckServlet extends AbstractFlybushServlet {
+
+    public static final String PLUGIN_RELEASE_DATE_FMT = "MM/dd/yyyy hh:mm aa z";
+    private static final Pattern RC_REGEX = Pattern.compile("[\\d\\.]+-rc\\d+");
+    private static final Pattern DEV_REGEX = Pattern.compile("[\\d\\.]+-dev-\\d+");
+    private static final Pattern BETA_REGEX = Pattern.compile("[\\d\\.]+-beta\\d+");
+    private static final Pattern ALPHA_REGEX = Pattern.compile("[\\d\\.]+-alpha\\d+");
+    private static final Pattern STABLE_REGEX = Pattern.compile("[\\d\\.]+");
 
     @SuppressWarnings({"unchecked"})
     @Override
@@ -39,41 +44,7 @@ public class UpdateCheckServlet extends AbstractFlybushServlet {
         entry.setDate(new Date());
         final List<List<String>> plugins = Lists.newArrayList();
         try {
-            SAXParserFactory.newInstance().newSAXParser().parse(req.getInputStream(), new DefaultHandler() {
-                @Override
-                public void startElement(String uri, String localName, String qName, Attributes attributes)
-                        throws SAXException {
-                    if (qName.equals("findbugs-invocation")) {
-                        for (int i = 0; i < attributes.getLength(); i++) {
-                            String name = attributes.getQName(i);
-                            String value = attributes.getValue(i);
-                            if (name.equals("version")) entry.setVersion(value);
-                            if (name.equals("app-name")) entry.setAppName(value);
-                            if (name.equals("app-version")) entry.setAppVersion(value);
-                            if (name.equals("entry-point")) entry.setEntryPoint(value);
-                            if (name.equals("os")) entry.setOs(value);
-                            if (name.equals("java-version")) entry.setJavaVersion(value);
-                            if (name.equals("language")) entry.setLanguage(value);
-                            if (name.equals("country")) entry.setLocaleCountry(value);
-                            if (name.equals("uuid")) entry.setUuid(value);
-                        }
-                    } else if (qName.equals("plugin")) {
-
-                        String id = null;
-                        String name = null;
-                        String version = null;
-                        for (int i = 0; i < attributes.getLength(); i++) {
-                            String qname = attributes.getQName(i);
-                            if (qname.equals("id")) id = attributes.getValue(i);
-                            if (qname.equals("name")) name = attributes.getValue(i);
-                            if (qname.equals("version")) version = attributes.getValue(i);
-                        }
-                        if (id != null) {
-                            plugins.add(Arrays.asList(id, name, version));
-                        }
-                    }
-                }
-            });
+            parsePluginsXml(req, entry, plugins);
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
         } catch (SAXException e) {
@@ -84,6 +55,154 @@ public class UpdateCheckServlet extends AbstractFlybushServlet {
             setResponse(resp, 500, "Missing fields in posted XML - version, uuid");
             return;
         }
+
+        List<DbUsageEntry> entries = commitEntries(pm, entry, plugins);
+
+        resp.setStatus(200);
+        resp.setContentType("text/xml");
+
+        /*
+        <?xml version="1.0" encoding="UTF-8"?>
+        <fb-plugin-updates>
+            <plugin id="edu.umd.cs.findbugs.plugins.core">
+                <release
+                        date="12/21/2011 10:00 am EST"
+                        version="2.0.0"
+                        url="http://findbugs.cs.umd.edu/">
+                   <message>FindBugs 2.0.0 has been released</message>
+                </release>
+            </plugin>
+        </fb-plugin-updates>
+        */
+
+        try {
+            writeResponseXml(pm, resp, entries);
+        } catch (XMLStreamException e) {
+            LOGGER.log(Level.WARNING, "Exception while writing XML", e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void writeResponseXml(PersistenceManager pm, HttpServletResponse resp, List<DbUsageEntry> entries)
+            throws XMLStreamException, IOException {
+        XMLStreamWriter writer = XMLOutputFactory.newFactory().createXMLStreamWriter(resp.getOutputStream());
+        writer = makeIndentingStreamWriterIfPossible(writer);
+        writer.writeStartDocument();
+        writer.writeStartElement("fb-plugin-updates");
+        Query query = pm.newQuery("select from " + persistenceHelper.getDbPluginUpdateXmlClassname()
+                + " order by pluginId, releaseDate desc");
+        List<DbPluginUpdateXml> results = (List<DbPluginUpdateXml>) query.execute();
+        if (!results.isEmpty()) {
+            DateFormat df = new SimpleDateFormat(PLUGIN_RELEASE_DATE_FMT, Locale.ENGLISH);
+            String oldPluginId = null;
+            boolean wrotePlugin = false;
+            for (DbPluginUpdateXml result : results) {
+                String pluginId = result.getPluginId();
+                if (pluginId == null) continue;
+                DbUsageEntry found = findSubmittedPluginUsageEntry(entries, pluginId);
+                String channel = null;
+                if (found != null)
+                    channel = findOrDetectChannel(found);
+
+                try {
+                    oldPluginId = writePluginUpdate(writer, df, oldPluginId, result, channel);
+                    if (oldPluginId != null)
+                        wrotePlugin = true;
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Can't write plugin update " + result, e);
+                }
+            }
+            if (wrotePlugin)
+                writer.writeEndElement(); // plugin
+        }
+        writer.writeEndElement(); // fb-plugin-updates
+        writer.writeEndDocument();
+        writer.close();
+    }
+
+    private String findOrDetectChannel(DbUsageEntry found) {
+        String userChannel = found.getPluginChannel();
+        if (userChannel != null) {
+            return userChannel;
+        } else {
+            String pluginVersion = found.getPluginVersion();
+            String channel = null;
+            if (pluginVersion != null) {
+                if (STABLE_REGEX.matcher(pluginVersion).matches()) channel = "stable";
+                if (RC_REGEX.matcher(pluginVersion).matches()) channel = "rc";
+                if (BETA_REGEX.matcher(pluginVersion).matches()) channel = "beta";
+                if (ALPHA_REGEX.matcher(pluginVersion).matches()) channel = "alpha";
+                if (DEV_REGEX.matcher(pluginVersion).matches()) channel = "dev";
+                if (channel == null)
+                    LOGGER.warning("version does not match any regex: " + pluginVersion);
+                else
+                    LOGGER.info("version matches! " + pluginVersion  + " is " + channel);
+            }
+            return channel;
+        }
+    }
+
+    private DbUsageEntry findSubmittedPluginUsageEntry(List<DbUsageEntry> entries, String pluginId) {
+        DbUsageEntry found = null;
+        for (DbUsageEntry entry : entries) {
+            if (pluginId.equals(entry.getPlugin())) {
+                found = entry;
+            }
+        }
+        return found;
+    }
+
+    private XMLStreamWriter makeIndentingStreamWriterIfPossible(XMLStreamWriter writer) {
+        try {
+            Class<?> cls = Class.forName("com.sun.xml.internal.txw2.output.IndentingXMLStreamWriter");
+            writer = (XMLStreamWriter) cls.getConstructor(XMLStreamWriter.class).newInstance(writer);
+        } catch (Throwable t) {
+            // ignore
+        }
+        return writer;
+    }
+
+    private String writePluginUpdate(XMLStreamWriter writer, DateFormat df, String oldPluginId,
+                                     DbPluginUpdateXml result, String userChannel) throws XMLStreamException {
+        String newPluginId = result.getPluginId();
+        if (newPluginId == null)
+            return null;
+        String channel = result.getChannel();
+        if (userChannel != null && !userChannel.equals(channel))
+            return oldPluginId;
+
+        boolean newPlugin = !newPluginId.equals(oldPluginId);
+        if (newPlugin) {
+            if (oldPluginId != null)
+                writer.writeEndElement(); // plugin
+
+            writer.writeStartElement("plugin");
+            writer.writeAttribute("id", newPluginId);
+        }
+        oldPluginId = newPluginId;
+
+        writer.writeStartElement("release");
+        if (channel != null) writer.writeAttribute("channel", channel);
+        Date releaseDate = result.getReleaseDate();
+        if (releaseDate != null) writer.writeAttribute("date", df.format(releaseDate));
+        String version = result.getVersion();
+        if (version != null) writer.writeAttribute("version", version);
+        writer.writeAttribute("url", result.getUrl());
+
+        String message = result.getMessage();
+
+        if (message != null) {
+            writer.writeStartElement("message");
+            writer.writeCData(message);
+            writer.writeEndElement(); // message
+        }
+
+        writer.writeEndElement(); // release
+        return oldPluginId;
+    }
+
+    private List<DbUsageEntry> commitEntries(PersistenceManager pm, DbUsageEntry entry, List<List<String>> plugins) {
+        List<DbUsageEntry> entries = Lists.newArrayList();
         try {
             LOGGER.info(entry.toString());
             LOGGER.info(plugins.toString());
@@ -92,92 +211,58 @@ public class UpdateCheckServlet extends AbstractFlybushServlet {
                 pluginEntry.setPlugin(e.get(0));
                 pluginEntry.setPluginName(e.get(1));
                 pluginEntry.setPluginVersion(e.get(2));
+                pluginEntry.setPluginChannel(e.get(3));
 
                 pm.currentTransaction().begin();
                 pm.makePersistent(pluginEntry);
                 pm.currentTransaction().commit();
-
-                sendGoogleAnalyicsRequest();
+                entries.add(pluginEntry);
             }
         } finally {
             if (pm.currentTransaction().isActive())
                 pm.currentTransaction().rollback();
         }
-        //TODO: unit test me!
-        resp.setStatus(200);
-        resp.setContentType("text/xml");
-        try {
-            List<DbPluginUpdateXml> results = (List<DbPluginUpdateXml>) getUpdateXmlQueryObj(pm, persistenceHelper).execute();
-            if (results.size() > 0)
-                resp.getWriter().write(results.get(0).getContents());
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while grabbing update check XML from DB", e);
-        }
+        return entries;
     }
 
-    private void sendGoogleAnalyicsRequest() {
-        /*
-                //Google analytics tracking code for Library Finder
-                JGoogleAnalyticsTracker tracker = new JGoogleAnalyticsTracker(pluginEntry.getAppName(),pluginEntry.getAppVersion(),"UA-95484-8");
-                tracker.setUrlBuildingStrategy(new GoogleAnalytics_v1_URLBuildingStrategy(pluginEntry.getAppName(), pluginEntry.getAppVersion(), "UA-95484-8") {
-                    @Override
-                    public String buildURL(FocusPoint focusPoint) {
-                        return super.buildURL(focusPoint) + "&utme=";
+    private void parsePluginsXml(HttpServletRequest req, final DbUsageEntry entry, final List<List<String>> plugins) throws SAXException, IOException, ParserConfigurationException {
+        SAXParserFactory.newInstance().newSAXParser().parse(req.getInputStream(), new DefaultHandler() {
+            @Override
+            public void startElement(String uri, String localName, String qName, Attributes attributes)
+                    throws SAXException {
+                if (qName.equals("findbugs-invocation")) {
+                    for (int i = 0; i < attributes.getLength(); i++) {
+                        String name = attributes.getQName(i);
+                        String value = attributes.getValue(i);
+                        if (name.equals("version")) entry.setVersion(value);
+                        if (name.equals("app-name")) entry.setAppName(value);
+                        if (name.equals("app-version")) entry.setAppVersion(value);
+                        if (name.equals("entry-point")) entry.setEntryPoint(value);
+                        if (name.equals("os")) entry.setOs(value);
+                        if (name.equals("java-version")) entry.setJavaVersion(value);
+                        if (name.equals("language")) entry.setLanguage(value);
+                        if (name.equals("country")) entry.setLocaleCountry(value);
+                        if (name.equals("uuid")) entry.setUuid(value);
                     }
-                });
+                } else if (qName.equals("plugin")) {
 
-
-        //                    _gaq.push(['_setCustomVar',
-        //                          1,                   // This custom var is set to slot #1.  Required parameter.
-        //                          'Section1',           // The top-level name for your online content categories.  Required parameter.
-        //                          'Life & Style',  // Sets the value of "Section" to "Life & Style" for this particular aricle.  Required parameter.
-        //                          3                    // Sets the scope to page-level.  Optional parameter.
-        //                       ]);
-        //                    _gaq.push(['_setCustomVar',
-        //                          2,                   // This custom var is set to slot #1.  Required parameter.
-        //                          'Section2',           // The top-level name for your online content categories.  Required parameter.
-        //                          'Life & Style',  // Sets the value of "Section" to "Life & Style" for this particular aricle.  Required parameter.
-        //                          3                    // Sets the scope to page-level.  Optional parameter.
-        //                       ]);
-
-                // http://www.google-analytics.com/__utm.gif?utmwv=5.2.2&utms=1&utmn=1729318528&utmhn=keithlea.com
-                // &utmt=event
-                // &utme=5(Shopping*Item%20Removal)8(Section1*Section2)9(Life%20%26%20Style*Life%20%26%20Style)
-                // &utmcs=ISO-8859-1&utmsr=1680x1050&utmsc=24-bit&utmul=en-us&utmje=1&utmfl=11.1%20r102
-                // &utmdt=Analytics%20Test&utmhid=1462421625&utmr=-&utmp=%2Fin%2Fanalytics-test.html&utmac=UA-95484-8
-                // &utmcc=__utma%3D69158283.1665018895.1326831161.1326831161.1326831161.1%3B%2B__utmz%3D69158283.1326831161.1.1.utmcsr%3D(direct)%7Cutmccn%3D(direct)%7Cutmcmd%3D(none)%3B&utmu=4Q~
-
-                Random random = new Random();
-                int cookie = random.nextInt();
-                int randomValue = random.nextInt(2147483647) -1;
-                long now = new Date().getTime();
-                LinkedHashMap<String,String> vars = Maps.newLinkedHashMap();
-                vars.put("JavaVersion", entry.getJavaVersion());
-                vars.put("JavaVersion", entry.getUuid());
-
-                StringBuilder url = new StringBuilder("http://www.google-analytics.com/__utm.gif");
-                url.append("?utmwv=1"); //Urchin/Analytics version
-                url.append("&utmn=" + random.nextInt());
-                url.append("&utmcs=UTF-8"); //document encoding
-                url.append("&utmsr=1440x900"); //screen resolution
-                url.append("&utmsc=32-bit"); //color depth
-                url.append("&utmul=" + pluginEntry.getLanguage() + "-" + pluginEntry.getCountry()); //user language
-                url.append("&utmje=1"); //java enabled
-                url.append("&utmfl=9.0%20%20r28"); //flash
-                url.append("&utmcr=1"); //carriage return
-                url.append("&utmhn=findbugs-cloud.appspot.com");//document hostname
-        //                url.append("&utmr="+refererURL); //referer URL
-                url.append("&utmac=UA-95484-8");//Google Analytics account
-                url.append("&utme=5(Usage*Usage)" +
-                        "8("
-                        + Joiner.on("*").join(vars.keySet()) + ")" +
-                        "9("
-                        + Joiner.on("*").join(vars.values()) + ")");//Google Analytics account
-                url.append("&utmcc=__utma%3D'"+cookie+"."+randomValue+"."+now+"."+now+"."+now+".2%3B%2B__utmb%3D"
-                        +cookie+"%3B%2B__utmc%3D"+cookie+"%3B%2B__utmz%3D"+cookie+"."+now
-                        +".2.2.utmccn%3D(direct)%7Cutmcsr%3D(direct)%7Cutmcmd%3D(none)%3B%2B__utmv%3D"+cookie);
-                return url.toString();
-                */
+                    String id = null;
+                    String name = null;
+                    String version = null;
+                    String channel = null;
+                    for (int i = 0; i < attributes.getLength(); i++) {
+                        String qname = attributes.getQName(i);
+                        if (qname.equals("id")) id = attributes.getValue(i);
+                        if (qname.equals("name")) name = attributes.getValue(i);
+                        if (qname.equals("version")) version = attributes.getValue(i);
+                        if (qname.equals("channel")) channel = attributes.getValue(i);
+                    }
+                    if (id != null) {
+                        plugins.add(Arrays.asList(id, name, version, channel));
+                    }
+                }
+            }
+        });
     }
 
     public static Query getUpdateXmlQueryObj(PersistenceManager pm, PersistenceHelper persistenceHelper) {

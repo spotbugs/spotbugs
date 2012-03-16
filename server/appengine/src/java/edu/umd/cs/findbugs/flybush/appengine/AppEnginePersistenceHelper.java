@@ -85,6 +85,11 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
     }
 
     @Override
+    public DbPluginUpdateXml createPluginUpdateXml() {
+        return new AppEngineDbPluginUpdateXml();
+    }
+
+    @Override
     public DbUsageSummary createDbUsageSummary() {
         return new AppEngineDbUsageSummary();
     }

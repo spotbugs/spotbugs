@@ -26,4 +26,8 @@
         <property name="endDate" direction="asc"/>
         <property name="date" direction="asc"/>
     </datastore-index>
+    <datastore-index kind="AppEngineDbPluginUpdateXml" ancestor="false" source="manual">
+        <property name="pluginId" direction="asc"/>
+        <property name="releaseDate" direction="desc"/>
+    </datastore-index>
 </datastore-indexes>

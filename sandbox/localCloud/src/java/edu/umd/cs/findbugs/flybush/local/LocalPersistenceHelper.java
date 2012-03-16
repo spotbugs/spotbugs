@@ -90,6 +90,11 @@ public class LocalPersistenceHelper extends PersistenceHelper {
     }
 
     @Override
+    public DbPluginUpdateXml createPluginUpdateXml() {
+        return new LocalDbPluginUpdateXml();
+    }
+
+    @Override
     public DbUsageSummary createDbUsageSummary() {
         throw new UnsupportedOperationException();
     }

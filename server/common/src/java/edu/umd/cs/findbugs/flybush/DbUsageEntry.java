@@ -25,6 +25,8 @@ public interface DbUsageEntry {
     void setPlugin(String plugin);
     String getPluginName();
     void setPluginName(String pluginName);
+    void setPluginChannel(String channel);
+    String getPluginChannel();
     String getPluginVersion();
     void setPluginVersion(String pluginVersion);
     Date getDate();

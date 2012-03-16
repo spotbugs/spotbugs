@@ -20,6 +20,7 @@ public abstract class PersistenceHelper {
     public abstract DbClientVersionStats createDbClientVersionStats(String application, String version, long dayStart);
     public abstract DbUsageEntry createDbUsageEntry();
     public abstract DbPluginUpdateXml createPluginUpdateXml(String value);
+    public abstract DbPluginUpdateXml createPluginUpdateXml();
     public abstract DbUsageSummary createDbUsageSummary();
 
     public abstract Class<? extends DbUser> getDbUserClass();

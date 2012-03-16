@@ -46,6 +46,8 @@ public class LocalDbUsageEntry implements DbUsageEntry {
     @Persistent
     private String pluginVersion;
     @Persistent
+    private String pluginChannel;
+    @Persistent
     private Date date;
 
     public String getIpAddress() {
@@ -149,6 +151,14 @@ public class LocalDbUsageEntry implements DbUsageEntry {
 
     public void setPluginName(String pluginName) {
         this.pluginName = pluginName;
+    }
+
+    public void setPluginChannel(String channel) {
+        this.pluginChannel = channel;
+    }
+
+    public String getPluginChannel() {
+        return pluginChannel;
     }
 
     public String getPluginVersion() {
