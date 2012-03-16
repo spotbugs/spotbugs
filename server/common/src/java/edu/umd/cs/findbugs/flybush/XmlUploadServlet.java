@@ -116,6 +116,8 @@ public class XmlUploadServlet extends AbstractFlybushServlet {
             currentXml = "(no update xml has been uploaded yet)";
         else
             currentXml = xmls.get(0).getContents();
+        if (currentXml == null)
+            currentXml = "(error)";
 
         resp.setContentType("text/html");
         resp.getWriter().print(
@@ -124,6 +126,8 @@ public class XmlUploadServlet extends AbstractFlybushServlet {
                         "  <title>File Upload</title>\n" +
                         "</head>\n" +
                         "<body>\n" +
+                        "<h1 style=color:red>THIS FORM IS NOT USED ANYMORE!</h1>\n" +
+                        "<p style=color:red>Use the App Engine Data Viewer to add/edit plugin updates.</p>\n" +
                         "  <form method=\"post\" action=\"upload\" enctype=\"multipart/form-data\">\n" +
                         "    <input type=\"file\" name=\"file\" />\n" +
                         "    <input type=\"submit\" value=\"Upload\" />\n" +
