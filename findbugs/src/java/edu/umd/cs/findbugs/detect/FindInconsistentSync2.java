@@ -367,8 +367,12 @@ public class FindInconsistentSync2 implements Detector {
             bugReporter.logError("Error finding locked call sites", e);
             return;
         }
-
+        
+            
         for (Method method : allMethods) {
+            if (DEBUG)
+                System.out.println("******** considering method " + method.getName());
+
             if (classContext.getMethodGen(method) == null)
                 continue;
 
@@ -384,7 +388,7 @@ public class FindInconsistentSync2 implements Detector {
             || name.equals("finalize");
 
             if (inConstructor)
-                return;
+                continue;
 
             if (DEBUG)
                 System.out.println("******** Analyzing method " + method.getName());

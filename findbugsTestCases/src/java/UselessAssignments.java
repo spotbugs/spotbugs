@@ -1,8 +1,14 @@
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 class UselessAssignments {
-    @ExpectWarning("UuF,UrF")
-    int foo, bar, g1, g2;
+    @ExpectWarning("UR")
+    int foo;
+    
+    @ExpectWarning("UrF")
+    int bar, g1;
+    
+    @ExpectWarning("UuF")
+    int g2;
 
     @ExpectWarning("DLS,SA")
     public UselessAssignments(int Foo, int Bar) {

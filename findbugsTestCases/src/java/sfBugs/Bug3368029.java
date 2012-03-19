@@ -25,7 +25,7 @@ public class Bug3368029 {
         return total;
     }
     /*missing synchronized!*/
-    public void reset() {
+    public void foobar() {
         this.total = 0;
     }
     /*missing synchronized!*/
@@ -34,7 +34,7 @@ public class Bug3368029 {
             countOne(thing);
         }
     }
-    private void countOne(String thing) {
+    private synchronized void countOne(String thing) {
         total += thing.length();
     }
 

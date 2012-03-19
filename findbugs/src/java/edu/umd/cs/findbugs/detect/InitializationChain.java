@@ -32,7 +32,9 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.XField;
 
 public class InitializationChain extends BytecodeScanningDetector {
     Set<String> requires = new TreeSet<String>();
@@ -41,11 +43,14 @@ public class InitializationChain extends BytecodeScanningDetector {
 
     Set<String> staticFieldsAccessedInConstructor = new HashSet<String>();
 
-    Map<String, BugInstance> staticFieldWritten = new HashMap<String, BugInstance>();
+    HashSet<String> staticFieldWritten = new HashSet<String>();
+
 
     private BugReporter bugReporter;
 
     private boolean instanceCreated;
+    
+    private HashSet<XField> singletonFields = new HashSet<XField>();
 
     private int instanceCreatedPC;
 
@@ -63,6 +68,7 @@ public class InitializationChain extends BytecodeScanningDetector {
         instanceCreatedWarningGiven = false;
         if (!getMethodName().equals("<clinit>") && !getMethodName().equals("<init>"))
             return;
+        singletonFields.clear();
         super.visit(obj);
         requires.remove(getDottedClassName());
         if (getDottedClassName().equals("java.lang.System")) {
@@ -76,15 +82,11 @@ public class InitializationChain extends BytecodeScanningDetector {
             classRequires.put(getDottedClassName(), requires);
             requires = new TreeSet<String>();
         }
+        singletonFields.clear();
     }
 
     @Override
     public void visitAfter(JavaClass obj) {
-        for (String name : staticFieldsAccessedInConstructor) {
-            BugInstance bug = staticFieldWritten.get(name);
-            if (bug != null)
-                bugReporter.reportBug(bug);
-        }
         staticFieldWritten.clear();
         staticFieldsAccessedInConstructor.clear();
 
@@ -106,12 +108,19 @@ public class InitializationChain extends BytecodeScanningDetector {
             // of which variables could be seen.
             if (instanceCreated && !instanceCreatedWarningGiven && !getSuperclassName().equals("java.lang.Enum")) {
                 String okSig = "L" + getClassName() + ";";
-                if (!okSig.equals(getSigConstantOperand())) {
-                    staticFieldWritten.put(getNameConstantOperand(),
+                if (!okSig.equals(getSigConstantOperand()) && staticFieldWritten.add(getNameConstantOperand())) {
+                    if (!singletonFields.isEmpty()) {
+                        for(XField f : singletonFields)
+                            bugReporter.reportBug(
+                                    new BugInstance(this, "SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY).addClassAndMethod(this)
+                                           .addField(f).describe(FieldAnnotation.STORED_ROLE) .addReferencedField(this).describe(FieldAnnotation.STORED_ROLE).addSourceLine(this, instanceCreatedPC));
+                    } else
+                        bugReporter.reportBug(
                             new BugInstance(this, "SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY).addClassAndMethod(this)
-                                    .addReferencedField(this).addSourceLine(this, instanceCreatedPC));
+                                    .addReferencedField(this).describe(FieldAnnotation.STORED_ROLE).addSourceLine(this, instanceCreatedPC));
                     instanceCreatedWarningGiven = true;
-                }
+                } else 
+                    singletonFields.add(getXFieldOperand());
             }
         } else if (seen == NEW && getClassConstantOperand().equals(getClassName())) {
             instanceCreated = true;

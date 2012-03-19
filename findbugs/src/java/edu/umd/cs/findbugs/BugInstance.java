@@ -470,17 +470,17 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      *         there is no such BugAnnotation
      */
     private <T extends BugAnnotation> T findPrimaryAnnotationOfType(Class<T> cls) {
-        T bestMatch = null;
+        T firstMatch = null;
         for (Iterator<BugAnnotation> i = annotationIterator(); i.hasNext();) {
             BugAnnotation annotation = i.next();
             if (cls.isAssignableFrom(annotation.getClass())) {
                 if (annotation.getDescription().endsWith("DEFAULT"))
                     return cls.cast(annotation);
-                else
-                    bestMatch = cls.cast(annotation);
+                else if (firstMatch == null)
+                    firstMatch = cls.cast(annotation);
             }
         }
-        return bestMatch;
+        return firstMatch;
     }
 
     public LocalVariableAnnotation getPrimaryLocalVariableAnnotation() {

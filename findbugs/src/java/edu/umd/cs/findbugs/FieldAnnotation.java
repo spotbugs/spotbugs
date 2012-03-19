@@ -35,9 +35,13 @@ import org.apache.bcel.generic.PUTSTATIC;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -188,6 +192,14 @@ public class FieldAnnotation extends PackageMemberAnnotation {
                 fieldDescriptor.getSourceSignature(), fieldDescriptor.isStatic());
     }
 
+    
+    public XField toXField() {
+        return XFactory.createXField(className, fieldName, fieldSig, isStatic);
+    }
+    
+    public FieldDescriptor toFieldDescriptor() {
+       return DescriptorFactory.instance().getFieldDescriptor(this);
+    }
     /**
      * Get the field name.
      */
