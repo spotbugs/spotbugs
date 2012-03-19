@@ -161,6 +161,14 @@ This plugin contains all of the standard FindBugs detectors.
   Detectors
   **********************************************************************
    -->
+  <Detector class="edu.umd.cs.findbugs.detect.InitializeNonnullFieldsInConstructor">
+    <Details>
+<![CDATA[
+<p> Finds nonnull fields that are not written to in constructors.
+</p>
+]]>
+     </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.IntCast2LongAsInstant">
     <Details>
 <![CDATA[
@@ -1921,6 +1929,18 @@ another package.</p>
     This method can be invoked as though it returned a value of type boolean, and
     the compiler will insert automatic unboxing of the Boolean value. If a null value is returned,
     this will result in a NullPointerException.
+       </p>
+       ]]>
+       </Details>
+  </BugPattern>
+  <BugPattern type="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">
+    <ShortDescription>Nonnull field is not initialized</ShortDescription>
+    <LongDescription>Nonnull field {2.name} is not initialized by {1}</LongDescription>
+    <Details>
+       <![CDATA[
+       <p> The field is marked as nonnull, but isn't written to by the constructor.
+	The field might be initialized elsewhere during constructor, or might always
+	be initialized before use.
        </p>
        ]]>
        </Details>
