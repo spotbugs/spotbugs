@@ -6,7 +6,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3503898 {
 
-	@NoWarning("UrF")
+    @NoWarning("UrF")
     private String value;
 
     public void setValue(String value) {
