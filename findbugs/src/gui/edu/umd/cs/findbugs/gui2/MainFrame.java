@@ -104,9 +104,9 @@ public class MainFrame extends FBFrame implements LogSync {
 
     private BugAspects currentSelectedBugAspects;
 
-    private Project curProject = new Project();
+    private volatile Project curProject = new Project();
 
-    private boolean newProject = false;
+    private volatile boolean newProject = false;
 
     private final ProjectPackagePrefixes projectPackagePrefixes = new ProjectPackagePrefixes();
 
