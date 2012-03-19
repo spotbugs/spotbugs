@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -28,6 +30,7 @@ import java.util.TreeSet;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -35,13 +38,14 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 public class InitializationChain extends BytecodeScanningDetector {
     Set<String> requires = new TreeSet<String>();
 
     Map<String, Set<String>> classRequires = new TreeMap<String, Set<String>>();
 
-    Set<String> staticFieldsAccessedInConstructor = new HashSet<String>();
+    Set<XField> staticFieldsAccessedInConstructor = new HashSet<XField>();
 
     HashSet<String> staticFieldWritten = new HashSet<String>();
 
@@ -51,6 +55,8 @@ public class InitializationChain extends BytecodeScanningDetector {
     private boolean instanceCreated;
     
     private HashSet<XField> singletonFields = new HashSet<XField>();
+    private Map<XMethod, Set<XField>> staticFieldsRead = new HashMap<XMethod, Set<XField>>();
+    private Set<XField> fieldsRead = new HashSet<XField>();
 
     private int instanceCreatedPC;
 
@@ -63,13 +69,31 @@ public class InitializationChain extends BytecodeScanningDetector {
     }
 
     @Override
+    protected Iterable<Method> getMethodVisitOrder(JavaClass obj) {
+        ArrayList<Method> visitOrder = new ArrayList<Method>();
+        Method staticInitializer = null;
+        for(Method m : obj.getMethods()) {
+            String name = m.getName();
+            if (name.equals("<clinit>"))
+                staticInitializer = m;
+            else if (name.equals("<init>"))
+                visitOrder.add(m);
+            
+        }
+        if (staticInitializer != null)
+            visitOrder.add(staticInitializer);
+        return visitOrder;
+    }
+    
+    
+    @Override
     public void visit(Code obj) {
         instanceCreated = false;
         instanceCreatedWarningGiven = false;
-        if (!getMethodName().equals("<clinit>") && !getMethodName().equals("<init>"))
-            return;
+        fieldsRead.clear();
         singletonFields.clear();
         super.visit(obj);
+        staticFieldsRead.put(getXMethod(), fieldsRead);
         requires.remove(getDottedClassName());
         if (getDottedClassName().equals("java.lang.System")) {
             requires.add("java.io.FileInputStream");
@@ -97,16 +121,18 @@ public class InitializationChain extends BytecodeScanningDetector {
 
         if (getMethodName().equals("<init>")) {
             if (seen == GETSTATIC && getClassConstantOperand().equals(getClassName())) {
-                staticFieldsAccessedInConstructor.add(getNameConstantOperand());
+                staticFieldsAccessedInConstructor.add(getXFieldOperand());
+                fieldsRead.add(getXFieldOperand());
             }
             return;
         }
 
-        if (seen == PUTSTATIC && getClassConstantOperand().equals(getClassName())) {
-            // Don't do this check; it generates too many false
-            // positives. We need to do a more detailed check
-            // of which variables could be seen.
-            if (instanceCreated && !instanceCreatedWarningGiven && !getSuperclassName().equals("java.lang.Enum")) {
+        if (seen == PUTSTATIC && getClassConstantOperand().equals(getClassName()) && !getSuperclassName().equals("java/lang/Enum")) {
+            
+            if(!staticFieldsAccessedInConstructor.contains(getXFieldOperand()))
+                    return;
+            
+            if (instanceCreated && !instanceCreatedWarningGiven ) {
                 String okSig = "L" + getClassName() + ";";
                 if (!okSig.equals(getSigConstantOperand()) && staticFieldWritten.add(getNameConstantOperand())) {
                     if (!singletonFields.isEmpty()) {

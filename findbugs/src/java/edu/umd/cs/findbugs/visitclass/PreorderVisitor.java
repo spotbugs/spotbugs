@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -337,6 +338,9 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
         this.visitMethodsInCallOrder = visitMethodsInCallOrder;
     }
 
+    protected Iterable<Method> getMethodVisitOrder(JavaClass obj) {
+        return Arrays.asList(obj.getMethods());
+    }
     // General classes
     @Override
     public void visitJavaClass(JavaClass obj) {
@@ -344,7 +348,6 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
         if (shouldVisit(obj)) {
             constantPool.accept(this);
             Field[] fields = obj.getFields();
-            Method[] methods = obj.getMethods();
             Attribute[] attributes = obj.getAttributes();
             for (Field field : fields)
                 doVisitField(field);
@@ -366,7 +369,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
                 }
             }
             if (!didInCallOrder)
-                for (Method m : methods)
+                for (Method m : getMethodVisitOrder(obj))
                     doVisitMethod(m);
             for (Attribute attribute : attributes)
                 attribute.accept(this);
