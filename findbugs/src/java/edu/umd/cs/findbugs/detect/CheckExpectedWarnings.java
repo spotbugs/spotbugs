@@ -145,10 +145,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                     if (DEBUG)
                         System.out.println("primary field of " + field + " for " + warning);
                     FieldDescriptor fieldDescriptor = field.toFieldDescriptor();
-                    Collection<BugInstance> warnings;
-                    // I want a FindBugs warning here
-                    warnings = warningsByMethod.get(fieldDescriptor);
-                    warnings = warningsByField.get(fieldDescriptor);
+                    Collection<BugInstance> warnings = warningsByField.get(fieldDescriptor);
                     
                     if (warnings == null) {
                         warnings = new LinkedList<BugInstance>();
