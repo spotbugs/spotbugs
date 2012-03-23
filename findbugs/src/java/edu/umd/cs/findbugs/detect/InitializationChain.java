@@ -20,9 +20,9 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -45,22 +46,29 @@ public class InitializationChain extends BytecodeScanningDetector {
 
     Map<String, Set<String>> classRequires = new TreeMap<String, Set<String>>();
 
-    Set<XField> staticFieldsAccessedInConstructor = new HashSet<XField>();
-
-    HashSet<String> staticFieldWritten = new HashSet<String>();
-
-
+    
+   
     private BugReporter bugReporter;
 
-    private boolean instanceCreated;
-    
-    private HashSet<XField> singletonFields = new HashSet<XField>();
     private Map<XMethod, Set<XField>> staticFieldsRead = new HashMap<XMethod, Set<XField>>();
-    private Set<XField> fieldsRead = new HashSet<XField>();
+    private Set<XField> staticFieldsReadInAnyConstructor = new HashSet<XField>();
+    private Set<XField> fieldsReadInThisConstructor = new HashSet<XField>();
 
-    private int instanceCreatedPC;
+    private Set<XMethod> constructorsInvokedInStaticInitializer = new HashSet<XMethod>();
+    private List<InvocationInfo> invocationInfo = new ArrayList<InvocationInfo>();
+    private Set<XField> warningGiven = new HashSet<XField>();
 
-    private boolean instanceCreatedWarningGiven;
+    private InvocationInfo lastInvocation;
+   
+    static class InvocationInfo {
+        public InvocationInfo(XMethod constructor, int pc) {
+            this.constructor = constructor;
+            this.pc = pc;
+        }
+        XMethod constructor;
+        int pc;
+        XField field;
+    }
 
     private static final boolean DEBUG = SystemProperties.getBoolean("ic.debug");
 
@@ -88,12 +96,9 @@ public class InitializationChain extends BytecodeScanningDetector {
     
     @Override
     public void visit(Code obj) {
-        instanceCreated = false;
-        instanceCreatedWarningGiven = false;
-        fieldsRead.clear();
-        singletonFields.clear();
+        fieldsReadInThisConstructor  = new HashSet<XField>();
         super.visit(obj);
-        staticFieldsRead.put(getXMethod(), fieldsRead);
+        staticFieldsRead.put(getXMethod(), fieldsReadInThisConstructor);
         requires.remove(getDottedClassName());
         if (getDottedClassName().equals("java.lang.System")) {
             requires.add("java.io.FileInputStream");
@@ -106,51 +111,67 @@ public class InitializationChain extends BytecodeScanningDetector {
             classRequires.put(getDottedClassName(), requires);
             requires = new TreeSet<String>();
         }
-        singletonFields.clear();
     }
 
     @Override
     public void visitAfter(JavaClass obj) {
-        staticFieldWritten.clear();
-        staticFieldsAccessedInConstructor.clear();
+        
+        staticFieldsRead.clear();
+        
+        staticFieldsReadInAnyConstructor.clear();
+        fieldsReadInThisConstructor.clear();
+
+        constructorsInvokedInStaticInitializer.clear();
+        invocationInfo.clear();
+        lastInvocation = null;
 
     }
 
     @Override
     public void sawOpcode(int seen) {
-
+        InvocationInfo prev = lastInvocation;
+        lastInvocation = null;
         if (getMethodName().equals("<init>")) {
             if (seen == GETSTATIC && getClassConstantOperand().equals(getClassName())) {
-                staticFieldsAccessedInConstructor.add(getXFieldOperand());
-                fieldsRead.add(getXFieldOperand());
+                staticFieldsReadInAnyConstructor.add(getXFieldOperand());
+                fieldsReadInThisConstructor.add(getXFieldOperand());
             }
             return;
         }
 
-        if (seen == PUTSTATIC && getClassConstantOperand().equals(getClassName()) && !getSuperclassName().equals("java/lang/Enum")) {
+        if (seen == INVOKESPECIAL && getNameConstantOperand().equals("<init>") &&  getClassConstantOperand().equals(getClassName())) {
             
-            if(!staticFieldsAccessedInConstructor.contains(getXFieldOperand()))
-                    return;
+            XMethod m = getXMethodOperand();
+            Set<XField> read = staticFieldsRead.get(m);
+            if (constructorsInvokedInStaticInitializer.add(m) && read != null && !read.isEmpty()) {
+                lastInvocation = new InvocationInfo(m, getPC());
+                invocationInfo.add(lastInvocation);
+                
+                }
             
-            if (instanceCreated && !instanceCreatedWarningGiven ) {
-                String okSig = "L" + getClassName() + ";";
-                if (!okSig.equals(getSigConstantOperand()) && staticFieldWritten.add(getNameConstantOperand())) {
-                    if (!singletonFields.isEmpty()) {
-                        for(XField f : singletonFields)
-                            bugReporter.reportBug(
-                                    new BugInstance(this, "SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY).addClassAndMethod(this)
-                                           .addField(f).describe(FieldAnnotation.STORED_ROLE) .addReferencedField(this).describe(FieldAnnotation.STORED_ROLE).addSourceLine(this, instanceCreatedPC));
-                    } else
-                        bugReporter.reportBug(
-                            new BugInstance(this, "SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY).addClassAndMethod(this)
-                                    .addReferencedField(this).describe(FieldAnnotation.STORED_ROLE).addSourceLine(this, instanceCreatedPC));
-                    instanceCreatedWarningGiven = true;
-                } else 
-                    singletonFields.add(getXFieldOperand());
-            }
-        } else if (seen == NEW && getClassConstantOperand().equals(getClassName())) {
-            instanceCreated = true;
-            instanceCreatedPC = getPC();
+        }
+        if (seen == PUTSTATIC && getClassConstantOperand().equals(getClassName())) {
+               XField f = getXFieldOperand();
+               if (prev != null)
+                   prev.field = f;
+               if (staticFieldsReadInAnyConstructor.contains(f) && !warningGiven.contains(f)) {
+                   for(InvocationInfo i : invocationInfo) {
+                       Set<XField> fields = staticFieldsRead.get(i.constructor);
+                       if (fields != null && fields.contains(f)) {
+                           warningGiven.add(f);
+                           BugInstance bug = new BugInstance(this, "SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY).addClassAndMethod(this);
+                           if (i.field != null) {
+                               bug.addField(i.field).describe(FieldAnnotation.STORED_ROLE);
+                           }
+                           bug.addMethod(i.constructor).describe(MethodAnnotation.METHOD_CONSTRUCTOR);
+                           bug.addReferencedField(this).describe(FieldAnnotation.VALUE_OF_ROLE).addSourceLine(this, i.pc);
+                           bugReporter.reportBug(bug);
+                           break;
+                           
+                       }
+                   }
+               }
+              
         } else if (seen == PUTSTATIC || seen == GETSTATIC || seen == INVOKESTATIC || seen == NEW)
             if (getPC() + 6 < codeBytes.length)
                 requires.add(getDottedClassConstantOperand());
