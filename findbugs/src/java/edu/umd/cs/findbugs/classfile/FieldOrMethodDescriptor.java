@@ -114,19 +114,10 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
         return (this.isStatic ? 1 : 0) - (o.isStatic() ? 1 : 0);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public final boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof FieldOrMethodDescriptor)) {
-            return false;
-        }
-        FieldOrMethodDescriptor other = (FieldOrMethodDescriptor) obj;
-        return this.isStatic == other.isStatic && this.slashedClassName.equals(other.slashedClassName)
-                && this.name.equals(other.name) && this.signature.equals(other.signature);
+
+    protected boolean haveEqualFields(FieldOrMethodDescriptor other) {
+    return this.isStatic == other.isStatic && this.slashedClassName.equals(other.slashedClassName)
+            && this.name.equals(other.name) && this.signature.equals(other.signature);
     }
 
     /*

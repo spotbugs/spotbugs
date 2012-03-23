@@ -49,4 +49,12 @@ public class MethodDescriptor extends FieldOrMethodDescriptor implements Compara
     public int compareTo(ComparableMethod o) {
         return FieldOrMethodDescriptor.compareTo(this, (MethodDescriptor)o);
     }
+    
+    @Override
+    public final boolean equals(Object obj) {
+        if (obj instanceof MethodDescriptor) {
+            return haveEqualFields((MethodDescriptor) obj);
+        }
+        return false;
+    }
 }

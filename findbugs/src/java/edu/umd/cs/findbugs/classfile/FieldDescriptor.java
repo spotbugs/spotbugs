@@ -54,6 +54,12 @@ public class FieldDescriptor extends FieldOrMethodDescriptor implements Comparab
         return FieldOrMethodDescriptor.compareTo(this, (FieldDescriptor)o);
     }
 
-    
+    @Override
+    public final boolean equals(Object obj) {
+        if (obj instanceof FieldDescriptor) {
+            return haveEqualFields((FieldDescriptor) obj);
+        }
+        return false;
+    }
     
 }
