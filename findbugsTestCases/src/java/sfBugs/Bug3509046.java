@@ -24,5 +24,7 @@ public class Bug3509046 implements Serializable {
     private final Map<String, String> columns = new HashMap<String, String>();
 
     
+    @NoWarning("SE_BAD_FIELD")
+    private  Map<String, String> foo;
 
 }
