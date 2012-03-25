@@ -1202,6 +1202,7 @@
         <delete failonerror="false">
            <fileset dir="plugin" includes="*.jar"/>
         </delete>
+        <mkdir dir="optionalPlugin"/> <!-- avoid an error on the next line -->
         <delete failonerror="false">
            <fileset dir="optionalPlugin" includes="*.jar"/>
         </delete>
