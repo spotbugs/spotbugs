@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -459,6 +460,7 @@ public abstract class UpdateCheckServletTest extends AbstractFlybushServletTest 
 
     private void release(String pluginId, String channel, String version, String date) throws ParseException {
         DateFormat df = DateFormat.getDateTimeInstance();
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
         DbPluginUpdateXml update = persistenceHelper.createPluginUpdateXml();
         update.setChannel(channel);
         update.setReleaseDate(df.parse(date));

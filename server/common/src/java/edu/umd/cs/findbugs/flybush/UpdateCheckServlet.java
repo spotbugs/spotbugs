@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
@@ -92,10 +93,11 @@ public class UpdateCheckServlet extends AbstractFlybushServlet {
         writer.writeStartDocument();
         writer.writeStartElement("fb-plugin-updates");
         Query query = pm.newQuery("select from " + persistenceHelper.getDbPluginUpdateXmlClassname()
-                + " order by pluginId, releaseDate desc");
+                + " order by pluginId ascending, releaseDate descending");
         List<DbPluginUpdateXml> results = (List<DbPluginUpdateXml>) query.execute();
         if (!results.isEmpty()) {
             DateFormat df = new SimpleDateFormat(PLUGIN_RELEASE_DATE_FMT, Locale.ENGLISH);
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
             String oldPluginId = null;
             boolean wrotePlugin = false;
             for (DbPluginUpdateXml result : results) {
