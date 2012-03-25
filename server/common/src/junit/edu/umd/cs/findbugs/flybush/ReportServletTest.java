@@ -251,7 +251,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         int last = 0;
         String page = outputCollector.toString();
         for (String email : Arrays.asList("someone", "someone-else", "someone3")) {
-            last = page.indexOf("<option value=\"" + email + "\">" + email + "</option>", last);
+            last = page.indexOf("<option value=\"" + email + "\">" + email, last);
             assertTrue("could not find combo box item for " + email + ": " + page, last != -1);
         }
     }
@@ -303,7 +303,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
         List<String> pvalue = params.get("chxl");
         // assert that there are only 20 packages shown
         String chxl = pvalue.get(0);
-        assertEquals(21, chxl.split("\\|").length);
+        assertEquals(20, chxl.split("\\|").length);
 
         // make sure they are in descending order
         List<String> chds = params.get("chd");

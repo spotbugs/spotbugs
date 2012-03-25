@@ -668,7 +668,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         chart.setDataEncoding(DataEncoding.TEXT);
         chart.setSize(800, 350);
 
-        chart.setGrid(100, (totalEvals / 100)*10, 8, 2);
+        chart.setGrid(100, Math.max(1, (totalEvals / 100)*10), 8, 2);
 
         chart.addXAxisLabels(AxisLabelsFactory.newAxisLabels(labels));
         AxisLabels leftLabels = AxisLabelsFactory.newNumericRangeAxisLabels(0, totalEvals);
