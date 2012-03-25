@@ -3,7 +3,6 @@ package edu.umd.cs.findbugs.flybush;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -21,9 +20,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import com.google.common.collect.Lists;
+import com.sun.org.apache.xpath.internal.FoundIndex;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import static java.util.Arrays.asList;
 
 public class UpdateCheckServlet extends AbstractFlybushServlet {
 
@@ -98,11 +100,16 @@ public class UpdateCheckServlet extends AbstractFlybushServlet {
             boolean wrotePlugin = false;
             for (DbPluginUpdateXml result : results) {
                 String pluginId = result.getPluginId();
-                if (pluginId == null) continue;
+                if (pluginId == null)
+                    continue;
+                
+                // only include this plugin if the user has it
                 DbUsageEntry found = findSubmittedPluginUsageEntry(entries, pluginId);
+                if (found == null)
+                    continue;
                 String channel = null;
-                if (found != null)
-                    channel = findOrDetectChannel(found);
+//                if (found != null)
+                channel = findOrDetectChannel(found);
 
                 try {
                     oldPluginId = writePluginUpdate(writer, df, oldPluginId, result, channel);
@@ -168,7 +175,7 @@ public class UpdateCheckServlet extends AbstractFlybushServlet {
         if (newPluginId == null)
             return null;
         String channel = result.getChannel();
-        if (userChannel != null && !userChannel.equals(channel))
+        if (!isChannelRelevant(userChannel, channel))
             return oldPluginId;
 
         boolean newPlugin = !newPluginId.equals(oldPluginId);
@@ -201,6 +208,22 @@ public class UpdateCheckServlet extends AbstractFlybushServlet {
         return oldPluginId;
     }
 
+    @SuppressWarnings("RedundantIfStatement")
+    private boolean isChannelRelevant(String userChannel, String channel) {
+        if (userChannel == null || userChannel.equals(channel)) 
+            return true;
+        if (channel.equals("stable") && asList("dev", "alpha", "beta", "rc").contains(userChannel))
+            return true;
+        if (channel.equals("rc") && asList("dev", "alpha", "beta").contains(userChannel))
+            return true;
+        if (channel.equals("beta") && asList("dev", "alpha").contains(userChannel))
+            return true;
+        if (channel.equals("alpha") && asList("dev").contains(userChannel))
+            return true;
+
+        return false;
+    }
+
     private List<DbUsageEntry> commitEntries(PersistenceManager pm, DbUsageEntry entry, List<List<String>> plugins) {
         List<DbUsageEntry> entries = Lists.newArrayList();
         try {
@@ -225,7 +248,8 @@ public class UpdateCheckServlet extends AbstractFlybushServlet {
         return entries;
     }
 
-    private void parsePluginsXml(HttpServletRequest req, final DbUsageEntry entry, final List<List<String>> plugins) throws SAXException, IOException, ParserConfigurationException {
+    private void parsePluginsXml(HttpServletRequest req, final DbUsageEntry entry, final List<List<String>> plugins)
+            throws SAXException, IOException, ParserConfigurationException {
         SAXParserFactory.newInstance().newSAXParser().parse(req.getInputStream(), new DefaultHandler() {
             @Override
             public void startElement(String uri, String localName, String qName, Attributes attributes)
@@ -258,7 +282,7 @@ public class UpdateCheckServlet extends AbstractFlybushServlet {
                         if (qname.equals("channel")) channel = attributes.getValue(i);
                     }
                     if (id != null) {
-                        plugins.add(Arrays.asList(id, name, version, channel));
+                        plugins.add(asList(id, name, version, channel));
                     }
                 }
             }
