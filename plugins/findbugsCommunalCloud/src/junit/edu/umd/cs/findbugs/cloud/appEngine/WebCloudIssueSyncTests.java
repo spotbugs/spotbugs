@@ -189,7 +189,7 @@ public class WebCloudIssueSyncTests extends AbstractWebCloudTest {
         cloud.initiateCommunication();
         cloud.waitUntilIssuesUploaded(5, TimeUnit.SECONDS);
 
-        assertEquals(UNAUTHENTICATED, cloud.getSigninState());
+        assertEquals(Cloud.SigninState.SIGNIN_DECLINED, cloud.getSigninState());
 
         // verify
         assertEquals("/find-issues", cloud.urlsRequested.get(0));
