@@ -2199,7 +2199,7 @@ as expected.
     <!-- match System.exit(...) usage warnings in void main(String[]) methods in all classes -->
     <Match>
       <Method returns="void" name="main" params="java.lang.String[]" />
-      <Method pattern="DM_EXIT" />
+      <Bug pattern="DM_EXIT" />
     </Match>
     <!-- match UuF warnings on fields of type com.foobar.DebugInfo on all classes -->
     <Match>
