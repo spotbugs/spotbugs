@@ -31,11 +31,13 @@ import javax.annotation.meta.When;
  * The annotated element could be null under some circumstances.
  * 
  * In general, this means developers will have to read the documentation to
- * determine when a null value is acceptable and whether it is neccessary to
+ * determine when a null value is acceptable and whether it is necessary to
  * check for a null value.
  * 
  * When this annotation is applied to a method it applies to the method return
  * value.
+ * 
+ * @deprecated - use {@link javax.annotation.Nullable} instead. 
  **/
 @Documented
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE })
