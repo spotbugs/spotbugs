@@ -325,8 +325,9 @@ public class FindBugsWorker {
     }
 
     void logDirty(SortedBugCollection bugCollection) {
-        if (true)
+        if (true) {
             return;
+        }
         int count = 0;
         for(BugInstance b : bugCollection) {
             BugDesignation bd = b.getUserDesignation();
@@ -524,15 +525,20 @@ public class FindBugsWorker {
             IClasspathEntry classpathEntry = entries[i];
             if (classpathEntry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
                 IPath outputLocation = ResourceUtils.getOutputLocation(classpathEntry, defaultOutputLocation);
-                IResource resource = root.findMember(classpathEntry.getPath());
+                if(outputLocation == null) {
+                    continue;
+                }
+                IResource cpeResource = root.findMember(classpathEntry.getPath());
                 // patch from 2891041: do not analyze derived "source" folders
                 // because they probably contain auto-generated classes
-                if (resource != null && resource.isDerived()) {
+                if (cpeResource != null && cpeResource.isDerived()) {
                     continue;
                 }
                 // TODO not clear if it is absolute in workspace or in global FS
                 IPath srcLocation = ResourceUtils.relativeToAbsolute(classpathEntry.getPath());
-                srcToOutputMap.put(srcLocation, outputLocation);
+                if(srcLocation != null) {
+                    srcToOutputMap.put(srcLocation, outputLocation);
+                }
             }
         }
 
