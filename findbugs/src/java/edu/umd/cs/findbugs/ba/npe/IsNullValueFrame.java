@@ -73,6 +73,10 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
     private IsNullConditionDecision decision;
 
     private boolean trackValueNumbers;
+    
+    public boolean isTrackValueNumbers() {
+        return trackValueNumbers;
+    }
 
     private Map<ValueNumber, IsNullValue> knownValueMap;
 

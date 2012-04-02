@@ -469,7 +469,7 @@ public class UnreadFields extends OpcodeStackDetector {
                         IsNullValueFrame iFrame = invDataflow.getAnalysis().getFactAtPC(invDataflow.getCFG(), getPC());
                         AvailableLoad l = new AvailableLoad(f);
                         ValueNumber[] availableLoads = vFrame.getAvailableLoad(l);
-                        if (availableLoads != null)
+                        if (availableLoads != null && iFrame.isTrackValueNumbers())
                             for (ValueNumber v : availableLoads) {
                                 IsNullValue knownValue = iFrame.getKnownValue(v);
                                 if (knownValue == null)
