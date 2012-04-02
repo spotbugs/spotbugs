@@ -30,7 +30,7 @@
         <pathelement location="lib/testng-6.3.1.jar"/>
     </path>
 
-    <target name="build" depends="classes,runfindbugs" />
+    <target name="build" depends="classes,runfindbugs,runEffort" />
 
          <target name="init">
                 <!-- true to recompile FB core (if findbugs.jar is not there) -->
@@ -102,6 +102,25 @@
             <class location="${basedir}/build/classes" />
         </findbugs>
     </target>
+
+
+    <target name="runEffort" depends="classes">
+     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
+           classpath="${fb-ant.jar}"/>
+        <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx600m"
+                         output="xml:withMessages" timestampNow="true" reportLevel="low" effort="min" outputFile="build/minEffort.xml">
+            <sourcePath path="${basedir}/src/java" />
+            <auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar:lib/guava.jar:lib/testng-6.3.1.jar"/>
+            <class location="${basedir}/build/classes" />
+        </findbugs>
+        <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx600m"
+                         output="xml:withMessages" timestampNow="true" reportLevel="low" effort="max" outputFile="build/maxEffort.xml">
+            <sourcePath path="${basedir}/src/java" />
+            <auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar:lib/guava.jar:lib/testng-6.3.1.jar"/>
+            <class location="${basedir}/build/classes" />
+        </findbugs>
+    </target>
+
 
 
     <target name="runNormal" depends="classes">
