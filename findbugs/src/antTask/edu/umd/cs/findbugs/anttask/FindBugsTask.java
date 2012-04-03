@@ -56,6 +56,7 @@ package edu.umd.cs.findbugs.anttask;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
@@ -593,8 +594,9 @@ public class FindBugsTask extends AbstractFindBugsTask {
         // getLocation());
         // }
 
-        if (effort != null && !effort.equals("min") && !effort.equals("default") && !effort.equals("max")) {
-            throw new BuildException("effort attribute must be one of 'min', 'default', or 'max'");
+        List<String> efforts = Arrays.asList( "min", "less", "default", "more", "max");
+        if (effort != null && !efforts.contains(effort)) {
+            throw new BuildException("effort attribute must be one of " + efforts);
         }
     }
 
