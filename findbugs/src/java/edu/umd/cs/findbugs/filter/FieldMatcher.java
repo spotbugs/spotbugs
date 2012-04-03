@@ -61,14 +61,16 @@ public class FieldMatcher extends MemberMatcher implements Matcher {
         if (!name.match(fieldAnnotation.getFieldName())) {
             return false;
         }
-        if (signature != null && !signature.equals(fieldAnnotation.getFieldSignature()))
+        if (signature != null && !signature.match(fieldAnnotation.getFieldSignature()))
             return false;
         return true;
     }
 
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-        XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec()).addOptionalAttribute(
-                "signature", signature);
+        XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec());
+        if (signature != null)
+            attributes.addOptionalAttribute(
+                "signature", signature.getSpec());
         if (disabled)
             attributes.addAttribute("disabled", "true");
         xmlOutput.openCloseTag("Field", attributes);

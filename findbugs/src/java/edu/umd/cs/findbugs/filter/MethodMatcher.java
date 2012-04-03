@@ -60,7 +60,7 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
             return false;
         if (!name.match(methodAnnotation.getMethodName()))
             return false;
-        if (signature != null && !signature.equals(methodAnnotation.getMethodSignature()))
+        if (signature != null && !signature.match(methodAnnotation.getMethodSignature()))
             return false;
         return true;
     }
@@ -71,8 +71,10 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
     }
 
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-        XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec())
-                .addOptionalAttribute("signature", signature).addOptionalAttribute("role", role);
+        XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec());
+        if (signature != null)
+            attributes
+                .addOptionalAttribute("signature", signature.getSpec()).addOptionalAttribute("role", role);
         if (disabled)
             attributes.addAttribute("disabled", "true");
         xmlOutput.openCloseTag("Method", attributes);

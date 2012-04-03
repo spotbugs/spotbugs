@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.filter;
 
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 /**
  * @author rak
@@ -27,25 +28,35 @@ import java.util.StringTokenizer;
 public class SignatureUtil {
 
     public static String createMethodSignature(String params, String returns) {
-        if (params == null) {
-            if (returns == null)
-                return null;
-            throw new NullPointerException("params is null but returns is nonnull");
-        }
-        if (returns == null)
-            throw new NullPointerException("returns is null but params is nonnull");
+        if (params == null && returns == null)
+            return null;
+           
+        String pString, rString;
+        if (params == null)
+            pString = ".*";
+        else {
         StringBuilder buf = new StringBuilder();
 
-        buf.append('(');
         StringTokenizer tok = new StringTokenizer(params, " \t\n\r\f,");
         while (tok.hasMoreTokens()) {
             String param = typeToSignature(tok.nextToken());
             buf.append(param);
         }
-        buf.append(')');
-        buf.append(typeToSignature(returns));
-
-        return buf.toString();
+       pString = buf.toString();
+        }
+        if (returns == null) 
+            rString = ".*";
+        else 
+            rString = typeToSignature(returns);
+        if (params == null || returns == null) {
+            String result = "~\\(" + pString + "\\)" + rString;
+            assert Pattern.compile(result.substring(1)) != null;
+            return result;
+        }
+        
+        else
+            return "(" + pString + ")" + rString;
+       
     }
 
     public static String createFieldSignature(String type) {

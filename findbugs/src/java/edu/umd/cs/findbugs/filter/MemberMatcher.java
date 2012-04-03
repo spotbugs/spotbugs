@@ -34,7 +34,7 @@ public class MemberMatcher {
     protected final String role;
 
     @CheckForNull
-    protected final String signature;
+    protected final NameMatch signature;
 
     public MemberMatcher(String name) {
         this(name, null, null);
@@ -54,7 +54,7 @@ public class MemberMatcher {
         }
 
         this.name = new NameMatch(name);
-        this.signature = signature;
+        this.signature = new NameMatch(signature);
         this.role = role;
 
     }
