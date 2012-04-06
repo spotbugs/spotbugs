@@ -251,8 +251,8 @@ public abstract class AbstractFindBugsTask extends Task {
      * Check that all required attributes have been set.
      */
     protected void checkParameters() {
-        if (homeDir == null && (classpath == null || pluginList == null)) {
-            throw new BuildException("either home attribute or " + "classpath and pluginList attributes "
+        if (homeDir == null && classpath == null) {
+            throw new BuildException("either home attribute or " + "classpath attributes "
                     + " must be defined for task <" + getTaskName() + "/>", getLocation());
         }
 
@@ -302,13 +302,14 @@ public abstract class AbstractFindBugsTask extends Task {
             // Use findbugs.home to locate findbugs.jar and the standard
             // plugins. This is the usual means of initialization.
             File findbugsLib = new File(homeDir, "lib");
+            if (!findbugsLib.exists() && homeDir.getName().equals("lib")) {
+                findbugsLib = homeDir;
+                homeDir = homeDir.getParentFile();
+            }
             File findbugsLibFindBugs = new File(findbugsLib, "findbugs.jar");
-            File findBugsFindBugs = new File(homeDir, "findbugs.jar");
             // log("executing using home dir [" + homeDir + "]");
             if (findbugsLibFindBugs.exists())
                 findbugsEngine.setClasspath(new Path(getProject(), findbugsLibFindBugs.getPath()));
-            else if (findBugsFindBugs.exists())
-                findbugsEngine.setClasspath(new Path(getProject(), findBugsFindBugs.getPath()));
             else
                 throw new IllegalArgumentException("Can't find findbugs.jar in " + homeDir);
             findbugsEngine.createJvmarg().setValue("-Dfindbugs.home=" + homeDir.getPath());
@@ -318,7 +319,8 @@ public abstract class AbstractFindBugsTask extends Task {
             // FindBugs installed using a non-standard directory layout.
 
             findbugsEngine.setClasspath(classpath);
-
+        }
+        if (pluginList != null) {
             addArg("-pluginList");
             addArg(pluginList.toString());
         }
