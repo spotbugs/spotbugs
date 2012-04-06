@@ -5,6 +5,16 @@
 		<xs:documentation>This scheme describes the XML format used by FindBugs to store the results
 			of analysis.</xs:documentation>
 	</xs:annotation>
+	
+	<xs:element name="FindBugsFilter">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element ref="Matcher" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+			
+	
 	<xs:element name="BugCollection">
 		<xs:complexType>
 			<xs:sequence>
@@ -23,6 +33,12 @@
 								maxOccurs="unbounded">	<xs:complexType>
 									<xs:attribute name="id" type="xs:string"/>
 									<xs:attribute name="enabled" type="xs:string"/>
+								</xs:complexType></xs:element>
+							<xs:element name="SuppressionFilter" minOccurs="0"
+								maxOccurs="1">	<xs:complexType>
+									<xs:sequence>
+									<xs:element ref="Matcher"  minOccurs="1" maxOccurs="unbounded"/>
+									</xs:sequence>
 								</xs:complexType></xs:element>
 							<xs:element name="Cloud" minOccurs="0" maxOccurs="1">
 								<xs:complexType>
@@ -178,9 +194,7 @@
 										<xs:attribute name="value" type="xs:string" use="required"/>
 									</xs:complexType>
 								</xs:element>
-
-							</xs:choice>
-							<xs:element name="UserAnnotation" minOccurs="0">
+		<xs:element name="UserAnnotation" minOccurs="0">
 								<xs:complexType>
 									<xs:simpleContent>
 										<xs:extension base="xs:string">
@@ -196,6 +210,8 @@
 									</xs:simpleContent>
 								</xs:complexType>
 							</xs:element>
+							</xs:choice>
+					
 						</xs:sequence>
 						<xs:attribute name="type" type="xs:string" use="required"/>
 						<xs:attribute name="priority" type="xs:unsignedByte" use="required"/>
@@ -450,4 +466,181 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+
+
+<xs:element name="Matcher" type="MatcherType" abstract="true"/>
+
+<xs:element name="Bug" substitutionGroup="Matcher" type="BugMatcherType" />
+<xs:element name="Class" substitutionGroup="Matcher" type="ClassMatcherType" />
+<xs:element name="FirstVersion" substitutionGroup="Matcher" type="FirstVersionMatcherType" />
+<xs:element name="LastVersion" substitutionGroup="Matcher" type="LastVersionMatcherType" />
+<xs:element name="Designation" substitutionGroup="Matcher" type="DesignationMatcherType" />
+<xs:element name="BugCode" substitutionGroup="Matcher" type="BugCodeMatcherType" />
+<xs:element name="Local" substitutionGroup="Matcher" type="LocalMatcherType" />
+<xs:element name="BugPattern" substitutionGroup="Matcher" type="BugPatternMatcherType" />
+<xs:element name="Priority" substitutionGroup="Matcher" type="PriorityMatcherType" />
+<xs:element name="Rank" substitutionGroup="Matcher" type="RankMatcherType" />
+<xs:element name="Package" substitutionGroup="Matcher" type="PackageMatcherType" />
+<xs:element name="Method" substitutionGroup="Matcher" type="MethodMatcherType" />
+<xs:element name="Field" substitutionGroup="Matcher" type="FieldMatcherType" />
+<xs:element name="Or" substitutionGroup="Matcher" type="OrMatcherType" />
+<xs:element name="And" substitutionGroup="Matcher" type="AndMatcherType" />
+<xs:element name="Match" substitutionGroup="Matcher" type="MatchMatcherType" />
+<xs:element name="Not" substitutionGroup="Matcher" type="NotMatcherType" />
+
+
+
+	<xs:complexType name="MatcherType" abstract="true" ></xs:complexType>
+
+	<xs:complexType name="BugMatcherType">
+		<xs:complexContent>
+			<xs:extension base="MatcherType">
+				<xs:attribute name="code" type="xs:string" use="optional" />
+				<xs:attribute name="pattern" type="xs:string" use="optional" />
+				<xs:attribute name="category" type="xs:string" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ClassMatcherType">
+		<xs:complexContent>
+			<xs:extension base="MatcherType">
+				<xs:attribute name="name" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="FirstVersionMatcherType">
+		<xs:complexContent>
+			<xs:extension base="MatcherType">
+				<xs:attribute name="value" type="xs:long" use="required" />
+				<xs:attribute name="relOp" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="LastVersionMatcherType">
+		<xs:complexContent>
+			<xs:extension base="MatcherType">
+				<xs:attribute name="value" type="xs:long" use="required" />
+				<xs:attribute name="relOp" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="DesignationMatcherType">
+		<xs:complexContent>
+			<xs:extension base="MatcherType">
+				<xs:attribute name="designation" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="BugCodeMatcherType">
+		<xs:complexContent>
+			<xs:extension base="MatcherType">
+				<xs:attribute name="name" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="LocalMatcherType">
+		<xs:complexContent>
+			<xs:extension base="MatcherType">
+				<xs:attribute name="name" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BugPatternMatcherType">
+		<xs:complexContent>
+			<xs:extension base="MatcherType">
+				<xs:attribute name="name" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="PriorityMatcherType">
+		<xs:complexContent>
+			<xs:extension base="MatcherType">
+				<xs:attribute name="value" type="xs:int" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="RankMatcherType">
+		<xs:complexContent>
+			<xs:extension base="MatcherType">
+				<xs:attribute name="value" type="xs:int" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="PackageMatcherType">
+		<xs:complexContent>
+			<xs:extension base="MatcherType">
+				<xs:attribute name="name" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="MethodMatcherType">
+		<xs:complexContent>
+			<xs:extension base="MatcherType">
+				<xs:attribute name="name" type="xs:string" use="optional" />
+				<xs:attribute name="params" type="xs:string" use="optional" />
+				<xs:attribute name="returns" type="xs:string" use="optional" />
+				<xs:attribute name="role" type="xs:string" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="FieldMatcherType">
+		<xs:complexContent>
+			<xs:extension base="MatcherType">
+				<xs:attribute name="name" type="xs:string" use="optional" />
+				<xs:attribute name="type" type="xs:string" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="OrMatcherType">
+		<xs:complexContent>
+			<xs:extension base="MatcherType">
+				<xs:sequence>
+					<xs:element ref="Matcher" minOccurs="1" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="AndMatcherType">
+		<xs:complexContent>
+			<xs:extension base="MatcherType">
+				<xs:sequence>
+					<xs:element ref="Matcher" minOccurs="1" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="MatchMatcherType">
+		<xs:complexContent>
+			<xs:extension base="MatcherType">
+				<xs:sequence>
+					<xs:element ref="Matcher" minOccurs="1" maxOccurs="unbounded" />
+				</xs:sequence>
+				<xs:attribute name="classregex" type="xs:string" use="optional" />
+				<xs:attribute name="class" type="xs:string" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="NotMatcherType">
+		<xs:complexContent>
+			<xs:extension base="MatcherType">
+				<xs:sequence>
+					<xs:element ref="Matcher" minOccurs="1" maxOccurs="1" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
 </xs:schema>
