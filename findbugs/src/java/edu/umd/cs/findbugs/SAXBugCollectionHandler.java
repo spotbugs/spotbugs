@@ -456,7 +456,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             addMatcher(new BugMatcher(getOptionalAttribute(attributes, "code"), getOptionalAttribute(attributes, "pattern"),
                     getOptionalAttribute(attributes, "category")));
         } else if (qName.equals("Class")) {
-            addMatcher(new ClassMatcher(getOptionalAttribute(attributes, "name")));
+            addMatcher(new ClassMatcher(getRequiredAttribute(attributes, "name", qName)));
         } else if (qName.equals("FirstVersion")) {
             addMatcher(new FirstVersionMatcher(getRequiredAttribute(attributes, "value", qName), getRequiredAttribute(attributes,
                     "relOp", qName)));
@@ -466,17 +466,17 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         } else if (qName.equals("Designation")) {
             addMatcher(new DesignationMatcher(getRequiredAttribute(attributes, "designation", qName)));
         } else if (qName.equals("BugCode")) {
-            addMatcher(new BugMatcher(getOptionalAttribute(attributes, "name"), "", ""));
+            addMatcher(new BugMatcher(getRequiredAttribute(attributes, "name", qName), "", ""));
         } else if (qName.equals("Local")) {
-            addMatcher(new LocalMatcher(getOptionalAttribute(attributes, "name")));
+            addMatcher(new LocalMatcher(getRequiredAttribute(attributes, "name", qName)));
         } else if (qName.equals("BugPattern")) {
-            addMatcher(new BugMatcher("", getOptionalAttribute(attributes, "name"), ""));
+            addMatcher(new BugMatcher("", getRequiredAttribute(attributes, "name", qName), ""));
         } else if (qName.equals("Priority") || qName.equals("Confidence")) {
-            addMatcher(new PriorityMatcher(getOptionalAttribute(attributes, "value")));
+            addMatcher(new PriorityMatcher(getRequiredAttribute(attributes, "value", qName)));
         } else if (qName.equals("Rank")) {
-            addMatcher(new RankMatcher(getOptionalAttribute(attributes, "value")));
+            addMatcher(new RankMatcher(getRequiredAttribute(attributes, "value", qName)));
         } else if (qName.equals("Package")) {
-            String pName = getOptionalAttribute(attributes, "name");
+            String pName = getRequiredAttribute(attributes, "name", qName);
             pName = pName.startsWith("~") ? pName : "~" + pName.replace(".", "\\.");
             addMatcher(new ClassMatcher(pName + "\\.[^.]+"));
         } else if (qName.equals("Method")) {
