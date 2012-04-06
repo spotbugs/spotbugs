@@ -86,11 +86,26 @@ public class FilterFactory {
         return matcher;
     }
 
-    /**
-     * @param s
-     * @param bug
-     * @return
-     */
+    
+    public static boolean canFilter(Sortables s) {
+        switch (s) {
+        case BUGCODE:
+        case CATEGORY:
+        case CLASS:
+        case DESIGNATION:
+        case FIRSTVERSION:
+        case LASTVERSION:
+        case PACKAGE:
+        case PRIORITY:
+        case TYPE:
+        case BUG_RANK:
+            return true;
+        default:
+            return false;
+        }
+    }
+    
+
     private static Matcher makeMatcher(Sortables s, BugInstance bug) {
         switch (s) {
         case BUGCODE:
@@ -114,13 +129,16 @@ public class FilterFactory {
             return new ClassMatcher("~" + p + "\\.[^.]+");
         case PRIORITY:
             return new PriorityMatcher(Integer.toString(bug.getPriority()));
-
+       
         case TYPE:
             return new BugMatcher(null, s.getFrom(bug), null);
 
+        case BUG_RANK:
+            return new RankMatcher(s.getFrom(bug));
+         
         case DIVIDER:
         default:
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Don't know how to make maker for " + s);
         }
     }
 

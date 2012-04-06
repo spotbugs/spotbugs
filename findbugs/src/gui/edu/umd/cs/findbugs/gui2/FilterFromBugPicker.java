@@ -70,7 +70,7 @@ final class FilterFromBugPicker {
     
     private void addFilterLikeCheckboxes(JPanel center) {
         for (Sortables sortable : availableSortables) {
-            if (sortable.equals(Sortables.DIVIDER)) { continue; }
+            if (!FilterFactory.canFilter(sortable)) { continue; }
             
             JCheckBox checkBox = new JCheckBox(sortable.toString() + " is " + sortable.formatValue(sortable.getFrom(bug)));
             
