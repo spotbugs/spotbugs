@@ -28,18 +28,14 @@ import java.util.Set;
 public class ErrorCountingBugReporter extends DelegatingBugReporter {
     private int bugCount;
 
-    private int missingClassCount;
-
-    private int errorCount;
+    private HashSet<String> errors = new HashSet<String>();
 
     private Set<String> missingClassSet = new HashSet<String>();
 
     public ErrorCountingBugReporter(BugReporter realBugReporter) {
         super(realBugReporter);
         this.bugCount = 0;
-        this.missingClassCount = 0;
-        this.errorCount = 0;
-
+        
         // Add an observer to record when bugs make it through
         // all priority and filter criteria, so our bug count is
         // accurate.
@@ -55,17 +51,17 @@ public class ErrorCountingBugReporter extends DelegatingBugReporter {
     }
 
     public int getMissingClassCount() {
-        return missingClassCount;
+        return missingClassSet.size();
     }
 
     public int getErrorCount() {
-        return errorCount;
+        return errors.size();
     }
 
     @Override
     public void logError(String message) {
-        ++errorCount;
-        super.logError(message);
+        if (errors.add(message))
+          super.logError(message);
     }
 
     @Override
@@ -74,8 +70,8 @@ public class ErrorCountingBugReporter extends DelegatingBugReporter {
         if (missing == null || missing.startsWith("[") || missing.equals("java.lang.Synthetic")) {
             return;
         }
-        if (missingClassSet.add(missing))
-            ++missingClassCount;
-        super.reportMissingClass(ex);
+        if (missingClassSet.add(missing)) {
+            super.reportMissingClass(ex);
+        }
     }
 }
