@@ -335,7 +335,22 @@ public interface Cloud {
     }
 
     enum SigninState {
-        NO_SIGNIN_REQUIRED, UNAUTHENTICATED, SIGNING_IN, SIGNED_IN, SIGNIN_FAILED, SIGNIN_DECLINED, SIGNED_OUT;
+        NO_SIGNIN_REQUIRED, UNAUTHENTICATED, SIGNING_IN, SIGNED_IN, SIGNIN_FAILED, SIGNIN_DECLINED, SIGNED_OUT, DISCONNECTED;
+        
+        
+        /** Can download issues without asking to sign in */
+        public boolean canDownload() {
+            switch (this) {
+            case NO_SIGNIN_REQUIRED:
+            case SIGNING_IN:
+            case SIGNED_IN:
+            case UNAUTHENTICATED:
+                return true;
+            default:
+                return false;
+            }
+            
+        }
         
         /** Can upload issues without asking to sign in */
         public boolean canUpload() {
@@ -365,6 +380,7 @@ public interface Cloud {
         public boolean couldSignIn() {
             switch (this) {
             case UNAUTHENTICATED:
+            case DISCONNECTED:
             case SIGNED_OUT:
             case SIGNIN_FAILED:
             case SIGNIN_DECLINED:
@@ -375,11 +391,11 @@ public interface Cloud {
         }
         static final ResourceBundle names = ResourceBundle.getBundle(Cloud.class.getName(), Locale.getDefault());
 
+        
         @Override
         public String toString() {
-            String value = names.getString(this.name());
-            if (value != null)
-                return value.trim();
+            if (names.containsKey(this.name()))
+                    return names.getString(this.name()).trim();
             return this.name();
         }
     }

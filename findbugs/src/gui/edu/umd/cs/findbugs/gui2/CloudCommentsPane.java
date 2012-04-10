@@ -76,6 +76,7 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.Cloud.SigninState;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.util.Util;
@@ -351,8 +352,8 @@ public abstract class CloudCommentsPane extends JPanel {
             if (cloud.getPlugin().getId().equals("edu.umd.cs.findbugs.cloud.doNothingCloud")) {
                 changeClicked();
             }
-            switch (cloud.getSigninState()) {
-            case SIGNED_IN:
+            SigninState state = cloud.getSigninState();
+            if (state == SigninState.SIGNED_IN) {
                 backgroundExecutor.execute(new Runnable() {
                     public void run() {
                         cloud.signOut();
@@ -360,16 +361,7 @@ public abstract class CloudCommentsPane extends JPanel {
                     }
                 });
                 refresh();
-                break;
-
-            case NO_SIGNIN_REQUIRED:
-            case SIGNING_IN:
-                break;
-
-            case SIGNED_OUT:
-            case SIGNIN_FAILED:
-            case SIGNIN_DECLINED:
-            case UNAUTHENTICATED:
+            } else if (state.couldSignIn()) {
                 backgroundExecutor.execute(new Runnable() {
                     public void run() {
                         try {
@@ -386,8 +378,7 @@ public abstract class CloudCommentsPane extends JPanel {
                     }
                 });
                 refresh();
-                break;
-            default:
+          
             }
         }
     }
@@ -765,18 +756,16 @@ public abstract class CloudCommentsPane extends JPanel {
             case SIGNING_IN:
                 signInOutLink.setVisible(false);
                 break;
-            case SIGNED_OUT:
-            case SIGNIN_FAILED:
-            case SIGNIN_DECLINED:
-            case UNAUTHENTICATED:
-                setSignInOutText("sign in");
-                signInOutLink.setVisible(true);
-                break;
             case SIGNED_IN:
                 setSignInOutText("sign out");
                 signInOutLink.setVisible(true);
                 break;
-            default:
+             default:
+                 if (state.couldSignIn()) {
+                     setSignInOutText("sign in");
+                     signInOutLink.setVisible(true);
+                 }
+                 break;
         }
         if (cloud.getPlugin().getId().equals("edu.umd.cs.findbugs.cloud.doNothingCloud")) {
             setSignInOutText("enable cloud plugin...");

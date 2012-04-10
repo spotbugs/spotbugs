@@ -232,7 +232,14 @@ public abstract class AbstractCloud implements Cloud {
     }
 
     public String notInCloudMsg(BugInstance b) {
-        return !isOnlineCloud() || issueDataDownloaded ? "Issue not recorded in cloud" : "Waiting for issue data...";
+        
+        if (!!isOnlineCloud())
+            return "off line cloud";
+        if (getSigninState().canDownload())
+            return "disconnected from cloud";
+        if (!issueDataDownloaded)
+            return "Waiting for issue data...";
+        return  "Issue not recorded in cloud";
         
     }
     public String getCloudReport(BugInstance b) {
