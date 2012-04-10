@@ -156,8 +156,7 @@ public class SortedBugCollection implements BugCollection {
         if (result == null) {
             IGuiCallback callback = getProject().getGuiCallback();
             result = cloud = CloudFactory.createCloudWithoutInitializing(this);
-            callback.registerCloud(getProject(), this, result);
-            try {
+             try {
                 CloudFactory.initializeCloud(this, result);
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Could not load cloud plugin "+ result.getCloudName(), e);
@@ -167,6 +166,8 @@ public class SortedBugCollection implements BugCollection {
                             "set -D" + CloudFactory.FAIL_ON_CLOUD_ERROR_PROP + "=false", e);
                 result = cloud = CloudFactory.getPlainCloud(this);
             }
+            callback.registerCloud(getProject(), this, result);
+             
             
         }
         if (bugsPopulated)
