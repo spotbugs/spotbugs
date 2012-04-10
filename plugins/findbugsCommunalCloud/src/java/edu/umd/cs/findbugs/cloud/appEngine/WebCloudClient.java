@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -183,6 +184,10 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
             initialized = true;
             return true;
 
+        } catch (UnknownHostException e) {
+            setSigninState(SigninState.DISCONNECTED);
+            initialized = true;
+            return true;
         } catch (IOException e) {
             setSigninState(SigninState.SIGNIN_FAILED);
             throw e;
@@ -342,26 +347,41 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
             MutableCloudTask task = createTask("Signing into " + getCloudName());
             try {
                 try {
-                    networkClient.signIn(true);
-                    networkClient.logIntoCloudForce();
+                    if (oldState == SigninState.DISCONNECTED) {
+                        if (networkClient.initialize()) {
+                            networkClient.signIn(true);
+                            networkClient.logIntoCloudForce();
+                            setSigninState(SigninState.SIGNED_IN);
+                        } else {
+                            // soft init didn't work
+                            setSigninState(SigninState.UNAUTHENTICATED);
+                        }
+                    } else {
+                        networkClient.signIn(true);
+                        networkClient.logIntoCloudForce();
+                        setSigninState(SigninState.SIGNED_IN);
+                    }
+                } catch (UnknownHostException e) {
+                    getGuiCallback().showMessageDialog("Could not connect to " + getCloudName());
+                    setSigninState(SigninState.DISCONNECTED);
                 } catch (IOException e) {
                     setSigninState(SigninState.SIGNIN_FAILED);
                     throw e;
-
                 } catch (RuntimeException e) {
                     setSigninState(SigninState.SIGNIN_FAILED);
                     throw e;
                 }
 
-                setSigninState(SigninState.SIGNED_IN);
             } finally {
                 task.finished();
             }
         }
+        if (getSigninState().canDownload()) {
         initiateCommunication();
         SigninState newState = getSigninState();
-        if (oldState == SigninState.SIGNED_OUT && newState == SigninState.SIGNED_IN) {
+        if (!oldState.canUpload()  && newState.canUpload()) {
             evaluationsFromXmlUploader.tryUploadingLocalAnnotations(true);
+        }
         }
     }
 
@@ -559,7 +579,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     }
 
     public boolean isInCloud(BugInstance b) {
-        return networkClient.getIssueByHash(b.getInstanceHash()) != null;
+        return getSigninState().canDownload() && networkClient.getIssueByHash(b.getInstanceHash()) != null;
     }
 
     public boolean isOnlineCloud() {
@@ -582,6 +602,8 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     }
 
     private void signOut(boolean background) {
+        if (getSigninState() == SigninState.DISCONNECTED)
+            return;
         networkClient.signOut(background);
         setSigninState(SigninState.SIGNED_OUT);
         setStatusMsg("Signed out of " + getCloudName());
