@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<FindBugsFilter>
+  <And>
+    <Rank value="16"/>
+    <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/>
+  </And>
+  <And>
+    <Class name="edu.umd.cs.findbugs.util.FractionalMultiset"/>
+    <Bug pattern="DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS"/>
+  </And>
+  <And>
+    <Class name="~edu.umd.cs.findbugs.detect\.[^.]+"/>
+    <Bug category="EXPERIMENTAL"/>
+  </And>
+  <And>
+    <Designation designation="MOSTLY_HARMLESS"/>
+    <Bug pattern="SF_SWITCH_NO_DEFAULT"/>
+  </And>
+</FindBugsFilter>

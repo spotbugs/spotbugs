@@ -34,6 +34,7 @@
     <property name="xslsrc.dir" value="src/xsl"/>
     <property name="junitsrc.dir" value="src/junit"/>
     <property name="docsrc.dir" value="src/doc"/>
+    <property name="samplesrc.dir" value="src/sampleXml"/>
     <property name="etc.dir" value="etc"/>
     <property name="test.dir" value="test"/>
     <property name="doc.dir" value="doc"/>
@@ -229,6 +230,11 @@
     </target>
 
     <target name="validatesamplexmloutput" depends="runanttask">
+        <copy todir="${sampleoutput.dir}" overwrite="true">
+            <fileset dir="${samplesrc.dir}">
+                                <include name="*.xml"/>
+	    </fileset>
+        </copy>
         <schemavalidate failonerror="yes" noNamespaceFile="${etc.dir}/bugcollection.xsd">
             <attribute name="http://xml.org/sax/features/namespaces" value="true"/>
             <fileset dir="${sampleoutput.dir}" includes="*.xml"/>
