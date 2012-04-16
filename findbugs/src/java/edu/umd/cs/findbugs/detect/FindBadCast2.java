@@ -1,9 +1,13 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+
+import javax.annotation.CheckForNull;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
@@ -28,7 +32,6 @@ import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -183,7 +186,7 @@ public class FindBadCast2 implements Detector {
         }
         BitSet linesMentionedMultipleTimes = classContext.linesMentionedMultipleTimes(method);
         LineNumberTable lineNumberTable = methodGen.getLineNumberTable(methodGen.getConstantPool());
-
+        Map<BugAnnotation, String> instanceOfChecks = new HashMap<BugAnnotation, String>();
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
 
@@ -315,7 +318,7 @@ public class FindBadCast2 implements Detector {
                 paramValueNumberSet = getParameterValueNumbers(classContext, method, cfg);
             ValueNumber valueNumber = vFrame.getTopValue();
             boolean isParameter = paramValueNumberSet.contains(valueNumber);
-            BugAnnotation variable = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, valueNumber, vFrame,
+            BugAnnotation valueSource = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, valueNumber, vFrame,
                     "VALUE_OF");
             BugAnnotation source = BugInstance.getSourceForTopStackValue(classContext, method, location);
 
@@ -362,10 +365,18 @@ public class FindBadCast2 implements Detector {
                         System.out.println("  complete information: " + completeInformation);
                         System.out.println("  isParameter: " + valueNumber);
                         System.out.println("  score: " + rank);
+                        System.out.println("  source is: " + valueSource);
                         if (handle.getPrev() == null)
                             System.out.println("  prev is null");
                         else
                             System.out.println("  prev is " + handle.getPrev());
+                    }
+                    if (!isCast && downcast && valueSource != null) {
+                        String oldCheck = instanceOfChecks.get(valueSource);
+                        if (oldCheck == null)
+                            instanceOfChecks.put(valueSource, castName);
+                        else if (oldCheck.equals(castName))
+                            instanceOfChecks.put(valueSource, null);
                     }
                     if (!downcast && completeInformation || operandTypeIsExact) {
                         String bugPattern;
@@ -384,13 +395,17 @@ public class FindBadCast2 implements Detector {
 
                         bugReporter.reportBug(new BugInstance(this, bugPattern, isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
                                 .addClassAndMethod(methodGen, sourceFile)
-                                .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(variable, source)
+                                .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(valueSource, source)
                                 .addSourceLine(sourceLineAnnotation));
-                    } else if (isCast && rank < 0.9 && variable instanceof LocalVariableAnnotation
+                    } else if (isCast && rank < 0.9 
                             && !valueNumber.hasFlag(ValueNumber.ARRAY_VALUE) && !valueNumber.hasFlag(ValueNumber.RETURN_VALUE)) {
 
                         int priority = NORMAL_PRIORITY;
 
+                        @CheckForNull String oldCheck = instanceOfChecks.get(valueSource);
+                        if (castName.equals(oldCheck))
+                            priority += 1;
+                        
                         if (rank > 0.75)
                             priority += 2;
                         else if (rank > 0.5)
@@ -423,7 +438,7 @@ public class FindBadCast2 implements Detector {
                             System.out.println(" ref name: " + refName);
                         if (methodGen.getName().equals("compareTo"))
                             priority++;
-                        else if (methodGen.isPublic() && isParameter)
+                        else if (methodGen.isPublic() && isParameter && !castName.equals(oldCheck))
                             priority--;
                         if (DEBUG)
                             System.out.println(" priority h: " + priority);
@@ -438,7 +453,7 @@ public class FindBadCast2 implements Detector {
 
                             BugInstance bugInstance = new BugInstance(this, bug, priority)
                                     .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType)
-                                    .addOptionalAnnotation(variable);
+                                    .addOptionalAnnotation(valueSource);
 
                             accumulator.accumulateBug(bugInstance, sourceLineAnnotation);
                         }
@@ -452,7 +467,7 @@ public class FindBadCast2 implements Detector {
                         && ((MethodAnnotation) source).getMethodSignature().equals("()[Ljava/lang/Object;"))
                     bugReporter.reportBug(new BugInstance(this,  "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY", isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
                     .addClassAndMethod(methodGen, sourceFile)
-                    .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(variable, source)
+                    .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(valueSource, source)
                     .addSourceLine(sourceLineAnnotation));
 
 
