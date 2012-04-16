@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.classfile.impl;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import edu.umd.cs.findbugs.BugReporter;
@@ -102,8 +103,14 @@ public class ClassFactory implements IClassFactory {
 
         File file = new File(fileName);
 
-        if (file.isDirectory()) {
+        if (!file.exists()) {
+            throw new FileNotFoundException("File " + file.getAbsolutePath() + " doesn't exist");
+        } else if (!file.canRead()) {
+            throw new IOException("File " + file.getAbsolutePath() + " not readable");
+        } else if (file.isDirectory()) {
             return new DirectoryCodeBase(codeBaseLocator, file);
+        } else if (!file.isFile()) {
+            throw new IOException("File " + file.getAbsolutePath() + " is not a normal file");
         } else if (fileName.endsWith(".class")) {
             return new SingleFileCodeBase(codeBaseLocator, fileName);
         } else {
