@@ -28,11 +28,7 @@
 </authorgroup>
 
 <copyright>
-  <year>2003</year>
-  <year>2004</year>
-  <year>2005</year>
-  <year>2006</year>
-  <year>2008</year>
+  <year>2003 - 2012</year>
   <holder>University of Maryland</holder>
 </copyright>
 
@@ -165,7 +161,7 @@ To compile &FindBugs; from source, you will need the following:
   </listitem>
   <listitem>
     <para>
-      <ulink url="http://java.sun.com/j2se/">JDK 1.5.0 beta or later</ulink>
+      <ulink url="http://java.sun.com/j2se/">JDK 1.5.0 or later</ulink>
     </para>
   </listitem>
   <listitem>
@@ -1230,10 +1226,16 @@ using the &FindBugs; task.
     <term><literal>class</literal></term>
     <listitem>
        <para>
-       A nested element specifying which classes to analyze.  The <literal>class</literal>
+       A optional nested element specifying which classes to analyze.  The <literal>class</literal>
        element must specify a <literal>location</literal> attribute which names the
        archive file (jar, zip, etc.), directory, or class file to be analyzed.  Multiple <literal>class</literal>
        elements may be specified as children of a single <literal>findbugs</literal> element.
+       </para>
+       <para>In addition to or instead of specifying a <literal>class</literal> element,
+       the  &FindBugs; task can contain one or more <literal>fileset</literal> element(s) that 
+       specify files to be analyzed. 
+       For example, you might use a fileset to specify that all of the jar files in a directory
+       should be analyzed.
        </para>
     </listitem>
   </varlistentry>
@@ -1289,9 +1291,9 @@ using the &FindBugs; task.
     <listitem>
        <para>
        An optional attribute.  It specifies
-       the priority threshold for reporting bugs.  If set to "low", all bugs are reported.
-       If set to "medium" (the default), medium and high priority bugs are reported.
-       If set to "high", only high priority bugs are reported.
+       the confidence/priority threshold for reporting issues.  If set to "low", confidence is not used to filter bugs.
+       If set to "medium" (the default), low confidence issues are supressed. 
+       If set to "high", only high confidence bugs are reported.
        </para>
     </listitem>
   </varlistentry>
