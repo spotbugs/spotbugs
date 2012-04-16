@@ -2222,6 +2222,15 @@ public class OpcodeStack implements Constants2 {
                 Byte.class);
     }
 
+    private void markConstantValueUnknown(Item item) {
+        item.constValue = null;
+        if (item.registerNumber >= 0) {
+            OpcodeStack.Item sbItem = getLVValue(item.registerNumber);
+            if (sbItem != null && sbItem.getSignature().equals(item.getSignature()))
+                sbItem.constValue = null;
+        }
+        
+    }
     private void processMethodCall(DismantleBytecode dbc, int seen) {
         @SlashedClassName String clsName = dbc.getClassConstantOperand();
         String methodName = dbc.getNameConstantOperand();
@@ -2263,7 +2272,7 @@ public class OpcodeStack implements Constants2 {
             Item item = getStackItem(i);
             String itemSignature = item.getSignature();
             if (itemSignature.equals("Ljava/lang/StringBuilder;") || itemSignature.equals("Ljava/lang/StringBuffer;"))
-                item.constValue = null;
+                markConstantValueUnknown(item);
         }
         boolean initializingServletWriter = false;
         if (seen == INVOKESPECIAL && methodName.equals("<init>") && clsName.startsWith("java/io") && clsName.endsWith("Writer")
@@ -2304,19 +2313,12 @@ public class OpcodeStack implements Constants2 {
                     Object sVal = i.getConstant();
                     if ((sbVal != null) && (sVal != null)) {
                         appenderValue = sbVal + sVal.toString();
-                    } else if (sbItem.registerNumber >= 0) {
-                        OpcodeStack.Item item = getLVValue(sbItem.registerNumber);
-                        if (item != null)
-                            item.constValue = null;
-                    }
+                    } else 
+                        markConstantValueUnknown(sbItem);
                 } else if (signature.startsWith("([CII)")) {
                     sawUnknownAppend = true;
                     sbItem = getStackItem(3);
-                    if (sbItem.registerNumber >= 0) {
-                        OpcodeStack.Item item = getLVValue(sbItem.registerNumber);
-                        if (item != null)
-                            item.constValue = null;
-                    }
+                    markConstantValueUnknown(sbItem);
                 } else {
                     sawUnknownAppend = true;
                 }
