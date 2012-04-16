@@ -1,0 +1,16 @@
+<!-- FindBugs filter file -->
+
+<!-- 
+If the params attribute is missing in the method match clause of a filter file an NPE will be thrown.
+
+Example:
+-->
+
+<FindBugsFilter>
+
+<Match>
+<Class name="tgmt.common.bo.BoFacade"/>
+<Method name="extToString" returns="java.lang.String"/>
+<Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
+</Match>
+</FindBugsFilter>

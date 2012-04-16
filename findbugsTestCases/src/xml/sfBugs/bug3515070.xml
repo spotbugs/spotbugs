@@ -1,0 +1,13 @@
+<project name="bug3515070" default="filter">
+
+ <property name="findbugs.jar" value="../../../../findbugs/lib/findbugs.jar"/>
+
+<target name="filter">
+<taskdef name="filterbugs" 
+   classname="edu.umd.cs.findbugs.anttask.FilterBugsTask" classpath="${findbugs.jar}"/>
+<filterbugs classpath="${findbugs.jar}"
+bugPattern=""
+input="input.xml"
+output="output.xml"/>
+</target>
+</project>
