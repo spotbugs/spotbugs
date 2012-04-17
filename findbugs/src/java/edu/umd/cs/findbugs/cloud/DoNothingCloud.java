@@ -331,10 +331,11 @@ public class DoNothingCloud implements Cloud {
         throw new UnsupportedOperationException();
     }
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#communicationInitiated()
-     */
     public boolean communicationInitiated() {
         return false;
+    }
+
+    public boolean isInitialized() {
+        return true;
     }
 }

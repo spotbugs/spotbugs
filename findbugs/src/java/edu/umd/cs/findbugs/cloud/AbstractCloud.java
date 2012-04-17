@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
@@ -120,7 +121,13 @@ public abstract class AbstractCloud implements Cloud {
         }
     }
 
+    boolean abstractCloudInitialized = false;
+    public boolean isInitialized() {
+        return abstractCloudInitialized;
+    }
+    @OverridingMethodsMustInvokeSuper
     public boolean initialize() throws IOException {
+        abstractCloudInitialized = true;
         String modeString = getCloudProperty("votingmode");
         Mode newMode = DEFAULT_VOTING_MODE;
         if (modeString != null) {

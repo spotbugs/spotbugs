@@ -87,6 +87,8 @@ public interface Cloud {
      */
     public boolean initialize() throws IOException;
 
+    /** Return true if the cloud has been successfully initialized */
+    public boolean isInitialized();
     /**
      * Waits until all new issues have been uploaded
      */

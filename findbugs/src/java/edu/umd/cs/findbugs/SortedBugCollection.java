@@ -170,6 +170,9 @@ public class SortedBugCollection implements BugCollection {
              
             
         }
+        if (!result.isInitialized()) {
+            LOGGER.log(Level.SEVERE, "Cloud " + result.getCloudName() + " is not initialized ");  
+        }
         if (bugsPopulated)
             result.bugsPopulated();
         return result;
