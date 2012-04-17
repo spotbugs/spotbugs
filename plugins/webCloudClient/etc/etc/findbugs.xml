@@ -1,0 +1,16 @@
+<FindbugsPlugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
+       pluginid="edu.umd.cs.findbugs.plugins.findbugsCommunalCloud" 
+       parentid="edu.umd.cs.findbugs.plugins.webCloud" 
+       provider="FindBugs project" website="http://findbugs.sourceforge.net"
+       update-url="http://update.findbugs.org/update-check">
+
+       <Cloud id="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
+              cloudClass="edu.umd.cs.findbugs.cloud.appEngine.WebCloudClient"
+              usernameClass="edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup"
+              onlineStorage="true">
+              <Property key="webcloud.host">http://findbugs-cloud.appspot.com</Property>
+              <Property key="cloud.detailsUrl">http://findbugs-cloud.appspot.com/issues/%s?embed</Property>
+       </Cloud>
+
+</FindbugsPlugin>

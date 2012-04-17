@@ -1,0 +1,54 @@
+<project name="findbugsCommunalCloud" default="install">
+
+    <property file="local.properties"/>
+
+    <!--
+        The build.properties contains global properties, which are common for all developers.
+        Note:
+        Ant properties cannot be overriden, so if local.properties and build.properties
+        contains same keys, ant will use those from local.properties
+    -->
+    <property file="build.properties"/>
+
+    <property name="findbugs.home" value="${findbugsBase.dir}/findbugs"/>
+    <property name="destination.dir" value="${findbugsBase.dir}/findbugs/${plugin.dir}"/>
+    <property name="destination2.dir" value="${findbugsBase.dir}/findbugs/${plugin.dir}"/>
+
+
+    <target name="validate">
+        <xmlvalidate lenient="false" failonerror="yes">
+            <attribute name="http://apache.org/xml/features/validation/schema" value="true"/>
+            <attribute name="http://xml.org/sax/features/namespaces" value="true"/>
+            <fileset dir="etc" includes="*.xml"/>
+        </xmlvalidate>
+    </target>
+
+    <target name="clean">
+        <delete dir="build"/>
+        <mkdir dir="build"/>
+    </target>
+
+    <target name="plugin-jar" depends="clean">
+        <jar destfile="build/findbugsCommunalCloud.jar">
+            <fileset dir="etc">
+                <include name="findbugs.xml"/>
+                <include name="messages.xml"/>
+            </fileset>
+
+        </jar>
+    </target>
+
+    <target name="install" depends="plugin-jar">
+        <copy todir="${destination.dir}" file="build/findbugsCommunalCloud.jar" flatten="true"/>
+        <copy todir="${destination2.dir}" file="build/findbugsCommunalCloud.jar" flatten="true"/>
+        <copy todir="${findbugs.home}/jnlp" flatten="true">
+            <fileset dir="etc">
+                <include name="*.jnlp"/>
+            </fileset>
+        </copy>
+    </target>
+
+
+</project>
+
+      

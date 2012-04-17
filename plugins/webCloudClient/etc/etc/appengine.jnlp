@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<jnlp spec="1.0+" >
+  <information> 
+    <title>FindBugs</title>
+    <vendor>University of Maryland</vendor> 
+    <homepage href="http://findbugs.sourceforge.net"/> 
+    <description>Findbugs: Static Bug Finder</description> 
+    <description kind="short">Static analysis tool for defect detection</description> 
+    <icon href="buggy-sm.png"/> 
+    <offline-allowed/> 
+  </information> 
+  <security> 
+      <all-permissions/> 
+  </security> 
+  <resources> 
+
+    <jar href="AppEngineCloudClient/axis.jar"/>
+    <jar href="AppEngineCloudClient/commons-discovery-0.2.jar"/>
+    <jar href="AppEngineCloudClient/commons-logging-1.0.4.jar"/>
+    <jar href="AppEngineCloudClient/gdata-client-1.0.jar"/>
+    <jar href="AppEngineCloudClient/gdata-core-1.0.jar"/>
+    <jar href="AppEngineCloudClient/gdata-projecthosting-2.1.jar"/>
+    <jar href="AppEngineCloudClient/google-collect-1.0-rc1.jar"/>
+    <jar href="AppEngineCloudClient/jaxrpc.jar"/>
+    <jar href="AppEngineCloudClient/protobuf-java-2.3.0.jar"/>
+    <jar href="AppEngineCloudClient/saaj.jar"/>
+    <jar href="AppEngineCloudClient/wsdl4j-1.5.1.jar"/>
+
+    <property name="findbugs.plugin.AppEngine" value="AppEngineCloudClient.jar"/>
+
+    <property name="findbugs.cloud.default" value="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"/>
+
+  </resources> 
+ <component-desc />
+</jnlp> 
+
