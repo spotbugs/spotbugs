@@ -1005,11 +1005,8 @@ public class PluginLoader {
                 throw new DuplicatePluginIdException(pluginId, loadedFrom, u);
         }
 
-        parentId = pluginDescriptor.valueOf("/FindbugsPlugin/@parentid");
-        
-        if (true || !parentId.isEmpty())
-            System.out.println(pluginId + " depends on " + parentId);
-        
+        parentId = pluginDescriptor.valueOf("/FindbugsPlugin/@parentid");     
+    
         String version = pluginDescriptor.valueOf("/FindbugsPlugin/@version");
         String releaseDate = pluginDescriptor.valueOf("/FindbugsPlugin/@releaseDate");
         
@@ -1097,14 +1094,16 @@ public class PluginLoader {
         }
         SAXReader reader = new SAXReader();
 
+        Reader r = null;
         try {
-            Reader r = UTF8.bufferedReader(findbugsXML_URL.openStream());
+            r = UTF8.bufferedReader(findbugsXML_URL.openStream());
             pluginDescriptor = reader.read(r);
         } catch (DocumentException e) {
             throw new PluginException("Couldn't parse \"" + findbugsXML_URL + "\" using " + reader.getClass().getName(), e);
         } catch (IOException e) {
             throw new PluginException("Couldn't open \"" + findbugsXML_URL + "\"", e);
-
+        } finally {
+            IO.close(r);
         }
         return pluginDescriptor;
     }

@@ -34,6 +34,7 @@
 package edu.umd.cs.findbugs.io;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +45,7 @@ import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.WillNotClose;
 
 import edu.umd.cs.findbugs.charsets.UTF8;
@@ -121,11 +123,27 @@ public class IO {
     /**
      * Close given InputStream, ignoring any resulting exception.
      * 
+     */
+     public static void close(@CheckForNull Closeable c) {
+        if (c == null) {
+            return;
+        }
+
+        try {
+            c.close();
+        } catch (IOException e) {
+            // Ignore
+        }
+    }
+
+    /**
+     * Close given InputStream, ignoring any resulting exception.
+     * 
      * @param inputStream
      *            the InputStream to close; may be null (in which case nothing
      *            happens)
      */
-    public static void close(InputStream inputStream) {
+    public static void close(@CheckForNull InputStream inputStream) {
         if (inputStream == null) {
             return;
         }
@@ -144,7 +162,7 @@ public class IO {
      *            the OutputStream to close; may be null (in which case nothing
      *            happens)
      */
-    public static void close(OutputStream outputStream) {
+    public static void close(@CheckForNull OutputStream outputStream) {
         if (outputStream == null) {
             return;
         }
