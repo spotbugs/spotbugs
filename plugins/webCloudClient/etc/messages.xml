@@ -13,21 +13,12 @@
     <Details>
 <![CDATA[
 <p>
-Allows making bug comments and classifying bugs on the FindBugs Cloud at http://cloud.findbugs.org.
+Provide infrastructure to allow the creation of web based clouds for FindBugs.
+By itself, this plugin doesn't provide pointers to any specific clouds.
 </p>
 ]]>
     </Details>
   </Plugin>
-
-
-  <Cloud id="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud">
-    <Description>FindBugs Cloud</Description>
-    <Details>Comments are stored on the FindBugs Cloud at http://findbugs-cloud.appspot.com/</Details>
-    </Cloud>
-  <Cloud id="edu.umd.cs.findbugs.cloud.appengine.theflybush">
-    <Description>FindBugs test Cloud</Description>
-    <Details>Comments are stored on the FindBugs test Cloud at http://theflybush.appspot.com/</Details>
-    </Cloud>
 
   </MessageCollection>
 

@@ -1,4 +1,4 @@
-<project name="findbugsCommunalCloud" default="install">
+<project name="webCloudClient" default="install">
 
     <property file="local.properties"/>
 
@@ -67,7 +67,7 @@
     </target>
 
     <target name="plugin-jar" depends="compile">
-        <jar destfile="build/findbugsCommunalCloud.jar">
+        <jar destfile="build/webCloudClient.jar">
             <fileset dir="etc">
                 <include name="findbugs.xml"/>
                 <include name="messages.xml"/>
@@ -81,8 +81,8 @@
     </target>
 
     <target name="install" depends="plugin-jar">
-        <copy todir="${destination.dir}" file="build/findbugsCommunalCloud.jar" flatten="true"/>
-        <copy todir="${destination2.dir}" file="build/findbugsCommunalCloud.jar" flatten="true"/>
+        <copy todir="${destination.dir}" file="build/webCloudClient.jar" flatten="true"/>
+        <copy todir="${destination2.dir}" file="build/webCloudClient.jar" flatten="true"/>
         <copy todir="${findbugs.home}/jnlp" flatten="true">
             <fileset dir="etc">
                 <include name="*.jnlp"/>
