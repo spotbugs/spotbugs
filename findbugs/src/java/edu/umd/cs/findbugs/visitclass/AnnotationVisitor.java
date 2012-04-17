@@ -50,24 +50,15 @@ import edu.umd.cs.findbugs.util.ClassName;
  */
 public class AnnotationVisitor extends PreorderVisitor {
 
-    /**
-     *
-     */
+
     private static final String RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS = "RuntimeInvisibleParameterAnnotations";
 
-    /**
-     *
-     */
+
     private static final String RUNTIME_INVISIBLE_ANNOTATIONS = "RuntimeInvisibleAnnotations";
 
-    /**
-     *
-     */
+
     private static final String RUNTIME_VISIBLE_ANNOTATIONS = "RuntimeVisibleAnnotations";
 
-    /**
-     *
-     */
     private static final String RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS = "RuntimeVisibleParameterAnnotations";
 
     static final boolean DEBUG = SystemProperties.getBoolean("annotation.visitor");
