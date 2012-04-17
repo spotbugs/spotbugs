@@ -290,6 +290,11 @@ public class Version {
                     System.out.println("  is enabled by default");
                 if (plugin.isGloballyEnabled())
                     System.out.println("  is globally enabled");
+                Plugin parent = plugin.getParentPlugin();
+                if (parent != null) {
+                    System.out.println("  has parent plugin " + parent.getPluginId());
+                }
+
                 for (CloudPlugin cloudPlugin : plugin.getCloudPlugins()) {
                     System.out.printf("  cloud %s%n", cloudPlugin.getId());
                     System.out.printf("     %s%n", cloudPlugin.getDescription());

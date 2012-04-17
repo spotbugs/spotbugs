@@ -37,6 +37,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -66,6 +69,7 @@ import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.CloudPluginBuilder;
 import edu.umd.cs.findbugs.cloud.username.NameLookup;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.plan.ByInterfaceDetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.DetectorFactorySelector;
@@ -109,18 +113,21 @@ public class PluginLoader {
     private static final String XPATH_PLUGIN_PLUGINID = "/FindbugsPlugin/@pluginid";
 
     private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.debug.PluginLoader");
+    static boolean lazyInitialization = false;
+    static LinkedList<PluginLoader> partiallyInitialized = new LinkedList<PluginLoader>();
 
-    // ClassLoader used to load classes and resources
-    private final ClassLoader classLoader;
-
-    private final ClassLoader classLoaderForResources;
 
     // Keep a count of how many plugins we've seen without a
     // "pluginid" attribute, so we can assign them all unique ids.
     private static int nextUnknownId;
+    
+    // ClassLoader used to load classes and resources
+    private ClassLoader classLoader;
+
+    private final ClassLoader classLoaderForResources;
 
     // The loaded Plugin
-    private Plugin plugin;
+    private final Plugin plugin;
 
     private final boolean corePlugin;
 
@@ -130,12 +137,14 @@ public class PluginLoader {
 
     private boolean optionalPlugin;
 
-
     private final URL loadedFrom;
 
     private final String jarName;
 
     private final URI loadedFromUri;
+    
+    /** plugin Id for parent plugin */
+    String parentId;
 
     static HashSet<String> loadedPluginIds = new HashSet<String>();
     static {
@@ -190,7 +199,6 @@ public class PluginLoader {
      */
     private PluginLoader(@Nonnull URL url, URI uri, ClassLoader parent, boolean isInitial, boolean optional) throws PluginException {
         URL[] loaderURLs = createClassloaderUrls(url);
-        classLoader = new URLClassLoader(loaderURLs, parent);
         classLoaderForResources = new URLClassLoader(loaderURLs);
         loadedFrom = url;
         loadedFromUri = uri;
@@ -199,10 +207,65 @@ public class PluginLoader {
         initialPlugin = isInitial;
         optionalPlugin = optional;
         plugin = init();
-        Plugin.putPlugin(loadedFromUri, plugin);
+        if (parentId.isEmpty()) {
+            classLoader = new URLClassLoader(loaderURLs, parent);
+        } else {
+            if (parent != PluginLoader.class.getClassLoader())
+                throw new IllegalArgumentException("Can't specify parentid " + parentId + " and provide a seperate class loader");
+            Plugin parentPlugin = Plugin.getByPluginId(parentId);
+            if (parentPlugin != null) {
+                parent = parentPlugin.getClassLoader();
+                classLoader = new URLClassLoader(loaderURLs, parent);
+            }
+        }
+        if (classLoader == null) {
+            if (!lazyInitialization)
+                throw new IllegalStateException("Can't find parent plugin " + parentId);
+            partiallyInitialized.add(this);
+        } else {
+            loadPluginComponents();
+            Plugin.putPlugin(loadedFromUri, plugin);
+        }
     }
 
+    private static void finishLazyInitialization()  {
+        if (!lazyInitialization)
+            throw new IllegalStateException("Not in lazy initialization mode");
+        while (!partiallyInitialized.isEmpty()) {
+            boolean changed = false;
+            LinkedList<String>  unresolved = new LinkedList<String>();
+            
+            for (Iterator<PluginLoader> i = partiallyInitialized.iterator(); i.hasNext();) {
+                PluginLoader pluginLoader = i.next();
+                String pluginId = pluginLoader.getPlugin().getPluginId();
+                
+                String parentid = pluginLoader.parentId;
+                assert !parentid.isEmpty();
+                Plugin parent = Plugin.getByPluginId(parentid);
+                if (parent != null) {
+                    i.remove();
+                    try {
+                    URL[] loaderURLs = pluginLoader.createClassloaderUrls(pluginLoader.loadedFrom);
+                    pluginLoader.classLoader = new URLClassLoader(loaderURLs, parent.getClassLoader());
+                    pluginLoader.loadPluginComponents();
+                    Plugin.putPlugin(pluginLoader.loadedFromUri, pluginLoader.plugin);
+                    } catch (PluginException e) {
+                        throw new RuntimeException("Unable to load plugin " + pluginId, e);
+                    }
+                    changed = true;
+                } else
+                    unresolved.add(pluginId); 
+            }
+            if (!changed) {
+                 
+                throw new RuntimeException("Unable to resolve plugin parents for plugins " + unresolved);
 
+            }
+        }
+        lazyInitialization = false;
+    }
+
+    
     /**
      * Patch for issue 3429143: allow plugins load classes/resources from 3rd
      * party jars
@@ -278,14 +341,12 @@ public class PluginLoader {
         }
         jarName = getJarName(loadedFrom);
         plugin = init();
+        loadPluginComponents();
         Plugin.putPlugin(null, plugin);
     }
 
     /**
-     * Constructor. Loads a plugin using the caller's class loader. This
-     * constructor should only be used to load the "core" findbugs detectors,
-     * which are built into findbugs.jar.
-     * @throws PluginException
+     * Fake plugin.
      */
     @Deprecated
     public PluginLoader(boolean fake, URL url) throws PluginException {
@@ -302,6 +363,7 @@ public class PluginLoader {
             throw new IllegalArgumentException("Failed to parse uri: " + loadedFrom);
         }
         jarName = getJarName(loadedFrom);
+        plugin = null;
     }
 
     private URL computeCoreUrl() {
@@ -366,6 +428,8 @@ public class PluginLoader {
      * @return Returns the classLoader.
      */
     public ClassLoader getClassLoader() {
+        if (classLoader == null)
+            throw new IllegalStateException("Plugin not completely initialized; classloader not set yet");
         return classLoader;
     }
 
@@ -510,7 +574,7 @@ public class PluginLoader {
         return null;
     }
 
-    private static <T> Class<? extends T> getClass(ClassLoader loader, String className, Class<T> type) throws PluginException {
+    private static <T> Class<? extends T> getClass(ClassLoader loader, @DottedClassName String className, Class<T> type) throws PluginException {
         try {
             return loader.loadClass(className).asSubclass(type);
         } catch (ClassNotFoundException e) {
@@ -528,126 +592,23 @@ public class PluginLoader {
             System.out.println("Loading plugin from " + loadedFrom);
         // Plugin descriptor (a.k.a, "findbugs.xml"). Defines
         // the bug detectors and bug patterns that the plugin provides.
-        Document pluginDescriptor;
-
-        // Unique plugin id
-        String pluginId;
-
-
-        // Read the plugin descriptor
-        String name = "findbugs.xml";
-        URL findbugsXML_URL = getResource(name);
-        if (findbugsXML_URL == null)
-            throw new PluginException("Couldn't find \"" + name + "\" in plugin");
-        if (DEBUG)
-            System.out.println("PluginLoader found " + name + " at: " + findbugsXML_URL);
-
-        if (jarName != null && !findbugsXML_URL.toString().contains(jarName)
-                && !(corePlugin && findbugsXML_URL.toString().endsWith("etc/findbugs.xml"))) {
-            String classloaderName = classLoader.getClass().getName();
-            if (classLoader instanceof URLClassLoader) {
-                classloaderName += Arrays.asList(((URLClassLoader) classLoader).getURLs());
-            }
-            throw new PluginDoesntContainMetadataException((corePlugin ? "Core plugin" : "Plugin ") + jarName
-                    + " doesn't contain findbugs.xml; got " + findbugsXML_URL + " from " + classloaderName);
-        }
-        SAXReader reader = new SAXReader();
-
-        try {
-            Reader r = UTF8.bufferedReader(findbugsXML_URL.openStream());
-            pluginDescriptor = reader.read(r);
-        } catch (DocumentException e) {
-            throw new PluginException("Couldn't parse \"" + findbugsXML_URL + "\" using " + reader.getClass().getName(), e);
-        } catch (IOException e) {
-            throw new PluginException("Couldn't open \"" + findbugsXML_URL + "\"", e);
-
-        }
-
-        // Get the unique plugin id (or generate one, if none is present)
-        pluginId = pluginDescriptor.valueOf(XPATH_PLUGIN_PLUGINID);
-        if (pluginId.equals("")) {
-            synchronized (PluginLoader.class) {
-                pluginId = "plugin" + nextUnknownId++;
-            }
-        }
-        cannotDisable = Boolean.parseBoolean(pluginDescriptor.valueOf("/FindbugsPlugin/@cannotDisable"));
-
-        String de = pluginDescriptor.valueOf("/FindbugsPlugin/@defaultenabled");
-        if (de != null && de.toLowerCase().trim().equals("false")) {
-            optionalPlugin = true;
-        }
-        if (optionalPlugin)
-            cannotDisable = false;
-        if (!loadedPluginIds.add(pluginId)) {
-            Plugin existingPlugin = Plugin.getByPluginId(pluginId);
-            URL u = existingPlugin == null ? null : existingPlugin.getPluginLoader().getURL();
-            if (cannotDisable && initialPlugin)
-                throw new DuplicatePluginIdError(pluginId, loadedFrom, u);
-            else
-                throw new DuplicatePluginIdException(pluginId, loadedFrom, u);
-        }
-
-        String version = pluginDescriptor.valueOf("/FindbugsPlugin/@version");
-        String releaseDate = pluginDescriptor.valueOf("/FindbugsPlugin/@releaseDate");
+        Document pluginDescriptor = getPluginDescriptor();
         List<Document> messageCollectionList = getMessageDocuments();
-
-        if ((releaseDate == null  || releaseDate.length() == 0) && isCorePlugin())
-            releaseDate = Version.CORE_PLUGIN_RELEASE_DATE;
-        // Create the Plugin object (but don't assign to the plugin field yet,
-        // since we're still not sure if everything will load correctly)
-        Date parsedDate = parseDate(releaseDate);
-        Plugin plugin = new Plugin(pluginId, version, parsedDate, this, !optionalPlugin, cannotDisable);
-
-        // Set provider and website, if specified
-        String provider = pluginDescriptor.valueOf(XPATH_PLUGIN_PROVIDER).trim();
-        if (!provider.equals(""))
-            plugin.setProvider(provider);
-        String website = pluginDescriptor.valueOf(XPATH_PLUGIN_WEBSITE).trim();
-        if (!website.equals(""))
-            try {
-                plugin.setWebsite(website);
-            } catch (URISyntaxException e1) {
-                AnalysisContext.logError("Plugin " + pluginId + " has invalid website: " + website, e1);
-            }
-
-        String updateUrl = pluginDescriptor.valueOf("/FindbugsPlugin/@update-url").trim();
-        if (!updateUrl.equals(""))
-            try {
-                plugin.setUpdateUrl(updateUrl);
-            } catch (URISyntaxException e1) {
-                AnalysisContext.logError("Plugin " + pluginId + " has invalid update check URL: " + website, e1);
-
-            }
+        
+        Plugin constructedPlugin = constructMinimalPlugin(pluginDescriptor, messageCollectionList);
+       
+        // Success!
+        if (DEBUG)
+            System.out.println("Loaded " + constructedPlugin.getPluginId() + " from " + loadedFrom);
+        return constructedPlugin;
+    }
 
 
-        // Set short description, if specified
-        Node pluginShortDesc = null;
-        try {
-            pluginShortDesc = findMessageNode(messageCollectionList, XPATH_PLUGIN_SHORT_DESCRIPTION,
-                    "no plugin description");
-        } catch (PluginException e) {
-            // Missing description is not fatal, so ignore
-        }
-        if (pluginShortDesc != null) {
-            plugin.setShortDescription(pluginShortDesc.getText().trim());
-        }
-        Node detailedDescription = null;
-        try {
-            detailedDescription = findMessageNode(messageCollectionList, "/MessageCollection/Plugin/Details",
-                    "no plugin description");
-        } catch (PluginException e) {
-            // Missing description is not fatal, so ignore
-        }
-        if (detailedDescription != null) {
-            plugin.setDetailedDescription(detailedDescription.getText().trim());
-        }
-        List<Node> globalOptionNodes = pluginDescriptor.selectNodes("/FindbugsPlugin/GlobalOptions/Property");
-        for(Node optionNode : globalOptionNodes) {
-            String key = optionNode.valueOf("@key");
-            String value = optionNode.getText().trim();
-            plugin.setMyGlobalOption(key, value);
-        }
 
+    private void loadPluginComponents()
+            throws PluginException {
+        Document pluginDescriptor = getPluginDescriptor();
+        List<Document> messageCollectionList = getMessageDocuments();
         List<Node> cloudNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Cloud");
         for (Node cloudNode : cloudNodeList) {
 
@@ -683,7 +644,7 @@ public class PluginLoader {
             }
 
 
-            CloudPlugin cloudPlugin = new CloudPluginBuilder().setFindbugsPluginId(pluginId).setCloudid(cloudId).setClassLoader(classLoader)
+            CloudPlugin cloudPlugin = new CloudPluginBuilder().setFindbugsPluginId(plugin.getPluginId()).setCloudid(cloudId).setClassLoader(classLoader)
                     .setCloudClass(cloudClass).setUsernameClass(usernameClass).setHidden(hidden).setProperties(properties)
                     .setDescription(description).setDetails(details).setOnlineStorage(onlineStorage).createCloudPlugin();
             plugin.addCloudPlugin(cloudPlugin);
@@ -696,14 +657,14 @@ public class PluginLoader {
 
             List<Node> componentNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/PluginComponent");
             for (Node componentNode : componentNodeList) {
-                String componentKindname = componentNode.valueOf("@componentKind");
-                if (componentKindname == null) throw new PluginException("Missing @componentKind for " + pluginId
+                @DottedClassName String componentKindname = componentNode.valueOf("@componentKind");
+                if (componentKindname == null) throw new PluginException("Missing @componentKind for " + plugin.getPluginId()
                         + " loaded from " + loadedFrom);
-                String componentClassname = componentNode.valueOf("@componentClass");
-                if (componentClassname == null) throw new PluginException("Missing @componentClassname for " + pluginId
+                @DottedClassName String componentClassname = componentNode.valueOf("@componentClass");
+                if (componentClassname == null) throw new PluginException("Missing @componentClassname for " + plugin.getPluginId()
                         + " loaded from " + loadedFrom);
                 String componentId = componentNode.valueOf("@id");
-                if (componentId == null) throw new PluginException("Missing @id for " + pluginId
+                if (componentId == null) throw new PluginException("Missing @id for " + plugin.getPluginId()
                         + " loaded from " + loadedFrom);
 
                 try {
@@ -719,7 +680,7 @@ public class PluginLoader {
                     if (propertiesLocation != null && propertiesLocation.length() > 0) {
                         URL properiesURL = classLoaderForResources.getResource(propertiesLocation);
                         if (properiesURL == null) {
-                            AnalysisContext.logError("Could not load properties for " + pluginId + " component " + componentId
+                            AnalysisContext.logError("Could not load properties for " + plugin.getPluginId() + " component " + componentId
                                     + " from " + propertiesLocation);
                             continue;
                         }
@@ -749,10 +710,10 @@ public class PluginLoader {
                 List<Node> findBugsMainList = pluginDescriptor.selectNodes("/FindbugsPlugin/FindBugsMain");
                 for (Node main : findBugsMainList) {
                     String className = main.valueOf("@class");
-                    if (className == null) throw new PluginException("Missing @class for FindBugsMain in plugin" + pluginId
+                    if (className == null) throw new PluginException("Missing @class for FindBugsMain in plugin" + plugin.getPluginId()
                             + " loaded from " + loadedFrom);
                     String cmd = main.valueOf("@cmd");
-                    if (cmd == null) throw new PluginException("Missing @cmd for for FindBugsMain in plugin " + pluginId
+                    if (cmd == null) throw new PluginException("Missing @cmd for for FindBugsMain in plugin " + plugin.getPluginId()
                             + " loaded from " + loadedFrom);
                     String kind = main.valueOf("@kind");
                     boolean analysis = Boolean.valueOf(main.valueOf("@analysis"));
@@ -769,7 +730,7 @@ public class PluginLoader {
 
                     } catch (Exception e) {
                         AnalysisContext.logError("Unable to load FindBugsMain " + cmd +
-                                " : " + className + " in plugin " + pluginId
+                                " : " + className + " in plugin " + plugin.getPluginId()
                                 + " loaded from " + loadedFrom, e);
                     }
                 }
@@ -863,7 +824,7 @@ public class PluginLoader {
         for (Document messageCollection : messageCollectionList) {
             List<Node> categoryNodeList = messageCollection.selectNodes("/MessageCollection/BugCategory");
             if (DEBUG)
-                System.out.println("found " + categoryNodeList.size() + " categories in " + pluginId);
+                System.out.println("found " + categoryNodeList.size() + " categories in " + plugin.getPluginId());
             for (Node categoryNode : categoryNodeList) {
                 String key = categoryNode.valueOf("@category");
                 if (key.equals(""))
@@ -1001,18 +962,151 @@ public class PluginLoader {
                 // plugin can not have bugrank.txt. In this case, an empty
                 // bugranker will be created
                 if (DEBUG)
-                    System.out.println("No " + BugRanker.FILENAME + " for plugin " + pluginId);
+                    System.out.println("No " + BugRanker.FILENAME + " for plugin " + plugin.getPluginId());
             }
             BugRanker ranker = new BugRanker(bugRankURL);
             plugin.setBugRanker(ranker);
         } catch (IOException e) {
             throw new PluginException("Couldn't parse \"" + BugRanker.FILENAME + "\"", e);
         }
+    }
 
-        // Success!
+
+    /**
+     * @param pluginDescriptor
+     * @param messageCollectionList
+     * @return
+     * @throws DuplicatePluginIdError
+     */
+    private Plugin constructMinimalPlugin(Document pluginDescriptor, List<Document> messageCollectionList)
+            throws DuplicatePluginIdError {
+        // Get the unique plugin id (or generate one, if none is present)
+        // Unique plugin id
+        String pluginId = pluginDescriptor.valueOf(XPATH_PLUGIN_PLUGINID);
+        if (pluginId.equals("")) {
+            synchronized (PluginLoader.class) {
+                pluginId = "plugin" + nextUnknownId++;
+            }
+        }
+        cannotDisable = Boolean.parseBoolean(pluginDescriptor.valueOf("/FindbugsPlugin/@cannotDisable"));
+
+        String de = pluginDescriptor.valueOf("/FindbugsPlugin/@defaultenabled");
+        if (de != null && de.toLowerCase().trim().equals("false")) {
+            optionalPlugin = true;
+        }
+        if (optionalPlugin)
+            cannotDisable = false;
+        if (!loadedPluginIds.add(pluginId)) {
+            Plugin existingPlugin = Plugin.getByPluginId(pluginId);
+            URL u = existingPlugin == null ? null : existingPlugin.getPluginLoader().getURL();
+            if (cannotDisable && initialPlugin)
+                throw new DuplicatePluginIdError(pluginId, loadedFrom, u);
+            else
+                throw new DuplicatePluginIdException(pluginId, loadedFrom, u);
+        }
+
+        parentId = pluginDescriptor.valueOf("/FindbugsPlugin/@parentid");
+        
+        if (true || !parentId.isEmpty())
+            System.out.println(pluginId + " depends on " + parentId);
+        
+        String version = pluginDescriptor.valueOf("/FindbugsPlugin/@version");
+        String releaseDate = pluginDescriptor.valueOf("/FindbugsPlugin/@releaseDate");
+        
+        if ((releaseDate == null  || releaseDate.length() == 0) && isCorePlugin())
+            releaseDate = Version.CORE_PLUGIN_RELEASE_DATE;
+        // Create the Plugin object (but don't assign to the plugin field yet,
+        // since we're still not sure if everything will load correctly)
+        Date parsedDate = parseDate(releaseDate);
+        Plugin constructedPlugin = new Plugin(pluginId, version, parsedDate, this, !optionalPlugin, cannotDisable);
+        // Set provider and website, if specified
+        String provider = pluginDescriptor.valueOf(XPATH_PLUGIN_PROVIDER).trim();
+        if (!provider.equals(""))
+            constructedPlugin.setProvider(provider);
+        String website = pluginDescriptor.valueOf(XPATH_PLUGIN_WEBSITE).trim();
+        if (!website.equals(""))
+            try {
+                constructedPlugin.setWebsite(website);
+            } catch (URISyntaxException e1) {
+                AnalysisContext.logError("Plugin " + constructedPlugin.getPluginId() + " has invalid website: " + website, e1);
+            }
+
+        String updateUrl = pluginDescriptor.valueOf("/FindbugsPlugin/@update-url").trim();
+        if (!updateUrl.equals(""))
+            try {
+                constructedPlugin.setUpdateUrl(updateUrl);
+            } catch (URISyntaxException e1) {
+                AnalysisContext.logError("Plugin " + constructedPlugin.getPluginId() + " has invalid update check URL: " + website, e1);
+            }
+
+        // Set short description, if specified
+        Node pluginShortDesc = null;
+        try {
+            pluginShortDesc = findMessageNode(messageCollectionList, XPATH_PLUGIN_SHORT_DESCRIPTION,
+                    "no plugin description");
+        } catch (PluginException e) {
+            // Missing description is not fatal, so ignore
+        }
+        if (pluginShortDesc != null) {
+            constructedPlugin.setShortDescription(pluginShortDesc.getText().trim());
+        }
+        Node detailedDescription = null;
+        try {
+            detailedDescription = findMessageNode(messageCollectionList, "/MessageCollection/Plugin/Details",
+                    "no plugin description");
+        } catch (PluginException e) {
+            // Missing description is not fatal, so ignore
+        }
+        if (detailedDescription != null) {
+            constructedPlugin.setDetailedDescription(detailedDescription.getText().trim());
+        }
+        List<Node> globalOptionNodes = pluginDescriptor.selectNodes("/FindbugsPlugin/GlobalOptions/Property");
+        for(Node optionNode : globalOptionNodes) {
+            String key = optionNode.valueOf("@key");
+            String value = optionNode.getText().trim();
+            constructedPlugin.setMyGlobalOption(key, value);
+        }
+        return constructedPlugin;
+    }
+
+
+    /**
+     * @return
+     * @throws PluginException
+     * @throws PluginDoesntContainMetadataException
+     */
+    public Document getPluginDescriptor() throws PluginException, PluginDoesntContainMetadataException {
+        Document pluginDescriptor;
+
+        // Read the plugin descriptor
+        String name = "findbugs.xml";
+        URL findbugsXML_URL = getResource(name);
+        if (findbugsXML_URL == null)
+            throw new PluginException("Couldn't find \"" + name + "\" in plugin");
         if (DEBUG)
-            System.out.println("Loaded " + plugin.getPluginId() + " from " + loadedFrom);
-        return plugin;
+            System.out.println("PluginLoader found " + name + " at: " + findbugsXML_URL);
+
+        if (jarName != null && !findbugsXML_URL.toString().contains(jarName)
+                && !(corePlugin && findbugsXML_URL.toString().endsWith("etc/findbugs.xml"))) {
+            String classloaderName = classLoader.getClass().getName();
+            if (classLoader instanceof URLClassLoader) {
+                classloaderName += Arrays.asList(((URLClassLoader) classLoader).getURLs());
+            }
+            throw new PluginDoesntContainMetadataException((corePlugin ? "Core plugin" : "Plugin ") + jarName
+                    + " doesn't contain findbugs.xml; got " + findbugsXML_URL + " from " + classloaderName);
+        }
+        SAXReader reader = new SAXReader();
+
+        try {
+            Reader r = UTF8.bufferedReader(findbugsXML_URL.openStream());
+            pluginDescriptor = reader.read(r);
+        } catch (DocumentException e) {
+            throw new PluginException("Couldn't parse \"" + findbugsXML_URL + "\" using " + reader.getClass().getName(), e);
+        } catch (IOException e) {
+            throw new PluginException("Couldn't open \"" + findbugsXML_URL + "\"", e);
+
+        }
+        return pluginDescriptor;
     }
 
 
@@ -1051,7 +1145,7 @@ public class PluginLoader {
 
 
     private <T> void loadComponentPlugin(@SuppressWarnings("hiding") Plugin plugin,
-            Class<T> componentKind, String componentClassname, String filterId,
+            Class<T> componentKind, @DottedClassName String componentClassname, String filterId,
             boolean disabled, String description, String details, PropertyBundle properties) throws PluginException {
         {
         Class<? extends T> componentClass = null;
@@ -1256,6 +1350,7 @@ public class PluginLoader {
     }
 
     static synchronized void loadInitialPlugins() {
+        lazyInitialization = true;
         loadCorePlugin();
         if (JavaWebStart.isRunningViaJavaWebstart()) {
             installWebStartPlugins();
@@ -1293,6 +1388,7 @@ public class PluginLoader {
                 assert true; // keep going
             }
         }
+        finishLazyInitialization();
     }
 
     private static void loadCorePlugin() {
@@ -1316,6 +1412,8 @@ public class PluginLoader {
             assert true;
         }catch (PluginException e) {
             AnalysisContext.logError("Unable to load plugin from " + u, e);
+            if (DEBUG)
+                e.printStackTrace();
         }
     }
 

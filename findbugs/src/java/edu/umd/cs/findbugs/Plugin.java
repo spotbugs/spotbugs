@@ -629,6 +629,13 @@ public class Plugin {
     public ClassLoader getClassLoader() {
         return getPluginLoader().getClassLoader();
     }
+    
+    public @CheckForNull Plugin getParentPlugin() {
+        String parentid = getPluginLoader().parentId;
+        if (parentid == null || parentid.isEmpty())
+            return null;
+        return Plugin.getByPluginId(parentid);
+    }
 
     /**
      * Loads the given plugin and enables it for the given project.
