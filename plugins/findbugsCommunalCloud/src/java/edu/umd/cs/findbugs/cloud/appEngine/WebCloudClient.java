@@ -158,6 +158,10 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     boolean initialized = false;
 
     @Override
+    public boolean isInitialized() {
+        return super.isInitialized() && initialized;
+    }
+    @Override
     public boolean initialize() throws IOException {
         // noinspection ConstantConditions
         if (false && initialized) {
@@ -174,19 +178,20 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
                 return false;
             }
 
-            if (networkClient.initialize()) {
+            boolean networkInitialization = networkClient.initialize();
+            initialized = true;
+            if (networkInitialization) {
                 setSigninState(SigninState.SIGNED_IN);
             } else {
                 // soft init didn't work
                 setSigninState(SigninState.UNAUTHENTICATED);
             }
             
-            initialized = true;
             return true;
 
         } catch (UnknownHostException e) {
-            setSigninState(SigninState.DISCONNECTED);
             initialized = true;
+            setSigninState(SigninState.DISCONNECTED);
             return true;
         } catch (IOException e) {
             setSigninState(SigninState.SIGNIN_FAILED);
