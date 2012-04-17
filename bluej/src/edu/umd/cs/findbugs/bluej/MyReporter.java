@@ -18,7 +18,7 @@ public class MyReporter extends TextUIBugReporter {
     @Override
     protected void doReportBug(BugInstance bugInstance) {
         BugPattern bugPattern = bugInstance.getBugPattern();
-        if (bugPattern.getCategory().equals("CORRECTNESS")
+        if (bugInstance.getBugRank() <= 14 && bugPattern.getCategory().equals("CORRECTNESS")
                 && ! bugPattern.getType().startsWith("DE_")
                 && ! bugPattern.getType().startsWith("HE_")
                 && ! bugPattern.getType().startsWith("SE_")
@@ -40,7 +40,7 @@ public class MyReporter extends TextUIBugReporter {
         // TODO Auto-generated method stub
 
     }
-    @Override
+    
     public BugCollection getBugCollection() {
         return bugs;
     }
