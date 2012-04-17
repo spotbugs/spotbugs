@@ -12,6 +12,7 @@
         <ant dir="plugins/googlecode" />
         <ant dir="plugins/jdbcCloudClient" />
         <ant dir="plugins/jira" />
+        <ant dir="plugins/webCloudClient" />
         <ant dir="plugins/findbugsCommunalCloud" />
         <ant dir="webCloudProtocol" />
 
