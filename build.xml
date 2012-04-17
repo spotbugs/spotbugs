@@ -18,6 +18,7 @@
 
         <!-- <ant dir="bluej" /> -->
         <ant dir="eclipsePlugin" />
+        <ant dir="findbugs" target="scripts" />
         <ant dir="findbugsTestCases" />
         <ant dir="plugins/poweruser" />
     </target>
