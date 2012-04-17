@@ -631,10 +631,9 @@ public class Plugin {
     }
     
     public @CheckForNull Plugin getParentPlugin() {
-        String parentid = getPluginLoader().parentId;
-        if (parentid == null || parentid.isEmpty())
-            return null;
-        return Plugin.getByPluginId(parentid);
+        if (getPluginLoader().hasParent()) 
+            return Plugin.getByPluginId(getPluginLoader().parentId);
+        return null;
     }
 
     /**

@@ -38,13 +38,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
@@ -184,6 +184,9 @@ public class PluginLoader {
     }
 
 
+    public boolean hasParent() {
+        return parentId != null && parentId.length() > 0;
+    }
     /**
      * Constructor.
      *
@@ -207,7 +210,7 @@ public class PluginLoader {
         initialPlugin = isInitial;
         optionalPlugin = optional;
         plugin = init();
-        if (parentId.isEmpty()) {
+        if (!hasParent()) {
             classLoader = new URLClassLoader(loaderURLs, parent);
         } else {
             if (parent != PluginLoader.class.getClassLoader())
@@ -234,13 +237,13 @@ public class PluginLoader {
         while (!partiallyInitialized.isEmpty()) {
             boolean changed = false;
             LinkedList<String>  unresolved = new LinkedList<String>();
+            Set<String>  needed = new TreeSet<String>();
             
             for (Iterator<PluginLoader> i = partiallyInitialized.iterator(); i.hasNext();) {
                 PluginLoader pluginLoader = i.next();
                 String pluginId = pluginLoader.getPlugin().getPluginId();
-                
+                assert pluginLoader.hasParent();
                 String parentid = pluginLoader.parentId;
-                assert !parentid.isEmpty();
                 Plugin parent = Plugin.getByPluginId(parentid);
                 if (parent != null) {
                     i.remove();
@@ -253,13 +256,13 @@ public class PluginLoader {
                         throw new RuntimeException("Unable to load plugin " + pluginId, e);
                     }
                     changed = true;
-                } else
+                } else {
                     unresolved.add(pluginId); 
+                    needed.add(parentid);
+                }
             }
-            if (!changed) {
-                 
-                throw new RuntimeException("Unable to resolve plugin parents for plugins " + unresolved);
-
+            if (!changed) {                
+                throw new RuntimeException("Unable to load parent plugins " + needed + " in order to load " + unresolved);
             }
         }
         lazyInitialization = false;

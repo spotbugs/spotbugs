@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -396,9 +397,11 @@ public interface Cloud {
         
         @Override
         public String toString() {
-            if (names.containsKey(this.name()))
-                    return names.getString(this.name()).trim();
-            return this.name();
+            try {
+                return names.getString(this.name()).trim();
+            } catch (MissingResourceException e) {
+                return this.name();
+            }
         }
     }
 
