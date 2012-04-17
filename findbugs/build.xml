@@ -676,7 +676,7 @@
     -->
             <fileset dir="../findbugsTestCases/src"/>
 
-            <fileset dir="${pluginsSrc.dir}/findbugsCommunalCloud/src"/>
+            <fileset dir="${pluginsSrc.dir}/webCloudClient/src"/>
             <fileset dir="${pluginsSrc.dir}/jira/src"/>
             <fileset dir="${pluginsSrc.dir}/googlecode/src"/>
             <fileset dir="${pluginsSrc.dir}/jdbcCloudClient/src"/>
