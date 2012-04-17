@@ -39,6 +39,7 @@
     </target>
 
     <target name="install" depends="plugin-jar">
+        <ant dir="${findbugsBase.dir}/plugins/webCloudClient" target="install" />
         <copy todir="${destination.dir}" file="build/findbugsCommunalCloud.jar" flatten="true"/>
         <copy todir="${destination2.dir}" file="build/findbugsCommunalCloud.jar" flatten="true"/>
         <copy todir="${findbugs.home}/jnlp" flatten="true">
