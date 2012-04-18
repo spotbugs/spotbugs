@@ -1,17 +1,15 @@
 package sfBugs;
 
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 public class Bug1964520a {
 
     private Superclass something;
 
+    @NoWarning("BC_UNCONFIRMED_CAST")
     public void setSomething(Superclass object) {
         this.something = object;
-        if (something instanceof Subclass && ((Subclass) something).bla()) // this
-                                                                           // line
-                                                                           // is
-                                                                           // bug-annotated
-                                                                           // by
-                                                                           // FindBugs
+        if (something instanceof Subclass && ((Subclass) something).bla()) 
         {
             ((Subclass) something).foo();
         }

@@ -19,7 +19,7 @@ public class Bug3474679
         Assert.assertEquals(new Double(0), new BigDecimal("0")); //correctly flagged as a bug
         
     }
-    @DesireWarning(value = "EC_UNRELATED_TYPES")
+    @ExpectWarning(value = "EC_UNRELATED_TYPES")
     @Test
     public void testEquals2()
     {

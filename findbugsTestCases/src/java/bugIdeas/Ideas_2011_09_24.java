@@ -8,6 +8,8 @@ import javax.annotation.meta.TypeQualifier;
 import javax.annotation.meta.TypeQualifierNickname;
 import javax.annotation.meta.When;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 
 public class Ideas_2011_09_24 {
     @Documented
@@ -31,10 +33,12 @@ public @interface SlashedClassName {
 public @interface DottedClassName {
 }
     
+    @ExpectWarning("TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS")
     public boolean badCheck(@SlashedClassName String slashedClassName, @DottedClassName String dottedClassName) {
         return slashedClassName.equals(dottedClassName);
     }
     
+    @ExpectWarning("TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS")
     public boolean badCheck2(@SlashedClassName String slashedClassName, @DottedClassName String dottedClassName) {
         return slashedClassName == dottedClassName;
     }
