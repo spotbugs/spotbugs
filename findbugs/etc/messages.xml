@@ -3667,13 +3667,30 @@ defined in an interface references a mutable
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="MS_SHOULD_BE_REFACTORED_TO_BE_FINAL">
+    <ShortDescription>Field isn't final but should be refactored to be so</ShortDescription>
+    <LongDescription>{1} isn't final but should be refactored to be so</LongDescription>
+    <Details>
+<![CDATA[
+   <p>
+This static field public but not final, and
+could be changed by malicious code or
+by accident from another package.
+The field could be made final to avoid
+this vulnerability. However, the static initializer contains more than one write
+to the field, so doing so will require some refactoring.
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="MS_SHOULD_BE_FINAL">
     <ShortDescription>Field isn't final but should be</ShortDescription>
     <LongDescription>{1} isn't final but should be</LongDescription>
     <Details>
 <![CDATA[
    <p>
- A mutable static field could be changed by malicious code or
+This static field public but not final, and
+could be changed by malicious code or
         by accident from another package.
         The field could be made final to avoid
         this vulnerability.</p>

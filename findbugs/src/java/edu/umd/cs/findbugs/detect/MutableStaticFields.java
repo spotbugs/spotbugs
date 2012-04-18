@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -75,6 +76,10 @@ public class MutableStaticFields extends BytecodeScanningDetector {
     Set<XField> notFinal = new HashSet<XField>();
 
     Set<XField> outsidePackage = new HashSet<XField>();
+    Set<XField> needsRefactoringToBeFinal = new HashSet<XField>();
+    
+    Set<XField> writtenInMethod = new HashSet<XField>();
+    Set<XField> writtenTwiceInMethod = new HashSet<XField>();
 
     Map<XField, SourceLineAnnotation> firstFieldUse = new HashMap<XField, SourceLineAnnotation>();
 
@@ -109,6 +114,17 @@ public class MutableStaticFields extends BytecodeScanningDetector {
         // System.out.println(methodName);
         inStaticInitializer = getMethodName().equals("<clinit>");
     }
+    
+    @Override
+    public void visit(Code obj) {
+        writtenInMethod.clear();
+        writtenTwiceInMethod.clear();
+        super.visit(obj);
+        if (inStaticInitializer)
+            needsRefactoringToBeFinal.addAll(writtenTwiceInMethod);
+        writtenInMethod.clear();
+        writtenTwiceInMethod.clear();
+    }
 
     @Override
     public void sawOpcode(int seen) {
@@ -132,6 +148,10 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 
             if (seen == GETSTATIC) {
                 readAnywhere.add(xField);
+            }
+            if (seen == PUTSTATIC) {
+                if (!writtenInMethod.add(xField))
+                    writtenTwiceInMethod.add(xField);
             }
 
             if (!samePackage) {
@@ -257,6 +277,8 @@ public class MutableStaticFields extends BytecodeScanningDetector {
                 bugType = "MS_FINAL_PKGPROTECT";
             } else if (couldBeFinal && !isHashtable && !isArray) {
                 bugType = "MS_SHOULD_BE_FINAL";
+                if (needsRefactoringToBeFinal.contains(f))
+                    bugType = "MS_SHOULD_BE_REFACTORED_TO_BE_FINAL";
                 if (fieldName.equals(fieldName.toUpperCase()) || fieldSig.charAt(0) == 'L') {
                     priority = HIGH_PRIORITY;
                 }

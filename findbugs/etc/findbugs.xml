@@ -425,7 +425,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.MutableLock" speed="fast"
                     reports="ML_SYNC_ON_UPDATED_FIELD"/>
           <Detector class="edu.umd.cs.findbugs.detect.MutableStaticFields" speed="fast"
-                    reports="MS_OOI_PKGPROTECT,MS_FINAL_PKGPROTECT,MS_SHOULD_BE_FINAL,MS_PKGPROTECT,MS_MUTABLE_HASHTABLE,MS_MUTABLE_ARRAY,MS_CANNOT_BE_FINAL"/>
+                    reports="MS_OOI_PKGPROTECT,MS_FINAL_PKGPROTECT,MS_SHOULD_BE_REFACTORED_TO_BE_FINAL,MS_SHOULD_BE_FINAL,MS_PKGPROTECT,MS_MUTABLE_HASHTABLE,MS_MUTABLE_ARRAY,MS_CANNOT_BE_FINAL"/>
           <Detector class="edu.umd.cs.findbugs.detect.Naming" speed="fast"
                     reports="NM_WRONG_PACKAGE,NM_WRONG_PACKAGE_INTENTIONAL,NM_VERY_CONFUSING,NM_VERY_CONFUSING_INTENTIONAL,NM_CONFUSING,NM_METHOD_CONSTRUCTOR_CONFUSION,NM_LCASE_HASHCODE,NM_LCASE_TOSTRING,NM_BAD_EQUAL,NM_CLASS_NAMING_CONVENTION,NM_FIELD_NAMING_CONVENTION,NM_METHOD_NAMING_CONVENTION,NM_CLASS_NOT_EXCEPTION,NM_SAME_SIMPLE_NAME_AS_SUPERCLASS,NM_SAME_SIMPLE_NAME_AS_INTERFACE"/>
           <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" speed="fast"
@@ -821,6 +821,7 @@
           <BugPattern abbrev="MS" type="MS_OOI_PKGPROTECT" category="MALICIOUS_CODE"/>
           <BugPattern abbrev="MS" type="MS_FINAL_PKGPROTECT" category="MALICIOUS_CODE"/>
           <BugPattern abbrev="MS" type="MS_SHOULD_BE_FINAL" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="MS" type="MS_SHOULD_BE_REFACTORED_TO_BE_FINAL" category="MALICIOUS_CODE"/>
           <BugPattern abbrev="MS" type="MS_PKGPROTECT" category="MALICIOUS_CODE"/>
           <BugPattern abbrev="MS" type="MS_MUTABLE_HASHTABLE" category="MALICIOUS_CODE"/>
           <BugPattern abbrev="MS" type="MS_MUTABLE_ARRAY" category="MALICIOUS_CODE"/>
