@@ -8,4 +8,4 @@ Export-Package: edu.umd.cs.findbugs.annotations,
  javax.annotation.concurrent,
  javax.annotation.meta,
  net.jcip.annotations
-Bundle-RequiredExecutionEnvironment: JavaSE-1.5
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
