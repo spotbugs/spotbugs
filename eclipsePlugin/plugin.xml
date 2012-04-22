@@ -817,9 +817,6 @@
          <options>
             <property name="org.eclipse.ui.navigator.hideLinkWithEditorAction" value="true" />
             <property name="org.eclipse.ui.navigator.hideCollapseAllAction" value="true" />
-            <!-- MUST be DISABLED as long as we support Eclipse 3.3, see
-             https://bugs.eclipse.org/bugs/show_bug.cgi?id=185561 -->
-            <property name="org.eclipse.ui.navigator.hideAvailableExtensionsTab" value="false" />
          </options>
       </viewer>
 
