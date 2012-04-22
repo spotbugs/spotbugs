@@ -18,7 +18,7 @@ Bundle-Activator: de.tobject.findbugs.FindbugsPlugin
 Bundle-Vendor: FindBugs Project
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui.workbench.texteditor,
- org.eclipse.ui,
+ org.eclipse.ui;bundle-version="3.5.0",
  org.eclipse.ant.core,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
