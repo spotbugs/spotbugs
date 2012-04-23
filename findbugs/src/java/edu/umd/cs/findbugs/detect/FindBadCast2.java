@@ -375,8 +375,8 @@ public class FindBadCast2 implements Detector {
                         String oldCheck = instanceOfChecks.get(valueSource);
                         if (oldCheck == null)
                             instanceOfChecks.put(valueSource, castName);
-                        else if (oldCheck.equals(castName))
-                            instanceOfChecks.put(valueSource, null);
+                        else if (!oldCheck.equals(castName))
+                            instanceOfChecks.put(valueSource, "");
                     }
                     if (!downcast && completeInformation || operandTypeIsExact) {
                         String bugPattern;
@@ -403,7 +403,7 @@ public class FindBadCast2 implements Detector {
                         int priority = NORMAL_PRIORITY;
 
                         @CheckForNull String oldCheck = instanceOfChecks.get(valueSource);
-                        if (castName.equals(oldCheck))
+                        if (castName.equals(oldCheck) || "".equals(oldCheck))
                             priority += 1;
                         
                         if (rank > 0.75)
