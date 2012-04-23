@@ -170,8 +170,20 @@
   </BugCategory>
 
 
-  <!-- ********************************************************************** Detectors ********************************************************************** -->
-
+  <!--
+  **********************************************************************
+  Detectors
+  **********************************************************************
+   -->
+  <Detector class="edu.umd.cs.findbugs.detect.InitializeNonnullFieldsInConstructor">
+    <Details>
+<![CDATA[
+<p> Finds nonnull fields that are not written to in constructors.
+このディテクタは、コンストラクタで書き込まれない非 null フィールドを発券します。
+</p>
+]]>
+     </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.IntCast2LongAsInstant">
     <Details>
 <![CDATA[
@@ -420,7 +432,7 @@ null かもしれない値が null でない値だけが使われるべき文脈
     <Details>
 <![CDATA[
 <p>
-このディテクタは、どのメソッドが常に null でない値を返すかを決定するアプリケーションで、すべてのメソッドを解析します。
+このディテクタは、どのメソッドが常に非 null 値を返すかを決定するアプリケーションで、すべてのメソッドを解析します。
 </p>
 ]]>
     </Details>
@@ -1013,7 +1025,7 @@ null の参照解除のためのノイズが多いディテクタです。コー
     <Details>
 <![CDATA[
 <p>
-このディテクタは、悪意のあるコードによって変更されるかもしれない static フィールドを探します。
+このディテクタは、悪質なコードによって変更されるかもしれない static フィールドを探します。
 </p>
 ]]>
     </Details>
@@ -2175,7 +2187,7 @@ XSS に関して心配しているなら商用の静的解析ツールかペネ�
     <Details>
 <![CDATA[
 <p>
-(<a href="http://java.sun.com/developer/JDCTechTips/2003/tt1208.html#1">From JDC Tech Tip</a>):<br>
+(<a href="http://web.archive.org/web/20090526170426/http://java.sun.com/developer/JDCTechTips/2003/tt1208.html">From JDC Tech Tip</a>)<br>
 に解説されているとおり、Swing のメソッド、<code>show</code> メソッド、<code>setVisible</code> メソッド、<code>pack</code> メソッドは、フレームのために関連したピアを作成します。
 ピアの作成で、システムはイベントディスパッチスレッドを作成します。
 これが問題になることがあります。なぜなら <code>pack</code> メソッドと <code>validate</code> メソッドがまだ処理中でもイベントディスパッチスレッドがリスナに通知できるからです。
@@ -2270,13 +2282,26 @@ volatile フィールドのインクリメントは、アトミックではあ�
     <Details>
 <![CDATA[
 <p>
-Boolean.TRUE、Boolean.FALSE、null を返すメソッドは事故が起こるのを待っているようなものです。
+Boolean.TRUE、Boolean.FALSE、null を返すメソッドはいつ事故が起きてもおかしくないです。
 まるで論理型の値を返すかのように、このメソッドは呼び出される可能性があります。
 そして、コンパイラは Boolean 値のオートアンボクシングを挿入します。
 null 値が返されるなら <code>NullPointerException</code> が発生することになります。
 </p>
 ]]>
     </Details>
+  </BugPattern>
+
+　　<BugPattern type="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">
+    <ShortDescription>非 null フィールドは初期化されていない</ShortDescription>
+    <LongDescription>非 null フィールド {2.name} は {1} によって初期化されていません。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+フィールドは、非 null としてマークされているが、コンストラクタで書き込まれていません。
+フィールドは、コンストラクタの間、ほかの場所で初期化されるか、または使用する前に常に初期化されるかもしれません。
+</p>
+]]>
+       </Details>
   </BugPattern>
 
   <BugPattern type="NP_SYNC_AND_NULL_CHECK_FIELD">
@@ -2289,7 +2314,6 @@ null 値が返されるなら <code>NullPointerException</code> が発生する�
 null のフィールドを同期化すると <code>NullPointerException</code> がスローされるので、null チェックは無意味になります。
 別のフィールドで同期化した方がよいです。
 </p>
-
 ]]>
     </Details>
   </BugPattern>
@@ -4098,8 +4122,8 @@ private Long getNotificationSequenceNumber() {
 <![CDATA[
 <p>
 インタフェースに定義された final static フィールドは、配列や Hashtable などの可変オブジェクトを参照しています。
-この可変オブジェクトは、悪意のあるコードや別のパッケージからの事故によって変更される可能性があります。
-これを解決するために、フィールドはクラスへ移動する必要があり、脆弱性を回避するためにパッケージプロテクテッドにすべきです。
+この可変オブジェクトは、悪質なコードや偶然別のパッケージによって変更される可能性があります。
+これを解決するために、フィールドはクラスへ移動する必要があり、脆弱性を回避するためにパッケージプロテクテッドにします。
 </p>
 ]]>
     </Details>
@@ -4111,21 +4135,35 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-この可変 static フィールドは、悪意のあるコードや別のパッケージからの事故によって変更される可能性があります。
-フィールドは、脆弱性を回避するために final またはパッケージプロテクテッドにすべきです。
+この可変 static フィールドは、悪質なコードや偶然別のパッケージによって変更される可能性があります。
+フィールドは、脆弱性を回避するために final またはパッケージプロテクテッドにできます。
 </p>
 ]]>
     </Details>
   </BugPattern>
 
+  <BugPattern type="MS_SHOULD_BE_REFACTORED_TO_BE_FINAL">
+    <ShortDescription>final でないフィールドはリファクタリングされるべき</ShortDescription>
+    <LongDescription>{1} は、final でないのでリファクタリングされるべきです。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+final でない public static フィールドは、悪質なコードや偶然別のパッケージによって変更される可能性があります。
+フィールドは、脆弱性を回避するために final にできます。
+しかしながら、スタティックイニシャライザには複数のフィールドへの書き込みがあるので、何らかのリファクタリングを必要とするでしょう。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
   <BugPattern type="MS_SHOULD_BE_FINAL">
     <ShortDescription>final にすべきフィールド</ShortDescription>
     <LongDescription>{1} は、final ではありませんが、final にすべきです。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-この可変 static フィールドは、悪意のあるコードや別のパッケージからの事故によって変更される可能性があります。
-フィールドは、脆弱性を回避するために final にすべきです。
+final でない public static フィールドは、悪質なコードや偶然別のパッケージによって変更される可能性があります。
+フィールドは、脆弱性を回避するために final にできます。
 </p>
 ]]>
     </Details>
@@ -4137,8 +4175,8 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-この可変 static フィールドは、悪意のあるコードや別のパッケージからの事故によって変更される可能性があります。
-フィールドは、脆弱性を回避するためにパッケージプロテクテッドにすべきです。
+この可変 static フィールドは、悪質なコードや偶然別のパッケージによって変更される可能性があります。
+フィールドは、脆弱性を回避するためにパッケージプロテクテッドにできます。
 </p>
 ]]>
     </Details>
@@ -4150,7 +4188,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-この final static フィールドは、Hashtable を参照しているので、悪意のあるコードや別のパッケージからの事故によってアクセスされる可能性があります。
+この final static フィールドは、Hashtable を参照しているので、悪質なコードや偶然別のパッケージによってアクセスされる可能性があります。
 このコードは、Hashtable のコンテンツを自由に変更できます。
 </p>
 ]]>
@@ -4163,7 +4201,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-この final static フィールドは、配列を参照しているので、悪意のあるコードや誤って別のパッケージからアクセスされる可能性があります。
+この final static フィールドは、配列を参照しているので、悪質なコードや偶然別のパッケージによってアクセスされる可能性があります。
 このコードは、配列のコンテンツを自由に変更できます。
 </p>
 ]]>
@@ -4171,12 +4209,12 @@ private Long getNotificationSequenceNumber() {
   </BugPattern>
 
   <BugPattern type="MS_CANNOT_BE_FINAL">
-    <ShortDescription>final でないフィールドは悪意のあるコードから保護できない</ShortDescription>
-    <LongDescription>{1} は、final でないので、悪意のあるコードから保護できません。 </LongDescription>
+    <ShortDescription>final でないフィールドは悪質なコードから保護できない</ShortDescription>
+    <LongDescription>{1} は、final でないので、悪質なコードから保護できません。 </LongDescription>
     <Details>
 <![CDATA[
 <p>
-この可変 static フィールドは、悪意のあるコードや別のパッケージからの事故によって変更される可能性があります。
+この可変 static フィールドは、悪質なコードや偶然別のパッケージによって変更される可能性があります。
 残念ながらこのような使い方は簡単に解決できません。
 </p>
 ]]>
@@ -7288,13 +7326,13 @@ double value2 =  x / (double) y;
   </BugPattern>
 
   <BugPattern type="VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN">
-    <ShortDescription>Boolean でない引数を ％b 書式指示子を使用してフォーマットしている</ShortDescription>
-    <LongDescription>Boolean でない引数を ％b 書式指示子を使用してフォーマットしています。{1}</LongDescription>
+    <ShortDescription>Boolean 型でない引数を ％b 書式指示子を使用してフォーマットしている</ShortDescription>
+    <LongDescription>Boolean 型でない引数を ％b 書式指示子を使用してフォーマットしています。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 Boolean 型でない引数を %b 書式指示子でフォーマットしています。これは例外をスローしません。
-その代わりに null でない値では true 、null では false を出力します。
+その代わりに、非  null 値では true 、null では false を出力します。
 書式文字列のこの機能は奇妙で意図したことではないかもしれません。
 </p>
 ]]>
