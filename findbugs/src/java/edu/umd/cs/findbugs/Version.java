@@ -175,7 +175,8 @@ public class Version {
 
             parsedDate = fmt.parse(CORE_PLUGIN_RELEASE_DATE);
         } catch (ParseException e) {
-            e.printStackTrace();
+            if (SystemProperties.ASSERTIONS_ENABLED)
+                e.printStackTrace();
             parsedDate = null;
         }
         releaseDate = parsedDate;
