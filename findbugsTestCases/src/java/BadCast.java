@@ -54,6 +54,7 @@ class BadCast {
         return new Hashtable();
     }
 
+    @ExpectWarning("BC")
     int d() {
         Map m = bar();
         Set s = (Set) m.values();
@@ -85,8 +86,9 @@ class BadCast {
         return ((Hashtable[]) foo()).length;
     }
 
+    @ExpectWarning("BC")
     int hx() {
-        Object o = baz();
+        Object o = baz(); // returns Hashtable
         try {
             if (o instanceof Collection) {
                 System.out.println("Yeah..." + ((Set) o).size());
