@@ -23,7 +23,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * Common superclass for FieldDescriptor and MethodDescriptor.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
@@ -60,8 +60,8 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @return Returns the class name
      */
     public @SlashedClassName
@@ -122,7 +122,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -135,7 +135,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -143,7 +143,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
         return (isStatic ? "static " : "") + getClassDescriptor().getDottedClassName() + "." + name + signature;
     }
 
-    public static <T extends FieldOrMethodDescriptor> int compareTo(T thas, T that) {
+    public static int compareTo(FieldOrMethodDescriptor thas, FieldOrMethodDescriptor that) {
          int result = thas.slashedClassName.compareTo(that.slashedClassName);
         if (result != 0)
             return result;

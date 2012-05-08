@@ -109,7 +109,7 @@
         <mkdir dir="${lib.dir}"/>
     </target>
 
-    <target name="clean" depends="init" description="Clean up temporary files">
+    <target name="clean" depends="init,fbclean" description="Clean up temporary files">
         <delete includeemptydirs="true" >
             <fileset dir="${bin.dir}"  includes="**/*"/>
             <fileset dir="${lib.dir}"  includes="**/*"/>
@@ -350,6 +350,12 @@
         <copy todir="${lib.dir}" preservelastmodified="true">
             <fileset dir="${findbugs.dir}/lib" includes="${jars.required}"/>
         </copy>
+    </target>
+
+    <!-- Trigger clean of FB core, if fb.recompile is set -->
+    <target name="fbclean" if="fb.recompile" >
+        <echo message="Cleaning Findbugs core libraries"/>
+        <ant dir="${findbugs.dir}" inheritall="false" target="clean" />
     </target>
 
     <!-- Trigger (re-)compilation of FB core, if findbugs.jar is not available -->
