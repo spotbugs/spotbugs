@@ -77,8 +77,6 @@ class BadCast {
         return ((Hashtable) bar()).size();
     }
 
-    @ExpectWarning("BC")
-    @NoWarning(value = "BC", confidence=Confidence.MEDIUM )
     int h2() {
         Map m = bar();
         if (m instanceof Hashtable)

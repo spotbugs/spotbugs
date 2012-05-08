@@ -1,5 +1,7 @@
 package sfBugs;
 
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 /*
  * I'm using FindBugs. 1.2.1 it's giving
  * "Impossible cast, actual type String[], expected String"
@@ -7,6 +9,7 @@ package sfBugs;
  */
 public class Bug1816258 {
 
+    @NoWarning("BC_IMPOSSIBLE_CAST")
     public void castTest() {
         Object postObject = new String[] { null };
         String postValue = postObject instanceof String[] ? ((String[]) postObject)[0] : (String) postObject // line
@@ -15,6 +18,7 @@ public class Bug1816258 {
         System.out.println(postValue);
     }
 
+    @NoWarning("BC_IMPOSSIBLE_CAST")
     public void castTest2() {
         Object postObject = new String[] { null };
 
@@ -25,6 +29,7 @@ public class Bug1816258 {
             postValue = (String) postObject; // line 12
         System.out.println(postValue);
     }
+
 
     public void castTest3(Object postObject) {
         String postValue = postObject instanceof String[] ? ((String[]) postObject)[0] : (String) postObject // line
