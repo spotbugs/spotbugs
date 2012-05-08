@@ -7019,7 +7019,21 @@ better to do a null test rather than an instanceof test.
 <![CDATA[
 <p>
 This cast is unchecked, and not all instances of the type casted from can be cast to
-the type it is being cast to. Ensure that your program logic ensures that this
+the type it is being cast to. Check that your program logic ensures that this
+cast will not fail.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+   <BugPattern type="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE">
+    <ShortDescription>Unchecked/unconfirmed cast of return value from method</ShortDescription>
+    <LongDescription>Unchecked/unconfirmed cast from {2} to {3} of return value in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This code performs an unchecked cast of the return value of a method. 
+The code might be calling the method in such a way that the cast is guaranteed to be
+safe, but FindBugs is unable to verify that the cast is safe.  Check that your program logic ensures that this
 cast will not fail.
 </p>
 ]]>

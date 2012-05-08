@@ -521,7 +521,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble" speed="fast"
                     reports="ICAST_IDIV_CAST_TO_DOUBLE,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL,ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindBadCast2" speed="fast"
-                    reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION,BC_BAD_CAST_TO_ABSTRACT_COLLECTION,BC_UNCONFIRMED_CAST,BC_IMPOSSIBLE_CAST,BC_IMPOSSIBLE_INSTANCEOF,BC_VACUOUS_INSTANCEOF,NP_NULL_INSTANCEOF,BC_IMPOSSIBLE_DOWNCAST,BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY" /> 
+                    reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION,BC_BAD_CAST_TO_ABSTRACT_COLLECTION,BC_UNCONFIRMED_CAST,BC_UNCONFIRMED_CAST_OF_RETURN_VALUE,BC_IMPOSSIBLE_CAST,BC_IMPOSSIBLE_INSTANCEOF,BC_VACUOUS_INSTANCEOF,NP_NULL_INSTANCEOF,BC_IMPOSSIBLE_DOWNCAST,BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY" /> 
 
           <Detector class="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue"
                     speed="fast" reports="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION,DMI_NONSERIALIZABLE_OBJECT_WRITTEN"/>
@@ -1070,6 +1070,8 @@
                     category="BAD_PRACTICE"/>
           <BugPattern abbrev="BC" type="BC_BAD_CAST_TO_CONCRETE_COLLECTION" category="STYLE"/>
           <BugPattern abbrev="BC" type="BC_UNCONFIRMED_CAST" category="STYLE"/>
+          <BugPattern abbrev="BC" type="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE" category="STYLE"/>
+          
           <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY" category="CORRECTNESS"
                     deprecated="true"/>
           <!-- deprecated in favor of BC_IMPOSSIBLE_CAST -->

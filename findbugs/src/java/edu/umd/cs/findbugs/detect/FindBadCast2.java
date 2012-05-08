@@ -520,7 +520,9 @@ public class FindBadCast2 implements Detector {
                             priority = HIGH_PRIORITY;
                         if (priority <= LOW_PRIORITY) {
                             String bug = "BC_UNCONFIRMED_CAST";
-                            if (castToConcreteCollection)
+                            if (valueNumber.hasFlag(ValueNumber.RETURN_VALUE) || valueSource instanceof MethodAnnotation)
+                                bug = "BC_UNCONFIRMED_CAST_OF_RETURN_VALUE";
+                            else if (castToConcreteCollection)
                                 bug = "BC_BAD_CAST_TO_CONCRETE_COLLECTION";
                             else if (castToAbstractCollection)
                                 bug = "BC_BAD_CAST_TO_ABSTRACT_COLLECTION";
