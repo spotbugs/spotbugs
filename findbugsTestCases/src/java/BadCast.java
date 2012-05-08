@@ -7,7 +7,9 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
+import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 class BadCast {
 
@@ -75,6 +77,8 @@ class BadCast {
         return ((Hashtable) bar()).size();
     }
 
+    @ExpectWarning("BC")
+    @NoWarning(value = "BC", confidence=Confidence.MEDIUM )
     int h2() {
         Map m = bar();
         if (m instanceof Hashtable)
