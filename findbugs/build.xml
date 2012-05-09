@@ -1066,6 +1066,7 @@
 
         <patternset id="bindist.jar.pats">
             <include name="lib/*.jar"/>
+            <include name="plugin/webCloudClient.jar"/>
             <include name="plugin/findbugsCommunalCloud.jar"/>
             <include name="plugin/README"/>
             <include name="plugin"/>
@@ -1084,6 +1085,7 @@
             <include name="plugin/noUpdateChecks.jar"/>
             <include name="plugin/README"/>
             <include name="plugin"/>
+            <include name="optionalPlugin/webCloudClient.jar"/>
             <include name="optionalPlugin/findbugsCommunalCloud.jar"/>
             <include name="optionalPlugin/poweruser.jar"/>
             <include name="optionalPlugin/bugCollectionCloud.jar"/>
