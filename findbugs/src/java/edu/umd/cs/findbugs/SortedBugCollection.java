@@ -1454,9 +1454,11 @@ public class SortedBugCollection implements BugCollection {
             oldCloud.shutdown();
         }
         cloud = null;
-        Cloud newCloud = getCloud();
+        @Nonnull Cloud newCloud = getCloud();
         assert newCloud == cloud;
-        if (bugsPopulated && cloud != null) {
+        assert cloud != null;
+        assert cloud.isInitialized();
+        if (bugsPopulated ) {
             cloud.bugsPopulated();
             cloud.initiateCommunication();
         }

@@ -1140,7 +1140,9 @@ public class MainFrame extends FBFrame implements LogSync {
         }
 
         public void handleStateChange(SigninState oldState, SigninState state) {
-            mainFrameTree.rebuildBugTreeIfSortablesDependOnCloud();
+            Cloud cloud = MainFrame.this.bugCollection.getCloudLazily();
+            if (cloud != null && cloud.isInitialized())
+              mainFrameTree.rebuildBugTreeIfSortablesDependOnCloud();
         }
     }
 
