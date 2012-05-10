@@ -262,7 +262,13 @@ public class PluginLoader {
                 }
             }
             if (!changed) {                
-                throw new RuntimeException("Unable to load parent plugins " + needed + " in order to load " + unresolved);
+                String msg = "Unable to load parent plugins " + needed + " in order to load " + unresolved;
+                System.err.println(msg);
+                AnalysisContext.logError(msg);
+                for (Iterator<PluginLoader> i = partiallyInitialized.iterator(); i.hasNext();) {
+                    Plugin.removePlugin(i.next().loadedFromUri);
+                }
+                partiallyInitialized.clear();    
             }
         }
         lazyInitialization = false;

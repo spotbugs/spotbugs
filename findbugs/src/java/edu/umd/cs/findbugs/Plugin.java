@@ -515,6 +515,10 @@ public class Plugin {
         }
         return null;
     }
+    
+    public static synchronized void removePlugin(URI uri) {
+       allPlugins.remove(uri);
+    }
 
     /**
      * @return a copy of the internal plugins collection
