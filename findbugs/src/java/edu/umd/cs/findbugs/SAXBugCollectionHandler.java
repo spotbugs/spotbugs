@@ -341,7 +341,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                         Boolean isInterface = Boolean.valueOf(getRequiredAttribute(attributes, "interface", qName));
                         int size = Integer.valueOf(getRequiredAttribute(attributes, "size", qName));
                         String sourceFile = getOptionalAttribute(attributes, "sourceFile");
-                        bugCollection.getProjectStats().addClass(className, sourceFile, isInterface, size);
+                        bugCollection.getProjectStats().addClass(className, sourceFile, isInterface, size, false);
                     }
 
                 } else if (isTopLevelFilter(outerElement) || isCompoundElementTag(outerElement)) {

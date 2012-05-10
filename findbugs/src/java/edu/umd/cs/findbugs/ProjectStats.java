@@ -196,6 +196,24 @@ public class ProjectStats implements XMLWriteable, Cloneable {
      *            detect/FindBugsSummaryStats.
      */
     public void addClass(@DottedClassName String className, @CheckForNull String sourceFile, boolean isInterface, int size) {
+        addClass(className, sourceFile, isInterface, size, true);
+    }
+
+    /**
+     * Report that a class has been analyzed.
+     * 
+     * @param className
+     *            the full name of the class
+     * @param sourceFile
+     *            TODO
+     * @param isInterface
+     *            true if the class is an interface
+     * @param size
+     *            a normalized class size value; see
+     *            detect/FindBugsSummaryStats.
+     * @param updatePackageStats TODO
+     */
+    public void addClass(@DottedClassName String className, @CheckForNull String sourceFile, boolean isInterface, int size, boolean updatePackageStats) {
         hasClassStats = true;
         String packageName;
         int lastDot = className.lastIndexOf('.');
@@ -204,7 +222,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         else
             packageName = className.substring(0, lastDot);
         PackageStats stat = getPackageStats(packageName);
-        stat.addClass(className, sourceFile, isInterface, size);
+        stat.addClass(className, sourceFile, isInterface, size, updatePackageStats);
         totalClasses++;
         totalSize += size;
         totalClassesFromPackageStats = 0;
@@ -524,7 +542,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
             if (packageStatsMap.containsKey(key)) {
                 PackageStats pkgStats = packageStatsMap.get(key);
                 for (ClassStats classStats : pkgStats2.getClassStats()) {
-                    pkgStats.addClass(classStats);
+                    pkgStats.addClass(classStats, true);
                 }
             } else {
                 packageStatsMap.put(key, pkgStats2);

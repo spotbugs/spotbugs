@@ -212,19 +212,28 @@ public class PackageStats implements XMLWriteable {
     }
 
     public void addClass(String name, String sourceFile, boolean isInterface, int size) {
+        addClass(name, sourceFile, isInterface, size, true);
+    }
+
+    public void addClass(String name, String sourceFile, boolean isInterface, int size, boolean updatePackageStats) {
         ClassStats classStats = getClassStats(name, sourceFile);
         classStats.setInterface(isInterface);
         classStats.setSize(size);
-        addClass(classStats);
+        addClass(classStats, updatePackageStats);
     }
 
     public void addClass(ClassStats classStats) {
+        addClass(classStats, true);
+    }
+
+    public void addClass(ClassStats classStats, boolean updatePackageStats) {
         if (packageMembers.isEmpty()) {
             this.size = 0;
             this.numClasses = 0;
         }
         packageMembers.put(classStats.getName(), classStats);
-        size += classStats.size();
+        if (updatePackageStats) 
+            size += classStats.size();
     }
 
     public String getPackageName() {
