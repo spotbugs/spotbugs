@@ -4143,8 +4143,8 @@ private Long getNotificationSequenceNumber() {
   </BugPattern>
 
   <BugPattern type="MS_SHOULD_BE_REFACTORED_TO_BE_FINAL">
-    <ShortDescription>final でないフィールドはリファクタリングされるべき</ShortDescription>
-    <LongDescription>{1} は、final でないのでリファクタリングされるべきです。</LongDescription>
+    <ShortDescription>final でないフィールドはリファクタリングするべき</ShortDescription>
+    <LongDescription>{1} は、final でないのでリファクタリングするべきです。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7600,11 +7600,26 @@ an indication of some misunderstanding or some other logic error.
 <p>
 このキャストはチェックされていません。
 すべての型のインスタンスがキャストした型にキャストできるというわけではありません。
-プログラムのロジックが確実にこのキャストが失敗しないことを確認してください。 
+プログラムのロジックがこのキャストが失敗しないことを確実に確認してください。  
 </p>
 ]]>
     </Details>
   </BugPattern>
+
+   <BugPattern type="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE">
+    <ShortDescription>メソッドからの戻り値の未チェック/未確認のキャスト</ShortDescription>
+    <LongDescription>{2} からの {3} 戻り値への未チェック/未確認のキャストです。{1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このコードは、メソッドの戻り値の未確認のキャストを実行しています。
+コードは、キャストが安全であることが保証されるようにメソッドを呼び出しているかもしれませんが、FindBugs はキャストが安全であることを検証できません。
+プログラムのロジックがこのキャストが失敗しないことを確実に確認してください。 
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="BC_BAD_CAST_TO_CONCRETE_COLLECTION">
     <ShortDescription>具象コレクションへの疑わしいキャスト</ShortDescription>
     <LongDescription>{2} から {3} への疑わしいキャストです。{1}</LongDescription>
