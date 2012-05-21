@@ -1078,12 +1078,14 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                     SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
         }
 
-        if (result == IncompatibleTypes.SEEMS_OK) return;
-
         if (result.getPriority() >= Priorities.LOW_PRIORITY) {
             comparedForEqualityInThisMethod.add(lhsType_.getSignature());
             comparedForEqualityInThisMethod.add(rhsType_.getSignature());
         }
+        
+        if (result == IncompatibleTypes.SEEMS_OK) return;
+
+       
         if (result.getPriority() > Priorities.LOW_PRIORITY)
             return;
 
