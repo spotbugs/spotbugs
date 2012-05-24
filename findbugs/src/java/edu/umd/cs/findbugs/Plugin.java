@@ -527,6 +527,12 @@ public class Plugin {
         return new ArrayList<Plugin>(allPlugins.values());
     }
 
+    public static synchronized Collection<String> getAllPluginIds() {
+       ArrayList<String> result = new ArrayList<String>();
+       for(Plugin p : allPlugins.values())
+           result.add(p.getPluginId());
+       return result;
+    }
     /**
      * @return a copy of the internal plugins collection
      */

@@ -265,6 +265,10 @@ public class PluginLoader {
                 String msg = "Unable to load parent plugins " + needed + " in order to load " + unresolved;
                 System.err.println(msg);
                 AnalysisContext.logError(msg);
+                msg = "Available plugins are " + Plugin.getAllPluginIds();
+                System.err.println(msg);
+                AnalysisContext.logError(msg);
+               
                 for (Iterator<PluginLoader> i = partiallyInitialized.iterator(); i.hasNext();) {
                     Plugin.removePlugin(i.next().loadedFromUri);
                 }
