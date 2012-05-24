@@ -68,6 +68,7 @@ public class TypeQualifierApplications {
     static final boolean CHECK_EXHAUSTIVE = true; // SystemProperties.getBoolean("ctq.applications.checkexhaustive");
 
     static class Data {
+        
         /**
          * Type qualifier annotations applied directly to
          * methods/fields/classes/etc.
@@ -95,14 +96,14 @@ public class TypeQualifierApplications {
     private static ThreadLocal<Data> instance = new ThreadLocal<Data>() {
         @Override
         protected Data initialValue() {
+            if (DEBUG) {
+                System.out.println("constructing TypeQualifierApplications.Data");
+            }
             return new Data();
         }
     };
 
     public static void clearInstance() {
-        if (DEBUG) {
-            System.out.println("Clearing TypeQualifier application cache");
-        }
         instance.remove();
     }
 
@@ -120,6 +121,11 @@ public class TypeQualifierApplications {
 
     private static Map<AnnotatedObject, Collection<AnnotationValue>> getDirectObjectAnnotations() {
         return instance.get().directObjectAnnotations;
+    }
+    
+    public static void updateAnnotations(AnnotatedObject object) {
+        // TODO: Be smarter. Can we do something other than clear everything?
+        clearInstance();
     }
 
     /**

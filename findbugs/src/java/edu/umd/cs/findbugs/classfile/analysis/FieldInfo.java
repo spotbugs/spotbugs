@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -264,6 +265,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
                 fieldAnnotations);
         updatedAnnotations.put(annotationValue.getAnnotationClass(), annotationValue);
         fieldAnnotations = updatedAnnotations;
+        TypeQualifierApplications.updateAnnotations(this);
     }
 
     /*

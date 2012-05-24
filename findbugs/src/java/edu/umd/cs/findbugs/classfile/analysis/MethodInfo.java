@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -470,6 +471,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
                 methodAnnotations);
         updatedAnnotations.put(annotationValue.getAnnotationClass(), annotationValue);
         methodAnnotations = updatedAnnotations;
+        TypeQualifierApplications.updateAnnotations(this);
     }
 
     /**
@@ -491,6 +493,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         paramMap.put(annotationValue.getAnnotationClass(), annotationValue);
 
         methodParameterAnnotations = updatedAnnotations;
+        TypeQualifierApplications.updateAnnotations(this);
     }
 
     /*
