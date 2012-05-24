@@ -215,11 +215,11 @@ public class FindBugs2Eclipse extends FindBugs2 {
         long totalClassReadTime = TimeUnit.MILLISECONDS.convert(profile.getTotalTime(), TimeUnit.NANOSECONDS);
         long totalTime = TimeUnit.MILLISECONDS.convert(footprint.getClockTime(), TimeUnit.MILLISECONDS);
 
-        double classReadSpeed = totalClassReadTime > 0? data.byteSize * 1000 / totalClassReadTime : 0;
-        double classCountSpeed = totalTime > 0? data.classCount * 1000 / totalTime : 0;
-        double classPart = totalTime > 0? totalClassReadTime * 100 / totalTime : 0;
-        double appPart = data.byteSize > 0? data.byteSizeApp * 100 / data.byteSize : 0;
-        double bytesPerClass = data.classCount > 0? data.byteSize / data.classCount : 0;
+        double classReadSpeed = totalClassReadTime > 0? data.byteSize * 1000.0 / totalClassReadTime : 0;
+        double classCountSpeed = totalTime > 0? data.classCount * 1000.0 / totalTime : 0;
+        double classPart = totalTime > 0? totalClassReadTime * 100.0 / totalTime : 0;
+        double appPart = data.byteSize > 0? data.byteSizeApp * 100.0 / data.byteSize : 0;
+        double bytesPerClass = data.classCount > 0? ((double) data.byteSize)  / data.classCount : 0;
         long peakMemory = footprint.getPeakMemory() / (1024 * 1024);
         pw.printf("%n");
         pw.printf("Peak memory (MB)      : %1$ 20d %n", peakMemory);
