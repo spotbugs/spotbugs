@@ -824,7 +824,6 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             boolean relaxed) {
         boolean reportAll = relaxed || REPORT_ALL_REF_COMPARISONS;
 
-        WarningWithProperties best = null;
         int bestPriority = Integer.MAX_VALUE;
         for (WarningWithProperties warn : warningList) {
             int priority = warn.instance.getPriority();
