@@ -38,6 +38,8 @@ import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLUtil;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -299,7 +301,7 @@ public class UpdateChecker {
 //            xmlWriter.write(doc);
 //            xmlWriter.close();
 //            System.out.println("UPDATE RESPONSE: " + stringWriter.toString());
-            List<Element> pluginEls = (List<Element>) doc.selectNodes("fb-plugin-updates/plugin");
+            List<Element> pluginEls =  XMLUtil.selectNodes(doc, "fb-plugin-updates/plugin");
             Map<String, Plugin> map = new HashMap<String, Plugin>();
             for (Plugin p : plugins)
                 map.put(p.getPluginId(), p);

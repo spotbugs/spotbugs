@@ -82,6 +82,7 @@ import edu.umd.cs.findbugs.updates.UpdateChecker;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.JavaWebStart;
 import edu.umd.cs.findbugs.util.Util;
+import edu.umd.cs.findbugs.xml.XMLUtil;
 
 /**
  * Loader for a FindBugs plugin. A plugin is a jar file containing two metadata
@@ -622,7 +623,7 @@ public class PluginLoader {
             throws PluginException {
         Document pluginDescriptor = getPluginDescriptor();
         List<Document> messageCollectionList = getMessageDocuments();
-        List<Node> cloudNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Cloud");
+        List<Node> cloudNodeList = XMLUtil.selectNodes(pluginDescriptor, "/FindbugsPlugin/Cloud");
         for (Node cloudNode : cloudNodeList) {
 
             String cloudClassname = cloudNode.valueOf("@cloudClass");
@@ -649,7 +650,7 @@ public class PluginLoader {
                     continue;
                 properties.loadPropertiesFromURL(properiesURL);
             }
-            List<Node> propertyNodes = cloudNode.selectNodes("Property");
+            List<Node> propertyNodes = XMLUtil.selectNodes(cloudNode, "Property");
             for (Node node : propertyNodes) {
                 String key = node.valueOf("@key");
                 String value = node.getText().trim();
@@ -668,7 +669,7 @@ public class PluginLoader {
         // Create PluginComponents
         try {
 
-            List<Node> componentNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/PluginComponent");
+            List<Node> componentNodeList = XMLUtil.selectNodes(pluginDescriptor, "/FindbugsPlugin/PluginComponent");
             for (Node componentNode : componentNodeList) {
                 @DottedClassName String componentKindname = componentNode.valueOf("@componentKind");
                 if (componentKindname == null) throw new PluginException("Missing @componentKind for " + plugin.getPluginId()
@@ -699,7 +700,7 @@ public class PluginLoader {
                         }
                         properties.loadPropertiesFromURL(properiesURL);
                     }
-                    List<Node> propertyNodes = componentNode.selectNodes("Property");
+                    List<Node> propertyNodes = XMLUtil.selectNodes(componentNode, "Property");
                     for (Node node : propertyNodes) {
                         String key = node.valueOf("@key");
                         String value = node.getText();
@@ -720,7 +721,7 @@ public class PluginLoader {
             // Create FindBugsMains
 
 
-                List<Node> findBugsMainList = pluginDescriptor.selectNodes("/FindbugsPlugin/FindBugsMain");
+                List<Node> findBugsMainList = XMLUtil.selectNodes(pluginDescriptor, "/FindbugsPlugin/FindBugsMain");
                 for (Node main : findBugsMainList) {
                     String className = main.valueOf("@class");
                     if (className == null) throw new PluginException("Missing @class for FindBugsMain in plugin" + plugin.getPluginId()
@@ -748,7 +749,7 @@ public class PluginLoader {
                     }
                 }
 
-            List<Node> detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
+            List<Node> detectorNodeList = XMLUtil.selectNodes(pluginDescriptor, "/FindbugsPlugin/Detector");
             int detectorCount = 0;
             for (Node detectorNode : detectorNodeList) {
                 String className = detectorNode.valueOf("@class");
@@ -799,7 +800,8 @@ public class PluginLoader {
         Node orderingConstraintsNode = pluginDescriptor.selectSingleNode("/FindbugsPlugin/OrderingConstraints");
         if (orderingConstraintsNode != null) {
             // Get inter-pass and intra-pass constraints
-            for (Element constraintElement : (List<Element>) orderingConstraintsNode.selectNodes("./SplitPass|./WithinPass")) {
+            List<Element> elements =  XMLUtil.selectNodes(orderingConstraintsNode, "./SplitPass|./WithinPass");
+            for (Element constraintElement : elements) {
                 // Create the selectors which determine which detectors are
                 // involved in the constraint
                 DetectorFactorySelector earlierSelector = getConstraintSelector(constraintElement, plugin, "Earlier");
@@ -821,7 +823,7 @@ public class PluginLoader {
 
         // register global Category descriptions
 
-        List<Node> categoryNodeListGlobal = pluginDescriptor.selectNodes("/FindbugsPlugin/BugCategory");
+        List<Node> categoryNodeListGlobal = XMLUtil.selectNodes(pluginDescriptor, "/FindbugsPlugin/BugCategory");
         for(Node categoryNode : categoryNodeListGlobal) {
             String key = categoryNode.valueOf("@category");
             if (key.equals(""))
@@ -835,7 +837,7 @@ public class PluginLoader {
 
 
         for (Document messageCollection : messageCollectionList) {
-            List<Node> categoryNodeList = messageCollection.selectNodes("/MessageCollection/BugCategory");
+            List<Node> categoryNodeList = XMLUtil.selectNodes(messageCollection, "/MessageCollection/BugCategory");
             if (DEBUG)
                 System.out.println("found " + categoryNodeList.size() + " categories in " + plugin.getPluginId());
             for (Node categoryNode : categoryNodeList) {
@@ -876,7 +878,7 @@ public class PluginLoader {
         }
 
         // Create BugPatterns
-        List<Node> bugPatternNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/BugPattern");
+        List<Node> bugPatternNodeList = XMLUtil.selectNodes(pluginDescriptor, "/FindbugsPlugin/BugPattern");
         for (Node bugPatternNode : bugPatternNodeList) {
             String type = bugPatternNode.valueOf("@type");
             String abbrev = bugPatternNode.valueOf("@abbrev");
@@ -920,7 +922,7 @@ public class PluginLoader {
         // Create BugCodes
         Set<String> definedBugCodes = new HashSet<String>();
         for (Document messageCollection : messageCollectionList) {
-            List<Node> bugCodeNodeList = messageCollection.selectNodes("/MessageCollection/BugCode");
+            List<Node> bugCodeNodeList = XMLUtil.selectNodes(messageCollection, "/MessageCollection/BugCode");
             for (Node bugCodeNode : bugCodeNodeList) {
                 String abbrev = bugCodeNode.valueOf("@abbrev");
                 if (abbrev.equals(""))
@@ -1070,7 +1072,7 @@ public class PluginLoader {
         if (detailedDescription != null) {
             constructedPlugin.setDetailedDescription(detailedDescription.getText().trim());
         }
-        List<Node> globalOptionNodes = pluginDescriptor.selectNodes("/FindbugsPlugin/GlobalOptions/Property");
+        List<Node> globalOptionNodes = XMLUtil.selectNodes(pluginDescriptor, "/FindbugsPlugin/GlobalOptions/Property");
         for(Node optionNode : globalOptionNodes) {
             String key = optionNode.valueOf("@key");
             String value = optionNode.getText().trim();

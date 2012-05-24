@@ -46,6 +46,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLUtil;
 
 /**
  * Filter to match a subset of BugInstances. The filter criteria are read from
@@ -220,7 +221,7 @@ public class Filter extends OrMatcher {
 
         int count = 1;
         // Iterate over Match elements
-        for (Object matchObj : filterDoc.selectNodes("/FindBugsFilter/Match")) {
+        for (Object matchObj : XMLUtil.selectNodes(filterDoc, "/FindBugsFilter/Match")) {
             Element matchNode = (Element) matchObj;
             AndMatcher matchMatcher = new AndMatcher();
 

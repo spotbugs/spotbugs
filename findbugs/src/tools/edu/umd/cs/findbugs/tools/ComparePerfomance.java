@@ -33,6 +33,8 @@ import org.dom4j.DocumentException;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
+import edu.umd.cs.findbugs.xml.XMLUtil;
+
 /**
  * @author pugh
  */
@@ -73,7 +75,7 @@ public class ComparePerfomance {
         double gc_seconds = Double.parseDouble(summary.valueOf("@gc_seconds"));
         putStats("gc_seconds", i, (int) (gc_seconds * 1000));
         
-        List<Node> profileNodes = doc.selectNodes("/BugCollection/FindBugsSummary/FindBugsProfile/ClassProfile");
+        List<Node> profileNodes = XMLUtil.selectNodes(doc, "/BugCollection/FindBugsSummary/FindBugsProfile/ClassProfile");
         for(Node n : profileNodes) {
             String name = n.valueOf("@name");
             int totalMilliseconds = Integer.parseInt(n.valueOf("@totalMilliseconds"));

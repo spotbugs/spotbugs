@@ -31,6 +31,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.xml.XMLUtil;
 
 /**
  * Add human-readable messages to a dom4j tree containing FindBugs XML output.
@@ -62,7 +63,7 @@ public class AddMessages {
      * Add messages to the dom4j tree.
      */
     public void execute() {
-        Iterator<?> elementIter = document.selectNodes("/BugCollection/BugInstance").iterator();
+        Iterator<?> elementIter = XMLUtil.selectNodes(document, "/BugCollection/BugInstance").iterator();
         Iterator<BugInstance> bugInstanceIter = bugCollection.iterator();
 
         Set<String> bugTypeSet = new HashSet<String>();

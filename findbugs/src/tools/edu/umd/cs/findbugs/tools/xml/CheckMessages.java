@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.tools.xml;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.dom4j.Attribute;
@@ -30,6 +31,8 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+
+import edu.umd.cs.findbugs.xml.XMLUtil;
 
 /**
  * Ensure that the XML messages files in a FindBugs plugin are valid and
@@ -78,7 +81,8 @@ public class CheckMessages {
          */
         @SuppressWarnings("unchecked")
         public Iterator<Node> xpathIterator(String xpath) {
-            return document.selectNodes(xpath).iterator();
+            List<Node> nodes = XMLUtil.selectNodes(document, xpath);
+            return nodes.iterator();
         }
 
         /**

@@ -146,8 +146,8 @@ public class TypeQualifierValue<A extends Annotation> {
             Class<?> c = validatorLoader.loadClass(checkerName.getDottedClassName());
              if (TypeQualifierValidator.class.isAssignableFrom(c)) {
                 Class<? extends TypeQualifierValidator> checkerClass = c.asSubclass(TypeQualifierValidator.class);
-                validator = checkerClass.newInstance();
-                qualifierClass = (Class<A>) validatorLoader.loadClass(typeQualifier.getDottedClassName());           
+                validator = getValidator(checkerClass);
+                qualifierClass = getQualifierClass(typeQualifier);           
                 
                 InvocationHandler handler = new InvocationHandler() {
 
@@ -171,6 +171,28 @@ public class TypeQualifierValue<A extends Annotation> {
         this.validator = validator;
         this.typeQualifierClass = qualifierClass;
         this.proxy = proxy;
+    }
+
+    /**
+     * @param checkerClass
+     * @return
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    @SuppressWarnings("unchecked")
+    private TypeQualifierValidator<A> getValidator(Class<? extends TypeQualifierValidator> checkerClass)
+            throws InstantiationException, IllegalAccessException {
+        return checkerClass.newInstance();
+    }
+
+    /**
+     * @param typeQualifier
+     * @return
+     * @throws ClassNotFoundException
+     */
+    @SuppressWarnings("unchecked")
+    private Class<A> getQualifierClass(ClassDescriptor typeQualifier) throws ClassNotFoundException {
+        return (Class<A>) validatorLoader.loadClass(typeQualifier.getDottedClassName());
     }
 
     static class Data {

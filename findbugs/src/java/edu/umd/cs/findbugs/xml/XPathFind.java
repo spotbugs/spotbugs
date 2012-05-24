@@ -28,6 +28,7 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
+
 /**
  * Find nodes in a dom4j tree that match a particular XPath expression. The
  * main() driver prints out information about matching nodes in an XML document.
@@ -49,7 +50,8 @@ public abstract class XPathFind {
 
     @SuppressWarnings("unchecked")
     public void find(String xpath) {
-        for (Node node : (List<Node>) document.selectNodes(xpath)) {
+        List<Node> nodes =  XMLUtil.selectNodes(document, xpath);
+        for (Node node : nodes) {
             match(node);
         }
     }
