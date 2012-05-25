@@ -202,12 +202,15 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
         profiler.report(new Profiler.TotalTimeComparator(profiler), new Profiler.FilterByTime(10000000), printStream);
 
         printToStream("\nTotal calls:");
-        profiler.report(new Profiler.TotalCallsComparator(profiler), new Profiler.FilterByCalls(stats.getNumClasses()),
-                printStream);
+        int numClasses = stats.getNumClasses();
+        if(numClasses > 0) {
+            profiler.report(new Profiler.TotalCallsComparator(profiler), new Profiler.FilterByCalls(numClasses),
+                    printStream);
 
-        printToStream("\nTime per call:");
-        profiler.report(new Profiler.TimePerCallComparator(profiler),
-                new Profiler.FilterByTimePerCall(10000000 / stats.getNumClasses()), printStream);
+            printToStream("\nTime per call:");
+            profiler.report(new Profiler.TimePerCallComparator(profiler),
+                    new Profiler.FilterByTimePerCall(10000000 / numClasses), printStream);
+        }
         try {
             xmlStream.finish();
         } catch (IOException e) {
