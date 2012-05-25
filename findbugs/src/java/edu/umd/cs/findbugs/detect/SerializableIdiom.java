@@ -623,7 +623,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                     if (!strongEvidenceForIntendedSerialization()) {
                         if (obj.getName().startsWith("this$"))
                             priority = Math.max(priority, NORMAL_PRIORITY);
-                        else if (innerClassHasOuterInstance) {
+                        if (innerClassHasOuterInstance) {
                             if (isAnonymousInnerClass)
                                 priority += 2;
                             else
