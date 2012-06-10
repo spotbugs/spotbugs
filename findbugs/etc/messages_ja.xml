@@ -249,7 +249,7 @@
     <Details>
 <![CDATA[
 <p>
-このディテクタは、net.jcip.annotations.Immutable としてアノテーションが付けられたクラスのルール違反を探します。
+このディテクタは、net.jcip.annotations.Immutable としてアノテートされたクラスのルール違反を探します。
 </p>
 ]]>
     </Details>
@@ -2588,7 +2588,7 @@ null のフィールドを同期化すると <code>NullPointerException</code> �
     <Details>
 <![CDATA[
 <p>
-クラスにはnet.jcip.annotations.Immutable アノテーションが付けられています。
+クラスにはnet.jcip.annotations.Immutable でアノテートされています。
 Immutable アノテーションのルールは、すべてのフィールドを final にすることを義務づけます。
 </p>
 ]]>
@@ -2643,7 +2643,7 @@ URL の <code>equals</code> メソッドと <code>hashCode</code> メソッド�
     <Details>
 <![CDATA[
 <p>
-アノテーションがそれ自身に <code>@Retention(RetentionPolicy.RUNTIME)</code> アノテーションを付けない限り、アノテーションはリフレクション (たとえば、<code>isAnnotationPresent(...)</code> メソッド) を使用して観測できません。
+アノテーションは、<code>@Retention(RetentionPolicy.RUNTIME)</code> でアノテートされなければ、リフレクション (たとえば、<code>isAnnotationPresent(...)</code> メソッド) を使用して観測することができません。
 </p>
 ]]>
     </Details>
@@ -3582,8 +3582,7 @@ public int hashCode() {
     <Details>
 <![CDATA[
 <p>
-このフィールドは、<code>net.jcip.annotations.GuardedBy</code> アノテーションが付けられていますが、
-アノテーションに違反すると思われる方法でアクセスされる可能性があります。
+このフィールドは、<code>net.jcip.annotations.GuardedBy</code> でアノテートされているが、アノテーションに違反すると思われる方法でアクセスされる可能性があります。
 </p>
 ]]>
     </Details>
@@ -5294,12 +5293,12 @@ if (x &lt; 0) {
   </BugPattern>
 
   <BugPattern type="NP_STORE_INTO_NONNULL_FIELD">
-    <ShortDescription>@NonNull アノテーションが付けられたフィールドに null を格納している</ShortDescription>
-    <LongDescription>@NonNull アノテーションが付けられたフィールド {2.givenClass} に null を格納しています。{1}</LongDescription>
+    <ShortDescription>@NonNull でアノテートされたフィールドに null を格納している</ShortDescription>
+    <LongDescription>@NonNull でアノテートされたフィールド {2.givenClass} に null を格納しています。{1}</LongDescription>
     <Details>
       <![CDATA[
 <p>
-@NonNull アノテーションが付けられたフィールドに null かもしれない値を格納しています。 
+@NonNull でアノテートされたフィールドに null かもしれない値を格納しています。 
 </p>
 ]]>
     </Details>
@@ -5323,12 +5322,12 @@ switch 文の default が多くの場合実行不可能なので FindBugs が例
   </BugPattern>
 
   <BugPattern type="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE">
-    <ShortDescription>null 値を許容しないパラメータに null 値を許容するアノテーションが付けられている</ShortDescription>
-    <LongDescription>{2} は、null 値を許容しないのに null 値を許容するアノテーションが付けられています。</LongDescription>
+    <ShortDescription>パラメータは  非 null でなければならないが null 可能としてアノテートされている</ShortDescription>
+    <LongDescription>{2} は、非 null でなければならないが、null 可能としてアノテートされています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このパラメータは、null 値を許容しないことを要求する方法で常に使われていますが、パラメータには明示的に null 値を許容するアノテーションが付けられています。
+このパラメータは、常に 非 null にすることを要求する方法で使われますが、パラメータには明示的に null 可能としてアノテートされています。
 パラメータかアノテーションのどちらかの使い方が間違っています。
 </p>
 ]]>
@@ -5400,8 +5399,8 @@ switch 文の default が多くの場合実行不可能なので FindBugs が例
     <Details>
 <![CDATA[
 <p>
-おそらく、 null 値を許容しないメソッドパラメータに  null 値を渡しています。
-パラメータは、常に非 null であるべきパラメータとしてアノテーションが付けられていたか、または解析が常に null 値を利用すると示していました。
+null の可能性がある値が、非 null メソッドパラメータに渡されています。
+パラメータは、常に非 null とすべきパラメータとしてアノテートされていたか、または解析が常に null 値を利用すると示していました。
 </p>
 ]]>
     </Details>
@@ -5414,7 +5413,7 @@ switch 文の default が多くの場合実行不可能なので FindBugs が例
       <![CDATA[
 <p>
 おそらく、すべての知られているターゲットメソッドが非 null であることを要求する呼び出し場所で null 値を渡しています。
-パラメータは、常に非 null であるべきパラメータとしてアノテーションが付けられていたか、または解析が常に null 値を利用すると示していました。
+パラメータは、常に非 null とすべきパラメータとしてアノテートされていたか、または解析が常に null 値を利用すると示していました。
 </p>
       ]]>
     </Details>
@@ -5427,7 +5426,7 @@ switch 文の default が多くの場合実行不可能なので FindBugs が例
       <![CDATA[
 <p>
 このメソッド呼び出しは非 null メソッドパラメータに対して null 値を渡しています。
-パラメータは、常に非 null であるべきパラメータとしてアノテーションが付けられていたか、または解析が常に null 値を利用すると示していました。
+パラメータは、常に非 null とすべきパラメータとしてアノテートされていたか、または解析が常に null 値を利用すると示していました。
 </p>
       ]]>
     </Details>
@@ -5440,7 +5439,7 @@ switch 文の default が多くの場合実行不可能なので FindBugs が例
       <![CDATA[
 <p>
 このメソッドは、非 null でなければならないメソッドのパラメータとして、null 値を渡しています。
-このパラメータは、@Nonnull として明示的にアノテーションが付けられていたか、または解析が常に null 値を利用すると示していました。
+このパラメータは、@Nonnull として明示的にアノテートされていたか、または解析が常に null 値を利用すると示していました。
 </p>
       ]]>
     </Details>
@@ -8166,14 +8165,14 @@ JavaDoc に書かれているように、DateFormat はマルチスレッドで�
 
   <BugPattern type="TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS">
     <ShortDescription>互換性のない型修飾子による比較値</ShortDescription>
-    <LongDescription>型修飾子 {2.simpleName} でアノテーションされた値がその修飾子がない値と等価性のために比較されています。</LongDescription>
+    <LongDescription>型修飾子 {2.simpleName} でアノテートされた値がその修飾子がない値と等価性のために比較されています。</LongDescription>
     <Details>
       <![CDATA[
 <p>
 型修飾子アノテーションを指定した値がその修飾子のない値と比較しています。
 </p>
 <p>
-より正確に、when=ALWAYS を指定した型修飾子でアノテーションされた値が同じ型修飾子で when=NEVER を指定する値と比較しています。
+より正確に、when=ALWAYS を指定した型修飾子でアノテートされた値が同じ型修飾子で when=NEVER を指定する値と比較しています。
 </p>
 <p>
 たとえば、@NonNegative が型修飾子アノテーション @Negative(when=When.NEVER) の略称だとします。
@@ -8190,14 +8189,14 @@ public boolean example(@Negative Integer value1, @NonNegative Integer value2) {
 
   <BugPattern type="TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED">
     <ShortDescription>型修飾子でアノテーションされた値がその修飾子を付けてはならない値を必要とする場所で使われている</ShortDescription>
-    <LongDescription>型修飾子 {2} でアノテーションされた値がその修飾子を付けてはならない値を必要とする場所で使われています。</LongDescription>
+    <LongDescription>型修飾子 {2} でアノテートされた値がその修飾子を付けてはならない値を必要とする場所で使われています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
 型修飾子アノテーションを指定した値がその修飾子を付けてはならない値を必要とする場所で使われています。
 </p>
 <p>
-より正確に、when=ALWAYS を指定した型修飾子でアノテーションされた値が到達することが保証されているか同じ型修飾子で when=NEVER を指定する場所で使用しています。
+より正確に、when=ALWAYS を指定した型修飾子でアノテートされた値が到達することが保証されているか同じ型修飾子で when=NEVER を指定する場所で使用しています。
 </p>
 <p>
 たとえば、@NonNegative が型修飾子アノテーション @Negative(when=When.NEVER) の略称だとします。
@@ -8214,14 +8213,14 @@ public @NonNegative Integer example(@Negative Integer value) {
 
   <BugPattern type="TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED">
     <ShortDescription>型修飾子でアノテーションされていない値がその修飾子が付けられた値を必要とする場所で使われている</ShortDescription>
-    <LongDescription>型修飾子 {2.simpleName} でアノテーションされていない値がその修飾子が付けられた値を必要とする場所で使われています。</LongDescription>
+    <LongDescription>型修飾子 {2.simpleName} でアノテートされていない値がその修飾子が付けられた値を必要とする場所で使われています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
 型修飾子アノテーションを指定していない値がその修飾子が付けられた値を必要とする場所で使われています。
 </p>
 <p>
-より正確に、when=NEVER を指定した型修飾子でアノテーションされた値が同じ型修飾子で when=ALWAYS を指定する場所で使用しています。
+より正確に、when=NEVER を指定した型修飾子でアノテートされた値が同じ型修飾子で when=ALWAYS を指定する場所で使用しています。
 </p>        
 ]]>
     </Details>
@@ -8233,7 +8232,7 @@ public @NonNegative Integer example(@Negative Integer value) {
     <Details>
 <![CDATA[
 <p>
-型修飾子によって示された値のインスタンスではない可能性としてアノテーションされた値です。
+型修飾子によって示された値のインスタンスではない可能性としてアノテートされた値です。
 値はその型修飾子によって示された値を必要とする方法で使われることが保証されています。
 </p>
 ]]>
@@ -8246,7 +8245,7 @@ public @NonNegative Integer example(@Negative Integer value) {
     <Details>
 <![CDATA[
 <p>
-型修飾子によって示された値のインスタンスである可能性としてアノテーションされた値です。
+型修飾子によって示された値のインスタンスである可能性としてアノテートされた値です。
 値はその型修飾子によって示された値を禁止する方法で使われることが保証されています。
 </p>
 ]]>
@@ -8255,7 +8254,7 @@ public @NonNegative Integer example(@Negative Integer value) {
 
   <BugPattern type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK">
     <ShortDescription>値は型修飾子を必要としないが、不明としてマークされている</ShortDescription>
-    <LongDescription>値は、{2.simpleName} を必要としませんが、明示的に {2.simpleName} に関して不明としてアノテーションが付けられています。</LongDescription>
+    <LongDescription>値は、{2.simpleName} を必要としませんが、明示的に {2.simpleName} に関して不明としてアノテーションされています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -8269,7 +8268,7 @@ public @NonNegative Integer example(@Negative Integer value) {
 
   <BugPattern type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK">
     <ShortDescription>値は型修飾子を必要としているが、不明としてマークされている</ShortDescription>
-    <LongDescription>値は、常に {2.simpleName} を必要としていますが、明示的に {2.simpleName} に関して不明としてアノテーションが付けられています。</LongDescription>
+    <LongDescription>値は、常に {2.simpleName} を必要としていますが、明示的に {2.simpleName} に関して不明としてアノテーションされています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -8406,7 +8405,7 @@ Jason Mehrens によって寄贈されたバグパターン
     <Details>
 <![CDATA[
 <p>
-FindBugs は、@NoWarning アノテーションによって、予期しない/望ましくない警告を生成しました。
+FindBugs は、@NoWarning でアノテートされたことにより、予期しない/望ましくない警告を生成しました。
 </p>
 ]]>
     </Details>
@@ -8418,7 +8417,7 @@ FindBugs は、@NoWarning アノテーションによって、予期しない/�
     <Details>
 <![CDATA[
 <p>
-FindBugs は、@ExpectedWarning によって、予期した/望ましい警告が生成されませんでした。
+FindBugs は、@ExpectedWarning でアノテートされたことにより、予期した/望ましい警告が生成されませんでした。
 </p>
 ]]>
     </Details>
