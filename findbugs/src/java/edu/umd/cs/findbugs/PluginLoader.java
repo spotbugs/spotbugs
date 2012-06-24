@@ -743,9 +743,16 @@ public class PluginLoader {
                         plugin.addFindBugsMain(mainClass, cmd, description, kind, analysis);
 
                     } catch (Exception e) {
-                        AnalysisContext.logError("Unable to load FindBugsMain " + cmd +
+                        String msg = "Unable to load FindBugsMain " + cmd +
                                 " : " + className + " in plugin " + plugin.getPluginId()
-                                + " loaded from " + loadedFrom, e);
+                                + " loaded from " + loadedFrom;
+                        AnalysisContext.logError(msg, e);
+                        if (SystemProperties.ASSERTIONS_ENABLED) {
+                            System.err.println(msg);
+                            AssertionError e2 = new AssertionError(msg);
+                            e2.initCause(e);
+                            throw e2;
+                        }
                     }
                 }
 
