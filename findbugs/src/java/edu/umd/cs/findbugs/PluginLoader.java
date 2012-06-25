@@ -565,6 +565,7 @@ public class PluginLoader {
                     return f.toURL();
                 } catch (MalformedURLException e) {
                     // ignore it
+                    assert true;
                 }
         }
 
@@ -582,6 +583,7 @@ public class PluginLoader {
                     return f.toURI().toURL();
                 } catch (MalformedURLException e) {
                     // ignore it
+                    assert true;
                 }
         }
 
@@ -741,18 +743,12 @@ public class PluginLoader {
 
                         Class<?> mainClass =  classLoader.loadClass(className);
                         plugin.addFindBugsMain(mainClass, cmd, description, kind, analysis);
-
                     } catch (Exception e) {
                         String msg = "Unable to load FindBugsMain " + cmd +
                                 " : " + className + " in plugin " + plugin.getPluginId()
                                 + " loaded from " + loadedFrom;
-                        AnalysisContext.logError(msg, e);
-                        if (SystemProperties.ASSERTIONS_ENABLED) {
-                            System.err.println(msg);
-                            AssertionError e2 = new AssertionError(msg);
-                            e2.initCause(e);
-                            throw e2;
-                        }
+                        PluginException e2 = new PluginException(msg, e);
+                        AnalysisContext.logError(msg, e2);
                     }
                 }
 

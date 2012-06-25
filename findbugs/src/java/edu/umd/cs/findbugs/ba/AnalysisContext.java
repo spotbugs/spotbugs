@@ -313,6 +313,16 @@ public abstract class AnalysisContext {
      * Report an error
      */
     static public void logError(String msg, Exception e) {
+        AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
+        if (currentAnalysisContext2 == null) {
+            if (SystemProperties.ASSERTIONS_ENABLED) {
+                AssertionError e2 = new AssertionError("Exception logged with no analysis context");
+                e2.initCause(e);
+                throw e2;
+            }
+            e.printStackTrace(System.err);
+            return;
+        }
         if (e instanceof MissingClassException) {
             reportMissingClass(((MissingClassException) e).getClassNotFoundException());
             return;
@@ -321,9 +331,7 @@ public abstract class AnalysisContext {
             reportMissingClass(((edu.umd.cs.findbugs.classfile.MissingClassException) e).toClassNotFoundException());
             return;
         }
-        AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
-        if (currentAnalysisContext2 == null)
-            return;
+      
         RepositoryLookupFailureCallback lookupFailureCallback = currentAnalysisContext2.getLookupFailureCallback();
         if (lookupFailureCallback != null)
             lookupFailureCallback.logError(msg, e);
