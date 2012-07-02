@@ -172,6 +172,14 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     private boolean isFakeBugType(String type) {
         return "MISSING".equals(type) || "FOUND".equals(type);
     }
+    
+    public static class NoSuchBugPattern extends IllegalArgumentException {
+        public final String type;
+        public NoSuchBugPattern(String type) {
+            super("Can't find definition of bug type " + type);
+            this.type = type;
+        }
+    }
     /**
      * Constructor.
      *
@@ -188,9 +196,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
         BugPattern p = DetectorFactoryCollection.instance().lookupBugPattern(type);
         if (p == null) {
-            if (!isFakeBugType(type) && missingBugTypes.add(type)) {
+            if ( missingBugTypes.add(type)) {
                 String msg = "Can't find definition of bug type " + type;
-                AnalysisContext.logError(msg, new IllegalArgumentException(msg));
+                AnalysisContext.logError(msg, new NoSuchBugPattern(type));
             }
         } else
             this.priority += p.getPriorityAdjustment();

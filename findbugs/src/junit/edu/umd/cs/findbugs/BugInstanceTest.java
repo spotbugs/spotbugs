@@ -16,7 +16,7 @@ public class BugInstanceTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        b = new BugInstance("NP_NULL_DEREF", Priorities.NORMAL_PRIORITY);
+        b = new BugInstance("NP_NULL_ON_SOME_PATH", Priorities.NORMAL_PRIORITY);
         b.setProperty("A", "a");
         b.setProperty("B", "b");
         b.setProperty("C", "c");

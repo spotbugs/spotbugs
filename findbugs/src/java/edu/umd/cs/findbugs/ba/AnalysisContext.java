@@ -35,6 +35,7 @@ import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.AnalysisLocal;
+import edu.umd.cs.findbugs.BugInstance.NoSuchBugPattern;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SuppressionMatcher;
@@ -150,20 +151,6 @@ public abstract class AnalysisContext {
         databaseOutputDir = null;
     }
 
-    // /**
-    // * Create a new AnalysisContext.
-    // *
-    // * @param lookupFailureCallback the RepositoryLookupFailureCallback that
-    // * the AnalysisContext should use to report errors
-    // * @return a new AnalysisContext
-    // */
-    // public static AnalysisContext create(RepositoryLookupFailureCallback
-    // lookupFailureCallback) {
-    // AnalysisContext analysisContext = new
-    // LegacyAnalysisContext(lookupFailureCallback);
-    // setCurrentAnalysisContext(analysisContext);
-    // return analysisContext;
-    // }
 
     /**
      * Instantiate the CheckReturnAnnotationDatabase. Do this after the
@@ -315,6 +302,8 @@ public abstract class AnalysisContext {
     static public void logError(String msg, Exception e) {
         AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
         if (currentAnalysisContext2 == null) {
+            if (e instanceof NoSuchBugPattern)
+                return;
             if (SystemProperties.ASSERTIONS_ENABLED) {
                 AssertionError e2 = new AssertionError("Exception logged with no analysis context");
                 e2.initCause(e);
@@ -819,6 +808,12 @@ public abstract class AnalysisContext {
         currentXFactory.set(new XFactory());
     }
 
+    
+    public static  AnalysisContext createAnalysisContext() {
+        AnalysisCacheToAnalysisContextAdapter analysisContext = new AnalysisCacheToAnalysisContextAdapter();
+        AnalysisContext.setCurrentAnalysisContext(analysisContext);
+        return analysisContext;
+    }
     public static void removeCurrentAnalysisContext() {
         AnalysisContext context = currentAnalysisContext();
         if (context != null)

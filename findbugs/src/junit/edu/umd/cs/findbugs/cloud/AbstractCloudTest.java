@@ -23,6 +23,7 @@ import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.PropertyBundle;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.cloud.Cloud.Mode;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
@@ -226,11 +227,13 @@ public class AbstractCloudTest extends TestCase {
     }
 
     public void testSourceLinkFormatInvalid() throws Exception {
+        AnalysisContext.createAnalysisContext();
         initializeSourceLinks("edu/umd/(.*)", "http://x.y.z/%M", null);
         checkSourceLink(null, "edu.umd.cs.SomeClass", 0);
     }
 
     public void testSourceLinkURLInvalid() throws Exception {
+        AnalysisContext.createAnalysisContext();
         initializeSourceLinks("edu/umd/(.*)", "://x.y.z/%s", null);
         checkSourceLink(null, "edu.umd.cs.SomeClass", 0);
     }
