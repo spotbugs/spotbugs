@@ -304,7 +304,7 @@ public abstract class AnalysisContext {
         if (currentAnalysisContext2 == null) {
             if (e instanceof NoSuchBugPattern)
                 return;
-            if (SystemProperties.ASSERTIONS_ENABLED) {
+            if (false && SystemProperties.ASSERTIONS_ENABLED) {
                 AssertionError e2 = new AssertionError("Exception logged with no analysis context");
                 e2.initCause(e);
                 throw e2;
@@ -805,15 +805,10 @@ public abstract class AnalysisContext {
      */
     public static void setCurrentAnalysisContext(AnalysisContext analysisContext) {
         currentAnalysisContext.set(analysisContext);
-        currentXFactory.set(new XFactory());
+        if (Global.getAnalysisCache() != null)
+            currentXFactory.set(new XFactory());
     }
 
-    
-    public static  AnalysisContext createAnalysisContext() {
-        AnalysisCacheToAnalysisContextAdapter analysisContext = new AnalysisCacheToAnalysisContextAdapter();
-        AnalysisContext.setCurrentAnalysisContext(analysisContext);
-        return analysisContext;
-    }
     public static void removeCurrentAnalysisContext() {
         AnalysisContext context = currentAnalysisContext();
         if (context != null)
