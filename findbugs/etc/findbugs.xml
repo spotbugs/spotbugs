@@ -59,7 +59,7 @@
           <FindBugsMain cmd="union" kind="history" class="edu.umd.cs.findbugs.workflow.UnionResults"/>
           <FindBugsMain cmd="merge" kind="history" class="edu.umd.cs.findbugs.workflow.Update"/>
                   
-          <FindBugsMain cmd="dis" kind="utility" class="edu.umd.cs.findbugs.workflow.PrintClass"/> 
+          <FindBugsMain cmd="dis" kind="utility" class="edu.umd.cs.findbugs.visitclass.PrintClass"/> 
           
           <OrderingConstraints>
                     <SplitPass>
