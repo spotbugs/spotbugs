@@ -214,7 +214,8 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             sawStaticDelegate = true;
 
         if ((seen == INVOKESTATIC || seen == INVOKESPECIAL || seen == INVOKEVIRTUAL)
-                && getClassConstantOperand().equals("org/apache/commons/lang/builder/EqualsBuilder"))
+                && (getClassConstantOperand().equals("org/apache/commons/lang/builder/EqualsBuilder")
+                        || getClassConstantOperand().equals("org/apache/commons/lang3/builder/EqualsBuilder")))
             sawEqualsBuilder = true;
 
         if (seen == IRETURN && getPC() == 1 && getPrevOpcode(1) == ICONST_0) {

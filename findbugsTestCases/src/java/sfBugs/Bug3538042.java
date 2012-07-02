@@ -2,11 +2,11 @@ package sfBugs;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
-public class Bug2922917 {
+public class Bug3538042 {
     int x, y, z;
 
     @Override
@@ -14,7 +14,7 @@ public class Bug2922917 {
         return x + y + z;
     }
 
-    static class A extends Bug2922917 {
+    static class A extends Bug3538042 {
 
         @NoWarning("EQ_UNUSUAL")
         @Override
@@ -35,7 +35,7 @@ public class Bug2922917 {
 
     }
 
-    static class B extends Bug2922917 {
+    static class B extends Bug3538042 {
 
         @NoWarning("EQ_UNUSUAL")
         @Override
@@ -45,7 +45,7 @@ public class Bug2922917 {
 
     }
 
-    static class C extends Bug2922917 {
+    static class C extends Bug3538042 {
 
         @NoWarning("EQ_UNUSUAL")
         @Override
@@ -55,7 +55,7 @@ public class Bug2922917 {
 
     }
 
-    static class D extends Bug2922917 {
+    static class D extends Bug3538042 {
 
         @NoWarning("EQ_UNUSUAL")
         @Override
@@ -65,7 +65,7 @@ public class Bug2922917 {
 
     }
 
-    static class E extends Bug2922917 {
+    static class E extends Bug3538042 {
 
         @NoWarning("EQ_UNUSUAL")
         @Override
@@ -75,22 +75,22 @@ public class Bug2922917 {
 
     }
 
-    static class F extends Bug2922917 {
+    static class F extends Bug3538042 {
 
         @NoWarning("EQ_UNUSUAL")
         @Override
         public boolean equals(Object obj) {
-            return EqualsBuilder.reflectionEquals(this, obj, false, Bug2922917.class);
+            return EqualsBuilder.reflectionEquals(this, obj, false, Bug3538042.class);
         }
 
     }
 
-    static class G extends Bug2922917 {
+    static class G extends Bug3538042 {
 
         @NoWarning("EQ_UNUSUAL")
         @Override
         public boolean equals(Object obj) {
-            return EqualsBuilder.reflectionEquals(this, obj, false, Bug2922917.class, new String[] { "x", "y" });
+            return EqualsBuilder.reflectionEquals(this, obj, false, Bug3538042.class, new String[] { "x", "y" });
         }
 
     }
