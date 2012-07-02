@@ -488,6 +488,11 @@ public class Plugin {
     }
 
     <T> void addComponentPlugin(Class<T> componentKind, ComponentPlugin<T> plugin) {
+        if (componentKind == null)
+            throw new NullPointerException("Null component kind");
+        if (plugin == null)
+            throw new NullPointerException("Null plugin");
+        
         if (!componentKind.isAssignableFrom(plugin.getComponentClass()))
                 throw new IllegalArgumentException();
         componentPlugins.put(componentKind, plugin.getId(), plugin);
