@@ -81,7 +81,6 @@ public class ComponentPlugin<T> {
 
     public boolean isNamed(Set<String> names) {
         return names.contains(id) || names.contains(shortId);
-
     }
 
     protected final String id;
@@ -92,10 +91,17 @@ public class ComponentPlugin<T> {
     protected final String details;
     protected final boolean enabledByDefault;
 
-
-
     public Class<? extends T> getComponentClass() {
+        if (!isAvailable()) {
+            if (FindBugs.noAnalysis)
+                throw new IllegalStateException("No analysis set; no component class loaded for " + getPlugin());
+            throw new IllegalStateException("No component class for " + getPlugin());
+        }
         return componentClass;
+    }
+
+    public boolean isAvailable() {
+        return componentClass != null;
     }
 
     final Class<? extends T> componentClass;

@@ -1166,7 +1166,7 @@ public class PluginLoader {
             boolean disabled, String description, String details, PropertyBundle properties) throws PluginException {
         {
         Class<? extends T> componentClass = null;
-        if (!FindBugs.noAnalysis) {
+        if (!FindBugs.noAnalysis || componentKind == edu.umd.cs.findbugs.bugReporter.BugReporterDecorator.class) {
             componentClass = getClass(classLoader, componentClassname, componentKind);
         }
 
