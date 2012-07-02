@@ -185,7 +185,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
         BugPattern p = DetectorFactoryCollection.instance().lookupBugPattern(type);
         if (p == null) {
-            if (missingBugTypes.add(type)) {
+            if (!"MISSING".equals(type)  && missingBugTypes.add(type)) {
                 String msg = "Can't find definition of bug type " + type;
                 AnalysisContext.logError(msg, new IllegalArgumentException(msg));
             }
