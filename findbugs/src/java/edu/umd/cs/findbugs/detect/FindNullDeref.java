@@ -1113,7 +1113,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             } else {
                 warning = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE";
                 valueIsNull = false;
-                priority = isChecked ? NORMAL_PRIORITY : LOW_PRIORITY;
+                priority = isChecked ? HIGH_PRIORITY : NORMAL_PRIORITY;
             }
 
         } else {
