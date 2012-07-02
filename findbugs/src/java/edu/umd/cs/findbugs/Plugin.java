@@ -495,7 +495,7 @@ public class Plugin {
         
         Class<? extends T> componentClass = plugin.getComponentClass();
         if (componentClass == null)
-            throw new NullPointerException("Null componentClass for plugin " + plugin.getId());
+            throw new NullPointerException("Null componentClass " + componentKind.getName() + " for plugin " + plugin.getId());
         
         if (!componentKind.isAssignableFrom(componentClass))
                 throw new IllegalArgumentException();
