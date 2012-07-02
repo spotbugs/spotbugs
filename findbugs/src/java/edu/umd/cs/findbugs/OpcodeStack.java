@@ -3112,21 +3112,15 @@ public class OpcodeStack implements Constants2 {
     private void pushByLocalLoad(String signature, int register) {
         Item oldItem = getLVValue(register);
 
-        Item newItem;
-        if (oldItem == null) {
-            newItem = new Item(signature);
-            newItem.registerNumber = register;
-        } else {
-            newItem = oldItem;
-            if (newItem.signature.equals("Ljava/lang/Object;") && !signature.equals("Ljava/lang/Object;")) {
+        Item newItem = oldItem;
+        if (newItem.signature.equals("Ljava/lang/Object;") && !signature.equals("Ljava/lang/Object;")) {
+            newItem = new Item(oldItem);
+            newItem.signature = signature;
+        }
+        if (newItem.getRegisterNumber() < 0) {
+            if (newItem == oldItem)
                 newItem = new Item(oldItem);
-                newItem.signature = signature;
-            }
-            if (newItem.getRegisterNumber() < 0) {
-                if (newItem == oldItem)
-                    newItem = new Item(oldItem);
-                newItem.registerNumber = register;
-            }
+            newItem.registerNumber = register;
         }
 
         push(newItem);

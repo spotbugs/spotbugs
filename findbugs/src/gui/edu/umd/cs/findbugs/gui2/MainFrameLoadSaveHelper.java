@@ -77,12 +77,12 @@ public class MainFrameLoadSaveHelper implements Serializable {
                 continue;
             }
             mainFrame.setProjectChanged(true);
-            if (mainFrame.getProject().getSuppressionFilter() == null) {
-                mainFrame.getProject().setSuppressionFilter(filter);
-            } else {
-                for (Matcher m : filter.getChildren())
-                    mainFrame.getProject().getSuppressionFilter().addChild(m);
+            Filter suppressionFilter = mainFrame.getProject().getSuppressionFilter();
+            
+            for (Matcher m : filter.getChildren()) {
+                suppressionFilter.addChild(m);
             }
+            
             PreferencesFrame.getInstance().updateFilterPanel();
         }
 
@@ -189,11 +189,6 @@ public class MainFrameLoadSaveHelper implements Serializable {
     }
 
     boolean exportFilter() {
-        if (mainFrame.getProject().getSuppressionFilter() == null) {
-            JOptionPane.showMessageDialog(mainFrame, L10N.getLocalString("dlg.no_filter", "There is no filter"));
-            return false;
-        }
-
         filterOpenFileChooser.setDialogTitle(L10N.getLocalString("dlg.exportFilter_ttl", "Export filter..."));
 
         boolean retry = true;

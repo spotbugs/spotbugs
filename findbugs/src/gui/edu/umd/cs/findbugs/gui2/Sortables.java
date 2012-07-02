@@ -277,9 +277,6 @@ public enum Sortables implements Comparator<String> {
         public String getFrom(BugInstance bug) {
 
             BugPattern bugPattern = bug.getBugPattern();
-            if (bugPattern == null) {
-                return "?";
-            }
             return bugPattern.getCategory();
         }
 
@@ -334,8 +331,6 @@ public enum Sortables implements Comparator<String> {
         @Override
         public String getFrom(BugInstance bug) {
             BugPattern bugPattern = bug.getBugPattern();
-            if (bugPattern == null)
-                return null;
             return bugPattern.getAbbrev();
         }
 
@@ -352,10 +347,7 @@ public enum Sortables implements Comparator<String> {
     TYPE(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_pattern", "Bug Pattern")) {
         @Override
         public String getFrom(BugInstance bug) {
-            if ((bug.getBugPattern()) == null)
-                return "?";
-            else
-                return bug.getBugPattern().getType();
+            return bug.getBugPattern().getType();
         }
 
         @Override
@@ -396,9 +388,6 @@ public enum Sortables implements Comparator<String> {
 
         @Override
         public String getFrom(BugInstance bug) {
-            if ((bug.getBugPattern()) == null)
-                return "??";
-
             int rank = BugRanker.findRank(bug);
             return values[rank];
         }

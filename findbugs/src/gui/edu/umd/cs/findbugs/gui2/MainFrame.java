@@ -593,10 +593,6 @@ public class MainFrame extends FBFrame implements LogSync {
 
     public void displayCloudReport() {
         Cloud cloud = this.bugCollection.getCloud();
-        if (cloud == null) {
-            JOptionPane.showMessageDialog(this, "There is no cloud");
-            return;
-        }
         cloud.waitUntilIssueDataDownloaded();
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
@@ -725,7 +721,7 @@ public class MainFrame extends FBFrame implements LogSync {
      */
     public void updateTitle() {
         Project project = getProject();
-        String name = project == null ? null : project.getProjectName();
+        String name = project.getProjectName();
         if ((name == null || name.trim().equals("")) && saveFile != null)
             name = saveFile.getAbsolutePath();
         if (name == null)

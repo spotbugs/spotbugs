@@ -349,11 +349,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         String priorityString = getPriorityString();
         BugPattern bugPattern = this.getBugPattern();
         // then get the category and put everything together
-        String categoryString;
-        if (bugPattern == null)
-            categoryString = "Unknown category for " + getType();
-        else
-            categoryString = I18N.instance().getBugCategoryDescription(bugPattern.getCategory());
+        String categoryString = I18N.instance().getBugCategoryDescription(bugPattern.getCategory());
         return priorityString + " Confidence " + categoryString;
         // TODO: internationalize the word "Confidence"
     }
@@ -365,8 +361,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     public String getCategoryAbbrev() {
         BugPattern bugPattern = getBugPattern();
-        if (bugPattern == null)
-            return "?";
         return bugPattern.getCategoryAbbrev();
     }
 
@@ -601,7 +595,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      */
     public String getAbbrev() {
         BugPattern pattern = getBugPattern();
-        return pattern != null ? pattern.getAbbrev() : "<unknown bug pattern>";
+        return pattern.getAbbrev();
     }
 
     /** clear the user designation. */
@@ -2060,13 +2054,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     public String getAbridgedMessage() {
         BugPattern bugPattern = getBugPattern();
-        String pattern, shortPattern;
-        if (bugPattern == null)
-            shortPattern = pattern = "Error2: missing bug pattern for key " + type;
-        else {
-            pattern = getLongDescription().replaceAll(" in \\{1\\}", "");
-            shortPattern = bugPattern.getShortDescription();
-        }
+        
+        String pattern = getLongDescription().replaceAll(" in \\{1\\}", "");
+        String shortPattern = bugPattern.getShortDescription();
+        
         try {
             FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
             return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass(), true);
@@ -2241,7 +2232,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             BugPattern bugPattern = getBugPattern();
 
             xmlOutput.openTag("ShortMessage");
-            xmlOutput.writeText(bugPattern != null ? bugPattern.getShortDescription() : this.toString());
+            xmlOutput.writeText(bugPattern.getShortDescription());
             xmlOutput.closeTag("ShortMessage");
 
             xmlOutput.openTag("LongMessage");

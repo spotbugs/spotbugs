@@ -143,10 +143,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
             outputStream.print(" ");
         }
         SourceLineAnnotation line = bugInstance.getPrimarySourceLineAnnotation();
-        if (line == null)
-            outputStream.println(bugInstance.getMessage().replace('\n', ' '));
-        else
-            outputStream.println(bugInstance.getMessage().replace('\n', ' ') + "  " + line.toString());
+        outputStream.println(bugInstance.getMessage().replace('\n', ' ') + "  " + line.toString());
     }
 
     private boolean analysisErrors;

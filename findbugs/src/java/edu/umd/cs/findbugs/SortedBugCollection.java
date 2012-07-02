@@ -489,48 +489,15 @@ public class SortedBugCollection implements BugCollection {
 
     }
 
-    // private String getQuickInstanceHash(BugInstance bugInstance) {
-    // String hash = bugInstance.getInstanceHash();
-    // if (hash != null) return hash;
-    // MessageDigest digest = null;
-    // try { digest = MessageDigest.getInstance("MD5");
-    // } catch (Exception e2) {
-    // // OK, we won't digest
-    // assert true;
-    // }
-    // hash = bugInstance.getInstanceKey();
-    // if (digest != null) {
-    // byte [] data = digest.digest(hash.getBytes());
-    // String tmp = new BigInteger(1,data).toString(16);
-    // if (false) System.out.println(hash + " -> " + tmp);
-    // hash = tmp;
-    // }
-    // bugInstance.setInstanceHash(hash);
-    // return hash;
-    // }
-
     public void computeBugHashes() {
         if (preciseHashOccurrenceNumbersAvailable)
             return;
         invalidateHashes();
-        MessageDigest digest = Util.getMD5Digest();
-
         HashMap<String, Integer> seen = new HashMap<String, Integer>();
 
         for (BugInstance bugInstance : getCollection()) {
             String hash = bugInstance.getInstanceHash();
-            if (hash == null) {
-                hash = bugInstance.getInstanceKey();
 
-                try {
-                    byte[] data = digest.digest(hash.getBytes("UTF-8"));
-                    hash = new BigInteger(1, data).toString(16);
-                } catch (UnsupportedEncodingException e) {
-                    throw new IllegalStateException(e);
-                }
-
-                bugInstance.setInstanceHash(hash);
-            }
             Integer count = seen.get(hash);
             if (count == null) {
                 bugInstance.setInstanceOccurrenceNum(0);
@@ -1406,8 +1373,6 @@ public class SortedBugCollection implements BugCollection {
         if (GraphicsEnvironment.isHeadless())
             return in;
         IGuiCallback guiCallback = project.getGuiCallback();
-        if (guiCallback == null)
-            return in;
         return guiCallback.getProgressMonitorInputStream(in, length, msg);
     }
 

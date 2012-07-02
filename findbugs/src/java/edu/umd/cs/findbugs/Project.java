@@ -1146,7 +1146,9 @@ public class Project implements XMLWriteable {
      * @param suppressionFilter
      *            The suppressionFilter to set.
      */
-    public void setSuppressionFilter(Filter suppressionFilter) {
+    public void setSuppressionFilter(@Nonnull Filter suppressionFilter) {
+        if (suppressionFilter == null)
+            throw new NullPointerException();
         this.suppressionFilter = suppressionFilter;
     }
 
@@ -1154,9 +1156,6 @@ public class Project implements XMLWriteable {
      * @return Returns the suppressionFilter.
      */
     public Filter getSuppressionFilter() {
-        if (suppressionFilter == null) {
-            suppressionFilter = new Filter();
-        }
         return suppressionFilter;
     }
 

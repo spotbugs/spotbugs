@@ -186,10 +186,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
                     else
                         System.out.print("#0#" + key);
                     SourceLineAnnotation sourceLine = warning.getPrimarySourceLineAnnotation();
-                    if (sourceLine != null)
-                        System.out.println("#" + sourceLine.getSourceFile() + "#" + sourceLine.getStartLine());
-                    else
-                        System.out.println("##");
+                    System.out.println("#" + sourceLine.getSourceFile() + "#" + sourceLine.getStartLine());
                     System.out.println(warning.getAnnotationText());
                 } catch (RuntimeException e) {
                     if (storedException == null)

@@ -71,24 +71,18 @@ public class EmacsBugReporter extends TextUIBugReporter {
         String fullPath = "???";
 
         SourceLineAnnotation line = bugInstance.getPrimarySourceLineAnnotation();
-        if (line == null) {
-            ClassAnnotation classInfo = bugInstance.getPrimaryClass();
-            if (classInfo != null) {
-                fullPath = sourceFileNameCache.get(classInfo.getClassName());
-            }
-        } else {
-            lineStart = line.getStartLine();
-            lineEnd = line.getEndLine();
-            SourceFinder sourceFinder = AnalysisContext.currentAnalysisContext().getSourceFinder();
-            String pkgName = line.getPackageName();
-            try {
-                fullPath = sourceFinder.findSourceFile(pkgName, line.getSourceFile()).getFullFileName();
-            } catch (IOException e) {
-                if (pkgName.equals(""))
-                    fullPath = line.getSourceFile();
-                else
-                    fullPath = pkgName.replace('.', '/') + "/" + line.getSourceFile();
-            }
+
+        lineStart = line.getStartLine();
+        lineEnd = line.getEndLine();
+        SourceFinder sourceFinder = AnalysisContext.currentAnalysisContext().getSourceFinder();
+        String pkgName = line.getPackageName();
+        try {
+            fullPath = sourceFinder.findSourceFile(pkgName, line.getSourceFile()).getFullFileName();
+        } catch (IOException e) {
+            if (pkgName.equals(""))
+                fullPath = line.getSourceFile();
+            else
+                fullPath = pkgName.replace('.', '/') + "/" + line.getSourceFile();
         }
         outputStream.print(fullPath + ":" + lineStart + ":" + lineEnd + " " + bugInstance.getMessage());
 
