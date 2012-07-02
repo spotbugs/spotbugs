@@ -145,7 +145,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
                     Location l = new Location(lastInSourceHandle, source);
                     InstructionHandle ih = l.getHandle();
                     // Get instruction that pushed topmost
-                    InstructionHandle ihPrev = ih == null ? null : ih.getPrev();
+                    InstructionHandle ihPrev = ih.getPrev();
                     // Get next-topmost that pushed next-topmost
                     InstructionHandle ihPrevPrev = ihPrev == null ? null : ihPrev.getPrev();
                     int prevPush = 0;

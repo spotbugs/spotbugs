@@ -165,7 +165,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
             FieldVariable field = (FieldVariable) binding.getVariable();
             XField xfield = Hierarchy.findXField(field.getClassName(), field.getFieldName(), field.getFieldSig(),
                     field.isStatic());
-            if (xfield == null)
+            if (!xfield.isResolved())
                 return;
 
             // XXX: for now, ignore lazy initialization of instance fields
