@@ -493,7 +493,11 @@ public class Plugin {
         if (plugin == null)
             throw new NullPointerException("Null plugin");
         
-        if (!componentKind.isAssignableFrom(plugin.getComponentClass()))
+        Class<? extends T> componentClass = plugin.getComponentClass();
+        if (componentClass == null)
+            throw new NullPointerException("Null componentClass for plugin " + plugin.getId());
+        
+        if (!componentKind.isAssignableFrom(componentClass))
                 throw new IllegalArgumentException();
         componentPlugins.put(componentKind, plugin.getId(), plugin);
     }
