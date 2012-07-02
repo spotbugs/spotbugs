@@ -1107,7 +1107,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             assert true;
         }
         if (redundantBranch.secondValue == null) {
-            if (redundantBranch.firstValue.isDefinitelyNull()) {
+           if (redundantBranch.firstValue.isDefinitelyNull()) {
                 warning = "RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE";
                 priority = NORMAL_PRIORITY;
             } else {
@@ -1115,6 +1115,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                 valueIsNull = false;
                 priority = isChecked ? HIGH_PRIORITY : NORMAL_PRIORITY;
             }
+           if (infeasibleEdgeSimplyThrowsException) 
+               priority++;
+           
 
         } else {
             if (stack != null)
