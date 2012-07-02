@@ -169,6 +169,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.ENGLISH);
     }
 
+    private boolean isFakeBugType(String type) {
+        return "MISSING".equals(type) || "FOUND".equals(type);
+    }
     /**
      * Constructor.
      *
@@ -185,7 +188,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
         BugPattern p = DetectorFactoryCollection.instance().lookupBugPattern(type);
         if (p == null) {
-            if (!"MISSING".equals(type)  && missingBugTypes.add(type)) {
+            if (!isFakeBugType(type) && missingBugTypes.add(type)) {
                 String msg = "Can't find definition of bug type " + type;
                 AnalysisContext.logError(msg, new IllegalArgumentException(msg));
             }
