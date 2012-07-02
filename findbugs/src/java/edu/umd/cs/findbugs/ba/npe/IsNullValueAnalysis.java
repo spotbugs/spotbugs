@@ -251,7 +251,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                 else if (n == NullnessAnnotation.NONNULL)
                     // Parameter declared @NonNull
                     // TODO: label this so we don't report defensive programming
-                    value = IsNullValue.nonNullValue();
+                    value = false ? IsNullValue.nonNullValue()  : IsNullValue.parameterMarkedAsNonnull(methodParameter);
                 else
                     // Don't know; use default value, normally non-reporting
                     // nonnull

@@ -328,6 +328,12 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
     }
 
     /**
+     * Get instance representing a parameter marked as Nonnull
+     */
+    public static IsNullValue parameterMarkedAsNonnull(XMethodParameter mp) {
+        return instanceByFlagsList[PARAM >> FLAG_SHIFT][NN];
+    }
+    /**
      * Get non-reporting non-null value. This is what we use for unknown values.
      */
     public static IsNullValue nonReportingNotNullValue() {

@@ -1035,8 +1035,11 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
         boolean isChecked = redundantBranch.firstValue.isChecked();
         boolean wouldHaveBeenAKaboom = redundantBranch.firstValue.wouldHaveBeenAKaboom();
-        Location locationOfKaBoom = redundantBranch.firstValue.getLocationOfKaBoom();
+        boolean isParameter = redundantBranch.firstValue.isParamValue();
 
+        Location locationOfKaBoom = redundantBranch.firstValue.getLocationOfKaBoom();
+        if (isParameter && !wouldHaveBeenAKaboom)
+            return;
         boolean createdDeadCode = false;
         boolean infeasibleEdgeSimplyThrowsException = false;
         Edge infeasibleEdge = redundantBranch.infeasibleEdge;
