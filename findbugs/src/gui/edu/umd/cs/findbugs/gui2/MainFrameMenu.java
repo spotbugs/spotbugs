@@ -182,7 +182,7 @@ public class MainFrameMenu implements Serializable {
         JMenu windowMenu = mainFrame.getGuiLayout().createWindowMenu();
 
         JMenuItem newProjectMenuItem = null;
-        if (!FindBugs.noAnalysis) {
+        if (!FindBugs.isNoAnalysis()) {
             newProjectMenuItem = newJMenuItem("menu.new_item", "New Project", KeyEvent.VK_N);
 
             attachAcceleratorKey(newProjectMenuItem, KeyEvent.VK_N);
@@ -213,7 +213,7 @@ public class MainFrameMenu implements Serializable {
             }
         });
 
-        if (!FindBugs.noAnalysis) {
+        if (!FindBugs.isNoAnalysis()) {
             redoAnalysis = newJMenuItem("menu.rerunAnalysis", "Redo Analysis", KeyEvent.VK_R);
 
             redoAnalysis.setEnabled(false);
@@ -265,7 +265,7 @@ public class MainFrameMenu implements Serializable {
             }
         });
 
-        if (!FindBugs.noAnalysis)
+        if (!FindBugs.isNoAnalysis())
             fileMenu.add(newProjectMenuItem);
 
         fileMenu.add(openMenuItem);
@@ -275,7 +275,7 @@ public class MainFrameMenu implements Serializable {
         fileMenu.add(saveMenuItem);
         fileMenu.addSeparator();
         fileMenu.add(reconfigMenuItem);
-        if (!FindBugs.noAnalysis) {
+        if (!FindBugs.isNoAnalysis()) {
             fileMenu.add(redoAnalysis);
         }
 

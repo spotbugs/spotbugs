@@ -138,7 +138,7 @@ public abstract class FindBugs {
      */
     private static String home = System.getProperty("findbugs.home");
 
-    public static boolean noAnalysis = Boolean.getBoolean("findbugs.noAnalysis");
+    private static boolean noAnalysis = Boolean.getBoolean("findbugs.noAnalysis");
 
     /**
      * Disable analysis within FindBugs. Turns off loading of bug detectors.
@@ -146,7 +146,29 @@ public abstract class FindBugs {
     public static void setNoAnalysis() {
         noAnalysis = true;
     }
+    /**
+     * @return Returns the noAnalysis.
+     */
+    public static boolean isNoAnalysis() {
+        return noAnalysis;
+    }
 
+    private static boolean noMains = Boolean.getBoolean("findbugs.noMains");
+
+    /**
+     * Disable loading of FindBugsMain classes.
+     */
+    public static void setNoMains() {
+        noMains = true;
+    }
+
+    /**
+     * @return Returns the noMains.
+     */
+    public static boolean isNoMains() {
+        return noMains;
+    }
+  
     public static final Logger LOGGER = Logger.getLogger(FindBugs.class.getPackage().getName());
 
     static {

@@ -160,7 +160,7 @@ public class DetectorFactory {
             String reports, String requireJRE) {
         this.plugin = plugin;
         this.className = className;
-        this.detectorCreator = FindBugs.noAnalysis ? null : new ReflectionDetectorCreator(detectorClass);
+        this.detectorCreator = FindBugs.isNoAnalysis() ? null : new ReflectionDetectorCreator(detectorClass);
         this.defEnabled = enabled;
         this.speed = speed;
         this.reports = reports;
@@ -214,7 +214,7 @@ public class DetectorFactory {
      *         interface
      */
     public boolean isDetectorClassSubtypeOf(Class<?> otherClass) {
-        if (FindBugs.noAnalysis)
+        if (FindBugs.isNoAnalysis())
             throw new IllegalStateException("No analysis specified");
         return otherClass.isAssignableFrom(detectorCreator.getDetectorClass());
     }
@@ -370,7 +370,7 @@ public class DetectorFactory {
      */
     @Deprecated
     public Detector create(BugReporter bugReporter) {
-        if (FindBugs.noAnalysis)
+        if (FindBugs.isNoAnalysis())
             throw new IllegalStateException("No analysis specified");
         return detectorCreator.createDetector(bugReporter);
     }
@@ -383,7 +383,7 @@ public class DetectorFactory {
      * @return the Detector2
      */
     public Detector2 createDetector2(BugReporter bugReporter) {
-        if (FindBugs.noAnalysis)
+        if (FindBugs.isNoAnalysis())
             throw new IllegalStateException("No analysis specified");
         return detectorCreator.createDetector2(bugReporter);
     }

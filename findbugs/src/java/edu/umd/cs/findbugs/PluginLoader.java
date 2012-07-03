@@ -722,6 +722,7 @@ public class PluginLoader {
 
             // Create FindBugsMains
 
+            if (!FindBugs.isNoMains()) {
 
                 List<Node> findBugsMainList = XMLUtil.selectNodes(pluginDescriptor, "/FindbugsPlugin/FindBugsMain");
                 for (Node main : findBugsMainList) {
@@ -751,6 +752,7 @@ public class PluginLoader {
                         AnalysisContext.logError(msg, e2);
                     }
                 }
+            }
 
             List<Node> detectorNodeList = XMLUtil.selectNodes(pluginDescriptor, "/FindbugsPlugin/Detector");
             int detectorCount = 0;
@@ -768,7 +770,7 @@ public class PluginLoader {
 
                 // Create DetectorFactory for the detector
                 Class<?> detectorClass = null;
-                if (!FindBugs.noAnalysis) {
+                if (!FindBugs.isNoAnalysis()) {
                     detectorClass = classLoader.loadClass(className);
 
                     if (!Detector.class.isAssignableFrom(detectorClass) && !Detector2.class.isAssignableFrom(detectorClass))
@@ -1166,7 +1168,7 @@ public class PluginLoader {
             boolean disabled, String description, String details, PropertyBundle properties) throws PluginException {
         {
         Class<? extends T> componentClass = null;
-        if (!FindBugs.noAnalysis || componentKind == edu.umd.cs.findbugs.bugReporter.BugReporterDecorator.class) {
+        if (!FindBugs.isNoAnalysis() || componentKind == edu.umd.cs.findbugs.bugReporter.BugReporterDecorator.class) {
             componentClass = getClass(classLoader, componentClassname, componentKind);
         }
 

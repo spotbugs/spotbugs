@@ -192,7 +192,7 @@ public class FindBugs2 implements IFindBugsEngine {
      */
     public void execute() throws IOException, InterruptedException {
 
-        if (FindBugs.noAnalysis)
+        if (FindBugs.isNoAnalysis())
             throw new UnsupportedOperationException("This FindBugs invocation was started without analysis capabilities");
 
         Profiler profiler = bugReporter.getProjectStats().getProfiler();

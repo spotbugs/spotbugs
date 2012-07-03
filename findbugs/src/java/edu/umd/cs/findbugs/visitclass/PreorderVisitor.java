@@ -389,7 +389,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
         superclassName = dottedSuperclassName.replace('.', '/');
 
         ClassDescriptor cDesc = DescriptorFactory.createClassDescriptor(className);
-        if (!FindBugs.noAnalysis)
+        if (!FindBugs.isNoAnalysis())
         try {
             thisClassInfo = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, cDesc);
         } catch (CheckedAnalysisException e) {

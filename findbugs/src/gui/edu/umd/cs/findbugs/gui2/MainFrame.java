@@ -563,7 +563,7 @@ public class MainFrame extends FBFrame implements LogSync {
 
     void newProject() {
         clearSourcePane();
-        if (!FindBugs.noAnalysis) {
+        if (!FindBugs.isNoAnalysis()) {
             mainFrameMenu.enableOrDisableItems(curProject, bugCollection);
         }
 
