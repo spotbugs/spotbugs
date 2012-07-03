@@ -33,6 +33,11 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
         cloud = createWebCloudClient();
         responseIssue = createIssueToReturn(createEvaluation("NOT_A_BUG", SAMPLE_DATE + 100, "comment", "first"));
     }
+    
+    protected void tearDown() throws Exception {
+        cloud.throwBackgroundExceptions();
+        super.tearDown();
+    }
 
     @SuppressWarnings("deprecation")
     public void testStoreUserAnnotationAfterUploading() throws Exception {
