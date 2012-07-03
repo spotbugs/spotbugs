@@ -95,6 +95,7 @@ import de.tobject.findbugs.view.explorer.BugContentProvider;
 import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PluginException;
 import edu.umd.cs.findbugs.Project;
@@ -214,7 +215,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
         Version.registerApplication("FindBugs-Eclipse", Version.RELEASE);
 
-        // configure debugging
+         // configure debugging
         configurePluginDebugOptions();
 
         // initialize resource strings
@@ -242,6 +243,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             }
             System.setProperty("findbugs.cloud.default", defCloud);
         }
+
+        /** Don't load main classes */
+        FindBugs.setNoMains();
 
         // Register our save participant
         FindbugsSaveParticipant saveParticipant = new FindbugsSaveParticipant();
