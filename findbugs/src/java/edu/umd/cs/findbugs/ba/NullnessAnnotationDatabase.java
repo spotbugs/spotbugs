@@ -63,10 +63,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
             return false;
         XMethodParameter xmp = new XMethodParameter(m, param);
         NullnessAnnotation resolvedAnnotation = getResolvedAnnotation(xmp, true);
-        if (false) {
-            System.out.println("QQQ parameter " + param + " of " + m + " is " + resolvedAnnotation);
-            System.out.println(m.getSignature());
-        }
+       
 
         return resolvedAnnotation == NullnessAnnotation.NONNULL;
     }
