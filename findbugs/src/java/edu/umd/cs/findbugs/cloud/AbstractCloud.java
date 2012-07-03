@@ -689,7 +689,7 @@ public abstract class AbstractCloud implements Cloud {
         SigninState oldState = this.signinState;
         if (oldState == state)
             return;
-        LOGGER.log(Level.FINER, "State " + oldState + " -> " + state, new Throwable());
+        LOGGER.log(Level.FINER, "State " + oldState + " -> " + state, new Throwable("Change in login state at:"));
         this.signinState = state;
         for (CloudStatusListener statusListener : statusListeners)
             statusListener.handleStateChange(oldState, state);
