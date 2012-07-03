@@ -12,9 +12,9 @@
 	<classpathentry kind="lib" path="lib/mockito-all-1.8.2.jar" sourcepath="C:/Users/Keith/Code/Libraries/guava-r05/guava-src-r05.zip"/>
 	<classpathentry kind="lib" path="lib/guava.jar" sourcepath="C:/Users/Keith/Code/Libraries/guava-r05/guava-src-r05.zip"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.2.jar" sourcepath="C:/Users/Keith/Code/Libraries/commons-fileupload-1.2.2-src/src/java"/>
+	<classpathentry kind="lib" path="lib/JGoogleAnalytics_0.4.jar"/>
+	<classpathentry kind="lib" path="lib/charts4j-1.3.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/webCloudProtocol"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.5.jar" sourcepath="C:/Users/Keith/Code/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar"/>
-	<classpathentry kind="var" path="CODE_DIR/findbugs/server/common/lib/charts4j-1.3.jar" sourcepath="/CODE_DIR/lib/charts4j-1.3/src/main/java"/>
-	<classpathentry kind="var" path="CODE_DIR/findbugs/server/common/lib/JGoogleAnalytics_0.4.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
