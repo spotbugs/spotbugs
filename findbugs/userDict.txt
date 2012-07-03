@@ -28,3 +28,6 @@ jaime
 apache
 univ
 plugins
+rubrics
+dropdown
+checkbox
