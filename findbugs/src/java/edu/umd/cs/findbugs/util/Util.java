@@ -159,14 +159,13 @@ public class Util {
     static Collection<Runnable> runAtShutdown;
 
     public static String getNetworkErrorMessage(Throwable e) {
-        String errorMsg = e.getClass().getSimpleName() + ": " + e.getMessage();
         if (e.getClass().getSimpleName().equals("InvalidProtocolBufferException")) {
-            errorMsg = "Your Internet provider may require you to log in via your web browser.";
+             return "Your Internet provider may require you to log in via your web browser.";
         }
         if (e instanceof UnknownHostException) {
-            errorMsg = "You may not be connected to the Internet.";
-        }
-        return errorMsg;
+            return "You may not be connected to the Internet.";
+        } else
+            return e.getClass().getSimpleName() + ": " + e.getMessage();
     }
 
     static class ShutdownLogging {
