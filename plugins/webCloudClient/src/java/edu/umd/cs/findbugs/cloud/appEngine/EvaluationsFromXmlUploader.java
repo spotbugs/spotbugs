@@ -48,7 +48,6 @@ public class EvaluationsFromXmlUploader {
         int num = localAnnotations.size();
         if (num <= 0)
             return;
-        System.err.println("QQQ: tryUploadingLocalAnnotations checking");
         
         cloud.getBackgroundExecutor().execute(new Runnable() {
 
@@ -60,8 +59,6 @@ public class EvaluationsFromXmlUploader {
                 if (!triedToUpload.compareAndSet(false, true))
                     return;
               
-                new RuntimeException("QQQ: found local annotations").printStackTrace();
-                
                 cloud.getGuiCallback().invokeInGUIThread(new Runnable() {
 
                     public void run() {
@@ -86,7 +83,6 @@ public class EvaluationsFromXmlUploader {
     }
 
     void askUserAboutUploadingXMLDesignations(final IdentityHashMap<BugInstance, BugDesignation> localAnnotations ) {
-       new RuntimeException("QQQ: askUserAboutUploadingXMLDesignations").printStackTrace();
         
        Multiset<String> users = getAuthors(localAnnotations);
 
@@ -106,12 +102,11 @@ public class EvaluationsFromXmlUploader {
             }
             return;
         }
-        System.err.println("QQQ: told to upload");
+        
         try {
             cloud.signInIfNecessary("To store your reviews on the " + cloud.getCloudName()
                     + ", you must sign in first.");
         } catch (SignInCancelledException e) {
-            System.out.println("QQQ: signin canceled");
             return;
         }
         if (cloud.getSigninState() != Cloud.SigninState.SIGNED_IN) {
@@ -177,7 +172,6 @@ public class EvaluationsFromXmlUploader {
     @SuppressWarnings({ "deprecation" })
     void actuallyUploadXmlEvaluations(IdentityHashMap<BugInstance, BugDesignation> designationsLoadedFromXML) {
         int uploaded = 0;
-        System.err.println("QQQ: actuallyUploadXmlEvaluations");
         try {
             cloud.waitUntilNewIssuesUploaded();
 

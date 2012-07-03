@@ -422,7 +422,6 @@ public class WebCloudNetworkClient {
         // kludgy but works.
     
         BugDesignation designation = bugInstance.getNonnullUserDesignation();
-        new RuntimeException("QQQ: storeUserAnnotation of " + designation + " for " + bugInstance.getMessage()).printStackTrace();
         long timestamp = designation.getTimestamp();
         String designationKey = designation.getDesignationKey();
         String comment = designation.getAnnotationText();
