@@ -4,20 +4,15 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
@@ -39,8 +34,6 @@ import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup;
 
 class MockWebCloudClient extends WebCloudClient {
-    private static final Logger LOGGER = Logger.getLogger(MockWebCloudClient.class.getPackage().getName());
-
     private List<ExpectedConnection> expectedConnections = new ArrayList<ExpectedConnection>();
 
     private int nextConnection = 0;
@@ -56,29 +49,7 @@ class MockWebCloudClient extends WebCloudClient {
     public List<String> statusMsgHistory = new CopyOnWriteArrayList<String>();
 
     private final Object statusMsgLock = new Object();
-    
-    public ConcurrentLinkedQueue<Throwable> backgroundExceptions = new ConcurrentLinkedQueue<Throwable>();
 
-    protected UncaughtExceptionHandler getUncaughtBackgroundExceptionHandler() {
-        return new UncaughtExceptionHandler() {
-
-            public void uncaughtException(Thread t, Throwable e) {
-                LOGGER.log(Level.SEVERE, "Exception in background thread " + t, e);
-                backgroundExceptions.add(e);
-            }};
-    }
-    
-    public void throwBackgroundExceptions() throws Exception {
-        Throwable t = backgroundExceptions.poll();
-        if (t instanceof Exception)
-            throw (Exception) t;
-        if (t instanceof Error)
-            throw (Error) t;
-        if (t != null)
-            throw new AssertionError("Weird throwable", t);
-        
-    }
-    
     public MockWebCloudClient(CloudPlugin plugin, SortedBugCollection bugs, List<HttpURLConnection> mockConnections)
             throws IOException {
         super(plugin, bugs, new Properties());

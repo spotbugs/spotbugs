@@ -2,7 +2,6 @@ package edu.umd.cs.findbugs.cloud.appEngine;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -71,7 +70,6 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     private static final int MAX_RECENT_EVALUATION_PAGES = 30;
 
     protected final @Nonnull ExecutorService backgroundExecutorService;
-    protected final @Nonnull UncaughtExceptionHandler uncaughtBackgroundExceptionHandler;
 
     private Timer timer;
 
@@ -102,8 +100,13 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     public WebCloudClient(CloudPlugin plugin, BugCollection bugs, Properties properties) {
         super(plugin, bugs, properties);
         setNetworkClient(new WebCloudNetworkClient());
-        uncaughtBackgroundExceptionHandler = getUncaughtBackgroundExceptionHandler();
-        backgroundExecutorService = createBackgroundExecutorService();
+        backgroundExecutorService = Executors.newFixedThreadPool(4, new ThreadFactory() {
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r, WebCloudClient.class.getSimpleName() + " bg");
+                t.setDaemon(true);
+                return t;
+            }
+        });
         if (backgroundExecutorService.isShutdown())
             LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown at creation");
 
@@ -113,25 +116,6 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
         } else {
             this.bugFilingHelper = new BugFilingHelper(this, bugFilerPlugin);
         }
-    }
-
-    protected UncaughtExceptionHandler getUncaughtBackgroundExceptionHandler() {
-        return new UncaughtExceptionHandler() {
-
-            public void uncaughtException(Thread t, Throwable e) {
-                LOGGER.log(Level.SEVERE, "Exception in background thread " + t, e);
-                
-            }};
-    }
-    protected ExecutorService createBackgroundExecutorService() {
-        return Executors.newFixedThreadPool(4, new ThreadFactory() {
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r, WebCloudClient.class.getSimpleName() + " bg");
-                t.setDaemon(true);
-                t.setUncaughtExceptionHandler(uncaughtBackgroundExceptionHandler);
-                return t;
-            }
-        });
     }
 
     /** package-private for testing */
