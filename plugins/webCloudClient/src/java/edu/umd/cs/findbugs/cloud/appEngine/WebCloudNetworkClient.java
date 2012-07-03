@@ -420,10 +420,13 @@ public class WebCloudNetworkClient {
     public void storeUserAnnotation(BugInstance bugInstance) throws SignInCancelledException, IOException {
         // store this stuff first because signIn might clobber it. this is
         // kludgy but works.
+    
         BugDesignation designation = bugInstance.getNonnullUserDesignation();
+        new RuntimeException("QQQ: storeUserAnnotation of " + designation + " for " + bugInstance.getMessage()).printStackTrace();
         long timestamp = designation.getTimestamp();
         String designationKey = designation.getDesignationKey();
         String comment = designation.getAnnotationText();
+        designation.cleanDirty();
 
         cloudClient.signInIfNecessary("To store your reviews on the " + cloudClient.getCloudName() + ", you must sign in first.");
 

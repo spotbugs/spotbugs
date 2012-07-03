@@ -4,15 +4,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
@@ -34,6 +38,9 @@ import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.username.WebCloudNameLookup;
 
 class MockWebCloudClient extends WebCloudClient {
+    
+    private static final Logger LOGGER = Logger.getLogger(MockWebCloudClient.class.getPackage().getName());
+
     private List<ExpectedConnection> expectedConnections = new ArrayList<ExpectedConnection>();
 
     private int nextConnection = 0;
@@ -75,6 +82,34 @@ class MockWebCloudClient extends WebCloudClient {
         initialized = true;
     }
 
+    private ConcurrentLinkedQueue<Throwable> backgroundExceptions = new ConcurrentLinkedQueue<Throwable>();
+    
+    protected UncaughtExceptionHandler getuUncaughtBackgroundExceptionHandler() {
+        return new UncaughtExceptionHandler() {
+            public void uncaughtException(Thread arg0, Throwable arg1) {
+                backgroundExceptions.add(arg1);
+                LOGGER.log(Level.WARNING, "background exeception in " + arg0.getName(), arg1);
+            }    
+        };
+    }
+    
+    public void throwBackgroundException() throws Exception {
+        Throwable t = backgroundExceptions.poll();
+        if (t == null) 
+            return;
+        if (t instanceof Exception) throw (Exception) t;
+        if (t instanceof Error) throw (Error) t;
+        AssertionError ae = new AssertionError("Weird throwable");
+        ae.initCause(t);
+        throw ae;
+    }
+    
+    public void awaitBackgroundTasks() throws InterruptedException {
+        backgroundExecutorService.awaitTermination(3, TimeUnit.SECONDS);
+        backgroundExecutorService.shutdown();
+        backgroundExecutorService.awaitTermination(5, TimeUnit.SECONDS);
+        
+    }
     @Override
     public String getCloudName() {
         return "FindBugs Cloud";
@@ -114,7 +149,7 @@ class MockWebCloudClient extends WebCloudClient {
      * requested more than once, this will return only the data from the LATEST
      * one.
      */
-    public byte[] postedData(String url) {
+    public byte[] postedData(String url) throws IOException {
         return getLatestExpectedConnection(url).getPostData();
     }
 
@@ -233,7 +268,7 @@ class MockWebCloudClient extends WebCloudClient {
     private class MockWebCloudNetworkClient extends WebCloudNetworkClient {
         @Override
         HttpURLConnection openConnection(String url) {
-            System.out.println("request " + url);
+            new RuntimeException("QQQ: request " + nextConnection + ":" + url + " expecting " + expectedConnections).printStackTrace();
             ExpectedConnection connection = null;
             if (nextConnection >= expectedConnections.size()) {
                 ExpectedConnection lastConnection = expectedConnections.get(expectedConnections.size() - 1);
@@ -330,7 +365,7 @@ class MockWebCloudClient extends WebCloudClient {
             return this;
         }
 
-        public byte[] getPostData() {
+        public byte[] getPostData() throws IOException {
             return getOutputStream().toByteArray();
         }
 
@@ -357,18 +392,19 @@ class MockWebCloudClient extends WebCloudClient {
 
         @Override
         public String toString() {
-            ByteArrayOutputStream postStream = getOutputStream();
+            ByteArrayOutputStream postStream;
+            try {
+                postStream = getOutputStream();
+            } catch (IOException e) {
+               return e.toString();
+            }
             return "/" + url() + (postStream.size() > 0 ? " <" + postStream.size() + ">" : "");
         }
 
         // ====================== end of public methods =======================
 
-        private ByteArrayOutputStream getOutputStream() {
-            try {
+        private ByteArrayOutputStream getOutputStream() throws IOException {
                 return (ByteArrayOutputStream) mockConnection.getOutputStream();
-            } catch (IOException e) {
-                throw new IllegalStateException(e);
-            }
         }
     }
 }

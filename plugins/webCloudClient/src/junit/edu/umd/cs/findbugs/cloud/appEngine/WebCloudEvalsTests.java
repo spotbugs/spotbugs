@@ -33,6 +33,12 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
         cloud = createWebCloudClient();
         responseIssue = createIssueToReturn(createEvaluation("NOT_A_BUG", SAMPLE_DATE + 100, "comment", "first"));
     }
+    
+    protected void tearDown() throws Exception {
+        cloud.awaitBackgroundTasks();
+        cloud.throwBackgroundException();
+        super.tearDown();
+    }
 
     @SuppressWarnings("deprecation")
     public void testStoreUserAnnotationAfterUploading() throws Exception {
@@ -229,6 +235,7 @@ public class WebCloudEvalsTests extends AbstractWebCloudTest {
         cloud.expectConnection("find-issues");
         cloud.expectConnection("get-recent-evaluations").withResponse(recentEvalResponse);
 
+        foundIssue.getNonnullUserDesignation().cleanDirty();
         // execute
         cloud.initialize();
         cloud.initiateCommunication();

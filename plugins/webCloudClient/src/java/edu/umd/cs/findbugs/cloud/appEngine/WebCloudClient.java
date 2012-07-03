@@ -2,6 +2,7 @@ package edu.umd.cs.findbugs.cloud.appEngine;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -50,6 +51,8 @@ import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.cloud.MutableCloudTask;
 import edu.umd.cs.findbugs.cloud.OnlineCloud;
 import edu.umd.cs.findbugs.cloud.SignInCancelledException;
+import edu.umd.cs.findbugs.cloud.Cloud.CloudStatusListener;
+import edu.umd.cs.findbugs.cloud.Cloud.SigninState;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
@@ -70,6 +73,7 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     private static final int MAX_RECENT_EVALUATION_PAGES = 30;
 
     protected final @Nonnull ExecutorService backgroundExecutorService;
+    protected final @Nonnull UncaughtExceptionHandler uncaughtBackgroundExceptionHandler;
 
     private Timer timer;
 
@@ -100,13 +104,8 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
     public WebCloudClient(CloudPlugin plugin, BugCollection bugs, Properties properties) {
         super(plugin, bugs, properties);
         setNetworkClient(new WebCloudNetworkClient());
-        backgroundExecutorService = Executors.newFixedThreadPool(4, new ThreadFactory() {
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r, WebCloudClient.class.getSimpleName() + " bg");
-                t.setDaemon(true);
-                return t;
-            }
-        });
+        uncaughtBackgroundExceptionHandler = getUncaughtBackgroundExceptionHandler();
+        backgroundExecutorService = createBackgroundExecutorService();
         if (backgroundExecutorService.isShutdown())
             LOGGER.log(Level.SEVERE, "backgroundExecutor service is shutdown at creation");
 
@@ -116,6 +115,25 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
         } else {
             this.bugFilingHelper = new BugFilingHelper(this, bugFilerPlugin);
         }
+    }
+
+    protected UncaughtExceptionHandler getUncaughtBackgroundExceptionHandler() {
+        return new UncaughtExceptionHandler() {
+
+            public void uncaughtException(Thread t, Throwable e) {
+                LOGGER.log(Level.SEVERE, "Exception in background thread " + t, e);
+                
+            }};
+    }
+    protected ExecutorService createBackgroundExecutorService() {
+        return Executors.newFixedThreadPool(4, new ThreadFactory() {
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r, WebCloudClient.class.getSimpleName() + " bg");
+                t.setDaemon(true);
+                t.setUncaughtExceptionHandler(uncaughtBackgroundExceptionHandler);
+                return t;
+            }
+        });
     }
 
     /** package-private for testing */
@@ -171,6 +189,19 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
 
         LOGGER.fine("Initializing " + getClass().getSimpleName());
         setSigninState(SigninState.UNAUTHENTICATED);
+        
+        addStatusListener(new CloudStatusListener() {
+            
+            public void handleStateChange(SigninState oldState, SigninState state) {
+                if (oldState.canUpload() && !state.canUpload())
+                    evaluationsFromXmlUploader.reset();
+            }
+            
+            public void handleIssueDataDownloadedEvent() {
+                // TODO Auto-generated method stub
+                
+            }
+        });
 
         try {
             if (!super.initialize()) {
@@ -238,6 +269,8 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
         return getSigninState().couldSignIn();
     }
 
+
+    
     @Override
     public void shutdown() {
         switch(getSigninState()) {

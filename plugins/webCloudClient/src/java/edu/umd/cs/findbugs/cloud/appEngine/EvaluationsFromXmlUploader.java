@@ -16,41 +16,56 @@ import edu.umd.cs.findbugs.util.Multiset;
 import edu.umd.cs.findbugs.util.Util;
 
 public class EvaluationsFromXmlUploader {
-    private IdentityHashMap<BugInstance, BugDesignation> localAnnotations;
-
     private final WebCloudClient cloud;
 
-    private AtomicBoolean checkedForUpload = new AtomicBoolean(false);
+    private final AtomicBoolean checkedForUpload = new AtomicBoolean(false);
 
+    private final AtomicBoolean triedToUpload = new AtomicBoolean(false);
+
+    
     public EvaluationsFromXmlUploader(WebCloudClient cloud) {
         this.cloud = cloud;
     }
 
+    public void reset() {
+        checkedForUpload.set(false);
+        triedToUpload.set(false);
+    }
     public void tryUploadingLocalAnnotations(boolean force) {
         if (!force && !checkedForUpload.compareAndSet(false, true))
             return;
-        if (cloud.getGuiCallback().isHeadless())
+        if (triedToUpload.get())
+            return;
+       if (cloud.getGuiCallback().isHeadless())
             return;
         if (cloud.getSigninState().shouldAskToSignIn() && !cloud.couldSignIn())
             return;
-        localAnnotations = getDesignationsFromXML();
 
+        final IdentityHashMap<BugInstance, BugDesignation> localAnnotations = getDesignationsFromXML();
+        if (triedToUpload.get())
+            return;
+       
         int num = localAnnotations.size();
         if (num <= 0)
             return;
-
+        System.err.println("QQQ: tryUploadingLocalAnnotations checking");
+        
         cloud.getBackgroundExecutor().execute(new Runnable() {
 
             public void run() {
                 cloud.waitUntilIssueDataDownloaded();
-                removeIssuesThatShouldNotBeUploaded();
+                removeIssuesThatShouldNotBeUploaded(localAnnotations);
                 if (localAnnotations.isEmpty())
                     return;
-
+                if (!triedToUpload.compareAndSet(false, true))
+                    return;
+              
+                new RuntimeException("QQQ: found local annotations").printStackTrace();
+                
                 cloud.getGuiCallback().invokeInGUIThread(new Runnable() {
 
                     public void run() {
-                        askUserAboutUploadingXMLDesignations();
+                        askUserAboutUploadingXMLDesignations(localAnnotations);
                     }
                 });
 
@@ -59,7 +74,7 @@ public class EvaluationsFromXmlUploader {
         });
     }
 
-    private void removeIssuesThatShouldNotBeUploaded() {
+    private void removeIssuesThatShouldNotBeUploaded(IdentityHashMap<BugInstance, BugDesignation> localAnnotations ) {
         for (Iterator<Map.Entry<BugInstance, BugDesignation>> i = localAnnotations.entrySet().iterator(); i.hasNext();) {
             Map.Entry<BugInstance, BugDesignation> e = i.next();
             BugInstance b = e.getKey();
@@ -70,7 +85,8 @@ public class EvaluationsFromXmlUploader {
         }
     }
 
-    private void askUserAboutUploadingXMLDesignations() {
+    void askUserAboutUploadingXMLDesignations(final IdentityHashMap<BugInstance, BugDesignation> localAnnotations ) {
+       new RuntimeException("QQQ: askUserAboutUploadingXMLDesignations").printStackTrace();
         
        Multiset<String> users = getAuthors(localAnnotations);
 
@@ -90,11 +106,12 @@ public class EvaluationsFromXmlUploader {
             }
             return;
         }
-        System.out.println(result);
+        System.err.println("QQQ: told to upload");
         try {
             cloud.signInIfNecessary("To store your reviews on the " + cloud.getCloudName()
                     + ", you must sign in first.");
         } catch (SignInCancelledException e) {
+            System.out.println("QQQ: signin canceled");
             return;
         }
         if (cloud.getSigninState() != Cloud.SigninState.SIGNED_IN) {
@@ -158,8 +175,9 @@ public class EvaluationsFromXmlUploader {
     }
 
     @SuppressWarnings({ "deprecation" })
-    private void actuallyUploadXmlEvaluations(IdentityHashMap<BugInstance, BugDesignation> designationsLoadedFromXML) {
+    void actuallyUploadXmlEvaluations(IdentityHashMap<BugInstance, BugDesignation> designationsLoadedFromXML) {
         int uploaded = 0;
+        System.err.println("QQQ: actuallyUploadXmlEvaluations");
         try {
             cloud.waitUntilNewIssuesUploaded();
 
@@ -175,6 +193,8 @@ public class EvaluationsFromXmlUploader {
            cloud.setStatusMsg(statusMsg);
 
         } catch (Exception e) {
+            e.printStackTrace(System.err);
+            
             cloud.getGuiCallback().showMessageDialog(
                     "Unable to upload " + (designationsLoadedFromXML.size() - uploaded)
                             + " issues from XML to cloud due to error\n" + e.getMessage());
