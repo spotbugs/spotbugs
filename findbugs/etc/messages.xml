@@ -51,7 +51,7 @@ This plugin contains all of the standard FindBugs detectors.
   <FindBugsMain cmd="merge" class="edu.umd.cs.findbugs.workflow.Update">
     <Description>Combine analysis results from different versions of software to produce multi-version analysis results </Description>
   </FindBugsMain>
-  
+
   <FindBugsMain cmd="dis" class="edu.umd.cs.findbugs.workflow.PrintClass">
     <Description>Disassemble a class file</Description>
   </FindBugsMain>
@@ -305,7 +305,7 @@ by other detectors.</p>
   <Detector class="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures">
     <Details>
 <![CDATA[
-<p> Looks for immutable classes with methods that return new instances of that class, 
+<p> Looks for immutable classes with methods that return new instances of that class,
 where people might accidently think those methods mutate the instance they are invoked on.
 </p>
 ]]>
@@ -893,7 +893,7 @@ of Serializable classes.  </p>
   <Detector class="edu.umd.cs.findbugs.detect.ExplicitSerialization">
     <Details>
 <![CDATA[
-<p> Looks for explicit serialization via readObject and 
+<p> Looks for explicit serialization via readObject and
     writeObject as evidence
 that this class is, indeed, serialized. </p>
 ]]>
@@ -1633,7 +1633,7 @@ This partical method invocation doesn't make sense, for reasons that should be a
 </p>
 
 ]]>
-    </Details> 
+    </Details>
     </BugPattern>
 
   <BugPattern type="DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD">
@@ -1752,7 +1752,7 @@ consider using a commercial static analysis or pen-testing tool.
 See <a href="http://cwe.mitre.org/data/definitions/23.html">http://cwe.mitre.org/data/definitions/23.html</a>
 for more information.</p>
 <p>FindBugs looks only for the most blatant, obvious cases of relative path traversal.
-If FindBugs found <em>any</em>, you <em>almost certainly</em> have more 
+If FindBugs found <em>any</em>, you <em>almost certainly</em> have more
 vulnerabilities that FindBugs doesn't report. If you are concerned about relative path traversal, you should seriously
 consider using a commercial static analysis or pen-testing tool.
 </p>
@@ -1765,13 +1765,13 @@ consider using a commercial static analysis or pen-testing tool.
     <LongDescription>Absolute path traversal in {1}</LongDescription>
     <Details>
 <![CDATA[
-    <p>The software uses an HTTP request parameter to construct a pathname that should be within a restricted directory, 
+    <p>The software uses an HTTP request parameter to construct a pathname that should be within a restricted directory,
 but it does not properly neutralize absolute path sequences such as "/abs/path" that can resolve to a location that is outside of that directory.
 
 See <a href="http://cwe.mitre.org/data/definitions/36.html">http://cwe.mitre.org/data/definitions/36.html</a>
 for more information.</p>
 <p>FindBugs looks only for the most blatant, obvious cases of absolute path traversal.
-If FindBugs found <em>any</em>, you <em>almost certainly</em> have more 
+If FindBugs found <em>any</em>, you <em>almost certainly</em> have more
 vulnerabilities that FindBugs doesn't report. If you are concerned about absolute path traversal, you should seriously
 consider using a commercial static analysis or pen-testing tool.
 </p>
@@ -1939,8 +1939,8 @@ another package.</p>
     <Details>
        <![CDATA[
        <p> The field is marked as nonnull, but isn't written to by the constructor.
-	The field might be initialized elsewhere during constructor, or might always
-	be initialized before use.
+    The field might be initialized elsewhere during constructor, or might always
+    be initialized before use.
        </p>
        ]]>
        </Details>
@@ -2898,7 +2898,7 @@ by reversing the order of the operands rather than by negating the results.
     <LongDescription>{1} returns Integer.MIN_VALUE, which can't be negated</LongDescription>
     <Details>
 <![CDATA[
-  <p> In some situation, this compareTo or compare method returns 
+  <p> In some situation, this compareTo or compare method returns
 the  constant Integer.MIN_VALUE, which is an exceptionally bad practice.
   The only thing that matters about the return value of compareTo is the sign of the result.
     But people will sometimes negate the return value of compareTo, expecting that this will negate
@@ -4622,9 +4622,9 @@ to use that non-null value. Calling readLine again will give you a different lin
 <p>This code calls a method and ignores the return value. The return value
 is the same type as the type the method is invoked on, and from our analysis it looks
 like the return value might be important (e.g., like ignoring the
-return value of <code>String.toLowerCase()</code>). 
+return value of <code>String.toLowerCase()</code>).
 </p>
-<p>We are guessing that ignoring the return value might be a bad idea just from 
+<p>We are guessing that ignoring the return value might be a bad idea just from
 a simple analysis of the body of the method. You can use a @CheckReturnValue annotation
 to instruct FindBugs as to whether ignoring the return value of this method
 is important or acceptable.
@@ -4689,7 +4689,7 @@ signals unexpected behavior by returning an atypical return value.
    <p> This code invoked a compareTo or compare method, and checks to see if the return value is a specific value,
 such as 1 or -1. When invoking these methods, you should only check the sign of the result, not for any specific
 non-zero value. While many or most compareTo and compare methods only return -1, 0 or 1, some of them
-will return other values. 
+will return other values.
 ]]>
     </Details>
   </BugPattern>
@@ -5872,7 +5872,7 @@ of these classes have their own concurrency control mechanisms that are orthogon
 the synchronization provided by the Java keyword <code>synchronized</code>. For example,
 synchronizing on an <code>AtomicBoolean</code> will not prevent other threads
 from modifying the  <code>AtomicBoolean</code>.</p>
-<p>Such code may be correct, but should be carefully reviewed and documented, 
+<p>Such code may be correct, but should be carefully reviewed and documented,
 and may confuse people who have to maintain the code at a later date.
 </p>
 ]]>
@@ -7031,7 +7031,7 @@ cast will not fail.
     <Details>
 <![CDATA[
 <p>
-This code performs an unchecked cast of the return value of a method. 
+This code performs an unchecked cast of the return value of a method.
 The code might be calling the method in such a way that the cast is guaranteed to be
 safe, but FindBugs is unable to verify that the cast is safe.  Check that your program logic ensures that this
 cast will not fail.
@@ -7492,7 +7492,7 @@ always be true, and <code>c.retainAll(c)</code> should have no effect.
     <LongDescription>{0} is both an Iterator and a Map.Entry </LongDescription>
     <Details>
      <![CDATA[
-     <p> The entrySet() method is allowed to return a view of the 
+     <p> The entrySet() method is allowed to return a view of the
      underlying Map in which an Iterator and Map.Entry. This clever
      idea was used in several Map implementations, but introduces the possibility
      of nasty coding mistakes. If a map <code>m</code> returns
@@ -7509,7 +7509,7 @@ always be true, and <code>c.retainAll(c)</code> should have no effect.
     <LongDescription>Adding elements of an entry set may fail due to reuse of {2.simpleClass}.Entry object in {1}</LongDescription>
     <Details>
      <![CDATA[
-     <p> The entrySet() method is allowed to return a view of the 
+     <p> The entrySet() method is allowed to return a view of the
      underlying Map in which a single Entry object is reused and returned
      during the iteration.  As of Java 1.6, both IdentityHashMap
      and EnumMap did so. When iterating through such a Map,
@@ -8108,8 +8108,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="JCIP">Violation of net.jcip annotations</BugCode>
   <BugCode abbrev="USELESS_STRING">Useless/non-informative string generated</BugCode>
   <BugCode abbrev="DMI">Dubious method invocation</BugCode>
-  <BugCode abbrev="PZ">Warning inspired by Josh Bloch's and Neal Gafter's Programming
-    Puzzlers</BugCode>
+  <BugCode abbrev="PZ">Warning inspired by Josh Bloch's and Neal Gafter's Programming Puzzlers</BugCode>
   <BugCode abbrev="SWL">Sleep with lock held</BugCode>
   <BugCode abbrev="J2EE">J2EE error</BugCode>
   <BugCode abbrev="DB">Duplicate Branches</BugCode>
@@ -8125,6 +8124,5 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="TQ">Inconsistent use of type qualifier annotations</BugCode>
   <BugCode abbrev="OBL">Unsatisfied obligation to clean up stream or resource</BugCode>
   <BugCode abbrev="FB">FindBugs did not produce the expected warnings on a method</BugCode>
-  <BugCode abbrev="DL">Unintended contention or possible deadlock due to locking on shared
-    objects</BugCode>
+  <BugCode abbrev="DL">Unintended contention or possible deadlock due to locking on shared objects</BugCode>
 </MessageCollection>
