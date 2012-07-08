@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 /**
  * Submitted By: Bhavana Summary:
  * 
@@ -34,22 +36,22 @@ public class Bug1744457 {
 
     public static void main(String args[]) {
         Bug1744457 b = new Bug1744457();
-        // b.justFirst();
-        // b.justSecond();
+        b.justFirst();
+        b.justSecond();
         b.both();
     }
 
-    // // grep -A 1 ES_COMPARING_STRINGS_WITH_EQ | grep Bug1744457
+    @ExpectWarning("ES_COMPARING_STRINGS_WITH_EQ,SBSC_USE_STRINGBUFFER_CONCATENATION")
     public void both() {
-        List A = new ArrayList();
+        List<String> A = new ArrayList<String>();
         A.add("Alex");
         A.add("john");
         A.add("lily");
         A.add("tracy");
-        Iterator it = A.iterator();
+        Iterator<String> it = A.iterator();
 
         while (it.hasNext()) {
-            String retrieve = (String) it.next();
+            String retrieve = it.next();
             if (retrieve != null && !retrieve.equals(""))
                 System.out.println(retrieve);
         }
@@ -57,29 +59,45 @@ public class Bug1744457 {
         it = A.iterator();
         String add = "";
         while (it.hasNext()) {
-            String retrieve = (String) it.next();
-            // FindBugs incorrectly misses ES_COMPARING_STRINGS_WITH_EQ
+            String retrieve = it.next();
             if (retrieve != null && retrieve != "")
-                // FindBugs correctly finds
-                // SBSC_USE_STRINGBUFFER_CONCATENATION
+               add += retrieve;
+            System.out.println(add);
+        }
+    }
+
+    public void justFirst() {
+        List<String> A = new ArrayList<String>();
+        A.add("Alex");
+        A.add("john");
+        A.add("lily");
+        A.add("tracy");
+        Iterator<String> it = A.iterator();
+
+        while (it.hasNext()) {
+            String retrieve = it.next();
+            if (retrieve != null && !retrieve.equals(""))
+                System.out.println(retrieve);
+        }
+    }
+
+    @ExpectWarning("ES_COMPARING_STRINGS_WITH_EQ,SBSC_USE_STRINGBUFFER_CONCATENATION")
+    public void justSecond() {
+        List<String> A = new ArrayList<String>();
+        A.add("Alex");
+        A.add("john");
+        A.add("lily");
+        A.add("tracy");
+        Iterator <String>it = A.iterator();
+
+        it = A.iterator();
+        String add = "";
+        while (it.hasNext()) {
+            String retrieve = it.next();
+            if (retrieve != null && retrieve != "")
                 add += retrieve;
             System.out.println(add);
         }
     }
 
-    /*
-     * public void justFirst() { List A = new ArrayList(); A.add("Alex");
-     * A.add("john"); A.add("lily"); A.add("tracy"); Iterator it = A.iterator();
-     * 
-     * while (it.hasNext()) { String retrieve = (String) it.next(); if (retrieve
-     * != null && !retrieve.equals("")) System.out.println(retrieve); } }
-     * 
-     * public void justSecond() { List A = new ArrayList(); A.add("Alex");
-     * A.add("john"); A.add("lily"); A.add("tracy"); Iterator it = A.iterator();
-     * 
-     * it = A.iterator(); String add = ""; while (it.hasNext()) { String
-     * retrieve = (String) it.next(); // FindBugs correctly warns on retrieve !=
-     * "" if (retrieve != null && retrieve != "") add += retrieve;
-     * System.out.println(add); } }
-     */
 }

@@ -60,6 +60,9 @@ public class RefComparisonWarningProperty extends AbstractWarningProperty {
     /** Comparing static string and an unknown string. */
     public static final RefComparisonWarningProperty STATIC_AND_UNKNOWN = new RefComparisonWarningProperty("STATIC_AND_UNKNOWN",
             PriorityAdjustment.LOWER_PRIORITY);
+    /** Comparing static string and an unknown string. */
+    public static final RefComparisonWarningProperty EMPTY_AND_UNKNOWN = new RefComparisonWarningProperty("EMPTY_AND_UNKNOWN",
+            PriorityAdjustment.NO_ADJUSTMENT);
 
     /** Saw a call to String.intern(). */
     public static final RefComparisonWarningProperty SAW_INTERN = new RefComparisonWarningProperty("SAW_INTERN",
