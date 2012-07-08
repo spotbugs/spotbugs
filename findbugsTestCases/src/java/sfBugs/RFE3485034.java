@@ -6,6 +6,10 @@ import java.io.InputStream;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
+/**
+ * http://sourceforge.net/tracker/?func=detail&aid=3485034&group_id=96405&atid=614696
+ *
+ */
 public class RFE3485034 {
 
     @ExpectWarning("OBL_UNSATISFIED_OBLIGATION,OS_OPEN_STREAM")
