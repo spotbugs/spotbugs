@@ -1,8 +1,11 @@
 import java.util.Calendar;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 /* From "More Programming Puzzlers" */
 
 public class Elvis {
+    @ExpectWarning("SI_INSTANCE_BEFORE_FINALS_ASSIGNED")
     public static final Elvis INSTANCE = new Elvis();
 
     private final int beltSize;

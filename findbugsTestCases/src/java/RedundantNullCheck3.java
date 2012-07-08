@@ -1,5 +1,8 @@
 import java.io.FileInputStream;
 
+import edu.umd.cs.findbugs.annotations.Confidence;
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 class RedundantNullCheck3 {
 
     public void test1() throws Exception {
@@ -9,6 +12,7 @@ class RedundantNullCheck3 {
             in.close();
     }
 
+    @NoWarning(value="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", confidence = Confidence.MEDIUM)
     public void test2() throws Exception {
         FileInputStream in = new FileInputStream("/dev/null");
         // don't generate a warning here
