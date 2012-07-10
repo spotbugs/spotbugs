@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -229,15 +230,28 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
      * very fast
      */
 
-    private ArrayList<SortableValue> enumsThatExist(BugAspects a) {
-        if (st.getOrderBeforeDivider().size() == 0)
-            return null;
+    private List<SortableValue> enumsThatExist(BugAspects a) {
+        List<Sortables> orderBeforeDivider = st.getOrderBeforeDivider();
+        if (orderBeforeDivider.size() == 0) {
+            List<SortableValue> result = Collections.emptyList();
+            assert false;
+            return result;
+        }
 
-        Sortables key = (a.size() == 0 ? st.getOrderBeforeDivider().get(0) : st.getOrderBeforeDivider().get(
-                st.getOrderBeforeDivider().indexOf(a.last().key) + 1));
+        Sortables key;
+        if (a.size() == 0)
+            key = orderBeforeDivider.get(0);
+        else {
+            Sortables lastKey = a.last().key;
+            int index = orderBeforeDivider.indexOf(lastKey);
+            if (index + 1 < orderBeforeDivider.size())
+                key = orderBeforeDivider.get(index + 1);
+            else
+                key = lastKey;
+        }
 
         String[] all = key.getAll(bugSet.query(a));
-        ArrayList<SortableValue> result = new ArrayList<SortableValue>();
+        ArrayList<SortableValue> result = new ArrayList<SortableValue>(all.length);
         for (String i : all)
             result.add(new SortableValue(key, i));
         return result;
@@ -258,7 +272,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         if (isLeaf(child)) {
             return bugSet.query((BugAspects) parent).indexOf((BugLeafNode) child);
         } else {
-            ArrayList<SortableValue> stringPairs = enumsThatExist((BugAspects) parent);
+            List<SortableValue> stringPairs = enumsThatExist((BugAspects) parent);
             if (stringPairs == null) {
                 // XXX-Threading difficulties-stringpairs is null somehow
                 Debug.println("Stringpairs is null on getIndexOfChild!  Error!");
