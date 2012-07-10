@@ -15,9 +15,54 @@
 				<td align="left" valign="top">
 
 
-					<h1>
-						FindBugs Change Log, Version @VERSION@
-					</h1>
+					<h1>FindBugs Change Log, Version @VERSION@</h1>
+
+                <ul>
+                    <li>New bug patterns; in some cases, bugs previous reported as other bug patterns are reported
+                        as instances of these new bug patterns in order to make it easier for developers to understand
+                        the bug reports</li>
+                    <ul>
+                        <li><a
+                            href="http://findbugs.sourceforge.net/bugDescriptions.html#PT_ABSOLUTE_PATH_TRAVERSAL">PT_ABSOLUTE_PATH_TRAVERSAL
+                        </a>
+                        <li><a
+                            href="http://findbugs.sourceforge.net/bugDescriptions.html#PT_RELATIVE_PATH_TRAVERSAL">PT_RELATIVE_PATH_TRAVERSAL
+                        </a>
+                        <li><a
+                            href="http://findbugs.sourceforge.net/bugDescriptions.html#NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR
+                        </a>
+                        <li><a
+                            href="http://findbugs.sourceforge.net/bugDescriptions.html#MS_SHOULD_BE_REFACTORED_TO_BE_FINAL">MS_SHOULD_BE_REFACTORED_TO_BE_FINAL
+                        </a>
+                        <li><a
+                            href="http://findbugs.sourceforge.net/bugDescriptions.html#BC_UNCONFIRMED_CAST_OF_RETURN_VALUE">BC_UNCONFIRMED_CAST_OF_RETURN_VALUE
+                        </a>
+                        <li><a
+                            href="http://findbugs.sourceforge.net/bugDescriptions.html#PT_ABSOLUTE_PATH_TRAVERSAL">PT_ABSOLUTE_PATH_TRAVERSAL
+                        </a>
+                        <li><a
+                            href="http://findbugs.sourceforge.net/bugDescriptions.html#TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS">TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS
+                        </a>
+                    </ul>
+                    <li>Changes to fix false negatives for the following bug patterns: <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#BC_UNCONFIRMED_CAST">BC_UNCONFIRMED_CAST</a>,
+                        <a href="http://findbugs.sourceforge.net/bugDescriptions.html#EC_BAD_ARRAY_COMPARE">EC_BAD_ARRAY_COMPARE</a>,
+                        <a href="http://findbugs.sourceforge.net/bugDescriptions.html#EQ_UNUSUAL">EQ_UNUSUAL</a>, <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#GC_UNRELATED_TYPES">GC_UNRELATED_TYPES</a>,
+                        and <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE">NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE</a>.
+
+                    
+                    <li>Changes to fix false positions for the following bug patterns: <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_DOH">DMI_DOH</a>, <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#EC_UNRELATED_TYPES">EC_UNRELATED_TYPES</a>,
+                        and <a href="http://findbugs.sourceforge.net/bugDescriptions.html#SE_BAD_FIELD">SE_BAD_FIELD</a>.
+                    
+                </ul>
+
+                <h1>
+                        FindBugs Change Log, Version 2.0.0
+                    </h1>
 
                                 <h2> Changes since version 1.3.8</h2>
 					<ul>
