@@ -310,37 +310,27 @@ public class BugLoader {
     BugCollection redoAnalysisKeepComments(@Nonnull Project p) {
         if (p == null)
             throw new NullPointerException("null project");
-
-        BugSet oldSet = BugSet.getMainBugSet();
-        BugCollection current = MainFrame.getInstance().getBugCollection();// Now
-                                                                           // we
-                                                                           // should
-                                                                           // no
-                                                                           // longer
-                                                                           // get
-                                                                           // this
-                                                                           // December
-                                                                           // 31st
-                                                                           // 1969
-                                                                           // business.
-        // Sourceforge bug 1800962 indicates 'current' can be null here
-        if (current != null)
-            for (BugLeafNode node : oldSet) {
-                BugInstance bug = node.getBug();
-                current.add(bug);
-            }
+        
+        BugCollection current = MainFrame.getInstance().getBugCollection();
+        
         Update update = new Update();
 
         RedoAnalysisCallback ac = new RedoAnalysisCallback();
 
         new AnalyzingDialog(p, ac, true);
 
-        if (current == null)
-            return ac.getBugCollection();
-        else if (ac.finished)
-            return update.mergeCollections(current, ac.getBugCollection(), true, false);
-        else
+        if (!ac.finished)
             return null;
+        if (current == null)
+            current =  ac.getBugCollection();   
+        else {
+            current =  update.mergeCollections(current, ac.getBugCollection(), true, false);
+            if (current.hasDeadBugs()) {
+                addDeadBugMatcher(current);
+            }
+        }
+       return current;
+       
 
     }
 

@@ -468,8 +468,11 @@ public class MainFrame extends FBFrame implements LogSync {
                 System.out.println("Setting bug collection; contains " + bugCollection.getCollection().size() + " bugs");
 
         }
-        if (bugCollection != null && bugCollection.getProject() != project)
-            throw new IllegalArgumentException("project and bug collection don't match");
+        if (bugCollection != null && bugCollection.getProject() != project) {
+            Project p2 = bugCollection.getProject();
+            throw new IllegalArgumentException(String.format("project %x and bug collection %x don't match",
+                    System.identityHashCode(project), System.identityHashCode(p2)));
+        }
         acquireDisplayWait();
         try {
             
@@ -607,6 +610,7 @@ public class MainFrame extends FBFrame implements LogSync {
         if (!canNavigateAway())
             return;
 
+        /// QQQ-TODO: new RuntimeException("Redo analysis called").printStackTrace();
         acquireDisplayWait();
         edu.umd.cs.findbugs.util.Util.runInDameonThread(
         new Runnable() {

@@ -978,7 +978,8 @@ public class SortedBugCollection implements BugCollection {
     public boolean add(BugInstance bugInstance, boolean updateActiveTime) {
         assert !bugsPopulated;
         if (bugsPopulated)
-            AnalysisContext.logError("Bug collection marked as populated, but bugs added", new RuntimeException());
+            AnalysisContext.logError("Bug collection marked as populated, but bugs added", 
+                    new RuntimeException("Bug collection marked as populated, but bugs added"));
         preciseHashOccurrenceNumbersAvailable = false;
         if (updateActiveTime) {
             bugInstance.setFirstVersion(sequence);
@@ -1142,7 +1143,7 @@ public class SortedBugCollection implements BugCollection {
      */
 
     public SortedBugCollection createEmptyCollectionWithMetadata() {
-        SortedBugCollection dup = new SortedBugCollection((ProjectStats) projectStats.clone(), comparator, project.duplicate());
+        SortedBugCollection dup = new SortedBugCollection(projectStats.clone(), comparator, project);
         dup.projectStats.clearBugCounts();
         dup.errorList.addAll(this.errorList);
         dup.missingClassSet.addAll(this.missingClassSet);
