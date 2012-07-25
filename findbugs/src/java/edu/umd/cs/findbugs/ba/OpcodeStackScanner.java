@@ -46,7 +46,7 @@ public class OpcodeStackScanner {
         } catch (EarlyExitException e) {
             return e.stack;
         }
-        throw new IllegalArgumentException("Didn't reach pc " + pc + " of " + method);
+        throw new IllegalArgumentException("Didn't reach pc " + pc + " of " + method + " in " +  theClass.getClassName() );
     }
 
     static class Scanner extends OpcodeStackDetector {
