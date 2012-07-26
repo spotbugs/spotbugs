@@ -24,12 +24,28 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * @author pwilliam
  */
 public class OpcodeStackScanner {
 
+    public static class UnreachableCodeException extends RuntimeException {
+       
+        public UnreachableCodeException( @DottedClassName String className, String methodName, String methodSignature, int pc) {
+            super("Didn't reach pc " + pc + " of " + className + "." + methodName + methodSignature);
+            this.className = className;
+            this.methodName = methodName;
+            this.methodSignature = methodSignature;
+            this.pc = pc;
+        }
+        @DottedClassName String className;
+        String methodName;
+        String methodSignature;
+        int pc;
+    }
+        
     static class EarlyExitException extends RuntimeException {
         final OpcodeStack stack;
 
@@ -46,12 +62,13 @@ public class OpcodeStackScanner {
         } catch (EarlyExitException e) {
             return e.stack;
         }
-        throw new IllegalArgumentException("Didn't reach pc " + pc + " of " + method + " in " +  theClass.getClassName() );
+        throw new UnreachableCodeException(theClass.getClassName(), method.getName(), method.getSignature(), pc);
     }
 
     static class Scanner extends OpcodeStackDetector {
 
         Scanner(JavaClass theClass, Method targetMethod, int targetPC) {
+            System.out.println("Scanning " + theClass.getClassName() + "." + targetMethod.getName());
             this.theClass = theClass;
             this.targetMethod = targetMethod;
             this.targetPC = targetPC;
@@ -65,6 +82,7 @@ public class OpcodeStackScanner {
 
         @Override
         public void sawOpcode(int seen) {
+            System.out.printf("%3d: %8s %s\n", getPC(), OPCODE_NAMES[seen], getStack());
             if (getPC() == targetPC)
                 throw new EarlyExitException(stack);
         }

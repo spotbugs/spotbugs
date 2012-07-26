@@ -63,6 +63,7 @@ import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.OpcodeStackScanner;
+import edu.umd.cs.findbugs.ba.OpcodeStackScanner.UnreachableCodeException;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -2349,10 +2350,16 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     public static @CheckForNull
     BugAnnotation getSourceForStackValue(ClassContext classContext, Method method, Location location, int depth) {
-        int pc = location.getHandle().getPosition();
-        OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
-        BugAnnotation a0 = getSomeSource(classContext, method, location, stack, depth);
-        return a0;
+        try {
+            int pc = location.getHandle().getPosition();
+            OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
+            BugAnnotation a0 = getSomeSource(classContext, method, location, stack, depth);
+            return a0;
+        } catch (UnreachableCodeException e) {
+            if (SystemProperties.ASSERTIONS_ENABLED)
+                AnalysisContext.logError(e.getMessage(), e);
+            return null;
+        }
     }
 
     public static @CheckForNull
