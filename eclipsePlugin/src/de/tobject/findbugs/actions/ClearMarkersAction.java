@@ -64,6 +64,7 @@ final class ClearMarkersJob extends FindBugsJob {
 
     ClearMarkersJob(IResource resource, List<WorkItem> resources) {
         super("Removing FindBugs markers", resource);
+        setRule(resource);
         this.resources = resources;
     }
 

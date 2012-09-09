@@ -36,11 +36,12 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.IField;
@@ -112,22 +113,32 @@ public final class MarkerUtil {
      *            the project
      * @param monitor
      */
-    public static void createMarkers(IJavaProject javaProject, BugCollection theCollection, ISchedulingRule rule, IProgressMonitor monitor) {
+    public static void createMarkers(final IJavaProject javaProject, final BugCollection theCollection, final ISchedulingRule rule, IProgressMonitor monitor) {
         if (monitor.isCanceled()) {
             return;
         }
-        List<MarkerParameter> bugParameters = createBugParameters(javaProject, theCollection, monitor);
+        final List<MarkerParameter> bugParameters = createBugParameters(javaProject, theCollection, monitor);
         if (monitor.isCanceled()) {
             return;
         }
-        IProject project = javaProject.getProject();
-        try {
-            project.getWorkspace().run(new MarkerReporter(bugParameters, theCollection, project), // action
-                    rule,
-                    IWorkspace.AVOID_UPDATE,  monitor);
-        } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Core exception on add marker");
-        }
+        WorkspaceJob wsJob = new WorkspaceJob("Creating FindBugs markers") {
+
+            @Override
+            public IStatus runInWorkspace(IProgressMonitor monitor1) throws CoreException {
+                IProject project = javaProject.getProject();
+                try {
+                    new MarkerReporter(bugParameters, theCollection, project).run(monitor1);
+                } catch (CoreException e) {
+                    FindbugsPlugin.getDefault().logException(e, "Core exception on add marker");
+                    return e.getStatus();
+                }
+                return monitor1.isCanceled()? Status.CANCEL_STATUS : Status.OK_STATUS;
+            }
+        };
+        wsJob.setRule(rule);
+        wsJob.setSystem(true);
+        wsJob.setUser(false);
+        wsJob.schedule();
     }
 
     /**
@@ -551,6 +562,7 @@ public final class MarkerUtil {
                 createMarkers(javaProject, bugs, project, monitor);
             }
         };
+        job.setRule(project);
         job.scheduleInteractive();
     }
 

@@ -108,7 +108,7 @@ public class LoadXmlAction extends FindBugsAction {
     /**
      * Run a FindBugs import on the given project, displaying a progress
      * monitor.
-     * 
+     *
      * @param project
      *            The resource to load XMl to.
      */
@@ -120,6 +120,7 @@ public class LoadXmlAction extends FindBugsAction {
                 worker.loadXml(fileName);
             }
         };
+        runFindBugs.setRule(project);
         runFindBugs.scheduleInteractive();
     }
 

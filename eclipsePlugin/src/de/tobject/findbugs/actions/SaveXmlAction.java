@@ -117,7 +117,7 @@ public class SaveXmlAction extends FindBugsAction {
     /**
      * Save the XML result of a FindBugs analysis on the given project,
      * displaying a progress monitor.
-     * 
+     *
      * @param project
      *            The selected project.
      * @param fileName
@@ -137,6 +137,7 @@ public class SaveXmlAction extends FindBugsAction {
                 }
             }
         };
+        runFindBugs.setRule(project);
         runFindBugs.scheduleInteractive();
     }
 }

@@ -64,7 +64,7 @@ public class MutexSchedulingRule implements ISchedulingRule {
         Job[] fbJobs = Job.getJobManager().find(FindbugsPlugin.class);
         int runningCount = 0;
         for (Job job : fbJobs) {
-            if (job.getState() == Job.RUNNING) {
+            if (job.getState() == Job.RUNNING && job.getRule() instanceof MutexSchedulingRule) {
                 runningCount++;
                 // TODO made this condition configurable
                 if( runningCount > MAX_JOBS) {
@@ -76,9 +76,9 @@ public class MutexSchedulingRule implements ISchedulingRule {
     }
 
     public boolean contains(ISchedulingRule rule) {
-        if (rule instanceof IResource && resource != null) {
-            return resource.contains(rule);
-        }
+//        if (rule instanceof IResource && resource != null) {
+//            return resource.contains(rule);
+//        }
         return isConflicting(rule);
         /*
          * from the URL above: "If you do not need to create hierarchies of
