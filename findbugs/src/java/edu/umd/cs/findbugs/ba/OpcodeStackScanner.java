@@ -23,6 +23,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
@@ -31,8 +32,10 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  */
 public class OpcodeStackScanner {
 
+    static final boolean DEBUG = SystemProperties.getBoolean("oss.debug");
+
     public static class UnreachableCodeException extends RuntimeException {
-       
+
         public UnreachableCodeException( @DottedClassName String className, String methodName, String methodSignature, int pc) {
             super("Didn't reach pc " + pc + " of " + className + "." + methodName + methodSignature);
             this.className = className;
@@ -45,7 +48,7 @@ public class OpcodeStackScanner {
         String methodSignature;
         int pc;
     }
-        
+
     static class EarlyExitException extends RuntimeException {
         final OpcodeStack stack;
 
@@ -68,7 +71,9 @@ public class OpcodeStackScanner {
     static class Scanner extends OpcodeStackDetector {
 
         Scanner(JavaClass theClass, Method targetMethod, int targetPC) {
-            System.out.println("Scanning " + theClass.getClassName() + "." + targetMethod.getName());
+            if(DEBUG) {
+                System.out.println("Scanning " + theClass.getClassName() + "." + targetMethod.getName());
+            }
             this.theClass = theClass;
             this.targetMethod = targetMethod;
             this.targetPC = targetPC;
@@ -82,7 +87,9 @@ public class OpcodeStackScanner {
 
         @Override
         public void sawOpcode(int seen) {
-            System.out.printf("%3d: %8s %s\n", getPC(), OPCODE_NAMES[seen], getStack());
+            if(DEBUG) {
+                System.out.printf("%3d: %8s %s\n", getPC(), OPCODE_NAMES[seen], getStack());
+            }
             if (getPC() == targetPC)
                 throw new EarlyExitException(stack);
         }
