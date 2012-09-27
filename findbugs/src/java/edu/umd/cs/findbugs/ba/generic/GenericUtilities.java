@@ -30,6 +30,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.type.NullType;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -250,6 +251,7 @@ public class GenericUtilities {
      */
     public static @CheckForNull
     Type getType(String signature) {
+        try {
         // ensure signature only has one type
         if (new GenericSignatureParser("(" + signature + ")V").getNumParameters() != 1)
             throw new IllegalArgumentException("the following signature does not " + "contain exactly one type: " + signature);
@@ -292,6 +294,10 @@ public class GenericUtilities {
         } else
             // assert signature contains no generic information
             return Type.getType(signature);
+        } catch (IllegalStateException e) {
+            AnalysisContext.logError("Error parsing signature " + signature, e);
+            return null;
+        }
     }
 
     public static ObjectType merge(Type t1, ObjectType t2) {
