@@ -70,7 +70,7 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
     public void visit(Field obj) {
         super.visit(obj);
         XField f = XFactory.createXField(this);
-        if (isNonnull(f) && !f.isSynthetic()) {
+        if (checkForInitialization(f) && !f.isSynthetic()) {
             if (f.isStatic())
                 nonnullStaticFields.add(f);
             else
@@ -82,7 +82,11 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
      * @param f
      * @return
      */
-    public boolean isNonnull(XField f) {
+    public boolean checkForInitialization(XField f) {
+        if (!f.isReferenceType())
+            return false;
+        if (f.isFinal())
+            return false;
         NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase()
                 .getResolvedAnnotation(f, false);
         boolean isNonnull = annotation == NullnessAnnotation.NONNULL;
@@ -124,12 +128,15 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
+        
+        System.out.printf("%3d: %s%n", getPC(), OPCODE_NAMES[seen]);
+        
         if (secondaryConstructor)
             return;
 
         switch (seen) {
         case Constants.INVOKESPECIAL:
-            if (getNameConstantOperand().equals("<init>") && isSelfOperation()) {
+            if (!getMethod().isStatic() && getNameConstantOperand().equals("<init>") && isSelfOperation()) {
                 OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);
                 if (invokedOn.isInitialParameter() && invokedOn.getRegisterNumber() == 0) {
                     secondaryConstructor = true;
@@ -145,7 +152,7 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
                 XField f = getXFieldOperand();
                 if (f == null)
                     break;
-                if (isNonnull(f))
+                if (checkForInitialization(f))
                     initializedFields.add(f);
             }
             break;
@@ -158,7 +165,7 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
                 if (f == null)
                     break;
 
-                if (isNonnull(f))
+                if (checkForInitialization(f))
                     initializedFields.add(f);
             }
             break;
