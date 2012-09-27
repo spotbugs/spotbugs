@@ -230,7 +230,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
      * very fast
      */
 
-    private List<SortableValue> enumsThatExist(BugAspects a) {
+    private @Nonnull List<SortableValue> enumsThatExist(BugAspects a) {
         List<Sortables> orderBeforeDivider = st.getOrderBeforeDivider();
         if (orderBeforeDivider.size() == 0) {
             List<SortableValue> result = Collections.emptyList();
@@ -273,14 +273,6 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
             return bugSet.query((BugAspects) parent).indexOf((BugLeafNode) child);
         } else {
             List<SortableValue> stringPairs = enumsThatExist((BugAspects) parent);
-            if (stringPairs == null) {
-                // XXX-Threading difficulties-stringpairs is null somehow
-                Debug.println("Stringpairs is null on getIndexOfChild!  Error!");
-                // noinspection ConstantConditions
-                assert (false);
-                return -1;
-            }
-
             return stringPairs.indexOf(((BugAspects) child).last());
 
         }

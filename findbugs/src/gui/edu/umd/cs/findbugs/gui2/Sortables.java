@@ -99,14 +99,11 @@ public enum Sortables implements Comparator<String> {
             if (bugCollection == null)
                 return "--";
             AppVersion appVersion = bugCollection.getAppVersionFromSequenceNumber(seqNum);
-            String appendItem = "";
             if (appVersion != null) {
                 String timestamp = new Timestamp(appVersion.getTimestamp()).toString();
-                appendItem = appVersion.getReleaseName() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
-            }
-            if (appendItem == "")
-                appendItem = "#" + seqNum;
-            return appendItem;
+                return appVersion.getReleaseName() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
+            } else 
+                return "#" + seqNum;
         }
 
         @Override
@@ -143,14 +140,11 @@ public enum Sortables implements Comparator<String> {
             if (bugCollection == null)
                 return "--";
             AppVersion appVersion = bugCollection.getAppVersionFromSequenceNumber(seqNum);
-            String appendItem = "";
             if (appVersion != null) {
                 String timestamp = new Timestamp(appVersion.getTimestamp()).toString();
-                appendItem = appVersion.getReleaseName() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
+                return appVersion.getReleaseName() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
             }
-            if (appendItem == "")
-                appendItem = "#" + seqNum;
-            return appendItem;
+            else return "#" + seqNum;
         }
 
         @Override
