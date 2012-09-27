@@ -129,8 +129,6 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         
-        System.out.printf("%3d: %s%n", getPC(), OPCODE_NAMES[seen]);
-        
         if (secondaryConstructor)
             return;
 
