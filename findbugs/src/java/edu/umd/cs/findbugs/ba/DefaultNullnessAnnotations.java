@@ -44,7 +44,13 @@ public class DefaultNullnessAnnotations {
         database.addFieldAnnotation("java.lang.System", "out", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
         database.addFieldAnnotation("java.lang.System", "err", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
         database.addFieldAnnotation("java.lang.System", "in", "Ljava/io/InputStream;", true, NullnessAnnotation.NONNULL);
-
+       
+        database.addFieldAnnotation("java.math.BigInteger", "ZERO", "Ljava/math/BigInteger;", true, NullnessAnnotation.NONNULL);
+        database.addFieldAnnotation("java.math.BigInteger", "ONE", "Ljava/math/BigInteger;", true, NullnessAnnotation.NONNULL);
+        database.addFieldAnnotation("java.math.BigInteger", "TEN", "Ljava/math/BigInteger;", true, NullnessAnnotation.NONNULL);
+        
+        
+        
         database.addMethodAnnotation("java.lang.ref.ReferenceQueue", "poll", "()Ljava/lang/ref/Reference;", false,
                 NullnessAnnotation.CHECK_FOR_NULL);
         database.addMethodAnnotation("java.lang.ref.Reference", "get", "()Ljava/lang/Object;", false,

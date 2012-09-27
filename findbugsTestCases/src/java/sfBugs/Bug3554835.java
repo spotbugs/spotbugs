@@ -16,6 +16,18 @@ public class Bug3554835 {
         }
 
         System.out.println(new BigInteger("1").add(i));
+    }
+    
+    void y() {
+        BigInteger i = BigInteger.ZERO;
+
+        if (i == null) {
+            i = BigInteger.ONE;
+        } else {
+            i = BigInteger.TEN;
+        }
+
+        System.out.println(new BigInteger("1").add(i));
 
     }
 }
