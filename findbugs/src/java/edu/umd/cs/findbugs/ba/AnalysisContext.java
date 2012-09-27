@@ -754,8 +754,12 @@ public abstract class AnalysisContext {
                 System.out.println("Loading default " + description + " from " + resourceName + " @ "
                         + database.getClass().getResource(resourceName) + " ... ");
             InputStream in = database.getClass().getResourceAsStream(resourceName);
-            database.read(in);
-            in.close();
+            if (in == null) {
+                AnalysisContext.logError("Unable to load " + description + " from resource " + resourceName);
+            } else {
+                database.read(in);
+                in.close();
+            }
             return database;
         } catch (IOException e) {
             getLookupFailureCallback().logError("Error loading " + description, e);
