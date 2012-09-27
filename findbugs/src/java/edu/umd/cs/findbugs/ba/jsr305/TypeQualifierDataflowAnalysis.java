@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Abstract base class for type qualifier dataflow analyses.
@@ -50,14 +51,36 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnalysis<TypeQualifierValueSet> {
 
+    static String primitiveType (String simpleClass) {
+        if (simpleClass.equals("Integer"))
+            return "int";
+        return  simpleClass.toLowerCase();
+    }
+    
     static boolean isIdentifyFunctionForTypeQualifiers(XMethod m) {
         String className = m.getClassName();
+        if (!className.startsWith("java.lang"))
+            return false;
         String methodName = m.getName();
-        if (className.equals("java.lang.Integer") && (methodName.equals("intValue") || methodName.equals("valueOf")))
-            return true;
-        return false;
-
+        
+        if (m.isStatic()) {
+            if (!methodName.equals("valueOf")) 
+                return false;
+            String signature = m.getSignature();
+            if (signature.charAt(2) != ')')
+                return false;
+        } else {
+            String simpleClassName = ClassName.extractSimpleName(className);
+            
+            if (!methodName.equals(primitiveType(simpleClassName) + "Value"))
+                return false;
+            String signature = m.getSignature();
+            if (signature.charAt(1) != ')')
+                return false;
+        }
+        return true;
     }
+
 
     static final boolean DEBUG_VERBOSE = SystemProperties.getBoolean("ctq.dataflow.debug.verbose");
 
