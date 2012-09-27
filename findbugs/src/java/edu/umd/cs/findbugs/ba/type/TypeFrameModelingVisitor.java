@@ -625,7 +625,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             return;
 
         if (methodName.equals("initCause") && signature.equals("(Ljava/lang/Throwable;)Ljava/lang/Throwable;")
-                && className.endsWith("Exception")) {
+                && (className.endsWith("Exception")
+                || className.endsWith("Error"))) {
             try {
 
                 frame.popValue();
