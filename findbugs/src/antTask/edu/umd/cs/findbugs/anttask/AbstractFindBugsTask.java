@@ -311,7 +311,7 @@ public abstract class AbstractFindBugsTask extends Task {
             if (findbugsLibFindBugs.exists())
                 findbugsEngine.setClasspath(new Path(getProject(), findbugsLibFindBugs.getPath()));
             else
-                throw new IllegalArgumentException("Can't find findbugs.jar in " + homeDir);
+                throw new IllegalArgumentException("Can't find findbugs.jar in " + findbugsLib);
             findbugsEngine.createJvmarg().setValue("-Dfindbugs.home=" + homeDir.getPath());
         } else {
             // Use an explicitly specified classpath and list of plugin Jars
