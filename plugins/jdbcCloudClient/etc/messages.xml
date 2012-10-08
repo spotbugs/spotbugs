@@ -26,7 +26,7 @@ This plugin code for synchronizing with a JDBC based cloud
 
 
   <FindBugsMain cmd="dbStats" class="edu.umd.cs.findbugs.cloud.db.DBStats">
-    <Description>XXXXXX</Description>
+    <Description>Generate stats from database</Description>
   </FindBugsMain>
   </MessageCollection>
 
