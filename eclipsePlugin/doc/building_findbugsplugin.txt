@@ -2,7 +2,7 @@ Here is how to build the FindBugs Eclipse Plugin:
 
 Install Eclipse
 ================
-1) Download and install Eclipse 3.4.x.
+1) Download and install Eclipse 3.6.+ (minumum supported version).
 2) Download and install Subclipse plugin for Subversion.
     Chose [Help | Software Updates... | Available Software | Add Site...] and use
     http://subclipse.tigris.org/update_1.4.x as update site url. Select checkboxes
@@ -32,12 +32,12 @@ Import the projects
 Setup target platform
 ======================
 
-6) Create /home/user/bin/Eclipse34 directory. Create "plugins" link there pointing to the
-    "plugins" directory located in the root of Eclipse 3.4 installation.
+6) Create /home/user/bin/Eclipse36 directory. Create "plugins" link there pointing to the
+    "plugins" directory located in the root of Eclipse 3.6 installation.
 7) Set the right target platform in Eclipse. Go to
     [Window | Preferences | Plugin Development | Target Platform]
-    and select the "Eclipse 3.4" target platform definition from the list.
-    Currently Eclipse 3.4 is still supported, even if Eclipse 3.6 is already released!
+    and select the "Eclipse 3.6" target platform definition from the list.
+    Currently Eclipse 3.6 is still supported, even if Eclipse 3.8 is already released!
     Additional target platforms can be setup in the similar way.
     Under Windows, replace "/home/user/" path to something like C:\Documents\%user%.
 
@@ -65,7 +65,7 @@ Build executable plug-in
 =========================
 11) Create local.properties file in the [findBugsEclipsePlugin] root directory.
    The local.properties file must contain the location of
-   - Eclipse platform (key is "eclipsePlugin.dir", value is the 3.4+ Eclipse plugins folder,
+   - Eclipse platform (key is "eclipsePlugin.dir", value is the 3.6+ Eclipse plugins folder,
    see "target platform" step).
    - SVN ant task (key is "svnant.home", value is the svnant 1.2.1 root folder).
    You can download svnant task from http://subclipse.tigris.org/files/documents/906/43359/svnant-1.2.1.zip.
