@@ -26,6 +26,7 @@ import java.io.InputStream;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
@@ -36,18 +37,11 @@ import edu.umd.cs.findbugs.io.IO;
 
 /**
  * Analysis engine to produce the data (bytes) of a class.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<ClassData> {
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
-     * .classfile.IAnalysisCache, java.lang.Object)
-     */
     public ClassData analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
 
         // Compute the resource name
@@ -58,7 +52,13 @@ public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
         try {
             codeBaseEntry = analysisCache.getClassPath().lookupResource(resourceName);
         } catch (ResourceNotFoundException e) {
-            throw new MissingClassException(descriptor, e);
+            // Allow loading javax.annotation's from our own classpath - in case we analyze projects
+            // using 3rd party nullness annotations (which do not have jsr305 classes on classpath)
+            if(resourceName.startsWith("javax/annotation/")){
+                codeBaseEntry = new VirtualCodeBaseEntry(descriptor);
+            } else {
+                throw new MissingClassException(descriptor, e);
+            }
         }
 
         byte[] data;
@@ -93,15 +93,45 @@ public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
         return new ClassData(descriptor, codeBaseEntry, data);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
-     * .findbugs.classfile.IAnalysisCache)
-     */
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerClassAnalysisEngine(ClassData.class, this);
     }
 
+    private static class VirtualCodeBaseEntry implements ICodeBaseEntry {
+
+        private final ClassDescriptor descriptor;
+
+        public VirtualCodeBaseEntry(ClassDescriptor descriptor) {
+            this.descriptor = descriptor;
+        }
+
+        public String getResourceName() {
+            return descriptor.toResourceName();
+        }
+
+        public int getNumBytes() {
+            return -1;
+        }
+
+        public InputStream openResource() throws IOException {
+            InputStream stream = getClass().getClassLoader().getResourceAsStream(descriptor.toResourceName());
+            if(stream == null){
+                throw new IOException("Can not load '" + descriptor.toResourceName() + "' from FindBugs classpath.");
+            }
+            return stream;
+        }
+
+        public ICodeBase getCodeBase() {
+            return null;
+        }
+
+        public ClassDescriptor getClassDescriptor() {
+            return descriptor;
+        }
+
+        public void overrideResourceName(String resourceName) {
+            //
+        }
+
+    }
 }
