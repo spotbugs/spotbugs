@@ -518,6 +518,9 @@ public class DefaultNullnessAnnotations {
                 false, NullnessAnnotation.CHECK_FOR_NULL);
         db.addMethodAnnotation("org.eclipse.core.resources.IWorkspaceRoot","getFileForLocation","(Lorg/eclipse/core/runtime/IPath;)Lorg/eclipse/core/resources/IFile;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
+        // override annotation from IResource: workspace root is always available
+        db.addMethodAnnotation("org.eclipse.core.resources.IWorkspaceRoot","getLocation","()Lorg/eclipse/core/runtime/IPath;",
+                false, NullnessAnnotation.NONNULL);
 
         db.addMethodAnnotation("org.eclipse.core.resources.IResourceDelta","findMember","(Lorg/eclipse/core/runtime/IPath;)Lorg/eclipse/core/resources/IResourceDelta;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
