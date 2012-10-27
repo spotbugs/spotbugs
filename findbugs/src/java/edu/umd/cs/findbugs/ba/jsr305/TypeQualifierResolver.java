@@ -35,29 +35,31 @@ import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
 
 /**
  * Resolve annotations into type qualifiers.
- * 
+ *
  * @author William Pugh
  */
 public class TypeQualifierResolver {
-    static ClassDescriptor typeQualifier = DescriptorFactory.createClassDescriptor(javax.annotation.meta.TypeQualifier.class);
+    static final ClassDescriptor typeQualifier = DescriptorFactory.createClassDescriptor(javax.annotation.meta.TypeQualifier.class);
 
-    static ClassDescriptor typeQualifierNickname = DescriptorFactory
+    static final ClassDescriptor typeQualifierNickname = DescriptorFactory
             .createClassDescriptor(javax.annotation.meta.TypeQualifierNickname.class);
 
-    static ClassDescriptor typeQualifierDefault = DescriptorFactory
+    static final ClassDescriptor typeQualifierDefault = DescriptorFactory
             .createClassDescriptor(javax.annotation.meta.TypeQualifierDefault.class);
 
-    static ClassDescriptor elementTypeDescriptor = DescriptorFactory
+    static final ClassDescriptor elementTypeDescriptor = DescriptorFactory
             .createClassDescriptor(java.lang.annotation.ElementType.class);
 
-    static ClassDescriptor googleNullable = DescriptorFactory.createClassDescriptor("com/google/common/base/Nullable");
+    static final ClassDescriptor googleNullable = DescriptorFactory.createClassDescriptor("com/google/common/base/Nullable");
 
-    static ClassDescriptor intellijNullable = DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/Nullable");
+    static final ClassDescriptor intellijNullable = DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/Nullable");
+
+    static final ClassDescriptor eclipseNullable = DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/Nullable");
 
     /**
      * Resolve an AnnotationValue into a list of AnnotationValues representing
      * type qualifier annotations.
-     * 
+     *
      * @param value
      *            AnnotationValue representing the use of an annotation
      * @return Collection of AnnotationValues representing resolved
@@ -73,7 +75,7 @@ public class TypeQualifierResolver {
      * Resolve collection of AnnotationValues (which have been used to annotate
      * an AnnotatedObject or method parameter) into collection of resolved type
      * qualifier AnnotationValues.
-     * 
+     *
      * @param values
      *            Collection of AnnotationValues used to annotate an
      *            AnnotatedObject or method parameter
@@ -92,7 +94,7 @@ public class TypeQualifierResolver {
      * qualifier(s) the annotation resolves to. Detects annotations which are
      * directly marked as TypeQualifier annotations, and also resolves the use
      * of TypeQualifierNickname annotations.
-     * 
+     *
      * @param value
      *            AnnotationValue representing the use of an annotation
      * @param result
@@ -113,7 +115,9 @@ public class TypeQualifierResolver {
             onStack.add(annotationClass);
 
             try {
-                if (annotationClass.equals(googleNullable) || annotationClass.equals(intellijNullable)) {
+                if (annotationClass.equals(googleNullable)
+                        || annotationClass.equals(eclipseNullable)
+                        || annotationClass.equals(intellijNullable)) {
                     resolveTypeQualifierNicknames(new AnnotationValue(JSR305NullnessAnnotations.CHECK_FOR_NULL), result, onStack);
                     return;
                 }
@@ -149,7 +153,7 @@ public class TypeQualifierResolver {
      * Resolve collection of AnnotationValues (which have been used to annotate
      * an AnnotatedObject or method parameter) into collection of resolved type
      * qualifier AnnotationValues.
-     * 
+     *
      * @param values
      *            Collection of AnnotationValues used to annotate an
      *            AnnotatedObject or method parameter
@@ -168,7 +172,7 @@ public class TypeQualifierResolver {
      * qualifier(s) the annotation resolves to. Detects annotations which are
      * directly marked as TypeQualifier annotations, and also resolves the use
      * of TypeQualifierNickname annotations.
-     * 
+     *
      * @param value
      *            AnnotationValue representing the use of an annotation
      * @param result
