@@ -49,8 +49,16 @@ public class AnnotationClasspathInitializer extends ClasspathVariableInitializer
     private String getLibraryPath(Bundle bundle, String libName) {
         URL installLocation = bundle.getEntry(libName);
         if (installLocation == null) {
-            FindbugsPlugin.getDefault().logError("Library not found in plugin: " + libName);
-            return null;
+            // check if we debugging eclipse and see classpath of the findbugs core project 
+        	Bundle bundle2 = Platform.getBundle("findbugs");
+            if(bundle2 != null){
+                installLocation = bundle2.getEntry(libName);
+            }
+            
+            if(installLocation == null){
+                FindbugsPlugin.getDefault().logError("Library not found in plugin: " + libName);
+                return null;
+            }
         }
         String fullPath = null;
         try {
