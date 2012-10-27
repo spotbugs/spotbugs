@@ -124,7 +124,7 @@ public class TypeQualifierResolver {
                 XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class, annotationClass);
                 if (c.getAnnotationDescriptors().contains(typeQualifierNickname)) {
                     for (ClassDescriptor d : c.getAnnotationDescriptors())
-                        if (!c.equals(typeQualifierNickname))
+                        if (!d.equals(typeQualifierNickname))
                             resolveTypeQualifierNicknames(c.getAnnotation(d), result, onStack);
                 } else if (c.getAnnotationDescriptors().contains(typeQualifier)) {
                     result.add(value);
