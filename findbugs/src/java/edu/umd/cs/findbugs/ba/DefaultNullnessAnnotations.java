@@ -422,8 +422,13 @@ public class DefaultNullnessAnnotations {
     }
 
     private static void addEclipseSpecificAnnotations(INullnessAnnotationDatabase db) {
-        db.addMethodAnnotation("org.eclipse.core.runtime.IAdaptable","getAdapter","(Ljava/lang/Class;)Ljava/lang/Object;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
+//        if(true){
+//            return;
+//        }
+
+        // usually either uses known common services or checks for unknown. Too much noise
+//        db.addMethodAnnotation("org.eclipse.core.runtime.IAdaptable","getAdapter","(Ljava/lang/Class;)Ljava/lang/Object;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
 
         db.addMethodAnnotation("org.eclipse.core.runtime.IAdapterFactory","getAdapter","(Ljava/lang/Object;Ljava/lang/Class;)Ljava/lang/Object;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
@@ -435,19 +440,21 @@ public class DefaultNullnessAnnotations {
         db.addMethodAnnotation("org.eclipse.core.runtime.IAdapterManager","loadAdapter","(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
 
-        db.addMethodAnnotation("org.eclipse.ui.IMemento","getChild","(Ljava/lang/String;)Lorg/eclipse/ui/IMemento;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.ui.IMemento","getID","()Ljava/lang/String;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.ui.IMemento","getInteger","(Ljava/lang/String;)Ljava/lang/Integer;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.ui.IMemento","getString","(Ljava/lang/String;)Ljava/lang/String;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.ui.IMemento","getTextData","()Ljava/lang/String;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
+        // usually reads are in-sync with writes, so too much noise
+//        db.addMethodAnnotation("org.eclipse.ui.IMemento","getChild","(Ljava/lang/String;)Lorg/eclipse/ui/IMemento;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+//        db.addMethodAnnotation("org.eclipse.ui.IMemento","getID","()Ljava/lang/String;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+//        db.addMethodAnnotation("org.eclipse.ui.IMemento","getInteger","(Ljava/lang/String;)Ljava/lang/Integer;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+//        db.addMethodAnnotation("org.eclipse.ui.IMemento","getString","(Ljava/lang/String;)Ljava/lang/String;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+//        db.addMethodAnnotation("org.eclipse.ui.IMemento","getTextData","()Ljava/lang/String;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
 
-        db.addMethodAnnotation("org.eclipse.core.runtime.jobs.Job","getResult","()Lorg/eclipse/core/runtime/IStatus;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
+        // too seldom, usually used after job.join.
+//        db.addMethodAnnotation("org.eclipse.core.runtime.jobs.Job","getResult","()Lorg/eclipse/core/runtime/IStatus;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
 
         db.addMethodAnnotation("org.eclipse.core.runtime.FileLocator","find","(Ljava/net/URL;)Ljava/net/URL;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
@@ -465,42 +472,24 @@ public class DefaultNullnessAnnotations {
         db.addMethodAnnotation("org.osgi.framework.Bundle","getServicesInUse","()[Lorg/osgi/framework/ServiceReference;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
 
-        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getLocation","()Lorg/eclipse/core/runtime/IPath;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getLocationURI","()Ljava/net/URI;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.core.resources.IResource","findMarker","(J)Lorg/eclipse/core/resources/IMarker;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getFileExtension","()Ljava/lang/String;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getParent","()Lorg/eclipse/core/resources/IContainer;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getPersistentProperty","(Lorg/eclipse/core/runtime/QualifiedName;)Ljava/lang/String;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-
-//        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getProject","()Lorg/eclipse/core/resources/IProject;",
+        // usually not a problem - and there is a way to ask before if it is not empty
+//        db.addMethodAnnotation("org.eclipse.core.runtime.IPath","lastSegment","()Ljava/lang/String;",
 //                false, NullnessAnnotation.CHECK_FOR_NULL);
 
-        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getRawLocation","()Lorg/eclipse/core/runtime/IPath;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getResourceAttributes","()Lorg/eclipse/core/resources/ResourceAttributes;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getSessionProperty","(Lorg/eclipse/core/runtime/QualifiedName;)Ljava/lang/Object;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
+        // too much noise: similar as if annotating List.get(i)
+//        db.addMethodAnnotation("org.eclipse.core.runtime.IPath","segment","(I)Ljava/lang/String;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
 
-        db.addMethodAnnotation("org.eclipse.core.runtime.IPath","lastSegment","()Ljava/lang/String;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.core.runtime.IPath","segment","(I)Ljava/lang/String;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
+        // too much noise: usually search results are validated
+//        db.addMethodAnnotation("org.eclipse.core.resources.IContainer","findMember","(Ljava/lang/String;)Lorg/eclipse/core/resources/IResource;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+//        db.addMethodAnnotation("org.eclipse.core.resources.IContainer","findMember","(Ljava/lang/String;Z)Lorg/eclipse/core/resources/IResource;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+//        db.addMethodAnnotation("org.eclipse.core.resources.IContainer","findMember","(Lorg/eclipse/core/runtime/IPath;)Lorg/eclipse/core/resources/IResource;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+//        db.addMethodAnnotation("org.eclipse.core.resources.IContainer","findMember","(Lorg/eclipse/core/runtime/IPath;Z)Lorg/eclipse/core/resources/IResource;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
 
-        db.addMethodAnnotation("org.eclipse.core.resources.IContainer","findMember","(Ljava/lang/String;)Lorg/eclipse/core/resources/IResource;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.core.resources.IContainer","findMember","(Ljava/lang/String;Z)Lorg/eclipse/core/resources/IResource;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.core.resources.IContainer","findMember","(Lorg/eclipse/core/runtime/IPath;)Lorg/eclipse/core/resources/IResource;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.core.resources.IContainer","findMember","(Lorg/eclipse/core/runtime/IPath;Z)Lorg/eclipse/core/resources/IResource;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
         db.addMethodAnnotation("org.eclipse.core.resources.IContainer","getDefaultCharset","(Z)Ljava/lang/String;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
 
@@ -518,9 +507,44 @@ public class DefaultNullnessAnnotations {
                 false, NullnessAnnotation.CHECK_FOR_NULL);
         db.addMethodAnnotation("org.eclipse.core.resources.IWorkspaceRoot","getFileForLocation","(Lorg/eclipse/core/runtime/IPath;)Lorg/eclipse/core/resources/IFile;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
+
         // override annotation from IResource: workspace root is always available
-        db.addMethodAnnotation("org.eclipse.core.resources.IWorkspaceRoot","getLocation","()Lorg/eclipse/core/runtime/IPath;",
-                false, NullnessAnnotation.NONNULL);
+        // XXX seems not to work at all...
+//        db.addMethodAnnotation("org.eclipse.core.resources.IWorkspaceRoot","getLocation","()Lorg/eclipse/core/runtime/IPath;",
+//                false, NullnessAnnotation.NONNULL);
+
+        // override annotation from IResource: workspace root has no parent
+        db.addMethodAnnotation("org.eclipse.core.resources.IWorkspaceRoot","getParent","()Lorg/eclipse/core/resources/IContainer;",
+                false, NullnessAnnotation.CHECK_FOR_NULL);
+
+        // XXX too high rate of false positives, due the problem with IWorkspaceRoot.getLocation() above
+//        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getLocation","()Lorg/eclipse/core/runtime/IPath;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+        // XXX too high rate of false positives, due the problem with IWorkspaceRoot.getLocation() above
+//        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getLocationURI","()Ljava/net/URI;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+
+        db.addMethodAnnotation("org.eclipse.core.resources.IResource","findMarker","(J)Lorg/eclipse/core/resources/IMarker;",
+                false, NullnessAnnotation.CHECK_FOR_NULL);
+        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getFileExtension","()Ljava/lang/String;",
+                false, NullnessAnnotation.CHECK_FOR_NULL);
+        // only true for workspace root
+//        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getParent","()Lorg/eclipse/core/resources/IContainer;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+
+        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getPersistentProperty","(Lorg/eclipse/core/runtime/QualifiedName;)Ljava/lang/String;",
+                false, NullnessAnnotation.CHECK_FOR_NULL);
+
+//        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getProject","()Lorg/eclipse/core/resources/IProject;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+
+        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getRawLocation","()Lorg/eclipse/core/runtime/IPath;",
+                false, NullnessAnnotation.CHECK_FOR_NULL);
+        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getResourceAttributes","()Lorg/eclipse/core/resources/ResourceAttributes;",
+                false, NullnessAnnotation.CHECK_FOR_NULL);
+        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getSessionProperty","(Lorg/eclipse/core/runtime/QualifiedName;)Ljava/lang/Object;",
+                false, NullnessAnnotation.CHECK_FOR_NULL);
+
 
         db.addMethodAnnotation("org.eclipse.core.resources.IResourceDelta","findMember","(Lorg/eclipse/core/runtime/IPath;)Lorg/eclipse/core/resources/IResourceDelta;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
@@ -547,13 +571,15 @@ public class DefaultNullnessAnnotations {
 //        db.addMethodAnnotation("org.eclipse.swt.widgets.Control","getParent","()Lorg/eclipse/swt/widgets/Composite;",
 //                false, NullnessAnnotation.CHECK_FOR_NULL);
 
-        db.addMethodAnnotation("org.eclipse.swt.widgets.Widget","getData","()Ljava/lang/Object;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.swt.widgets.Widget","getData","(Ljava/lang/String;)Ljava/lang/Object;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
+        // Usually checked or used only if set before
+//        db.addMethodAnnotation("org.eclipse.swt.widgets.Widget","getData","()Ljava/lang/Object;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+//        db.addMethodAnnotation("org.eclipse.swt.widgets.Widget","getData","(Ljava/lang/String;)Ljava/lang/Object;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
 
-        db.addMethodAnnotation("org.eclipse.jface.viewers.IStructuredSelection","getFirstElement","()Ljava/lang/Object;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
+        // there is a way to ask selection before - so we can't just always warn
+//        db.addMethodAnnotation("org.eclipse.jface.viewers.IStructuredSelection","getFirstElement","()Ljava/lang/Object;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
 
         db.addMethodAnnotation("org.eclipse.jface.viewers.ITreeContentProvider","getParent","(Ljava/lang/Object;)Ljava/lang/Object;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
@@ -615,8 +641,9 @@ public class DefaultNullnessAnnotations {
 //        db.addMethodAnnotation("org.eclipse.ui.IWorkbenchWindow","getActivePage","()Lorg/eclipse/ui/IWorkbenchPage;",
 //                false, NullnessAnnotation.CHECK_FOR_NULL);
 
-        db.addMethodAnnotation("org.eclipse.ui.IWorkbench","getActiveWorkbenchWindow","()Lorg/eclipse/ui/IWorkbenchWindow;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
+        // too much noise because if a class is used in UI context, there is an active window.
+//        db.addMethodAnnotation("org.eclipse.ui.IWorkbench","getActiveWorkbenchWindow","()Lorg/eclipse/ui/IWorkbenchWindow;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
 
 //        db.addMethodAnnotation("org.eclipse.jface.wizard.IWizard","getContainer","()Lorg/eclipse/jface/wizard/IWizardContainer;",
 //                false, NullnessAnnotation.CHECK_FOR_NULL);
@@ -638,18 +665,19 @@ public class DefaultNullnessAnnotations {
 //        db.addMethodAnnotation("org.eclipse.jface.wizard.IWizardPage","getWizard","()Lorg/eclipse/jface/wizard/IWizard;",
 //                false, NullnessAnnotation.CHECK_FOR_NULL);
 
-        db.addMethodAnnotation("org.eclipse.jface.resource.ImageRegistry","getDescriptor","(Ljava/lang/String;)Lorg/eclipse/jface/resource/ImageDescriptor;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.jface.resource.ImageRegistry","get","(Ljava/lang/String;)Lorg/eclipse/swt/graphics/Image;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-
-        db.addMethodAnnotation("org.eclipse.jface.resource.ColorRegistry","get","(Ljava/lang/String;)Lorg/eclipse/swt/graphics/Color;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.jface.resource.ColorRegistry","getRGB","(Ljava/lang/String;)Lorg/eclipse/swt/graphics/RGB;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-
-        db.addMethodAnnotation("org.eclipse.jface.resource.JFaceResources","getImage","(Ljava/lang/String;)Lorg/eclipse/swt/graphics/Image;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
+        // usually statically assigned resources - so either it never worked or always ok. Too noisy
+//        db.addMethodAnnotation("org.eclipse.jface.resource.ImageRegistry","getDescriptor","(Ljava/lang/String;)Lorg/eclipse/jface/resource/ImageDescriptor;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+//        db.addMethodAnnotation("org.eclipse.jface.resource.ImageRegistry","get","(Ljava/lang/String;)Lorg/eclipse/swt/graphics/Image;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+//
+//        db.addMethodAnnotation("org.eclipse.jface.resource.ColorRegistry","get","(Ljava/lang/String;)Lorg/eclipse/swt/graphics/Color;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+//        db.addMethodAnnotation("org.eclipse.jface.resource.ColorRegistry","getRGB","(Ljava/lang/String;)Lorg/eclipse/swt/graphics/RGB;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+//
+//        db.addMethodAnnotation("org.eclipse.jface.resource.JFaceResources","getImage","(Ljava/lang/String;)Lorg/eclipse/swt/graphics/Image;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
 
 //        db.addMethodAnnotation("org.eclipse.jface.action.IAction","getImageDescriptor","()Lorg/eclipse/jface/resource/ImageDescriptor;",
 //                false, NullnessAnnotation.CHECK_FOR_NULL);
