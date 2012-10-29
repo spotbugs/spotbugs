@@ -85,8 +85,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         return memoized(attributes.getValue(qName));
     }
 
+    @CheckForNull
     private final BugCollection bugCollection;
 
+    @CheckForNull
     private final Project project;
 
     private final Stack<CompoundMatcher> matcherStack = new Stack<CompoundMatcher>();
@@ -118,8 +120,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
     private String cloudPropertyKey;
 
-    private SAXBugCollectionHandler(String topLevelName, BugCollection bugCollection, Project project,
-            @CheckForNull File base) {
+    private SAXBugCollectionHandler(String topLevelName, @CheckForNull BugCollection bugCollection,
+            @CheckForNull Project project, @CheckForNull File base) {
         this.topLevelName = topLevelName;
         this.bugCollection = bugCollection;
         this.project = project;
@@ -384,11 +386,13 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     if (qName.equals(Project.CLOUD_ELEMENT_NAME)) {
                         String cloudId = getRequiredAttribute(attributes, Project.CLOUD_ID_ATTRIBUTE_NAME, qName);
                         project.setCloudId(cloudId);
-                        Map<String,String> map = new HashMap<String, String>();
-                        for (int i = 0; i < attributes.getLength(); i++) {
-                            map.put(attributes.getLocalName(i), attributes.getValue(i));
+                        if(bugCollection != null){
+                            Map<String,String> map = new HashMap<String, String>();
+                            for (int i = 0; i < attributes.getLength(); i++) {
+                                map.put(attributes.getLocalName(i), attributes.getValue(i));
+                            }
+                            bugCollection.setXmlCloudDetails(Collections.unmodifiableMap(map));
                         }
-                        bugCollection.setXmlCloudDetails(Collections.unmodifiableMap(map));
                     } else if (qName.equals(Project.PLUGIN_ELEMENT_NAME)) {
                         String pluginId = getRequiredAttribute(attributes, Project.PLUGIN_ID_ATTRIBUTE_NAME, qName);
                         Boolean enabled = Boolean.valueOf(getRequiredAttribute(attributes, Project.PLUGIN_STATUS_ELEMENT_NAME, qName));
@@ -594,7 +598,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             s = getOptionalAttribute(attributes, "needsSync"); // optional
             if (s == null || s.equals("false"))
                 bugInstance.setUserAnnotationDirty(false);
-            
+
         } else
             throw new SAXException("Unknown bug annotation named " + qName);
 
