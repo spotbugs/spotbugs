@@ -538,10 +538,12 @@ public class DefaultNullnessAnnotations {
 //        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getProject","()Lorg/eclipse/core/resources/IProject;",
 //                false, NullnessAnnotation.CHECK_FOR_NULL);
 
-        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getRawLocation","()Lorg/eclipse/core/runtime/IPath;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getResourceAttributes","()Lorg/eclipse/core/resources/ResourceAttributes;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
+//        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getRawLocation","()Lorg/eclipse/core/runtime/IPath;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+
+//        db.addMethodAnnotation("org.eclipse.core.resources.IResource","getResourceAttributes","()Lorg/eclipse/core/resources/ResourceAttributes;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+
         db.addMethodAnnotation("org.eclipse.core.resources.IResource","getSessionProperty","(Lorg/eclipse/core/runtime/QualifiedName;)Ljava/lang/Object;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
 
@@ -579,6 +581,10 @@ public class DefaultNullnessAnnotations {
 
         // there is a way to ask selection before - so we can't just always warn
 //        db.addMethodAnnotation("org.eclipse.jface.viewers.IStructuredSelection","getFirstElement","()Ljava/lang/Object;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+
+        // too many false positives
+//        db.addMethodAnnotation("org.eclipse.jface.viewers.ISelectionProvider","getSelection","()Lorg/eclipse/jface/viewers/ISelection;",
 //                false, NullnessAnnotation.CHECK_FOR_NULL);
 
         db.addMethodAnnotation("org.eclipse.jface.viewers.ITreeContentProvider","getParent","(Ljava/lang/Object;)Ljava/lang/Object;",
