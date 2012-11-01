@@ -234,7 +234,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
             Thread.currentThread().interrupt();
         }
 
-        int work = pass == 0 ? 1 : 2;
+        int work = (pass * 99) + 1;
         String className = classDescriptor.getDottedClassName();
 
         if (DEBUG) {
@@ -294,10 +294,10 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
 
     public void predictPassCount(int[] classesPerPass) {
         int expectedWork = 0;
-        for (int count : classesPerPass) {
-            expectedWork += 2 * count;
+        for (int i = 0; i < classesPerPass.length; i++) {
+            int count = classesPerPass[i];
+            expectedWork += ((i * 99) + 1) * count;
         }
-        expectedWork -= classesPerPass[0];
         if (!(monitor instanceof SubProgressMonitor)) {
             monitor.beginTask("Performing bug checking...", expectedWork);
         }
