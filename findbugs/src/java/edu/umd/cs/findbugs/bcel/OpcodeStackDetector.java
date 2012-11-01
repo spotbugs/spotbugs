@@ -28,10 +28,17 @@ import edu.umd.cs.findbugs.OpcodeStack.JumpInfo;
 /**
  * Base class for Detectors that want to scan the bytecode of a method and use
  * an opcode stack.
- * 
+ *
  * @see BytecodeScanningDetector
  */
 abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
+
+    private final boolean isUsingCustomUserValue;
+
+    public OpcodeStackDetector() {
+    	super();
+        isUsingCustomUserValue = getClass().isAnnotationPresent(OpcodeStack.CustomUserValue.class);
+    }
 
     /**
      * @author pwilliam
@@ -70,4 +77,15 @@ abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
 
     @Override
     abstract public void sawOpcode(int seen);
+
+    /**
+     * @return true if this detector is annotated with  {@link OpcodeStack.CustomUserValue}
+     * and thus should not reuse generic OpcodeStack information
+     * from an iterative evaluation of the opcode stack. Such detectors
+     * will not use iterative opcode stack evaluation.
+     * @see OpcodeStack#resetForMethodEntry(edu.umd.cs.findbugs.visitclass.DismantleBytecode)
+     */
+    public final boolean isUsingCustomUserValue() {
+        return isUsingCustomUserValue;
+    }
 }

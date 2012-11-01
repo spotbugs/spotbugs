@@ -96,13 +96,13 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * </ul>
  */
 public class OpcodeStack implements Constants2 {
-    
+
     /** You can put this annotation on a OpcodeStack detector
      * to indicate that it uses {@link OpcodeStack.Item#userValue},
-     * and thus should not reuse generic OpcodeStack information 
+     * and thus should not reuse generic OpcodeStack information
      * from an iterative evaluation of the opcode stack. Such detectors
      * will not use iterative opcode stack evaluation.
-     * 
+     *
      * This is primarily for detectors that need to be backwards compatible with
      * versions of FindBugs that do not support {@link OpcodeStackDetector.WithCustomJumpInfo }}
      */
@@ -152,7 +152,7 @@ public class OpcodeStack implements Constants2 {
         @Retention(RetentionPolicy.RUNTIME)
         public @interface SpecialKind {
         }
-        
+
         static @SpecialKind int asSpecialKind(int kind) {
             return kind;
         }
@@ -440,7 +440,7 @@ public class OpcodeStack implements Constants2 {
                 buf.append(", uv: ");
                 buf.append(userValue.toString());
             }
-            
+
             buf.append(" >");
             return buf.toString();
         }
@@ -1002,7 +1002,7 @@ public class OpcodeStack implements Constants2 {
         if (jumpEntry != null) {
             setReachOnlyByBranch(false);
             List<Item> jumpStackEntry = jumpStackEntries.get(Integer.valueOf(dbc.getPC()));
-            
+
             if (DEBUG2) {
                 System.out.println("XXXXXXX " + isReachOnlyByBranch());
                 System.out.println("merging lvValues at jump target " + dbc.getPC() + " -> " + jumpEntry);
@@ -1345,7 +1345,7 @@ public class OpcodeStack implements Constants2 {
                 seenTransferOfControl = true;
                 Item right = pop();
                 Item left = pop();
-                
+
                 Object lConstant = left.getConstant();
                 Object rConstant = right.getConstant();
                 boolean takeJump = false;
@@ -2229,7 +2229,7 @@ public class OpcodeStack implements Constants2 {
             if (sbItem != null && sbItem.getSignature().equals(item.getSignature()))
                 sbItem.constValue = null;
         }
-        
+
     }
     private void processMethodCall(DismantleBytecode dbc, int seen) {
         @SlashedClassName String clsName = dbc.getClassConstantOperand();
@@ -2313,7 +2313,7 @@ public class OpcodeStack implements Constants2 {
                     Object sVal = i.getConstant();
                     if ((sbVal != null) && (sVal != null)) {
                         appenderValue = sbVal + sVal.toString();
-                    } else 
+                    } else
                         markConstantValueUnknown(sbItem);
                 } else if (signature.startsWith("([CII)")) {
                     sawUnknownAppend = true;
@@ -2423,14 +2423,14 @@ public class OpcodeStack implements Constants2 {
             return;
         }
 
-        if ((clsName.equals("java/util/Random") || clsName.equals("java/security/SecureRandom")) && 
+        if ((clsName.equals("java/util/Random") || clsName.equals("java/security/SecureRandom")) &&
                 (methodName.equals("nextInt")  && signature.equals("()I")
                         || methodName.equals("nextLong")  && signature.equals("()J"))
                 ) {
             Item i = pop();
             i.setSpecialKind(Item.RANDOM_INT);
             push(i);
-        } else if (methodName.equals("size") && signature.equals("()I") 
+        } else if (methodName.equals("size") && signature.equals("()I")
                 && Subtypes2.instanceOf(ClassName.toDottedClassName(clsName), "java.util.Collection")) {
             Item i = pop();
             if (i.getSpecialKind() == Item.NOT_SPECIAL)
@@ -2653,8 +2653,9 @@ public class OpcodeStack implements Constants2 {
             JumpInfo jump = null;
             if (visitor instanceof OpcodeStackDetector.WithCustomJumpInfo) {
                 jump = ((OpcodeStackDetector.WithCustomJumpInfo) visitor).customJumpInfo();
-            } else if (!visitor.getClass().isAnnotationPresent(OpcodeStack.CustomUserValue.class)) 
+            } else if ((visitor instanceof OpcodeStackDetector) && !((OpcodeStackDetector)visitor).isUsingCustomUserValue()) {
                 jump = getJumpInfo();
+            }
             if (jump != null) {
                 learnFrom(jump);
             }
