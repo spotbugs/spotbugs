@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.annotation.Nonnull;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -667,13 +669,11 @@ public class DetectorConfigurationTab extends Composite {
         if (abbr == null) {
             abbr = createBugsAbbreviation(factory);
         }
-        if (abbr == null) {
-            abbr = ""; //$NON-NLS-1$
-        }
         return abbr;
     }
 
-    protected String createBugsAbbreviation(DetectorFactory factory) {
+    @Nonnull
+    private String createBugsAbbreviation(DetectorFactory factory) {
         StringBuffer sb = new StringBuffer();
         Collection<BugPattern> patterns = factory.getReportedBugPatterns();
         LinkedHashSet<String> abbrs = new LinkedHashSet<String>();
