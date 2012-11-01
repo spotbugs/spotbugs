@@ -222,6 +222,7 @@ public class FindBugs2Eclipse extends FindBugs2 {
         double bytesPerClass = data.classCount > 0? ((double) data.byteSize)  / data.classCount : 0;
         long peakMemory = footprint.getPeakMemory() / (1024 * 1024);
         pw.printf("%n");
+        pw.printf("Total bugs            : %1$ 20d %n", stats.getTotalBugs());
         pw.printf("Peak memory (MB)      : %1$ 20d %n", peakMemory);
         pw.printf("Total classes         : %1$ 20d %n", data.classCount);
         pw.printf("Total time (msec)     : %1$ 20d %n", totalTime);
