@@ -1,6 +1,6 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.DesireNoWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3560970 {
 
@@ -12,7 +12,7 @@ public class Bug3560970 {
         DECLINED, SYSTEMERROR, OTHER
     };
 
-    @DesireNoWarning("SF_SWITCH_NO_DEFAULT")
+    @NoWarning("SF_SWITCH_NO_DEFAULT")
     public void test(ResultCode resultCode) {
         boolean isAuthorised;
         TransactionStatus transactionStatus = TransactionStatus.OTHER;

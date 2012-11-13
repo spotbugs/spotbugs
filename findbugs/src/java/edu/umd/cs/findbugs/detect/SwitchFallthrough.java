@@ -62,10 +62,11 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
     private final BugAccumulator bugAccumulator;
 
     private int lastPC;
+    private int biggestJumpTarget;
 
-    private BitSet potentiallyDeadStores = new BitSet();
+    private final BitSet potentiallyDeadStores = new BitSet();
 
-    private Set<XField> potentiallyDeadFields = new HashSet<XField>();
+    private final Set<XField> potentiallyDeadFields = new HashSet<XField>();
 
     private BitSet potentiallyDeadStoresFromBeforeFallthrough = new BitSet();
 
@@ -94,9 +95,10 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             System.out.printf("%nVisiting %s%n", getMethodDescriptor());
         reachable = false;
         lastPC = 0;
+        biggestJumpTarget = -1;
         found.clear();
         switchHdlr = new SwitchHandler();
-        clearAll();
+        clearAllDeadStores();
         deadStore = null;
         priority = NORMAL_PRIORITY;
         fallthroughDistance = 1000;
@@ -159,18 +161,16 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             potentiallyDeadStoresFromBeforeFallthrough = (BitSet) potentiallyDeadStores.clone();
             potentiallyDeadFieldsFromBeforeFallthrough = new HashSet<XField>(potentiallyDeadFields);
             if (!hasFallThruComment(lastPC + 1, getPC() - 1)) {
-                if (isDefaultOffset) {
-                    SourceLineAnnotation sourceLineAnnotation = switchHdlr.getCurrentSwitchStatement(this);
-                    if (DEBUG)
-                        System.out.printf("Found fallthrough to default offset at %d%n", getPC());
-
-                    foundSwitchNoDefault(sourceLineAnnotation);
-
-                } else {
+                if (!isDefaultOffset) {
                     SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(
                             getClassContext(), this, lastPC, getPC());
                     found.add(sourceLineAnnotation);
+                } else if ( getPC() >= biggestJumpTarget) {
+                    SourceLineAnnotation sourceLineAnnotation = switchHdlr.getCurrentSwitchStatement(this);
+                    if (DEBUG)
+                        System.out.printf("Found fallthrough to default offset at %d (BJT is %d)%n", getPC(), biggestJumpTarget);
 
+                    foundSwitchNoDefault(sourceLineAnnotation);
                 }
             }
 
@@ -178,7 +178,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         if (isBranch(seen) || isSwitch(seen) || seen == GOTO || seen == ARETURN || seen == IRETURN || seen == RETURN
                 || seen == LRETURN || seen == DRETURN || seen == FRETURN) {
-            clearAll();
+            clearAllDeadStores();
         }
 
         if (seen == GETFIELD && stack.getStackDepth() > 0) {
@@ -217,7 +217,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                             priority).addClassAndMethod(this).add(deadStore), this);
                 }
             }
-            clearAll();
+            clearAllDeadStores();
         }
 
         if (isRegisterLoad())
@@ -235,8 +235,8 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             }
             potentiallyDeadStores.set(register);
         }
-      
-            
+
+
         if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("ordinal") && getSigConstantOperand().equals("()I")) {
             XClass c = getXClassOperand();
             if (c != null) {
@@ -255,9 +255,21 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             if (justSawHashcode)
                 break; // javac compiled switch statement
             reachable = false;
+            biggestJumpTarget = -1;
             switchHdlr.enterSwitch(this, enumType);
             if (DEBUG)
                 System.out.printf("  entered switch, default is %d%n", switchHdlr.getDefaultOffset());
+            break;
+
+        case GOTO_W:
+        case GOTO:
+            if (biggestJumpTarget < getBranchTarget()) {
+                biggestJumpTarget = getBranchTarget();
+                if (DEBUG)
+                    System.out.printf("  Setting BJT to %d%n", biggestJumpTarget);
+            }
+
+            reachable = false;
             break;
 
         case ATHROW:
@@ -267,20 +279,18 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         case LRETURN:
         case DRETURN:
         case FRETURN:
-        case GOTO_W:
-        case GOTO:
             reachable = false;
             break;
 
         case INVOKESTATIC:
             reachable = !("exit".equals(getNameConstantOperand()) && "java/lang/System".equals(getClassConstantOperand()));
             break;
-       
+
         default:
             reachable = true;
         }
 
-        justSawHashcode =   seen == INVOKEVIRTUAL && getNameConstantOperand().equals("hashCode") && getSigConstantOperand().equals("()I"); 
+        justSawHashcode =   seen == INVOKEVIRTUAL && getNameConstantOperand().equals("hashCode") && getSigConstantOperand().equals("()I");
         lastPC = getPC();
         fallthroughDistance++;
     }
@@ -289,7 +299,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
     /**
      *
      */
-    private void clearAll() {
+    private void clearAllDeadStores() {
         potentiallyDeadStores.clear();
         potentiallyDeadStoresFromBeforeFallthrough.clear();
         potentiallyDeadFields.clear();
