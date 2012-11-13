@@ -2379,7 +2379,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
   </BugPattern>
   <BugPattern type="DM_CONVERT_CASE">
     <ShortDescription>Consider using Locale parameterized version of invoked method</ShortDescription>
-    <LongDescription>Use of non-localized String.toUpperCase() or String.toLowerCase in {1}</LongDescription>
+    <LongDescription>Use of non-localized String.toUpperCase() or String.toLowerCase() in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> A String is being converted to upper or lowercase, using the platform's default encoding. This may
