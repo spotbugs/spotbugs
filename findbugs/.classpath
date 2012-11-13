@@ -35,9 +35,9 @@
 	<classpathentry exported="true" kind="lib" path="lib/jaxen-1.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jFormatString.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jdepend-2.9.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/asm-3.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/asm-commons-3.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/asm-tree-3.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/asm-3.3.jar" sourcepath="lib/asm-src-3.3.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/asm-commons-3.3.jar" sourcepath="lib/asm-src-3.3.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/asm-tree-3.3.jar" sourcepath="lib/asm-src-3.3.zip"/>
 	<classpathentry kind="lib" path="lib/ant.jar"/>
 	<classpathentry kind="output" path="classesEclipse"/>
 </classpath>
