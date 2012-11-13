@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.security.Principal;
 import java.util.HashSet;
 
 import org.apache.bcel.Constants;
@@ -27,7 +26,6 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
-import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -83,9 +81,7 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
      * @return
      */
     public boolean checkForInitialization(XField f) {
-        if (!f.isReferenceType())
-            return false;
-        if (f.isFinal())
+        if (!f.isReferenceType() || f.isFinal())
             return false;
         NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase()
                 .getResolvedAnnotation(f, false);
@@ -128,7 +124,7 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        
+
         if (secondaryConstructor)
             return;
 
