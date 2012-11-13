@@ -6333,6 +6333,17 @@ does not need to be created, just access the static methods directly using the c
   each of whose catch blocks is identical, but this construct also accidentally catches RuntimeException as well,
   masking potential bugs.
   </p>
+  <p>A better approach is to either explicitly catch the specific exceptions that are thrown, 
+  or to explicitly catch RuntimeException exception, rethrow it, and then catch all non-Runtime Exceptions, as shown below:
+  <pre>
+  try {
+    ...
+  } catch (RuntimeException e) {
+    throw e;
+  } catch (Exception e) {
+    ... deal with all non-runtime exceptions ...
+  }</pre>
+  </p>
   ]]>
      </Details>
   </BugPattern>
