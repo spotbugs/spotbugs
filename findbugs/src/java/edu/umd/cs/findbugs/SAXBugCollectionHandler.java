@@ -174,6 +174,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
     private static boolean DEBUG = false;
 
+    @SuppressWarnings("hiding")
     @Override
     public void startElement(String uri, String name, String qName, Attributes attributes) throws SAXException {
         // URI should always be empty.
@@ -189,6 +190,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 throw new SAXException("Invalid top-level element (expected " + topLevelName + ", saw " + qName + ")");
 
             if (qName.equals(BUG_COLLECTION)) {
+                BugCollection bugCollection = this.bugCollection;
+                assert bugCollection != null;
                 // Read and set the sequence number.
                 String version = getOptionalAttribute(attributes, "version");
                 if (bugCollection instanceof SortedBugCollection)
@@ -224,6 +227,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 matcherStack.clear();
                 pushCompoundMatcher(filter);
             } else if (qName.equals(PROJECT)) {
+                Project project = this.project;
+                assert project != null;
                 // Project element
                 String projectName = getOptionalAttribute(attributes, Project.PROJECTNAME_ATTRIBUTE_NAME);
                 if (projectName != null)
@@ -231,6 +236,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             } else {
                 String outerElement = elementStack.get(elementStack.size() - 1);
                 if (outerElement.equals(BUG_COLLECTION)) {
+
                     // Parsing a top-level element of the BugCollection
                     if (qName.equals("BugInstance")) {
                         // BugInstance element - get required type and priority
@@ -297,6 +303,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                         }
 
                     } else if (qName.equals("FindBugsSummary")) {
+                        BugCollection bugCollection = this.bugCollection;
+                        assert bugCollection != null;
                         String timestamp = getRequiredAttribute(attributes, "timestamp", qName);
                         String vmVersion = getOptionalAttribute(attributes, "vm_version");
                         String totalClasses = getOptionalAttribute(attributes, "total_classes");
@@ -332,12 +340,16 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                         stackTrace.clear();
                     }
                 } else if (outerElement.equals("FindBugsSummary") && qName.equals("PackageStats")) {
+                    BugCollection bugCollection = this.bugCollection;
+                    assert bugCollection != null;
                     String packageName = getRequiredAttribute(attributes, "package", qName);
                     int numClasses = Integer.valueOf(getRequiredAttribute(attributes, "total_types", qName));
                     int size = Integer.valueOf(getRequiredAttribute(attributes, "total_size", qName));
                     bugCollection.getProjectStats().putPackageStats(packageName, numClasses, size);
 
                 } else if (outerElement.equals("PackageStats")) {
+                    BugCollection bugCollection = this.bugCollection;
+                    assert bugCollection != null;
                     if (qName.equals("ClassStats")) {
                         String className = getRequiredAttribute(attributes, "class", qName);
                         Boolean isInterface = Boolean.valueOf(getRequiredAttribute(attributes, "interface", qName));
@@ -361,6 +373,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     }
                 } else if (outerElement.equals(BugCollection.HISTORY_ELEMENT_NAME)) {
                     if (qName.equals(AppVersion.ELEMENT_NAME)) {
+                        BugCollection bugCollection = this.bugCollection;
+                        assert bugCollection != null;
+
                         try {
                             String sequence = getRequiredAttribute(attributes, "sequence", qName);
                             String timestamp = getOptionalAttribute(attributes, "timestamp");
@@ -383,6 +398,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                         }
                     }
                 } else if (outerElement.equals(BugCollection.PROJECT_ELEMENT_NAME)) {
+                    Project project = this.project;
+                    assert project != null;
                     if (qName.equals(Project.CLOUD_ELEMENT_NAME)) {
                         String cloudId = getRequiredAttribute(attributes, Project.CLOUD_ID_ATTRIBUTE_NAME, qName);
                         project.setCloudId(cloudId);
@@ -679,6 +696,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         }
     }
 
+    @SuppressWarnings("hiding")
     @Override
     public void endElement(String uri, String name, String qName) throws SAXException {
         // URI should always be empty.
@@ -699,10 +717,14 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
                 matcherStack.pop();
             } else if (outerElement.equals(BUG_COLLECTION)) {
+                BugCollection bugCollection = this.bugCollection;
+                assert bugCollection != null;
                 if (qName.equals("BugInstance")) {
                     bugCollection.add(bugInstance, false);
                 }
             } else if (outerElement.equals(PROJECT)) {
+                Project project = this.project;
+                assert project != null;
                 if (qName.equals("Jar"))
                     project.addFile(makeAbsolute(getTextContents()));
                 else if (qName.equals("SrcDir"))
@@ -713,6 +735,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
 
             } else if (outerElement.equals(Project.CLOUD_ELEMENT_NAME) && qName.equals(Project.CLOUD_PROPERTY_ELEMENT_NAME)) {
+                Project project = this.project;
+                assert project != null;
                 assert cloudPropertyKey != null;
                 project.getCloudProperties().setProperty(cloudPropertyKey, getTextContents());
                 cloudPropertyKey = null;
@@ -721,6 +745,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     bugInstance.setAnnotationText(getTextContents(), null);
                 }
             } else if (outerElement.equals(BugCollection.ERRORS_ELEMENT_NAME)) {
+                BugCollection bugCollection = this.bugCollection;
+                assert bugCollection != null;
                 if (qName.equals(BugCollection.ANALYSIS_ERROR_ELEMENT_NAME)) {
                     analysisError.setMessage(getTextContents());
                     bugCollection.addError(analysisError);
@@ -743,6 +769,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 }
             } else if (outerElement.equals("ClassFeatures")) {
                 if (qName.equals(ClassFeatureSet.ELEMENT_NAME)) {
+                    BugCollection bugCollection = this.bugCollection;
+                    assert bugCollection != null;
+
                     bugCollection.setClassFeatureSet(classFeatureSet);
                     classFeatureSet = null;
                 }
