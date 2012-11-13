@@ -512,7 +512,7 @@ public class UnreadFields extends OpcodeStackDetector {
                 }
                 // Eclipse bundles which implements start/stop *very* often
                 // assigns static instances there
-                if (getMethodName().equals("start") || getMethodName().equals("stop")
+                if ((getMethodName().equals("start") || getMethodName().equals("stop"))
                         && getMethodSig().equals("(Lorg/osgi/framework/BundleContext;)V")) {
                     try {
                         JavaClass bundleClass = Repository.lookupClass("org.osgi.framework.BundleActivator");
