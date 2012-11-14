@@ -155,10 +155,10 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @return the sequence number
      */
     public long getSequenceNumber();
-    
+
     public boolean isMultiversion();
     public boolean hasDeadBugs();
-  
+
 
 
     /**
@@ -375,10 +375,10 @@ public interface BugCollection extends Iterable<BugInstance> {
     /**
      * Get the instance of user annotation plugin
      *
-     * @return user annotation plugin 
+     * @return user annotation plugin
      */
     public @Nonnull Cloud getCloud();
-    
+
     public @CheckForNull Cloud getCloudLazily();
 
     public @Nonnull Cloud reinitializeCloud();
@@ -386,7 +386,7 @@ public interface BugCollection extends Iterable<BugInstance> {
     public void setXmlCloudDetails(Map<String, String> map);
 
     public Map<String, String> getXmlCloudDetails();
-    
-    /** Note that we are done adding bugs to this bug collection */
-    public void bugsPopulated();
+
+    /** Note that we are done (or not yet) adding bugs to this bug collection */
+    public void bugsPopulated(boolean done);
 }

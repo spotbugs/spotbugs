@@ -30,12 +30,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
-import java.security.MessageDigest;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -102,8 +99,8 @@ public class SortedBugCollection implements BugCollection {
     private boolean withMessages = false;
 
     private boolean minimalXML = false;
-    
-    private boolean synced = false;
+
+    private final boolean synced = false;
 
     private boolean applySuppressions = false;
 
@@ -140,13 +137,13 @@ public class SortedBugCollection implements BugCollection {
     public Project getProject() {
         return project;
     }
-    
+
     public @CheckForNull Cloud getCloudLazily() {
-        if (cloud != null && bugsPopulated) 
+        if (cloud != null && bugsPopulated)
            cloud.bugsPopulated();
         return cloud;
     }
-        
+
 
     public @Nonnull Cloud getCloud() {
         if (shouldNotUsePlugin) {
@@ -167,11 +164,11 @@ public class SortedBugCollection implements BugCollection {
                 result = cloud = CloudFactory.getPlainCloud(this);
             }
             callback.registerCloud(getProject(), this, result);
-             
-            
+
+
         }
         if (!result.isInitialized()) {
-            LOGGER.log(Level.SEVERE, "Cloud " + result.getCloudName() + " is not initialized ");  
+            LOGGER.log(Level.SEVERE, "Cloud " + result.getCloudName() + " is not initialized ");
         }
         if (bugsPopulated)
             result.bugsPopulated();
@@ -234,7 +231,7 @@ public class SortedBugCollection implements BugCollection {
      *         BugInstance was already in the BugCollection
      */
     public boolean add(BugInstance bugInstance) {
-        return add(bugInstance, 
+        return add(bugInstance,
                 bugInstance.getFirstVersion() == 0L && bugInstance.getLastVersion() == 0L);
     }
 
@@ -387,7 +384,7 @@ public class SortedBugCollection implements BugCollection {
             profiler.end(handler.getClass());
         }
         timeFinishedLoading = System.currentTimeMillis();
-        bugsPopulated();
+        bugsPopulated(true);
         // Presumably, project is now up-to-date
         project.setModified(false);
     }
@@ -453,10 +450,10 @@ public class SortedBugCollection implements BugCollection {
      */
     public void writeXML(@WillClose Writer out) throws IOException {
         assert project != null;
-        bugsPopulated();
+        bugsPopulated(true);
         XMLOutput xmlOutput;
         // if (project == null) throw new NullPointerException("No project");
-        
+
 
         if (withMessages && cloud != null) {
             cloud.bugsPopulated();
@@ -978,7 +975,7 @@ public class SortedBugCollection implements BugCollection {
     public boolean add(BugInstance bugInstance, boolean updateActiveTime) {
         assert !bugsPopulated;
         if (bugsPopulated)
-            AnalysisContext.logError("Bug collection marked as populated, but bugs added", 
+            AnalysisContext.logError("Bug collection marked as populated, but bugs added",
                     new RuntimeException("Bug collection marked as populated, but bugs added"));
         preciseHashOccurrenceNumbersAvailable = false;
         if (updateActiveTime) {
@@ -1047,7 +1044,7 @@ public class SortedBugCollection implements BugCollection {
         else
             missingClassSet.add(className);
     }
-    
+
    public Collection<? extends AnalysisError> getErrors() {
        return errorList;
    }
@@ -1104,7 +1101,7 @@ public class SortedBugCollection implements BugCollection {
 
     /** Returns whether this bug collection contains results from multiple analysis runs,
      * either of different version of the software or from different versions of FindBugs.
-     * 
+     *
      * @return
      */
     public boolean isMultiversion() {
@@ -1130,7 +1127,7 @@ public class SortedBugCollection implements BugCollection {
         SortedBugCollection dup = createEmptyCollectionWithMetadata();
 
         SortedBugCollection.cloneAll(dup.bugSet, this.bugSet);
-        
+
 
         return dup;
     }
@@ -1238,7 +1235,7 @@ public class SortedBugCollection implements BugCollection {
 
     }
 
- 
+
     /*
      * (non-Javadoc)
      *
@@ -1460,9 +1457,9 @@ public class SortedBugCollection implements BugCollection {
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.BugCollection#bugsPopulated()
      */
-    public void bugsPopulated() {
-        bugsPopulated = true;
-        
+    public void bugsPopulated(boolean done) {
+        bugsPopulated = done;
+
     }
 }
 

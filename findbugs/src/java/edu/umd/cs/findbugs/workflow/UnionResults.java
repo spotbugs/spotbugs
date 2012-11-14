@@ -50,7 +50,7 @@ public class UnionResults {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String,
          * java.lang.String)
@@ -65,7 +65,7 @@ public class UnionResults {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java
          * .lang.String, java.lang.String)
@@ -103,7 +103,7 @@ public class UnionResults {
         Project project = into.getProject();
         Project project2 = from.getProject();
         project.add(project2);
-        
+
         for(AnalysisError error : from.getErrors())
             into.addError(error);
 
@@ -120,17 +120,18 @@ public class UnionResults {
 
         SortedBugCollection results = null;
         HashSet<String> hashes = new HashSet<String>();
-        
+
         for (int i = argCount; i < argv.length; i++) {
             try {
                 SortedBugCollection more = new SortedBugCollection();
 
                 more.readXML(argv[i]);
-                
+
                 if (results != null) {
                     merge(hashes, results, more);
                 } else {
                     results = more;
+                    results.bugsPopulated(false);
                     for(BugInstance b : more.getCollection())
                         hashes.add(b.getInstanceHash());
                 }

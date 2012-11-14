@@ -42,7 +42,7 @@ public class XMLBugReporter extends BugCollectionBugReporter {
             Project project = getProject();
             if (project == null)
                 throw new NullPointerException("No project");
-            getBugCollection().bugsPopulated();
+            getBugCollection().bugsPopulated(true);
             getBugCollection().writeXML(outputStream);
             outputStream.close();
 

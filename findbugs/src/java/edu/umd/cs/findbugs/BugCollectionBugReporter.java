@@ -113,7 +113,7 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
      * @see edu.umd.cs.findbugs.BugReporter#finish()
      */
     public void finish() {
-       bugCollection.bugsPopulated();
+       bugCollection.bugsPopulated(true);
        if (writer != null)
             writer.flush();
     }
@@ -125,6 +125,7 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
      * @param line
      *            one line of the error report
      */
+    @Override
     protected void emitLine(String line) {
         if (writer == null) {
             super.emitLine(line);
