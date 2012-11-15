@@ -24,7 +24,11 @@ import org.apache.bcel.classfile.Code;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
+import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 /**
@@ -43,16 +47,26 @@ public class BooleanReturnNull extends OpcodeStackDetector {
         String s = getMethodSig();
         SignatureParser sp = new SignatureParser(s);
         // Check to see if the method has Boolean return type
-        boolean interesting = "Ljava/lang/Boolean;".equals(sp.getReturnTypeSignature());
-        if (interesting) {
-            super.visit(code); // make callbacks to sawOpcode for all opcodes
-            bugAccumulator.reportAccumulatedBugs();
-        }
-    }
+        if (!"Ljava/lang/Boolean;".equals(sp.getReturnTypeSignature()))
+            return;
 
+        if (isExplicitlyNullable())
+            return;
+
+        super.visit(code); // make callbacks to sawOpcode for all opcodes
+        bugAccumulator.reportAccumulatedBugs();
+
+    }
+    private boolean isExplicitlyNullable() {
+        AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
+        INullnessAnnotationDatabase nullnessAnnotationDatabase = analysisContext.getNullnessAnnotationDatabase();
+        XMethod xMethod = getXMethod();
+        NullnessAnnotation na = nullnessAnnotationDatabase.getResolvedAnnotation(xMethod, true);
+        return na != null && na != NullnessAnnotation.NONNULL;
+    }
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
      */
     @Override
