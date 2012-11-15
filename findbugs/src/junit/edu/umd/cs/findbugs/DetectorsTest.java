@@ -89,6 +89,18 @@ public class DetectorsTest {
                 .getCollection().isEmpty());
     }
 
+    @Test
+    public void testBug3506402() throws IOException, InterruptedException {
+        setUpEngine("../findbugsTestCases/build/classes/nullnessAnnotations/CheckForNullVarArgs.class",
+                    "../findbugsTestCases/build/classes/nullnessAnnotations/CheckForNullArrayArgs.class");
+        
+        engine.execute();
+        
+        // If there are zero bugs, then something's wrong
+        assertFalse("No bugs were reported. Something is wrong with the configuration", bugReporter.getBugCollection()
+                .getCollection().isEmpty());
+    }
+
     @After
     public void checkForUnexpectedBugs() {
         List<BugInstance> unexpectedBugs = new ArrayList<BugInstance>();

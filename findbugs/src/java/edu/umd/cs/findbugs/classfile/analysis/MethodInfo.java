@@ -526,7 +526,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      * @see edu.umd.cs.findbugs.ba.XMethod#isVarArgs()
      */
     public boolean isVarArgs() {
-        return checkFlag(Constants.ACC_TRANSIENT);
+        return checkFlag(Constants.ACC_VARARGS);
     }
 
     /*
