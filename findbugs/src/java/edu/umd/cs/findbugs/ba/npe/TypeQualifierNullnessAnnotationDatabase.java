@@ -102,7 +102,10 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 
             NullnessAnnotation result = toNullnessAnnotation(tqa);
             if (DEBUG) {
-                System.out.println("   ==> " + (result != null ? result.toString() : "not found"));
+                if (result == null)
+                    System.out.println("   ===> not found");
+                else
+                    System.out.println("   ===> " + tqa + "/" + result.toString() );
             }
             return result;
         } finally {
