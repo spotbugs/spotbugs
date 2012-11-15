@@ -19,7 +19,6 @@ public class Ideas_2010_06_16 {
         main2();
     }
 
-    @ExpectWarning("NP")
     public static void main2() {
         test2((Object[]) null);
 

@@ -1,3 +1,5 @@
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class SwitchDup {
 
     public int simpleIf(boolean b) {
@@ -84,6 +86,7 @@ public class SwitchDup {
         // return n; // unreachable
     }
 
+    @ExpectWarning("SF_SWITCH_NO_DEFAULT")
     public int noDefault(int which) {
         int n = 5;
         switch (which) {

@@ -101,6 +101,7 @@ public class Bug2539590 {
     }
 
     @ExpectWarning("SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW")
+    @NoWarning("SF_SWITCH_NO_DEFAULT")
     public static int fallthroughMethodToss(int which) {
         int result;
         switch (which) {
