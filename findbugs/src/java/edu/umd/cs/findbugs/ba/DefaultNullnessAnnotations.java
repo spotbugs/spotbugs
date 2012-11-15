@@ -500,8 +500,9 @@ public class DefaultNullnessAnnotations {
 
         db.addMethodAnnotation("org.eclipse.core.resources.IProject","getNature","(Ljava/lang/String;)Lorg/eclipse/core/resources/IProjectNature;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.core.resources.IProject","getWorkingLocation","(Ljava/lang/String;)Lorg/eclipse/core/runtime/IPath;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
+
+//        db.addMethodAnnotation("org.eclipse.core.resources.IProject","getWorkingLocation","(Ljava/lang/String;)Lorg/eclipse/core/runtime/IPath;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
 
         db.addMethodAnnotation("org.eclipse.core.resources.IWorkspaceRoot","getContainerForLocation","(Lorg/eclipse/core/runtime/IPath;)Lorg/eclipse/core/resources/IContainer;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
@@ -595,8 +596,10 @@ public class DefaultNullnessAnnotations {
 
         db.addMethodAnnotation("org.eclipse.jface.viewers.ILabelProvider","getImage","(Ljava/lang/Object;)Lorg/eclipse/swt/graphics/Image;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.jface.viewers.ILabelProvider","getText","(Ljava/lang/Object;)Ljava/lang/String;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
+
+        // too many false positives
+//        db.addMethodAnnotation("org.eclipse.jface.viewers.ILabelProvider","getText","(Ljava/lang/Object;)Ljava/lang/String;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
 
         db.addMethodAnnotation("org.eclipse.jface.viewers.IFontProvider","getFont","(Ljava/lang/Object;)Lorg/eclipse/swt/graphics/Font;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
@@ -626,8 +629,10 @@ public class DefaultNullnessAnnotations {
 
         db.addMethodAnnotation("org.eclipse.jface.viewers.ITableLabelProvider","getColumnImage","(Ljava/lang/Object;I)Lorg/eclipse/swt/graphics/Image;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.jface.viewers.ITableLabelProvider","getColumnText","(Ljava/lang/Object;I)Ljava/lang/String;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
+
+        // too many false positives
+//        db.addMethodAnnotation("org.eclipse.jface.viewers.ITableLabelProvider","getColumnText","(Ljava/lang/Object;I)Ljava/lang/String;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
 
         db.addMethodAnnotation("org.eclipse.ui.IWorkbenchPage","findView","(Ljava/lang/String;)Lorg/eclipse/ui/IViewPart;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
@@ -639,10 +644,12 @@ public class DefaultNullnessAnnotations {
                 false, NullnessAnnotation.CHECK_FOR_NULL);
         db.addMethodAnnotation("org.eclipse.ui.IWorkbenchPage","getActiveEditor","()Lorg/eclipse/ui/IEditorPart;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.ui.IWorkbenchPage","openEditor","(Lorg/eclipse/ui/IEditorInput;Ljava/lang/String;)Lorg/eclipse/ui/IEditorPart;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.ui.IWorkbenchPage","openEditor","(Lorg/eclipse/ui/IEditorInput;Ljava/lang/String;ZI)Lorg/eclipse/ui/IEditorPart;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
+
+        // too many false positives
+//        db.addMethodAnnotation("org.eclipse.ui.IWorkbenchPage","openEditor","(Lorg/eclipse/ui/IEditorInput;Ljava/lang/String;)Lorg/eclipse/ui/IEditorPart;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
+//        db.addMethodAnnotation("org.eclipse.ui.IWorkbenchPage","openEditor","(Lorg/eclipse/ui/IEditorInput;Ljava/lang/String;ZI)Lorg/eclipse/ui/IEditorPart;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
 
 //        db.addMethodAnnotation("org.eclipse.ui.IWorkbenchWindow","getActivePage","()Lorg/eclipse/ui/IWorkbenchPage;",
 //                false, NullnessAnnotation.CHECK_FOR_NULL);
