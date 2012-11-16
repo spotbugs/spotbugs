@@ -88,13 +88,13 @@ public abstract class FindBugsJob extends Job {
     public void scheduleInteractive() {
         setUser(true);
         setPriority(Job.INTERACTIVE);
-        
+
         // paranoia
         if(supportsMulticore() && analysisSem.availablePermits() == 0
                 && Job.getJobManager().find(FindbugsPlugin.class).length == 0){
             analysisSem.release(MutexSchedulingRule.MAX_JOBS);
         }
-        
+
         schedule();
     }
 
@@ -128,7 +128,6 @@ public abstract class FindBugsJob extends Job {
             FindbugsPlugin.getDefault().logException(ex, createErrorMessage());
             return ex.getStatus();
         } catch (InterruptedException e) {
-            Thread.interrupted();
             return Status.CANCEL_STATUS;
         } finally {
             if(supportsMulticore()){
