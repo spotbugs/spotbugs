@@ -18,6 +18,8 @@
  */
 package de.tobject.findbugs;
 
+import java.util.concurrent.Semaphore;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -34,7 +36,12 @@ import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
  * @author Andrei
  */
 public abstract class FindBugsJob extends Job {
+
+    private final static Semaphore analysisSem;
+
     static {
+        analysisSem = new Semaphore(MutexSchedulingRule.MAX_JOBS);
+
         // see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=298795
         // we must run this stupid code in the UI thread
         Display.getDefault().asyncExec(new Runnable() {
@@ -81,6 +88,13 @@ public abstract class FindBugsJob extends Job {
     public void scheduleInteractive() {
         setUser(true);
         setPriority(Job.INTERACTIVE);
+        
+        // paranoia
+        if(supportsMulticore() && analysisSem.availablePermits() == 0
+                && Job.getJobManager().find(FindbugsPlugin.class).length == 0){
+            analysisSem.release(MutexSchedulingRule.MAX_JOBS);
+        }
+        
         schedule();
     }
 
@@ -96,9 +110,16 @@ public abstract class FindBugsJob extends Job {
 
     abstract protected void runWithProgress(IProgressMonitor monitor) throws CoreException;
 
+    protected boolean supportsMulticore(){
+        return false;
+    }
+
     @Override
     public IStatus run(IProgressMonitor monitor) {
         try {
+            if(supportsMulticore()){
+                analysisSem.acquire();
+            }
             runWithProgress(monitor);
         } catch (OperationCanceledException e) {
             // Do nothing when operation cancelled.
@@ -106,7 +127,13 @@ public abstract class FindBugsJob extends Job {
         } catch (CoreException ex) {
             FindbugsPlugin.getDefault().logException(ex, createErrorMessage());
             return ex.getStatus();
+        } catch (InterruptedException e) {
+            Thread.interrupted();
+            return Status.CANCEL_STATUS;
         } finally {
+            if(supportsMulticore()){
+                analysisSem.release();
+            }
             monitor.done();
         }
         return Status.OK_STATUS;

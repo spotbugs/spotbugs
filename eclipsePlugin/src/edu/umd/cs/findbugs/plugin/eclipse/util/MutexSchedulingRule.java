@@ -20,9 +20,6 @@ package edu.umd.cs.findbugs.plugin.eclipse.util;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.core.runtime.jobs.Job;
-
-import de.tobject.findbugs.FindbugsPlugin;
 
 /**
  * A complicated scheduling rule for mutually exclusivity, derived from:
@@ -35,8 +32,8 @@ import de.tobject.findbugs.FindbugsPlugin;
 public class MutexSchedulingRule implements ISchedulingRule {
 
     // enable multicore
-    private static final int MAX_JOBS = Runtime.getRuntime().availableProcessors();
-    private static final boolean MULTICORE = MAX_JOBS > 1;
+    public static final int MAX_JOBS = Runtime.getRuntime().availableProcessors();
+    public static final boolean MULTICORE = MAX_JOBS > 1;
 
     private final IResource resource;
 
@@ -55,36 +52,13 @@ public class MutexSchedulingRule implements ISchedulingRule {
             return true;
         }
         if (MULTICORE) {
-            return resource.contains(mRule.resource) || tooManyJobsThere();
+            return resource.contains(mRule.resource);
         }
         return true;
     }
 
-    private static boolean tooManyJobsThere() {
-        Job[] fbJobs = Job.getJobManager().find(FindbugsPlugin.class);
-        int runningCount = 0;
-        for (Job job : fbJobs) {
-            if (job.getState() == Job.RUNNING && job.getRule() instanceof MutexSchedulingRule) {
-                runningCount++;
-                // TODO made this condition configurable
-                if( runningCount > MAX_JOBS) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public boolean contains(ISchedulingRule rule) {
-//        if (rule instanceof IResource && resource != null) {
-//            return resource.contains(rule);
-//        }
         return isConflicting(rule);
-        /*
-         * from the URL above: "If you do not need to create hierarchies of
-         * locks, you can implement the contains method to simply call
-         * isConflicting."
-         */
     }
 
     @Override

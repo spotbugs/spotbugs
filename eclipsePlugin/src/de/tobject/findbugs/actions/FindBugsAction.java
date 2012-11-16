@@ -59,6 +59,7 @@ import de.tobject.findbugs.builder.WorkItem;
 import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.view.FindBugsPerspectiveFactory;
+import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
 
 /**
  * Run FindBugs on the currently selected element(s) in the package explorer.
@@ -256,6 +257,11 @@ public class FindBugsAction implements IObjectActionDelegate {
             this.resources = resources;
             this.resource = resource;
             this.targetPart = targetPart;
+        }
+
+        @Override
+        protected boolean supportsMulticore(){
+            return MutexSchedulingRule.MULTICORE;
         }
 
         @Override

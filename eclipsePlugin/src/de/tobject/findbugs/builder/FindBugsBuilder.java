@@ -35,6 +35,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import de.tobject.findbugs.FindBugsJob;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.preferences.FindBugsConstants;
+import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
 
 /**
  * The <code>FindBugsBuilder</code> performs a FindBugs run on a subset of the
@@ -202,6 +203,11 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
         private StartedFromBuilderJob(String name, IResource resource, List<WorkItem> resources) {
             super(name, resource);
             this.resources = resources;
+        }
+
+        @Override
+        protected boolean supportsMulticore(){
+            return MutexSchedulingRule.MULTICORE;
         }
 
         @Override
