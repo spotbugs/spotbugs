@@ -119,6 +119,9 @@ public abstract class FindBugsJob extends Job {
         try {
             if(supportsMulticore()){
                 analysisSem.acquire();
+                if(monitor.isCanceled()){
+                    return Status.CANCEL_STATUS;
+                }
             }
             runWithProgress(monitor);
         } catch (OperationCanceledException e) {
