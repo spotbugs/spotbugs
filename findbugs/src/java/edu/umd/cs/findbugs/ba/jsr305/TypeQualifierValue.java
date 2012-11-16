@@ -71,7 +71,7 @@ public class TypeQualifierValue<A extends Annotation> {
 
     public final ClassDescriptor typeQualifier;
     public final Class<A> typeQualifierClass;
-    
+
     public final A proxy;
 
     public final @CheckForNull Object value;
@@ -97,7 +97,7 @@ public class TypeQualifierValue<A extends Annotation> {
                                      // exclusive type qualifier value
         boolean isExhaustive = false; // will be set to true if this is an
                                       // exhaustive type qualifier value
-        
+
         TypeQualifierValidator<A> validator = null;
         Class<A> qualifierClass = null;
         A proxy = null;
@@ -147,8 +147,8 @@ public class TypeQualifierValue<A extends Annotation> {
              if (TypeQualifierValidator.class.isAssignableFrom(c)) {
                 Class<? extends TypeQualifierValidator> checkerClass = c.asSubclass(TypeQualifierValidator.class);
                 validator = getValidator(checkerClass);
-                qualifierClass = getQualifierClass(typeQualifier);           
-                
+                qualifierClass = getQualifierClass(typeQualifier);
+
                 InvocationHandler handler = new InvocationHandler() {
 
                     public Object invoke(Object arg0, Method arg1, Object[] arg2) throws Throwable {
@@ -156,7 +156,7 @@ public class TypeQualifierValue<A extends Annotation> {
                            return TypeQualifierValue.this.value;
                        throw new UnsupportedOperationException("Can't handle " + arg1);
                     }};
-                
+
                 proxy =  qualifierClass.cast(Proxy.newProxyInstance(validatorLoader, new Class[] {qualifierClass}, handler));
             }
         } catch (ClassNotFoundException e) {
@@ -258,7 +258,7 @@ public class TypeQualifierValue<A extends Annotation> {
             if (!performing.compareAndSet(false, true)) {
                 throw new IllegalStateException("recursive validation");
             }
-            
+
             return validator.forConstantValue(proxy, constantValue);
         } catch (Exception e) {
             AnalysisContext.logError("Error executing custom validator for " + typeQualifier + " " + constantValue, e);
@@ -292,6 +292,11 @@ public class TypeQualifierValue<A extends Annotation> {
         map.put(desc, value, result);
         instance.get().allKnownTypeQualifiers.add(result);
         return result;
+    }
+    @SuppressWarnings("unchecked")
+    public static @Nonnull <A extends Annotation>
+    TypeQualifierValue<A> getValue(Class <A> clazz, Object value) {
+        return getValue(DescriptorFactory.createClassDescriptor(clazz), value);
     }
 
     /**
