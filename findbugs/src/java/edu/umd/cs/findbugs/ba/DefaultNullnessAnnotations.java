@@ -560,8 +560,9 @@ public class DefaultNullnessAnnotations {
 //        db.addMethodAnnotation("org.eclipse.core.resources.IStorage","getFullPath","()Lorg/eclipse/core/runtime/IPath;",
 //                false, NullnessAnnotation.CHECK_FOR_NULL);
 
-        db.addMethodAnnotation("org.eclipse.core.resources.IMarker","getAttribute","(Ljava/lang/String;)Ljava/lang/Object;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
+        // Too many false positives
+//        db.addMethodAnnotation("org.eclipse.core.resources.IMarker","getAttribute","(Ljava/lang/String;)Ljava/lang/Object;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
 
         db.addMethodAnnotation("org.eclipse.team.core.RepositoryProvider","getProvider","(Lorg/eclipse/core/resources/IProject;)Lorg/eclipse/team/core/RepositoryProvider;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
@@ -642,8 +643,10 @@ public class DefaultNullnessAnnotations {
                 false, NullnessAnnotation.CHECK_FOR_NULL);
         db.addMethodAnnotation("org.eclipse.ui.IWorkbenchPage","findViewReference","(Ljava/lang/String;Ljava/lang/String;)Lorg/eclipse/ui/IViewReference;",
                 false, NullnessAnnotation.CHECK_FOR_NULL);
-        db.addMethodAnnotation("org.eclipse.ui.IWorkbenchPage","getActiveEditor","()Lorg/eclipse/ui/IEditorPart;",
-                false, NullnessAnnotation.CHECK_FOR_NULL);
+
+     // Too many false positives if used from editor, which is active anyway
+//        db.addMethodAnnotation("org.eclipse.ui.IWorkbenchPage","getActiveEditor","()Lorg/eclipse/ui/IEditorPart;",
+//                false, NullnessAnnotation.CHECK_FOR_NULL);
 
         // too many false positives
 //        db.addMethodAnnotation("org.eclipse.ui.IWorkbenchPage","openEditor","(Lorg/eclipse/ui/IEditorInput;Ljava/lang/String;)Lorg/eclipse/ui/IEditorPart;",
