@@ -62,7 +62,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * A dataflow analysis to detect potential null pointer dereferences.
- * 
+ *
  * @author David Hovemeyer
  * @see IsNullValue
  * @see IsNullValueFrame
@@ -83,11 +83,9 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
     private final ValueNumberDataflow vnaDataflow;
 
-    private final TypeDataflow typeDataflow;
-
     private final CFG cfg;
 
-    private Set<LocationWhereValueBecomesNull> locationWhereValueBecomesNullSet;
+    private final Set<LocationWhereValueBecomesNull> locationWhereValueBecomesNullSet;
 
     private final boolean trackValueNumbers;
 
@@ -113,7 +111,6 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         this.visitor = new IsNullValueFrameModelingVisitor(methodGen.getConstantPool(), assertionMethods, vnaDataflow,
                 typeDataflow, trackValueNumbers);
         this.vnaDataflow = vnaDataflow;
-        this.typeDataflow = typeDataflow;
         this.cfg = cfg;
         this.locationWhereValueBecomesNullSet = new HashSet<LocationWhereValueBecomesNull>();
         this.pointerEqualityCheck = getForPointerEqualityCheck(cfg, vnaDataflow);
@@ -579,7 +576,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.FrameDataflowAnalysis#mergeInto(edu.umd.cs.findbugs
      * .ba.Frame, edu.umd.cs.findbugs.ba.Frame)
@@ -602,7 +599,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#startIteration()
      */
     @Override
@@ -632,7 +629,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
     /**
      * Determine if the given basic block ends in a redundant null comparison.
-     * 
+     *
      * @param basicBlock
      *            the basic block
      * @param lastFrame
@@ -804,7 +801,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
     /**
      * Update is-null information at a branch target based on information gained
      * at a null comparison branch.
-     * 
+     *
      * @param origFrame
      *            the original is-null frame at entry to basic block
      * @param frame
