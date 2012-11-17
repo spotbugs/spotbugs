@@ -387,6 +387,5 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     public Map<String, String> getXmlCloudDetails();
 
-    /** Note that we are done (or not yet) adding bugs to this bug collection */
-    public void bugsPopulated(boolean done);
+    public void bugsPopulated();
 }

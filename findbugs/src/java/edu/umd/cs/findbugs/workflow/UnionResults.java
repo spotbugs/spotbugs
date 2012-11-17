@@ -126,15 +126,11 @@ public class UnionResults {
                 SortedBugCollection more = new SortedBugCollection();
 
                 more.readXML(argv[i]);
+                if (results == null)
+                    results = more.createEmptyCollectionWithMetadata();
 
-                if (results != null) {
-                    merge(hashes, results, more);
-                } else {
-                    results = more;
-                    results.bugsPopulated(false);
-                    for(BugInstance b : more.getCollection())
-                        hashes.add(b.getInstanceHash());
-                }
+                merge(hashes, results, more);
+
             } catch (IOException e) {
                 System.err.println("Trouble reading/parsing " + argv[i]);
             } catch (DocumentException e) {

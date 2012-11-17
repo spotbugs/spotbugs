@@ -102,7 +102,7 @@ public class SortedBugCollection implements BugCollection {
     boolean earlyStats = SystemProperties.getBoolean("findbugs.report.summaryFirst");
 
     boolean bugsPopulated = false;
-    
+
     private boolean withMessages = false;
 
     private boolean minimalXML = false;
@@ -409,7 +409,7 @@ public class SortedBugCollection implements BugCollection {
             profiler.end(handler.getClass());
         }
         timeFinishedLoading = System.currentTimeMillis();
-        bugsPopulated(true);
+        bugsPopulated();
         // Presumably, project is now up-to-date
         project.setModified(false);
     }
@@ -475,7 +475,7 @@ public class SortedBugCollection implements BugCollection {
      */
     public void writeXML(@WillClose Writer out) throws IOException {
         assert project != null;
-        bugsPopulated(true);
+        bugsPopulated();
         XMLOutput xmlOutput;
         // if (project == null) throw new NullPointerException("No project");
 
@@ -956,9 +956,12 @@ public class SortedBugCollection implements BugCollection {
 
     public boolean add(BugInstance bugInstance, boolean updateActiveTime) {
         assert !bugsPopulated;
-        if (bugsPopulated)
+
+        if (bugsPopulated) {
             AnalysisContext.logError("Bug collection marked as populated, but bugs added",
                     new RuntimeException("Bug collection marked as populated, but bugs added"));
+            bugsPopulated = false;
+        }
         preciseHashOccurrenceNumbersAvailable = false;
         if (updateActiveTime) {
             bugInstance.setFirstVersion(sequence);
@@ -1307,9 +1310,10 @@ public class SortedBugCollection implements BugCollection {
         this.shouldNotUsePlugin = b;
     }
 
-    public void bugsPopulated(boolean done) {
-        bugsPopulated = done;
+    public void bugsPopulated() {
+        bugsPopulated = true;
     }
+
 }
 
 // vim:ts=4

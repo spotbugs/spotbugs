@@ -113,7 +113,7 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
      * @see edu.umd.cs.findbugs.BugReporter#finish()
      */
     public void finish() {
-       bugCollection.bugsPopulated(true);
+       bugCollection.bugsPopulated();
        if (writer != null)
             writer.flush();
     }

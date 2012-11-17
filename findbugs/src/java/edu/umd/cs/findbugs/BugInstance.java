@@ -173,7 +173,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     private boolean isFakeBugType(String type) {
         return "MISSING".equals(type) || "FOUND".equals(type);
     }
-    
+
     public static class NoSuchBugPattern extends IllegalArgumentException {
         public final String type;
         public NoSuchBugPattern(String type) {
@@ -2055,10 +2055,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     public String getAbridgedMessage() {
         BugPattern bugPattern = getBugPattern();
-        
+
         String pattern = getLongDescription().replaceAll(" in \\{1\\}", "");
         String shortPattern = bugPattern.getShortDescription();
-        
+
         try {
             FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
             return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass(), true);
