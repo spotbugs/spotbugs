@@ -7200,8 +7200,8 @@ String that gives the contents of the array. See Programming Puzzlers, chapter 3
     </Details>
   </BugPattern>
   <BugPattern type="DMI_INVOKING_TOSTRING_ON_ANONYMOUS_ARRAY">
-    <ShortDescription>Invocation of toString on an array</ShortDescription>
-    <LongDescription>Invocation of toString on an array in {1}</LongDescription>
+    <ShortDescription>Invocation of toString on an unnamed array</ShortDescription>
+    <LongDescription>Invocation of toString on an unnamed array in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
