@@ -49,7 +49,7 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
 
 /**
  * Figure out where and how type qualifier annotations are applied.
- * 
+ *
  * @author William Pugh
  * @author David Hovemeyer
  */
@@ -68,29 +68,29 @@ public class TypeQualifierApplications {
     static final boolean CHECK_EXHAUSTIVE = true; // SystemProperties.getBoolean("ctq.applications.checkexhaustive");
 
     static class Data {
-        
+
         /**
          * Type qualifier annotations applied directly to
          * methods/fields/classes/etc.
          */
-        private Map<AnnotatedObject, Collection<AnnotationValue>> directObjectAnnotations = new HashMap<AnnotatedObject, Collection<AnnotationValue>>();
+        private final Map<AnnotatedObject, Collection<AnnotationValue>> directObjectAnnotations = new HashMap<AnnotatedObject, Collection<AnnotationValue>>();
 
         /** Type qualifier annotations applied directly to method parameters. */
-        private HashMap<XMethod, Map<Integer, Collection<AnnotationValue>>> directParameterAnnotations = new HashMap<XMethod, Map<Integer, Collection<AnnotationValue>>>();
+        private final HashMap<XMethod, Map<Integer, Collection<AnnotationValue>>> directParameterAnnotations = new HashMap<XMethod, Map<Integer, Collection<AnnotationValue>>>();
 
         /**
          * Map of TypeQualifierValues to maps containing, for each
          * AnnotatedObject, the effective TypeQualifierAnnotation (if any) for
          * that AnnotatedObject.
          */
-        private Map<TypeQualifierValue, Map<AnnotatedObject, TypeQualifierAnnotation>> effectiveObjectAnnotations = new HashMap<TypeQualifierValue, Map<AnnotatedObject, TypeQualifierAnnotation>>();
+        private final Map<TypeQualifierValue, Map<AnnotatedObject, TypeQualifierAnnotation>> effectiveObjectAnnotations = new HashMap<TypeQualifierValue, Map<AnnotatedObject, TypeQualifierAnnotation>>();
 
         /**
          * Map of TypeQualifierValues to maps containing, for each
          * XMethod/parameter, the effective TypeQualifierAnnotation (if any) for
          * that XMethod/parameter.
          */
-        private Map<TypeQualifierValue, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>> effectiveParameterAnnotations = new HashMap<TypeQualifierValue, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>>();
+        private final Map<TypeQualifierValue, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>> effectiveParameterAnnotations = new HashMap<TypeQualifierValue, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>>();
     }
 
     private static ThreadLocal<Data> instance = new ThreadLocal<Data>() {
@@ -122,7 +122,7 @@ public class TypeQualifierApplications {
     private static Map<AnnotatedObject, Collection<AnnotationValue>> getDirectObjectAnnotations() {
         return instance.get().directObjectAnnotations;
     }
-    
+
     public static void updateAnnotations(AnnotatedObject object) {
         // TODO: Be smarter. Can we do something other than clear everything?
         clearInstance();
@@ -138,7 +138,7 @@ public class TypeQualifierApplications {
 
     /**
      * Get the direct annotations (if any) on given AnnotatedObject.
-     * 
+     *
      * @param m
      *            an AnnotatedObject
      * @return Collection of AnnotationValues representing annotations directly
@@ -159,7 +159,7 @@ public class TypeQualifierApplications {
 
     /**
      * Get the direct annotations (if any) on given method parameter.
-     * 
+     *
      * @param m
      *            a method
      * @param parameter
@@ -172,6 +172,8 @@ public class TypeQualifierApplications {
         Map<Integer, Collection<AnnotationValue>> map = directParameterAnnotations.get(m);
         if (map == null) {
             int n = m.getNumParams();
+            if (m.isVarArgs())
+                n--; // ignore annotations on varargs parameters
             map = new HashMap<Integer, Collection<AnnotationValue>>(n + 2);
             for (int i = 0; i < n; i++) {
                 Collection<AnnotationValue> a = TypeQualifierResolver.resolveTypeQualifiers(m.getParameterAnnotations(i));
@@ -192,7 +194,7 @@ public class TypeQualifierApplications {
     /**
      * Populate a Set of TypeQualifierAnnotations representing directly-applied
      * type qualifier annotations on given method parameter.
-     * 
+     *
      * @param result
      *            Set of TypeQualifierAnnotations
      * @param o
@@ -210,7 +212,7 @@ public class TypeQualifierApplications {
     /**
      * Populate a Set of TypeQualifierAnnotations representing directly-applied
      * type qualifier annotations on given AnnotatedObject.
-     * 
+     *
      * @param result
      *            Set of TypeQualifierAnnotations
      * @param o
@@ -229,7 +231,7 @@ public class TypeQualifierApplications {
 
     /**
      * Resolve a raw AnnotationValue into a TypeQualifierAnnotation.
-     * 
+     *
      * @param v
      *            a raw AnnotationValue
      * @return a constructed TypeQualifierAnnotation
@@ -247,7 +249,7 @@ public class TypeQualifierApplications {
     /**
      * Resolve a raw AnnotationValue into a TypeQualifierAnnotation, storing
      * result in given Set.
-     * 
+     *
      * @param set
      *            Set of resolved TypeQualifierAnnotations
      * @param v
@@ -263,7 +265,7 @@ public class TypeQualifierApplications {
      * Populate Set of TypeQualifierAnnotations for given AnnotatedObject,
      * taking into account annotations applied to outer scopes (e.g., enclosing
      * classes and packages.)
-     * 
+     *
      * @param result
      *            Set of TypeQualifierAnnotations
      * @param o
@@ -284,7 +286,7 @@ public class TypeQualifierApplications {
      * Get the collection of resolved TypeQualifierAnnotations for a given
      * AnnotatedObject, taking into account annotations applied to outer scopes
      * (e.g., enclosing classes and packages.)
-     * 
+     *
      * @param o
      *            an AnnotatedObject
      * @param e
@@ -301,7 +303,7 @@ public class TypeQualifierApplications {
      * Get the collection of resolved TypeQualifierAnnotations for a given
      * parameter, taking into account annotations applied to outer scopes (e.g.,
      * enclosing classes and packages.)
-     * 
+     *
      * @param o
      *            a method
      * @param parameter
@@ -320,14 +322,14 @@ public class TypeQualifierApplications {
      * Get the Collection of resolved TypeQualifierAnnotations representing
      * directly applied and default (outer scope) type qualifier annotations for
      * given AnnotatedObject.
-     * 
+     *
      * <p>
      * NOTE: does not properly account for inherited annotations on instance
      * methods. It is ok to call this method to find out generally-relevant
      * TypeQualifierAnnotations, but not to find the effective
      * TypeQualifierAnnotation.
      * </p>
-     * 
+     *
      * @param o
      *            an AnnotatedObject
      * @return Collection of TypeQualifierAnnotations applicable to the
@@ -341,14 +343,14 @@ public class TypeQualifierApplications {
      * Get the Collection of resolved TypeQualifierAnnotations representing
      * directly applied and default (outer scope) type qualifier annotations for
      * given method parameter.
-     * 
+     *
      * <p>
      * NOTE: does not properly account for inherited annotations on instance
      * method parameters. It is ok to call this method to find out
      * generally-relevant TypeQualifierAnnotations, but not to find the
      * effective TypeQualifierAnnotation.
      * </p>
-     * 
+     *
      * @param o
      *            a method
      * @param parameter
@@ -362,7 +364,7 @@ public class TypeQualifierApplications {
 
     /**
      * Look up a TypeQualifierAnnotation matching given TypeQualifierValue.
-     * 
+     *
      * @param typeQualifierAnnotations
      *            a Collection of TypeQualifierAnnotations
      * @param typeQualifierValue
@@ -382,7 +384,7 @@ public class TypeQualifierApplications {
 
     /**
      * Look for a default type qualifier annotation.
-     * 
+     *
      * @param o
      *            an AnnotatedObject
      * @param typeQualifierValue
@@ -519,7 +521,7 @@ public class TypeQualifierApplications {
      * Get the effective TypeQualifierAnnotation on given AnnotatedObject. Takes
      * into account inherited and default (outer scope) annotations. Also takes
      * exclusive qualifiers into account.
-     * 
+     *
      * @param o
      *            an AnnotatedObject
      * @param typeQualifierValue
@@ -620,7 +622,7 @@ public class TypeQualifierApplications {
 
     /**
      * Get a directly-applied TypeQualifierAnnotation on given AnnotatedObject.
-     * 
+     *
      * @param o
      *            an AnnotatedObject
      * @param typeQualifierValue
@@ -643,7 +645,7 @@ public class TypeQualifierApplications {
     /**
      * Get the effective inherited TypeQualifierAnnotation on given instance
      * method.
-     * 
+     *
      * @param o
      *            an XMethod
      * @param typeQualifierValue
@@ -671,7 +673,7 @@ public class TypeQualifierApplications {
     /**
      * Get the default (outer scope) annotation applicable to given
      * AnnotatedObject.
-     * 
+     *
      * @param o
      *            an AnnotatedObject
      * @param typeQualifierValue
@@ -716,7 +718,7 @@ public class TypeQualifierApplications {
      * Get the effective TypeQualifierAnnotation on given method parameter.
      * Takes into account inherited and default (outer scope) annotations. Also
      * takes exclusive qualifiers into account.
-     * 
+     *
      * @param xmethod
      *            a method
      * @param parameter
@@ -795,6 +797,13 @@ public class TypeQualifierApplications {
             // Compute answer
             TypeQualifierAnnotation tqa;
 
+            if (xmethod.isVarArgs() && parameter == xmethod.getNumParams()-1) {
+                tqa = null;
+                if (DEBUG) {
+                    System.out.print("  vararg parameters don't get type qualifiers");
+                }
+            }
+            else {
             // Check direct application
             if (DEBUG) {
                 System.out.print("  (1) Checking direct application...");
@@ -842,6 +851,7 @@ public class TypeQualifierApplications {
                     }
                 }
             }
+            }
 
             // Cache answer
             result = tqa;
@@ -866,7 +876,7 @@ public class TypeQualifierApplications {
     /**
      * Get the TypeQualifierAnnotation directly applied to given method
      * parameter.
-     * 
+     *
      * @param xmethod
      *            a method
      * @param parameter
@@ -890,7 +900,7 @@ public class TypeQualifierApplications {
     /**
      * Get the effective inherited TypeQualifierAnnotation on the given instance
      * method parameter.
-     * 
+     *
      * @param xmethod
      *            an instance method
      * @param parameter
@@ -921,7 +931,7 @@ public class TypeQualifierApplications {
     /**
      * Get the default (outer-scope) TypeQualifierAnnotation on given method
      * parameter.
-     * 
+     *
      * @param xmethod
      *            a method
      * @param typeQualifierValue
