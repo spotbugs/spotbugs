@@ -369,4 +369,28 @@
         <echo message="Building Findbugs noUpdateChecks plugin"/>
         <ant dir="${fb.noUpdateChecks.dir}" inheritall="false" target="install" />
     </target>
+
+  <target name="findbugscheck" depends="classes">
+    <property name="findbugs.home" value="${findbugs.dir}" />
+    <property name="anttask.jar" value="${findbugs.home}/lib/findbugs-ant.jar"/>
+    <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
+
+    <findbugs home="."
+              output="xml"
+              cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
+              jvmargs="-ea -Xmx1200m -Dfindbugs.failOnCloudError=true -Dfindbugs.cloud.token=238b6fc80cec17ec"
+              projectName="FindBugs Eclipse plugin"
+              maxRank="20"
+              timeout="1800000"
+              outputFile="findbugscheckAll.xml" >
+      <class location="${bin.dir}" />
+      <sourcePath path="${srd.dir}"/>
+      <auxClasspath refid="plugin.classpath"/>
+      <auxClasspath path="lib/ant.jar"/>
+    </findbugs>
+
+
+   </target>
+
+
 </project>
