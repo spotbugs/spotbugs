@@ -16,7 +16,7 @@ public class Ideas_2012_11_15 {
         return null;
     }
     
-    @ExpectWarning("NP_DEREFERENCE_OF_READLINE_VALUE")
+    @ExpectWarning("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     @NoWarning("NP_GUARANTEED_DEREF")
     public int f(int i) {
         
