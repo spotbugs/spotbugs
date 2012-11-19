@@ -81,18 +81,14 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
     private ValueNumber instanceOfValueNumber;
 
-    private FieldSummary fieldSummary;
-
-    private FieldStoreTypeDatabase database;
-
-    private Set<ReferenceType> typesComputedFromGenerics = Util.newSetFromMap(new IdentityHashMap<ReferenceType, Boolean>());
+    private final Set<ReferenceType> typesComputedFromGenerics = Util.newSetFromMap(new IdentityHashMap<ReferenceType, Boolean>());
 
     protected final TypeMerger typeMerger;
-    
+
     protected LocalVariableTypeTable localTypeTable;
-    
+
     protected BitSet genericLocalVariables;
-    
+
 
     /**
      * Constructor.
@@ -107,7 +103,6 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
      */
     public TypeFrameModelingVisitor(ConstantPoolGen cpg, TypeMerger typeMerger) {
         super(cpg);
-        fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
         this.typeMerger = typeMerger;
 
     }
@@ -126,18 +121,18 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
     public void setLocalTypeTable(LocalVariableTypeTable localTypeTable) {
         this.localTypeTable = localTypeTable;
-        if (localTypeTable == null) 
+        if (localTypeTable == null)
             genericLocalVariables = null;
         else {
             genericLocalVariables = new BitSet();
             for(LocalVariable lv : localTypeTable.getLocalVariableTypeTable()) {
                 if (lv.getSignature().indexOf('<') > 0)
                     genericLocalVariables.set(lv.getIndex());
-                
+
             }
         }
-            
-        
+
+
     }
 
     /**
@@ -182,7 +177,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
      *            the FieldStoreTypeDatabase
      */
     public void setFieldStoreTypeDatabase(FieldStoreTypeDatabase database) {
-        this.database = database;
+
     }
 
     @Override
@@ -580,7 +575,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                 }
             } catch (DataflowAnalysisException e) {
                 AnalysisContext.logError("oops", e);
-            } 
+            }
 
         }
 
@@ -706,7 +701,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         else
             pushValue(result);
     }
-    
+
     public static boolean isStraightGenericMap(ClassDescriptor c) {
         if (c.matches(Map.class))
             return true;
