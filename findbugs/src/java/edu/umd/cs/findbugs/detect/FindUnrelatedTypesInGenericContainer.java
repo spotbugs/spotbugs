@@ -104,7 +104,7 @@ import edu.umd.cs.findbugs.util.MultiMap;
  */
 public class FindUnrelatedTypesInGenericContainer implements Detector {
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private static final boolean DEBUG = SystemProperties.getBoolean("gc.debug");
 
@@ -117,7 +117,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         final ClassDescriptor interfaceForCall;
         final int argumentIndex;
         final int typeIndex;
-        
+
         @Override
         public String toString() {
             return String.format("[%s %d %d]", interfaceForCall, argumentIndex, typeIndex);
@@ -130,11 +130,11 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
      * corresponding type in the class type parameters. If the argument has no
      * correspondence, then the value is -1.
      * <p>
-     * 
+     *
      * Get the String key by calling getCollectionsMapKey()
      */
 
-    private MultiMap<String, Info> callMap = new MultiMap<String, Info>(LinkedList.class);
+    private final MultiMap<String, Info> callMap = new MultiMap<String, Info>(LinkedList.class);
 
 
     private void addCheckedCall(@DottedClassName String className, String methodName, String sig, int argumentParameterIndex, int typeParameterIndex) {
@@ -176,17 +176,17 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         addCheckedCall(Map.class.getName(), "containsValue", 1);
         addCheckedCall(Map.class.getName(), "get", 0);
         addCheckedCall(Map.class.getName(), "remove", 0);
-        
+
         // Hashtable<K,V>
         addCheckedCall(Hashtable.class.getName(), "contains", 1);
-        
+
         // ConcurrentHashMap<K,V>
         addCheckedCall(ConcurrentHashMap.class.getName(), "contains", 1);
-     
+
         // ConcurrentMap<K,V>
         addCheckedCall(ConcurrentMap.class.getName(), "remove", "(Ljava/lang/Object;Ljava/lang/Object;)", 0, 0);
         addCheckedCall(ConcurrentMap.class.getName(), "remove", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);
-       
+
 
         // Multimap<K,V>
         addCheckedCall("com.google.common.collect.Multimap", "containsEntry", "(Ljava/lang/Object;Ljava/lang/Object;)", 0, 0);
@@ -206,7 +206,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
         // Table<R,C,V>
         addCheckedCall("com.google.common.collect.Table", "contains", "(Ljava/lang/Object;Ljava/lang/Object;)", 0, 0);
-        addCheckedCall("com.google.common.collect.Table", "contains", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);        
+        addCheckedCall("com.google.common.collect.Table", "contains", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);
         addCheckedCall("com.google.common.collect.Table", "containsRow", 0);
         addCheckedCall("com.google.common.collect.Table", "containsColumn", 1);
         addCheckedCall("com.google.common.collect.Table", "containsValue", 2);
@@ -215,13 +215,13 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         addCheckedCall("com.google.common.collect.Table", "remove", "(Ljava/lang/Object;Ljava/lang/Object;)", 0, 0);
         addCheckedCall("com.google.common.collect.Table", "remove", "(Ljava/lang/Object;Ljava/lang/Object;)", 1, 1);
 
-        
+
         // Sets
         addCheckedCall("com.google.common.collect.Sets", "intersection", "(Ljava/util/Set;Ljava/util/Set;)", 1, -1);
         addCheckedCall("com.google.common.collect.Sets", "difference", "(Ljava/util/Set;Ljava/util/Set;)", 1, -1);
         addCheckedCall("com.google.common.collect.Sets", "symmetricDifference", "(Ljava/util/Set;Ljava/util/Set;)", 1, -1);
-        
-        
+
+
         // Iterables
         addCheckedCall("com.google.common.collect.Iterables", "contains", "(Ljava/lang/Iterable;Ljava/lang/Object;)", 1, 0);
         addCheckedCall("com.google.common.collect.Iterables", "removeAll", "(Ljava/lang/Iterable;Ljava/util/Collection;)", 1, -1);
@@ -241,7 +241,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
     /**
      * Visit the class context
-     * 
+     *
      * @see edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
      */
     public void visitClassContext(ClassContext classContext) {
@@ -300,13 +300,13 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 "java.util.Iterator", "com.google.common.collect.Multimap", "com.google.common.collect.Multiset",
                 "com.google.common.collect.Table" }));
     }
-    
+
     private boolean isGenericCollection(ClassDescriptor operandClass) {
         String dottedClassName = operandClass.getDottedClassName();
 
         if (baseGenericTypes.contains(dottedClassName))
             return true;
-        
+
         String found = null;
         for(String c : baseGenericTypes) {
             if (Subtypes2.instanceOf(operandClass, c)) {
@@ -322,10 +322,18 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
             XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, operandClass);
 
             String sig = xclass.getSourceSignature();
-            if (sig == null) 
+            if (sig == null)
                 return false;
 
+            String typeParameter = null;
             List<String> split = GenericUtilities.split(sig, true);
+            if (sig.charAt(0) == '<') {
+                int end = sig.indexOf(':');
+                if (end > 0)
+                    typeParameter = sig.substring(1, end);
+
+            }
+            if (DEBUG) System.out.println(dottedClassName + " " + typeParameter + " " + split);
             for (String s : split) {
                 int i = s.indexOf('<');
                 if (i < 0)
@@ -333,12 +341,15 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 if (s.charAt(0) != 'L')
                     throw new IllegalStateException("unexpected non signature: " + s);
                 ClassDescriptor c = DescriptorFactory.createClassDescriptor(s.substring(1, i));
-                if (isGenericCollection(c)) {
+                if (isGenericCollection(c) && (typeParameter == null || s.substring(i+1).startsWith("T" + typeParameter))) {
                     if (DEBUG)
                         System.out.println(operandClass + " is a subtype of " + s);
                     return true;
                 }
             }
+            if (DEBUG)
+                System.out.println("Not a subtype");
+
 
         } catch (CheckedAnalysisException e1) {
             AnalysisContext.logError("Error checking for weird generic parameterization of " + operandClass, e1);
@@ -410,26 +421,26 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                         continue;
                     }
                 }
-                
+
                 boolean allMethod;
-                
+
                 int typeArgument;
                 if (info.typeIndex >= 0) {
                     allMethod = false;
-                    typeArgument = info.typeIndex; 
+                    typeArgument = info.typeIndex;
                 } else {
                     allMethod = true;
-                    typeArgument = -(1+info.typeIndex); 
+                    typeArgument = -(1+info.typeIndex);
                 }
                 int pos = info.argumentIndex;
-               
-        
+
+
                 int lhsPos;
                 if (inv instanceof INVOKESTATIC)
                     lhsPos = sigParser.getSlotsFromTopOfStackForParameter(0);
-                else 
+                else
                     lhsPos = sigParser.getTotalArgumentSize();
-               
+
                 int stackPos = sigParser.getSlotsFromTopOfStackForParameter(pos);
 
                 TypeFrame frame = typeDataflow.getFactAtLocation(location);
@@ -515,8 +526,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 if (!isGenericCollection(operandClass))
                     continue;
 
-                if (expectedTypeParameters == 2 && 
-                        Subtypes2.instanceOf(operandClass, Map.class)      
+                if (expectedTypeParameters == 2 &&
+                        Subtypes2.instanceOf(operandClass, Map.class)
                         && !TypeFrameModelingVisitor.isStraightGenericMap(operandClass))
                     continue;
                 Type expectedType;
@@ -532,7 +543,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                     }
                     equalsType = ((GenericObjectType)actualType).getParameterAt(typeArgument);
                 }
-                    
+
 
                 IncompatibleTypes matchResult = compareTypes(expectedType, actualType, allMethod);
 
@@ -649,7 +660,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
      * This is a conservative comparison - returns true if it cannot decide. If
      * the parameter type is a type variable (e.g. <code>T</code>) then we don't
      * know enough (yet) to decide if they do not match so return true.
-     * 
+     *
      * @param ignoreBaseType
      *            TODO
      */
@@ -825,7 +836,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
     /**
      * Empty
-     * 
+     *
      * @see edu.umd.cs.findbugs.Detector#report()
      */
     public void report() {
