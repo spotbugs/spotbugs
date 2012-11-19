@@ -180,6 +180,18 @@ public abstract class AnalysisContext {
 
     ClassSummary classSummary;
 
+    ClassDescriptor classBeingAnalyzed;
+
+    public ClassDescriptor getClassBeingAnalyzed() {
+        return classBeingAnalyzed;
+    }
+
+    public void setClassBeingAnalyzed(@Nonnull ClassDescriptor classBeingAnalyzed) {
+        this.classBeingAnalyzed = classBeingAnalyzed;
+    }
+    public void clearClassBeingAnalyzed() {
+        this.classBeingAnalyzed = null;
+    }
     public ClassSummary getClassSummary() {
         if (classSummary == null)
             throw new IllegalStateException("ClassSummary not set");
@@ -265,6 +277,8 @@ public abstract class AnalysisContext {
         String missing = AbstractBugReporter.getMissingClassName(e);
         if (skipReportingMissingClass(missing))
             return;
+        if (!analyzingApplicationClass())
+            return;
 
         RepositoryLookupFailureCallback lookupFailureCallback = getCurrentLookupFailureCallback();
         if (lookupFailureCallback != null)
@@ -277,15 +291,27 @@ public abstract class AnalysisContext {
         reportMissingClass(e.getClassDescriptor());
     }
 
+    static public boolean analyzingApplicationClass() {
+        AnalysisContext context = AnalysisContext.currentAnalysisContext();
+        if (context == null)
+            return false;
+        ClassDescriptor clazz = context.getClassBeingAnalyzed();
+        if (clazz == null)
+            return false;
+        return context.isApplicationClass(clazz);
+    }
     static public void reportMissingClass(edu.umd.cs.findbugs.classfile.MissingClassException e) {
         if (e == null)
             throw new NullPointerException("argument is null");
         reportMissingClass(e.getClassDescriptor());
     }
 
+
     static public void reportMissingClass(ClassDescriptor c) {
         if (c == null)
             throw new NullPointerException("argument is null");
+        if (!analyzingApplicationClass())
+            return;
         String missing = c.getDottedClassName();
         if (missing.length() == 1)
             System.out.println(c);
@@ -320,7 +346,7 @@ public abstract class AnalysisContext {
             reportMissingClass(((edu.umd.cs.findbugs.classfile.MissingClassException) e).toClassNotFoundException());
             return;
         }
-      
+
         RepositoryLookupFailureCallback lookupFailureCallback = currentAnalysisContext2.getLookupFailureCallback();
         if (lookupFailureCallback != null)
             lookupFailureCallback.logError(msg, e);

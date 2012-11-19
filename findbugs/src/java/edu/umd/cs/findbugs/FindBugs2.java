@@ -1139,7 +1139,8 @@ public class FindBugs2 implements IFindBugsEngine {
                         System.out.println("  " + c);
                     }
                 }
-                AnalysisContext.currentAnalysisContext().updateDatabases(passCount);
+                AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
+                currentAnalysisContext.updateDatabases(passCount);
 
                 progress.startAnalysis(classCollection.size());
                 int count = 0;
@@ -1165,14 +1166,15 @@ public class FindBugs2 implements IFindBugsEngine {
                         }
                         continue;
                     }
-                    boolean isHuge = AnalysisContext.currentAnalysisContext().isTooBig(classDescriptor);
-                    if (isHuge && AnalysisContext.currentAnalysisContext().isApplicationClass(classDescriptor)) {
+                    boolean isHuge = currentAnalysisContext.isTooBig(classDescriptor);
+                    if (isHuge && currentAnalysisContext.isApplicationClass(classDescriptor)) {
                         bugReporter.reportBug(new BugInstance("SKIPPED_CLASS_TOO_BIG", Priorities.NORMAL_PRIORITY)
                                 .addClass(classDescriptor));
                     }
                     currentClassName = ClassName.toDottedClassName(classDescriptor.getClassName());
                     notifyClassObservers(classDescriptor);
                     profiler.startContext(currentClassName);
+                    currentAnalysisContext.setClassBeingAnalyzed(classDescriptor);
 
                     try {
                     for (Detector2 detector : detectorList) {
@@ -1207,10 +1209,11 @@ public class FindBugs2 implements IFindBugsEngine {
 
                         progress.finishClass();
                         profiler.endContext(currentClassName);
+                        currentAnalysisContext.clearClassBeingAnalyzed();
                         if (PROGRESS) {
                             long usecs = (System.nanoTime() - classStartNanoTime)/1000;
                             if (usecs > 15000) {
-                                int classSize = AnalysisContext.currentAnalysisContext().getClassSize(classDescriptor);
+                                int classSize = currentAnalysisContext.getClassSize(classDescriptor);
                                 long speed = usecs /classSize;
                                 if (speed > 15)
                                 System.out.printf("  %6d usecs/byte  %6d msec  %6d bytes  %d pass %s%n", speed, usecs/1000, classSize, passCount,
