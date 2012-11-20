@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class Bug3566803 {
 
@@ -28,5 +29,54 @@ public class Bug3566803 {
             System.out.println(rs.getString(1));
         }
     }
+
+    public static void main(String... strings) {
+        Connection connection = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+                String driverName = "oracle.jdbc.driver.OracleDriver";
+                Class.forName(driverName);
+                String url = "";
+                String username = "";
+                String password = "";
+                for (int i = 0; i < 10; i++) {
+                                connection = DriverManager.getConnection(url, username,
+                                                password);
+
+                                pstmt = connection
+                                                .prepareStatement("SELECT count(1) from tab");
+
+                                rs = pstmt.executeQuery();
+                                while (rs.next()) {
+                                        System.out.println(rs.getString(1));
+                                }
+                }
+        } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+        } catch (SQLException sql) {
+                System.out.println("SQLException" + sql.getMessage());
+        } finally {
+                try {
+                        if (rs != null)
+                                rs.close();
+                } catch (SQLException e) {
+                        e.printStackTrace();
+                }
+                try {
+                        if (pstmt != null)
+                                pstmt.close();
+                } catch (SQLException e) {
+                        e.printStackTrace();
+                }
+                try {
+                        if (connection != null)
+                                connection.close();
+                } catch (SQLException e) {
+                        e.printStackTrace();
+                }
+        }
+}
+
 
 }
