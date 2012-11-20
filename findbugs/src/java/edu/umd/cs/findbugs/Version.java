@@ -65,9 +65,9 @@ public class Version {
      * Release candidate number. "0" indicates that the version is not a release
      * candidate.
      */
-    public static final int RELEASE_CANDIDATE = 0;
+    public static final int RELEASE_CANDIDATE = 1;
 
-    
+
     public static final String SVN_REVISION = System.getProperty("svn.revision", "Unknown");
     /**
      * Release date.
@@ -75,11 +75,11 @@ public class Version {
     private static final String COMPUTED_DATE;
 
     public static final String DATE;
-    
+
     public static final String CORE_PLUGIN_RELEASE_DATE;
 
     private static final String COMPUTED_ECLIPSE_DATE;
-    
+
     private static final String COMPUTED_PLUGIN_RELEASE_DATE;
 
     private static String applicationName = "";
@@ -153,7 +153,7 @@ public class Version {
                     release = (String) versionProperties.get("release.number");
                     date = (String) versionProperties.get("release.date");
                     plugin_release_date =  (String) versionProperties.get("plugin.release.date");
-                }     
+                }
             } catch (Exception e) {
                 assert true; // ignore
             } finally {
@@ -165,7 +165,7 @@ public class Version {
             date = COMPUTED_DATE;
         if (plugin_release_date == null)
             plugin_release_date = COMPUTED_PLUGIN_RELEASE_DATE;
-        
+
         RELEASE = release;
         DATE = date;
         CORE_PLUGIN_RELEASE_DATE = plugin_release_date;
@@ -212,7 +212,7 @@ public class Version {
     }
 
     public static void main(String[] argv) throws InterruptedException {
-        
+
         if (!IS_DEVELOPMENT && RELEASE_CANDIDATE != 0) {
             throw new IllegalStateException("Non developmental version, but is release candidate " + RELEASE_CANDIDATE);
         }
@@ -220,9 +220,9 @@ public class Version {
             printVersion(false);
             return;
         }
-        
+
         String arg = argv[0];
-        
+
         if (arg.equals("-release"))
             System.out.println(RELEASE);
         else if (arg.equals("-date"))
@@ -253,7 +253,7 @@ public class Version {
         } else if (arg.equals("-configuration")){
             printVersion(true);
         } else {
-            
+
             usage();
             System.exit(1);
         }
@@ -272,7 +272,7 @@ public class Version {
     public static @CheckForNull Date getReleaseDate() {
         return releaseDate;
     }
-    
+
     /**
      * @param justPrintConfiguration
      * @throws InterruptedException
