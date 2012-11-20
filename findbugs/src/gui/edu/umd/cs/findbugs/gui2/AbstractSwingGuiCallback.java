@@ -128,7 +128,7 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
                 item.setCurrentValue(textComponent.getText());
 
             } else if (field instanceof JComboBox) {
-                JComboBox<?> box = (JComboBox) field;
+                JComboBox box = (JComboBox) field;
                 String value = (String) box.getSelectedItem();
                 item.setCurrentValue(value);
             }
@@ -141,7 +141,7 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
         for (FormItem item : items) {
             JComponent field = item.getField();
             if (field instanceof JComboBox) {
-                JComboBox<?> box = (JComboBox) field;
+                JComboBox box = (JComboBox) field;
                 List<String> newPossibleValues = item.getPossibleValues();
                 if (!boxModelIsSame(box, newPossibleValues)) {
                     MutableComboBoxModel mmodel = (MutableComboBoxModel) box.getModel();
