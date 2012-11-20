@@ -1,5 +1,7 @@
 package edu.umd.cs.findbugs.flybush.appengine;
 
+import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,7 +31,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
-import com.google.appengine.repackaged.com.google.common.collect.Maps;
+
 import edu.umd.cs.findbugs.flybush.DbClientVersionStats;
 import edu.umd.cs.findbugs.flybush.DbEvaluation;
 import edu.umd.cs.findbugs.flybush.DbInvocation;
@@ -40,36 +42,41 @@ import edu.umd.cs.findbugs.flybush.DbUsageSummary;
 import edu.umd.cs.findbugs.flybush.DbUser;
 import edu.umd.cs.findbugs.flybush.PersistenceHelper;
 
-import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
-
 public class AppEnginePersistenceHelper extends PersistenceHelper {
     private static final Logger LOGGER = Logger.getLogger(AppEnginePersistenceHelper.class.getName());
     private Random random = new Random();
 
+    @Override
     public PersistenceManagerFactory getPersistenceManagerFactory() {
         return PMF.get();
     }
 
+    @Override
     public PersistenceManager getPersistenceManager() {
         return getPersistenceManagerFactory().getPersistenceManager();
     }
 
+    @Override
     public AppEngineDbUser createDbUser(String openidUrl, String email) {
         return new AppEngineDbUser(openidUrl, email);
     }
 
+    @Override
     public AppEngineSqlCloudSession createSqlCloudSession(long id, Date date, Object userKey, String email) {
         return new AppEngineSqlCloudSession((Key) userKey, id, email, date);
     }
 
+    @Override
     public Class<? extends DbUser> getDbUserClass() {
         return AppEngineDbUser.class;
     }
 
+    @Override
     public DbInvocation createDbInvocation() {
         return new AppEngineDbInvocation();
     }
 
+    @Override
     public Class<AppEngineSqlCloudSession> getSqlCloudSessionClass() {
         return AppEngineSqlCloudSession.class;
     }
@@ -94,6 +101,7 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
         return new AppEngineDbUsageSummary();
     }
 
+    @Override
     public int clearAllData() {
         int deleted = 0;
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
@@ -105,14 +113,17 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
         return deleted;
     }
 
+    @Override
     public AppEngineDbIssue createDbIssue() {
         return new AppEngineDbIssue();
     }
 
+    @Override
     public Class<AppEngineDbInvocation> getDbInvocationClass() {
         return AppEngineDbInvocation.class;
     }
 
+    @Override
     public AppEngineDbEvaluation createDbEvaluation() {
         return new AppEngineDbEvaluation();
     }
@@ -122,14 +133,17 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
         return new AppEngineDbClientVersionStats(application, version, dayStart);
     }
 
+    @Override
     public Class<AppEngineDbIssue> getDbIssueClass() {
         return AppEngineDbIssue.class;
     }
 
+    @Override
     public Class<AppEngineDbEvaluation> getDbEvaluationClass() {
         return AppEngineDbEvaluation.class;
     }
 
+    @Override
     public Class<? extends DbClientVersionStats> getDbClientVersionStatsClass() {
         return AppEngineDbClientVersionStats.class;
     }
@@ -149,10 +163,12 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
         return AppEngineDbUsageSummary.class;
     }
 
+    @Override
     public <E> E getObjectById(PersistenceManager pm, Class<? extends E> cls, Object key) {
         return pm.getObjectById(cls, key);
     }
 
+    @Override
     @SuppressWarnings({ "unchecked" })
     public Map<String, DbIssue> findIssues(PersistenceManager pm, Iterable<String> hashes) {
         javax.jdo.Query query = pm
@@ -181,6 +197,7 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
         return map;
     }
 
+    @Override
     public void convertToOldCommentStyleForTesting(DbEvaluation eval) {
         AppEngineDbEvaluation aede = (AppEngineDbEvaluation) eval;
         aede.setShortComment(aede.getLongComment().getValue());
@@ -228,6 +245,7 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
         queue.add(taskOptions);
     }
 
+    @Override
     public String getEmail(PersistenceManager pm, Comparable<?> who) {
         // noinspection RedundantCast
         return pm.getObjectById(getDbUserClass(), (Key) who).getEmail();

@@ -38,66 +38,82 @@ public class AppEngineDbUsageSummary implements DbUsageSummary {
     @Persistent
     private Blob blob;
 
+    @Override
     public Date getDate() {
         return date;
     }
 
+    @Override
     public void setDate(Date date) {
         this.date = date;
     }
 
+    @Override
     public Date getEndDate() {
         return endDate;
     }
 
+    @Override
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 
+    @Override
     public String getCategory() {
         return category;
     }
 
+    @Override
     public void setCategory(String category) {
         this.category = category;
     }
 
+    @Override
     public String getCategoryKey() {
         return categoryKey;
     }
 
+    @Override
     public void setCategoryKey(String categoryKey) {
         this.categoryKey = categoryKey;
     }
 
+    @Override
     public String getCategorySubkey() {
         return categorySubkey;
     }
 
+    @Override
     public void setCategorySubkey(String categorySubkey) {
         this.categorySubkey = categorySubkey;
     }
 
+    @Override
     public int getValue() {
         return value;
     }
 
+    @Override
     public void setValue(int value) {
         this.value = value;
     }
 
+    @Override
     public Date getLastUpdated() {
         return lastUpdated;
     }
 
+    @Override
     public byte[] getBlob() {
         return blob.getBytes();
     }
 
+    @Override
     public void setBlob(byte[] blob) {
         this.blob = new Blob(blob);
     }
 
+    @Override
     public void setLastUpdated(Date lastUpdated) {
         this.lastUpdated = lastUpdated;
     }

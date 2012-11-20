@@ -29,10 +29,12 @@ public class AppEngineDbInvocation implements DbInvocation {
         return key;
     }
 
+    @Override
     public Key getWho() {
         return who;
     }
 
+    @Override
     public void setWho(Object user) {
         setWho((Key) user);
     }
@@ -41,10 +43,12 @@ public class AppEngineDbInvocation implements DbInvocation {
         this.who = who;
     }
 
+    @Override
     public long getStartTime() {
         return startTime;
     }
 
+    @Override
     public void setStartTime(long startTime) {
         this.startTime = startTime;
     }

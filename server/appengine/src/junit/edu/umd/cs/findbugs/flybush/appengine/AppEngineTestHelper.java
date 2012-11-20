@@ -20,6 +20,7 @@ public class AppEngineTestHelper implements FlybushServletTestHelper {
 
     private LocalServiceTestHelper helper;
 
+    @Override
     public void setUp() throws Exception {
         LocalDatastoreServiceTestConfig config = new LocalDatastoreServiceTestConfig();
         config.setNoStorage(true);
@@ -28,6 +29,7 @@ public class AppEngineTestHelper implements FlybushServletTestHelper {
         initPersistenceManager();
     }
 
+    @Override
     public void tearDown() throws Exception {
         helper.tearDown();
     }
@@ -36,6 +38,7 @@ public class AppEngineTestHelper implements FlybushServletTestHelper {
      * Creates a PersistenceManagerFactory on the fly, with the exact same
      * information stored in the /WEB-INF/META-INF/jdoconfig.xml file.
      */
+    @Override
     public void initPersistenceManager() {
         Properties newProperties = new Properties();
         newProperties.put("javax.jdo.PersistenceManagerFactoryClass",
@@ -51,10 +54,12 @@ public class AppEngineTestHelper implements FlybushServletTestHelper {
         doNothing().when(persistenceManager).close();
     }
 
+    @Override
     public PersistenceManager getPersistenceManager() {
         return persistenceManager;
     }
 
+    @Override
     public PersistenceHelper createPersistenceHelper(final PersistenceManager persistenceManager) {
         return new AppEnginePersistenceHelper() {
             @Override

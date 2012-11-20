@@ -45,58 +45,72 @@ public class AppEngineDbIssue implements DbIssue {
     @Element(dependent = "true")
     private Set<AppEngineDbEvaluation> evaluations;
 
+    @Override
     public String getHash() {
         return hash;
     }
 
+    @Override
     public void setHash(String hash) {
         this.hash = hash;
     }
 
+    @Override
     public String getBugPattern() {
         return bugPattern;
     }
 
+    @Override
     public void setBugPattern(String bugPattern) {
         this.bugPattern = bugPattern;
     }
 
+    @Override
     public int getPriority() {
         return priority;
     }
 
+    @Override
     public void setPriority(int priority) {
         this.priority = priority;
     }
 
+    @Override
     public String getPrimaryClass() {
         return primaryClass;
     }
 
+    @Override
     public void setPrimaryClass(String primaryClass) {
         this.primaryClass = primaryClass;
     }
 
+    @Override
     public long getFirstSeen() {
         return firstSeen;
     }
 
+    @Override
     public void setFirstSeen(long firstSeen) {
         this.firstSeen = firstSeen;
     }
 
+    @Override
     public long getLastSeen() {
         return lastSeen;
     }
 
+    @Override
     public void setLastSeen(long lastSeen) {
         this.lastSeen = lastSeen;
     }
 
+    @Override
     public Set<AppEngineDbEvaluation> getEvaluations() {
         return evaluations;
     }
 
+    @Override
     public void addEvaluation(DbEvaluation eval) {
         if (evaluations == null) {
             evaluations = new HashSet<AppEngineDbEvaluation>();
@@ -105,12 +119,14 @@ public class AppEngineDbIssue implements DbIssue {
         updateHasEvaluations();
     }
 
+    @Override
     public void addEvaluations(DbEvaluation... evals) {
         for (DbEvaluation eval : evals) {
             addEvaluation(eval);
         }
     }
 
+    @Override
     public boolean hasEvaluations() {
         return hasEvaluations;
     }
@@ -119,6 +135,7 @@ public class AppEngineDbIssue implements DbIssue {
         hasEvaluations = this.evaluations != null && !this.evaluations.isEmpty();
     }
 
+    @Override
     public void setHasEvaluations(boolean hasEvaluations) {
         this.hasEvaluations = hasEvaluations;
     }
@@ -127,23 +144,28 @@ public class AppEngineDbIssue implements DbIssue {
      * Does not access the given list, only stores it. Good for lazy loaded
      * evaluations.
      */
+    @Override
     @SuppressWarnings({ "unchecked" })
     public void setEvaluationsDontLook(Set<? extends DbEvaluation> evaluations) {
         this.evaluations = (Set<AppEngineDbEvaluation>) evaluations;
     }
 
+    @Override
     public String getBugLink() {
         return bugLink;
     }
 
+    @Override
     public void setBugLink(String bugLink) {
         this.bugLink = bugLink;
     }
 
+    @Override
     public String getBugLinkType() {
         return bugLinkType;
     }
 
+    @Override
     public void setBugLinkType(String bugLinkType) {
         this.bugLinkType = bugLinkType;
     }

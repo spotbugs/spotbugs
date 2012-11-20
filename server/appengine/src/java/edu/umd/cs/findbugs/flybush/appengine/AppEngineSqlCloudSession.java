@@ -41,22 +41,27 @@ public class AppEngineSqlCloudSession implements SqlCloudSession {
         this(author, Long.toString(randomID), email, date);
     }
 
+    @Override
     public Key getUser() {
         return user;
     }
 
+    @Override
     public String getEmail() {
         return email;
     }
 
+    @Override
     public Key getInvocation() {
         return invocation;
     }
 
+    @Override
     public void setInvocation(DbInvocation invocation) {
         this.invocation = ((AppEngineDbInvocation) invocation).getKey();
     }
 
+    @Override
     public String getRandomID() {
         return randomID;
     }

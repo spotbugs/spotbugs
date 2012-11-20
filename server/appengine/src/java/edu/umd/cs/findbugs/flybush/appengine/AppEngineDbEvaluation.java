@@ -51,22 +51,27 @@ public class AppEngineDbEvaluation implements DbEvaluation {
     @Persistent
     private Set<String> packages;
 
+    @Override
     public Comparable<?> getWho() {
         return who;
     }
 
+    @Override
     public String getWhoId() {
         return who.getName();
     }
 
+    @Override
     public void setWho(Object user) {
         setWho((Key) user);
     }
 
+    @Override
     public String getEmail() {
         return email;
     }
 
+    @Override
     public void setEmail(String email) {
         this.email = email;
     }
@@ -91,10 +96,12 @@ public class AppEngineDbEvaluation implements DbEvaluation {
         this.packages = packages;
     }
 
+    @Override
     public void setInvocation(DbInvocation invocation) {
         this.invocation = ((AppEngineDbInvocation) invocation).getKey();
     }
 
+    @Override
     public Object getInvocationKey() {
         return invocation;
     }
@@ -103,38 +110,47 @@ public class AppEngineDbEvaluation implements DbEvaluation {
         this.who = who;
     }
 
+    @Override
     public String getDesignation() {
         return designation;
     }
 
+    @Override
     public void setDesignation(String designation) {
         this.designation = designation;
     }
 
+    @Override
     public String getComment() {
         return commentLong == null ? comment : commentLong.getValue();
     }
 
+    @Override
     public void setComment(String comment) {
         this.commentLong = new Text(comment);
     }
 
+    @Override
     public DbIssue getIssue() {
         return issue;
     }
 
+    @Override
     public void setIssue(DbIssue issue) {
         this.issue = (AppEngineDbIssue) issue;
     }
 
+    @Override
     public long getWhen() {
         return when;
     }
 
+    @Override
     public void setWhen(long when) {
         this.when = when;
     }
 
+    @Override
     public int compareTo(DbEvaluation o) {
         if (getWhen() < o.getWhen())
             return -1;

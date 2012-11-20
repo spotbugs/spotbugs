@@ -63,66 +63,82 @@ public class AppEngineDbPluginUpdateXml implements DbPluginUpdateXml {
         text = contents == null ? null : new Text(contents);
     }
 
+    @Override
     public Date getDate() {
         return date;
     }
 
+    @Override
     public void setDate(Date date) {
         this.date = date;
     }
 
+    @Override
     public String getUser() {
         return user;
     }
 
+    @Override
     public void setUser(String user) {
         this.user = user;
     }
 
+    @Override
     public String getPluginId() {
         return pluginId;
     }
 
+    @Override
     public void setPluginId(String pluginId) {
         this.pluginId = pluginId;
     }
 
+    @Override
     public Date getReleaseDate() {
         return releaseDate;
     }
 
+    @Override
     public void setReleaseDate(Date releaseDate) {
         this.releaseDate = releaseDate;
     }
 
+    @Override
     public String getVersion() {
         return version;
     }
 
+    @Override
     public void setVersion(String version) {
         this.version = version;
     }
 
+    @Override
     public String getChannel() {
         return channel;
     }
 
+    @Override
     public void setChannel(String channel) {
         this.channel = channel;
     }
 
+    @Override
     public String getMessage() {
         return message;
     }
 
+    @Override
     public void setMessage(String message) {
         this.message = message;
     }
 
+    @Override
     public String getUrl() {
         return url;
     }
 
+    @Override
     public void setUrl(String url) {
         this.url = url;
     }

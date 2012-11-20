@@ -62,121 +62,151 @@ public class AppEngineDbUsageEntry implements DbUsageEntry {
         this.ipAddress = ipAddress;
     }
 
+    @Override
     public String getCountry() {
         return country;
     }
 
+    @Override
     public void setCountry(String country) {
         this.country = country;
     }
 
+    @Override
     public String getVersion() {
         return version;
     }
 
+    @Override
     public void setVersion(String version) {
         this.version = version;
     }
 
+    @Override
     public String getAppName() {
         return appName;
     }
 
+    @Override
     public void setAppName(String appName) {
         this.appName = appName;
     }
 
+    @Override
     public String getAppVersion() {
         return appVersion;
     }
 
+    @Override
     public void setAppVersion(String appVersion) {
         this.appVersion = appVersion;
     }
 
+    @Override
     public String getEntryPoint() {
         return entryPoint;
     }
 
+    @Override
     public void setEntryPoint(String entryPoint) {
         this.entryPoint = entryPoint;
     }
 
+    @Override
     public String getOs() {
         return os;
     }
 
+    @Override
     public void setOs(String os) {
         this.os = os;
     }
 
+    @Override
     public String getJavaVersion() {
         return javaVersion;
     }
 
+    @Override
     public void setJavaVersion(String javaVersion) {
         this.javaVersion = javaVersion;
     }
+    @Override
     public String getLanguage() {
         return language;
     }
 
+    @Override
     public void setLanguage(String language) {
         this.language = language;
     }
 
+    @Override
     public String getLocaleCountry() {
         return localeCountry;
     }
 
+    @Override
     public void setLocaleCountry(String localeCountry) {
         this.localeCountry = localeCountry;
     }
 
+    @Override
     public String getUuid() {
         return uuid;
     }
 
+    @Override
     public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 
+    @Override
     public String getPlugin() {
         return plugin;
     }
 
+    @Override
     public void setPlugin(String plugin) {
         this.plugin = plugin;
     }
 
+    @Override
     public String getPluginName() {
         return pluginName;
     }
 
+    @Override
     public void setPluginName(String pluginName) {
         this.pluginName = pluginName;
     }
 
+    @Override
     public void setPluginChannel(String channel) {
         this.pluginChannel = channel;
     }
 
+    @Override
     public String getPluginChannel() {
         return pluginChannel;
     }
 
+    @Override
     public String getPluginVersion() {
         return pluginVersion;
     }
 
+    @Override
     public void setPluginVersion(String pluginVersion) {
         this.pluginVersion = pluginVersion;
     }
 
+    @Override
     public Date getDate() {
         return date;
     }
 
+    @Override
     public void setDate(Date date) {
         this.date = date;
     }

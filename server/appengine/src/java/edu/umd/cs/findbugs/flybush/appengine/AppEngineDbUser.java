@@ -26,22 +26,27 @@ public class AppEngineDbUser implements DbUser {
         this.email = email;
     }
 
+    @Override
     public Key createKeyObject() {
         return KeyFactory.createKey(AppEngineDbUser.class.getSimpleName(), getOpenid());
     }
 
+    @Override
     public int compareTo(DbUser o) {
         return getOpenid().compareTo(o.getOpenid());
     }
 
+    @Override
     public String getOpenid() {
         return openid;
     }
 
+    @Override
     public String getEmail() {
         return email;
     }
 
+    @Override
     public String getUploadToken() {
         return uploadToken;
     }
