@@ -589,7 +589,13 @@
     </findbugs>
   </target>
 
-  <target name="findbugsTestCases" depends="anttask,junittests,jars">
+   <target name="findbugsTestCases.check">
+    <condition property="findbugsTestCases.exists">
+      <available file="${findbugsTestCases.dir}" type="dir"/>
+    </condition>
+  </target>
+
+  <target name="findbugsTestCases" depends="anttask,junittests,jars,findbugsTestCases.check" if="findbugsTestCases.exists">
    <property name="findbugs.home" value="." />
     <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
     <findbugs home="."
@@ -598,7 +604,7 @@
               projectName="FindBugsTestCases"
               timeout="1800000"
               outputFile="${sampleoutput.dir}/findbugsTestCases.xml" >
-      <class location="../findbugsTestCases/build/classes" />
+      <class location="{findbugsTestCases.dir}/build/classes" />
     </findbugs>
   </target>
 
@@ -635,12 +641,17 @@
         </antcall>
     </target>
 
-    <target name="compileFindbugsTestCases">
-            <ant dir="../findbugsTestCases" target="classes" inheritAll="false" />
+    <target name="foundFindbugsTestCases" depends="findbugsTestCases.check" unless="findbugsTestCases.exists">
+	<echo>FindBugs test cases not found at ${findbugsTestCases.dir}</echo>
+        <echo>Skipping test cases that depend on them</echo>
+    </target>
+
+    <target name="compileFindbugsTestCases" depends="findbugsTestCases.check" if="findbugsTestCases.exists">
+            <ant dir="${findbugsTestCases.dir}" target="classes" inheritAll="false" />
     </target>
 
     <!-- Run JUnit test cases -->
-    <target name="test" depends="runjunit"/>
+    <target name="test" depends="runjunit,foundFindbugsTestCases"/>
 
     <target name="runjunit" depends="junittests,jars,compileFindbugsTestCases">
         <echo>Running JUnit test cases for FindBugs...</echo>
@@ -649,6 +660,7 @@
         <junit fork="yes" printsummary="true">
             <jvmarg value="-ea"/>
             <jvmarg value="-Dfindbugs.home=."/>
+            <jvmarg value="-DfindbugsTestCases.home=${findbugsTestCases.dir}"/>
             <formatter type="xml"/>   <!-- Hudson reads generated xml -->
             <classpath refid="tools.classpath"/>
             <classpath>
@@ -672,10 +684,7 @@
             <fileset dir="src/java"/>
             <fileset dir="src/gui"/>
             <fileset dir="src/junit"/>
-    <!--
-            <fileset dir="../sandbox/localCloud/src"/>
-    -->
-            <fileset dir="../findbugsTestCases/src"/>
+            <fileset dir="${findbugsTestCases.dir}/src"/>
 
             <fileset dir="${pluginsSrc.dir}/webCloudClient/src"/>
             <fileset dir="${pluginsSrc.dir}/jira/src"/>

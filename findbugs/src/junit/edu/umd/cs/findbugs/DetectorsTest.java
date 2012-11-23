@@ -30,8 +30,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.NoWarning;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
@@ -47,20 +45,33 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  */
 
 public class DetectorsTest {
-    /**
-     *
-     */
+
     private static final String FB_UNEXPECTED_WARNING = "FB_UNEXPECTED_WARNING";
 
-    /**
-     *
-     */
     private static final String FB_MISSING_EXPECTED_WARNING = "FB_MISSING_EXPECTED_WARNING";
 
     private BugCollectionBugReporter bugReporter;
 
     private IFindBugsEngine engine;
 
+    private  File findbugsTestCases;
+
+    public  File getFindbugsTestCases() throws IOException {
+        if (findbugsTestCases != null)
+            return findbugsTestCases;
+        File f = new File(SystemProperties.getProperty("findbugsTestCases.home", "../findbugsTestCases"));
+        if (f.exists() && f.isDirectory() && f.canRead()) {
+            findbugsTestCases = f;
+            return f;
+        }
+        throw new IOException("FindBugs test cases not available at " + f.getCanonicalPath());
+    }
+    public File getFindbugsTestCasesFile(String path) throws IOException {
+        File f = new File(getFindbugsTestCases(), path);
+        if (f.exists() && f.canRead())
+            return f;
+        throw new IOException("FindBugs test cases file " + path + " not available at " + f.getCanonicalPath());
+    }
     @Before
     public void setUp() throws Exception {
         loadFindbugsPlugin();
@@ -68,7 +79,7 @@ public class DetectorsTest {
 
     @Test
     public void testAllRegressionFiles() throws IOException, InterruptedException {
-        setUpEngine("../findbugsTestCases/build/classes/");
+        setUpEngine("build/classes/");
 
         engine.execute();
 
@@ -79,8 +90,8 @@ public class DetectorsTest {
 
     @Test
     public void testBug3053867() throws IOException, InterruptedException {
-        setUpEngine("../findbugsTestCases/build/classes/sfBugs/Bug3053867.class",
-                "../findbugsTestCases/build/classes/sfBugs/Bug3053867$Foo.class");
+        setUpEngine("build/classes/sfBugs/Bug3053867.class",
+                "build/classes/sfBugs/Bug3053867$Foo.class");
 
         engine.execute();
 
@@ -93,9 +104,9 @@ public class DetectorsTest {
     public void testBug3506402() throws IOException, InterruptedException {
         setUpEngine("../findbugsTestCases/build/classes/nullnessAnnotations/CheckForNullVarArgs.class",
                     "../findbugsTestCases/build/classes/nullnessAnnotations/CheckForNullArrayArgs.class");
-        
+
         engine.execute();
-        
+
         // If there are zero bugs, then something's wrong
         assertFalse("No bugs were reported. Something is wrong with the configuration", bugReporter.getBugCollection()
                 .getCollection().isEmpty());
@@ -156,7 +167,7 @@ public class DetectorsTest {
      * all the available detectors and reports all the bug categories. Uses a
      * normal priority threshold.
      */
-    private void setUpEngine(String... analyzeMe) {
+    private void setUpEngine(String... analyzeMe) throws IOException {
         this.engine = new FindBugs2();
         Project project = new Project();
         project.setProjectName("findbugsTestCases");
@@ -175,17 +186,16 @@ public class DetectorsTest {
         preferences.getFilterSettings().clearAllCategories();
         this.engine.setUserPreferences(preferences);
 
-        // This is ugly. We should think how to improve this.
         for (String s : analyzeMe)
-            project.addFile(s);
+            project.addFile(getFindbugsTestCasesFile(s).getPath());
 
         project.addAuxClasspathEntry("lib/junit.jar");
-        File lib = new File("../findbugsTestCases/lib");
+        File lib = getFindbugsTestCasesFile("lib");
          for(File f : lib.listFiles()) {
              String path = f.getPath();
-             if (path.endsWith(".jar"))
+             if (f.canRead() && path.endsWith(".jar"))
                  project.addAuxClasspathEntry(path);
          }
-       
+
     }
 }
