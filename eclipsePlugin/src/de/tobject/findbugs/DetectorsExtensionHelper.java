@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2010, Andrei Loskutov
+ * Copyright (C) 2010-2012, Andrey Loskutov
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,18 +18,12 @@
  */
 package de.tobject.findbugs;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipOutputStream;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -48,8 +42,6 @@ import de.tobject.findbugs.io.IO;
 
 /**
  * Helper class to read contributions for the "detectorPlugins" extension point
- *
- * @author andrei
  */
 public class DetectorsExtensionHelper {
 
@@ -162,16 +154,10 @@ public class DetectorsExtensionHelper {
     }
 
     /**
-     * Used for Eclipse instances running inside debugger. FindBugs expects to
-     * see *.jar files, but during development Eclipse plugins are just
-     * directories. The code below makes a temporary jar file from the plugin's
+     * Used for Eclipse instances running inside debugger. During development Eclipse plugins
+     * are just directories. The code below tries to locate plugin's
      * "bin" directory. It doesn't work if the plugin build.properties are not
-     * existing or contain invalid content.
-     *
-     *
-     * @param bundleName
-     * @param sourceDir
-     * @return
+     * existing or contain invalid content
      */
     @CheckForNull
     private static String createTemporaryJar(String bundleName, File sourceDir) {
@@ -201,31 +187,7 @@ public class DetectorsExtensionHelper {
                     "Failed to create temporary detector package for bundle " + sourceDir);
             return null;
         }
-        File jarFile;
-        try {
-            jarFile = File.createTempFile(bundleName + "_", ".jar");
-            jarFile.deleteOnExit();
-        } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e, "Failed to create temporary detector package for bundle " + bundleName);
-            return null;
-        }
-
-        ZipOutputStream jar = null;
-        try {
-            jar = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(jarFile)));
-            addFiles(bundleName, classDir, classDir, jar);
-            try {
-                addFiles(bundleName, etcDir, etcDir, jar);
-            } catch (ZipException e) {
-                // duplicated entries as files from /etc are on classpath already
-            }
-        } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e, "Failed to create temporary detector package for bundle " + bundleName);
-            return null;
-        } finally {
-            IO.closeQuietly(jar);
-        }
-        return jarFile.getAbsolutePath();
+        return classDir.getAbsolutePath();
     }
 
     /**
@@ -252,41 +214,4 @@ public class DetectorsExtensionHelper {
         return props.getProperty("output..", "");
     }
 
-    private static void addFiles(String name, File sourceDir, File root, ZipOutputStream zip) throws IOException {
-        File[] files = sourceDir.listFiles();
-        if (files == null) {
-            FindbugsPlugin.getDefault().logException(new IllegalStateException("No files for bundle in " + sourceDir),
-                    "Failed to create temporary detector package for bundle " + name);
-            return;
-        }
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-        int prefixLength = root.getAbsolutePath().length() + 1;
-        for (File file : files) {
-            boolean directory = file.isDirectory();
-            if (directory) {
-                String dirName = file.getName();
-                if (dirName.equalsIgnoreCase(".svn") || dirName.equalsIgnoreCase(".cvs") || dirName.equalsIgnoreCase(".hg")) {
-                    continue;
-                }
-                addFiles(name, file, root, zip);
-            } else {
-                String fileName = file.getAbsolutePath().substring(prefixLength);
-                ZipEntry entry = new ZipEntry(fileName);
-                entry.setMethod(ZipEntry.DEFLATED);
-                zip.putNextEntry(entry);
-                BufferedInputStream bis = null;
-
-                try {
-                    bis = new BufferedInputStream(new FileInputStream(file));
-                    entry.setSize(file.length());
-                    while ((bytesRead = bis.read(buffer)) != -1) {
-                        zip.write(buffer, 0, bytesRead);
-                    }
-                } finally {
-                    IO.closeQuietly(bis);
-                }
-            }
-        }
-    }
 }

@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -121,7 +122,7 @@ public class PluginLoader {
     // Keep a count of how many plugins we've seen without a
     // "pluginid" attribute, so we can assign them all unique ids.
     private static int nextUnknownId;
-    
+
     // ClassLoader used to load classes and resources
     private ClassLoader classLoader;
 
@@ -143,7 +144,7 @@ public class PluginLoader {
     private final String jarName;
 
     private final URI loadedFromUri;
-    
+
     /** plugin Id for parent plugin */
     String parentId;
 
@@ -239,7 +240,7 @@ public class PluginLoader {
             boolean changed = false;
             LinkedList<String>  unresolved = new LinkedList<String>();
             Set<String>  needed = new TreeSet<String>();
-            
+
             for (Iterator<PluginLoader> i = partiallyInitialized.iterator(); i.hasNext();) {
                 PluginLoader pluginLoader = i.next();
                 String pluginId = pluginLoader.getPlugin().getPluginId();
@@ -258,28 +259,28 @@ public class PluginLoader {
                     }
                     changed = true;
                 } else {
-                    unresolved.add(pluginId); 
+                    unresolved.add(pluginId);
                     needed.add(parentid);
                 }
             }
-            if (!changed) {                
+            if (!changed) {
                 String msg = "Unable to load parent plugins " + needed + " in order to load " + unresolved;
                 System.err.println(msg);
                 AnalysisContext.logError(msg);
                 msg = "Available plugins are " + Plugin.getAllPluginIds();
                 System.err.println(msg);
                 AnalysisContext.logError(msg);
-               
+
                 for (Iterator<PluginLoader> i = partiallyInitialized.iterator(); i.hasNext();) {
                     Plugin.removePlugin(i.next().loadedFromUri);
                 }
-                partiallyInitialized.clear();    
+                partiallyInitialized.clear();
             }
         }
         lazyInitialization = false;
     }
 
-    
+
     /**
      * Patch for issue 3429143: allow plugins load classes/resources from 3rd
      * party jars
@@ -295,42 +296,85 @@ public class PluginLoader {
      *         in the array.
      * @throws PluginException
      */
-    private @Nonnull URL[] createClassloaderUrls(@Nonnull URL url) throws PluginException {
+    private static @Nonnull URL[] createClassloaderUrls(@Nonnull URL url) throws PluginException {
         List<URL> urls = new ArrayList<URL>();
         urls.add(url);
 
-        JarInputStream jis = null;
-        try {
-            jis = new JarInputStream(url.openStream());
-            Manifest mf = jis.getManifest();
-            if(mf == null) {
-                return urls.toArray(new URL[urls.size()]);
+        Manifest mf = null;
+        File f = new File(url.getPath());
+        // default: try with jar/zip/war etc files
+        if(!f.isDirectory()) {
+            JarInputStream jis = null;
+            try {
+                jis = new JarInputStream(url.openStream());
+                mf = jis.getManifest();
+            } catch (IOException ioe) {
+               throw new PluginException("Failed loading manifest for plugin jar: " + url, ioe);
+            } finally {
+                IO.close(jis);
             }
-            Attributes atts = mf.getMainAttributes();
-            if (atts != null) {
-                String classPath = atts.getValue(Attributes.Name.CLASS_PATH);
-                if (classPath != null) {
-                    String jarRoot = url.toString();
-                    jarRoot = jarRoot.substring(0, jarRoot.lastIndexOf("/") + 1);
-                    String[] jars = classPath.split(",");
-                    for (String jar : jars) {
-                        jar = jarRoot + jar.trim();
-                        urls.add(new URL(jar));
-                    }
-                }
-            }
-        } catch (IOException ioe) {
-           throw new PluginException("Failed loading manifest for plugin jar: " + url, ioe);
-        } finally {
-            if (jis != null) {
+        } else {
+            // If this is not a jar/zip/war etc file, can we can load from directory?
+            // Allow plugins be loaded from "exploded jar" directories (e.g. while debugging
+            // 3rd party FB plugin projects in Eclipse without packaging them to jars at all)
+            File manifest = guessManifest(f);
+            if(manifest != null){
+                FileInputStream is = null;
                 try {
-                    jis.close();
-                } catch (IOException ioe) {
+                    is = new FileInputStream(manifest);
+                    mf = new Manifest(is);
+                } catch (IOException e) {
+                    throw new PluginException("Failed loading manifest for plugin jar: " + url, e);
+                } finally {
+                    IO.close(is);
                 }
             }
         }
-
+        if(mf != null){
+            try {
+                addClassPathFromManifest(url, urls, mf);
+            } catch (MalformedURLException e) {
+                throw new PluginException("Failed loading manifest for plugin jar: " + url, e);
+            }
+        }
         return urls.toArray(new URL[urls.size()]);
+    }
+
+    private static void addClassPathFromManifest(@Nonnull URL url, @Nonnull List<URL> urls,
+            @Nonnull Manifest mf) throws MalformedURLException {
+        Attributes atts = mf.getMainAttributes();
+        if (atts == null)  {
+            return;
+        }
+        String classPath = atts.getValue(Attributes.Name.CLASS_PATH);
+        if (classPath != null) {
+            String jarRoot = url.toString();
+            jarRoot = jarRoot.substring(0, jarRoot.lastIndexOf("/") + 1);
+            String[] jars = classPath.split(",");
+            for (String jar : jars) {
+                jar = jarRoot + jar.trim();
+                urls.add(new URL(jar));
+            }
+        }
+    }
+
+    /**
+     * Trying to find the manifest of "exploded plugin" in the current dir, "standard jar" manifest
+     * location or "standard" Eclipse location (sibling to the current classpath)
+     */
+    @CheckForNull
+    private static File guessManifest(@Nonnull File parent) {
+        File file = new File(parent, "MANIFEST.MF");
+        if(!file.isFile()){
+            file = new File(parent, "META-INF/MANIFEST.MF");
+        }
+        if(!file.isFile()){
+            file = new File(parent, "../META-INF/MANIFEST.MF");
+        }
+        if(file.isFile()){
+            return file;
+        }
+        return null;
     }
 
     /**
@@ -610,9 +654,9 @@ public class PluginLoader {
         // the bug detectors and bug patterns that the plugin provides.
         Document pluginDescriptor = getPluginDescriptor();
         List<Document> messageCollectionList = getMessageDocuments();
-        
+
         Plugin constructedPlugin = constructMinimalPlugin(pluginDescriptor, messageCollectionList);
-       
+
         // Success!
         if (DEBUG)
             System.out.println("Loaded " + constructedPlugin.getPluginId() + " from " + loadedFrom);
@@ -1025,11 +1069,11 @@ public class PluginLoader {
                 throw new DuplicatePluginIdException(pluginId, loadedFrom, u);
         }
 
-        parentId = pluginDescriptor.valueOf("/FindbugsPlugin/@parentid");     
-    
+        parentId = pluginDescriptor.valueOf("/FindbugsPlugin/@parentid");
+
         String version = pluginDescriptor.valueOf("/FindbugsPlugin/@version");
         String releaseDate = pluginDescriptor.valueOf("/FindbugsPlugin/@releaseDate");
-        
+
         if ((releaseDate == null  || releaseDate.length() == 0) && isCorePlugin())
             releaseDate = Version.CORE_PLUGIN_RELEASE_DATE;
         // Create the Plugin object (but don't assign to the plugin field yet,
