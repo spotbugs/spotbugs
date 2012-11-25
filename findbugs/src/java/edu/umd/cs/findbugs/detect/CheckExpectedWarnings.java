@@ -34,6 +34,7 @@ import javax.annotation.CheckForNull;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.DetectorFactory;
@@ -116,7 +117,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         }
 
         if (!initialized) {
-            
+
             initialized = true;
             //
             // Build index of all warnings reported so far, by method.
@@ -146,7 +147,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                         System.out.println("primary field of " + field + " for " + warning);
                     FieldDescriptor fieldDescriptor = field.toFieldDescriptor();
                     Collection<BugInstance> warnings = warningsByField.get(fieldDescriptor);
-                    
+
                     if (warnings == null) {
                         warnings = new LinkedList<BugInstance>();
                         warningsByField.put(fieldDescriptor, warnings);
@@ -221,7 +222,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         AnnotationValue expect = xfield.getAnnotation(annotation);
         if (expect == null)
             return;
-       
+
         if (DEBUG) {
             System.out.println("*** Found " + annotation + " annotation on " + xfield);
         }
@@ -229,12 +230,12 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         Collection<BugInstance> warnings = warningsByField.get(descriptor);
         check(expect, descriptor, warnings, expectWarnings, priority);
     }
-    
+
     private void check(AnnotationValue expect, FieldOrMethodDescriptor descriptor,
             Collection<BugInstance> warnings, boolean expectWarnings, int priority) {
-        
+
         if (expect != null) {
-            
+
             String expectedBugCodes = (String) expect.getValue("value");
             EnumValue wantedConfidence = (EnumValue) expect.getValue("confidence");
             EnumValue wantedPriority = (EnumValue) expect.getValue("priority");
@@ -243,8 +244,8 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                 num = 1;
             Integer rank = (Integer) expect.getValue("rank");
             if (rank == null)
-                rank = 20;
-           
+                rank = BugRanker.VISIBLE_RANK_MAX;
+
             int minPriority = Confidence.LOW.getConfidenceValue();
             if (wantedConfidence != null)
                 minPriority = Confidence.valueOf(wantedConfidence.value).getConfidenceValue();
@@ -277,7 +278,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 
     public void checkAnnotation(@CheckForNull String bugCode, Collection<BugInstance> warnings, boolean expectWarnings, int priority,
             Integer rank, Integer num, FieldOrMethodDescriptor methodDescriptor, int minPriority) {
-        
+
         String bugCodeMessage = bugCode != null ? bugCode : "any bug";
         Collection<SourceLineAnnotation> bugs = countWarnings(warnings, bugCode, minPriority,
                 rank);
@@ -292,7 +293,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                 reporter.reportBug(makeWarning("FB_UNEXPECTED_WARNING", methodDescriptor, priority)
                         .addString(bugCodeMessage).add(s));
             }
-        
+
     }
 
     /**
@@ -310,11 +311,11 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         if (DEBUG)
             System.out.println("Reporting " + bug);
         return bug;
-            
+
     }
 
-    private Collection<SourceLineAnnotation> countWarnings( Collection<BugInstance> warnings, 
-            @CheckForNull String bugCode, 
+    private Collection<SourceLineAnnotation> countWarnings( Collection<BugInstance> warnings,
+            @CheckForNull String bugCode,
             int desiredPriority, int rank) {
         Collection<SourceLineAnnotation> matching = new HashSet<SourceLineAnnotation>();
         DetectorFactoryCollection i18n = DetectorFactoryCollection.instance();

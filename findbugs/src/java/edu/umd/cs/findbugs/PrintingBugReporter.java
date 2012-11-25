@@ -65,11 +65,11 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
         private boolean annotationUploadFormat = false;
 
-        private int maxRank = 20;
+        private int maxRank = BugRanker.VISIBLE_RANK_MAX;
 
-        private int summarizeMaxRank = 20;
+        private int summarizeMaxRank = maxRank;
 
-        private Project project;
+        private final Project project;
 
         public PrintingCommandLine() {
             project = new Project();

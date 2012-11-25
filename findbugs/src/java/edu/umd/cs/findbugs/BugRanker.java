@@ -83,6 +83,10 @@ import edu.umd.cs.findbugs.util.Util;
  * @author Bill Pugh
  */
 public class BugRanker {
+    /** Maximum value for user visible ranks */
+    public static final int VISIBLE_RANK_MAX = 20;
+    /** Minimum value for user visible ranks */
+    public static final int VISIBLE_RANK_MIN = 1;
 
     static final boolean PLUGIN_DEBUG = Boolean.getBoolean("bugranker.plugin.debug");
 
@@ -185,9 +189,9 @@ public class BugRanker {
 
     private static int adjustRank(int patternRank, int priority) {
         int priorityAdjustment = priorityAdjustment(priority);
-        if (patternRank > 20)
+        if (patternRank > VISIBLE_RANK_MAX)
             return patternRank + priorityAdjustment;
-        return Math.max(1, Math.min(patternRank + priorityAdjustment, 20));
+        return Math.max(VISIBLE_RANK_MIN, Math.min(patternRank + priorityAdjustment, VISIBLE_RANK_MAX));
     }
 
     private static int rankBugPattern(BugPattern bugPattern, BugRanker... rankers) {
@@ -233,7 +237,7 @@ public class BugRanker {
         return adjustRank(patternRank, priority);
     }
 
-    
+
     private static AnalysisLocal<HashMap<BugPattern, Integer>> rankForBugPattern
     = new AnalysisLocal<HashMap<BugPattern, Integer>>() {
         @Override
@@ -242,7 +246,7 @@ public class BugRanker {
         }
     };
 
-   
+
     public static int findRank(BugPattern pattern, @CheckForNull DetectorFactory detectorFactory) {
         boolean haveCache = Global.getAnalysisCache() != null;
         if (haveCache) {
@@ -250,7 +254,7 @@ public class BugRanker {
              if (cachedResult != null)
                  return cachedResult;
         }
-        
+
         int rank;
         if (detectorFactory == null)
             rank = findRankUnknownPlugin(pattern);

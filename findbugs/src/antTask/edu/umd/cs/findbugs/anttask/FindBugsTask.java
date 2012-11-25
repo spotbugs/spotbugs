@@ -65,6 +65,7 @@ import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
 
+import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.ExitCodes;
 
 /**
@@ -117,15 +118,15 @@ import edu.umd.cs.findbugs.ExitCodes;
  * specified. the &lt;class&gt; tag defines the location of either a class, jar
  * file, zip file, or directory containing classes.
  * <p>
- * 
+ *
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  * @author Michael Tamm <a
  *         href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
  * @author Scott Wolk
  * @version $Revision: 1.56 $
- * 
+ *
  * @since Ant 1.5
- * 
+ *
  * @ant.task category="utility"
  */
 
@@ -187,13 +188,13 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     private String stylesheet;
 
-    private List<ClassLocation> classLocations = new ArrayList<ClassLocation>();
+    private final List<ClassLocation> classLocations = new ArrayList<ClassLocation>();
 
     private String onlyAnalyze;
 
     private boolean noClassOk;
 
-    private List<FileSet> filesets = new ArrayList<FileSet>();
+    private final List<FileSet> filesets = new ArrayList<FileSet>();
 
     public FindBugsTask() {
         super("edu.umd.cs.findbugs.FindBugs2");
@@ -220,7 +221,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Set the workHard flag.
-     * 
+     *
      * @param workHard
      *            true if we want findbugs to run with workHard option enabled
      */
@@ -230,7 +231,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Set the noClassOk flag.
-     * 
+     *
      * @param noClassOk
      *            true if we should generate no-error output if no classfiles
      *            are specified
@@ -241,7 +242,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Set the relaxed flag.
-     * 
+     *
      * @param relaxed
      *            true if we want findbugs to run with relaxed option enabled
      */
@@ -251,7 +252,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Set the adjustExperimental flag
-     * 
+     *
      * @param adjustExperimental
      *            true if we want experimental bug patterns to have lower
      *            priority
@@ -344,7 +345,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Set effort level.
-     * 
+     *
      * @param effort
      *            the effort level
      */
@@ -362,7 +363,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Set project name
-     * 
+     *
      * @param projectName
      *            the project name
      */
@@ -602,7 +603,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#beforeExecuteJavaProcess
      * ()
@@ -614,7 +615,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#afterExecuteJavaProcess
      * (int)
@@ -659,7 +660,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
         if (effort != null) {
             addArg("-effort:" + effort);
         }
-        if (maxRank > 0 && maxRank < 20) {
+        if (maxRank >= BugRanker.VISIBLE_RANK_MIN && maxRank <= BugRanker.VISIBLE_RANK_MAX) {
             addArg("-maxRank ");
             addArg(Integer.toString(maxRank));
         }

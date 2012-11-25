@@ -111,7 +111,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     private int priorityThreshold = Detector.NORMAL_PRIORITY;
 
-    private int rankThreshold = SystemProperties.getInt("findbugs.maxRank", 20);
+    private int rankThreshold = SystemProperties.getInt("findbugs.maxRank", BugRanker.VISIBLE_RANK_MAX);
 
     private PrintStream outputStream = null;
 
@@ -126,7 +126,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
     private String projectName = "";
 
     private String sourceInfoFile = null;
-    
+
     private String redoAnalysisFile = null;
 
     private boolean xargs = false;
@@ -136,7 +136,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
     private boolean applySuppression;
 
     private boolean printConfiguration;
-    
+
     private boolean printVersion;
 
     /**
@@ -570,7 +570,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         // by command line parsing)
         findBugs.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
 
-        
+
         if (redoAnalysisFile != null) {
             SortedBugCollection bugs = new SortedBugCollection();
             try {

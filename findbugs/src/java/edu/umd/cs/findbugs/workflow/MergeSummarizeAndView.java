@@ -95,7 +95,7 @@ public class MergeSummarizeAndView {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String,
          * java.lang.String)
@@ -110,7 +110,7 @@ public class MergeSummarizeAndView {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java
          * .lang.String, java.lang.String)
@@ -333,7 +333,7 @@ public class MergeSummarizeAndView {
         for (BugInstance warning : results.getCollection())
             if (!project.getSuppressionFilter().match(warning)) {
                 int rank = BugRanker.findRank(warning);
-                if (rank > 20)
+                if (rank > BugRanker.VISIBLE_RANK_MAX)
                     continue;
                 if (cloud.getConsensusDesignation(warning).score() < 0) {
                     harmless++;

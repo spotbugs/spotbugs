@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs;
 
 public enum BugRankCategory {
-    SCARIEST(4), SCARY(9), TROUBLING(14), OF_CONCERN(20);
+    SCARIEST(4), SCARY(9), TROUBLING(14), OF_CONCERN(BugRanker.VISIBLE_RANK_MAX);
     public final int maxRank;
     static public BugRankCategory getRank(int rank) {
         for(BugRankCategory c : values()) {

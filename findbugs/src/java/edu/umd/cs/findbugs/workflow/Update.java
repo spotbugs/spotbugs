@@ -65,11 +65,11 @@ public class Update {
      */
     private static final String USAGE = "Usage: " + Update.class.getName() + " [options]  data1File data2File data3File ... ";
 
-    private Map<BugInstance, BugInstance> mapFromNewToOldBug = new IdentityHashMap<BugInstance, BugInstance>();
+    private final Map<BugInstance, BugInstance> mapFromNewToOldBug = new IdentityHashMap<BugInstance, BugInstance>();
 
-    private Set<String> resurrected = new HashSet<String>();
+    private final Set<String> resurrected = new HashSet<String>();
 
-    private Map<BugInstance, Void> matchedOldBugs = new IdentityHashMap<BugInstance, Void>();
+    private final Map<BugInstance, Void> matchedOldBugs = new IdentityHashMap<BugInstance, Void>();
 
     boolean noPackageMoves = false;
 
@@ -84,7 +84,7 @@ public class Update {
 
     int mostRecent = -1;
 
-    int maxRank = 20;
+    int maxRank = BugRanker.VISIBLE_RANK_MAX;
 
     class UpdateCommandLine extends CommandLine {
         boolean overrideRevisionNames = false;
@@ -201,7 +201,7 @@ public class Update {
                 throw new IllegalArgumentException("Can't merge bug collections if the newer collection contains dead bugs: " + b);
 
         mapFromNewToOldBug.clear();
-                
+
         matchedOldBugs.clear();
         BugCollection resultCollection = newCollection.createEmptyCollectionWithMetadata();
         // Previous sequence number
@@ -335,7 +335,7 @@ public class Update {
         BugRanker.trimToMaxRank(newCollection, maxRank);
         if (sloppyMatch) {
             TreeSet<BugInstance> sloppyUnique = new TreeSet<BugInstance>(new SloppyBugComparator());
-            for(Iterator<BugInstance> i = newCollection.iterator(); i.hasNext(); ) 
+            for(Iterator<BugInstance> i = newCollection.iterator(); i.hasNext(); )
                 if (!sloppyUnique.add(i.next()))
                     i.remove();
         }
@@ -466,7 +466,7 @@ public class Update {
                 throw new IllegalStateException("Illegal Version range: " + bug.getFirstVersion() + ".." + bug.getLastVersion());
 
         discardUnwantedBugs(origCollection);
-        
+
         while (argCount <= (args.length - 1)) {
 
             BugCollection newCollection = new SortedBugCollection();
@@ -489,7 +489,7 @@ public class Update {
                 if (useAnalysisTimes)
                     newCollection.setTimestamp(newCollection.getAnalysisTimestamp());
                 discardUnwantedBugs(newCollection);
-                
+
                 origCollection = mergeCollections(origCollection, newCollection, true, false);
             } catch (IOException e) {
                 IOException e2 = new IOException("Error parsing " + newFilename);

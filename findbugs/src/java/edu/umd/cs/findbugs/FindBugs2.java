@@ -168,7 +168,7 @@ public class FindBugs2 implements IFindBugsEngine {
         this.analysisOptions.scanNestedArchives = false;
         // bug 2815983: no bugs are reported anymore
         // there is no info which value should be default, so using the any one
-        rankThreshold = 20;
+        rankThreshold = BugRanker.VISIBLE_RANK_MAX;
     }
 
     /**
