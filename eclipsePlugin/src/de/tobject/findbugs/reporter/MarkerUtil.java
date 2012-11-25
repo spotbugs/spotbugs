@@ -75,6 +75,7 @@ import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FieldAnnotation;
@@ -588,9 +589,9 @@ public final class MarkerUtil {
             }
         } catch (CoreException e) {
             FindbugsPlugin.getDefault().logException(e, "Marker does not contain rank");
-            return 20;
+            return BugRanker.VISIBLE_RANK_MAX;
         }
-        return 20;
+        return BugRanker.VISIBLE_RANK_MAX;
     }
 
     public static @CheckForNull

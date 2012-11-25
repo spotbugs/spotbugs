@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.TabItem;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.MarkerSeverity;
+import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
@@ -199,8 +200,8 @@ public class ReportConfigurationTab extends Composite {
                 updateRankValueLabel();
             }
         });
-        minRankSlider.setMinimum(0);
-        minRankSlider.setMaximum(20);
+        minRankSlider.setMinimum(BugRanker.VISIBLE_RANK_MIN);
+        minRankSlider.setMaximum(BugRanker.VISIBLE_RANK_MAX);
         minRankSlider.setSelection(getCurrentProps().getFilterSettings().getMinRank());
         minRankSlider.setIncrement(1);
         minRankSlider.setPageIncrement(5);
