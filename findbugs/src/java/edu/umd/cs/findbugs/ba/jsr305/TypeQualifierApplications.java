@@ -888,6 +888,9 @@ public class TypeQualifierApplications {
      */
     public static @CheckForNull
     TypeQualifierAnnotation getDirectTypeQualifierAnnotation(XMethod xmethod, int parameter, TypeQualifierValue typeQualifierValue) {
+        XMethod bridge = xmethod.bridgeTo();
+        if (bridge != null)
+            xmethod = bridge;
         Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
         getDirectApplications(applications, xmethod, parameter);
         if (DEBUG_METHOD != null && DEBUG_METHOD.equals(xmethod.getName())) {

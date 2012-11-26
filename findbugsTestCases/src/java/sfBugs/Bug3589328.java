@@ -1,20 +1,28 @@
 package sfBugs;
 
+import java.net.URI;
+
 import javax.annotation.Nonnull;
 
 import com.google.common.base.Function;
 
+import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
-public class Bug3589328 implements Function{
+public class Bug3589328 {
 
-    @NoWarning("NP")
-    @Override
-    public Object apply(@Nonnull Object x) {
-        if (x.hashCode() == 42)
-            return 42;
-        return x;
+    public static void main(String[] args) {
+        System.out.println("Hello World!");
+    }
+
+    public static class UriToString implements Function<URI, String> {
+
+        @NoWarning(value="NP", confidence=Confidence.LOW)
+        public String apply(@Nonnull URI input) {
+            return input.toString();
         }
+    }
+
 
 }
  
