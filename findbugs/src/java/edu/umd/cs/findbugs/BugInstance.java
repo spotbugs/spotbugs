@@ -1053,10 +1053,17 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     public BugInstance addClassAndMethod(PreorderVisitor visitor) {
         addClass(visitor);
         XMethod m = visitor.getXMethod();
-        if (m.isSynthetic())
-            AnalysisContext.logError("Adding error " + getBugPattern() + " to synthetic method " + m );
         addMethod(visitor);
+        if (m.isSynthetic())
+            foundInSyntheticMethod();
         return this;
+    }
+
+    public void foundInSyntheticMethod() {
+        if (annotationList.size() != 2)
+            return;
+        priority++;
+        AnalysisContext.logError("Adding error " + getBugPattern().getType() + " to synthetic method " + getPrimaryMethod());
     }
 
     /**
@@ -1084,11 +1091,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      */
     @Nonnull
     public BugInstance addClassAndMethod(MethodGen methodGen, String sourceFile) {
-        if (methodGen.isSynthetic())
-            AnalysisContext.logError("Adding error " + getBugPattern() + " to synthetic method " + methodGen );
-
         addClass(methodGen.getClassName());
         addMethod(methodGen, sourceFile);
+        if (methodGen.isSynthetic())
+            foundInSyntheticMethod();
         return this;
     }
 
@@ -1103,11 +1109,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      */
     @Nonnull
     public BugInstance addClassAndMethod(JavaClass javaClass, Method method) {
-        if (method.isSynthetic())
-            AnalysisContext.logError("Adding error " + getBugPattern() + " to synthetic method " + method );
-
         addClass(javaClass.getClassName());
         addMethod(javaClass, method);
+        if (method.isSynthetic())
+            foundInSyntheticMethod();
         return this;
     }
 
