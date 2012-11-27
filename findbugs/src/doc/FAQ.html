@@ -57,9 +57,9 @@ or
 
 <pre>
 java.lang.VerifyError: Cannot inherit from final class
-	at java.lang.ClassLoader.defineClass0(Native Method)
-	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
-	...
+    at java.lang.ClassLoader.defineClass0(Native Method)
+    at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+    ...
 </pre>
 
 <p> The problem here is that the wrong version of the
@@ -152,8 +152,8 @@ prerequisite plug-in "org.eclipse.ui.ide"
 
 <p> The reason for this problem is that the Eclipse
 plugin distributed with FindBugs
-does not work with 2.x versions of Eclipse.
-Please use Eclipse version 3.3 (June 2007) or newer.
+does not work with older 3.x versions of Eclipse.
+Please use Eclipse version 3.6 (June 2010) or newer.
 
 <h2><a name="q6">Q6: I'm getting a lot of false "OS" and "ODR" warnings</a></h2>
 
@@ -172,26 +172,12 @@ analysis.
 
 <h2><a name="q7">Q7: The Eclipse plugin loads, but doesn't work correctly</a></h2>
 
-<p> In versions 0.0.6 and 0.0.7 of the FindBugs Eclipse plugin,
-which correspond to the 0.7.4 and 0.8.0 releases,
-bugs in the experimental SwitchFallthrough detector can prevent
-FindBugs from running properly within Eclipse.
+<p> Make sure the Java code you trying to analyze is built properly and has no
+classpath or compile errors.
 
-<p> To work around the problem, make sure that SwitchFallthrough
-is disabled in the FindBugs Properties of your project.&nbsp;
-Right click on your project, and choose "Properties".&nbsp;
-In the Properties dialog, choose "FindBugs",
-and disable the checkbox next to SwitchFallthrough.
+<p> Make sure the project and workspace FindBugs settings are valid - in doubt, revert them to defaults.
 
-<p> Another common problem with the Eclipse plugin is that
-the FindBugs warnings do not appear in the "Problems" view.&nbsp;
-Make sure that FindBugs warnings are enabled in the filters
-for this view.&nbsp; The Filters menu is accessible by
-clicking on the icon that looks like this:
-<blockquote>
-<img src="eclipse-filters-icon.png">
-</blockquote>
-Make sure the "FindBugs Problem" checkbox is enabled.
+<p> Make sure the Error log view does not show errors.
 
 <h2><a name="q8">Q8: Where is the Maven plugin for FindBugs?</a></h2>
 
@@ -208,7 +194,7 @@ so we can't answer questions about it.
 which bundles FindBugs, PMD and CheckStyle. Use the following
 update site:
 <a href="http://deadlock.netbeans.org/hudson/job/sqe/lastStableBuild/artifact/build/full-sqe-updatecenter/updates.xml
-">http://deadlock.netbeans.org/hudson/job/sqe/lastStableBuild/artifact/build/full-sqe-updatecenter/updates.xml</a>a>
+">http://deadlock.netbeans.org/hudson/job/sqe/lastStableBuild/artifact/build/full-sqe-updatecenter/updates.xml</a>
 <p>Pease note that the SQE plugin is not maintained by the FindBugs developers,
 so we can't answer questions about it.
 </p>
