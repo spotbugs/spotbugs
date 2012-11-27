@@ -2658,15 +2658,15 @@ on objects referenced by X, because they may already be getting finalized in a s
 (i.e., a class that is neither a supertype nor subtype of the class that defines
 the equals method). For example, the Foo class might have an equals method
 that looks like:
-
-<p><code><pre>
+</p>
+<pre>
 public boolean equals(Object o) {
   if (o instanceof Foo)
     return name.equals(((Foo)o).name);
   else if (o instanceof String)
     return name.equals(o);
   else return false;
-</pre></code></p>
+</pre>
 
 <p>This is considered bad practice, as it makes it very hard to implement an equals method that
 is symmetric and transitive. Without those properties, very unexpected behavoirs are possible.
@@ -2828,11 +2828,10 @@ Plus, it means that the equals method is not symmetric.
   <p> This class defines an equals method that always returns false. This means that an object is not equal to itself, and it is impossible to create useful Maps or Sets of this class. More fundamentally, it means
 that equals is not reflexive, one of the requirements of the equals method.</p>
 <p>The likely intended semantics are object identity: that an object is equal to itself. This is the behavior inherited from class <code>Object</code>. If you need to override an equals inherited from a different
-superclass, you can use use:
+superclass, you can use use:</p>
 <pre>
 public boolean equals(Object o) { return this == o; }
 </pre>
-</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2960,10 +2959,10 @@ fix this problem of highest importance.
   than simple reference equality.)</p>
 <p>If you don't think instances of this class will ever be inserted into a HashMap/HashTable,
 the recommended <code>hashCode</code> implementation to use is:</p>
-<p><pre>public int hashCode() {
+<pre>public int hashCode() {
   assert false : "hashCode not designed";
   return 42; // any arbitrary constant will do
-  }</pre></p>
+  }</pre>
 ]]>
     </Details>
   </BugPattern>
@@ -3459,19 +3458,18 @@ public class CircularClassInitialization {
     <LongDescription>Synchronization on interned String in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> The code synchronizes on interned String.
+  <p> The code synchronizes on interned String.</p>
 <pre>
 private static String LOCK = "LOCK";
 ...
   synchronized(LOCK) { ...}
 ...
 </pre>
-</p>
 <p>Constant Strings are interned and shared across all other classes loaded by the JVM. Thus, this could
 is locking on something that other code might also be locking. This could result in very strange and hard to diagnose
 blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forums/t96352.html">http://www.javalobby.org/java/forums/t96352.html</a> and <a href="http://jira.codehaus.org/browse/JETTY-352">http://jira.codehaus.org/browse/JETTY-352</a>.
-<p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
 </p>
+<p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3480,7 +3478,7 @@ blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forum
     <LongDescription>Synchronization on Boolean in {1}</LongDescription>
     <Details>
       <![CDATA[
-  <p> The code synchronizes on a boxed primitive constant, such as an Boolean.
+  <p> The code synchronizes on a boxed primitive constant, such as an Boolean.</p>
 <pre>
 private static Boolean inited = Boolean.FALSE;
 ...
@@ -3492,7 +3490,6 @@ private static Boolean inited = Boolean.FALSE;
      }
 ...
 </pre>
-</p>
 <p>Since there normally exist only two Boolean objects, this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
 and possible deadlock</p>
 <p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
@@ -3505,7 +3502,7 @@ and possible deadlock</p>
     <Details>
       <![CDATA[
   <p> The code synchronizes on an apparently unshared boxed primitive,
-such as an Integer.
+such as an Integer.</p>
 <pre>
 private static final Integer fileLock = new Integer(1);
 ...
@@ -3514,11 +3511,11 @@ private static final Integer fileLock = new Integer(1);
      }
 ...
 </pre>
-</p>
-<p>It would be much better, in this code, to redeclare fileLock as
+<p>It would be much better, in this code, to redeclare fileLock as</p>
 <pre>
 private static final Object fileLock = new Object();
 </pre>
+<p>
 The existing code might be OK, but it is confusing and a
 future refactoring, such as the "Remove Boxing" refactoring in IntelliJ,
 might replace this with the use of an interned Integer object shared
@@ -3532,7 +3529,7 @@ throughout the JVM, leading to very confusing behavior and potential deadlock.
     <LongDescription>Synchronization on {2} in {1}</LongDescription>
     <Details>
       <![CDATA[
-  <p> The code synchronizes on a boxed primitive constant, such as an Integer.
+  <p> The code synchronizes on a boxed primitive constant, such as an Integer.</p>
 <pre>
 private static Integer count = 0;
 ...
@@ -3541,7 +3538,6 @@ private static Integer count = 0;
      }
 ...
 </pre>
-</p>
 <p>Since Integer objects can be cached and shared,
 this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
 and possible deadlock</p>
@@ -3603,9 +3599,8 @@ to guard against simultaneous updates to that field. But guarding a field
 gets a lock on the referenced object, not on the field. This may not
 provide the mutual exclusion you need, and other threads might
 be obtaining locks on the referenced objects (for other purposes). An example
-of this pattern would be:
-
-<p><pre>
+of this pattern would be:</p>
+<pre>
 private Long myNtfSeqNbrCounter = new Long(0);
 private Long getNotificationSequenceNumber() {
      Long result = null;
@@ -3616,9 +3611,6 @@ private Long getNotificationSequenceNumber() {
      return result;
  }
 </pre>
-
-
-</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4356,7 +4348,7 @@ consider removing it from the class.</p>
     <LongDescription>Unread public/protected field: {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> This field is never read.&nbsp
+  <p> This field is never read.&nbsp;
 The field is public or protected, so perhaps
     it is intended to be used with classes not seen as part of the analysis. If not,
 consider removing it from the class.</p>
@@ -4940,7 +4932,7 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
               (except on forward paths involving runtime exceptions).
               </p>
         <p>Note that a check such as
-            <code>if (x == null) throw new NullPointerException();</code
+            <code>if (x == null) throw new NullPointerException();</code>
             is treated as a dereference of <code>x</code>.
           ]]>
       </Details>
@@ -5719,9 +5711,9 @@ This may indicate a logic error or typo.</p>
     <LongDescription>Check for sign of bitwise operation in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method compares an expression such as
+<p> This method compares an expression such as</p>
 <pre>((event.detail &amp; SWT.SELECTED) &gt; 0)</pre>.
-Using bit arithmetic and then comparing with the greater than operator can
+<p>Using bit arithmetic and then comparing with the greater than operator can
 lead to unexpected results (of course depending on the value of
 SWT.SELECTED). If SWT.SELECTED is a negative number, this is a candidate
 for a bug. Even when SWT.SELECTED is not negative, it seems good practice
@@ -5738,9 +5730,9 @@ to use '!= 0' instead of '&gt; 0'.
     <LongDescription>Check for sign of bitwise operation in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method compares an expression such as
+<p> This method compares an expression such as</p>
 <pre>((event.detail &amp; SWT.SELECTED) &gt; 0)</pre>.
-Using bit arithmetic and then comparing with the greater than operator can
+<p>Using bit arithmetic and then comparing with the greater than operator can
 lead to unexpected results (of course depending on the value of
 SWT.SELECTED). If SWT.SELECTED is a negative number, this is a candidate
 for a bug. Even when SWT.SELECTED is not negative, it seems good practice
@@ -6036,11 +6028,10 @@ super.tearDown(), but doesn't.</p>
     <Details>
 <![CDATA[
 <p> Class is a JUnit TestCase and defines a suite() method.
-However, the suite method needs to be declared as either
+However, the suite method needs to be declared as either</p>
 <pre>public static junit.framework.Test suite()</pre>
 or
 <pre>public static junit.framework.TestSuite suite()</pre>
-</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6335,8 +6326,8 @@ does not need to be created, just access the static methods directly using the c
   each of whose catch blocks is identical, but this construct also accidentally catches RuntimeException as well,
   masking potential bugs.
   </p>
-  <p>A better approach is to either explicitly catch the specific exceptions that are thrown, 
-  or to explicitly catch RuntimeException exception, rethrow it, and then catch all non-Runtime Exceptions, as shown below:
+  <p>A better approach is to either explicitly catch the specific exceptions that are thrown,
+  or to explicitly catch RuntimeException exception, rethrow it, and then catch all non-Runtime Exceptions, as shown below:</p>
   <pre>
   try {
     ...
@@ -6345,7 +6336,6 @@ does not need to be created, just access the static methods directly using the c
   } catch (Exception e) {
     ... deal with all non-runtime exceptions ...
   }</pre>
-  </p>
   ]]>
      </Details>
   </BugPattern>
@@ -6553,26 +6543,22 @@ just use the constant. Methods detected are:
 <![CDATA[
 <p>
 This code performs integer multiply and then converts the result to a long,
-as in:
-<code>
+as in:</p>
 <pre>
     long convertDaysToMilliseconds(int days) { return 1000*3600*24*days; }
-</pre></code>
+</pre>
+<p>
 If the multiplication is done using long arithmetic, you can avoid
 the possibility that the result will overflow. For example, you
-could fix the above code to:
-<code>
+could fix the above code to:</p>
 <pre>
     long convertDaysToMilliseconds(int days) { return 1000L*3600*24*days; }
-</pre></code>
+</pre>
 or
-<code>
 <pre>
     static final long MILLISECONDS_PER_DAY = 24L*3600*1000;
     long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; }
-</pre></code>
-</p>
-
+</pre>
 ]]>
     </Details>
   </BugPattern>
@@ -6796,7 +6782,6 @@ that the code is supplying a MessageFormat string when a printf-style format str
 is required. At runtime, all of the arguments will be ignored
 and the format string will be returned exactly as provided without any formatting.
 </p>
-</p>
 ]]>
      </Details>
   </BugPattern>
@@ -6950,7 +6935,7 @@ downcast it to a subtype will always fail by throwing a ClassCastException.
 <![CDATA[
 <p>
 This code is casting the result of calling <code>toArray()</code> on a collection
-to a type more specific than <code>Object[]</code>, as in:
+to a type more specific than <code>Object[]</code>, as in:</p>
 <pre>
 String[] getAsArray(Collection&lt;String&gt; c) {
   return (String[]) c.toArray();
@@ -7776,7 +7761,7 @@ public @NonNegative Integer example(@Negative Integer value) {
       <p>
      This instance method synchronizes on <code>this.getClass()</code>. If this class is subclassed,
      subclasses will synchronize on the class object for the subclass, which isn't likely what was intended.
-     For example, consider this code from java.awt.Label:
+     For example, consider this code from java.awt.Label:</p>
      <pre>
      private static final String base = "label";
      private static int nameCounter = 0;
@@ -7785,9 +7770,9 @@ public @NonNegative Integer example(@Negative Integer value) {
             return base + nameCounter++;
         }
      }
-     </pre></p>
+     </pre>
      <p>Subclasses of <code>Label</code> won't synchronize on the same subclass, giving rise to a datarace.
-     Instead, this code should be synchronizing on <code>Label.class</code>
+     Instead, this code should be synchronizing on <code>Label.class</code></p>
       <pre>
      private static final String base = "label";
      private static int nameCounter = 0;
@@ -7796,7 +7781,7 @@ public @NonNegative Integer example(@Negative Integer value) {
             return base + nameCounter++;
         }
      }
-     </pre></p>
+     </pre>
       <p>Bug pattern contributed by Jason Mehrens</p>
       ]]>
     </Details>
@@ -7962,22 +7947,22 @@ public @NonNegative Integer example(@Negative Integer value) {
 consider:
 </p>
 
-<p><pre>public static void initLogging() throws Exception {
+<pre>public static void initLogging() throws Exception {
  Logger logger = Logger.getLogger("edu.umd.cs");
  logger.addHandler(new FileHandler()); // call to change logger configuration
  logger.setUseParentHandlers(false); // another call to change logger configuration
-}</pre></p>
+}</pre>
 
 <p>The logger reference is lost at the end of the method (it doesn't
 escape the method), so if you have a garbage collection cycle just
 after the call to initLogging, the logger configuration is lost
 (because Logger only keeps weak references).</p>
 
-<p><pre>public static void main(String[] args) throws Exception {
+<pre>public static void main(String[] args) throws Exception {
  initLogging(); // adds a file handler to the logger
  System.gc(); // logger configuration lost
  Logger.getLogger("edu.umd.cs").info("Some message"); // this isn't logged to the file as expected
-}</pre></p>
+}</pre>
 <p><em>Ulf Ochsenfahrt and Eric Fellheimer</em></p>
           ]]>
       </Details>
