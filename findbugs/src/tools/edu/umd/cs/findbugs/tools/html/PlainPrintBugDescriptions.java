@@ -27,9 +27,9 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.charsets.UTF8;
 
 public class PlainPrintBugDescriptions extends PrintBugDescriptions {
-    private String docTitle;
+    private final String docTitle;
 
-    private PrintStream out;
+    private final PrintStream out;
 
     public PlainPrintBugDescriptions(String docTitle, OutputStream out) {
         this.docTitle = docTitle;
@@ -46,7 +46,8 @@ public class PlainPrintBugDescriptions extends PrintBugDescriptions {
 
     @Override
     protected void prologue() throws IOException {
-        out.println("<html><head><title>" + docTitle + "</title>");
+        out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">" +
+                "\n<html><head><title>" + docTitle + "</title>");
         header();
         out.println("</head><body>");
         beginBody();
