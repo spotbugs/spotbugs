@@ -1063,7 +1063,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         if (annotationList.size() != 2)
             return;
         priority++;
-        AnalysisContext.logError("Adding error " + getBugPattern().getType() + " to synthetic method " + getPrimaryMethod());
+        setProperty("FOUND_IN_SYNTHETIC_METHOD", "true");
+        if (SystemProperties.ASSERTIONS_ENABLED && AnalysisContext.analyzingApplicationClass())
+            AnalysisContext.logError("Adding error " + getBugPattern().getType() + " to synthetic method " + getPrimaryMethod());
     }
 
     /**
