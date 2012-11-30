@@ -16,60 +16,90 @@ public class Ideas_2012_09_27 {
     public @interface PK {
     }
 
-    @PK
-    long getLongKey() {
-        return 42;
+    @Documented
+    @Retention(RetentionPolicy.RUNTIME)
+    @TypeQualifier
+    public @interface PK2 {
     }
 
-    void setLongKey(@PK long key) {
-
+//    @PK
+//    long getLongKey() {
+//        return 42;
+//    }
+    
+    @PK Object getO() {
+        return "42";
     }
+    
+//    @PK
+//    long getLongKey(int x) {
+//        return 42+x;
+//    }
+//
+//    @PK
+//    long getLongKey3(@PK2 long x) {
+//        return x;
+//    }
+//    
+//    @PK
+//    long getLongKey(String s) {
+//        return s.length();
+//    }
+//
+//    @PK
+//    long getLongKey2() {
+//        return 42L;
+//    }
 
+//    void setLongKey(@PK long key) {
+//
+//    }
+//
     @PK
     Long getBoxedLongKey() {
         return 42L;
     }
-
-    void setBoxedLongKey(@PK Long key) {
-
-    }
-
-    @PK
-    double getDoubleKey() {
-        return 42;
-    }
-
-    void setDoubleKey(@PK double key) {
-
-    }
-
-    @PK
-    Double getBoxedDoubleKey() {
-        return 42.0;
-    }
-
-    void setBoxedDoubleKey(@PK Double key) {
-
-    }
-    
-    @NoWarning("TQ")
-    void boxLong() {
-        setBoxedLongKey(getLongKey());
-    }
-
-    @NoWarning("TQ")
-    void unboxLong() {
-        setLongKey(getBoxedLongKey());
-    }
-
-    @NoWarning("TQ")
-    void boxDouble() {
-        setBoxedDoubleKey(getDoubleKey());
-    }
-
-    @NoWarning("TQ")
-    void unboxDouble() {
-        setDoubleKey(getBoxedDoubleKey());
-    }
+//
+//    void setBoxedLongKey(@PK Long key) {
+//
+//    }
+//
+//    @PK
+//    double getDoubleKey() {
+//        return 42;
+//    }
+//
+//    void setDoubleKey(@PK double key) {
+//
+//    }
+//
+//    @PK
+//    Double getBoxedDoubleKey() {
+//        return 42.0;
+//    }
+//
+//    void setBoxedDoubleKey(@PK Double key) {
+//
+//    }
+//    
+//    @NoWarning("TQ")
+//    void boxLong() {
+//        setBoxedLongKey(getLongKey());
+//    }
+//
+//    @NoWarning("TQ")
+//    void unboxLong() {
+//        setLongKey(getBoxedLongKey());
+//    }
+//
+//    @NoWarning("TQ")
+//    void boxDouble() {
+//        setBoxedDoubleKey(getDoubleKey());
+//    }
+//
+//    @NoWarning("TQ")
+//    void unboxDouble() {
+//        setDoubleKey(getBoxedDoubleKey());
+//    }
 
 }
