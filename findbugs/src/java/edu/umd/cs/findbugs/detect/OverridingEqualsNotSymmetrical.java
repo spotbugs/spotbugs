@@ -31,8 +31,8 @@ import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.FirstPassDetector;
 import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -48,7 +48,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
-public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implements NonReportingDetector {
+public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implements FirstPassDetector {
 
     private static final String EQUALS_NAME = "equals";
 
@@ -189,7 +189,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
     boolean sawEqualsBuilder;
 
-    private EnumMap<EqualsKindSummary.KindOfEquals, Integer> count = new EnumMap<EqualsKindSummary.KindOfEquals, Integer>(
+    private final EnumMap<EqualsKindSummary.KindOfEquals, Integer> count = new EnumMap<EqualsKindSummary.KindOfEquals, Integer>(
             EqualsKindSummary.KindOfEquals.class);
 
     private void count(EqualsKindSummary.KindOfEquals k) {
