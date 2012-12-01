@@ -288,12 +288,19 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                 bug.addString(String.format("Expected %d bugs, saw %d", num, bugs.size()));
             }
             reporter.reportBug(bug);
-        } else if (!expectWarnings && bugs.size() >= num)
-            for (SourceLineAnnotation s : bugs) {
-                reporter.reportBug(makeWarning("FB_UNEXPECTED_WARNING", methodDescriptor, priority)
-                        .addString(bugCodeMessage).add(s));
+        } else if (bugs.size() > num) {
+            BugInstance bug = makeWarning("FB_UNEXPECTED_WARNING", methodDescriptor, priority).addString(bugCodeMessage);
+            if (!expectWarnings) {
+                for (SourceLineAnnotation s : bugs) {
+                    reporter.reportBug(bug.add(s));
+                }
+            } else if(num > 1){
+                // num == 1 is default value. So if we set a non default value, and see more warnings
+                // as expected, it's a problem
+                bug.addString(String.format("Expected %d bugs, saw %d", num, bugs.size()));
+                reporter.reportBug(bug);
             }
-
+        }
     }
 
     /**
@@ -314,7 +321,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 
     }
 
-    private Collection<SourceLineAnnotation> countWarnings( Collection<BugInstance> warnings,
+    private static Collection<SourceLineAnnotation> countWarnings( Collection<BugInstance> warnings,
             @CheckForNull String bugCode,
             int desiredPriority, int rank) {
         Collection<SourceLineAnnotation> matching = new HashSet<SourceLineAnnotation>();

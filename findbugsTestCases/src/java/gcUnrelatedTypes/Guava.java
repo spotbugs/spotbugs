@@ -19,7 +19,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Guava {
 
-    
+
     static class Pair<A,B> {
         final A a;
         final B b;
@@ -56,7 +56,7 @@ public class Guava {
                 return false;
             return true;
         }
-        
+
     }
     @ExpectWarning(value="GC", num=7)
     public static void testMultimap(Multimap<String, Integer> mm) {
@@ -68,15 +68,15 @@ public class Guava {
         mm.remove(1, 2);
         mm.removeAll(1);
     }
-    
+
     @ExpectWarning("GC")
     public static void testMultimap3( Multimap<Long, Long> counts, int minSize) {
         List<Long> idsToRemove = new ArrayList<Long>();
         for (Long id : counts.keySet()) {
-          if (counts.get(id).size() < minSize) 
+          if (counts.get(id).size() < minSize)
             idsToRemove.add(id);
           }
-          counts.removeAll(idsToRemove);  
+          counts.removeAll(idsToRemove);
     }
 
 
@@ -97,8 +97,8 @@ public class Guava {
         mm.remove("x", p);
         mm.removeAll("x");
     }
-    
- 
+
+
 
     @ExpectWarning(value="GC", num=4)
     public static void testMultiset(Multiset<String> ms) {
@@ -142,7 +142,7 @@ public class Guava {
         Objects.equal("x", 1);
         Objects.equal("x",  new int[1]);
     }
-    
+
     @NoWarning("EC")
     public static void testObjectsOK() {
         Objects.equal("x", "X");
@@ -161,7 +161,7 @@ public class Guava {
         Sets.difference(s1, s2);
         Sets.symmetricDifference(s1, s2);
     }
-    @ExpectWarning(value="GC", num=2)
+    @ExpectWarning(value="GC", num=5)
     public static void testIterables(Iterable<String> i, Collection<Integer> c) {
         Iterables.contains(i, 1);
         Iterables.removeAll(i, c);
@@ -177,7 +177,7 @@ public class Guava {
         Iterables.elementsEqual(i, c);
         Iterables.frequency(i, "x");
     }
-    @ExpectWarning(value="GC", num=2)
+    @ExpectWarning(value="GC", num=5)
     public static void testIterators(Iterator<String> i, Collection<Integer> c) {
         Iterators.contains(i, 1);
         Iterators.removeAll(i,c);
