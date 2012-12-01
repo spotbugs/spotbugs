@@ -233,7 +233,7 @@
         <copy todir="${sampleoutput.dir}" overwrite="true">
             <fileset dir="${samplesrc.dir}">
                                 <include name="*.xml"/>
-	    </fileset>
+        </fileset>
         </copy>
         <schemavalidate failonerror="yes" noNamespaceFile="${etc.dir}/bugcollection.xsd">
             <attribute name="http://xml.org/sax/features/namespaces" value="true"/>
@@ -363,7 +363,7 @@
         </jar>
     </target>
 
- 
+
     <!-- Generate front-end scripts. -->
     <target name="scripts" depends="init">
         <loadproperties srcFile="${scripts.props}"/>
@@ -565,11 +565,11 @@
               withMessages="true"
               notAProblem="false"
               jvmargs="-ea -Xmx1200m"
-              input="${build.dir}/findbugscheckAll.xml" 
+              input="${build.dir}/findbugscheckAll.xml"
               output="${build.dir}/findbugscheck.xml" >
     </filterBugs>
   </target>
-    
+
   <target name="findbugscheck-cloud-fails" depends="anttask,junittests,jars">
     <property name="findbugs.home" value="." />
     <ant dir="${pluginsSrc.dir}/findbugsCommunalCloud" target="install" inheritAll="false" />
@@ -604,7 +604,7 @@
               projectName="FindBugsTestCases"
               timeout="1800000"
               outputFile="${sampleoutput.dir}/findbugsTestCases.xml" >
-      <class location="{findbugsTestCases.dir}/build/classes" />
+      <class location="${findbugsTestCases.dir}/build/classes" />
     </findbugs>
   </target>
 
@@ -642,7 +642,7 @@
     </target>
 
     <target name="foundFindbugsTestCases" depends="findbugsTestCases.check" unless="findbugsTestCases.exists">
-	<echo>FindBugs test cases not found at ${findbugsTestCases.dir}</echo>
+    <echo>FindBugs test cases not found at ${findbugsTestCases.dir}</echo>
         <echo>Skipping test cases that depend on them</echo>
     </target>
 
