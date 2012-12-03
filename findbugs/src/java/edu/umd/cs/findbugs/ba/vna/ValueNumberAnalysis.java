@@ -44,33 +44,35 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  * A dataflow analysis to track the production and flow of values in the Java
  * stack frame. See the {@link ValueNumber ValueNumber} class for an explanation
  * of what the value numbers mean, and when they can be compared.
- * 
+ *
  * <p>
  * This class is still experimental.
- * 
+ *
  * @author David Hovemeyer
  * @see ValueNumber
  * @see edu.umd.cs.findbugs.ba.DominatorsAnalysis
  */
 public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, ValueNumberFrame> {
 
-    public static final boolean DEBUG = SystemProperties.getBoolean("vna.debug");
+    private final static boolean TRACE =  SystemProperties.getBoolean("vna.trace");
 
-    private MethodGen methodGen;
+    public static final boolean DEBUG = TRACE || SystemProperties.getBoolean("vna.debug");
 
-    private ValueNumberFactory factory;
+    private final MethodGen methodGen;
 
-    private ValueNumberFrameModelingVisitor visitor;
+    private final ValueNumberFactory factory;
 
-    private ValueNumber[] entryLocalValueList;
+    private final ValueNumberFrameModelingVisitor visitor;
 
-    private IdentityHashMap<BasicBlock, ValueNumber> exceptionHandlerValueNumberMap;
+    private final ValueNumber[] entryLocalValueList;
+
+    private final IdentityHashMap<BasicBlock, ValueNumber> exceptionHandlerValueNumberMap;
 
     private ValueNumber thisValue;
 
-    private HashMap<Location, ValueNumberFrame> factAtLocationMap;
+    private final HashMap<Location, ValueNumberFrame> factAtLocationMap;
 
-    private HashMap<Location, ValueNumberFrame> factAfterLocationMap;
+    private final HashMap<Location, ValueNumberFrame> factAfterLocationMap;
 
     private MergeTree mergeTree;
 
@@ -134,7 +136,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     /**
      * Get the value number assigned to the given local variable upon entry to
      * the method.
-     * 
+     *
      * @param local
      *            local variable number
      * @return ValueNumber assigned to the local variable
@@ -146,7 +148,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     /**
      * Get the value number assigned to the given parameter upon entry to the
      * method.
-     * 
+     *
      * @param param
      *            a parameter (0 == first parameter)
      * @return the ValueNumber assigned to that parameter
@@ -271,7 +273,6 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         return fact;
     }
 
-    private final static boolean TRACE = false;
 
     @Override
     public ValueNumberFrame getFactAfterLocation(Location location) {
@@ -346,7 +347,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
      * <p/>
      * <p>
      * <em>This method should be called at most once</em>.
-     * 
+     *
      * @param dataflow
      *            the Dataflow object which executed this analysis (and has all
      *            of the block result values)
