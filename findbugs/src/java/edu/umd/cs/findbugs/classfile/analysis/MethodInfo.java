@@ -65,7 +65,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     static public class Builder {
         int accessFlags;
-        
+
         long variableHasName;
         long variableIsSynthetic;
 
@@ -85,9 +85,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         boolean usesConcurrency;
 
         boolean isStub;
-        
+
         boolean hasBackBranch;
-        
+
         boolean isIdentity;
 
         int methodCallCount;
@@ -122,12 +122,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
             if (p < 64)
                 variableHasName |= 1 << p;
         }
-        
+
         public void setVariableIsSynthetic(int p) {
             if (p < 64)
                 variableIsSynthetic |= 1 << p;
         }
-        
+
         public void setUsesConcurrency() {
             this.usesConcurrency = true;
         }
@@ -135,7 +135,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         public void setIsStub() {
             this.isStub = true;
         }
-        
+
         public void setHasBackBranch() {
             this.hasBackBranch = true;
         }
@@ -143,8 +143,13 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         public void setThrownExceptions(String[] exceptions) {
             this.exceptions = exceptions;
         }
-        
+
         public void setIsIdentity() {
+            Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(0);
+            if (map != null) {
+                // not identity if it has an annotation
+                return;
+            }
             this.isIdentity = true;
         }
 
@@ -175,7 +180,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
             if (variableHasName != 0)
                 variableIsSynthetic |= (~variableHasName);
             return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags,
-                    isUnconditionalThrower, isUnsupported, usesConcurrency, hasBackBranch, isStub, isIdentity, 
+                    isUnconditionalThrower, isUnsupported, usesConcurrency, hasBackBranch, isStub, isIdentity,
                     methodCallCount, exceptions, accessMethodForMethod, accessMethodForField,
                     methodAnnotations, methodParameterAnnotations, variableIsSynthetic);
         }
@@ -200,13 +205,13 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     }
 
     final int accessFlags;
-    
+
     final long variableIsSynthetic;
 
     final int methodCallCount;
 
     final boolean usesConcurrency;
-    
+
     final boolean hasBackBranch;
 
     final boolean isStub;
@@ -238,7 +243,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
 
     MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature,
-            int accessFlags, boolean isUnconditionalThrower, boolean isUnsupported, boolean usesConcurrency, 
+            int accessFlags, boolean isUnconditionalThrower, boolean isUnsupported, boolean usesConcurrency,
             boolean hasBackBranch, boolean isStub, boolean isIdentity,
             int methodCallCount, @CheckForNull String[] exceptions, @CheckForNull MethodDescriptor accessMethodForMethod,
             @CheckForNull FieldDescriptor accessMethodForField,
@@ -264,7 +269,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         if (isIdentity) {
             MethodInfo.identifyMethods.put(this, null);
         }
-            
+
         this.usesConcurrency = usesConcurrency;
         this.hasBackBranch = hasBackBranch;
         this.isStub = isStub;
@@ -292,7 +297,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     public int getNumParams() {
         return new SignatureParser(getSignature()).getNumParameters();
     }
-    
+
     public boolean isVariableSynthetic(int param) {
         if (param >= 64) return false;
         return (variableIsSynthetic & (1 << param)) != 0;
@@ -538,7 +543,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         return usesConcurrency;
     }
 
-    
+
     public boolean hasBackBranch() {
         return hasBackBranch;
     }
@@ -573,10 +578,10 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         return AnalysisContext.currentAnalysisContext().getBridgeTo(this);
 
     }
-    
+
     public XMethod resolveAccessMethodForMethod() {
         MethodDescriptor access = getAccessMethodForMethod();
-        if (access != null) 
+        if (access != null)
             return XFactory.createXMethod(access);
         return this;
     }
