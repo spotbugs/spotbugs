@@ -25,16 +25,13 @@ import edu.umd.cs.findbugs.ba.AnalysisFeatures.AnalysisFeature;
 
 /**
  * Boolean-valued analysis properties for FindBugs.
- * 
+ *
  * @see edu.umd.cs.findbugs.ba.AnalysisContext#setBoolProperty(int, boolean)
  * @see edu.umd.cs.findbugs.ba.AnalysisContext#getBoolProperty(int)
  * @author David Hovemeyer
  */
 public abstract class FindBugsAnalysisFeatures {
-    private static final int START;
-    static {
-        START = AnalysisFeatures.NUM_BOOLEAN_ANALYSIS_PROPERTIES;
-    }
+
 
     /**
      * "Relaxed" warning reporting mode. Rather than using hard-coded heuristics
@@ -43,16 +40,16 @@ public abstract class FindBugsAnalysisFeatures {
      * machine-learning-based ranking algorithm).
      */
     public static final @AnalysisFeature
-    int RELAXED_REPORTING_MODE = START + 0;
+    int RELAXED_REPORTING_MODE = AnalysisFeatures.Builder.build("RELAXED_REPORTING_MODE");
 
     /**
      * Enable interprocedural analysis.
      */
     public static final @AnalysisFeature
-    int INTERPROCEDURAL_ANALYSIS = START + 1;
+    int INTERPROCEDURAL_ANALYSIS = AnalysisFeatures.Builder.build("INTERPROCEDURAL_ANALYSIS");
 
     public static final @AnalysisFeature
-    int INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES = START + 2;
+    int INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES = AnalysisFeatures.Builder.build("INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES");
 
     static void setProperty(@AnalysisFeature int property, boolean value) {
         AnalysisContext.currentAnalysisContext().setBoolProperty(property, value);
@@ -64,7 +61,7 @@ public abstract class FindBugsAnalysisFeatures {
 
     /**
      * Set relaxed reporting mode.
-     * 
+     *
      * @param relaxedMode
      *            true if relaxed reporting mode should be enabled, false if not
      */
@@ -74,7 +71,7 @@ public abstract class FindBugsAnalysisFeatures {
 
     /**
      * Get relaxed reporting mode.
-     * 
+     *
      * @return true if relaxed reporting mode should be enabled, false if not
      */
     public static boolean isRelaxedMode() {

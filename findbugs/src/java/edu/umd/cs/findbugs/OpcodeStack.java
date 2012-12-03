@@ -52,6 +52,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.OpcodeStack.Item.SpecialKind;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ClassMember;
@@ -229,14 +230,16 @@ public class OpcodeStack implements Constants2 {
         public static final @SpecialKind
         int SERVLET_OUTPUT = 23;
 
-        public static HashMap<Integer, String> specialKindNames = new HashMap<Integer, String>();
+        public static final HashMap<Integer, String> specialKindNames = new HashMap<Integer, String>();
 
         private static @SpecialKind int nextSpecialKind = asSpecialKind(SERVLET_OUTPUT + 1);
 
         public static @SpecialKind
         int defineNewSpecialKind(String name) {
             specialKindNames.put(nextSpecialKind, name);
-            return asSpecialKind( nextSpecialKind++);
+            @SpecialKind int result = asSpecialKind( nextSpecialKind+1);
+            nextSpecialKind = result;
+            return result;
         }
 
         private static final int IS_INITIAL_PARAMETER_FLAG = 1;
@@ -2991,7 +2994,7 @@ public class OpcodeStack implements Constants2 {
 
     private void pushByFloatMath(int seen, Item it, Item it2) {
         Item result;
-        int specialKind = Item.FLOAT_MATH;
+        @SpecialKind int specialKind = Item.FLOAT_MATH;
         if ((it.getConstant() instanceof Float) && it2.getConstant() instanceof Float) {
             if (seen == FADD)
                 result = new Item("F", Float.valueOf(constantToFloat(it2) + constantToFloat(it)));
@@ -3016,7 +3019,7 @@ public class OpcodeStack implements Constants2 {
 
     private void pushByDoubleMath(int seen, Item it, Item it2) {
         Item result;
-        int specialKind = Item.FLOAT_MATH;
+        @SpecialKind int specialKind = Item.FLOAT_MATH;
         if ((it.getConstant() instanceof Double) && it2.getConstant() instanceof Double) {
             if (seen == DADD)
                 result = new Item("D", Double.valueOf(constantToDouble(it2) + constantToDouble(it)));

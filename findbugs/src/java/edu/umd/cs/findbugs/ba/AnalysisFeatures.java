@@ -29,7 +29,7 @@ import javax.annotation.meta.TypeQualifier;
  * Boolean analysis properties for use in the AnalysisContext. These can be used
  * to enable or disable various analysis features in the bytecode analysis
  * framework.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface AnalysisFeatures {
@@ -40,6 +40,17 @@ public interface AnalysisFeatures {
     public @interface AnalysisFeature {
     }
 
+
+    public static class Builder {
+        static int next = NUM_BOOLEAN_ANALYSIS_PROPERTIES;
+        private static @AnalysisFeature int asFeatureNum(int num) { return num; }
+        static @AnalysisFeature
+        public int build(String name) {
+            int num = next++;
+            return asFeatureNum(num);
+        }
+
+    }
     /**
      * Determine (1) what exceptions can be thrown on exception edges, (2) which
      * catch blocks are reachable, and (3) which exception edges carry only
@@ -103,7 +114,9 @@ public interface AnalysisFeatures {
      * Number of boolean analysis properties reserved for the bytecode analysis
      * framework. Clients of the framework may use property values &gt;= this
      * value.
+     * @deprecated - use Builder instead
      */
+    @Deprecated
     public static final @AnalysisFeature
     int NUM_BOOLEAN_ANALYSIS_PROPERTIES = 128;
 
