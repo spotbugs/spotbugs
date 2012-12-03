@@ -24,14 +24,16 @@ import javax.annotation.Nonnull;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 
 /**
  * A class to abstractly represent values in stack slots, indicating whether
  * thoses values can be null, non-null, null on some incoming path, or unknown.
- * 
+ *
  * @author David Hovemeyer
  * @see IsNullValueFrame
  * @see IsNullValueAnalysis
@@ -245,11 +247,17 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
     /**
      * Convert to a value known because it was returned from a method in a
      * method property database.
-     * 
+     *
      * @param methodInvoked
      *            TODO
      */
     public IsNullValue markInformationAsComingFromReturnValueOfMethod(XMethod methodInvoked) {
+        FieldDescriptor fieldDescriptor = methodInvoked.getAccessMethodForField();
+        if (fieldDescriptor != null) {
+            XField f = XFactory.getExactXField(fieldDescriptor);
+            return markInformationAsComingFromFieldValue(f);
+        }
+
         int flag = RETURN_VAL;
         if (methodInvoked.getName().equals("readLine") && methodInvoked.getSignature().equals("()Ljava/lang/String;"))
             flag = READLINE_VAL;
@@ -261,7 +269,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
     /**
      * Convert to a value known because it was returned from a method in a
      * method property database.
-     * 
+     *
      * @param field
      *            TODO
      */
@@ -459,7 +467,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
     /**
      * Return true if this value is either definitely null, or might be null on
      * a simple path.
-     * 
+     *
      * @return true if this value is either definitely null, or might be null on
      *         a simple path, false otherwise
      */
@@ -525,7 +533,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
     /**
      * Control split: move given value down in the lattice if it is a
      * conditionally-null value.
-     * 
+     *
      * @return another value (equal or further down in the lattice)
      */
     public IsNullValue downgradeOnControlSplit() {
