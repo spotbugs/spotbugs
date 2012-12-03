@@ -32,14 +32,14 @@ import javax.annotation.meta.When;
 /**
  * * Denotes a class name or package name where the / character is used to
  * separate package/class name components.
- * 
+ *
  * @author pugh
  */
 @Documented
 @TypeQualifier(applicableTo = CharSequence.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SlashedClassName {
-    
+
     public static final String NOT_AVAILABLE = "./.";
 
     When when() default When.ALWAYS;
@@ -55,12 +55,14 @@ public @interface SlashedClassName {
 
         @Nonnull
         public When forConstantValue(@Nonnull SlashedClassName annotation, Object value) {
+            if (value == null)
+                return When.MAYBE;
             if (!(value instanceof String))
                 return When.NEVER;
 
             if (pattern.matcher((String) value).matches())
                 return When.ALWAYS;
-            
+
             if (value.equals(NOT_AVAILABLE))
                 return When.MAYBE;
 
