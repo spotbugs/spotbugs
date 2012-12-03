@@ -13,6 +13,7 @@ import org.apache.bcel.Constants;
 
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
@@ -26,7 +27,7 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 class UnresolvedXMethod extends AbstractMethod {
 
     protected UnresolvedXMethod(MethodDescriptor m) {
-        super(m.getClassDescriptor().getDottedClassName(), m.getName(), m.getSignature(), 
+        super(m.getClassDescriptor().getDottedClassName(), m.getName(), m.getSignature(),
                 m.isStatic() ? Constants.ACC_STATIC : 0);
         if (XFactory.DEBUG_UNRESOLVED) {
             System.out.println("Unresolved xmethod: " + this);
@@ -35,7 +36,7 @@ class UnresolvedXMethod extends AbstractMethod {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XMethod#isReturnTypeReferenceType()
      */
     public boolean isReturnTypeReferenceType() {
@@ -46,7 +47,7 @@ class UnresolvedXMethod extends AbstractMethod {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     public int compareTo(ComparableMethod o) {
@@ -73,7 +74,7 @@ class UnresolvedXMethod extends AbstractMethod {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XMethod#getThrownExceptions()
      */
     public String[] getThrownExceptions() {
@@ -83,7 +84,7 @@ class UnresolvedXMethod extends AbstractMethod {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XMethod#isUnconditionalThrower()
      */
     public boolean isUnconditionalThrower() {
@@ -96,7 +97,7 @@ class UnresolvedXMethod extends AbstractMethod {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XMethod#isAbstract()
      */
     public boolean isAbstract() {
@@ -105,7 +106,7 @@ class UnresolvedXMethod extends AbstractMethod {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isSynthetic()
      */
     public boolean isSynthetic() {
@@ -114,7 +115,7 @@ class UnresolvedXMethod extends AbstractMethod {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isDeprecated()
      */
     public boolean isDeprecated() {
@@ -123,7 +124,7 @@ class UnresolvedXMethod extends AbstractMethod {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XMethod#isVarArgs()
      */
     public boolean isVarArgs() {
@@ -132,7 +133,7 @@ class UnresolvedXMethod extends AbstractMethod {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XMethod#usesConcurrency()
      */
     public boolean usesConcurrency() {
@@ -146,13 +147,13 @@ class UnresolvedXMethod extends AbstractMethod {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XMethod#isStub()
      */
     public boolean isStub() {
         return false;
     }
-    
+
     public boolean isIdentity() {
         return false;
     }
@@ -161,7 +162,7 @@ class UnresolvedXMethod extends AbstractMethod {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XMethod#addParameterAnnotation(int,
      * edu.umd.cs.findbugs.classfile.analysis.AnnotationValue)
      */
@@ -205,7 +206,7 @@ class UnresolvedXMethod extends AbstractMethod {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.XMethod#addAnnotation(edu.umd.cs.findbugs.classfile
      * .analysis.AnnotationValue)
@@ -231,7 +232,7 @@ class UnresolvedXMethod extends AbstractMethod {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XMethod#bridgeFrom()
      */
     public XMethod bridgeFrom() {
@@ -240,7 +241,7 @@ class UnresolvedXMethod extends AbstractMethod {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XMethod#bridgeTo()
      */
     public XMethod bridgeTo() {
@@ -253,11 +254,15 @@ class UnresolvedXMethod extends AbstractMethod {
     public MethodDescriptor getAccessMethodForMethod() {
         return null;
     }
-
+    public FieldDescriptor getAccessMethodForField() {
+        return null;
+    }
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.ba.XMethod#isVariableSynthetic(int)
      */
     public boolean isVariableSynthetic(int param) {
         return false;
     }
+
+
 }

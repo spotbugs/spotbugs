@@ -23,6 +23,7 @@ import java.util.Collection;
 import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
@@ -96,6 +97,11 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
 
     public @CheckForNull
     MethodDescriptor getAccessMethodForMethod();
+
+
+    public @CheckForNull
+    FieldDescriptor getAccessMethodForField();
+
 
     public
     XMethod resolveAccessMethodForMethod();
