@@ -199,12 +199,12 @@ public class TypeQualifierValue<A extends Annotation> {
         /**
          * Cache in which constructed TypeQualifierValues are interned.
          */
-        DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue> typeQualifierMap = new DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue>();
+        DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue<?>> typeQualifierMap = new DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue<?>>();
 
         /**
          * Set of all known TypeQualifierValues.
          */
-        Set<TypeQualifierValue> allKnownTypeQualifiers = new HashSet<TypeQualifierValue>();
+        Set<TypeQualifierValue<?>> allKnownTypeQualifiers = new HashSet<TypeQualifierValue<?>>();
     }
 
     private static ThreadLocal<Data> instance = new ThreadLocal<Data>() {
@@ -283,9 +283,9 @@ public class TypeQualifierValue<A extends Annotation> {
      * @return an interned TypeQualifierValue object
      */
     public static @Nonnull
-    TypeQualifierValue getValue(ClassDescriptor desc, Object value) {
-        DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue> map = instance.get().typeQualifierMap;
-        TypeQualifierValue result = map.get(desc, value);
+    TypeQualifierValue<?> getValue(ClassDescriptor desc, Object value) {
+        DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue<?>> map = instance.get().typeQualifierMap;
+        TypeQualifierValue<?> result = map.get(desc, value);
         if (result != null)
             return result;
         result = new TypeQualifierValue(desc, value);
@@ -296,7 +296,7 @@ public class TypeQualifierValue<A extends Annotation> {
     @SuppressWarnings("unchecked")
     public static @Nonnull <A extends Annotation>
     TypeQualifierValue<A> getValue(Class <A> clazz, Object value) {
-        return getValue(DescriptorFactory.createClassDescriptor(clazz), value);
+        return (TypeQualifierValue<A>) getValue(DescriptorFactory.createClassDescriptor(clazz), value);
     }
 
     /**
@@ -304,7 +304,7 @@ public class TypeQualifierValue<A extends Annotation> {
      *
      * @return Collection of all known TypeQualifierValues
      */
-    public static Collection<TypeQualifierValue> getAllKnownTypeQualifiers() {
+    public static Collection<TypeQualifierValue<?>> getAllKnownTypeQualifiers() {
         return Collections.unmodifiableSet(instance.get().allKnownTypeQualifiers);
     }
 
