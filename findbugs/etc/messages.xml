@@ -7658,6 +7658,26 @@ public @NonNegative Integer example(@Negative Integer value) {
   </BugPattern>
 
 
+  <BugPattern type="TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED">
+    <ShortDescription>Value without a type qualifier used where a value is required to have that qualifier</ShortDescription>
+    <LongDescription>Value without a type qualifier is used in a place that requires a {2.simpleName} annotation</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        A value is being used in a way that requires the value be annotation with a type qualifier.
+	The type qualifier is strict, so the tool rejects any values that do not have
+	the appropriate annotation.
+        </p>
+
+        <p>
+        To coerce a value to have a strict annotation, define an identity function where the return value is annotated
+	with the strict annotation.
+	This is the only way to turn a non-annotated value into a value with a strict type qualifier annotation.
+        </p>
+
+      ]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED">
     <ShortDescription>Value annotated as never carrying a type qualifier used where value carrying that qualifier is required</ShortDescription>
     <LongDescription>Value annotated as never carrying type qualifier {2.simpleName} used where value carrying that qualifier is required</LongDescription>
@@ -7680,6 +7700,10 @@ public @NonNegative Integer example(@Negative Integer value) {
       ]]>
     </Details>
   </BugPattern>
+
+
+
+
   <BugPattern type="TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK">
     <ShortDescription>Value that might not carry a type qualifier is always used in a way requires that type qualifier</ShortDescription>
     <LongDescription>Value that might not carry the {2.simpleName} annotation is always used in a way that requires that type qualifier</LongDescription>

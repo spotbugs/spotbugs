@@ -41,19 +41,22 @@ public class TypeQualifierValueSet {
         VALID, TOP, BOTTOM
     }
 
-    private Map<ValueNumber, FlowValue> valueMap;
+    private final Map<ValueNumber, FlowValue> valueMap;
 
-    private Map<ValueNumber, Set<SourceSinkInfo>> whereAlways;
+    private final Map<ValueNumber, Set<SourceSinkInfo>> whereAlways;
 
-    private Map<ValueNumber, Set<SourceSinkInfo>> whereNever;
+    private final Map<ValueNumber, Set<SourceSinkInfo>> whereNever;
 
     private State state = State.VALID;
 
-    public TypeQualifierValueSet() {
+    final boolean  isStrict;
+
+    public TypeQualifierValueSet(TypeQualifierValue typeQualifierValue) {
         this.valueMap = new HashMap<ValueNumber, FlowValue>(3);
         this.whereAlways = new HashMap<ValueNumber, Set<SourceSinkInfo>>(3);
         this.whereNever = new HashMap<ValueNumber, Set<SourceSinkInfo>>(3);
         this.state = State.TOP;
+        isStrict = typeQualifierValue.isStrictQualifier();
     }
 
     public void modelSourceSink(SourceSinkInfo sourceSinkInfo) {
@@ -85,7 +88,7 @@ public class TypeQualifierValueSet {
      private void setValue(ValueNumber vn, FlowValue flowValue) {
          if (flowValue == FlowValue.TOP)
              pruneValue(vn);
-         else 
+         else
              valueMap.put(vn, flowValue);
     }
 
@@ -127,7 +130,7 @@ public class TypeQualifierValueSet {
         case NEVER:  return getSourceSinkInfoSet(whereNever, vn);
         }
         return Collections.emptySet();
-       
+
     }
     public Set<? extends SourceSinkInfo> getWhereAlways(ValueNumber vn) {
         return getSourceSinkInfoSet(whereAlways, vn);
@@ -140,9 +143,9 @@ public class TypeQualifierValueSet {
     private static Set<? extends SourceSinkInfo> getSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap,
             ValueNumber vn) {
         Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.get(vn);
-        if (sourceSinkInfoSet == null || sourceSinkInfoSet.isEmpty()) 
+        if (sourceSinkInfoSet == null || sourceSinkInfoSet.isEmpty())
             return Collections.emptySet();
-        
+
         return sourceSinkInfoSet;
         }
     private static Set<SourceSinkInfo> getOrCreateSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap,
@@ -154,8 +157,8 @@ public class TypeQualifierValueSet {
         }
         return sourceSinkInfoSet;
     }
-    
-    
+
+
 
     public FlowValue getValue(ValueNumber vn) {
         FlowValue result = valueMap.get(vn);
@@ -190,7 +193,7 @@ public class TypeQualifierValueSet {
 
     private void copySourceSinkInfoSetMap(Map<ValueNumber, Set<SourceSinkInfo>> dest, Map<ValueNumber, Set<SourceSinkInfo>> source) {
         dest.clear();
-     
+
         for (Map.Entry<ValueNumber, Set<SourceSinkInfo>> entry : source.entrySet()) {
             HashSet<SourceSinkInfo> copy = new HashSet<SourceSinkInfo>(entry.getValue());
             dest.put(entry.getKey(), copy);
@@ -322,7 +325,7 @@ public class TypeQualifierValueSet {
 
         for (ValueNumber vn : interesting) {
             FlowValue value = getValue(vn);
-            if (value == FlowValue.TOP || value == FlowValue.UNKNOWN) continue; 
+            if (value == FlowValue.TOP || !isStrict && value == FlowValue.UNKNOWN) continue; 
             if (buf.length() > 1) {
                 buf.append(", ");
             }
@@ -342,14 +345,14 @@ public class TypeQualifierValueSet {
 
         buf.append(vn.getNumber());
         buf.append("->");
-       
+
         buf.append(value);
         if (value != FlowValue.TOP) {
             Set<? extends SourceSinkInfo> always = getSourceSinkInfoSet(whereAlways, vn);
             Set<? extends SourceSinkInfo> never = getSourceSinkInfoSet(whereNever, vn);
             if (value != FlowValue.UNKNOWN || !always.equals(never)) {
                 buf.append("[");
-                if (!always.isEmpty()) 
+                if (!always.isEmpty())
                     appendSourceSinkInfos(buf, "YES=", always);
                 if (!always.isEmpty() && !never.isEmpty())
                     buf.append(",");

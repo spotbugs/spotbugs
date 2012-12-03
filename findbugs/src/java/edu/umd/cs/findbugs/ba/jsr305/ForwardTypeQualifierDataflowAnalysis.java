@@ -24,12 +24,15 @@ import java.util.Iterator;
 import javax.annotation.meta.When;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.generic.ACONST_NULL;
+import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ConstantPushInstruction;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LDC;
+import org.apache.bcel.generic.LocalVariableInstruction;
 
 import edu.umd.cs.findbugs.ba.BlockOrder;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -115,6 +118,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
             Instruction instruction = location.getHandle().getInstruction();
             short opcode = instruction.getOpcode();
 
+            int produces = instruction.produceStack(cpg);
             if (instruction instanceof InvokeInstruction) {
                 // Model return value
                 registerReturnValueSource(location);
@@ -127,6 +131,12 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
             } else if (instruction instanceof ConstantPushInstruction) {
                 // Model constant values
                 registerConstantPushSource(location);
+            } else if (instruction instanceof ACONST_NULL) {
+                // Model constant values
+                registerPushNullSource(location);
+            } else  if ((produces == 1 || produces == 2) && !(instruction instanceof LocalVariableInstruction) && !(instruction instanceof CHECKCAST)){
+                // Model other sources
+                registerOtherSource(location);
             }
         }
     }
@@ -135,22 +145,33 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 
         LDC instruction = (LDC) location.getHandle().getInstruction();
         Object constantValue = instruction.getValue(cpg);
-        if (!typeQualifierValue.canValidate(constantValue))
+        registerConstantSource(location, constantValue);
+    }
+    private void registerPushNullSource(Location location) throws DataflowAnalysisException {
+        registerConstantSource(location, null);
+    }
+    private void registerConstantSource(Location location,  Object constantValue) throws DataflowAnalysisException {
+
+        When w;
+        if (typeQualifierValue.canValidate(constantValue))
+            w = typeQualifierValue.validate(constantValue);
+        else if (typeQualifierValue.isStrictQualifier())
             return;
-        When w = typeQualifierValue.validate(constantValue);
+        else
+            w = When.UNKNOWN;
 
         registerTopOfStackSource(SourceSinkType.CONSTANT_VALUE, location, w, false, constantValue);
+    }
+    private void registerOtherSource(Location location) throws DataflowAnalysisException {
+
+        registerTopOfStackSource(SourceSinkType.OTHER, location, When.UNKNOWN, false, null);
     }
 
     private void registerConstantPushSource(Location location) throws DataflowAnalysisException {
 
         ConstantPushInstruction instruction = (ConstantPushInstruction) location.getHandle().getInstruction();
         Number constantValue = instruction.getValue();
-        if (!typeQualifierValue.canValidate(constantValue))
-            return;
-        When w = typeQualifierValue.validate(constantValue);
-
-        registerTopOfStackSource(SourceSinkType.CONSTANT_VALUE, location, w, false, constantValue);
+        registerConstantSource(location, constantValue);
     }
     private void registerReturnValueSource(Location location) throws DataflowAnalysisException {
         // Nothing to do if called method does not return a value

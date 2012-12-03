@@ -56,22 +56,22 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
             return "int";
         return  simpleClass.toLowerCase();
     }
-    
+
     static boolean isIdentifyFunctionForTypeQualifiers(XMethod m) {
         String className = m.getClassName();
         if (!className.startsWith("java.lang"))
             return false;
         String methodName = m.getName();
-        
+
         if (m.isStatic()) {
-            if (!methodName.equals("valueOf")) 
+            if (!methodName.equals("valueOf"))
                 return false;
             String signature = m.getSignature();
             if (signature.charAt(2) != ')')
                 return false;
         } else {
             String simpleClassName = ClassName.extractSimpleName(className);
-            
+
             if (!methodName.equals(primitiveType(simpleClassName) + "Value"))
                 return false;
             String signature = m.getSignature();
@@ -94,7 +94,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 
     protected final ConstantPoolGen cpg;
 
-    private Map<Location, Set<SourceSinkInfo>> sourceSinkMap;
+    private final Map<Location, Set<SourceSinkInfo>> sourceSinkMap;
 
     /**
      * Constructor.
@@ -159,7 +159,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#createFact()
      */
     public TypeQualifierValueSet createFact() {
-        return new TypeQualifierValueSet();
+        return new TypeQualifierValueSet(typeQualifierValue);
     }
 
     /*
