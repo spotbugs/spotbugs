@@ -31,4 +31,6 @@ public @interface NoWarning {
     /** Want no warning at this rank or scarier */
     public int rank() default BugRanker.VISIBLE_RANK_MAX;
 
+    /** Tolerate up to this many warnings */
+    public int num() default 0;
 }

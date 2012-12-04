@@ -31,5 +31,6 @@ public @interface ExpectWarning {
     /** Expect a warning at least this scary */
     public int rank() default BugRanker.VISIBLE_RANK_MAX;
 
+    /** Expect at least this many warnings */
     public int num() default 1;
 }

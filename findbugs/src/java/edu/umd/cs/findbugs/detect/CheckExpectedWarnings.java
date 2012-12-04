@@ -241,7 +241,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
             EnumValue wantedPriority = (EnumValue) expect.getValue("priority");
             Integer num = (Integer) expect.getValue("num");
             if (num == null)
-                num = 1;
+                num = (expectWarnings ? 1 : 0);
             Integer rank = (Integer) expect.getValue("rank");
             if (rank == null)
                 rank = BugRanker.VISIBLE_RANK_MAX;
