@@ -32,6 +32,7 @@ import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LDC;
+import org.apache.bcel.generic.LDC2_W;
 import org.apache.bcel.generic.LocalVariableInstruction;
 
 import edu.umd.cs.findbugs.ba.BlockOrder;
@@ -128,6 +129,9 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
             } else if (instruction instanceof LDC) {
                 // Model constant values
                 registerLDCValueSource(location);
+            } else if (instruction instanceof LDC2_W) {
+                // Model constant values
+                registerLDC2ValueSource(location);
             } else if (instruction instanceof ConstantPushInstruction) {
                 // Model constant values
                 registerConstantPushSource(location);
@@ -144,6 +148,12 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
     private void registerLDCValueSource(Location location) throws DataflowAnalysisException {
 
         LDC instruction = (LDC) location.getHandle().getInstruction();
+        Object constantValue = instruction.getValue(cpg);
+        registerConstantSource(location, constantValue);
+    }
+    private void registerLDC2ValueSource(Location location) throws DataflowAnalysisException {
+
+        LDC2_W instruction = (LDC2_W) location.getHandle().getInstruction();
         Object constantValue = instruction.getValue(cpg);
         registerConstantSource(location, constantValue);
     }
