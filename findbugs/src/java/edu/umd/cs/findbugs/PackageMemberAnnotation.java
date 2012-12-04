@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.util.ClassName;
  * Abstract base class for BugAnnotations describing constructs which are
  * contained in a Java package. Specifically, this includes classes, methods,
  * and fields.
- * 
+ *
  * @author David Hovemeyer
  * @see BugAnnotation
  */
@@ -44,7 +44,7 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
 
     /**
      * Constructor.
-     * 
+     *
      * @param className
      *            name of the class
      */
@@ -63,7 +63,7 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
 
     /**
      * Constructor.
-     * 
+     *
      * @param className
      *            name of the class
      */
@@ -88,13 +88,17 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
     String getClassName() {
         return className;
     }
-    
+
     /**
      * Get the dotted class name.
      */
     public final @SlashedClassName
     String getSlashedClassName() {
         return ClassName.toSlashedClassName(className);
+    }
+
+    public String getSimpleClassName() {
+        return ClassName.extractSimpleName(className);
     }
 
     /**
@@ -120,7 +124,7 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
      * Format the annotation. Note that this version (defined by
      * PackageMemberAnnotation) only handles the "class" and "package" keys, and
      * calls formatPackageMember() for all other keys.
-     * 
+     *
      * @param key
      *            the key
      * @return the formatted annotation
@@ -183,7 +187,7 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
 
     /**
      * Do default and subclass-specific formatting.
-     * 
+     *
      * @param key
      *            the key specifying how to do the formatting
      * @param primaryClass

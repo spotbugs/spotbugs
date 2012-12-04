@@ -43,7 +43,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  * MethodAnnotation may (optionally) have a SourceLineAnnotation directly
  * embedded inside it to indicate the range of source lines where the method is
  * defined.
- * 
+ *
  * @author David Hovemeyer
  * @see BugAnnotation
  */
@@ -54,13 +54,13 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
     public static final String DEFAULT_ROLE = "METHOD_DEFAULT";
 
-    private String methodName;
+    private final String methodName;
 
-    private String methodSig;
+    private final String methodSig;
 
     private String fullMethod;
 
-    private boolean isStatic;
+    private final boolean isStatic;
 
     public static final String METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL = "METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL";
 
@@ -88,7 +88,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
     /**
      * Constructor.
-     * 
+     *
      * @param className
      *            the name of the class containing the method
      * @param methodName
@@ -114,7 +114,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     /**
      * Factory method to create a MethodAnnotation from the method the given
      * visitor is currently visiting.
-     * 
+     *
      * @param visitor
      *            the BetterVisitor currently visiting the method
      */
@@ -133,7 +133,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     /**
      * Factory method to create a MethodAnnotation from a method called by the
      * instruction the given visitor is currently visiting.
-     * 
+     *
      * @param visitor
      *            the visitor
      * @return the MethodAnnotation representing the called method
@@ -163,7 +163,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
      * Factory method to create the MethodAnnotation from the classname, method
      * name, signature, etc. The method tries to look up source line information
      * for the method.
-     * 
+     *
      * @param className
      *            name of the class containing the method
      * @param methodName
@@ -194,7 +194,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
      * Factory method to create the MethodAnnotation from the classname, method
      * name, signature, etc. The method tries to look up source line information
      * for the method.
-     * 
+     *
      * @param className
      *            name of the class containing the method
      * @param methodName
@@ -229,7 +229,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
      * Create a MethodAnnotation from a method that is not directly accessible.
      * We will use the repository to try to find its class in order to populate
      * the information as fully as possible.
-     * 
+     *
      * @param className
      *            class containing called method
      * @param methodName
@@ -250,7 +250,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
     /**
      * Create a MethodAnnotation from an XMethod.
-     * 
+     *
      * @param xmethod
      *            the XMethod
      * @return the MethodAnnotation
@@ -261,7 +261,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
     /**
      * Create a MethodAnnotation from a MethodDescriptor.
-     * 
+     *
      * @param methodDescriptor
      *            the MethodDescriptor
      * @return the MethodAnnotation
@@ -278,13 +278,13 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         return methodName;
     }
 
+
     public String getJavaSourceMethodName() {
         if (methodName.equals("<clinit>"))
-            return "<static initializer>";
+            return "<static initializer for " + getSimpleClassName() + ">";
+
         if (methodName.equals("<init>")) {
-            String result = getClassName();
-            int pos = Math.max(result.lastIndexOf('$'), result.lastIndexOf('.'));
-            return className.substring(pos + 1);
+            return getSimpleClassName();
         }
         return methodName;
     }
@@ -298,7 +298,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
     /**
      * Return whether or not the method is static.
-     * 
+     *
      * @return true if the method is static, false otherwise
      */
     public boolean isStatic() {
@@ -307,13 +307,13 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
     /**
      * Convert to an XMethod.
-     * 
+     *
      * @return an XMethod specifying the same method as this MethodAnnotation
      */
     public XMethod toXMethod() {
         return XFactory.createXMethod(className, methodName, methodSig, isStatic);
     }
-    
+
     public MethodDescriptor toMethodDescriptor() {
         return DescriptorFactory.instance().getMethodDescriptor(this);
     }
@@ -357,7 +357,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     /**
      * Get the "full" method name. This is a format which looks sort of like a
      * method signature that would appear in Java source code.
-     * 
+     *
      * @param primaryClass
      *            TODO
      */
@@ -376,11 +376,11 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     /**
      * Get the "full" method name. This is a format which looks sort of like a
      * method signature that would appear in Java source code.
-     * 
+     *
      * note: If shortenPackeges==true, this will return the same value as
      * getNameInClass(), except that method caches the result and this one does
      * not. Calling this one may be slow.
-     * 
+     *
      * @param shortenPackages
      *            whether to shorten package names if they are in java or in the
      *            same package as this method.
@@ -429,7 +429,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     /**
      * Get the "full" method name. This is a format which looks sort of like a
      * method signature that would appear in Java source code.
-     * 
+     *
      * @param primaryClass
      *            TODO
      */
