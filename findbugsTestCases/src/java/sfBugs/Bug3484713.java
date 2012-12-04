@@ -15,7 +15,7 @@ public class Bug3484713 {
       System.out.println(foo.equals("foo"));
     }
     Runnable r = new Runnable() {
-        @DesireNoWarning("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+        @DesireNoWarning("NP")
       @Override
       public void run() {
         if (foo != null) {

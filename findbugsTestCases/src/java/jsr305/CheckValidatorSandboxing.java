@@ -10,6 +10,9 @@ import javax.annotation.meta.TypeQualifier;
 import javax.annotation.meta.TypeQualifierValidator;
 import javax.annotation.meta.When;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 public class CheckValidatorSandboxing {
 
     void needsEven(@Even int x) {
@@ -18,7 +21,8 @@ public class CheckValidatorSandboxing {
     void needsEven(@Even long x) {
     }
 
-    void testOK(int x) {
+    @NoWarning("TQ")
+    void testOK(@Even int x) {
         needsEven(-2);
         needsEven(0);
         needsEven(2);
@@ -26,6 +30,7 @@ public class CheckValidatorSandboxing {
         needsEven(x);
     }
 
+    @ExpectWarning(value = "TQ", num=5)
     void testBad(int x) {
         needsEven(-1);
         needsEven(1);

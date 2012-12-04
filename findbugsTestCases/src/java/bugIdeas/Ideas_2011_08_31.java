@@ -10,28 +10,44 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2011_08_31 {
-    
+
     @Documented
     @TypeQualifier(applicableTo = Integer.class)
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface PK {}
-    
-    static @PK Integer asPK(Integer i) {
+    public @interface PK {
+    }
+
+    @NoWarning("TQ")
+    static @PK
+    Integer asPK(Integer i) {
         return i;
     }
-    
 
-    @PK int key;
-    
-    @ExpectWarning("TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED")
-    void setKey(int k) {
-        key =k;
+    @PK
+    int key;
+
+    int foo;
+
+    @ExpectWarning("TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED")
+    @PK
+    int getKey() {
+        return foo;
     }
 
-    @NoWarning("TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED")
+    @ExpectWarning("TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED")
+    @PK
+    int getKey2() {
+        return "x".hashCode();
+    }
+
+    @ExpectWarning("TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED")
+    void setKey(int k) {
+        key = k;
+    }
+
+    @NoWarning("TQ")
     void setKey2(int k) {
         key = asPK(k);
     }
-
 
 }
