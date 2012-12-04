@@ -22,9 +22,9 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -294,7 +294,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         return false;
     }
 
-    final static HashSet<String> baseGenericTypes = new HashSet<String>();
+    final static LinkedHashSet<String> baseGenericTypes = new LinkedHashSet<String>();
     static {
         baseGenericTypes.addAll(Arrays.asList(new String[] { "java.util.Map", "java.util.Collection", "java.lang.Iterable",
                 "java.util.Iterator", "com.google.common.collect.Multimap", "com.google.common.collect.Multiset",
@@ -341,7 +341,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 if (s.charAt(0) != 'L')
                     throw new IllegalStateException("unexpected non signature: " + s);
                 ClassDescriptor c = DescriptorFactory.createClassDescriptor(s.substring(1, i));
-                if (isGenericCollection(c) && (typeParameter == null || s.substring(i+1).startsWith("T" + typeParameter))) {
+                String superTypeParameter = s.substring(i+1);
+                if (isGenericCollection(c) && (typeParameter == null || superTypeParameter.startsWith("T" + typeParameter))) {
                     if (DEBUG)
                         System.out.println(operandClass + " is a subtype of " + s);
                     return true;
@@ -378,7 +379,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
         String sourceFile = classContext.getJavaClass().getSourceFileName();
         if (DEBUG) {
-            System.out.println("Checking " + fullMethodName);
+            System.out.println("\n" + fullMethodName);
         }
 
         // Process each instruction
