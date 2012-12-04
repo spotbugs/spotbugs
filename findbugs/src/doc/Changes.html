@@ -17,6 +17,98 @@
 
 
                     <h1>FindBugs Change Log, Version @VERSION@</h1>
+			<ul>
+			<li>Fix false positions for 
+			<a href="http://findbugs.sourceforge.net/bugDescriptions.html#NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR</a> 
+			- fixing 
+                        <a href="https://sourceforge.net/tracker/?func=detail&aid=3547559&group_id=96405&atid=614693">Bug3547559</a>, 
+                        <a href="https://sourceforge.net/tracker/?func=detail&aid=3555408&group_id=96405&atid=614693">Bug3555408</a>, 
+                        <a href="https://sourceforge.net/tracker/?func=detail&aid=3580266&group_id=96405&atid=614693">Bug3580266</a>
+                        and <a href="https://sourceforge.net/tracker/?func=detail&aid=3587164&group_id=96405&atid=614693">Bug3587164</a>.
+                       
+                        
+                        </li><li> Fix false positives for 
+                        <a href="http://findbugs.sourceforge.net/bugDescriptions.html#SF_SWITCH_NO_DEFAULT">SF_SWITCH_NO_DEFAULT</a>
+                        
+                       <li>Type qualifier annotations, including nullness annotations, are now ignored on vararg parameters 
+                       (including default and inherited annotations), awaiting JSR308.
+                       
+                       <li>Defined new bug pattern to give better explanations of issues involving strict type qualifiers
+                       <a href="http://findbugs.sourceforge.net/bugDescriptions.html#TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED">TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED</a> 
+                       
+                       <li>Adjusted analysis of type qualifiers, now giving warnings where a computed value is used in a place where a value with
+                       a strict type qualifier is required. 
+                       
+                       <li>Complain about missing classes only if they are encountered while analyzing application classes; ignore missing classes that are encounted while
+                       analyzing classes loaded from the  auxclasspath. Fix for <a href="https://sourceforge.net/tracker/?func=detail&aid=3588379&group_id=96405&atid=614693">Bug3588379</a>
+                       
+                       <li>Fixed false positive null pointer warning coming from synthetic bridge methods,
+                       fixing <a href="https://sourceforge.net/tracker/?func=detail&aid=3589328&group_id=96405&atid=614693">Bug3589328</a>
+                       <li>In general, suppress warnings in synthetic methods.
+                       
+                       <li>Fix some false positives involving 
+                       <a href="http://findbugs.sourceforge.net/bugDescriptions.html#GC_UNRELATED_TYPES">GC_UNRELATED_TYPES</a> 
+                       on classes that extend generic collection classes.
+                       </li>
+                       <li>Changes by Andrey Loskutov
+                       <ul>
+                       <li> fixed job scheduling errors in 3.8/4.2 Eclipse <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=393748">bug report</a>
+                       <li> more realistic progress bar updates for jobs
+
+
+					<li>added nullness annotations for some common Eclipse API methods known to usually return null values
+<li> Added support for org.eclipse.jdt.annotation.Nullable, NonNull and NonNullByDefault annotations (introduced with Eclipse 3.8/4.2)
+                       </li></ul>
+                       <li>Documentation improvements
+                       <li><a href="http://code.google.com/p/findbugs/source/list">lots of other small changes</a>
+                       </ul>
+					<h1>FindBugs Change Log, Version 2.0.1</h1>
+			<ul>
+			<li>Fix false positions for 
+			<a href="http://findbugs.sourceforge.net/bugDescriptions.html#NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR</a> 
+			- fixing 
+                        <a href="https://sourceforge.net/tracker/?func=detail&aid=3547559&group_id=96405&atid=614693">Bug3547559</a>, 
+                        <a href="https://sourceforge.net/tracker/?func=detail&aid=3555408&group_id=96405&atid=614693">Bug3555408</a>, 
+                        <a href="https://sourceforge.net/tracker/?func=detail&aid=3580266&group_id=96405&atid=614693">Bug3580266</a>
+                        and <a href="https://sourceforge.net/tracker/?func=detail&aid=3587164&group_id=96405&atid=614693">Bug3587164</a>.
+                       
+                        
+                        </li><li> Fix false positives for 
+                        <a href="http://findbugs.sourceforge.net/bugDescriptions.html#SF_SWITCH_NO_DEFAULT">SF_SWITCH_NO_DEFAULT</a>
+                        
+                       <li>Type qualifier annotations, including nullness annotations, are now ignored on vararg parameters 
+                       (including default and inherited annotations), awaiting JSR308.
+                       
+                       <li>Defined new bug pattern to give better explanations of issues involving strict type qualifiers
+                       <a href="http://findbugs.sourceforge.net/bugDescriptions.html#TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED">TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED</a> 
+                       
+                       <li>Adjusted analysis of type qualifiers, now giving warnings where a computed value is used in a place where a value with
+                       a strict type qualifier is required. 
+                       
+                       <li>Complain about missing classes only if they are encountered while analyzing application classes; ignore missing classes that are encounted while
+                       analyzing classes loaded from the  auxclasspath. Fix for <a href="https://sourceforge.net/tracker/?func=detail&aid=3588379&group_id=96405&atid=614693">Bug3588379</a>
+                       
+                       <li>Fixed false positive null pointer warning coming from synthetic bridge methods,
+                       fixing <a href="https://sourceforge.net/tracker/?func=detail&aid=3589328&group_id=96405&atid=614693">Bug3589328</a>
+                       <li>In general, suppress warnings in synthetic methods.
+                       
+                       <li>Fix some false positives involving 
+                       <a href="http://findbugs.sourceforge.net/bugDescriptions.html#GC_UNRELATED_TYPES">GC_UNRELATED_TYPES</a> 
+                       on classes that extend generic collection classes.
+                       </li>
+                       <li>Changes by Andrey Loskutov
+                       <ul>
+                       <li> fixed job scheduling errors in 3.8/4.2 Eclipse <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=393748">bug report</a>
+                       <li> more realistic progress bar updates for jobs
+
+
+					<li>added nullness annotations for some common Eclipse API methods known to usually return null values
+<li> Added support for org.eclipse.jdt.annotation.Nullable, NonNull and NonNullByDefault annotations (introduced with Eclipse 3.8/4.2)
+                       </li></ul>
+                       <li>Documentation improvements
+                       <li><a href="http://code.google.com/p/findbugs/source/list">lots of other small changes</a>
+                       </ul>
+					<h1>FindBugs Change Log, Version 2.0.1</h1>
 
                     <ul>
                       <li>New bug patterns; in some cases, bugs previous reported as other bug patterns are reported
