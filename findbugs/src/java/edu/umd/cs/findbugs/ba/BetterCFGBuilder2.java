@@ -64,6 +64,7 @@ import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.NOP;
 import org.apache.bcel.generic.POP;
 import org.apache.bcel.generic.POP2;
+import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.PUTSTATIC;
 import org.apache.bcel.generic.ReturnInstruction;
 
@@ -622,22 +623,30 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
             Instruction i = head.getInstruction();
 
 
-            if (false && i instanceof INVOKESTATIC) {
+            if ( i instanceof INVOKESTATIC) {
                 INVOKESTATIC is = (INVOKESTATIC) i;
                 String name = is.getMethodName(cpg);
+                String signature = is.getSignature(cpg);
                 if (name.startsWith("access$")) {
                     XMethod invoked = XFactory.createXMethod(is, cpg);
                     FieldDescriptor  field = invoked.getAccessMethodForField();
                     if (field != null) {
                         Instruction replacement;
                         int index = getIndex(field);
-
+                        boolean isSetter = signature.endsWith("V");
                         if (field.isStatic()) {
+                            if (isSetter)
+                                replacement = new PUTSTATIC(index);
+                            else
                             replacement = new GETSTATIC(index);
                         } else {
+                            if (isSetter)
+                                replacement = new PUTFIELD(index);
+                            else
                             replacement = new GETFIELD(index);
                         }
                         head.swapInstruction(replacement);
+//                        System.out.println("Substituting " + (isSetter ? "set" : "get") +" of " + field + " for call of " + invoked + " in " + methodGen.getClassName() + "." + methodGen.getName() + methodGen.getSignature());
                     }
 
                 }
