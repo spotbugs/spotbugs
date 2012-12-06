@@ -261,10 +261,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
         try {
             fieldName = fieldSig = dottedFieldSig = fullyQualifiedFieldName = null;
             thisFieldInfo = (FieldInfo) thisClassInfo.findField(getFieldName(), getFieldSig(), field.isStatic());
-            if (thisFieldInfo == null) {
-                throw new AssertionError("Can't get field info for " + getFullyQualifiedFieldName());
-            }
-
+            assert thisFieldInfo !=  null : "Can't get field info for " + getFullyQualifiedFieldName();
             fieldIsStatic = field.isStatic();
             field.accept(this);
             Attribute[] attributes = field.getAttributes();
@@ -285,8 +282,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
             this.method = method;
             methodName = methodSig = dottedMethodSig = fullyQualifiedMethodName = null;
             thisMethodInfo = (MethodInfo) thisClassInfo.findMethod(getMethodName(), getMethodSig(), method.isStatic());
-            if (thisMethodInfo == null)
-                throw new AssertionError("Can't get method info for " + getFullyQualifiedMethodName());
+            assert thisMethodInfo != null : "Can't get method info for " + getFullyQualifiedMethodName();
             this.method.accept(this);
             Attribute[] attributes = method.getAttributes();
             for (Attribute attribute : attributes)
@@ -328,8 +324,8 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
     }
 
     boolean visitMethodsInCallOrder;
-    
-    
+
+
    protected boolean isVisitMethodsInCallOrder() {
         return visitMethodsInCallOrder;
     }
@@ -352,16 +348,16 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
             for (Field field : fields)
                 doVisitField(field);
             boolean didInCallOrder = false;
-                       
+
             if (visitMethodsInCallOrder) {
                 try {
                     IAnalysisCache analysisCache = Global.getAnalysisCache();
 
                     ClassDescriptor c = DescriptorFactory.createClassDescriptor(obj);
-                    
+
                     ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, c);
                     didInCallOrder = true;
-                    for (Method m : classContext.getMethodsInCallOrder()) 
+                    for (Method m : classContext.getMethodsInCallOrder())
                         doVisitMethod(m);
 
                 } catch (CheckedAnalysisException e) {
