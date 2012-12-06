@@ -31,7 +31,7 @@ public class MultiMap<K, V> {
     final Class<? extends Collection<V>> containerClass;
 
     @SuppressWarnings("unchecked")
-    public MultiMap(Class<? extends Collection> c) {
+    public MultiMap(@SuppressWarnings("rawtypes") Class<? extends Collection> c) {
         containerClass = (Class<? extends Collection<V>>) c;
     }
 

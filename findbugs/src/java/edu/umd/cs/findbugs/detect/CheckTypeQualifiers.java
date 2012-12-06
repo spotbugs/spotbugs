@@ -155,8 +155,8 @@ public class CheckTypeQualifiers extends CFGDetector {
             System.out.println("CheckTypeQualifiers: checking " + methodDescriptor.toString());
         }
 
-        Collection<TypeQualifierValue> relevantQualifiers = Analysis.getRelevantTypeQualifiers(methodDescriptor, cfg);
-        for(Iterator<TypeQualifierValue> i = relevantQualifiers.iterator(); i.hasNext();  ) {
+        Collection<TypeQualifierValue<?>> relevantQualifiers = Analysis.getRelevantTypeQualifiers(methodDescriptor, cfg);
+        for(Iterator<TypeQualifierValue<?>> i = relevantQualifiers.iterator(); i.hasNext();  ) {
             if (i.next().getTypeQualifierClassDescriptor().getClassName().equals(NONNULL_ANNOTATION))
                 i.remove();
         }
