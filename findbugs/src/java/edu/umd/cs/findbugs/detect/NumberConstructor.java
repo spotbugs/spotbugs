@@ -37,18 +37,18 @@ import edu.umd.cs.findbugs.util.ClassName;
 /**
  * Detector to find calls to Number constructors with base type argument in Java
  * 5 or newer bytecode.
- * 
+ *
  * Using <code>new Integer(int)</code> is guaranteed to always result in a new
  * object whereas <code>Integer.valueOf(int)</code> allows caching of values to
  * be done by the javac, JVM class library or JIT.
- * 
+ *
  * Currently only the JVM class library seems to do caching in the range of -128
  * to 127. There does not seem to be any caching for float and double which is
  * why those are reported as low priority.
- * 
+ *
  * All invokes of Number constructor with a constant argument are flagged as
  * high priority and invokes with unknwon value are normal priority.
- * 
+ *
  * @author Mikko Tiihonen
  */
 public class NumberConstructor extends OpcodeStackDetector {
@@ -57,16 +57,13 @@ public class NumberConstructor extends OpcodeStackDetector {
 
     private final BugAccumulator bugAccumulator;
 
-    private final BugReporter bugReporter;
-
     /**
      * Constructs a NC detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
     public NumberConstructor(BugReporter bugReporter) {
-        this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
         handle("java/lang/Byte", false, "(B)V");
         handle("java/lang/Character", false, "(C)V");
@@ -85,7 +82,7 @@ public class NumberConstructor extends OpcodeStackDetector {
 
     /**
      * The detector is only meaningful for Java5 class libraries.
-     * 
+     *
      * @param classContext
      *            the context object that holds the JavaClass parsed
      */
