@@ -26,7 +26,6 @@ import java.util.TreeSet;
 import javax.annotation.CheckForNull;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.generic.PUTFIELD;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -35,6 +34,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
@@ -96,7 +96,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd
      * .cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder)
@@ -206,7 +206,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                         boolean sawSystemExit = false;
 
                         boolean sawBranch = false;
-                        
+
                         boolean sawBackBranch = false;
 
                         int methodCallCount = 0;
@@ -219,12 +219,12 @@ public class ClassParserUsingASM implements ClassParserInterface {
                         boolean isBridge = (access & Opcodes.ACC_SYNTHETIC) != 0 && (access & Opcodes.ACC_BRIDGE) != 0;
 
                         String bridgedMethodSignature;
-                        
-                        IdentityMethodState identityState = 
+
+                        IdentityMethodState identityState =
                                 IdentityMethodState.INITIAL;
-                        
+
                         ParameterLoadState parameterLoadState = ParameterLoadState.OTHER;
-                        
+
                         int parameterForLoadState;
 
                         StubState stubState = StubState.INITIAL;
@@ -235,13 +235,13 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
                         boolean accessForField;
                         boolean accessIsStatic;
-                        
+
                         HashSet<Label> labelsSeen = new HashSet<Label>();
 
                         boolean isStatic() {
                             return (access & Opcodes.ACC_STATIC) != 0;
                         }
-                        
+
                         @Override
                         public
                         void visitLocalVariable(String name,
@@ -251,9 +251,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
                                 Label end,
                                 int index) {
                             mBuilder.setVariableHasName(index);
-                            
+
                         }
-                        
+
                         @Override
                         public void visitLdcInsn(Object cst) {
                             if (cst.equals("Stub!"))
@@ -307,7 +307,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
                         @Override
                         public void visitVarInsn(int opcode, int var) {
-                               
+
                             boolean match = false;
                             if (parameterLoadState == ParameterLoadState.OTHER && !isStatic() && var == 0) {
                                     parameterLoadState = ParameterLoadState.LOADED_THIS;
@@ -319,15 +319,15 @@ public class ClassParserUsingASM implements ClassParserInterface {
                                 parameterForLoadState = var;
                                 match = true;
                             }
-                            
+
                             if (identityState == IdentityMethodState.INITIAL) {
                                 match = true;
                                 if (var > 0 || isStatic())
                                     identityState = IdentityMethodState.LOADED_PARAMETER;
                                 else
                                     identityState = IdentityMethodState.NOT;
-                                
-                            } 
+
+                            }
                             if (!match)
                                 visitSomeInsn();
                         }
@@ -342,7 +342,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                                 mBuilder.setVariableIsSynthetic(parameterForLoadState);
                             }
                             fieldInstructionCount++;
-                            
+
                             if (isAccessMethod && this.accessOwner == null) {
                                 this.accessOwner = owner;
                                 this.accessName = name;
@@ -352,7 +352,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                             }
                             visitSomeInsn();
                         }
-                        
+
                         public org.objectweb.asm.AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
                             AnnotationValue value = new AnnotationValue(desc);
                             mBuilder.addAnnotation(desc, value);
@@ -409,7 +409,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                                 return;
                             ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(owner);
                             calledClassSet.add(classDescriptor);
-                           
+
                         }
 
                         @Override
@@ -434,7 +434,18 @@ public class ClassParserUsingASM implements ClassParserInterface {
                                 if (!accessForField && methodCallCount == 1) {
                                     mBuilder.setAccessMethodForMethod(accessOwner, accessName, accessDesc, accessIsStatic);
                                 } else if(accessForField && fieldInstructionCount == 1) {
-                                    mBuilder.setAccessMethodForField(accessOwner, accessName, accessDesc, accessIsStatic);
+                                    boolean isSetter = methodDesc.endsWith(")V");
+                                    int numArg = new SignatureParser(methodDesc).getNumParameters();
+                                    int expected = 0;
+                                    if (!accessIsStatic) expected++;
+                                    if (isSetter) expected++;
+                                    boolean OK;
+                                    if (isSetter)
+                                        OK = methodDesc.substring(1).startsWith(ClassName.toSignature(accessOwner) + accessDesc);
+                                    else
+                                        OK = methodDesc.substring(1).startsWith(ClassName.toSignature(accessOwner));
+                                    if (numArg == expected && OK)
+                                        mBuilder.setAccessMethodForField(accessOwner, accessName, accessDesc, accessIsStatic);
                                 }
                             }
                             if (sawBackBranch)
