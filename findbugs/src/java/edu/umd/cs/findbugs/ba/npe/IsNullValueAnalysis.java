@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
+import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
@@ -340,7 +341,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         Location location = new Location(handle, basicBlock);
         ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(location);
         if (!vnaFrameAfter.isValid()) {
-            assert false : "Invalid VNA after location " + location;
+            assert false : "Invalid VNA after location " + location + " in " +  SignatureConverter.convertMethodSignature(methodGen);
             return;
         }
         for (int i = start; i < fact.getNumSlots(); ++i) {
