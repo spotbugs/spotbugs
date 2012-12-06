@@ -622,7 +622,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
             Instruction i = head.getInstruction();
 
 
-            if (i instanceof INVOKESTATIC) {
+            if (false && i instanceof INVOKESTATIC) {
                 INVOKESTATIC is = (INVOKESTATIC) i;
                 String name = is.getMethodName(cpg);
                 if (name.startsWith("access$")) {
