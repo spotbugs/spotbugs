@@ -23,25 +23,53 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
 
 /**
  * A simple class to parse method signatures.
- * 
+ *
  * @author David Hovemeyer
  */
 public class SignatureParser {
-    final int totalArgumentSize;
+    private int totalArgumentSize;
 
     public int getTotalArgumentSize() {
+        if ( parameterOffset == null)
+            getParameterOffset();
         return totalArgumentSize;
     }
 
-    final int parameterOffset[];
+     private @CheckForNull int parameterOffset[];
 
-     public int getSlotsFromTopOfStackForParameter(int paramNum) {
-        int result = totalArgumentSize - parameterOffset[paramNum];
+      @Nonnull int[] getParameterOffset() {
+        if ( parameterOffset != null )
+            return parameterOffset;
+        ArrayList<Integer> offsets = new ArrayList<Integer>();
+        Iterator<String> i = parameterSignatureIterator();
+        int totalSize = 0;
+
+        while (i.hasNext()) {
+            String s = i.next();
+
+            if (s.equals("D") || s.equals("J"))
+                totalSize += 2;
+            else
+                totalSize += 1;
+            offsets.add(totalSize);
+        }
+        totalArgumentSize = totalSize;
+        parameterOffset = new int[offsets.size()];
+        for (int j = 0; j < offsets.size(); j++)
+            parameterOffset[j] = offsets.get(j);
+        return parameterOffset;
+    }
+
+    public int getSlotsFromTopOfStackForParameter(int paramNum) {
+        int result = totalArgumentSize - getParameterOffset()[paramNum];
         return result;
     }
 
@@ -110,7 +138,7 @@ public class SignatureParser {
 
     /**
      * Constructor.
-     * 
+     *
      * @param signature
      *            the method signature to be parsed
      */
@@ -118,23 +146,7 @@ public class SignatureParser {
         if (!signature.startsWith("("))
             throw new IllegalArgumentException("Bad method signature: " + signature);
         this.signature = signature;
-        ArrayList<Integer> offsets = new ArrayList<Integer>();
-        Iterator<String> i = parameterSignatureIterator();
-        int totalSize = 0;
-        
-        while (i.hasNext()) {
-            String s = i.next();
 
-            if (s.equals("D") || s.equals("J"))
-                totalSize += 2;
-            else
-                totalSize += 1;
-            offsets.add(totalSize);
-        }
-        totalArgumentSize = totalSize;
-        parameterOffset = new int[offsets.size()];
-        for (int j = 0; j < offsets.size(); j++)
-            parameterOffset[j] = offsets.get(j);
 
     }
 
@@ -143,11 +155,11 @@ public class SignatureParser {
         for (Iterator<String> i = parameterSignatureIterator(); i.hasNext();) {
             result.add(i.next());
         }
-        return result.toArray(new String[result.size()]);        
+        return result.toArray(new String[result.size()]);
     }
     /**
      * Get an Iterator over signatures of the method parameters.
-     * 
+     *
      * @return Iterator which returns the parameter type signatures in order
      */
     public Iterator<String> parameterSignatureIterator() {
@@ -156,7 +168,7 @@ public class SignatureParser {
 
     /**
      * Get the method return type signature.
-     * 
+     *
      * @return the method return type signature
      */
     public String getReturnTypeSignature() {
@@ -168,16 +180,11 @@ public class SignatureParser {
 
     /**
      * Get the number of parameters in the signature.
-     * 
+     *
      * @return the number of parameters
      */
     public int getNumParameters() {
-        int count = 0;
-        for (Iterator<String> i = parameterSignatureIterator(); i.hasNext();) {
-            i.next();
-            ++count;
-        }
-        return count;
+        return getParameterOffset().length;
     }
 
     public boolean hasReferenceParameters() {
@@ -202,7 +209,7 @@ public class SignatureParser {
 
     /**
      * Determine whether or not given signature denotes a reference type.
-     * 
+     *
      * @param signature
      *            a signature
      * @return true if signature denotes a reference type, false otherwise
@@ -213,7 +220,7 @@ public class SignatureParser {
 
     /**
      * Get the number of parameters passed to method invocation.
-     * 
+     *
      * @param inv
      * @param cpg
      * @return int number of parameters
@@ -227,7 +234,7 @@ public class SignatureParser {
      * Return how many stack frame slots a type whose signature is given will
      * occupy. long and double values take 2 slots, while all other kinds of
      * values take 1 slot.
-     * 
+     *
      * @param sig
      *            a type signature
      * @return number of stack frame slots a value of the given type will occupy
