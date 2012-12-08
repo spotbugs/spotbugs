@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.classfile.analysis;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 
@@ -33,7 +35,7 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 
 /**
  * Represents the class name, superclass name, and interface list of a class.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassNameAndSuperclassInfo extends ClassDescriptor {
@@ -45,7 +47,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor {
 
     private final int accessFlags;
 
-    private final Collection<ClassDescriptor> calledClassDescriptorList;
+    private final Set<ClassDescriptor> calledClassDescriptors;
 
     private final int majorVersion, minorVersion;
 
@@ -64,11 +66,11 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor {
 
         Collection<ClassDescriptor> referencedClassDescriptorList;
 
-        Collection<ClassDescriptor> calledClassDescriptorList = Collections.<ClassDescriptor> emptyList();
+        Set<ClassDescriptor> calledClassDescriptors = Collections.<ClassDescriptor> emptySet();
 
         public ClassNameAndSuperclassInfo build() {
             return new ClassNameAndSuperclassInfo(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry,
-                    accessFlags, referencedClassDescriptorList, calledClassDescriptorList, majorVersion, minorVersion);
+                    accessFlags, referencedClassDescriptorList, calledClassDescriptors, majorVersion, minorVersion);
         }
 
         /**
@@ -129,15 +131,15 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor {
 
         public void setCalledClassDescriptors(Collection<ClassDescriptor> calledClassDescriptorList) {
             if (calledClassDescriptorList.size() == 0)
-                this.calledClassDescriptorList = Collections.emptyList();
+                this.calledClassDescriptors = Collections.emptySet();
             else
-                this.calledClassDescriptorList = new ArrayList<ClassDescriptor>(calledClassDescriptorList);
+                this.calledClassDescriptors = new HashSet<ClassDescriptor>(calledClassDescriptorList);
         }
     }
 
     /**
      * Constructor.
-     * 
+     *
      * @param classDescriptor
      *            ClassDescriptor representing the class name
      * @param superclassDescriptor
@@ -155,15 +157,15 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor {
             ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags,
             /* TODO: We aren't doing anything with this */
             Collection<ClassDescriptor> referencedClassDescriptorList,
-            @Nonnull Collection<ClassDescriptor> calledClassDescriptorList, int majorVersion, int minorVersion) {
+            @Nonnull Set<ClassDescriptor> calledClassDescriptors, int majorVersion, int minorVersion) {
         super(classDescriptor.getClassName());
         this.superclassDescriptor = superclassDescriptor;
         this.interfaceDescriptorList = interfaceDescriptorList;
         this.codeBaseEntry = codeBaseEntry;
         this.accessFlags = accessFlags;
-        if (calledClassDescriptorList == null)
-            throw new NullPointerException("calledClassDescriptorList must not be null");
-        this.calledClassDescriptorList = calledClassDescriptorList;
+        if (calledClassDescriptors == null)
+            throw new NullPointerException("calledClassDescriptors must not be null");
+        this.calledClassDescriptors = calledClassDescriptors;
         this.majorVersion = majorVersion;
         this.minorVersion = minorVersion;
 
@@ -212,10 +214,10 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor {
     }
 
     /**
-     * @return Returns the called class descriptor list.
+     * @return Returns the called class descriptors.
      */
-    public Collection<ClassDescriptor> getCalledClassDescriptorList() {
-        return calledClassDescriptorList;
+    public Set<ClassDescriptor> getCalledClassDescriptors() {
+        return calledClassDescriptors;
     }
 
     /**

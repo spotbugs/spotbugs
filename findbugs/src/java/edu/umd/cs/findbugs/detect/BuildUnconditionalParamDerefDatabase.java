@@ -62,7 +62,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /**
  * Build database of unconditionally dereferenced parameters.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
@@ -82,11 +82,7 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
     public void visitClassContext(ClassContext classContext) {
         boolean fullAnalysis = AnalysisContext.currentAnalysisContext().getBoolProperty(
                 FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES);
-        if (!fullAnalysis && !AnalysisContext.currentAnalysisContext()/*
-                                                                       * .
-                                                                       * getSubtypes
-                                                                       * ()
-                                                                       */.isApplicationClass(classContext.getJavaClass()))
+        if (!fullAnalysis && !AnalysisContext.currentAnalysisContext().isApplicationClass(classContext.getJavaClass()))
             return;
         if (VERBOSE_DEBUG)
             System.out.println("Visiting class " + classContext.getJavaClass().getClassName());
@@ -100,7 +96,6 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
         for (Type argument : method.getArgumentTypes())
             if (argument instanceof ReferenceType) {
                 hasReferenceParameters = true;
-                referenceParameters++;
             }
 
         if (hasReferenceParameters && classContext.getMethodGen(method) != null) {
@@ -110,15 +105,11 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
         }
     }
 
-    protected int referenceParameters;
-
-    protected int nonnullReferenceParameters;
-
     private void analyzeMethod(ClassContext classContext, Method method) {
         JavaClass jclass = classContext.getJavaClass();
+        XMethod xmethod = XFactory.createXMethod(jclass, method);
         try {
             CFG cfg = classContext.getCFG(method);
-            XMethod xmethod = XFactory.createXMethod(jclass, method);
 
             ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
             UnconditionalValueDerefDataflow dataflow = classContext.getUnconditionalValueDerefDataflow(method);
@@ -207,7 +198,6 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
                         dataflow, classContext.getTypeDataflow(method));
             }
             ParameterProperty property = new ParameterProperty();
-            nonnullReferenceParameters += unconditionalDerefSet.cardinality();
             property.setParamsWithProperty(unconditionalDerefSet);
 
             AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase()
@@ -216,7 +206,6 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
                 System.out.println("Unconditional deref: " + xmethod + "=" + property);
             }
         } catch (CheckedAnalysisException e) {
-            XMethod xmethod = XFactory.createXMethod(jclass, method);
             AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
                     .logError("Error analyzing " + xmethod + " for unconditional deref training", e);
         }
@@ -231,17 +220,17 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
      */
     public boolean isCaught(ClassContext classContext, Method method, UnconditionalValueDerefSet entryFact, ValueNumber paramVN) {
         boolean caught = true;
-        
-        Set<Location> dereferenceSites 
+
+        Set<Location> dereferenceSites
           = entryFact.getDerefLocationSet(paramVN);
         if (dereferenceSites != null && !dereferenceSites.isEmpty()) {
             ConstantPool cp = classContext.getJavaClass().getConstantPool();
-            
+
             for(Location loc : dereferenceSites) {
                 if (!FindNullDeref.catchesNull(cp, method.getCode(), loc))
                     caught = false;
             }
-            
+
         }
         return caught;
     }

@@ -163,9 +163,9 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
     private void registerConstantSource(Location location,  Object constantValue) throws DataflowAnalysisException {
 
         When w;
-        if (typeQualifierValue.canValidate(constantValue))
+        if (typeQualifierValue.canValidate(constantValue)) {
             w = typeQualifierValue.validate(constantValue);
-        else if (typeQualifierValue.isStrictQualifier())
+        } else if (typeQualifierValue.isStrictQualifier())
             return;
         else
             w = When.UNKNOWN;
@@ -228,6 +228,8 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 
     private void registerTopOfStackSource(SourceSinkType sourceSinkType, Location location, When when, boolean interproc,
             Object constantValue) throws DataflowAnalysisException {
+        if (when == When.UNKNOWN && !typeQualifierValue.isStrictQualifier())
+            return;
         ValueNumberFrame vnaFrameAfterInstruction = vnaDataflow.getFactAfterLocation(location);
         if (vnaFrameAfterInstruction.isValid()) {
             ValueNumber tosValue = vnaFrameAfterInstruction.getTopValue();

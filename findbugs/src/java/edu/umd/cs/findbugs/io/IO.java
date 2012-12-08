@@ -34,6 +34,7 @@
 package edu.umd.cs.findbugs.io;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.EOFException;
 import java.io.IOException;
@@ -46,9 +47,9 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
 
-import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.util.Util;
 
 public class IO {
@@ -66,8 +67,34 @@ public class IO {
         }
     };
 
-    public static String readAll(InputStream in) throws IOException {
-        return readAll(UTF8.reader(in));
+    public static byte[] readAll(@WillClose InputStream in) throws IOException {
+        try {
+            ByteArrayOutputStream byteSink = new ByteArrayOutputStream();
+            copy(in, byteSink);
+            return byteSink.toByteArray();
+        } finally {
+            close(in);
+        }
+    }
+
+    public static byte[] readAll(@WillClose InputStream in, int size) throws IOException {
+        try {
+            if (size == 0)
+                throw new IllegalArgumentException();
+            byte[] result = new byte[size];
+            int pos = 0;
+            int sz;
+            while ((sz = in.read(result, pos, size - pos)) > 0) {
+                pos += sz;
+            }
+            if (pos < size)
+                throw new IOException("Short read");
+            if (in.available() > 0)
+                throw new IOException("Long read");
+            return result;
+        } finally {
+            close(in);
+        }
     }
 
     public static String readAll(Reader reader) throws IOException {
@@ -122,7 +149,7 @@ public class IO {
 
     /**
      * Close given InputStream, ignoring any resulting exception.
-     * 
+     *
      */
      public static void close(@CheckForNull Closeable c) {
         if (c == null) {
@@ -138,7 +165,7 @@ public class IO {
 
     /**
      * Close given InputStream, ignoring any resulting exception.
-     * 
+     *
      * @param inputStream
      *            the InputStream to close; may be null (in which case nothing
      *            happens)
@@ -157,7 +184,7 @@ public class IO {
 
     /**
      * Close given OutputStream, ignoring any resulting exception.
-     * 
+     *
      * @param outputStream
      *            the OutputStream to close; may be null (in which case nothing
      *            happens)
@@ -177,7 +204,7 @@ public class IO {
     /**
      * Provide a skip fully method. Either skips the requested number of bytes
      * or throws an IOException;
-     * 
+     *
      * @param in
      *            The input stream on which to perform the skip
      * @param bytes
@@ -203,9 +230,9 @@ public class IO {
     public static boolean verifyURL(URL u) {
         if (u == null)
             return false;
-    
+
         InputStream i = null;
-    
+
         try {
             URLConnection uc = u.openConnection();
             i = uc.getInputStream();
@@ -213,12 +240,12 @@ public class IO {
             i.close();
             return firstByte >= 0;
         }
-    
+
         catch (Exception e) {
             return false;
         } finally {
             Util.closeSilently(i);
         }
-    
+
     }
 }

@@ -55,10 +55,8 @@ public @interface SlashedClassName {
 
         @Nonnull
         public When forConstantValue(@Nonnull SlashedClassName annotation, Object value) {
-            if (value == null)
-                return When.MAYBE;
             if (!(value instanceof String))
-                return When.NEVER;
+                return When.UNKNOWN;
 
             if (pattern.matcher((String) value).matches())
                 return When.ALWAYS;

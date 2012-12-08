@@ -19,7 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+
+import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -37,9 +41,12 @@ import edu.umd.cs.findbugs.classfile.Global;
 
 public class ExplicitSerialization extends OpcodeStackDetector implements NonReportingDetector {
 
-    final XMethod writeObject = XFactory.createXMethod("java.io.ObjectOutputStream", "writeObject", "(Ljava/lang/Object;)V", false);
+    final static XMethod writeObject = XFactory.createXMethod("java.io.ObjectOutputStream", "writeObject", "(Ljava/lang/Object;)V", false);
 
-    final XMethod readObject = XFactory.createXMethod("java.io.ObjectInputStream", "readObject", "()Ljava/lang/Object;", false);
+    final static XMethod readObject = XFactory.createXMethod("java.io.ObjectInputStream", "readObject", "()Ljava/lang/Object;", false);
+
+    final static ClassDescriptor ObjectOutputStream = DescriptorFactory.createClassDescriptor(ObjectOutputStream.class);
+    final static ClassDescriptor ObjectInputStream = DescriptorFactory.createClassDescriptor(ObjectInputStream.class);
 
     final UnreadFieldsData unreadFields;
 
@@ -49,6 +56,13 @@ public class ExplicitSerialization extends OpcodeStackDetector implements NonRep
         AnalysisContext context = AnalysisContext.currentAnalysisContext();
         unreadFields = context.getUnreadFieldsData();
         this.bugReporter = bugReporter;
+    }
+
+    @Override
+    public boolean shouldVisit(JavaClass obj) {
+        XClass xClass = getXClass();
+        return xClass.getCalledClassDescriptors().contains(ObjectOutputStream)
+                || xClass.getCalledClassDescriptors().contains(ObjectInputStream);
     }
 
     @Override

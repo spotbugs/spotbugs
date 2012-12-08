@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.engine;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -65,30 +64,19 @@ public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
         if (codeBaseEntry instanceof ZipInputStreamCodeBaseEntry) {
             data = ((ZipInputStreamCodeBaseEntry) codeBaseEntry).getBytes();
         } else {
-            // Create a ByteArrayOutputStream to capture the class data
-            int length = codeBaseEntry.getNumBytes();
-            ByteArrayOutputStream byteSink;
-            if (length >= 0) {
-                byteSink = new ByteArrayOutputStream(length);
-            } else {
-                byteSink = new ByteArrayOutputStream();
-            }
-
-            // Read the class data into the byte array
-            InputStream in = null;
             try {
-                in = codeBaseEntry.openResource();
-                IO.copy(in, byteSink);
+                // Create a ByteArrayOutputStream to capture the class data
+                int length = codeBaseEntry.getNumBytes();
+                InputStream in = codeBaseEntry.openResource();
+                if (length >= 0) {
+                    data = IO.readAll(in, length);
+                } else {
+                    data = IO.readAll(in);
+                }
+
             } catch (IOException e) {
                 throw new MissingClassException(descriptor, e);
-            } finally {
-                if (in != null) {
-                    IO.close(in);
-                }
             }
-
-            // Construct the resulting ClassData object and return it
-            data = byteSink.toByteArray();
         }
         return new ClassData(descriptor, codeBaseEntry, data);
     }

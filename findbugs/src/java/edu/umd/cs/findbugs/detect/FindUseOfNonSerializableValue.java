@@ -6,6 +6,13 @@ import java.util.Iterator;
 import javax.annotation.CheckForNull;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantCP;
+import org.apache.bcel.classfile.ConstantInterfaceMethodref;
+import org.apache.bcel.classfile.ConstantMethodref;
+import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
@@ -31,6 +38,7 @@ import edu.umd.cs.findbugs.ba.type.NullType;
 import edu.umd.cs.findbugs.ba.type.TopType;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public class FindUseOfNonSerializableValue implements Detector {
 
@@ -46,7 +54,32 @@ public class FindUseOfNonSerializableValue implements Detector {
     }
 
     public void visitClassContext(ClassContext classContext) {
-        Method[] methodList = classContext.getJavaClass().getMethods();
+        JavaClass javaClass = classContext.getJavaClass();
+        boolean skip = false;
+        ConstantPool constantPool = javaClass.getConstantPool();
+        for(Constant c : constantPool.getConstantPool() ) {
+            if (c instanceof ConstantMethodref || c instanceof ConstantInterfaceMethodref) {
+                ConstantCP m = (ConstantCP) c;
+                @DottedClassName String clazz = m.getClass(constantPool);
+                ConstantNameAndType nt = (ConstantNameAndType) constantPool.getConstant(m.getNameAndTypeIndex(), Constants.CONSTANT_NameAndType);
+                String name = nt.getName(constantPool);
+                if (name.equals("setAttribute") && clazz.equals("javax.servlet.http.HttpSession") || (name.equals("writeObject")
+                        && (clazz.equals("java.io.ObjectOutput")
+                                || clazz.equals("java.io.ObjectOutputStream")))) {
+                    if (DEBUG)
+                        System.out.println("Found call to " + clazz + "." + name);
+
+                    skip = false;
+                    break;
+                }
+
+            }
+        }
+        if (skip)
+            return;
+        if (DEBUG)
+            System.out.println(this.getClass().getSimpleName() + " Checking " + javaClass.getClassName());
+        Method[] methodList = javaClass.getMethods();
 
         for (Method method : methodList) {
             if (method.getCode() == null)
@@ -65,18 +98,18 @@ public class FindUseOfNonSerializableValue implements Detector {
     }
 
     enum Use { STORE_INTO_HTTP_SESSION, PASSED_TO_WRITE_OBJECT, STORED_IN_SERIALZIED_FIELD };
-    
+
     @CheckForNull Use getUse(ConstantPoolGen cpg, Instruction ins) {
         if (ins instanceof InvokeInstruction) {
             InvokeInstruction invoke = (InvokeInstruction) ins;
 
            String mName = invoke.getMethodName(cpg);
             String cName = invoke.getClassName(cpg);
-            
+
             if (mName.equals("setAttribute") && cName.equals("javax.servlet.http.HttpSession"))
                 return Use.STORE_INTO_HTTP_SESSION;
             if (mName.equals("writeObject")
-                    && (cName.equals("java.io.ObjectOutput") 
+                    && (cName.equals("java.io.ObjectOutput")
                             || cName.equals("java.io.ObjectOutputStream")))
                 return Use.PASSED_TO_WRITE_OBJECT;
         }
@@ -108,9 +141,9 @@ public class FindUseOfNonSerializableValue implements Detector {
             Instruction ins = handle.getInstruction();
 
             Use use = getUse(cpg, ins);
-            if (use == null) 
+            if (use == null)
                 continue;
-                
+
             TypeFrame frame = typeDataflow.getFactAtLocation(location);
             if (!frame.isValid()) {
                 // This basic block is probably dead
@@ -143,12 +176,12 @@ public class FindUseOfNonSerializableValue implements Detector {
 
                     String pattern;
                     switch(use) {
-                    case PASSED_TO_WRITE_OBJECT:  
+                    case PASSED_TO_WRITE_OBJECT:
                         pattern = "DMI_NONSERIALIZABLE_OBJECT_WRITTEN";
                         double isRemote = DeepSubtypeAnalysis.isDeepRemote(refType);
                         if (isRemote >= 0.9)
                             continue;
-                        if (isSerializable < isRemote) 
+                        if (isSerializable < isRemote)
                             isSerializable = isRemote;
                         break;
                     case STORE_INTO_HTTP_SESSION:
@@ -157,7 +190,7 @@ public class FindUseOfNonSerializableValue implements Detector {
                         default:
                             throw new IllegalStateException();
                     }
-                    
+
                     bugAccumulator.accumulateBug(new BugInstance(this, pattern,
                             isSerializable < 0.15 ? HIGH_PRIORITY : isSerializable > 0.5 ? LOW_PRIORITY : NORMAL_PRIORITY)
                             .addClassAndMethod(methodGen, sourceFile).addType(problem).describe(TypeAnnotation.FOUND_ROLE),

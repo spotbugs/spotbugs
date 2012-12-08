@@ -234,11 +234,11 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     static IdentityHashMap<MethodInfo, Void> identifyMethods = new IdentityHashMap<MethodInfo, Void>();
 
     public static void clearCaches() {
-        unsupportedMethods.clear();
-        unconditionalThrowers.clear();
-        accessMethodForMethod.clear();
-        accessMethodForField.clear();
-        identifyMethods.clear();
+        unsupportedMethods = new IdentityHashMap<MethodInfo, Void>();
+        unconditionalThrowers = new IdentityHashMap<MethodInfo, Void>();
+        accessMethodForMethod = new IdentityHashMap<MethodInfo, MethodDescriptor>();
+        accessMethodForField = new IdentityHashMap<MethodInfo, FieldDescriptor>();
+        identifyMethods = new IdentityHashMap<MethodInfo, Void>();
     }
 
 

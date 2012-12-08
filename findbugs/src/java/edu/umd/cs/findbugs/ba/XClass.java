@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
@@ -31,14 +32,14 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 
 /**
  * Interface for object representing information about a class.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, AnnotatedObject {
 
     /**
      * Get ClassDescriptor of this class's immediate superclass.
-     * 
+     *
      * @return ClassDescriptor of this class's immediate superclass, or null if
      *         this class has no immediate superclass
      */
@@ -47,7 +48,7 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
 
     /**
      * Get ClassDescriptors of interfaces directly implemented by this class.
-     * 
+     *
      * @return ClassDescriptors of interfaces directly implemented by this class
      */
     public ClassDescriptor[] getInterfaceDescriptorList();
@@ -55,7 +56,7 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
     /**
      * Get the ClassDescriptor of the immediate enclosing class, or null if this
      * XClass is not a nested or inner class.
-     * 
+     *
      * @return the ClassDescriptor of the immediate enclosing class, or null if
      *         this XClass is not a nested or inner class
      */
@@ -72,7 +73,7 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
     public boolean isAbstract();
 
     /**
-     * 
+     *
      * @return the Source attribute
      */
     public @CheckForNull
@@ -84,7 +85,7 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
 
     /**
      * Find an XMethod matching given parameters.
-     * 
+     *
      * @param methodName
      *            name of the method
      * @param methodSig
@@ -97,7 +98,7 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
 
     /**
      * Find XMethod matching given MethodDescriptor.
-     * 
+     *
      * @param descriptor
      *            a MethodDescriptor
      * @return matching XMethod, or null if there is no matching method
@@ -107,7 +108,7 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
     /**
      * Find XMethod matching the name and signature of the supplied method
      * MethodDescriptor. The class descriptor of the argument is ignored.
-     * 
+     *
      * @param descriptor
      *            a MethodDescriptor
      * @return matching XMethod, or null if there is no matching method
@@ -116,7 +117,7 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
 
     /**
      * Find an XField matching given parameters.
-     * 
+     *
      * @param name
      *            name of the field
      * @param signature
@@ -136,4 +137,9 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
     public boolean usesConcurrency();
 
     public boolean hasStubs();
+
+    /**
+     * @return Returns the called class descriptors.
+     */
+    public Set<ClassDescriptor> getCalledClassDescriptors();
 }

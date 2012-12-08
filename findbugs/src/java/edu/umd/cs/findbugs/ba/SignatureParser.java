@@ -60,16 +60,19 @@ public class SignatureParser {
             else
                 totalSize += 1;
             offsets.add(totalSize);
+
         }
         totalArgumentSize = totalSize;
-        parameterOffset = new int[offsets.size()];
-        for (int j = 0; j < offsets.size(); j++)
+        int numParameters = offsets.size();
+        parameterOffset = new int[numParameters];
+        for (int j = 0; j < numParameters; j++)
             parameterOffset[j] = offsets.get(j);
         return parameterOffset;
     }
 
     public int getSlotsFromTopOfStackForParameter(int paramNum) {
-        int result = totalArgumentSize - getParameterOffset()[paramNum];
+        int offset = getParameterOffset()[paramNum];
+        int result = totalArgumentSize - offset;
         return result;
     }
 

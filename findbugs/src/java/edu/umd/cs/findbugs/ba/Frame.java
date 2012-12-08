@@ -236,7 +236,10 @@ public abstract class Frame<ValueType> {
         int stackDepth = getStackDepth();
         if (loc >= stackDepth)
             throw new DataflowAnalysisException("not enough values on stack: access=" + loc + ", avail=" + stackDepth);
-        return slotList.get(slotList.size() - (loc + 1));
+        if (loc < 0)
+            throw new DataflowAnalysisException("can't get position " + loc + " of stack");
+        int pos = slotList.size() - (loc + 1);
+        return slotList.get(pos);
     }
 
     /**

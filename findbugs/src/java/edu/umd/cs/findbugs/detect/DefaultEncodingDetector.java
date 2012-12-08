@@ -1,5 +1,12 @@
 package edu.umd.cs.findbugs.detect;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
+
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.MethodAnnotation;
@@ -8,6 +15,9 @@ import edu.umd.cs.findbugs.ba.AnnotationEnumeration;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * <p>
@@ -25,14 +35,14 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
  * This FindBugs pattern detects invocations of Java Class Library methods and
  * constructors that are known to use the default platform encoding.
  * </p>
- * 
+ *
  * @author Robin Fernandes
  */
 public class DefaultEncodingDetector extends OpcodeStackDetector {
 
-    private final BugReporter bugReporter;
+    private final BugAccumulator bugAccumulator;
 
-    private DefaultEncodingAnnotationDatabase defaultEncodingAnnotationDatabase;
+    private final DefaultEncodingAnnotationDatabase defaultEncodingAnnotationDatabase;
 
     /**
      * This annotation is used to denote a method which relies on the default
@@ -60,6 +70,15 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
         public DefaultEncodingAnnotationDatabase() {
             this.setAddClassOnly(false);
             this.loadAuxiliaryAnnotations();
+        }
+
+        Set<ClassDescriptor> classes = new HashSet<ClassDescriptor>();
+        @Override
+        protected void addMethodAnnotation(@DottedClassName String cName, String mName, String mSig, boolean isStatic,
+                DefaultEncodingAnnotation annotation) {
+            super.addMethodAnnotation(cName, mName, mSig, isStatic, annotation);
+                classes.add(DescriptorFactory.createClassDescriptorFromDottedClassName(cName));
+
         }
 
         @Override
@@ -122,10 +141,27 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
     }
 
     public DefaultEncodingDetector(BugReporter bugReporter) {
-        this.bugReporter = bugReporter;
+        this.bugAccumulator = new BugAccumulator(bugReporter);
         this.defaultEncodingAnnotationDatabase = new DefaultEncodingAnnotationDatabase();
     }
 
+    @Override
+    public boolean shouldVisit(JavaClass obj) {
+        Set<ClassDescriptor> called = getXClass().getCalledClassDescriptors();
+        for(ClassDescriptor c : defaultEncodingAnnotationDatabase.classes) {
+            if (called.contains(c)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    @Override
+    public void visit(Code code) {
+        super.visit(code); // make callbacks to sawOpcode for all opcodes
+        bugAccumulator.reportAccumulatedBugs();
+
+    }
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
@@ -135,8 +171,8 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
             XMethod callSeen = XFactory.createXMethod(MethodAnnotation.fromCalledMethod(this));
             DefaultEncodingAnnotation annotation = defaultEncodingAnnotationDatabase.getDirectAnnotation(callSeen);
             if (annotation != null) {
-                bugReporter.reportBug(new BugInstance(this, "DM_DEFAULT_ENCODING", HIGH_PRIORITY).addClassAndMethod(this)
-                        .addCalledMethod(this).addSourceLine(this));
+                bugAccumulator.accumulateBug(new BugInstance(this, "DM_DEFAULT_ENCODING", HIGH_PRIORITY).addClassAndMethod(this)
+                        .addCalledMethod(this), this);
             }
         }
     }

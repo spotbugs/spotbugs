@@ -27,6 +27,7 @@ import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
@@ -50,7 +51,7 @@ import edu.umd.cs.findbugs.util.Util;
 /**
  * ClassInfo represents important metadata about a loaded class, such as its
  * superclass, access flags, codebase entry, etc.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, AnnotatedObject {
@@ -80,7 +81,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
         /**
          * Mapping from one method signature to its bridge method signature
          */
-        private Map<MethodInfo, String> bridgedSignatures = new IdentityHashMap<MethodInfo, String>();
+        private final Map<MethodInfo, String> bridgedSignatures = new IdentityHashMap<MethodInfo, String>();
 
         private ClassDescriptor immediateEnclosingClass;
 
@@ -122,7 +123,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
             return new ClassInfo(classDescriptor, classSourceSignature, superclassDescriptor, interfaceDescriptorList,
                     codeBaseEntry, accessFlags, source, majorVersion, minorVersion, referencedClassDescriptorList,
-                    calledClassDescriptorList, classAnnotations, fields, methods, immediateEnclosingClass, usesConcurrency,
+                    calledClassDescriptors, classAnnotations, fields, methods, immediateEnclosingClass, usesConcurrency,
                     hasStubs);
         }
 
@@ -218,7 +219,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
     }
 
     /**
-     * 
+     *
      * @param classDescriptor
      *            ClassDescriptor representing the class name
      * @param superclassDescriptor
@@ -246,7 +247,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
     private ClassInfo(ClassDescriptor classDescriptor, String classSourceSignature, ClassDescriptor superclassDescriptor,
             ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags, String source,
             int majorVersion, int minorVersion, Collection<ClassDescriptor> referencedClassDescriptorList,
-            Collection<ClassDescriptor> calledClassDescriptors, Map<ClassDescriptor, AnnotationValue> classAnnotations,
+            Set<ClassDescriptor> calledClassDescriptors, Map<ClassDescriptor, AnnotationValue> classAnnotations,
             FieldInfo[] fieldDescriptorList, MethodInfo[] methodInfoList, ClassDescriptor immediateEnclosingClass,
             boolean usesConcurrency, boolean hasStubs) {
         super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags,
@@ -294,7 +295,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XClass#findMethod(java.lang.String,
      * java.lang.String, boolean)
      */
@@ -309,7 +310,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.XClass#findMethod(edu.umd.cs.findbugs.classfile
      * .MethodDescriptor)
@@ -327,7 +328,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XClass#findField(java.lang.String,
      * java.lang.String, boolean)
      */
@@ -368,7 +369,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getPackageName()
      */
     @Override
@@ -384,7 +385,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getPackageName()
      */
 
@@ -417,7 +418,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
      * necessary for "built-in" annotations that FindBugs adds to system
      * classes. As long as we add such annotations early enough that nobody will
      * notice, we should be ok.
-     * 
+     *
      * @param annotationValue
      *            an AnnotationValue to add to the class
      */
@@ -473,7 +474,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XClass#getSourceSignature()
      */
     public String getSourceSignature() {
