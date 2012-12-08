@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import edu.umd.cs.findbugs.annotations.DesireNoWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 public class Bug1844671 {
+    @NoWarning("OS_OPEN_STREAM")
     public void falsePositive1() {
         FileWriter fw = null;
         try {
@@ -21,6 +25,7 @@ public class Bug1844671 {
         }
     }
 
+    @NoWarning("OS_OPEN_STREAM")
     public void falsePositive2() {
         FileWriter fw = null;
         try {
@@ -37,12 +42,12 @@ public class Bug1844671 {
         }
     }
 
-    public void falsePositive3() {
+   public void complicated() {
         FileWriter tmp = null;
         FileWriter fw = null;
         try {
-            tmp = new FileWriter(new File("")); // true positive
-            fw = new FileWriter(new File("")); // true positive
+            tmp = new FileWriter(new File("")); 
+            fw = new FileWriter(new File("")); 
         } catch (IOException e) {
             System.out.println(e);
         } finally {

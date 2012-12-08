@@ -17,6 +17,9 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Scanner;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 /**
  * Used by <code>DefaultEncodingDetectorTest</code> as sample code to test
  * <code>DefaultEncodingDetector</code>.
@@ -34,7 +37,7 @@ public class DefaultEncodingDetectorTest {
      * that method on instances of this class should be flagged.
      */
     public class MyBAOS extends ByteArrayOutputStream {
-        // @ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=1)
+        @ExpectWarning("Dm_DEFAULT_ENCODING")
         public void bar() {
             // Problem - should be flagged
             this.toString();
@@ -48,6 +51,7 @@ public class DefaultEncodingDetectorTest {
      */
     public class MyOtherBAOS extends ByteArrayOutputStream {
 
+        @NoWarning("Dm_DEFAULT_ENCODING")
         @Override
         public String toString() {
             try {
@@ -58,12 +62,13 @@ public class DefaultEncodingDetectorTest {
             return "";
         }
 
+        @NoWarning("Dm_DEFAULT_ENCODING")
         public void bar() {
             // not a problem
             this.toString();
         }
 
-        // @ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=1)
+        @ExpectWarning("Dm_DEFAULT_ENCODING")
         public void foo() {
             // Problem - should be flagged
             super.toString();
@@ -71,14 +76,14 @@ public class DefaultEncodingDetectorTest {
 
     }
 
-    // @ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=3)
+    @ExpectWarning(value="Dm_DEFAULT_ENCODING", num=2)
     public void string() {
         new String(new byte[] {});
         new String(new byte[] {}, 0, 0);
         "".getBytes();
     }
 
-    // @ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=6)
+    @ExpectWarning(value="Dm_DEFAULT_ENCODING", num=6)
     public void fileReaderWriter() throws IOException {
         new FileReader("");
         new FileReader(new File(""));
@@ -88,7 +93,7 @@ public class DefaultEncodingDetectorTest {
         new FileWriter(new FileDescriptor());
     }
 
-    // @ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=8)
+    @ExpectWarning(value="Dm_DEFAULT_ENCODING", num=8)
     public void printStreamWriter() throws IOException {
         new PrintStream(new File(""));
         new PrintStream(new FileOutputStream(""));
@@ -100,7 +105,7 @@ public class DefaultEncodingDetectorTest {
         new PrintWriter("");
     }
 
-    // @ExpectBug(value="Dm_DEFAULT_ENCODING", occurrences=7)
+    @ExpectWarning(value="Dm_DEFAULT_ENCODING", num=7)
     public void misc() throws IOException {
         new ByteArrayOutputStream().toString();
         new InputStreamReader(new FileInputStream(""));
@@ -114,6 +119,7 @@ public class DefaultEncodingDetectorTest {
     /**
      * These are all fine and should not be flagged.
      */
+    @NoWarning(value="Dm_DEFAULT_ENCODING")
     public void notBugs() throws IOException {
         String a = "foobar";
         a.getBytes(Charset.forName("UTF-8"));
