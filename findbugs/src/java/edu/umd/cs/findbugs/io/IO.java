@@ -45,6 +45,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Arrays;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.WillClose;
@@ -83,15 +84,21 @@ public class IO {
                 throw new IllegalArgumentException();
             byte[] result = new byte[size];
             int pos = 0;
-            int sz;
-            while ((sz = in.read(result, pos, size - pos)) > 0) {
-                pos += sz;
+            while (true) {
+                int sz;
+                while ((sz = in.read(result, pos, size - pos)) > 0) {
+                    pos += sz;
+                }
+
+                if (pos < size)
+                    return Arrays.copyOf(result, pos);
+                int nextByte = in.read();
+                if (nextByte == -1)
+                    return result;
+                size = size * 2 + 500;
+                result = Arrays.copyOf(result, size);
+                result[pos++] = (byte) nextByte;
             }
-            if (pos < size)
-                throw new IOException("Short read");
-            if (in.available() > 0)
-                throw new IOException("Long read");
-            return result;
         } finally {
             close(in);
         }
