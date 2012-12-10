@@ -2,19 +2,21 @@ package sfBugs;
 
 import javax.annotation.CheckForNull;
 
-import edu.umd.cs.findbugs.annotations.DesireNoWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 
 public class Bug3484713 {
   @CheckForNull
   private String foo;
 
+  @NoWarning("NP")
   public Runnable doFoo() {
     if (foo != null) {
       // No warning here.
       System.out.println(foo.equals("foo"));
     }
     Runnable r = new Runnable() {
+      @NoWarning("NP")
       @Override
       public void run() {
         if (foo != null) {
