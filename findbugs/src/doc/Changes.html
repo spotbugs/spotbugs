@@ -33,7 +33,11 @@
 					</li>
 					<li>Fix false positives for <a
 						href="http://findbugs.sourceforge.net/bugDescriptions.html#SF_SWITCH_NO_DEFAULT">SF_SWITCH_NO_DEFAULT</a>
-					<li>Type qualifier annotations, including nullness
+					<li>Inline access methods for private fields,
+                    fixing false positive in  <a
+                        href="https://sourceforge.net/tracker/?func=detail&aid=3484713&group_id=96405&atid=614693">Bug3484713</a>.
+            
+                    <li>Type qualifier annotations, including nullness
 						annotations, are now ignored on vararg parameters (including
 						default and inherited annotations), awaiting JSR308.
 					<li>Defined new bug pattern to give better explanations of
@@ -54,7 +58,14 @@
 					<li>Fix some false positives involving <a
 						href="http://findbugs.sourceforge.net/bugDescriptions.html#GC_UNRELATED_TYPES">GC_UNRELATED_TYPES</a>
 						on classes that extend generic collection classes.
+                       
 					</li>
+                    <li>Combine multiple identical warnings about 
+                     <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_DEFAULT_ENCODING">DM_DEFAULT_ENCODING</a>
+                         that occur in the same method,
+                    simplifying issue triage.
+                    
 					<li>Changes by Andrey Loskutov
 						<ul>
 							<li>fixed job scheduling errors in 3.8/4.2 Eclipse <a
