@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tomás Pollak
+ * Copyright (C) 2009, Tomï¿½s Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,15 +25,15 @@ import java.util.Set;
 /**
  * Enum for the different test scenarios in FindBugs. Each test scenario has
  * information of the input files, the expected bugs and markers, and so on.
- * 
- * @author Tomás Pollak
+ *
+ * @author Tomï¿½s Pollak
  */
 public enum TestScenario {
-    DEFAULT(new String[] { "/defaultScenario" }, false, new String[] { "URF_UNREAD_FIELD", "DM_STRING_CTOR" }, 2), QUICKFIX(
-            new String[] { "/quickfixScenario" }, false, new String[] {}, 0), QUICKFIX_WITH_JUNIT(
-            new String[] { "/quickfixScenario" }, true, new String[] {}, 0), JDT(new String[] { "/jdtScenario" }, false,
-            new String[] {}, 0), TWO_SRC_FOLDERS(new String[] { "/defaultScenario", "secondSrcScenario" }, false, new String[] {
-            "URF_UNREAD_FIELD", "DM_STRING_CTOR", "DM_NUMBER_CTOR" }, 2);
+    DEFAULT(new String[] { "/defaultScenario" }, false, new String[] { "URF_UNREAD_FIELD", "DM_STRING_CTOR" }, 2),
+    QUICKFIX(new String[] { "/quickfixScenario" }, false, new String[] {}, 0),
+    QUICKFIX_WITH_JUNIT(new String[] { "/quickfixScenario" }, true, new String[] {}, 0),
+    JDT(new String[] { "/jdtScenario" }, false, new String[] {}, 0),
+    TWO_SRC_FOLDERS(new String[] { "/defaultScenario", "secondSrcScenario" }, false, new String[] {"URF_UNREAD_FIELD", "DM_STRING_CTOR", "DM_NUMBER_CTOR" }, 2);
 
     private String[] testFilesPaths;
 
