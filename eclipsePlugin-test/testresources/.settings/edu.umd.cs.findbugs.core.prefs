@@ -1,5 +1,5 @@
 # FB preferences for the test project.
-# Note that the bug ranke is set to 20 to NOT filter any reported issues
+# Note that the bug rank is set to 20 to NOT filter any reported issues
 
 filter_settings=Medium|BAD_PRACTICE,CORRECTNESS,MT_CORRECTNESS,PERFORMANCE,STYLE|false|20
 filter_settings_neg=MALICIOUS_CODE,NOISE,I18N,SECURITY,EXPERIMENTAL|

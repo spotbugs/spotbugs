@@ -62,6 +62,7 @@ import de.tobject.findbugs.FindbugsTestPlugin;
 import de.tobject.findbugs.builder.FindBugsWorker;
 import de.tobject.findbugs.builder.WorkItem;
 import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.view.BugExplorerView;
 import de.tobject.findbugs.view.explorer.BugContentProvider;
@@ -102,7 +103,7 @@ public abstract class AbstractPluginTest {
     }
 
     protected static void addJUnitToProjectClasspath() throws JavaModelException {
-        IClasspathEntry cpe = BuildPathSupport.getJUnit3ClasspathEntry();
+        IClasspathEntry cpe = BuildPathSupport.getJUnit4ClasspathEntry();
         JavaProjectHelper.addToClasspath(getJavaProject(), cpe);
     }
 
@@ -136,7 +137,10 @@ public abstract class AbstractPluginTest {
         // Create the test project
         createJavaProject(TEST_PROJECT, "bin");
         addRTJar(getJavaProject());
-        addSourceContainer(getJavaProject(), SRC); // Create default 'src'
+
+        // Create default 'src'
+        addSourceContainer(getJavaProject(), SRC);
+
         String[] testFilesPaths = scenario.getTestFilesPaths();
         for (int i = 1; i < testFilesPaths.length; i++) { // Create extra 'srcx'
             addSourceContainer(getJavaProject(), SRC + (i + 1));
@@ -146,9 +150,9 @@ public abstract class AbstractPluginTest {
         // Copy test workspace
         Bundle testBundle = FindbugsTestPlugin.getDefault().getBundle();
 
-        importResources(getProject().getFolder(SRC), testBundle, testFilesPaths[0]); // Import
-                                                                                     // default
-                                                                                     // 'src'
+        // Import default 'src'
+        importResources(getProject().getFolder(SRC), testBundle, testFilesPaths[0]);
+
         for (int i = 1; i < testFilesPaths.length; i++) { // Import extra 'srcx'
             importResources(getProject().getFolder(SRC + (i + 1)), testBundle, testFilesPaths[i]);
         }
@@ -162,7 +166,8 @@ public abstract class AbstractPluginTest {
         waitForJobs();
         performDummySearch();
         waitForJobs();
-        processUiEvents();
+        processUiEvents(100);
+//        processUiEvents(10000);
     }
 
     /**
@@ -190,6 +195,22 @@ public abstract class AbstractPluginTest {
         }
     }
 
+    protected static void processUiEvents(long delayInMilliseconds) {
+        long start = System.currentTimeMillis();
+        long sleepTime = delayInMilliseconds > 10? 10 : delayInMilliseconds;
+        while (true) {
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            processUiEvents();
+            if(System.currentTimeMillis() - start > delayInMilliseconds){
+                break;
+            }
+        }
+    }
+
     public AbstractPluginTest() {
         super();
     }
@@ -204,8 +225,9 @@ public abstract class AbstractPluginTest {
         if (view != null) {
             activePage.hideView(view);
         }
-        processUiEvents();
+        getPreferenceStore().setValue(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH, false);
         waitForJobs();
+        processUiEvents();
     }
 
     @After
@@ -376,6 +398,8 @@ public abstract class AbstractPluginTest {
 
     protected void loadXml(FindBugsWorker worker, String bugsFileLocation) throws CoreException {
         worker.loadXml(bugsFileLocation);
+        waitForJobs();
+        processUiEvents();
     }
 
     protected IViewPart showBugExplorerView() throws PartInitException {
@@ -395,8 +419,8 @@ public abstract class AbstractPluginTest {
     protected void work(FindBugsWorker worker, IJavaElement element) throws CoreException {
         worker.work(Collections.singletonList(new WorkItem(element)));
         joinJobFamily(FindbugsPlugin.class); // wait for RefreshJob
-        processUiEvents();
         waitForJobs();
+        processUiEvents();
     }
 
     /**
@@ -404,7 +428,7 @@ public abstract class AbstractPluginTest {
      */
     protected void work(FindBugsWorker worker, IResource resource) throws CoreException {
         worker.work(Collections.singletonList(new WorkItem(resource)));
-        processUiEvents();
         waitForJobs();
+        processUiEvents();
     }
 }

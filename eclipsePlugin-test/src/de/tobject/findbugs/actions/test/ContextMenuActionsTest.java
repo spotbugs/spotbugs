@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tomás Pollak
+ * Copyright (C) 2009, Tomï¿½s Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,7 @@
  */
 package de.tobject.findbugs.actions.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
@@ -32,14 +32,13 @@ import org.junit.Test;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.actions.ClearMarkersAction;
 import de.tobject.findbugs.actions.FindBugsAction;
-import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.test.AbstractFindBugsTest;
 import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the FindBugsAction, SaveXMLAction and LoadXMLAction.
- * 
- * @author Tomás Pollak
+ *
+ * @author Tomï¿½s Pollak
  */
 public class ContextMenuActionsTest extends AbstractFindBugsTest {
     @BeforeClass
@@ -57,7 +56,6 @@ public class ContextMenuActionsTest extends AbstractFindBugsTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        getPreferenceStore().setValue(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH, false);
         tempFile = File.createTempFile("bugs", ".xml");
         assertTrue(tempFile.delete());
     }
@@ -65,7 +63,6 @@ public class ContextMenuActionsTest extends AbstractFindBugsTest {
     @Override
     public void tearDown() throws CoreException {
         tempFile.delete();
-        getPreferenceStore().setToDefault(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH);
         super.tearDown();
     }
 
