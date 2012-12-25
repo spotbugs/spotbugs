@@ -66,6 +66,7 @@ import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.view.BugExplorerView;
 import de.tobject.findbugs.view.explorer.BugContentProvider;
+import de.tobject.findbugs.view.explorer.ResourceChangeListener;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -418,6 +419,7 @@ public abstract class AbstractPluginTest {
      */
     protected void work(FindBugsWorker worker, IJavaElement element) throws CoreException {
         worker.work(Collections.singletonList(new WorkItem(element)));
+        processUiEvents(ResourceChangeListener.SHORT_DELAY);
         joinJobFamily(FindbugsPlugin.class); // wait for RefreshJob
         waitForJobs();
         processUiEvents();

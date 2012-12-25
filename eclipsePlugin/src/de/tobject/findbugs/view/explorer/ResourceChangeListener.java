@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2008, Andrei Loskutov
+ * Copyright (C) 2012, Andrey Loskutov
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,14 +27,14 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 
 /**
  * Listener which reports changes on projects or on FindBug markers
- * 
+ *
  * @author Andrei
  */
-final class ResourceChangeListener implements IResourceChangeListener {
+public final class ResourceChangeListener implements IResourceChangeListener {
 
-    static final int SHORT_DELAY = 250;
+    public static final int SHORT_DELAY = 250;
 
-    static final int LONG_DELAY = 750;
+    public static final int LONG_DELAY = 750;
 
     final IViewerRefreshJob refreshJob;
 
