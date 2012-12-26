@@ -19,9 +19,21 @@
 
 package edu.umd.cs.findbugs;
 
+import javax.annotation.Nonnull;
+
+/**
+ * Smaller value is scarier
+ *
+ * @see BugRanker
+ * @see edu.umd.cs.findbugs.annotations.Confidence
+ */
 public enum BugRankCategory {
+
     SCARIEST(4), SCARY(9), TROUBLING(14), OF_CONCERN(BugRanker.VISIBLE_RANK_MAX);
+
     public final int maxRank;
+
+    @Nonnull
     static public BugRankCategory getRank(int rank) {
         for(BugRankCategory c : values()) {
             if (rank <= c.maxRank) {

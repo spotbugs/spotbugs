@@ -23,6 +23,7 @@ import edu.umd.cs.findbugs.Priorities;
 
 /**
  * @author pugh
+ * @deprecated use {@link Confidence} instead
  */
 @Deprecated
 public enum Priority {

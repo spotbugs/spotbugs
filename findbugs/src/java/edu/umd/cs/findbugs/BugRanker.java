@@ -78,7 +78,9 @@ import edu.umd.cs.findbugs.util.Util;
  * categories are defined by the core bug ranker, we should always find an
  * absolute bug rank.
  *
- *
+ * @see BugRankCategory
+ * @see Priorities
+ * @see edu.umd.cs.findbugs.annotations.Confidence
  *
  * @author Bill Pugh
  */

@@ -20,6 +20,9 @@
 package edu.umd.cs.findbugs;
 
 /**
+ * @see edu.umd.cs.findbugs.BugRankCategory
+ * @see edu.umd.cs.findbugs.BugRanker
+ * @see edu.umd.cs.findbugs.annotations.Confidence
  * @author pugh
  */
 public interface Priorities {
