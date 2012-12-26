@@ -178,7 +178,7 @@ public class FindBadCast2 implements Detector {
             Location location = i.next();
             InstructionHandle handle = location.getHandle();
             Instruction ins = handle.getInstruction();
-            
+
             if (!(ins instanceof CHECKCAST) && !(ins instanceof INSTANCEOF))
                 continue;
 
@@ -203,7 +203,7 @@ public class FindBadCast2 implements Detector {
         Map<BugAnnotation, String> instanceOfChecks = new HashMap<BugAnnotation, String>();
         String constantClass = null;
         boolean methodInvocationWasGeneric = false;
-        
+
         int pcForConstantClass = -1;
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
@@ -225,7 +225,7 @@ public class FindBadCast2 implements Detector {
                         System.out.println(m + " has source signature " + sourceSignature);
                     }
                 }
-                 
+
             }
             if (ins instanceof LDC) {
                 LDC ldc = (LDC) ins;
@@ -233,7 +233,7 @@ public class FindBadCast2 implements Detector {
                 if (value instanceof ConstantClass) {
                     ConstantClass cc = (ConstantClass) value;
                     constantClass = cc.getBytes(classContext.getJavaClass().getConstantPool());
-                    pcForConstantClass = pc; 
+                    pcForConstantClass = pc;
                 }
             }
 
@@ -241,7 +241,6 @@ public class FindBadCast2 implements Detector {
                 continue;
 
             boolean isCast = ins instanceof CHECKCAST;
-            String kind = isCast ? "checkedCast" : "instanceof";
             int occurrences = cfg.getLocationsContainingInstructionWithOffset(pc).size();
             boolean split = occurrences > 1;
             if (lineNumberTable != null) {
@@ -255,13 +254,12 @@ public class FindBadCast2 implements Detector {
                 continue;
             IsNullValue operandNullness = nullFrame.getTopValue();
             if (DEBUG) {
+                String kind = isCast ? "checkedCast" : "instanceof";
                 System.out.println(kind + " at pc: " + pc + " in " + methodName);
                 System.out.println(" occurrences: " + occurrences);
                 System.out.println("XXX: " + operandNullness);
-
             }
 
-            
             if (split && !isCast) {
                 // don't report this case; it might be infeasible due to
                 // inlining
@@ -280,7 +278,7 @@ public class FindBadCast2 implements Detector {
                 continue;
             }
             boolean operandTypeIsExact = frame.isExact(frame.getStackLocation(0));
-            Type castType = ((TypedInstruction) ins).getType(cpg);
+            final Type castType = ((TypedInstruction) ins).getType(cpg);
 
             if (!(castType instanceof ReferenceType)) {
                 // This shouldn't happen either
@@ -302,13 +300,14 @@ public class FindBadCast2 implements Detector {
                 // Shouldn't happen - illegal bytecode
                 continue;
             }
-            ReferenceType refType = (ReferenceType) operandType;
+            final ReferenceType refType = (ReferenceType) operandType;
             boolean impliesByGenerics = typeDataflow.getAnalysis().isImpliedByGenericTypes(refType);
 
             if (impliesByGenerics && !isCast)
                 continue;
 
-            if (isCast && refType.equals(castType)) {
+            final boolean typesAreEqual = refType.equals(castType);
+            if (isCast && typesAreEqual) {
                 // System.out.println("self-cast to " +
                 // castType.getSignature());
                 continue;
@@ -337,10 +336,12 @@ public class FindBadCast2 implements Detector {
                 int priority = HIGH_PRIORITY;
                 if (split && (castSig2.endsWith("Error;") || castSig2.endsWith("Exception;")))
                     priority = LOW_PRIORITY;
-
-                bugReporter.reportBug(new BugInstance(this, isCast ? "BC_IMPOSSIBLE_CAST" : "BC_IMPOSSIBLE_INSTANCEOF", priority)
+                // report bug only if types are not equal, see bug 3598482
+                if(!typesAreEqual){
+                    bugReporter.reportBug(new BugInstance(this, isCast ? "BC_IMPOSSIBLE_CAST" : "BC_IMPOSSIBLE_INSTANCEOF", priority)
                         .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType)
                         .addSourceLine(sourceLineAnnotation));
+                }
                 continue;
             }
 
@@ -365,13 +366,13 @@ public class FindBadCast2 implements Detector {
                     "VALUE_OF");
             BugAnnotation source = BugInstance.getSourceForTopStackValue(classContext, method, location);
             boolean isParameter = paramValueNumberSet.contains(valueNumber) && source instanceof LocalVariableAnnotation;
-            
+
             try {
                 JavaClass castJavaClass = Repository.lookupClass(castName);
                 JavaClass refJavaClass = Repository.lookupClass(refName);
 
                 boolean upcast = Repository.instanceOf(refJavaClass, castJavaClass);
-                if (upcast || refType.equals(castType)) {
+                if (upcast || typesAreEqual) {
                     if (!isCast)
                         accumulator.accumulateBug(new BugInstance(this, "BC_VACUOUS_INSTANCEOF", NORMAL_PRIORITY)
                                 .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType),
@@ -445,7 +446,7 @@ public class FindBadCast2 implements Detector {
                                 .addClassAndMethod(methodGen, sourceFile)
                                 .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(valueSource, source)
                                 .addSourceLine(sourceLineAnnotation));
-                    } else if (isCast && rank < 0.9 
+                    } else if (isCast && rank < 0.9
                             && !valueNumber.hasFlag(ValueNumber.ARRAY_VALUE)) {
 
                         int priority = NORMAL_PRIORITY;
@@ -455,12 +456,12 @@ public class FindBadCast2 implements Detector {
                             System.out.println("Old check: " + oldCheck);
                         }
                         if (castName.equals(oldCheck)) {
-                            priority += 1;    
+                            priority += 1;
                         } else if ("".equals(oldCheck)) {
                             priority += 1;
                             if (!(source instanceof LocalVariableAnnotation)) continue;
                         }
-                        
+
                          if (rank > 0.75)
                             priority += 2;
                         else if (rank > 0.5)
@@ -508,12 +509,12 @@ public class FindBadCast2 implements Detector {
                            if (xm != null && (xm.isPrivate() || xm.isStatic()) && priority == Priorities.LOW_PRIORITY)
                                continue;
                        }
-    
+
                         if (valueNumber.hasFlag(ValueNumber.RETURN_VALUE) &&  priority < Priorities.LOW_PRIORITY)
                             priority = Priorities.LOW_PRIORITY;
                         if (DEBUG)
                             System.out.println(" priority g: " + priority);
-                      
+
                         if (DEBUG)
                             System.out.println(" priority h: " + priority);
                         if (priority < HIGH_PRIORITY)
