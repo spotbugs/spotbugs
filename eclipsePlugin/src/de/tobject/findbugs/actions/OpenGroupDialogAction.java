@@ -56,9 +56,6 @@ public class OpenGroupDialogAction implements IViewActionDelegate {
             return;
         }
         Grouping grouping = Grouping.createFrom(dialog.getGroups());
-        if (grouping == null) {
-            return;
-        }
         provider.setGrouping(grouping);
         CommonViewer viewer = navigator.getCommonViewer();
         Object[] expandedElements = viewer.getExpandedElements();

@@ -24,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javax.annotation.Nonnull;
+
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPersistable;
 
@@ -47,10 +49,12 @@ public class Grouping implements IPersistable {
         return createFrom(order);
     }
 
+    @Nonnull
     public static Grouping createFrom(List<GroupType> types) {
         return new Grouping(types);
     }
 
+    @Nonnull
     public List<GroupType> asList() {
         return new LinkedList<GroupType>(groupOrder);
     }
