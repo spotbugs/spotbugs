@@ -18,13 +18,15 @@
  */
 package edu.umd.cs.findbugs.architecture;
 
+import java.io.File;
+
 import jdepend.framework.JDepend;
 import jdepend.framework.JavaPackage;
 import junit.framework.TestCase;
 
 /**
  * Verifies the package dependencies.
- * 
+ *
  * @author Tom\u00e1s Pollak
  * @author Andrei Loskutov
  */
@@ -57,7 +59,7 @@ public class PackageDependenciesTest extends TestCase {
         super.setUp();
 
         // Get the classes root directory
-        String rootDirectory = getClass().getResource("/").getFile();
+        String rootDirectory = new File(getClass().getResource("/").toURI()).getCanonicalPath();
 
         // Setup the JDepend analysis
         engine = new JDepend();
