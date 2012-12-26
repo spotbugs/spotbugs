@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.TabItem;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.MarkerSeverity;
+import edu.umd.cs.findbugs.BugRankCategory;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
@@ -214,17 +215,9 @@ public class ReportConfigurationTab extends Composite {
     }
 
     private void updateRankValueLabel() {
-        String label;
         int rank = minRankSlider.getSelection();
-        if (rank < 5) {
-            label = "Scariest";
-        } else if (rank < 10) {
-            label = "Scary";
-        } else if (rank < 15) {
-            label = "Troubling";
-        } else {
-            label = "Of Concern";
-        }
+        BugRankCategory category = BugRankCategory.getRank(rank);
+        String label = category.toString();
         rankValueLabel.setText(rank + " (" + label + ")");
     }
 
