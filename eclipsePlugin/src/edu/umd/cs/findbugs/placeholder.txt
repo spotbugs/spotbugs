@@ -1,1 +1,0 @@
-# just a place holder to allow re-exporting of this package in the MANIFEST.MF
