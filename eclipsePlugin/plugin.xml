@@ -189,10 +189,10 @@
             quickFixIcon="icons/buggy-tiny-yellow.png"/>
       <specification
             annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationOfConcern"
-            icon="icons/buggy-tiny-gray.png"
+            icon="icons/buggy-tiny-yellow2.png"
             includeOnPreferencePage="true"
             label="fbWarningOfConcern"
-            quickFixIcon="icons/buggy-tiny-gray.png"/>
+            quickFixIcon="icons/buggy-tiny-yellow2.png"/>
 
    </extension>
 
@@ -609,7 +609,7 @@
          markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerTroubling">
       </imageprovider>
       <imageprovider
-         icon="icons/buggy-tiny-gray.png"
+         icon="icons/buggy-tiny-yellow2.png"
          id="de.tobject.findbugs.imageprovider"
          markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerOfConcern">
       </imageprovider>
