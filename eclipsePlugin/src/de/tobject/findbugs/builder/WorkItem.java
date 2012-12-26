@@ -118,9 +118,6 @@ public class WorkItem {
 
     public void clearMarkers() throws CoreException {
         IResource res = getMarkerTarget();
-        if (res == null) {
-            return;
-        }
         if (javaElt == null || !(res instanceof IProject)) {
             MarkerUtil.removeMarkers(res);
         } else {
@@ -155,7 +152,7 @@ public class WorkItem {
     /**
      * @return false if no classes was added
      */
-    private boolean addClassesForFolder(IFolder folder, Map<IPath, IPath> outLocations, Project fbProject) {
+    private static boolean addClassesForFolder(IFolder folder, Map<IPath, IPath> outLocations, Project fbProject) {
         IPath path = folder.getLocation();
         IPath srcRoot = getMatchingSourceRoot(path, outLocations);
         if (srcRoot == null) {
@@ -170,7 +167,7 @@ public class WorkItem {
         // TODO child directories too. Should add preference???
     }
 
-    private void addClassesForFile(IFile file, Map<IPath, IPath> outLocations, Project fbProject) {
+    private static void addClassesForFile(IFile file, Map<IPath, IPath> outLocations, Project fbProject) {
         IPath path = file.getLocation();
         IPath srcRoot = getMatchingSourceRoot(path, outLocations);
         if (srcRoot == null) {
@@ -201,7 +198,7 @@ public class WorkItem {
      * @return modified classNamePattern, if there are more then one type
      *         defined in the java file
      */
-    private String addSecondaryTypesToPattern(IFile file, String fileName, String classNamePattern) {
+    private static String addSecondaryTypesToPattern(IFile file, String fileName, String classNamePattern) {
         ICompilationUnit cu = JavaCore.createCompilationUnitFrom(file);
         if (cu == null) {
             FindbugsPlugin.getDefault().logError(
@@ -211,14 +208,17 @@ public class WorkItem {
         try {
             IType[] types = cu.getTypes();
             if (types.length > 1) {
+                StringBuilder sb = new StringBuilder(classNamePattern);
                 for (IType type : types) {
                     if (fileName.equals(type.getElementName())) {
                         // "usual" type with the same name: we have it already
                         continue;
                     }
-                    classNamePattern = classNamePattern + "|" + type.getElementName() + "\\.class|" + type.getElementName()
-                            + "\\$.*\\.class";
+                    sb.append("|").append(type.getElementName());
+                    sb.append("\\.class|").append(type.getElementName());
+                    sb.append("\\$.*\\.class");
                 }
+                classNamePattern = sb.toString();
             }
         } catch (JavaModelException e) {
             FindbugsPlugin.getDefault().logException(e, "Cannot get types from compilation unit: " + cu);
@@ -310,7 +310,7 @@ public class WorkItem {
      *            key is the source root, value is output folder
      * @return source root folder matching (parent of) given path, or null
      */
-    private @Nullable IPath getMatchingSourceRoot(@Nullable IPath srcPath, Map<IPath, IPath> outLocations) {
+    private static @Nullable IPath getMatchingSourceRoot(@Nullable IPath srcPath, Map<IPath, IPath> outLocations) {
         if(srcPath == null) {
             return null;
         }
