@@ -68,8 +68,8 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
         super.setUp();
 
         // Save the preferences and restore them after the test
-        originalWorkspacePreferences = getWorkspacePreferences();
-        originalProjectPreferences = getProjectPreferences();
+        originalWorkspacePreferences = getWorkspacePreferences().clone();
+        originalProjectPreferences = readProjectPreferences().clone();
 
         // Enable project settings
         FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);

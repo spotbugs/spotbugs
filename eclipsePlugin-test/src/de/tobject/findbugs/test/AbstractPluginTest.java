@@ -235,6 +235,7 @@ public abstract class AbstractPluginTest {
     public void tearDown() throws CoreException {
         // Clean the FindBugs state
         clearBugsState();
+        waitForJobs();
         processUiEvents();
     }
 
@@ -365,6 +366,10 @@ public abstract class AbstractPluginTest {
 
     protected UserPreferences getProjectPreferences() {
         return FindbugsPlugin.getProjectPreferences(getProject(), false);
+    }
+
+    protected UserPreferences readProjectPreferences() {
+        return FindbugsPlugin.getProjectPreferences(getProject(), true);
     }
 
     /**
