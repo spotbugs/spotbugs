@@ -170,30 +170,6 @@
   </extension>
   <extension point="org.eclipse.ui.editors.markerAnnotationSpecification">
       <specification
-            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationHigh"
-            icon="icons/buggy-tiny.png"
-            includeOnPreferencePage="false"
-            label="fbWarningHigh"
-            quickFixIcon="icons/buggy-tiny.png"/>
-      <specification
-            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationNormal"
-            icon="icons/buggy-tiny-orange.png"
-            includeOnPreferencePage="false"
-            label="fbWarningNormal"
-            quickFixIcon="icons/buggy-tiny-orange.png"/>
-      <specification
-            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationLow"
-            icon="icons/buggy-tiny-yellow.png"
-            includeOnPreferencePage="false"
-            label="fbWarningLow"
-            quickFixIcon="icons/buggy-tiny-yellow.png"/>
-      <specification
-            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationExperimental"
-            icon="icons/buggy-tiny-green.png"
-            includeOnPreferencePage="false"
-            label="fbWarningExperimental"
-            quickFixIcon="icons/buggy-tiny-green.png"/>
-      <specification
             annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationScariest"
             icon="icons/buggy-tiny.png"
             includeOnPreferencePage="true"
@@ -213,10 +189,10 @@
             quickFixIcon="icons/buggy-tiny-yellow.png"/>
       <specification
             annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationOfConcern"
-            icon="icons/buggy-tiny-blue.png"
+            icon="icons/buggy-tiny-gray.png"
             includeOnPreferencePage="true"
             label="fbWarningOfConcern"
-            quickFixIcon="icons/buggy-tiny-blue.png"/>
+            quickFixIcon="icons/buggy-tiny-gray.png"/>
 
    </extension>
 
@@ -620,22 +596,22 @@
       <imageprovider
          icon="icons/buggy-tiny.png"
          id="de.tobject.findbugs.imageprovider"
-         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerHigh">
+         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScariest">
       </imageprovider>
       <imageprovider
          icon="icons/buggy-tiny-orange.png"
          id="de.tobject.findbugs.imageprovider"
-         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerNormal">
+         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScary">
       </imageprovider>
       <imageprovider
          icon="icons/buggy-tiny-yellow.png"
          id="de.tobject.findbugs.imageprovider"
-         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerLow">
+         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerTroubling">
       </imageprovider>
       <imageprovider
-         icon="icons/buggy-tiny-green.png"
+         icon="icons/buggy-tiny-gray.png"
          id="de.tobject.findbugs.imageprovider"
-         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerExperimental">
+         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerOfConcern">
       </imageprovider>
    </extension>
 
