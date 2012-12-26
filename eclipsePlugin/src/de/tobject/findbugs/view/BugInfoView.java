@@ -331,10 +331,10 @@ public class BugInfoView extends AbstractFindbugsView {
             markerPrio = marker.getAttribute(IMarker.PRIORITY, IMarker.PRIORITY_LOW);
             rank = MarkerUtil.findBugRankForMarker(marker);
         }
-        sb.append("\n<b>Confidence</b>: ");
-        sb.append(getConfidence(markerPrio));
-        sb.append(", <b>Rank</b>: ").append(BugRankCategory.getRank(rank));
+        sb.append("\n<b>Rank</b>: ");
+        sb.append(BugRankCategory.getRank(rank));
         sb.append(" (").append(rank).append(")");
+        sb.append(", <b>confidence</b>: ").append(getConfidence(markerPrio));
         return sb.toString();
     }
 
