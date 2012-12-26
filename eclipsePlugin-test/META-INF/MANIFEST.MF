@@ -18,4 +18,3 @@ Require-Bundle: edu.umd.cs.findbugs.plugin.eclipse,
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Import-Package: edu.umd.cs.findbugs
