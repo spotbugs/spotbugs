@@ -70,6 +70,9 @@
         asm-3.3.jar,
         asm-tree-3.3.jar,
         asm-commons-3.3.jar,
+        asm-analysis-3.3.jar,
+        asm-util-3.3.jar,
+        asm-xml-3.3.jar,
         dom4j-1.6.1.jar,
         jaxen-1.1.1.jar" />
 
