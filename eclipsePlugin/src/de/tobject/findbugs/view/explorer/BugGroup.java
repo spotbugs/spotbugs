@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2008, Andrei Loskutov
+ * Copyright (C) 2012, Andrey Loskutov
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,19 +21,19 @@ package de.tobject.findbugs.view.explorer;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ui.IActionFilter;
 import org.eclipse.ui.views.tasklist.ITaskListResourceAdapter;
 
-import de.tobject.findbugs.marker.FindBugsMarker;
-import de.tobject.findbugs.marker.FindBugsMarker.MarkerRank;
-
 /**
  * @author Andrei
  */
-public class BugGroup implements IAdaptable, IActionFilter {
+public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup> {
 
     private String shortDescription;
 
@@ -41,22 +41,22 @@ public class BugGroup implements IAdaptable, IActionFilter {
 
     private Set<IMarker> allMarkers;
 
+    @CheckForNull
     private Object parent;
 
-    private final FindBugsMarker.MarkerRank priority;
+    @CheckForNull
+    private final Object identifier;
 
-    private final Object self;
-
+    @Nonnull
     private final GroupType type;
 
-    BugGroup(Object parent, Object self, GroupType type, MarkerRank priority) {
+    public BugGroup(Object parent, Object identifier, @Nonnull GroupType type) {
         super();
         this.parent = parent;
         Assert.isNotNull(type, "Group type cannot be null");
         this.type = type;
-        this.self = self == null ? this : self;
+        this.identifier = identifier;
         this.children = new HashSet<Object>();
-        this.priority = priority == null ? MarkerRank.Unknown : priority;
         this.allMarkers = new HashSet<IMarker>();
         if (parent instanceof BugGroup) {
             BugGroup bugGroup = (BugGroup) parent;
@@ -86,6 +86,7 @@ public class BugGroup implements IAdaptable, IActionFilter {
     /**
      * @return the short group description
      */
+    @SuppressWarnings("unchecked")
     public String getShortDescription() {
         if (shortDescription == null) {
             switch (type) {
@@ -98,7 +99,11 @@ public class BugGroup implements IAdaptable, IActionFilter {
             default:
                 @SuppressWarnings("rawtypes")
                 MarkerMapper mapper = type.getMapper();
-                shortDescription = mapper.getShortDescription(self);
+                if(identifier == null) {
+                    shortDescription = mapper.getShortDescription(this);
+                } else {
+                    shortDescription = mapper.getShortDescription(identifier);
+                }
                 break;
             }
         }
@@ -188,14 +193,12 @@ public class BugGroup implements IAdaptable, IActionFilter {
         return shortDescription == null ? getShortDescription() : shortDescription;
     }
 
-    public FindBugsMarker.MarkerRank getPriority() {
-        return priority;
-    }
-
-    @SuppressWarnings("unchecked")
-    public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
-        if (adapter.isAssignableFrom(self.getClass())) {
-            return self;
+    public Object getAdapter(Class adapter) {
+        if (identifier != null && adapter.isAssignableFrom(identifier.getClass())) {
+            return identifier;
+        }
+        if (BugGroup.class == adapter) {
+            return this;
         }
         if (ITaskListResourceAdapter.class == adapter) {
             // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=246409
@@ -209,12 +212,14 @@ public class BugGroup implements IAdaptable, IActionFilter {
         return null;
     }
 
+    @Nonnull
     public GroupType getType() {
         return type;
     }
 
+    @CheckForNull
     public Object getData() {
-        return self;
+        return identifier;
     }
 
     void dispose() {
@@ -232,6 +237,9 @@ public class BugGroup implements IAdaptable, IActionFilter {
 
     @Override
     public boolean equals(Object obj) {
+        if(this == obj){
+            return true;
+        }
         if (!(obj instanceof BugGroup)) {
             return false;
         }
@@ -239,24 +247,38 @@ public class BugGroup implements IAdaptable, IActionFilter {
         if (!equals(parent, bugGroup.parent)) {
             return false;
         }
-        if (self == null) {
-            return super.equals(obj);
+        if (!equals(type, bugGroup.type)) {
+            return false;
         }
-        return self.equals(bugGroup.self);
+        if (!equals(identifier, bugGroup.identifier)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public int hashCode() {
-        if (self == null) {
+        if (identifier == null) {
             return super.hashCode();
         }
-        return self.hashCode();
+        return identifier.hashCode();
     }
 
-    private boolean equals(Object o1, Object o2) {
+    private static boolean equals(Object o1, Object o2) {
         if (o1 == null) {
             return o2 == null;
         }
-        return o1.equals(o2);
+        return o1 == o2 || o1.equals(o2);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public int compareTo(BugGroup o) {
+        if(identifier == null || !getType().equals(o.getType())){
+            return 0;
+        }
+        if(identifier instanceof Comparable<?>){
+            return ((Comparable) identifier).compareTo(o.identifier);
+        }
+        return 0;
     }
 }

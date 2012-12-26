@@ -23,6 +23,7 @@ package de.tobject.findbugs.marker;
 import org.eclipse.jdt.core.IJavaElement;
 
 import edu.umd.cs.findbugs.BugRankCategory;
+import edu.umd.cs.findbugs.annotations.Confidence;
 
 /**
  * Marker ids for the findbugs.
@@ -38,12 +39,12 @@ public interface FindBugsMarker {
      */
     public static final String NAME = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker";
 
-    public static final String NAME_SCARIEST = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScariest";
+    public static final String TYPE_SCARIEST = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScariest";
 
-    public static final String NAME_SCARY = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScary";
+    public static final String TYPE_SCARY = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScary";
 
-    public static final String NAME_TROUBLING = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerTroubling";
-    public static final String NAME_OF_CONCERN = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerOfConcern";
+    public static final String TYPE_TROUBLING = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerTroubling";
+    public static final String TYPE_OF_CONCERN = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerOfConcern";
 
 
     /**
@@ -97,73 +98,59 @@ public interface FindBugsMarker {
      */
     public static final String PRIORITY_TYPE = "PRIORITY_TYPE";
 
-    // /**
-    // * Marker attribute recording the "group" of the bug (e.g. "Unread field")
-    // */
-    // public static final String PATTERN_DESCR_SHORT = "PATTERN_DESCR_SHORT";
-
+    /**
+     * @see BugRankCategory
+     */
     enum MarkerRank {
-        High(NAME_SCARIEST, "buggy-tiny.png", BugRankCategory.SCARIEST),
-        Normal(NAME_SCARY, "buggy-tiny-orange.png",  BugRankCategory.SCARY),
-        Low(NAME_TROUBLING, "buggy-tiny-yellow.png", BugRankCategory.TROUBLING),
-        Experimental(NAME_OF_CONCERN, "buggy-tiny-blue.png", BugRankCategory.OF_CONCERN),
-        Unknown( NAME_OF_CONCERN, "buggy-tiny-gray.png", BugRankCategory.OF_CONCERN);
+         Scariest(TYPE_SCARIEST, "buggy-tiny.png", BugRankCategory.SCARIEST),
+         Scary(TYPE_SCARY, "buggy-tiny-orange.png",  BugRankCategory.SCARY),
+         Troubling(TYPE_TROUBLING, "buggy-tiny-yellow.png", BugRankCategory.TROUBLING),
+         OfConcern(TYPE_OF_CONCERN, "buggy-tiny-yellow2.png", BugRankCategory.OF_CONCERN);
 
 
-        private final String prioName;
-
+        private final String markerType;
         private final String icon;
 
         private final BugRankCategory rankCategory;
-
         MarkerRank(String prioName, String icon, BugRankCategory rankCategory) {
-            this.prioName = prioName;
+            this.markerType = prioName;
             this.icon = icon;
             this.rankCategory = rankCategory;
         }
 
-        public static MarkerRank forCategory(BugRankCategory cat) {
+        public static int ordinal(String markerType) {
             MarkerRank[] values = MarkerRank.values();
             for (MarkerRank mr : values) {
-                if (cat == mr.rankCategory) {
-                    return mr;
+                if (mr.markerType.equals(markerType)) {
+                    return mr.ordinal();
                 }
             }
-            throw new IllegalArgumentException("Illegal category " + cat);
+            throw new IllegalArgumentException("Illegal type " + markerType);
         }
 
-        public static MarkerRank forCategory(int category) {
-            BugRankCategory[] values = BugRankCategory.values();
-            if(category >= 0 && category < values.length) {
-                return forCategory(values[category]);
-            }
-            throw new IllegalArgumentException("Illegal category " + category);
-        }
-
-        public static MarkerRank label(int rank) {
-
+        public static MarkerRank getRank(int rank) {
             MarkerRank[] values = MarkerRank.values();
             for (MarkerRank mr : values) {
                 if (rank <= mr.rankCategory.maxRank) {
                     return mr;
                 }
             }
-
             throw new IllegalArgumentException("Illegal rank " + rank);
-        }
-
-        public static int ordinal(String prioId) {
-            MarkerRank[] values = MarkerRank.values();
-            for (MarkerRank mr : values) {
-                if (mr.prioName.equals(prioId)) {
-                    return mr.ordinal();
-                }
-            }
-            return -1;
         }
 
         public String iconName() {
             return icon;
+        }
+    }
+
+    /**
+     * @see Confidence
+     */
+    enum MarkerConfidence {
+        High, Medium, Low, Ignore;
+
+        public String iconName(){
+            return "confidence-" + name().toLowerCase() + ".png";
         }
     }
 }

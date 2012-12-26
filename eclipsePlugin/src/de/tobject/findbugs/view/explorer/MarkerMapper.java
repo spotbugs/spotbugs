@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2008, Andrei Loskutov
+ * Copyright (C) 2012, Andrey Loskutov
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,8 +20,6 @@ package de.tobject.findbugs.view.explorer;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
-
-import de.tobject.findbugs.marker.FindBugsMarker;
 
 /**
  *
@@ -94,10 +92,6 @@ abstract class MarkerMapper<Identifier> {
      * @return the raw data from current marker for debug purposes
      */
     abstract String getDebugDescription(IMarker marker) throws CoreException;
-
-    FindBugsMarker.MarkerRank getMarkerRank(Identifier data) {
-        return FindBugsMarker.MarkerRank.Unknown;
-    }
 
     GroupType getType() {
         return type;

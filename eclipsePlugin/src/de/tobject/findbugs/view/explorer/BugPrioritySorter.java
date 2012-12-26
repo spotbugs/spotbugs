@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2008, Andrei Loskutov
+ * Copyright (C) 2012, Andrey Loskutov
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -60,7 +60,7 @@ public class BugPrioritySorter extends ViewerSorter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.jface.viewers.ViewerComparator#category(java.lang.Object)
      */
@@ -80,7 +80,7 @@ public class BugPrioritySorter extends ViewerSorter {
      * Sorts bug groups on severity first, then on bug pattern name.
      */
     static int compareGroups(BugGroup m1, BugGroup m2) {
-        int result = m1.getPriority().compareTo(m2.getPriority());
+        int result = m1.compareTo(m2);
         if (result == 0) {
             return m1.getShortDescription().compareToIgnoreCase(m2.getShortDescription());
         }
@@ -89,7 +89,7 @@ public class BugPrioritySorter extends ViewerSorter {
 
     /**
      * Sorts markers on priority first, then on name if requested
-     * 
+     *
      * @param m1
      * @param m2
      * @return

@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Andrei Loskutov
+ * Copyright (C) 2012, Andrey Loskutov
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,7 +24,8 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
-import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.marker.FindBugsMarker.MarkerConfidence;
+import de.tobject.findbugs.marker.FindBugsMarker.MarkerRank;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.view.explorer.BugGroup;
 import de.tobject.findbugs.view.explorer.BugLabelProvider;
@@ -66,26 +67,31 @@ public class PropPageTitleProvider extends BugLabelProvider {
     }
 
     String getTitle(BugGroup group) {
+        Object data = group.getData();
+        if(data == null){
+            return null;
+        }
         switch (group.getType()) {
         case Marker:
-            return getTitle((IMarker) group.getData());
+            return getTitle((IMarker) data);
         case Pattern:
-            return getTitle((BugPattern) group.getData());
+            return getTitle((BugPattern) data);
         case PatternType:
-            return getTitle((BugCode) group.getData());
+            return getTitle((BugCode) data);
         case Category:
-            return getTitle((BugCategory) group.getData());
+            return getTitle((BugCategory) data);
         case Confidence:
-            return getTitle((Integer) group.getData());
+            return getTitle((MarkerConfidence)data);
+        case BugRank:
+            return getTitle((MarkerRank)data);
         case Package:
-            return getTitle((IPackageFragment) group.getData());
+            return getTitle((IPackageFragment) data);
         case Project:
-            return getTitle((IProject) group.getData());
+            return getTitle((IProject) data);
         case Class:
-            return getTitle((IJavaElement) group.getData());
+            return getTitle((IJavaElement) data);
         case DetectorPlugin:
-            return getTitle((Plugin) group.getData());
-
+            return getTitle((Plugin) data);
         default:
             break;
         }
@@ -124,12 +130,21 @@ public class PropPageTitleProvider extends BugLabelProvider {
         return sb.toString();
     }
 
-    String getTitle(Integer priority) {
+    String getTitle(MarkerConfidence priority) {
         if (priority == null) {
             return null;
         }
-        StringBuilder sb = new StringBuilder("Priority: ");
-        sb.append(FindBugsMarker.MarkerRank.label(priority.intValue()).name());
+        StringBuilder sb = new StringBuilder("Confidence: ");
+        sb.append(priority.name());
+        return sb.toString();
+    }
+    
+    String getTitle(MarkerRank rank) {
+        if (rank == null) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder("Rank: ");
+        sb.append(rank.name());
         return sb.toString();
     }
 

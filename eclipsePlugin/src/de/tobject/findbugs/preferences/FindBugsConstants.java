@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2008, Andrei Loskutov
+ * Copyright (C) 2012, Andrey Loskutov
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,16 +43,16 @@ public final class FindBugsConstants {
     public final static String KEY_RUN_ANALYSIS_AS_EXTRA_JOB = "runAnalysisAsExtraJob";
 
     /** marker severity to use for bugs with of concern tank */
-    public final static String RANK_OFCONCERN_MARKER_SEVERITY = FindBugsMarker.NAME_OF_CONCERN;
+    public final static String RANK_OFCONCERN_MARKER_SEVERITY = FindBugsMarker.TYPE_OF_CONCERN;
 
     /** marker severity to use for bugs with troubling rank*/
-    public final static String RANK_TROUBLING_MARKER_SEVERITY = FindBugsMarker.NAME_TROUBLING;
+    public final static String RANK_TROUBLING_MARKER_SEVERITY = FindBugsMarker.TYPE_TROUBLING;
 
     /** marker severity to use for bugs with scary rank */
-    public final static String RANK_SCARY_MARKER_SEVERITY = FindBugsMarker.NAME_SCARY;
+    public final static String RANK_SCARY_MARKER_SEVERITY = FindBugsMarker.TYPE_SCARY;
 
     /** marker severity to use for bugs with scariest rank */
-    public final static String RANK_SCARIEST_MARKER_SEVERITY = FindBugsMarker.NAME_SCARIEST;
+    public final static String RANK_SCARIEST_MARKER_SEVERITY = FindBugsMarker.TYPE_SCARIEST;
 
 
     /**

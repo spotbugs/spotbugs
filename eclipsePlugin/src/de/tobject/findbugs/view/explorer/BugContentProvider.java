@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2008, Andrei Loskutov
+ * Copyright (C) 2012, Andrey Loskutov
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -98,7 +98,7 @@ public class BugContentProvider implements ICommonContentProvider {
         filteredMarkersMap = new HashMap<BugGroup, Integer>();
         filteredMarkers = new HashSet<IMarker>();
         resourceFilter = new WorkingSetsFilter();
-        rootElement = new BugGroup(null, null, GroupType.Undefined, null);
+        rootElement = new BugGroup(null, null, GroupType.Undefined);
         refreshJob = new RefreshJob("Updating bugs in bug explorer", this);
         IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
         String saved = store.getString(FindBugsConstants.LAST_USED_GROUPING);
@@ -134,7 +134,7 @@ public class BugContentProvider implements ICommonContentProvider {
                         return objects;
                     }
                 }
-                BugGroup root = new BugGroup(null, parent, GroupType.getType(parent), null);
+                BugGroup root = new BugGroup(null, parent, GroupType.getType(parent));
                 clearFilters();
                 children = createChildren(grouping.getFirstType(), getResources(parent), root);
                 if (input == parent) {
@@ -231,7 +231,7 @@ public class BugContentProvider implements ICommonContentProvider {
         Object oldInput = getInput();
         viewer.setInput(null);
         rootElement.dispose();
-        rootElement = new BugGroup(null, null, GroupType.Undefined, null);
+        rootElement = new BugGroup(null, null, GroupType.Undefined);
         if (oldInput instanceof IWorkingSet || oldInput instanceof IWorkspaceRoot) {
             viewer.setInput(oldInput);
         } else {
@@ -381,7 +381,7 @@ public class BugContentProvider implements ICommonContentProvider {
         int i = 0;
         for (Entry<Identifier, Set<IMarker>> entry : typesSet) {
             Identifier groupId = entry.getKey();
-            children[i] = new BugGroup(parent, groupId, mapper.getType(), mapper.getMarkerRank(groupId));
+            children[i] = new BugGroup(parent, groupId, mapper.getType());
             children[i].setMarkers(entry.getValue());
             i++;
         }
@@ -584,7 +584,7 @@ public class BugContentProvider implements ICommonContentProvider {
             // if there is no node, create one and recursively all children to
             // the last
             // level
-            BugGroup group = new BugGroup(parent, id, mapper.getType(), mapper.getMarkerRank(id));
+            BugGroup group = new BugGroup(parent, id, mapper.getType());
             group.addMarker(marker);
             if (filtered) {
                 filteredMarkersMap.put(group, Integer.valueOf(1));

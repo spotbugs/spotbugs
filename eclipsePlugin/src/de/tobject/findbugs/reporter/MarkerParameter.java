@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2010, Andrei Loskutov
+ * Copyright (C) 2012, Andrey Loskutov
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -64,14 +64,13 @@ public class MarkerParameter {
     private String getMarkerType() {
         switch (bug.getBugRankCategory()) {
         case SCARIEST:
-            return FindBugsMarker.NAME_SCARIEST;
+            return FindBugsMarker.TYPE_SCARIEST;
         case SCARY:
-            return FindBugsMarker.NAME_SCARY;
+            return FindBugsMarker.TYPE_SCARY;
         case TROUBLING:
-            return FindBugsMarker.NAME_TROUBLING;
-        case OF_CONCERN:
-            return FindBugsMarker.NAME_OF_CONCERN;
+            return FindBugsMarker.TYPE_TROUBLING;
+        default:
+            return FindBugsMarker.TYPE_OF_CONCERN;
         }
-        return FindBugsMarker.NAME_OF_CONCERN;
     }
 }

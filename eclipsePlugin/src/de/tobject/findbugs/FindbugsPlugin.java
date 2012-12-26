@@ -121,6 +121,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     private static final String DEFAULT_CLOUD_ID = "edu.umd.cs.findbugs.cloud.doNothingCloud";
 
     public static final String ICON_PATH = "icons/";
+    public static final String ICON_DEFAULT = "buggy-tiny-gray.png";
 
     @SuppressWarnings("restriction")
     private static final IPath WORKSPACE_PREFS_PATH = Platform.getStateLocation(Platform.getBundle(Platform.PI_RUNTIME))
@@ -226,7 +227,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         }
 
         if (System.getProperty("findbugs.home") == null) {
-            // TODO hardcore workaround for findbugs home property
+            // TODO workaround for findbugs home property
             // - see de.tobject.findbugs.builder.FindBugsWorker.work() too
             String findBugsHome = getFindBugsEnginePluginLocation();
             if (DEBUG) {
@@ -235,7 +236,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             System.setProperty("findbugs.home", findBugsHome);
         }
         if (System.getProperty("findbugs.cloud.default") == null) {
-            // TODO hardcore workaround for findbugs default cloud property
+            // TODO workaround for findbugs default cloud property
             // - see edu.umd.cs.findbugs.cloud.CloudFactory and messages.xml
             String defCloud = DEFAULT_CLOUD_ID;
             if (DEBUG) {
@@ -393,10 +394,20 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     @Override
     protected void initializeImageRegistry(ImageRegistry reg) {
         for (FindBugsMarker.MarkerRank prio : FindBugsMarker.MarkerRank.values()) {
-            ImageDescriptor descriptor = getImageDescriptor(prio.iconName());
-            if (descriptor != null) {
-                reg.put(prio.iconName(), descriptor);
-            }
+            String iconName = prio.iconName();
+            registerIcon(reg, iconName);
+        }
+        for (FindBugsMarker.MarkerConfidence prio : FindBugsMarker.MarkerConfidence.values()) {
+            String iconName = prio.iconName();
+            registerIcon(reg, iconName);
+        }
+        registerIcon(reg, ICON_DEFAULT);
+    }
+
+    private void registerIcon(ImageRegistry reg, String iconName) {
+        ImageDescriptor descriptor = getImageDescriptor(iconName);
+        if (descriptor != null) {
+            reg.put(iconName, descriptor);
         }
     }
 

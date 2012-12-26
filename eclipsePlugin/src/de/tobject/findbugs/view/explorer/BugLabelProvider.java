@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2008, Andrei Loskutov
+ * Copyright (C) 2012, Andrey Loskutov
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -44,7 +44,8 @@ import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonLabelProvider;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.marker.FindBugsMarker.MarkerConfidence;
+import de.tobject.findbugs.marker.FindBugsMarker.MarkerRank;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.cloud.Cloud;
 
@@ -73,26 +74,29 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
             case Marker:
                 return wbProvider.getImage(group.getData());
             case BugRank: {
-                FindBugsMarker.MarkerRank prio = group.getPriority();
+                MarkerRank rank = (MarkerRank) group.getData();
+                if(rank == null){
+                    return null;
+                }
                 ImageRegistry imageRegistry = FindbugsPlugin.getDefault().getImageRegistry();
-                return imageRegistry.get(prio.iconName());
+                return imageRegistry.get(rank.iconName());
             }
             case Confidence: {
-                int confidence = (Integer) group.getData();
-                FindBugsMarker.MarkerRank mr = FindBugsMarker.MarkerRank.values()[confidence-1];
+                MarkerConfidence markerConfidence = (MarkerConfidence) group.getData();
+                if(markerConfidence == null){
+                    return null;
+                }
                 ImageRegistry imageRegistry = FindbugsPlugin.getDefault().getImageRegistry();
-                return imageRegistry.get(mr.iconName());
+                return imageRegistry.get(markerConfidence.iconName());
             }
             default:
-                FindBugsMarker.MarkerRank prio = group.getPriority();
                 ImageRegistry imageRegistry = FindbugsPlugin.getDefault().getImageRegistry();
-                return imageRegistry.get(prio.iconName());
+                return imageRegistry.get(FindbugsPlugin.ICON_DEFAULT);
             }
 
         }
         if (element instanceof IMarker) {
-            IMarker marker = (IMarker) element;
-            if (!marker.exists()) {
+            if (!((IMarker) element).exists()) {
                 return null;
             }
         }
@@ -107,10 +111,10 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
         if (element instanceof BugGroup) {
             BugGroup group = (BugGroup) element;
             String cloudName = null;
-            if (group.getType() == GroupType.Project) {
-                IProject project = (IProject) group.getData();
+            Object data = group.getData();
+            if (group.getType() == GroupType.Project && data != null) {
                 try {
-                    SortedBugCollection bc = FindbugsPlugin.getBugCollection(project, null);
+                    SortedBugCollection bc = FindbugsPlugin.getBugCollection((IProject) data, null);
                     Cloud cloud = bc.getCloud();
                     if (cloud.isOnlineCloud()) {
                         cloudName = cloud.getCloudName();

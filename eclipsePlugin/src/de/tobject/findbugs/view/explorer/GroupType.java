@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2008, Andrei Loskutov
+ * Copyright (C) 2012, Andrey Loskutov
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,15 +32,15 @@ import org.eclipse.ui.IWorkingSet;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.marker.FindBugsMarker.MarkerConfidence;
+import de.tobject.findbugs.marker.FindBugsMarker.MarkerRank;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import edu.umd.cs.findbugs.BugCategory;
 import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.BugRankCategory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Plugin;
-import edu.umd.cs.findbugs.Priorities;
 
 /**
  * Type of the bug groups, shown inside the bug explorer
@@ -136,36 +136,36 @@ public enum GroupType {
         }
     }),
 
-    Confidence(true, new MarkerMapper<Integer>() {
+    Confidence(true, new MarkerMapper<MarkerConfidence>() {
         @Override
-        Integer getIdentifier(IMarker marker) {
+        MarkerConfidence getIdentifier(IMarker marker) {
             try {
                 Object attribute = marker.getAttribute(IMarker.PRIORITY);
                 if (attribute instanceof Integer) {
                     Integer prio = (Integer) attribute;
                     switch (prio.intValue()) {
                     case IMarker.PRIORITY_HIGH:
-                        return Integer.valueOf(Priorities.HIGH_PRIORITY);
+                        return MarkerConfidence.High;
                     case IMarker.PRIORITY_NORMAL:
-                        return Integer.valueOf(Priorities.NORMAL_PRIORITY);
+                        return MarkerConfidence.Medium;
+                    case IMarker.PRIORITY_LOW:
+                        return MarkerConfidence.Low;
                     default:
-                        return Integer.valueOf(Priorities.LOW_PRIORITY);
+                        return MarkerConfidence.Ignore;
                     }
                 }
             } catch (CoreException e) {
                 FindbugsPlugin.getDefault().logException(e, "Missing priority attribute in marker");
             }
-            BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
-            return bug == null ? null : Integer.valueOf(bug.getPriority());
+            return MarkerConfidence.Ignore;
         }
 
         @Override
-        String getShortDescription(Integer id) {
-            int prio = id.intValue();
-            switch(prio) {
-            case Priorities.HIGH_PRIORITY: return "High confidence";
-            case Priorities.NORMAL_PRIORITY: return "Normal confidence";
-            case Priorities.LOW_PRIORITY: return "Low confidence";
+        String getShortDescription(MarkerConfidence id) {
+            switch(id) {
+            case High: return "High confidence";
+            case Medium: return "Normal confidence";
+            case Low: return "Low confidence";
             default: return "Unknown confidence";
             }
         }
@@ -174,25 +174,17 @@ public enum GroupType {
         String getDebugDescription(IMarker marker) throws CoreException {
             return "priority: " + marker.getAttribute(IMarker.PRIORITY);
         }
-
-        @Override
-        FindBugsMarker.MarkerRank getMarkerRank(Integer data) {
-            if(data == null) {
-                return FindBugsMarker.MarkerRank.Unknown;
-            }
-            return FindBugsMarker.MarkerRank.forCategory(data.intValue());
-        }
     }),
 
-    BugRank(true, new MarkerMapper<BugRankCategory>() {
+    BugRank(true, new MarkerMapper<MarkerRank>() {
         @Override
-        BugRankCategory getIdentifier(IMarker marker) {
-                int rank = MarkerUtil.findBugRankForMarker(marker);
-                return BugRankCategory.getRank(rank);
+        MarkerRank getIdentifier(IMarker marker) {
+            int rank = MarkerUtil.findBugRankForMarker(marker);
+            return MarkerRank.getRank(rank);
         }
 
         @Override
-        String getShortDescription(BugRankCategory id) {
+        String getShortDescription(MarkerRank id) {
             return id.toString();
         }
 
@@ -201,22 +193,21 @@ public enum GroupType {
             return "rank: " + marker.getAttribute(FindBugsMarker.RANK);
         }
 
-        @Override
-        FindBugsMarker.MarkerRank getMarkerRank(BugRankCategory data) {
-            return FindBugsMarker.MarkerRank.values()[data.ordinal()];
-        }
-
     }),
 
 
     Category(true, new MarkerMapper<BugCategory>() {
         @Override
         BugCategory getIdentifier(IMarker marker) {
-            BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
-            if (bug == null) {
-                return null;
+            BugPattern bugPattern = MarkerUtil.findBugPatternForMarker(marker);
+            if(bugPattern == null){
+                BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
+                if (bug == null) {
+                    return null;
+                }
+                return DetectorFactoryCollection.instance().getBugCategory(bug.getBugPattern().getCategory());
             }
-            return DetectorFactoryCollection.instance().getBugCategory(bug.getBugPattern().getCategory());
+            return DetectorFactoryCollection.instance().getBugCategory(bugPattern.getCategory());
         }
 
         @Override
@@ -226,7 +217,8 @@ public enum GroupType {
 
         @Override
         String getDebugDescription(IMarker marker) throws CoreException {
-            return "category of: " + marker.getAttribute(FindBugsMarker.UNIQUE_ID);
+            return "category of: " + marker.getAttribute(FindBugsMarker.UNIQUE_ID) + "/"
+                    + marker.getAttribute(FindBugsMarker.BUG_TYPE);
         }
     }),
 
@@ -344,7 +336,14 @@ public enum GroupType {
         if (element instanceof BugCategory) {
             return GroupType.Category;
         }
+        if (element instanceof MarkerConfidence) {
+            return GroupType.Confidence;
+        }
+        if (element instanceof MarkerRank) {
+            return GroupType.BugRank;
+        }
         if (element instanceof Integer) {
+            // legacy name for compatibility if restoring from saved
             return GroupType.Confidence;
         }
         if (element instanceof String) {
