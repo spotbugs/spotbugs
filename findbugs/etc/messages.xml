@@ -7054,17 +7054,18 @@ collection class.
     </Details>
   </BugPattern>
   <BugPattern type="RE_POSSIBLE_UNINTENDED_PATTERN">
-    <ShortDescription>"." used for regular expression</ShortDescription>
-    <LongDescription>"." used for regular expression in {1}</LongDescription>
+    <ShortDescription>"." or "|" used for regular expression</ShortDescription>
+    <LongDescription>"." or "|" used for regular expression in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-A String function is being invoked and "." is being passed
+A String function is being invoked and "." or "|" is being passed
 to a parameter that takes a regular expression as an argument. Is this what you intended?
 For example
-s.replaceAll(".", "/") will return a String in which <em>every</em>
-character has been replaced by a / character,
-and s.split(".") <em>always</em> returns a zero length array of String.
+<li>s.replaceAll(".", "/") will return a String in which <em>every</em> character has been replaced by a '/' character
+<li>s.split(".") <em>always</em> returns a zero length array of String
+<li>"ab|cd".replaceAll("|", "/") will return "/a/b/|/c/d/"
+<li>"ab|cd".split("|") will return array with six (!) elements: [, a, b, |, c, d]
 </p>
 ]]>
     </Details>
@@ -7665,14 +7666,14 @@ public @NonNegative Integer example(@Negative Integer value) {
       <![CDATA[
         <p>
         A value is being used in a way that requires the value be annotation with a type qualifier.
-	The type qualifier is strict, so the tool rejects any values that do not have
-	the appropriate annotation.
+    The type qualifier is strict, so the tool rejects any values that do not have
+    the appropriate annotation.
         </p>
 
         <p>
         To coerce a value to have a strict annotation, define an identity function where the return value is annotated
-	with the strict annotation.
-	This is the only way to turn a non-annotated value into a value with a strict type qualifier annotation.
+    with the strict annotation.
+    This is the only way to turn a non-annotated value into a value with a strict type qualifier annotation.
         </p>
 
       ]]>

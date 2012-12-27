@@ -19,6 +19,25 @@ public class RE_POSSIBLE_UNINTENDED_PATTERN {
     String bug3(String any, String any2) {
         return any.replaceFirst(".", any2);
     }
+    @ExpectWarning("RE_POSSIBLE_UNINTENDED_PATTERN")
+    String [] bug11(String any) {
+        return any.split("|");
+    }
+
+    @ExpectWarning("RE_POSSIBLE_UNINTENDED_PATTERN")
+    String bug22(String any, String any2) {
+        return any.replaceAll("|", any2);
+    }
+
+    @ExpectWarning("RE_POSSIBLE_UNINTENDED_PATTERN")
+    String bug33(String any, String any2) {
+        return any.replaceFirst("|", any2);
+    }
+
+    @ExpectWarning("RE_POSSIBLE_UNINTENDED_PATTERN")
+    String bug4(String any) {
+        return any.replaceAll("|", "*");
+    }
 
     @NoWarning("RE_POSSIBLE_UNINTENDED_PATTERN")
     String notBug1(String any) {
@@ -28,5 +47,11 @@ public class RE_POSSIBLE_UNINTENDED_PATTERN {
     @NoWarning("RE_POSSIBLE_UNINTENDED_PATTERN")
     int notBug2(String any) {
         return any.indexOf(".");
+    }
+
+
+    @NoWarning("RE_POSSIBLE_UNINTENDED_PATTERN")
+    int notBug22(String any) {
+        return any.indexOf("|");
     }
 }

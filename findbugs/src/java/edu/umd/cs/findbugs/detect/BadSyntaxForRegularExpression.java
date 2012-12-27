@@ -47,10 +47,11 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
         if (value == null || !(value instanceof String))
             return;
         String regex = (String) value;
-        if (!regex.equals("."))
+        boolean dotIsUsed = regex.equals(".");
+        if (!dotIsUsed && !regex.equals("|"))
             return;
         int priority = HIGH_PRIORITY;
-        if (ignorePasswordMasking) {
+        if (ignorePasswordMasking && dotIsUsed) {
             priority = NORMAL_PRIORITY;
             OpcodeStack.Item top = stack.getStackItem(0);
             Object topValue = top.getConstant();
