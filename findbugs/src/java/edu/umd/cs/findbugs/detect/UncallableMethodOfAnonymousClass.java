@@ -171,10 +171,10 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                 }
                 pendingBug.addClass(superclassName).describe(role);
                 try {
-                    XClass from = Global.getAnalysisCache().getClassAnalysis(XClass.class, 
+                    XClass from = Global.getAnalysisCache().getClassAnalysis(XClass.class,
                             DescriptorFactory.createClassDescriptorFromDottedClassName(superclassName));
                     XMethod  potentialMatch = null;
-                    for(XMethod m : from.getXMethods()) 
+                    for(XMethod m : from.getXMethods())
                         if (!m.isStatic() && !m.isPrivate() && m.getName().toLowerCase().equals(obj.getName().toLowerCase())) {
                             if (potentialMatch == null)
                                 potentialMatch = m;
@@ -187,10 +187,9 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                      if (potentialMatch != null)
                          pendingBug.addMethod(potentialMatch)
                          .describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
-                         
+
                 } catch (CheckedAnalysisException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    AnalysisContext.logError("Error: ", e);
                 }
             } else {
                 pendingBug.setPriority(pendingBug.getPriority() - 1);

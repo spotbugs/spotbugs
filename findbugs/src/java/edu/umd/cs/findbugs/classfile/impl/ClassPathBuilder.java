@@ -62,7 +62,7 @@ import edu.umd.cs.findbugs.util.ClassPathUtil;
 
 /**
  * Implementation of IClassPathBuilder.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassPathBuilder implements IClassPathBuilder {
@@ -77,11 +77,11 @@ public class ClassPathBuilder implements IClassPathBuilder {
      * classpath construction algorithm.
      */
     static class WorkListItem {
-        private ICodeBaseLocator codeBaseLocator;
+        private final ICodeBaseLocator codeBaseLocator;
 
-        private boolean isAppCodeBase;
+        private final boolean isAppCodeBase;
 
-        private int howDiscovered;
+        private final int howDiscovered;
 
         @Override
         public String toString() {
@@ -153,23 +153,23 @@ public class ClassPathBuilder implements IClassPathBuilder {
     }
 
     // Fields
-    private IClassFactory classFactory;
+    private final IClassFactory classFactory;
 
-    private IErrorLogger errorLogger;
+    private final IErrorLogger errorLogger;
 
-    private LinkedList<WorkListItem> projectWorkList;
+    private final LinkedList<WorkListItem> projectWorkList;
 
-    private LinkedList<DiscoveredCodeBase> discoveredCodeBaseList;
+    private final LinkedList<DiscoveredCodeBase> discoveredCodeBaseList;
 
-    private Map<String, DiscoveredCodeBase> discoveredCodeBaseMap;
+    private final Map<String, DiscoveredCodeBase> discoveredCodeBaseMap;
 
-    private LinkedList<ClassDescriptor> appClassList;
+    private final LinkedList<ClassDescriptor> appClassList;
 
     private boolean scanNestedArchives;
 
     /**
      * Constructor.
-     * 
+     *
      * @param classFactory
      *            the class factory
      * @param errorLogger
@@ -186,7 +186,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IClassPathBuilder#addCodeBase(edu.umd.cs
      * .findbugs.classfile.ICodeBaseLocator, boolean)
@@ -197,7 +197,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IClassPathBuilder#scanNestedArchives(boolean
      * )
@@ -208,7 +208,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IClassPathBuilder#build(edu.umd.cs.findbugs
      * .classfile.IClassPath,
@@ -340,7 +340,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
     /**
      * Probe a codebase to see if a given source exists in that code base.
-     * 
+     *
      * @param resourceName
      *            name of a resource
      * @return true if the resource exists in the codebase, false if not
@@ -481,7 +481,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
     /**
      * Add worklist items from given system classpath.
-     * 
+     *
      * @param workList
      *            the worklist
      * @param path
@@ -505,7 +505,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
     /**
      * Add worklist items from given extensions directory.
-     * 
+     *
      * @param workList
      *            the worklist
      * @param extDir
@@ -516,7 +516,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
         File[] fileList = dir.listFiles(new FileFilter() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see java.io.FileFilter#accept(java.io.File)
              */
             public boolean accept(File pathname) {
@@ -540,7 +540,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
      * archives and Class-Path entries specified in Jar manifests. This should
      * give us as good an idea as possible of all of the classes available (and
      * which are part of the application).
-     * 
+     *
      * @param workList
      *            the worklist to process
      * @param progress
@@ -581,7 +581,9 @@ public class ClassPathBuilder implements IClassPathBuilder {
             if (item.getCodeBaseLocator() instanceof FilesystemCodeBaseLocator) {
                 FilesystemCodeBaseLocator l = (FilesystemCodeBaseLocator) item.getCodeBaseLocator();
                 if (l.getPathName().endsWith(".java")) {
-                    System.err.println("Ignoring .java file \"" + l.getPathName() + "\" specified in classpath or auxclasspath");
+                    if (DEBUG){
+                        System.err.println("Ignoring .java file \"" + l.getPathName() + "\" specified in classpath or auxclasspath");
+                    }
                     continue;
                 }
             }
@@ -635,7 +637,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
      * worklist)
      * <li>build a list of class resources found in the codebase
      * </ul>
-     * 
+     *
      * @param workList
      *            the worklist
      * @param discoveredCodeBase
@@ -681,7 +683,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
     /**
      * Attempt to parse data of given resource in order to divine the real name
      * of the class contained in the resource.
-     * 
+     *
      * @param entry
      *            the resource
      */
@@ -712,7 +714,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
     /**
      * Check a codebase for a Jar manifest to examine for Class-Path entries.
-     * 
+     *
      * @param workList
      *            the worklist
      * @param codeBase
@@ -761,7 +763,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
      * that all of the worklist items representing application codebases appear
      * <em>before</em> all of the worklist items representing auxiliary
      * codebases.
-     * 
+     *
      * @param projectWorkList
      *            the worklist
      * @param itemToAdd
@@ -795,7 +797,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.IClassPathBuilder#getAppClassList()
      */
     public List<ClassDescriptor> getAppClassList() {

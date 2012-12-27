@@ -426,19 +426,14 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      */
     public boolean isExperimental() {
         BugPattern pattern = getBugPattern();
-        return (pattern != null) && pattern.isExperimental();
+        return pattern.isExperimental();
     }
 
     /**
      * Get the primary class annotation, which indicates where the bug occurs.
      */
     public ClassAnnotation getPrimaryClass() {
-        ClassAnnotation result = findPrimaryAnnotationOfType(ClassAnnotation.class);
-        if (result == null) {
-            System.out.println("huh");
-            result = findPrimaryAnnotationOfType(ClassAnnotation.class);
-        }
-        return result;
+        return findPrimaryAnnotationOfType(ClassAnnotation.class);
     }
 
     /**

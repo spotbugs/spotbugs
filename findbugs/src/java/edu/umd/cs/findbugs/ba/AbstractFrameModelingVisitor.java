@@ -45,7 +45,7 @@ import edu.umd.cs.findbugs.bcel.generic.NULL2Z;
  * allows a checked DataflowAnalysisException to be thrown when invalid bytecode
  * is detected. E.g., stack underflows.
  * </p>
- * 
+ *
  * @author David Hovemeyer
  * @see Frame
  * @see DataflowAnalysis
@@ -59,7 +59,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
 
     /**
      * Constructor.
-     * 
+     *
      * @param cpg
      *            the ConstantPoolGen of the method to be analyzed
      */
@@ -70,7 +70,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
 
     /**
      * Analyze the given Instruction.
-     * 
+     *
      * @param ins
      *            the Instruction
      * @throws DataflowAnalysisException
@@ -83,9 +83,8 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
             try {
                 ins.accept(this);
             } catch (InvalidBytecodeException e) {
-                System.out.println("Could not analyze " + ins + " frame is " + frame);
-                e.printStackTrace(System.out);
-                throw new DataflowAnalysisException("Invalid bytecode", e);
+                String message = "Invalid bytecode: could not analyze instr. " + ins + " at frame " + frame;
+                throw new DataflowAnalysisException(message, e);
             }
     }
 
@@ -98,7 +97,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
 
     /**
      * Set the frame and Location for the instruction about to be modeled.
-     * 
+     *
      * @param frame
      *            the Frame
      * @param location
@@ -111,7 +110,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
 
     /**
      * Get the frame.
-     * 
+     *
      * @return the Frame object
      */
     public FrameType getFrame() {
@@ -120,7 +119,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
 
     /**
      * Get the Location.
-     * 
+     *
      * @return the Location
      */
     public Location getLocation() {
@@ -157,7 +156,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
 
     /**
      * This is called for illegal bytecodes.
-     * 
+     *
      * @throws InvalidBytecodeException
      */
     private void illegalBytecode(Instruction ins) {
@@ -188,7 +187,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
     public void visitIfInstruction(IfInstruction obj) {
     }
 
-    /** To allow for calls to visitNULL2Z and visitNONNULL2Z, this method is made final. 
+    /** To allow for calls to visitNULL2Z and visitNONNULL2Z, this method is made final.
      * If you want to override it, override visitConversionInstruction2 instead.
      */
     public final void visitConversionInstruction(ConversionInstruction obj) {
@@ -329,7 +328,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
     /**
      * Model the stack for instructions handled by handleNormalInstruction().
      * Subclasses may override to provide analysis-specific behavior.
-     * 
+     *
      * @param ins
      *            the Instruction to model
      * @param numWordsConsumed
@@ -344,7 +343,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
     /**
      * Primitive to model the stack effect of a single instruction, explicitly
      * specifying the value to be pushed on the stack.
-     * 
+     *
      * @param ins
      *            the Instruction to model
      * @param numWordsConsumed
@@ -785,15 +784,15 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
         handleNormalInstruction(obj);
     }
 
-  
+
     public void visitNULL2Z(NULL2Z obj) {
         handleNormalInstruction(obj);
     }
-    
+
     public void visitNONNULL2Z(NONNULL2Z obj) {
         handleNormalInstruction(obj);
     }
-    
+
     public void visitI2S(I2S obj) {
         handleNormalInstruction(obj);
     }

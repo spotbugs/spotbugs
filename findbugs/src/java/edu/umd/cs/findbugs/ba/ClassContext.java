@@ -76,7 +76,7 @@ import edu.umd.cs.findbugs.util.MapCache;
  * A ClassContext caches all of the auxiliary objects used to analyze the
  * methods of a class. That way, these objects don't need to be created over and
  * over again.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassContext {
@@ -107,7 +107,7 @@ public class ClassContext {
 
     /**
      * Constructor.
-     * 
+     *
      * @param jclass
      *            the JavaClass
      */
@@ -140,7 +140,7 @@ public class ClassContext {
     /**
      * Store a method analysis object. Note that the cached analysis object
      * could be a special value (indicating null or an exception).
-     * 
+     *
      * @param analysisClass
      *            class the method analysis object belongs to
      * @param methodDescriptor
@@ -158,7 +158,7 @@ public class ClassContext {
 
     /**
      * Retrieve a method analysis object.
-     * 
+     *
      * @param analysisClass
      *            class the method analysis object should belong to
      * @param methodDescriptor
@@ -177,7 +177,7 @@ public class ClassContext {
 
     /**
      * Purge all CFG-based method analyses for given method.
-     * 
+     *
      * @param methodDescriptor
      *            method descriptor identifying method to purge
      */
@@ -218,7 +218,7 @@ public class ClassContext {
 
     /**
      * Look up the Method represented by given MethodGen.
-     * 
+     *
      * @param methodGen
      *            a MethodGen
      * @return the Method represented by the MethodGen
@@ -264,7 +264,7 @@ public class ClassContext {
 
     /**
      * Get the RepositoryLookupFailureCallback.
-     * 
+     *
      * @return the RepositoryLookupFailureCallback
      */
     public RepositoryLookupFailureCallback getLookupFailureCallback() {
@@ -273,7 +273,7 @@ public class ClassContext {
 
     /**
      * Get a MethodGen object for given method.
-     * 
+     *
      * @param method
      *            the method
      * @return the MethodGen object for the method, or null if the method has no
@@ -290,7 +290,7 @@ public class ClassContext {
      * will be done. Because the CFG pruning can involve interprocedural
      * analysis, it is done on a best-effort basis, so the CFG returned might
      * not actually be pruned.
-     * 
+     *
      * @param method
      *            the method
      * @return the CFG
@@ -303,7 +303,7 @@ public class ClassContext {
 
     /**
      * Get the ConstantPoolGen used to create the MethodGens for this class.
-     * 
+     *
      * @return the ConstantPoolGen
      */
     public @Nonnull
@@ -313,7 +313,7 @@ public class ClassContext {
 
     /**
      * Get a UsagesRequiringNonNullValues for given method.
-     * 
+     *
      * @param method
      *            the method
      * @return the UsagesRequiringNonNullValues
@@ -325,7 +325,7 @@ public class ClassContext {
 
     /**
      * Get a ValueNumberDataflow for given method.
-     * 
+     *
      * @param method
      *            the method
      * @return the ValueNumberDataflow
@@ -336,7 +336,7 @@ public class ClassContext {
 
     /**
      * Get an IsNullValueDataflow for given method.
-     * 
+     *
      * @param method
      *            the method
      * @return the IsNullValueDataflow
@@ -347,7 +347,7 @@ public class ClassContext {
 
     /**
      * Get a TypeDataflow for given method.
-     * 
+     *
      * @param method
      *            the method
      * @return the TypeDataflow
@@ -358,7 +358,7 @@ public class ClassContext {
 
     /**
      * Get a DepthFirstSearch for given method.
-     * 
+     *
      * @param method
      *            the method
      * @return the DepthFirstSearch
@@ -369,7 +369,7 @@ public class ClassContext {
 
     /**
      * Get a ReverseDepthFirstSearch for given method.
-     * 
+     *
      * @param method
      *            the method
      * @return the ReverseDepthFirstSearch
@@ -378,7 +378,7 @@ public class ClassContext {
         return getMethodAnalysisNoDataflowAnalysisException(ReverseDepthFirstSearch.class, method);
     }
 
-    static final AnalysisLocal<MapCache<XMethod, BitSet>> cachedBitsets_AL 
+    static final AnalysisLocal<MapCache<XMethod, BitSet>> cachedBitsets_AL
      = new AnalysisLocal<MapCache<XMethod, BitSet>>() {
         @Override
         protected MapCache<XMethod, BitSet> initialValue() {
@@ -386,14 +386,14 @@ public class ClassContext {
         }
     };
 
-    static final AnalysisLocal<MapCache<XMethod, Set<Integer>>> cachedLoopExits_AL = 
+    static final AnalysisLocal<MapCache<XMethod, Set<Integer>>> cachedLoopExits_AL =
             new AnalysisLocal<MapCache<XMethod, Set<Integer>>>() {
         @Override
         protected MapCache<XMethod, Set<Integer>> initialValue() {
             return  new MapCache<XMethod, Set<Integer>>(13);
         }
     };
-            
+
 
     /**
      * Get a BitSet representing the bytecodes that are used in the given
@@ -401,7 +401,7 @@ public class ClassContext {
      * particular instructions. Because this step doesn't require building a
      * MethodGen, it is very fast and memory-efficient. It may allow a Detector
      * to avoid some very expensive analysis, which is a Big Win for the user.
-     * 
+     *
      * @param method
      *            the method
      * @return the BitSet containing the opcodes which appear in the method, or
@@ -418,7 +418,7 @@ public class ClassContext {
      * particular instructions. Because this step doesn't require building a
      * MethodGen, it is very fast and memory-efficient. It may allow a Detector
      * to avoid some very expensive analysis, which is a Big Win for the user.
-     * 
+     *
      * @param method
      *            the method
      * @return the BitSet containing the opcodes which appear in the method, or
@@ -538,7 +538,7 @@ public class ClassContext {
      * elements containing zero are either not valid instruction offsets, or
      * contain a NOP instruction. (It is convenient not to distinguish these
      * cases.)
-     * 
+     *
      * @param method
      *            the method
      * @return map of bytecode offsets to opcodes, or null if the method has no
@@ -551,7 +551,7 @@ public class ClassContext {
 
     /**
      * Get dataflow for LockAnalysis for given method.
-     * 
+     *
      * @param method
      *            the method
      * @return the LockDataflow
@@ -564,7 +564,7 @@ public class ClassContext {
      * Get LockChecker for method. This is like LockDataflow, but may be able to
      * avoid performing the actual dataflow analyses if the method doesn't
      * contain explicit monitorenter/monitorexit instructions.
-     * 
+     *
      * @param method
      *            the method
      * @return the LockChecker
@@ -577,7 +577,7 @@ public class ClassContext {
 
     /**
      * Get ReturnPathDataflow for method.
-     * 
+     *
      * @param method
      *            the method
      * @return the ReturnPathDataflow
@@ -589,7 +589,7 @@ public class ClassContext {
     /**
      * Get DominatorsAnalysis for given method, where exception edges are
      * ignored.
-     * 
+     *
      * @param method
      *            the method
      * @return the DominatorsAnalysis
@@ -602,7 +602,7 @@ public class ClassContext {
     /**
      * Get DominatorsAnalysis for given method, where implicit exception edges
      * are ignored.
-     * 
+     *
      * @param method
      *            the method
      * @return the DominatorsAnalysis
@@ -615,7 +615,7 @@ public class ClassContext {
     /**
      * Get PostDominatorsAnalysis for given method, where exception edges are
      * ignored.
-     * 
+     *
      * @param method
      *            the method
      * @return the PostDominatorsAnalysis
@@ -627,7 +627,7 @@ public class ClassContext {
 
     /**
      * Get ExceptionSetFactory for given method.
-     * 
+     *
      * @param method
      *            the method
      * @return the ExceptionSetFactory
@@ -638,7 +638,7 @@ public class ClassContext {
 
     /**
      * Get array of type signatures of parameters for given method.
-     * 
+     *
      * @param method
      *            the method
      * @return an array of type signatures indicating the types of the method's
@@ -650,7 +650,7 @@ public class ClassContext {
 
     /**
      * Get the set of fields loaded by given method.
-     * 
+     *
      * @param method
      *            the method
      * @return the set of fields loaded by the method
@@ -661,7 +661,7 @@ public class ClassContext {
 
     /**
      * Get LiveLocalStoreAnalysis dataflow for given method.
-     * 
+     *
      * @param method
      *            the method
      * @return the Dataflow object for LiveLocalStoreAnalysis on the method
@@ -672,7 +672,7 @@ public class ClassContext {
 
     /**
      * Get BlockType dataflow for given method.
-     * 
+     *
      * @param method
      *            the method
      * @return the Dataflow object for BlockTypeAnalysis on the method
@@ -697,7 +697,7 @@ public class ClassContext {
 
     /**
      * Get AssertionMethods for class.
-     * 
+     *
      * @return the AssertionMethods
      */
     public AssertionMethods getAssertionMethods() {
@@ -706,7 +706,7 @@ public class ClassContext {
 
     /**
      * Get ConstantDataflow for method.
-     * 
+     *
      * @param method
      *            the method
      * @return the ConstantDataflow
@@ -719,7 +719,7 @@ public class ClassContext {
 
     /**
      * Get load dataflow.
-     * 
+     *
      * @param method
      *            the method
      * @return the LoadDataflow
@@ -732,7 +732,7 @@ public class ClassContext {
 
     /**
      * Get store dataflow.
-     * 
+     *
      * @param method
      *            the method
      * @return the StoreDataflow
@@ -745,7 +745,7 @@ public class ClassContext {
 
     /**
      * Get CallListDataflow for method.
-     * 
+     *
      * @param method
      *            the method
      * @return the CallListDataflow
@@ -817,7 +817,7 @@ public class ClassContext {
 
     /**
      * Get the UnconditionalValueDerefDataflow for a method.
-     * 
+     *
      * @param method
      *            the method
      * @return the UnconditionalValueDerefDataflow
@@ -831,7 +831,7 @@ public class ClassContext {
 
     /**
      * Get a CompactLocationNumbering for a method.
-     * 
+     *
      * @param method
      *            a method
      * @return the CompactLocationNumbering for the method
@@ -844,7 +844,7 @@ public class ClassContext {
 
     /**
      * Get ReturnPathTypeDataflow for a method.
-     * 
+     *
      * @param method
      *            the method
      * @return the ReturnPathTypeDataflow for the method
@@ -1012,9 +1012,8 @@ public class ClassContext {
             if (cause instanceof CFGBuilderException) {
                 throw (CFGBuilderException) cause;
             }
-            System.out.println("Bad CAE: " + e.getClass().getName() + " for " + analysisClass.getName() + " of " + method);
-            e.printStackTrace(System.out);
-            IllegalStateException ise = new IllegalStateException("should not happen");
+            String message = "Should not happen: bad CAE: " + e.getClass().getName() + " for " + analysisClass.getName() + " of " + method;
+            IllegalStateException ise = new IllegalStateException(message);
             ise.initCause(e);
             throw ise;
         }
