@@ -230,7 +230,19 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
 
     public boolean testAttribute(Object target, String name, String value) {
         if ("type".equals(name)) {
-            return getType().name().equals(value);
+            String groupType = getType().name();
+            boolean match = groupType.equals(value);
+            if(match) {
+                return match;
+            }
+            if(value.indexOf('|') > 0){
+                String[] split = value.split("\\|");
+                for (String string : split) {
+                    if(groupType.equals(string)){
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }

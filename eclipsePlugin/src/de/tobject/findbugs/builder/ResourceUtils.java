@@ -43,6 +43,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.team.internal.core.subscribers.ChangeSet;
 import org.eclipse.ui.IAggregateWorkingSet;
@@ -125,7 +126,7 @@ public class ResourceUtils {
     /**
      * Returns a list of all <b>Java source related</b> files in a resource
      * delta. This is of help when performing an incremental build.
-     * 
+     *
      * @return Collection A list of all <b>Java source related</b> files to be
      *         built.
      */
@@ -183,7 +184,7 @@ public class ResourceUtils {
      * The children from selected parents are not resolved, so that the return
      * value contains the 'highest' possible hierarchical elements without
      * children.
-     * 
+     *
      * @param structuredSelection
      * @return a map with the project as a key and selected resources as value.
      *         If project itself was selected, then key is the same as value.
@@ -248,7 +249,7 @@ public class ResourceUtils {
 
     /**
      * Maps the resource into its project
-     * 
+     *
      * @param resource
      * @param projectsMap
      */
@@ -273,7 +274,7 @@ public class ResourceUtils {
 
     /**
      * Extracts only files from a change set
-     * 
+     *
      * @param set
      * @return
      */
@@ -323,7 +324,7 @@ public class ResourceUtils {
 
     /**
      * Convenient method to get work items (java related stuff) from adaptables
-     * 
+     *
      * @param element
      *            an IAdaptable object which may provide an adapter for
      *            IResource
@@ -346,7 +347,7 @@ public class ResourceUtils {
         if (element instanceof IAdaptable) {
             Object adapter = ((IAdaptable) element).getAdapter(IResource.class);
             if (adapter instanceof IResource) {
-                IResource resource = (IResource) element;
+                IResource resource = (IResource) adapter;
                 if (resource.getType() == IResource.FILE && !Util.isJavaArtifact(resource) || !resource.isAccessible()) {
                     // Ignore non java files or deleted/closed files/projects
                     return null;
@@ -355,7 +356,11 @@ public class ResourceUtils {
             }
             adapter = ((IAdaptable) element).getAdapter(IPackageFragment.class);
             if (adapter instanceof IPackageFragment) {
-                return new WorkItem((IPackageFragment) element);
+                return new WorkItem((IPackageFragment) adapter);
+            }
+            adapter = ((IAdaptable) element).getAdapter(IType.class);
+            if (adapter instanceof IType) {
+                return new WorkItem((IType) adapter);
             }
         }
         return null;
@@ -363,7 +368,7 @@ public class ResourceUtils {
 
     /**
      * Convenient method to get resources from adaptables
-     * 
+     *
      * @param element
      *            an IAdaptable object which may provide an adapter for
      *            IResource

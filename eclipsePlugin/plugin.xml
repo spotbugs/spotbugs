@@ -517,6 +517,11 @@
                label="Show In Package Explorer"
                menubarPath="fb">
          </action>
+         <menu
+               id="findbugs"
+               label="Find Bugs"
+               path="group.build">
+         </menu>
       </objectContribution>
 
       <objectContribution
@@ -556,6 +561,31 @@
                id="de.tobject.findbugs.filterPatternType2"
                label="This Bug Pattern Type"
                menubarPath="de.tobject.findbugs.filter/toggleSeparator">
+         </action>
+      </objectContribution>
+      <objectContribution
+            adaptable="true"
+            id="de.tobject.findbugs.BugGroupActions4"
+            objectClass="de.tobject.findbugs.view.explorer.BugGroup">
+         <filter
+               name="type"
+               value="Package|Class">
+         </filter>
+         <action
+               class="de.tobject.findbugs.actions.ClearMarkersAction"
+               icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/delete_edit.gif"
+               id="de.tobject.findbugs.removeMarkers"
+               label="%menu.clearMarkers"
+               menubarPath="findbugs/doit"
+               tooltip="%menu.clearMarkersPopup">
+         </action>
+         <action
+               class="de.tobject.findbugs.actions.FindBugsAction"
+               icon="icons/runFindbugs.png"
+               id="de.tobject.findbugs.findBugs"
+               label="&amp;Find Bugs"
+               menubarPath="findbugs/doit"
+               tooltip="Scan selected element for bugs.">
          </action>
       </objectContribution>
    </extension>

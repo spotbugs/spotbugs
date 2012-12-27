@@ -232,7 +232,14 @@ public class WorkItem {
             return resource;
         }
         try {
-            return javaElt.getCorrespondingResource();
+            IResource resource1 = javaElt.getCorrespondingResource();
+            if(resource1 != null) {
+                return resource1;
+            }
+            IJavaElement ancestor = javaElt.getAncestor(IJavaElement.COMPILATION_UNIT);
+            if(ancestor != null){
+                return ancestor.getCorrespondingResource();
+            }
         } catch (JavaModelException e) {
             // ignore, just return nothing
         }
