@@ -937,22 +937,8 @@
                toolbarPath="additions"
                tooltip="Refresh explorer content">
          </action>
-           <action
-                 class="de.tobject.findbugs.actions.GroupByAction"
-                 id="findBugsEclipsePlugin.toggleGrouping.Confidence.BugRank.Category.Project.Package.Class.PatternType.Pattern.Marker"
-                 label="Confidence-&gt;Rank-&gt;Category-&gt;Project-&gt;Package-&gt;Class-&gt;Pattern Type-&gt;Pattern"
-                 menubarPath="bugExplorer.menu.group/groupBy"
-                 style="radio"
-                 tooltip="Change Bug Explorer Grouping">
-           </action>
-           <action
-                 class="de.tobject.findbugs.actions.GroupByAction"
-                 id="findBugsEclipsePlugin.toggleGrouping.Confidence.Category.Project.PatternType.Pattern.Marker"
-                 label="Confidence-&gt;Category-&gt;Project-&gt;Pattern Type-&gt;Pattern"
-                 menubarPath="bugExplorer.menu.group/groupBy"
-                 style="radio"
-                 tooltip="Change Bug Explorer Grouping">
-           </action>
+
+
            <action
                  class="de.tobject.findbugs.actions.GroupByAction"
                  id="findBugsEclipsePlugin.toggleGrouping.Confidence.Project.Pattern.Marker"
@@ -969,14 +955,24 @@
                  style="radio"
                  tooltip="Change Bug Explorer Grouping">
            </action>
+
            <action
                  class="de.tobject.findbugs.actions.GroupByAction"
-                 id="findBugsEclipsePlugin.toggleGrouping.Project.Confidence.Category.PatternType.Pattern.Marker"
-                 label="Project-&gt;Confidence-&gt;Category-&gt;Pattern Type-&gt;Pattern"
+                 id="findBugsEclipsePlugin.toggleGrouping.BugRank.Project.Pattern.Marker"
+                 label="Rank-&gt;Project-&gt;Pattern"
                  menubarPath="bugExplorer.menu.group/groupBy"
                  style="radio"
                  tooltip="Change Bug Explorer Grouping">
            </action>
+           <action
+                 class="de.tobject.findbugs.actions.GroupByAction"
+                 id="findBugsEclipsePlugin.toggleGrouping.BugRank.Confidence.Pattern.Marker"
+                 label="Rank-&gt;Confidence-&gt;Pattern"
+                 menubarPath="bugExplorer.menu.group/groupBy"
+                 style="radio"
+                 tooltip="Change Bug Explorer Grouping">
+           </action>
+
            <action
                  class="de.tobject.findbugs.actions.GroupByAction"
                  id="findBugsEclipsePlugin.toggleGrouping.Project.Confidence.BugRank.Pattern.Marker"
@@ -987,28 +983,13 @@
            </action>
            <action
                  class="de.tobject.findbugs.actions.GroupByAction"
-                 id="findBugsEclipsePlugin.toggleGrouping.Project.Confidence.Pattern.Marker"
-                 label="Project-&gt;Confidence-&gt;Pattern"
+                 id="findBugsEclipsePlugin.toggleGrouping.Project.BugRank.Confidence.Pattern.Marker"
+                 label="Project-&gt;Rank-&gt;Confidence-&gt;Pattern"
                  menubarPath="bugExplorer.menu.group/groupBy"
                  style="radio"
                  tooltip="Change Bug Explorer Grouping">
            </action>
-           <action
-                 class="de.tobject.findbugs.actions.GroupByAction"
-                 id="findBugsEclipsePlugin.toggleGrouping.Project.BugRank.Marker"
-                 label="Project-&gt;Rank-&gt;Pattern"
-                 menubarPath="bugExplorer.menu.group/groupBy"
-                 style="radio"
-                 tooltip="Change Bug Explorer Grouping">
-           </action>
-           <action
-                 class="de.tobject.findbugs.actions.GroupByAction"
-                 id="findBugsEclipsePlugin.toggleGrouping.Project.Pattern.Marker"
-                 label="Project-&gt;Pattern"
-                 menubarPath="bugExplorer.menu.group/groupBy"
-                 style="radio"
-                 tooltip="Change Bug Explorer Grouping">
-           </action>
+
            <action
                  class="de.tobject.findbugs.actions.OpenGroupDialogAction"
                  icon="platform:/plugin/org.eclipse.debug.ui/icons/full/elcl16/edtsrclkup_co.gif"

@@ -342,10 +342,6 @@ public enum GroupType {
         if (element instanceof MarkerRank) {
             return GroupType.BugRank;
         }
-        if (element instanceof Integer) {
-            // legacy name for compatibility if restoring from saved
-            return GroupType.Confidence;
-        }
         if (element instanceof String) {
             GroupType[] values = values();
             for (GroupType type : values) {

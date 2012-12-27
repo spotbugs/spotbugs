@@ -26,10 +26,7 @@ import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
 
-import org.eclipse.ui.IMemento;
-import org.eclipse.ui.IPersistable;
-
-public class Grouping implements IPersistable {
+public class Grouping {
 
     private final LinkedList<GroupType> groupOrder;
 
@@ -44,6 +41,8 @@ public class Grouping implements IPersistable {
     private static Grouping createDefault() {
         List<GroupType> order = new ArrayList<GroupType>();
         order.add(GroupType.Project);
+        order.add(GroupType.BugRank);
+        order.add(GroupType.Confidence);
         order.add(GroupType.Pattern);
         order.add(GroupType.Marker);
         return createFrom(order);
@@ -59,14 +58,12 @@ public class Grouping implements IPersistable {
         return new LinkedList<GroupType>(groupOrder);
     }
 
+    @Nonnull
     public GroupType getFirstType() {
         return groupOrder.size() > 0 ? groupOrder.getFirst() : GroupType.Undefined;
     }
 
-    public GroupType getLastType() {
-        return groupOrder.size() > 0 ? groupOrder.getLast() : GroupType.Undefined;
-    }
-
+    @Nonnull
     public GroupType getChildType(GroupType parent) {
         if (parent == GroupType.Marker) {
             return parent;
@@ -90,18 +87,6 @@ public class Grouping implements IPersistable {
             }
         }
         return GroupType.Undefined;
-    }
-
-    public void saveState(IMemento memento) {
-        memento.putString("Grouping", groupOrder.toString());
-    }
-
-    static Grouping restoreFrom(IMemento memento) {
-        if (memento == null) {
-            return createDefault();
-        }
-        String string = memento.getString("Grouping");
-        return restoreFrom(string);
     }
 
     static Grouping restoreFrom(String saved) {
