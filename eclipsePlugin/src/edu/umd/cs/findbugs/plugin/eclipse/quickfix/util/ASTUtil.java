@@ -22,6 +22,7 @@
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix.util;
 
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ConditionCheck.checkForNull;
+import static org.eclipse.core.runtime.Assert.isTrue;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ import java.util.TreeSet;
 
 import javax.annotation.CheckForNull;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ArrayType;
@@ -69,7 +71,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.TypeDeclarationNotF
  * <CODE>PackageMemberAnnotations</CODE> into <CODE>BodyDeclarations</CODE>.
  * Normally this methods should be used to get a type, field or method
  * declaration for a class, field or method annotation.
- * 
+ *
  * @see ASTUtil#getTypeDeclaration(CompilationUnit, ClassAnnotation)
  * @see ASTUtil#getFieldDeclaration(TypeDeclaration, FieldAnnotation)
  * @see ASTUtil#getMethodDeclaration(TypeDeclaration, MethodAnnotation)
@@ -132,7 +134,7 @@ public class ASTUtil {
      * import will not be inserted. The imports are inserted in an ordered way.
      * The <CODE>Comparator</CODE> of the <CODE>SortedSet</CODE> is used to sort
      * the imports.
-     * 
+     *
      * @param rewrite
      *            the <CODE>ASTRewrite</CODE>, that stores the edits.
      * @param compilationUnit
@@ -184,7 +186,7 @@ public class ASTUtil {
      * <CODE>startLine</CODE> and <CODE>endLine</CODE>. If the source line
      * doesn't contain an <CODE>ASTNode</CODE>, a
      * <CODE>ASTNodeNotFoundException</CODE> is thrown.
-     * 
+     *
      * @param compilationUnit
      *            the <CODE>CompilationUnit</CODE>, that contains the
      *            <CODE>ASTNode</CODE>.
@@ -210,7 +212,7 @@ public class ASTUtil {
      * Returns the <CODE>TypeDeclaration</CODE> for the specified
      * <CODE>ClassAnnotation</CODE>. The type has to be declared in the
      * specified <CODE>CompilationUnit</CODE>.
-     * 
+     *
      * @param compilationUnit
      *            The <CODE>CompilationUnit</CODE>, where the
      *            <CODE>TypeDeclaration</CODE> is declared in.
@@ -231,7 +233,7 @@ public class ASTUtil {
     /**
      * Returns the <CODE>TypeDeclaration</CODE> for the specified type name. The
      * type has to be declared in the specified <CODE>CompilationUnit</CODE>.
-     * 
+     *
      * @param compilationUnit
      *            The <CODE>CompilationUnit</CODE>, where the
      *            <CODE>TypeDeclaration</CODE> is declared in.
@@ -265,7 +267,7 @@ public class ASTUtil {
      * Returns the <CODE>FieldDeclaration</CODE> for the specified
      * <CODE>FieldAnnotation</CODE>. The field has to be declared in the
      * specified <CODE>TypeDeclaration</CODE>.
-     * 
+     *
      * @param type
      *            The <CODE>TypeDeclaration</CODE>, where the
      *            <CODE>FieldDeclaration</CODE> is declared in.
@@ -288,7 +290,7 @@ public class ASTUtil {
      * Returns the <CODE>FieldDeclaration</CODE> for the specified field name.
      * The field has to be declared in the specified
      * <CODE>TypeDeclaration</CODE>.
-     * 
+     *
      * @param type
      *            The <CODE>TypeDeclaration</CODE>, where the
      *            <CODE>FieldDeclaration</CODE> is declared in.
@@ -320,7 +322,7 @@ public class ASTUtil {
      * Returns the <CODE>MethodDeclaration</CODE> for the specified
      * <CODE>MethodAnnotation</CODE>. The method has to be declared in the
      * specified <CODE>TypeDeclaration</CODE>.
-     * 
+     *
      * @param type
      *            The <CODE>TypeDeclaration</CODE>, where the
      *            <CODE>MethodDeclaration</CODE> is declared in.
@@ -343,7 +345,7 @@ public class ASTUtil {
      * Returns the <CODE>MethodDeclaration</CODE> for the specified method name
      * and signature. The method has to be declared in the specified
      * <CODE>TypeDeclaration</CODE>.
-     * 
+     *
      * @param type
      *            The <CODE>TypeDeclaration</CODE>, where the
      *            <CODE>MethodDeclaration</CODE> is declared in.
@@ -379,7 +381,7 @@ public class ASTUtil {
     /**
      * Return the first <CODE>Statement</CODE> found, that is between the
      * specified start and end line.
-     * 
+     *
      * @param compilationUnit
      * @param method
      * @param startLine
@@ -402,8 +404,8 @@ public class ASTUtil {
 
     @CheckForNull
     protected static ASTNode searchASTNode(CompilationUnit compilationUnit, int startLine, int endLine) {
-        assert compilationUnit != null;
-        assert startLine <= endLine;
+        Assert.isNotNull(compilationUnit);
+        isTrue(startLine <= endLine);
 
         SourceLineVisitor visitor = new SourceLineVisitor(compilationUnit, startLine, endLine);
         compilationUnit.accept(visitor);
@@ -412,8 +414,8 @@ public class ASTUtil {
 
     @CheckForNull
     protected static TypeDeclaration searchTypeDeclaration(List<?> declarations, String typeName) {
-        assert declarations != null;
-        assert typeName != null;
+        Assert.isNotNull(declarations);
+        Assert.isNotNull(typeName);
 
         int index = typeName.indexOf('$');
         String innerClassName = null;
@@ -441,9 +443,9 @@ public class ASTUtil {
     @CheckForNull
     protected static MethodDeclaration searchMethodDeclaration(AST ast, MethodDeclaration[] methods, String methodName,
             String methodSignature) {
-        assert methods != null;
-        assert methodName != null;
-        assert methodSignature != null;
+        Assert.isNotNull(methods);
+        Assert.isNotNull(methodName);
+        Assert.isNotNull(methodSignature);
 
         String[] parameters = parseParameters(methodSignature);
         for (MethodDeclaration method : methods) {
@@ -460,8 +462,8 @@ public class ASTUtil {
 
     @CheckForNull
     protected static Statement searchStatement(CompilationUnit compilationUnit, List<?> statements, int startLine, int endLine) {
-        assert compilationUnit != null;
-        assert statements != null;
+        Assert.isNotNull(compilationUnit);
+        Assert.isNotNull(statements);
 
         for (Object statementObj : statements) {
             Statement statement = (Statement) statementObj;
@@ -474,7 +476,7 @@ public class ASTUtil {
     }
 
     protected static String[] parseParameters(String methodSignature) {
-        assert methodSignature != null;
+        Assert.isNotNull(methodSignature);
 
         int leftParenthesis = methodSignature.indexOf('(');
         int rightParenthesis = methodSignature.indexOf(')');
@@ -492,7 +494,7 @@ public class ASTUtil {
     }
 
     protected static String normalizeParameter(String parameter) {
-        assert parameter != null;
+        Assert.isNotNull(parameter);
 
         Class<?> primitiveClass = primitiveTypes.get(parameter);
         if (primitiveClass != null) {

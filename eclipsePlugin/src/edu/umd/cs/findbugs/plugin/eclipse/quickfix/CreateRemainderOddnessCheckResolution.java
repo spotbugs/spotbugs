@@ -24,6 +24,7 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 import static org.eclipse.jdt.core.dom.InfixExpression.Operator.NOT_EQUALS;
 import static org.eclipse.jdt.core.dom.InfixExpression.Operator.REMAINDER;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.InfixExpression;
@@ -33,7 +34,7 @@ import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
  * The <CODE>CreateAndOddnessCheckResolution</CODE> is a subclass of the
  * abstract class <CODE>CorrectOddnessCheckResolution</CODE> and creates the
  * proper oddness check <CODE>(x % 2) != 0</CODE>.
- * 
+ *
  * @see <a
  *      href="http://findbugs.sourceforge.net/bugDescriptions.html#IM_BAD_CHECK_FOR_ODD">IM_BAD_CHECK_FOR_ODD</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
@@ -47,8 +48,8 @@ public class CreateRemainderOddnessCheckResolution extends CorrectOddnessCheckRe
      */
     @Override
     protected InfixExpression createCorrectOddnessCheck(ASTRewrite rewrite, Expression numberExpression) {
-        assert rewrite != null;
-        assert numberExpression != null;
+        Assert.isNotNull(rewrite);
+        Assert.isNotNull(numberExpression);
 
         final AST ast = rewrite.getAST();
         InfixExpression correctOddnessCheck = ast.newInfixExpression();

@@ -31,6 +31,7 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ui.IMarkerResolution;
 
 import de.tobject.findbugs.FindbugsPlugin;
@@ -40,7 +41,7 @@ import de.tobject.findbugs.FindbugsPlugin;
  * bug-resolutions. For each registred bug-type, at least one resolution-class
  * has to be specified. Also an instance of a bug-resolution can be associated
  * with a bug-type.
- * 
+ *
  * @see BugResolutionAssociations#getBugResolutions(String)
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
@@ -90,8 +91,8 @@ public class BugResolutionAssociations {
     }
 
     protected boolean registerBugResolutions(String bugType, Set<Class<? extends IMarkerResolution>> resolutionClasses) {
-        assert bugType != null;
-        assert resolutionClasses != null;
+        Assert.isNotNull(bugType);
+        Assert.isNotNull(resolutionClasses);
         if (resolutionClasses.isEmpty()) {
             return false;
         }
@@ -106,8 +107,8 @@ public class BugResolutionAssociations {
     }
 
     protected boolean deregisterBugResolutions(String bugType, Set<Class<? extends IMarkerResolution>> resolutionClasses) {
-        assert bugType != null;
-        assert resolutionClasses != null;
+        Assert.isNotNull(bugType);
+        Assert.isNotNull(resolutionClasses);
         if (resolutionClasses.isEmpty()) {
             return false;
         }
@@ -131,7 +132,7 @@ public class BugResolutionAssociations {
     }
 
     public boolean addBugResolutions(String bugType, IMarkerResolution... resolutions) {
-        assert bugType != null;
+        Assert.isNotNull(bugType);
         if (resolutions.length == 0) {
             return false;
         }
@@ -144,8 +145,8 @@ public class BugResolutionAssociations {
     }
 
     protected boolean addBugResolutions(String bugType, Set<IMarkerResolution> resolutions) {
-        assert bugType != null;
-        assert resolutions != null;
+        Assert.isNotNull(bugType);
+        Assert.isNotNull(resolutions);
         if (resolutions.isEmpty()) {
             return false;
         }
@@ -168,7 +169,7 @@ public class BugResolutionAssociations {
     // -------------------------------------------------------------------------
 
     public IMarkerResolution[] getBugResolutions(String bugType) {
-        assert bugType != null;
+        Assert.isNotNull(bugType);
         Set<? extends IMarkerResolution> resolutionSet = resolutions.get(bugType);
         if (resolutionSet != null) {
             return resolutionSet.toArray(new IMarkerResolution[resolutionSet.size()]);
@@ -179,7 +180,7 @@ public class BugResolutionAssociations {
     // -------------------------------------------------------------------------
 
     public boolean containsBugResolution(String bugType) {
-        assert bugType != null;
+        Assert.isNotNull(bugType);
         return resolutions.containsKey(bugType) || resolutionClasses.containsKey(bugType);
     }
 
@@ -190,7 +191,7 @@ public class BugResolutionAssociations {
     }
 
     public boolean removeBugResolutions(String bugType, IMarkerResolution... resolutions) {
-        assert bugType != null;
+        Assert.isNotNull(bugType);
 
         Set<IMarkerResolution> resolutionSet;
         if (resolutions.length > 0) {
@@ -205,8 +206,8 @@ public class BugResolutionAssociations {
     }
 
     protected boolean removeBugResolutions(String bugType, Set<IMarkerResolution> resolutions) {
-        assert bugType != null;
-        assert resolutions != null;
+        Assert.isNotNull(bugType);
+        Assert.isNotNull(resolutions);
         if (resolutions.isEmpty()) {
             return false;
         }
@@ -258,7 +259,7 @@ public class BugResolutionAssociations {
     // -------------------------------------------------------------------------
 
     private IMarkerResolution[] createBugResolutions(String bugType) {
-        assert bugType != null;
+        Assert.isNotNull(bugType);
         Set<Class<? extends IMarkerResolution>> classes = resolutionClasses.get(bugType);
         if (classes == null) {
             return new IMarkerResolution[0];
@@ -270,7 +271,7 @@ public class BugResolutionAssociations {
     }
 
     private Set<IMarkerResolution> instantiateBugResolutions(Set<Class<? extends IMarkerResolution>> classes) {
-        assert classes != null;
+        Assert.isNotNull(classes);
         Set<IMarkerResolution> fixes = new HashSet<IMarkerResolution>();
         for (Class<? extends IMarkerResolution> resolutionClass : classes) {
             IMarkerResolution fixer = instantiateBugResolution(resolutionClass);

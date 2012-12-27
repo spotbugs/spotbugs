@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getASTNode;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Statement;
@@ -34,7 +35,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
 /**
  * Statements that are useless should be removed from the code. The
  * <CODE>RemoveUselessStatementResolution</CODE> removes such statements.
- * 
+ *
  * @see <a
  *      href="http://findbugs.sourceforge.net/bugDescriptions.html#SA_FIELD_SELF_ASSIGNMENT">SA_FIELD_SELF_ASSIGNMENT</a>
  * @see <a
@@ -47,9 +48,9 @@ public class RemoveUselessStatementResolution extends BugResolution {
 
     @Override
     protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
-        assert rewrite != null;
-        assert workingUnit != null;
-        assert bug != null;
+        Assert.isNotNull(rewrite);
+        Assert.isNotNull(workingUnit);
+        Assert.isNotNull(bug);
 
         Statement statement = findUselessStatement(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
         rewrite.remove(statement, null);

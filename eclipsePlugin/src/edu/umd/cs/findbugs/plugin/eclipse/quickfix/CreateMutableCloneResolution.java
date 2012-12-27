@@ -5,6 +5,7 @@ import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getTypeDe
 
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -41,9 +42,9 @@ public class CreateMutableCloneResolution extends BugResolution {
 
     @Override
     protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
-        assert rewrite != null;
-        assert workingUnit != null;
-        assert bug != null;
+        Assert.isNotNull(rewrite);
+        Assert.isNotNull(workingUnit);
+        Assert.isNotNull(bug);
 
         TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
         MethodDeclaration method = getMethodDeclaration(type, bug.getPrimaryMethod());

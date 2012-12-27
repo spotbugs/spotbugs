@@ -24,6 +24,7 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getMethodDeclaration;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getTypeDeclaration;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -42,7 +43,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  * Some methods should implement a specific <CODE>super</CODE>-call for a clean
  * execution of the code. The <CODE>CreateSuperCallResolution</CODE> creates a
  * new <CODE>super</CODE>-call for these methods.
- * 
+ *
  * @see <a
  *      href="http://findbugs.sourceforge.net/bugDescriptions.html#FI_MISSING_SUPER_CALL">FI_MISSING_SUPER_CALL</a>
  * @see <a
@@ -85,9 +86,9 @@ public class CreateSuperCallResolution extends BugResolution {
 
     @Override
     protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
-        assert rewrite != null;
-        assert workingUnit != null;
-        assert bug != null;
+        Assert.isNotNull(rewrite);
+        Assert.isNotNull(workingUnit);
+        Assert.isNotNull(bug);
 
         TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
         MethodDeclaration method = getMethodDeclaration(type, bug.getPrimaryMethod());
@@ -106,8 +107,8 @@ public class CreateSuperCallResolution extends BugResolution {
     }
 
     protected SuperMethodInvocation createSuperMethodInvocation(ASTRewrite rewrite, MethodDeclaration method) {
-        assert rewrite != null;
-        assert method != null;
+        Assert.isNotNull(rewrite);
+        Assert.isNotNull(method);
 
         AST ast = rewrite.getAST();
         SuperMethodInvocation invocation = ast.newSuperMethodInvocation();

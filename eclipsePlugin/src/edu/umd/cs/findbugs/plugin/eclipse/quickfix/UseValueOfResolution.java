@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.annotation.CheckForNull;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -44,7 +45,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
 /**
  * The <CODE>UseValueOfResolution</CODE> replace the inefficient creation of an
  * instance, by the static <CODE>valueOf(...)</CODE> method.
- * 
+ *
  * @see <a
  *      href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_BOOLEAN_CTOR">DM_BOOLEAN_CTOR</a>
  * @see <a
@@ -80,8 +81,8 @@ public class UseValueOfResolution extends BugResolution {
 
     @Override
     protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
-        assert rewrite != null;
-        assert workingUnit != null;
+        Assert.isNotNull(rewrite);
+        Assert.isNotNull(workingUnit);
 
         ClassInstanceCreation primitiveTypeCreation = findPrimitiveTypeCreation(getASTNode(workingUnit,
                 bug.getPrimarySourceLineAnnotation()));
@@ -101,8 +102,8 @@ public class UseValueOfResolution extends BugResolution {
 
     protected MethodInvocation createValueOfInvocation(ASTRewrite rewrite, CompilationUnit compilationUnit,
             ClassInstanceCreation primitiveTypeCreation) {
-        assert rewrite != null;
-        assert primitiveTypeCreation != null;
+        Assert.isNotNull(rewrite);
+        Assert.isNotNull(primitiveTypeCreation);
 
         final AST ast = rewrite.getAST();
         MethodInvocation valueOfInvocation = ast.newMethodInvocation();

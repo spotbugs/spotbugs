@@ -24,6 +24,7 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getMethodDeclaration;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getTypeDeclaration;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -37,7 +38,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  * The same is valid for <CODE>finalize()</CODE> methods that only call the
  * superclass's <CODE>finalize()</CODE> method. The class
  * <CODE>RemoveUselessMethodResolution</CODE> removes such useless methods.
- * 
+ *
  * @see <a
  *      href="http://findbugs.sourceforge.net/bugDescriptions.html#FI_EMPTY">FI_EMPTY</a>
  * @see <a
@@ -50,9 +51,9 @@ public class RemoveUselessMethodResolution extends BugResolution {
 
     @Override
     protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
-        assert rewrite != null;
-        assert workingUnit != null;
-        assert bug != null;
+        Assert.isNotNull(rewrite);
+        Assert.isNotNull(workingUnit);
+        Assert.isNotNull(bug);
 
         TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
         MethodDeclaration method = getMethodDeclaration(type, bug.getPrimaryMethod());

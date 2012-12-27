@@ -28,6 +28,7 @@ import static org.eclipse.jdt.core.dom.InfixExpression.Operator.REMAINDER;
 
 import javax.annotation.CheckForNull;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -45,7 +46,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  * negative numbers. The <CODE>CorrectOddnessCheckResolution</CODE> provides a
  * resolution to replace this bad check by an <CODE>expression</CODE> that works
  * also for negative numbers.
- * 
+ *
  * @see <a
  *      href="http://findbugs.sourceforge.net/bugDescriptions.html#IM_BAD_CHECK_FOR_ODD">IM_BAD_CHECK_FOR_ODD</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
@@ -61,9 +62,9 @@ public abstract class CorrectOddnessCheckResolution extends BugResolution {
 
     @Override
     protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
-        assert rewrite != null;
-        assert workingUnit != null;
-        assert bug != null;
+        Assert.isNotNull(rewrite);
+        Assert.isNotNull(workingUnit);
+        Assert.isNotNull(bug);
 
         InfixExpression oddnessCheck = findOddnessCheck(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
         if (oddnessCheck == null) {
@@ -94,7 +95,7 @@ public abstract class CorrectOddnessCheckResolution extends BugResolution {
     /**
      * Creates and returns a correct <CODE>expression</CODE> that checks if a
      * value is odd or not.
-     * 
+     *
      * @param ast
      *            the <CODE>AST</CODE> instance under which the created
      *            <CODE>InfixExpression</CODE> will be created.

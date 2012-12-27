@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Andrei Loskutov
+ * Copyright (C) 2012, Andrey Loskutov
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,16 +25,18 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 
+import org.eclipse.core.runtime.Assert;
+
 import edu.umd.cs.findbugs.annotations.DischargesObligation;
 import edu.umd.cs.findbugs.util.Strings;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
-import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList.NameValuePair;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Write XML or plain text to an output stream.
- * 
+ *
  * @see OutputStreamXMLOutput
  * @author Andrei Loskutov
  */
@@ -51,7 +53,7 @@ public class ConfigurableXmlOutputStream implements XMLOutput {
 
     /**
      * Constructor.
-     * 
+     *
      * @param os
      *            OutputStream to write XML output to
      * @param plainText
@@ -192,7 +194,7 @@ public class ConfigurableXmlOutputStream implements XMLOutput {
     public void writeCDATA(String cdata) throws IOException {
         // FIXME: We just trust fate that the characters being written
         // don't contain the string "]]>"
-        assert (cdata.indexOf("]]") == -1);
+        Assert.isTrue(cdata.indexOf("]]") == -1);
         if (!plainText) {
             out.write("<![CDATA[");
         } else {

@@ -8,6 +8,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -35,7 +36,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  * pattern to run the fixes. Subclasses must use the ASTRewrite and the AST to
  * make their changes. They are not responsible for the setup and saving of the
  * changes.
- * 
+ *
  * @author cchristopher@ebay.com
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
@@ -75,7 +76,7 @@ public abstract class BugResolution implements IMarkerResolution {
      * The <CODE>IMarker</CODE> has to be a FindBugs marker. The
      * <CODE>BugInstance</CODE> associated to the <CODE>IMarker</CODE> will be
      * repaired. All exceptions are reported to the ErrorLog.
-     * 
+     *
      * @param marker
      *            non null The <CODE>IMarker</CODE> that specifies the bug.
      */
@@ -98,11 +99,11 @@ public abstract class BugResolution implements IMarkerResolution {
     /**
      * This method is used by the test-framework, to catch the thrown exceptions
      * and report it to the user.
-     * 
+     *
      * @see #run(IMarker)
      */
     private void runInternal(IMarker marker) throws BugResolutionException, BadLocationException, CoreException {
-        assert marker != null;
+        Assert.isNotNull(marker);
 
         BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
         if (bug == null) {
@@ -140,7 +141,7 @@ public abstract class BugResolution implements IMarkerResolution {
 
     /**
      * Get the compilation unit for the marker.
-     * 
+     *
      * @param marker
      *            not null
      * @return The compilation unit for the marker, or null if the file was not
@@ -161,12 +162,12 @@ public abstract class BugResolution implements IMarkerResolution {
     /**
      * Reports an exception to the user. This method could be overwritten by a
      * subclass to handle some exceptions individual.
-     * 
+     *
      * @param e
      *            not null
      */
     protected void reportException(Exception e) {
-        assert e != null;
+        Assert.isNotNull(e);
 
         FindbugsPlugin.getDefault().logException(e, e.getLocalizedMessage());
         MessageDialog.openError(FindbugsPlugin.getShell(), "BugResolution failed.", e.getLocalizedMessage());

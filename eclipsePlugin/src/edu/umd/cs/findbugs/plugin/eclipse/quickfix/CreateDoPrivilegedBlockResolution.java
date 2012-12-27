@@ -37,6 +37,7 @@ import java.util.TreeSet;
 
 import javax.annotation.CheckForNull;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -169,9 +170,9 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 
     @Override
     protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
-        assert rewrite != null;
-        assert workingUnit != null;
-        assert bug != null;
+        Assert.isNotNull(rewrite);
+        Assert.isNotNull(workingUnit);
+        Assert.isNotNull(bug);
 
         ClassInstanceCreation classLoaderCreation = findClassLoaderCreation(getASTNode(workingUnit,
                 bug.getPrimarySourceLineAnnotation()));
@@ -184,8 +185,8 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
     }
 
     protected void updateVariableReferences(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
-        assert rewrite != null;
-        assert classLoaderCreation != null;
+        Assert.isNotNull(rewrite);
+        Assert.isNotNull(classLoaderCreation);
 
         MethodDeclaration method = findMethodDeclaration(classLoaderCreation);
         if (method != null) {
@@ -198,9 +199,9 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
     }
 
     protected void updateMethodParams(ASTRewrite rewrite, Set<String> variables, List<?> params) {
-        assert rewrite != null;
-        assert variables != null;
-        assert params != null;
+        Assert.isNotNull(rewrite);
+        Assert.isNotNull(variables);
+        Assert.isNotNull(params);
 
         for (Object paramObj : params) {
             SingleVariableDeclaration param = (SingleVariableDeclaration) paramObj;
@@ -212,9 +213,9 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
     }
 
     protected void updateLocalVariableDeclarations(final ASTRewrite rewrite, final Set<String> variables, Block block) {
-        assert rewrite != null;
-        assert block != null;
-        assert variables != null;
+        Assert.isNotNull(rewrite);
+        Assert.isNotNull(block);
+        Assert.isNotNull(variables);
 
         final AST ast = rewrite.getAST();
         block.accept(new ASTVisitor() {
@@ -237,8 +238,8 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
     }
 
     protected void updateImportDeclarations(ASTRewrite rewrite, CompilationUnit compilationUnit) {
-        assert rewrite != null;
-        assert compilationUnit != null;
+        Assert.isNotNull(rewrite);
+        Assert.isNotNull(compilationUnit);
 
         if (isUpdateImports()) {
             final AST ast = rewrite.getAST();
@@ -254,15 +255,15 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
     }
 
     protected ImportDeclaration createImportDeclaration(AST ast, Class<?> importClass) {
-        assert ast != null;
-        assert importClass != null;
+        Assert.isNotNull(ast);
+        Assert.isNotNull(importClass);
         return createImportDeclaration(ast, importClass.getName(), false);
     }
 
     protected ImportDeclaration createImportDeclaration(AST ast, Class<?> importClass, String javaElementName) {
-        assert ast != null;
-        assert importClass != null;
-        assert javaElementName != null;
+        Assert.isNotNull(ast);
+        Assert.isNotNull(importClass);
+        Assert.isNotNull(javaElementName);
         return createImportDeclaration(ast, importClass.getName() + "." + javaElementName, true);
     }
 
