@@ -1070,7 +1070,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         return bugResolutions;
     }
 
-    private BugResolutionAssociations loadBugResolutions() {
+    private static BugResolutionAssociations loadBugResolutions() {
         BugResolutionLoader loader = new BugResolutionLoader();
         return loader.loadBugResolutions();
     }
