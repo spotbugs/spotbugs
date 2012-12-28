@@ -30,13 +30,12 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.NonReportingDetector;
+import edu.umd.cs.findbugs.FirstPassDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureParser;
-import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
@@ -46,7 +45,7 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
-public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetector implements NonReportingDetector {
+public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetector implements FirstPassDetector {
 
     final BugReporter bugReporter;
 
@@ -56,7 +55,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
         this.bugReporter = bugReporter;
         setVisitMethodsInCallOrder(true);
     }
-    
+
     boolean isInnerClass, hasNonFinalFields;
 
     @Override
@@ -65,12 +64,12 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
         hasNonFinalFields = false;
 
     }
-    
+
     @Override
     public void visit(Field obj) {
         if (obj.getName().equals("this$0"))
             isInnerClass = true;
-        if (!obj.isFinal() && !obj.isStatic() && !obj.isSynthetic()) 
+        if (!obj.isFinal() && !obj.isStatic() && !obj.isSynthetic())
             hasNonFinalFields = true;
     }
 
@@ -129,21 +128,21 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 funky = true;
             }
 
-            if (false) {
-                XClass c = getXClass();
-                String classSourceSig = c.getSourceSignature();
-                if (!genericReturnValue.equals(classSourceSig))
-                    return;
-            }
+//            if (false) {
+//                XClass c = getXClass();
+//                String classSourceSig = c.getSourceSignature();
+//                if (!genericReturnValue.equals(classSourceSig))
+//                    return;
+//            }
         }
 
 //         System.out.println("Investigating " + getFullyQualifiedMethodName());
         returnSelf = returnOther = updates = returnNew = returnUnknown = 0;
-        
-        if (REPORT_INFERRED_METHODS 
+
+        if (REPORT_INFERRED_METHODS
                 && AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass()))
             inferredMethod = new BugInstance("TESTING", NORMAL_PRIORITY).addClassAndMethod(this);
-        else 
+        else
             inferredMethod = null;
         super.visit(code); // make callbacks to sawOpcode for all opcodes
 //         System.out.printf("  %3d %3d %3d %3d%n", returnSelf, updates, returnOther, returnNew);
@@ -180,7 +179,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 }
             }
 
-          
+
             inferredMethod = null;
 
         }
@@ -244,10 +243,10 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                     returnNew++;
                 }
                 break;
-                
+
             }
-               
-            
+
+
             if (xMethod.isAbstract() && !xMethod.getClassDescriptor().equals(getClassDescriptor())) {
                 returnUnknown++;
                 break;
