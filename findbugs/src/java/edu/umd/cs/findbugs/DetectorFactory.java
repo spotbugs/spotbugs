@@ -226,7 +226,7 @@ public class DetectorFactory {
      * @return true if the created Detectors report warnings, false if not
      */
     public boolean isReportingDetector() {
-        return !isDetectorClassSubtypeOf(TrainingDetector.class) && !isDetectorClassSubtypeOf(FirstPassDetector.class);
+        return !isDetectorClassSubtypeOf(TrainingDetector.class) && !isDetectorClassSubtypeOf(NonReportingDetector.class);
 
     }
 
