@@ -38,3 +38,5 @@ findbugs/src/doc/allBugDescriptions.html
 findbugs/src/doc/bugDescriptions.html
 server/appengine/war/WEB-INF/classes/
 server/common/classes/
+findbugsTestCases/build/
+findbugsTestCases/history/
