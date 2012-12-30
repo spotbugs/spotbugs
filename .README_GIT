@@ -1,0 +1,13 @@
+Check http://code.google.com/p/findbugs-git/downloads/
+
+You should find there SVN repository snapshot corresponding to the http://code.google.com/p/findbugs/source/detail?r=14620.
+Additionally all remote references to existing SVN branches are converted to local (except trunk), and missing SVN tags for all major FB releases are set in Git.
+
+To start working with Git-SVN, download and:
+{{{
+tar -zxvf fndbugs-git.tar.gz
+cd findbugs-git
+git checkout -f
+git config svn.authorsfile `pwd`/.git/authors.txt
+git svn rebase
+}}}
