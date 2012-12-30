@@ -40,3 +40,11 @@ server/appengine/war/WEB-INF/classes/
 server/common/classes/
 findbugsTestCases/build/
 findbugsTestCases/history/
+JSR305-testCases/build/
+sandbox/localCloud/build/
+sandbox/localCloud/classes/
+NullPointerBenchmark/build/
+plugins/webCloudClient/lib/
+findbugs/doc/
+findbugs/annotationJavaDoc/
+findbugs/apiJavaDoc/
