@@ -141,8 +141,12 @@ public class TypeQualifierValue<A extends Annotation> {
             // found it.
 //            System.out.println(checkerName);
             SecurityManager m = System.getSecurityManager();
-            if (m == null)
-                System.setSecurityManager(new ValidationSecurityManager());
+            if (m == null){
+                // XXX "if" check below is the quick fix for bug 3599258 (Random obscure Eclipse failures during analysis)
+                if(!SystemProperties.RUNNING_IN_ECLIPSE){
+                    System.setSecurityManager(new ValidationSecurityManager());
+                }
+            }
             Class<?> c = validatorLoader.loadClass(checkerName.getDottedClassName());
              if (TypeQualifierValidator.class.isAssignableFrom(c)) {
                 Class<? extends TypeQualifierValidator> checkerClass = c.asSubclass(TypeQualifierValidator.class);
