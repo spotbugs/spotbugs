@@ -135,9 +135,8 @@ public abstract class AbstractBugReporter implements BugReporter {
         observerList = new LinkedList<BugReporterObserver>();
         projectStats = new ProjectStats();
         // bug 2815983: no bugs are reported anymore
-        // there is no info which value should be default, so using the
-        // "any one"
-        rankThreshold = 42;
+        // there is no info which value should be default, so using the max
+        rankThreshold = BugRanker.VISIBLE_RANK_MAX;
     }
 
     public void setErrorVerbosity(int level) {
