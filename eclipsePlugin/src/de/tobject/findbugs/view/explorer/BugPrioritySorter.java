@@ -21,12 +21,10 @@ package de.tobject.findbugs.view.explorer;
 import java.text.Collator;
 
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.reporter.MarkerUtil;
 
 public class BugPrioritySorter extends ViewerSorter {
 
@@ -58,12 +56,6 @@ public class BugPrioritySorter extends ViewerSorter {
         return super.compare(viewer, e1, e2);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.jface.viewers.ViewerComparator#category(java.lang.Object)
-     */
     @Override
     public int category(Object element) {
         if (element instanceof IMarker) {
@@ -88,7 +80,7 @@ public class BugPrioritySorter extends ViewerSorter {
     }
 
     /**
-     * Sorts markers on priority first, then on name if requested
+     * Sorts markers on rank, then priority, and then on name if requested
      *
      * @param m1
      * @param m2
@@ -98,20 +90,21 @@ public class BugPrioritySorter extends ViewerSorter {
         if (m1 == null || m2 == null || !m1.exists() || !m2.exists()) {
             return 0;
         }
-        try {
-            int ordinal1 = FindBugsMarker.MarkerRank.ordinal(m1.getType());
-            int ordinal2 = FindBugsMarker.MarkerRank.ordinal(m2.getType());
-            int result = ordinal1 - ordinal2;
-            if (result != 0) {
-                return result;
-            }
-            String a1 = m1.getAttribute(IMarker.MESSAGE, "");
-            String a2 = m2.getAttribute(IMarker.MESSAGE, "");
-            return a1.compareToIgnoreCase(a2);
-        } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Sort error");
+        int rank1 = MarkerUtil.findBugRankForMarker(m1);
+        int rank2 = MarkerUtil.findBugRankForMarker(m2);
+        int result = rank1 - rank2;
+        if (result != 0) {
+            return result;
         }
-        return 0;
+        int prio1 = MarkerUtil.findConfidenceForMarker(m1).ordinal();
+        int prio2 = MarkerUtil.findConfidenceForMarker(m2).ordinal();
+        result = prio1 - prio2;
+        if (result != 0) {
+            return result;
+        }
+        String a1 = m1.getAttribute(IMarker.MESSAGE, "");
+        String a2 = m2.getAttribute(IMarker.MESSAGE, "");
+        return a1.compareToIgnoreCase(a2);
     }
 
 }

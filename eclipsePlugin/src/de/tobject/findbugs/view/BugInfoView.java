@@ -72,6 +72,7 @@ import org.eclipse.ui.ide.IDE;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.marker.FindBugsMarker.MarkerConfidence;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.util.EditorUtil;
 import de.tobject.findbugs.util.Util;
@@ -86,7 +87,6 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Plugin;
-import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.ba.SignatureParser;
@@ -312,39 +312,19 @@ public class BugInfoView extends AbstractFindbugsView {
     private String getBugDetails() {
         StringBuilder sb = new StringBuilder();
         int rank = 0;
-        int markerPrio = 0;
+        MarkerConfidence confidence = MarkerConfidence.Ignore;
         if(bug != null) {
-            markerPrio = bug.getPriority();
-            switch (markerPrio) {
-            case Priorities.HIGH_PRIORITY:
-                markerPrio = IMarker.PRIORITY_HIGH;
-                break;
-            case Priorities.NORMAL_PRIORITY:
-                markerPrio = IMarker.PRIORITY_NORMAL;
-                break;
-            default:
-                markerPrio = IMarker.PRIORITY_LOW;
-                break;
-            }
+            confidence = MarkerConfidence.getConfidence(bug.getPriority());
             rank = bug.getBugRank();
         } else if(marker != null) {
-            markerPrio = marker.getAttribute(IMarker.PRIORITY, IMarker.PRIORITY_LOW);
+            confidence = MarkerUtil.findConfidenceForMarker(marker);
             rank = MarkerUtil.findBugRankForMarker(marker);
         }
         sb.append("\n<b>Rank</b>: ");
         sb.append(BugRankCategory.getRank(rank));
         sb.append(" (").append(rank).append(")");
-        sb.append(", <b>confidence</b>: ").append(getConfidence(markerPrio));
+        sb.append(", <b>confidence</b>: ").append(confidence);
         return sb.toString();
-    }
-
-    private static String getConfidence(int markerPrio) {
-        switch(markerPrio) {
-        case IMarker.PRIORITY_HIGH: return "High";
-        case IMarker.PRIORITY_NORMAL: return "Normal";
-        case IMarker.PRIORITY_LOW: return "Low";
-        default: return "Unknown";
-        }
     }
 
     private String getPatternDetails() {
@@ -382,7 +362,7 @@ public class BugInfoView extends AbstractFindbugsView {
         }
     }
 
-    private String toSafeHtml(String s) {
+    private static String toSafeHtml(String s) {
         if (s.indexOf(">") >= 0) {
             s = s.replace(">", "&gt;");
         }
@@ -550,10 +530,10 @@ public class BugInfoView extends AbstractFindbugsView {
         }
     }
 
-    private String stripFirstAndLast(String s) {
+    private static String stripFirstAndLast(String s) {
         return s.substring(1, s.length()-1);
     }
-    private IMethod getIMethod(IType type, MethodAnnotation mma) throws JavaModelException {
+    private static IMethod getIMethod(IType type, MethodAnnotation mma) throws JavaModelException {
         String name = mma.getMethodName();
         SignatureParser parser = new SignatureParser(mma.getMethodSignature());
         String[] arguments = parser.getArguments();

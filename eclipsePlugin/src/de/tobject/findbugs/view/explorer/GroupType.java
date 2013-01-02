@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package de.tobject.findbugs.view.explorer;
+import static de.tobject.findbugs.marker.FindBugsMarker.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +31,6 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.ui.IWorkingSet;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.marker.FindBugsMarker.MarkerConfidence;
 import de.tobject.findbugs.marker.FindBugsMarker.MarkerRank;
 import de.tobject.findbugs.reporter.MarkerUtil;
@@ -66,7 +65,7 @@ public enum GroupType {
 
         @Override
         String getDebugDescription(IMarker marker) throws CoreException {
-            return "plugin id: " + marker.getAttribute(FindBugsMarker.DETECTOR_PLUGIN_ID);
+            return "plugin id: " + marker.getAttribute(DETECTOR_PLUGIN_ID);
         }
     }),
 
@@ -111,7 +110,7 @@ public enum GroupType {
 
         @Override
         String getDebugDescription(IMarker marker) throws CoreException {
-            return "package of element with unique Java id: " + marker.getAttribute(FindBugsMarker.UNIQUE_JAVA_ID);
+            return "package of element with unique Java id: " + marker.getAttribute(UNIQUE_JAVA_ID);
         }
     }),
 
@@ -132,55 +131,31 @@ public enum GroupType {
 
         @Override
         String getDebugDescription(IMarker marker) throws CoreException {
-            return "class of element with unique Java id: " + marker.getAttribute(FindBugsMarker.UNIQUE_JAVA_ID);
+            return "class of element with unique Java id: " + marker.getAttribute(UNIQUE_JAVA_ID);
         }
     }),
 
     Confidence(true, new MarkerMapper<MarkerConfidence>() {
         @Override
         MarkerConfidence getIdentifier(IMarker marker) {
-            try {
-                Object attribute = marker.getAttribute(IMarker.PRIORITY);
-                if (attribute instanceof Integer) {
-                    Integer prio = (Integer) attribute;
-                    switch (prio.intValue()) {
-                    case IMarker.PRIORITY_HIGH:
-                        return MarkerConfidence.High;
-                    case IMarker.PRIORITY_NORMAL:
-                        return MarkerConfidence.Medium;
-                    case IMarker.PRIORITY_LOW:
-                        return MarkerConfidence.Low;
-                    default:
-                        return MarkerConfidence.Ignore;
-                    }
-                }
-            } catch (CoreException e) {
-                FindbugsPlugin.getDefault().logException(e, "Missing priority attribute in marker");
-            }
-            return MarkerConfidence.Ignore;
+            return MarkerUtil.findConfidenceForMarker(marker);
         }
 
         @Override
         String getShortDescription(MarkerConfidence id) {
-            switch(id) {
-            case High: return "High confidence";
-            case Medium: return "Normal confidence";
-            case Low: return "Low confidence";
-            default: return "Unknown confidence";
-            }
+            return id.name() + " confidence";
         }
 
         @Override
         String getDebugDescription(IMarker marker) throws CoreException {
-            return "priority: " + marker.getAttribute(IMarker.PRIORITY);
+            return "confidence: " + marker.getAttribute(PRIO_AKA_CONFIDENCE);
         }
     }),
 
     BugRank(true, new MarkerMapper<MarkerRank>() {
         @Override
         MarkerRank getIdentifier(IMarker marker) {
-            int rank = MarkerUtil.findBugRankForMarker(marker);
-            return MarkerRank.getRank(rank);
+            return MarkerRank.getRank(MarkerUtil.findBugRankForMarker(marker));
         }
 
         @Override
@@ -190,7 +165,7 @@ public enum GroupType {
 
         @Override
         String getDebugDescription(IMarker marker) throws CoreException {
-            return "rank: " + marker.getAttribute(FindBugsMarker.RANK);
+            return "rank: " + marker.getAttribute(RANK);
         }
 
     }),
@@ -217,8 +192,8 @@ public enum GroupType {
 
         @Override
         String getDebugDescription(IMarker marker) throws CoreException {
-            return "category of: " + marker.getAttribute(FindBugsMarker.UNIQUE_ID) + "/"
-                    + marker.getAttribute(FindBugsMarker.BUG_TYPE);
+            return "category of: " + marker.getAttribute(UNIQUE_ID) + "/"
+                    + marker.getAttribute(BUG_TYPE);
         }
     }),
 
@@ -245,7 +220,7 @@ public enum GroupType {
 
         @Override
         String getDebugDescription(IMarker marker) throws CoreException {
-            return "pattern type: " + marker.getAttribute(FindBugsMarker.PATTERN_TYPE);
+            return "pattern type: " + marker.getAttribute(PATTERN_TYPE);
         }
     }),
 
@@ -262,7 +237,7 @@ public enum GroupType {
 
         @Override
         String getDebugDescription(IMarker marker) throws CoreException {
-            return "pattern: " + marker.getAttribute(FindBugsMarker.BUG_TYPE);
+            return "pattern: " + marker.getAttribute(BUG_TYPE);
         }
     }),
 

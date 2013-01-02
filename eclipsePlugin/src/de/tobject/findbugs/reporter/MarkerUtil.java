@@ -70,6 +70,7 @@ import de.tobject.findbugs.FindBugsJob;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.builder.WorkItem;
 import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.marker.FindBugsMarker.MarkerConfidence;
 import de.tobject.findbugs.view.explorer.BugGroup;
 import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugCollection;
@@ -582,16 +583,15 @@ public final class MarkerUtil {
     }
 
     public static int findBugRankForMarker(IMarker marker) {
-        try {
-            Object bugCode = marker.getAttribute(FindBugsMarker.RANK);
-            if (bugCode instanceof Integer) {
-                return ((Integer) bugCode).intValue();
-            }
-        } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Marker does not contain rank");
-            return BugRanker.VISIBLE_RANK_MAX;
-        }
-        return BugRanker.VISIBLE_RANK_MAX;
+        return marker.getAttribute(FindBugsMarker.RANK, BugRanker.VISIBLE_RANK_MAX);
+    }
+
+    /**
+     * @return priority (aka confidence)
+     */
+    public static MarkerConfidence findConfidenceForMarker(IMarker marker) {
+        return MarkerConfidence.getConfidence(marker.getAttribute(FindBugsMarker.PRIO_AKA_CONFIDENCE,
+                MarkerConfidence.Ignore.name()));
     }
 
     public static @CheckForNull

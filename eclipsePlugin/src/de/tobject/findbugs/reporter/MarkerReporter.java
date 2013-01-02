@@ -19,6 +19,7 @@
  */
 
 package de.tobject.findbugs.reporter;
+import static de.tobject.findbugs.marker.FindBugsMarker.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,11 +37,10 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.marker.FindBugsMarker.MarkerConfidence;
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.DetectorFactory;
-import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
@@ -79,7 +79,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
         }
     }
 
-    private void updateMarkerSeverity(IPreferenceStore store, MarkerParameter mp) {
+    private static void updateMarkerSeverity(IPreferenceStore store, MarkerParameter mp) {
         String markerSeverityStr = store.getString(mp.markerType);
         mp.markerSeverity = MarkerSeverity.get(markerSeverityStr).value;
     }
@@ -108,25 +108,25 @@ public class MarkerReporter implements IWorkspaceRunnable {
             }
         }
         IMarker newMarker = markerTarget.createMarker(mp.markerType);
-        setAttributes(newMarker, attributes);
+        newMarker.setAttributes(attributes);
     }
 
-    private @CheckForNull
+    private static @CheckForNull
     IMarker findSameBug(Map<String, Object> attributes, IMarker[] existingMarkers) throws CoreException {
-        Object bugId = attributes.get(FindBugsMarker.UNIQUE_ID);
+        Object bugId = attributes.get(UNIQUE_ID);
         if (bugId == null) {
             return null;
         }
-        Object line = attributes.get(FindBugsMarker.PRIMARY_LINE);
+        Object line = attributes.get(PRIMARY_LINE);
         for (IMarker marker : existingMarkers) {
-            Object idAttribute = marker.getAttribute(FindBugsMarker.UNIQUE_ID);
+            Object idAttribute = marker.getAttribute(UNIQUE_ID);
             if (bugId.equals(idAttribute)) {
                 // Fix for issue 3054146: we filter too much. Different bugs
                 // from the same method and same type have equal hashes, as they
                 // do not include source line info to the hash calculation
                 // So we must compare source lines to to avoid too much
                 // filtering.
-                Object primaryLine = marker.getAttribute(FindBugsMarker.PRIMARY_LINE);
+                Object primaryLine = marker.getAttribute(PRIMARY_LINE);
                 if ((line == null && primaryLine == null) || (line != null && line.equals(primaryLine))) {
                     return marker;
                 }
@@ -142,49 +142,37 @@ public class MarkerReporter implements IWorkspaceRunnable {
     private Map<String, Object> createMarkerAttributes(MarkerParameter mp) {
         Map<String, Object> attributes = new HashMap<String, Object>(23);
         attributes.put(IMarker.LINE_NUMBER, mp.startLine);
-        attributes.put(FindBugsMarker.PRIMARY_LINE, mp.primaryLine);
-        attributes.put(FindBugsMarker.BUG_TYPE, mp.bug.getType());
-        attributes.put(FindBugsMarker.PATTERN_TYPE, mp.bug.getAbbrev());
-        attributes.put(FindBugsMarker.RANK, Integer.valueOf(mp.bug.getBugRank()));
+        attributes.put(PRIMARY_LINE, mp.primaryLine);
+        attributes.put(BUG_TYPE, mp.bug.getType());
+        attributes.put(PATTERN_TYPE, mp.bug.getAbbrev());
+        attributes.put(RANK, Integer.valueOf(mp.bug.getBugRank()));
+        attributes.put(PRIO_AKA_CONFIDENCE, MarkerConfidence.getConfidence(mp.bug.getPriority()).name());
 
         long seqNum = mp.bug.getFirstVersion();
         if (seqNum == 0) {
-            attributes.put(FindBugsMarker.FIRST_VERSION, "-1");
+            attributes.put(FIRST_VERSION, "-1");
         } else {
             AppVersion theVersion = collection.getAppVersionFromSequenceNumber(seqNum);
             if (theVersion == null) {
-                attributes.put(FindBugsMarker.FIRST_VERSION, "Cannot find AppVersion: seqnum=" + seqNum + "; collection seqnum="
+                attributes.put(FIRST_VERSION, "Cannot find AppVersion: seqnum=" + seqNum + "; collection seqnum="
                         + collection.getSequenceNumber());
             } else {
-                attributes.put(FindBugsMarker.FIRST_VERSION, Long.toString(theVersion.getTimestamp()));
+                attributes.put(FIRST_VERSION, Long.toString(theVersion.getTimestamp()));
             }
         }
         try {
-            attributes.put(IMarker.MESSAGE, mp.bug.getMessageWithoutPrefix());
+            attributes.put(IMarker.MESSAGE, getMessage(mp));
         } catch (RuntimeException e) {
             FindbugsPlugin.getDefault().logException(e, "Error generating msg for " + mp.bug.getType());
             attributes.put(IMarker.MESSAGE, "??? " + mp.bug.getType());
         }
         attributes.put(IMarker.SEVERITY, mp.markerSeverity);
-        attributes.put(FindBugsMarker.PRIORITY_TYPE, mp.bug.getPriorityTypeString());
-
-        switch (mp.bug.getPriority()) {
-        case Priorities.HIGH_PRIORITY:
-            attributes.put(IMarker.PRIORITY, Integer.valueOf(IMarker.PRIORITY_HIGH));
-            break;
-        case Priorities.NORMAL_PRIORITY:
-            attributes.put(IMarker.PRIORITY, Integer.valueOf(IMarker.PRIORITY_NORMAL));
-            break;
-        default:
-            attributes.put(IMarker.PRIORITY, Integer.valueOf(IMarker.PRIORITY_LOW));
-            break;
-        }
 
         // Set unique id of warning, so we can easily refer back
         // to it later: for example, when the user classifies the warning.
         String uniqueId = mp.bug.getInstanceHash();
         if (uniqueId != null) {
-            attributes.put(FindBugsMarker.UNIQUE_ID, uniqueId);
+            attributes.put(UNIQUE_ID, uniqueId);
         }
 
         // Set unique id of the plugin, so we can easily refer back
@@ -193,19 +181,19 @@ public class MarkerReporter implements IWorkspaceRunnable {
         if(detectorFactory != null) {
             String pluginId = detectorFactory.getPlugin().getPluginId();
             if (pluginId != null) {
-                attributes.put(FindBugsMarker.DETECTOR_PLUGIN_ID, pluginId);
+                attributes.put(DETECTOR_PLUGIN_ID, pluginId);
             } else {
                 // XXX to avoid errors. Don't know what to do if the plugin is missing
-                attributes.put(FindBugsMarker.DETECTOR_PLUGIN_ID, "edu.umd.cs.findbugs.plugins.core");
+                attributes.put(DETECTOR_PLUGIN_ID, "edu.umd.cs.findbugs.plugins.core");
             }
         } else {
             // XXX to avoid errors. Don't know what to do if the plugin is missing
-            attributes.put(FindBugsMarker.DETECTOR_PLUGIN_ID, "edu.umd.cs.findbugs.plugins.core");
+            attributes.put(DETECTOR_PLUGIN_ID, "edu.umd.cs.findbugs.plugins.core");
         }
 
         IJavaElement javaElt = mp.resource.getCorespondingJavaElement();
         if (javaElt != null) {
-            attributes.put(FindBugsMarker.UNIQUE_JAVA_ID, javaElt.getHandleIdentifier());
+            attributes.put(UNIQUE_JAVA_ID, javaElt.getHandleIdentifier());
             // Eclipse markers model doesn't allow to have markers
             // attached to the (non-resource) part of the resource (like jar
             // entry inside the jar)
@@ -218,15 +206,11 @@ public class MarkerReporter implements IWorkspaceRunnable {
         return attributes;
     }
 
-    /**
-     * Set all the attributes to marker in one 'workspace transaction'
-     *
-     * @param marker
-     *            non null
-     * @throws CoreException
-     */
-    private void setAttributes(IMarker marker, Map<String, Object> attributes) throws CoreException {
-        marker.setAttributes(attributes);
+    private static String getMessage(MarkerParameter mp) {
+        String message = mp.bug.getMessageWithoutPrefix();
+        message += " ["+ mp.bug.getBugRankCategory() + "(" + mp.bug.getBugRank() +
+                "), " + MarkerConfidence.getConfidence(mp.bug.getPriority()) + " confidence]";
+        return message;
     }
 
 }

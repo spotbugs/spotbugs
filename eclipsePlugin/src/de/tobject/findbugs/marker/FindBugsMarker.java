@@ -20,6 +20,8 @@
 
 package de.tobject.findbugs.marker;
 
+import javax.annotation.Nonnull;
+
 import org.eclipse.jdt.core.IJavaElement;
 
 import edu.umd.cs.findbugs.BugRankCategory;
@@ -63,6 +65,11 @@ public interface FindBugsMarker {
      */
     public static final String RANK = "RANK";
 
+    /**
+     * Marker attribute recording the bug priority (==confidence) (as integer).
+     */
+    public static final String PRIO_AKA_CONFIDENCE = "CONFIDENCE";
+
 
     /**
      * Marker attribute recording the unique id of the BugInstance in its
@@ -93,53 +100,42 @@ public interface FindBugsMarker {
     public static final String FIRST_VERSION = "FIRST_VERSION";
 
     /**
-     * Marker attribute recording the priority and type of the bug (e.g.
-     * "High Priority Correctness")
-     */
-    public static final String PRIORITY_TYPE = "PRIORITY_TYPE";
-
-    /**
      * @see BugRankCategory
      */
     enum MarkerRank {
-         Scariest(TYPE_SCARIEST, "buggy-tiny.png", BugRankCategory.SCARIEST),
-         Scary(TYPE_SCARY, "buggy-tiny-orange.png",  BugRankCategory.SCARY),
-         Troubling(TYPE_TROUBLING, "buggy-tiny-yellow.png", BugRankCategory.TROUBLING),
-         OfConcern(TYPE_OF_CONCERN, "buggy-tiny-yellow2.png", BugRankCategory.OF_CONCERN);
+         Scariest("buggy-tiny.png", BugRankCategory.SCARIEST),
+         Scary("buggy-tiny-orange.png",  BugRankCategory.SCARY),
+         Troubling("buggy-tiny-yellow.png", BugRankCategory.TROUBLING),
+         OfConcern("buggy-tiny-yellow2.png", BugRankCategory.OF_CONCERN);
 
-
-        private final String markerType;
         private final String icon;
-
         private final BugRankCategory rankCategory;
-        MarkerRank(String prioName, String icon, BugRankCategory rankCategory) {
-            this.markerType = prioName;
+
+        MarkerRank(String icon, BugRankCategory rankCategory) {
             this.icon = icon;
             this.rankCategory = rankCategory;
         }
 
-        public static int ordinal(String markerType) {
+        public static MarkerRank getRank(int bugRank) {
             MarkerRank[] values = MarkerRank.values();
             for (MarkerRank mr : values) {
-                if (mr.markerType.equals(markerType)) {
-                    return mr.ordinal();
-                }
-            }
-            throw new IllegalArgumentException("Illegal type " + markerType);
-        }
-
-        public static MarkerRank getRank(int rank) {
-            MarkerRank[] values = MarkerRank.values();
-            for (MarkerRank mr : values) {
-                if (rank <= mr.rankCategory.maxRank) {
+                if (bugRank <= mr.rankCategory.maxRank) {
                     return mr;
                 }
             }
-            throw new IllegalArgumentException("Illegal rank " + rank);
+            throw new IllegalArgumentException("Illegal rank " + bugRank);
         }
 
         public String iconName() {
             return icon;
+        }
+
+        @Override
+        public String toString() {
+            if(this == OfConcern) {
+                return "Of Concern";
+            }
+            return name();
         }
     }
 
@@ -147,10 +143,47 @@ public interface FindBugsMarker {
      * @see Confidence
      */
     enum MarkerConfidence {
-        High, Medium, Low, Ignore;
+        High(Confidence.HIGH), Normal(Confidence.MEDIUM), Low(Confidence.LOW), Ignore(Confidence.IGNORE);
+
+        private final Confidence confidence;
+
+        private MarkerConfidence(Confidence confidence){
+            this.confidence = confidence;
+
+        }
 
         public String iconName(){
             return "confidence-" + name().toLowerCase() + ".png";
+        }
+
+        /**
+         * XXX replace numeric values and double mapping through simple string id
+         * @param confidence name as defined by {@link #name()}
+         * @return matching confidence, never null
+         */
+        @Nonnull
+        public static MarkerConfidence getConfidence(int bugPrio){
+            Confidence con = Confidence.getConfidence(bugPrio);
+            MarkerConfidence[] values = MarkerConfidence.values();
+            for (MarkerConfidence mc : values) {
+                if(mc.confidence == con){
+                    return mc;
+                }
+            }
+            return Ignore;
+        }
+
+        /**
+         * @param confidence name as defined by {@link #name()}
+         * @return matching confidence, never null
+         */
+        @Nonnull
+        public static MarkerConfidence getConfidence(String confidence){
+            try {
+                return MarkerConfidence.valueOf(confidence);
+            } catch (IllegalArgumentException e) {
+                return Ignore;
+            }
         }
     }
 }
