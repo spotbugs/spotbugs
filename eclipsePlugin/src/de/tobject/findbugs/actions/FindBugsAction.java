@@ -200,7 +200,7 @@ public class FindBugsAction implements IObjectActionDelegate {
                 + " warnings found.\n\nSwitch to the FindBugs perspective?";
 
         MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoCancelQuestion(null, "FindBugs analysis finished",
-                message, "Remember the choice and do not ask me in the feature", false, store,
+                message, "Remember the choice and do not ask me in the future", false, store,
                 FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH);
 
         boolean remember = dialog.getToggleState();
