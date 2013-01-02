@@ -2159,7 +2159,7 @@ will need to be changed in order to compile it in later versions of Java.</p>
   </BugPattern>
   <BugPattern type="DP_DO_INSIDE_DO_PRIVILEGED">
     <ShortDescription>Method invoked that should be only be invoked inside a doPrivileged block</ShortDescription>
-    <LongDescription>invocation of {2}, which should be invoked from within a doPrivileged block, in {1}</LongDescription>
+    <LongDescription>Invocation of {2}, which should be invoked from within a doPrivileged block, in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> This code invokes a method that requires a security permission check.
@@ -2171,7 +2171,7 @@ will need to be changed in order to compile it in later versions of Java.</p>
   <BugPattern type="DP_DO_INSIDE_DO_PRIVILEDGED">
     <!-- misspelled for backward compatibility -->
     <ShortDescription>Method invoked that should be only be invoked inside a doPrivileged block</ShortDescription>
-    <LongDescription>invocation of {2}, which should be invoked from within a doPrivileged block, in {1}</LongDescription>
+    <LongDescription>Invocation of {2}, which should be invoked from within a doPrivileged block, in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> This code invokes a method that requires a security permission check.
@@ -2229,7 +2229,7 @@ Consider using <code>java.net.URI</code> instead.
   </BugPattern>
   <BugPattern type="DMI_BLOCKING_METHODS_ON_URL">
     <ShortDescription>The equals and hashCode methods of URL are blocking</ShortDescription>
-    <LongDescription>invocation of {2}, which blocks to do domain name resolution, in {1}</LongDescription>
+    <LongDescription>Invocation of {2}, which blocks to do domain name resolution, in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> The equals and hashCode
@@ -2242,7 +2242,7 @@ Consider using <code>java.net.URI</code> instead.
   </BugPattern>
   <BugPattern type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION">
     <ShortDescription>Can't use reflection to check for presence of annotation without runtime retention</ShortDescription>
-    <LongDescription>use of reflection to check for the presence the annotation {3} which doesn't have runtime retention, in {1}</LongDescription>
+    <LongDescription>Use of reflection to check for the presence the annotation {3} which doesn't have runtime retention, in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> Unless an annotation has itself been annotated with  @Retention(RetentionPolicy.RUNTIME), the annotation can't be observed using reflection
@@ -2636,7 +2636,7 @@ method.
   </BugPattern>
   <BugPattern type="FI_EXPLICIT_INVOCATION">
     <ShortDescription>Explicit invocation of finalizer</ShortDescription>
-    <LongDescription>explicit invocation of {2} in {1}</LongDescription>
+    <LongDescription>Explicit invocation of {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> This method contains an explicit invocation of the <code>finalize()</code>
@@ -2676,7 +2676,7 @@ is symmetric and transitive. Without those properties, very unexpected behavoirs
   </BugPattern>
   <BugPattern type="EQ_DONT_DEFINE_EQUALS_FOR_ENUM">
     <ShortDescription>Covariant equals() method defined for enum</ShortDescription>
-    <LongDescription>enum {0} defines equals({0.givenClass})</LongDescription>
+    <LongDescription>Enum {0} defines equals({0.givenClass})</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines an enumeration, and equality on enumerations are defined
@@ -3178,7 +3178,7 @@ Thus, having a mutable instance field generally creates race conditions.
   </BugPattern>
   <BugPattern type="MS_EXPOSE_REP">
     <ShortDescription>Public static method may expose internal representation by returning array</ShortDescription>
-    <LongDescription>public static {1} may expose internal representation by returning {2.givenClass}</LongDescription>
+    <LongDescription>Public static {1} may expose internal representation by returning {2.givenClass}</LongDescription>
     <Details>
 <![CDATA[
   <p> A public static method returns a reference to
@@ -4014,8 +4014,8 @@ mechanism, it must not be declared as a static method.
     </Details>
   </BugPattern>
   <BugPattern type="SE_PRIVATE_READ_RESOLVE_NOT_INHERITED">
-    <ShortDescription>private readResolve method not inherited by subclasses</ShortDescription>
-    <LongDescription>private readResolve method in {0} not inherited by subclasses.</LongDescription>
+    <ShortDescription>Private readResolve method not inherited by subclasses</ShortDescription>
+    <LongDescription>Private readResolve method in {0} not inherited by subclasses.</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a private readResolve method. Since it is private, it won't be inherited by subclasses.
@@ -4610,7 +4610,7 @@ to use that non-null value. Calling readLine again will give you a different lin
 
   <BugPattern type="RV_RETURN_VALUE_IGNORED_INFERRED">
     <ShortDescription>Method ignores return value, is this OK?</ShortDescription>
-    <LongDescription>return value of {2.givenClass} ignored, is this OK in {1}</LongDescription>
+    <LongDescription>Return value of {2.givenClass} ignored, is this OK in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>This code calls a method and ignores the return value. The return value
@@ -4631,7 +4631,7 @@ is important or acceptable.
 
   <BugPattern type="RV_RETURN_VALUE_IGNORED">
     <ShortDescription>Method ignores return value</ShortDescription>
-    <LongDescription>return value of {2.givenClass} ignored in {1}</LongDescription>
+    <LongDescription>Return value of {2.givenClass} ignored in {1}</LongDescription>
     <Details>
 <![CDATA[
    <p> The return value of this method should be checked. One common
@@ -4661,7 +4661,7 @@ dateString = dateString.trim();
 
   <BugPattern type="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE">
     <ShortDescription>Method ignores exceptional return value</ShortDescription>
-    <LongDescription>exceptional return value of {2} ignored in {1}</LongDescription>
+    <LongDescription>Exceptional return value of {2} ignored in {1}</LongDescription>
     <Details>
 <![CDATA[
    <p> This method returns a value that is not checked. The return value should be checked
@@ -6142,7 +6142,7 @@ less confusing to explicitly check pointer equality using <code>==</code>.
   </BugPattern>
   <BugPattern type="EC_INCOMPATIBLE_ARRAY_COMPARE">
     <ShortDescription>equals(...) used to compare incompatible arrays</ShortDescription>
-    <LongDescription>using equals to compare a {2.simpleClass} and a {3.simpleClass} in {1}</LongDescription>
+    <LongDescription>Using equals to compare a {2.simpleClass} and a {3.simpleClass} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6613,8 +6613,8 @@ floating point arithmetic.
     </Details>
   </BugPattern>
   <BugPattern type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL">
-    <ShortDescription>integral value cast to double and then passed to Math.ceil</ShortDescription>
-    <LongDescription>integral value cast to double and then passed to Math.ceil in {1}</LongDescription>
+    <ShortDescription>Integral value cast to double and then passed to Math.ceil</ShortDescription>
+    <LongDescription>Integral value cast to double and then passed to Math.ceil in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6633,8 +6633,8 @@ floating point arithmetic.
     </Details>
   </BugPattern>
   <BugPattern type="ICAST_IDIV_CAST_TO_DOUBLE">
-    <ShortDescription>integral division result cast to double or float</ShortDescription>
-    <LongDescription>integral division result cast to double or float in {1}</LongDescription>
+    <ShortDescription>Integral division result cast to double or float</ShortDescription>
+    <LongDescription>Integral division result cast to double or float in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6814,7 +6814,7 @@ this statement is executed.
   </BugPattern>
   <BugPattern type="VA_FORMAT_STRING_MISSING_ARGUMENT">
     <ShortDescription>Format string references missing argument</ShortDescription>
-    <LongDescription>format string "{3}" needs argument {5} but only {6} are provided in {1}</LongDescription>
+    <LongDescription>Format string "{3}" needs argument {5} but only {6} are provided in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7245,7 +7245,7 @@ for oddness, consider using x &amp; 1 == 1, or x % 2 != 0.
   </BugPattern>
   <BugPattern type="DMI_BAD_MONTH">
     <ShortDescription>Bad constant value for month</ShortDescription>
-    <LongDescription>bad month value of {2} passed to {3} in {1}</LongDescription>
+    <LongDescription>Bad month value of {2} passed to {3} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
