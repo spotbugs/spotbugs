@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs.annotations;
 
-import edu.umd.cs.findbugs.Priorities;
 import javax.annotation.Nonnull;
+
+import edu.umd.cs.findbugs.Priorities;
 
 /**
  * @see edu.umd.cs.findbugs.BugRankCategory
@@ -35,7 +36,9 @@ public enum Confidence {
     private final int confidenceValue;
 
     /**
-     * @param prio one of {@link Priorities} constants
+     * @param prio
+     *            value in range between {@link Priorities#HIGH_PRIORITY} and
+     *            {@link Priorities#IGNORE_PRIORITY} constants
      * @return matching confidence value
      */
     @Nonnull
@@ -45,13 +48,13 @@ public enum Confidence {
                 return c;
             }
         }
-        throw new IllegalArgumentException("Confidence of " + prio + " is outside legal range");
+        return Confidence.IGNORE;
     }
-    
+
     public int getConfidenceValue() {
         return confidenceValue;
     }
-    
+
     private Confidence(int p) {
         confidenceValue = p;
     }

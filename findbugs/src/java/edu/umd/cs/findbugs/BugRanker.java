@@ -85,9 +85,9 @@ import edu.umd.cs.findbugs.util.Util;
  * @author Bill Pugh
  */
 public class BugRanker {
-    /** Maximum value for user visible ranks */
+    /** Maximum value for user visible ranks (least relevant) */
     public static final int VISIBLE_RANK_MAX = 20;
-    /** Minimum value for user visible ranks */
+    /** Minimum value for user visible ranks (most relevant) */
     public static final int VISIBLE_RANK_MIN = 1;
 
     static final boolean PLUGIN_DEBUG = Boolean.getBoolean("bugranker.plugin.debug");
