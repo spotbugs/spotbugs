@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ClassMember;
+import edu.umd.cs.findbugs.ba.JCIPAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
@@ -37,17 +38,23 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 public class NoteJCIPAnnotation extends AnnotationVisitor implements Detector, NonReportingDetector {
 
     private static final String NET_JCIP_ANNOTATIONS = "net.jcip.annotations.";
+    private static final String JSR305_CONCURRENT_ANNOTATIONS = "javax.annotation.concurrent.";
 
     public NoteJCIPAnnotation(BugReporter bugReporter) {
+        super();
     }
 
     @Override
     public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
-
-        if (!annotationClass.startsWith(NET_JCIP_ANNOTATIONS)) {
+        if (annotationClass.startsWith(NET_JCIP_ANNOTATIONS)) {
+            annotationClass = annotationClass.substring(NET_JCIP_ANNOTATIONS.length());
+        } else if (annotationClass.startsWith(JSR305_CONCURRENT_ANNOTATIONS)) {
+            annotationClass = annotationClass.substring(JSR305_CONCURRENT_ANNOTATIONS.length());
+        } else {
             return;
         }
-        annotationClass = annotationClass.substring(NET_JCIP_ANNOTATIONS.length());
+        JCIPAnnotationDatabase annotationDatabase = AnalysisContext.currentAnalysisContext()
+            .getJCIPAnnotationDatabase();
         ElementValue value = map.get("value");
         ClassMember member;
         if (visitingField()) {
@@ -55,18 +62,17 @@ public class NoteJCIPAnnotation extends AnnotationVisitor implements Detector, N
         } else if (visitingMethod()) {
             member = XFactory.createXMethod(this);
         } else {
-            AnalysisContext.currentAnalysisContext()
-                    .getJCIPAnnotationDatabase().addEntryForClass(getDottedClassName(), annotationClass, value);
+            annotationDatabase.addEntryForClass(getDottedClassName(), annotationClass, value);
             return;
         }
-        AnalysisContext.currentAnalysisContext().getJCIPAnnotationDatabase()
-                .addEntryForClassMember(member, annotationClass, value);
+        annotationDatabase.addEntryForClassMember(member, annotationClass, value);
     }
 
     public void visitClassContext(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
-        if (!BCELUtil.preTiger(javaClass))
+        if (!BCELUtil.preTiger(javaClass)) {
             javaClass.accept(this);
+        }
 
     }
 
