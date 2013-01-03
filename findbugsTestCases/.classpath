@@ -15,8 +15,9 @@
 	<classpathentry kind="lib" path="lib/testng-6.3.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/jsr305.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
 	<classpathentry kind="lib" path="lib/joda-time-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/guava.jar"/>
+	<classpathentry kind="lib" path="/findbugs/lib/annotations.jar"/>
+	<classpathentry kind="lib" path="/findbugs/lib/findbugs.jar"/>
 	<classpathentry kind="output" path="classesEclipse"/>
 </classpath>

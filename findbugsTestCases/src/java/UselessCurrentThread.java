@@ -1,6 +1,11 @@
+import annotations.DetectorUnderTest;
+import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
+import edu.umd.cs.findbugs.detect.DroppedException;
+import edu.umd.cs.findbugs.detect.SuspiciousThreadInterrupted;
 
+@DetectorUnderTest(SuspiciousThreadInterrupted.class)
 public class UselessCurrentThread implements Runnable {
     private Thread unknownThread;
 
@@ -31,8 +36,9 @@ public class UselessCurrentThread implements Runnable {
             Thread.sleep(10000);
         }
     }
-    
-    @ExpectWarning("STI_INTERRUPTED_ON_UNKNOWNTHREAD")
+
+    // XXX no warning with ecj (Eclipse) compiler (bad)
+    @DesireWarning("STI_INTERRUPTED_ON_UNKNOWNTHREAD")
     void test4() throws InterruptedException {
         Thread t = Thread.currentThread();
         while (!unknownThread.interrupted()) {
@@ -41,7 +47,8 @@ public class UselessCurrentThread implements Runnable {
         }
     }
 
-    @ExpectWarning("STI_INTERRUPTED_ON_UNKNOWNTHREAD")
+    // XXX no warning with ecj (Eclipse) compiler (bad)
+    @DesireWarning("STI_INTERRUPTED_ON_UNKNOWNTHREAD")
     void test5() throws InterruptedException {
         while (!unknownThread.interrupted()) {
             System.out.println("huh?");
