@@ -1,9 +1,10 @@
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Getter {
+    @ExpectWarning(value="IS2_INCONSISTENT_SYNC")
     int x;
 
-    @ExpectWarning("UG")
+    @ExpectWarning(value="UG_SYNC_SET_UNSYNC_GET")
     public int getX() {
         return x;
     }

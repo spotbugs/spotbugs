@@ -1,3 +1,7 @@
+import edu.umd.cs.findbugs.annotations.Confidence;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 class SynchronizationTest6 {
     int x;
 
@@ -39,6 +43,7 @@ class SynchronizationTest6 {
         }
     }
 
+    @NoWarning("IS2_INCONSISTENT_SYNC")
     public int get2X() {
         return x + x;
     }

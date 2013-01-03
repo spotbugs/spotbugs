@@ -1,4 +1,8 @@
+import edu.umd.cs.findbugs.annotations.Confidence;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class InconsistentSynchronization {
+    @ExpectWarning("IS2_INCONSISTENT_SYNC")
     int x;
 
     public synchronized int getX() {
