@@ -64,7 +64,7 @@ public class JCIPAnnotationDatabase {
 
     public boolean hasMethodAnnotation(XMethod method, String annotationClass) {
         Map<String, ElementValue> map = getEntryForClassMember(method);
-        return map.containsKey(annotationClass);
+        return map != null && map.containsKey(annotationClass);
     }
 
     @CheckForNull
