@@ -222,7 +222,6 @@ public class FindInconsistentSync2 implements Detector {
      * lock held.
      */
     private static class FieldStats {
-        private final XField field;
 
         private final int[] countList = new int[6];
 
@@ -239,7 +238,6 @@ public class FindInconsistentSync2 implements Detector {
         final boolean servletField;
 
         FieldStats(XField field) {
-            this.field = field;
             servletField = FindInconsistentSync2.isServletField(field);
         }
 
@@ -367,8 +365,8 @@ public class FindInconsistentSync2 implements Detector {
             bugReporter.logError("Error finding locked call sites", e);
             return;
         }
-        
-            
+
+
         for (Method method : allMethods) {
             if (DEBUG)
                 System.out.println("******** considering method " + method.getName());
@@ -413,16 +411,19 @@ public class FindInconsistentSync2 implements Detector {
     }
 
     public void report() {
+        if(statMap.isEmpty()){
+            return;
+        }
+        JCIPAnnotationDatabase jcipAnotationDatabase = AnalysisContext.currentAnalysisContext().getJCIPAnnotationDatabase();
         for (XField xfield : statMap.keySet()) {
             FieldStats stats = statMap.get(xfield);
-            if (!stats.interesting)
+            if (!stats.isInteresting())
                 continue;
-            JCIPAnnotationDatabase jcipAnotationDatabase = AnalysisContext.currentAnalysisContext().getJCIPAnnotationDatabase();
-            boolean guardedByThis = "this".equals(jcipAnotationDatabase.getFieldAnnotation(xfield, "GuardedBy"));
             boolean notThreadSafe = jcipAnotationDatabase.hasClassAnnotation(xfield.getClassName(), "NotThreadSafe");
-            boolean threadSafe = jcipAnotationDatabase.hasClassAnnotation(xfield.getClassName().replace('/', '.'), "ThreadSafe");
             if (notThreadSafe)
                 continue;
+            boolean guardedByThis = "this".equals(jcipAnotationDatabase.getFieldAnnotation(xfield, "GuardedBy"));
+            boolean threadSafe = jcipAnotationDatabase.hasClassAnnotation(xfield.getClassName(), "ThreadSafe");
 
             WarningPropertySet<InconsistentSyncWarningProperty> propertySet = new WarningPropertySet<InconsistentSyncWarningProperty>();
 
@@ -755,7 +756,6 @@ public class FindInconsistentSync2 implements Detector {
      * @param method
      *            the method
      */
-    @SuppressWarnings("unchecked")
     public static boolean isGetterMethod(ClassContext classContext, Method method) {
         MethodGen methodGen = classContext.getMethodGen(method);
         if (methodGen == null)
@@ -824,7 +824,7 @@ public class FindInconsistentSync2 implements Detector {
      * assume that nonpublic methods will only be called from within the class,
      * which is not really a valid assumption.
      */
-    private Set<Method> findNotUnlockedMethods(ClassContext classContext, SelfCalls selfCalls, Set<CallSite> obviouslyLockedSites)
+    private static Set<Method> findNotUnlockedMethods(ClassContext classContext, SelfCalls selfCalls, Set<CallSite> obviouslyLockedSites)
             {
 
         JavaClass javaClass = classContext.getJavaClass();
@@ -888,7 +888,7 @@ public class FindInconsistentSync2 implements Detector {
      * assume that nonpublic methods will only be called from within the class,
      * which is not really a valid assumption.
      */
-    private Set<Method> findLockedMethods(ClassContext classContext, SelfCalls selfCalls, Set<CallSite> obviouslyLockedSites)
+    private static Set<Method> findLockedMethods(ClassContext classContext, SelfCalls selfCalls, Set<CallSite> obviouslyLockedSites)
              {
 
         JavaClass javaClass = classContext.getJavaClass();
@@ -984,7 +984,7 @@ public class FindInconsistentSync2 implements Detector {
     /**
      * Find all self-call sites that are obviously locked.
      */
-    private Set<CallSite> findObviouslyLockedCallSites(ClassContext classContext, SelfCalls selfCalls)
+    private static Set<CallSite> findObviouslyLockedCallSites(ClassContext classContext, SelfCalls selfCalls)
             throws CFGBuilderException, DataflowAnalysisException {
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
 

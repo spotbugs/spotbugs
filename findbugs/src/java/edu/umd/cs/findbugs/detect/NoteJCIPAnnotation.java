@@ -44,24 +44,23 @@ public class NoteJCIPAnnotation extends AnnotationVisitor implements Detector, N
     @Override
     public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
 
-        if (!annotationClass.startsWith(NET_JCIP_ANNOTATIONS))
+        if (!annotationClass.startsWith(NET_JCIP_ANNOTATIONS)) {
             return;
+        }
         annotationClass = annotationClass.substring(NET_JCIP_ANNOTATIONS.length());
         ElementValue value = map.get("value");
         ClassMember member;
-        if (visitingField())
+        if (visitingField()) {
             member = XFactory.createXField(this);
-        else if (visitingMethod())
+        } else if (visitingMethod()) {
             member = XFactory.createXMethod(this);
-        else {
-            Map<String, ElementValue> annotationsOfThisClass = AnalysisContext.currentAnalysisContext()
-                    .getJCIPAnnotationDatabase().getEntryForClass(getDottedClassName());
-            annotationsOfThisClass.put(annotationClass, value);
+        } else {
+            AnalysisContext.currentAnalysisContext()
+                    .getJCIPAnnotationDatabase().addEntryForClass(getDottedClassName(), annotationClass, value);
             return;
         }
-        Map<String, ElementValue> annotationsOfThisMember = AnalysisContext.currentAnalysisContext().getJCIPAnnotationDatabase()
-                .getEntryForClassMember(member);
-        annotationsOfThisMember.put(annotationClass, value);
+        AnalysisContext.currentAnalysisContext().getJCIPAnnotationDatabase()
+                .addEntryForClassMember(member, annotationClass, value);
     }
 
     public void visitClassContext(ClassContext classContext) {
@@ -72,7 +71,7 @@ public class NoteJCIPAnnotation extends AnnotationVisitor implements Detector, N
     }
 
     public void report() {
-
+        // noop
     }
 
 }

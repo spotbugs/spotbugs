@@ -22,56 +22,80 @@ package edu.umd.cs.findbugs.ba;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.classfile.ElementValue;
+
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public class JCIPAnnotationDatabase {
     Map<ClassMember, Map<String, ElementValue>> memberAnnotations = new HashMap<ClassMember, Map<String, ElementValue>>();
 
     Map<String, Map<String, ElementValue>> classAnnotations = new HashMap<String, Map<String, ElementValue>>();
 
-    public Object getClassAnnotation(String dottedClassName, String annotationClass) {
-        assert dottedClassName.indexOf('/') == -1;
-        return getEntryForClass(dottedClassName).get(annotationClass);
+    @CheckForNull
+    public Object getClassAnnotation(@DottedClassName String dottedClassName, String annotationClass) {
+        Map<String, ElementValue> map = getEntryForClass(dottedClassName);
+        return map == null? null : map.get(annotationClass);
     }
 
-    public boolean hasClassAnnotation(String dottedClassName, String annotationClass) {
+    public boolean hasClassAnnotation(@DottedClassName String dottedClassName, String annotationClass) {
         assert dottedClassName.indexOf('/') == -1;
-        return getEntryForClass(dottedClassName).containsKey(annotationClass);
+        Map<String, ElementValue> map = getEntryForClass(dottedClassName);
+        return map != null && map.containsKey(annotationClass);
     }
 
+    @CheckForNull
     public Object getFieldAnnotation(XField field, String annotationClass) {
-        return getEntryForClassMember(field).get(annotationClass);
+        Map<String, ElementValue> map = getEntryForClassMember(field);
+        return map == null? null : map.get(annotationClass);
     }
 
     public boolean hasFieldAnnotation(XField field, String annotationClass) {
-        return getEntryForClassMember(field).containsKey(annotationClass);
+        Map<String, ElementValue> map = getEntryForClassMember(field);
+        return map != null && map.containsKey(annotationClass);
     }
 
+    @CheckForNull
     public Object getMethodAnnotation(XMethod method, String annotationClass) {
-        return getEntryForClassMember(method).get(annotationClass);
+        Map<String, ElementValue> map = getEntryForClassMember(method);
+        return map == null? null : map.get(annotationClass);
     }
 
     public boolean hasMethodAnnotation(XMethod method, String annotationClass) {
-        return getEntryForClassMember(method).containsKey(annotationClass);
+        Map<String, ElementValue> map = getEntryForClassMember(method);
+        return map.containsKey(annotationClass);
     }
 
-    public Map<String, ElementValue> getEntryForClassMember(ClassMember member) {
+    @CheckForNull
+    private Map<String, ElementValue> getEntryForClassMember(ClassMember member) {
+        return memberAnnotations.get(member);
+    }
+
+    public void addEntryForClassMember(ClassMember member,
+            String annotationClass, ElementValue value) {
         Map<String, ElementValue> map = memberAnnotations.get(member);
         if (map == null) {
             map = new HashMap<String, ElementValue>();
             memberAnnotations.put(member, map);
         }
-        return map;
+        map.put(annotationClass, value);
     }
 
-    public Map<String, ElementValue> getEntryForClass(String dottedClassName) {
+    @CheckForNull
+    private Map<String, ElementValue> getEntryForClass(@DottedClassName String dottedClassName) {
         assert dottedClassName.indexOf('/') == -1;
-        Map<String, ElementValue> map = classAnnotations.get(dottedClassName);
+        return classAnnotations.get(dottedClassName);
+    }
+
+    public void addEntryForClass(@DottedClassName String dottedClassName,
+            String annotationClass, ElementValue value) {
+        Map<String, ElementValue> map = getEntryForClass(dottedClassName);
         if (map == null) {
             map = new HashMap<String, ElementValue>(3);
             classAnnotations.put(dottedClassName, map);
         }
-        return map;
+        map.put(annotationClass, value);
     }
 
 }
