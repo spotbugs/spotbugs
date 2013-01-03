@@ -66,19 +66,24 @@ public class DetectorsTest {
         }
         throw new IOException("FindBugs test cases not available at " + f.getCanonicalPath());
     }
+
     public File getFindbugsTestCasesFile(String path) throws IOException {
         File f = new File(getFindbugsTestCases(), path);
         if (f.exists() && f.canRead())
             return f;
         throw new IOException("FindBugs test cases file " + path + " not available at " + f.getCanonicalPath());
     }
+
     @Before
     public void setUp() throws Exception {
         loadFindbugsPlugin();
     }
 
+    /**
+     * Test for expected warnings on javac compiler generated classes
+     */
     @Test
-    public void testAllRegressionFiles() throws IOException, InterruptedException {
+    public void testAllRegressionFilesJavac() throws IOException, InterruptedException {
         setUpEngine("build/classes/");
 
         engine.execute();
@@ -88,22 +93,12 @@ public class DetectorsTest {
                 .getCollection().isEmpty());
     }
 
+    /**
+     * Test for expected warnings on ecj compiler (Eclipse) generated classes
+     */
     @Test
-    public void testBug3053867() throws IOException, InterruptedException {
-        setUpEngine("build/classes/sfBugs/Bug3053867.class",
-                "build/classes/sfBugs/Bug3053867$Foo.class");
-
-        engine.execute();
-
-        // If there are zero bugs, then something's wrong
-        assertFalse("No bugs were reported. Something is wrong with the configuration", bugReporter.getBugCollection()
-                .getCollection().isEmpty());
-    }
-
-    @Test
-    public void testBug3506402() throws IOException, InterruptedException {
-        setUpEngine("../findbugsTestCases/build/classes/nullnessAnnotations/CheckForNullVarArgs.class",
-                    "../findbugsTestCases/build/classes/nullnessAnnotations/CheckForNullArrayArgs.class");
+    public void testAllRegressionFilesEcj() throws IOException, InterruptedException {
+        setUpEngine("classesEclipse/");
 
         engine.execute();
 
@@ -130,14 +125,15 @@ public class DetectorsTest {
     /**
      * Returns a printable String concatenating bug locations.
      */
-    private String getBugsLocations(List<BugInstance> unexpectedBugs) {
+    private static String getBugsLocations(List<BugInstance> unexpectedBugs) {
         StringBuilder message = new StringBuilder();
         for (BugInstance bugInstance : unexpectedBugs) {
             message.append("\n");
-            if (bugInstance.getBugPattern().getType().equals(FB_MISSING_EXPECTED_WARNING))
+            if (bugInstance.getBugPattern().getType().equals(FB_MISSING_EXPECTED_WARNING)) {
                 message.append("missing ");
-            else
+            } else {
                 message.append("unexpected ");
+            }
             StringAnnotation pattern = (StringAnnotation) bugInstance.getAnnotations().get(2);
             message.append(pattern.getValue());
             message.append(" ");
@@ -149,7 +145,7 @@ public class DetectorsTest {
     /**
      * Returns if a bug instance is unexpected for this test.
      */
-    private boolean isUnexpectedBug(BugInstance bug) {
+    private static boolean isUnexpectedBug(BugInstance bug) {
         return FB_MISSING_EXPECTED_WARNING.equals(bug.getType()) || FB_UNEXPECTED_WARNING.equals(bug.getType());
     }
 
@@ -157,7 +153,7 @@ public class DetectorsTest {
      * Loads the default detectors from findbugs.jar, to isolate the test from
      * others that use fake plugins.
      */
-    private void loadFindbugsPlugin() {
+    private static void loadFindbugsPlugin() {
         DetectorFactoryCollection dfc = new DetectorFactoryCollection();
         DetectorFactoryCollection.resetInstance(dfc);
     }
@@ -165,7 +161,7 @@ public class DetectorsTest {
     /**
      * Sets up a FB engine to run on the 'findbugsTestCases' project. It enables
      * all the available detectors and reports all the bug categories. Uses a
-     * normal priority threshold.
+     * low priority threshold.
      */
     private void setUpEngine(String... analyzeMe) throws IOException {
         this.engine = new FindBugs2();
@@ -178,6 +174,7 @@ public class DetectorsTest {
 
         bugReporter = new BugCollectionBugReporter(project);
         bugReporter.setPriorityThreshold(Priorities.LOW_PRIORITY);
+        bugReporter.setRankThreshold(BugRanker.VISIBLE_RANK_MAX);
 
         engine.setBugReporter(this.bugReporter);
         UserPreferences preferences = UserPreferences.createDefaultUserPreferences();
@@ -186,15 +183,17 @@ public class DetectorsTest {
         preferences.getFilterSettings().clearAllCategories();
         this.engine.setUserPreferences(preferences);
 
-        for (String s : analyzeMe)
+        for (String s : analyzeMe) {
             project.addFile(getFindbugsTestCasesFile(s).getPath());
+        }
 
         project.addAuxClasspathEntry("lib/junit.jar");
         File lib = getFindbugsTestCasesFile("lib");
          for(File f : lib.listFiles()) {
              String path = f.getPath();
-             if (f.canRead() && path.endsWith(".jar"))
-                 project.addAuxClasspathEntry(path);
+             if (f.canRead() && path.endsWith(".jar")) {
+                project.addAuxClasspathEntry(path);
+            }
          }
 
     }
