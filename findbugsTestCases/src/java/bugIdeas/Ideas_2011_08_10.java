@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import annotations.DetectorUnderTest;
 
+import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
@@ -24,7 +25,7 @@ public abstract class Ideas_2011_08_10 {
         System.out.println("foobar");
     }
 
-    @DesireWarning("DE_MIGHT_IGNORE")
+    @DesireNoWarning("DE_MIGHT_IGNORE")
     public void doNotReport2() {
         try {
             doIO();
