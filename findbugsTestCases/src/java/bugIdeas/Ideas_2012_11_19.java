@@ -2,10 +2,14 @@ package bugIdeas;
 
 import java.util.ArrayList;
 
+import annotations.DetectorUnderTest;
+
 import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
+import edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer;
 
+@DetectorUnderTest(FindUnrelatedTypesInGenericContainer.class)
 public class Ideas_2012_11_19 {
 
     static class A<XYZ> extends ArrayList<Long> {

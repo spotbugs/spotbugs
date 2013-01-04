@@ -4,8 +4,12 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import edu.umd.cs.findbugs.annotations.NoWarning;
+import annotations.DetectorUnderTest;
 
+import edu.umd.cs.findbugs.annotations.NoWarning;
+import edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer;
+
+@DetectorUnderTest(FindUnrelatedTypesInGenericContainer.class)
 public class Bug3470297 {
 
     @NoWarning("GC_UNRELATED_TYPES")

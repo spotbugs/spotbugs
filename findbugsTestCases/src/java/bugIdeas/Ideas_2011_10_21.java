@@ -3,9 +3,13 @@ package bugIdeas;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import annotations.DetectorUnderTest;
+
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
+import edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer;
 
+@DetectorUnderTest(FindUnrelatedTypesInGenericContainer.class)
 public class Ideas_2011_10_21 {
 
     Hashtable<String, Integer> hashtable = new Hashtable<String, Integer>();

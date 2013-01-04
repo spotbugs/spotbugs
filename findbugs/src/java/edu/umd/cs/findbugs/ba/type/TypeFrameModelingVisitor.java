@@ -715,10 +715,14 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         if (sourceSignature == null)
             return false;
         if (sourceSignature.startsWith("<") && !sourceSignature.contains("Map<TK;TV;>")) {
-            if (SystemProperties.ASSERTIONS_ENABLED)
-                AnalysisContext.logError("QQQ: " + c + " has signature " + sourceSignature);
+            if (DEBUG) {
+                System.out.println(c + " has a complex generic signature: " + sourceSignature);
+            }
+            // See Bug3470297 and Bug3470297a examples
             return false;
         }
+
+
         return true;
     }
 
