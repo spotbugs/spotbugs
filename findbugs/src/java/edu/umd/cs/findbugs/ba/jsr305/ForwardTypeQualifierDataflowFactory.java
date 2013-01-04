@@ -62,22 +62,11 @@ public class ForwardTypeQualifierDataflowFactory extends
         super(methodDescriptor);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowFactory#getDataflow
-     * (edu.umd.cs.findbugs.ba.DepthFirstSearch, edu.umd.cs.findbugs.ba.XMethod,
-     * edu.umd.cs.findbugs.ba.CFG,
-     * edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow,
-     * org.apache.bcel.generic.ConstantPoolGen,
-     * edu.umd.cs.findbugs.classfile.IAnalysisCache,
-     * edu.umd.cs.findbugs.classfile.MethodDescriptor)
-     */
+
     @Override
     protected ForwardTypeQualifierDataflow getDataflow(DepthFirstSearch dfs, XMethod xmethod, CFG cfg,
             ValueNumberDataflow vnaDataflow, ConstantPoolGen cpg, IAnalysisCache analysisCache,
-            MethodDescriptor methodDescriptor, TypeQualifierValue typeQualifierValue) throws DataflowAnalysisException {
+            MethodDescriptor methodDescriptor, TypeQualifierValue<?> typeQualifierValue) throws DataflowAnalysisException {
         ForwardTypeQualifierDataflowAnalysis analysis = new ForwardTypeQualifierDataflowAnalysis(dfs, xmethod, cfg, vnaDataflow,
                 cpg, typeQualifierValue);
         analysis.registerSourceSinkLocations();
@@ -92,7 +81,7 @@ public class ForwardTypeQualifierDataflowFactory extends
 
     @Override
     protected void populateDatabase(ForwardTypeQualifierDataflow dataflow, ValueNumberDataflow vnaDataflow, XMethod xmethod,
-            TypeQualifierValue tqv) throws CheckedAnalysisException {
+            TypeQualifierValue<?> tqv) throws CheckedAnalysisException {
         assert TypeQualifierDatabase.USE_DATABASE;
 
         if (xmethod.getSignature().endsWith(")V")) {

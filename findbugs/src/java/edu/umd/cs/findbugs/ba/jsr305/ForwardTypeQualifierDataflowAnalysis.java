@@ -76,37 +76,19 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
      *            should check
      */
     public ForwardTypeQualifierDataflowAnalysis(DepthFirstSearch dfs, XMethod xmethod, CFG cfg, ValueNumberDataflow vnaDataflow,
-            ConstantPoolGen cpg, TypeQualifierValue typeQualifierValue) {
+            ConstantPoolGen cpg, TypeQualifierValue<?> typeQualifierValue) {
         super(xmethod, cfg, vnaDataflow, cpg, typeQualifierValue);
         this.dfs = dfs;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.ba.DataflowAnalysis#getBlockOrder(edu.umd.cs.findbugs
-     * .ba.CFG)
-     */
-    public BlockOrder getBlockOrder(CFG cfg) {
-        return new ReversePostOrder(cfg, dfs);
+    public BlockOrder getBlockOrder(CFG cfg1) {
+        return new ReversePostOrder(cfg1, dfs);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#isForwards()
-     */
     public boolean isForwards() {
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowAnalysis#
-     * registerSourceSinkLocations()
-     */
     @Override
     public void registerSourceSinkLocations() throws DataflowAnalysisException {
         registerParameterSources();

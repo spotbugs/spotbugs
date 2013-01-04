@@ -72,7 +72,7 @@ public class BackwardTypeQualifierDataflowFactory extends
     @Override
     protected BackwardTypeQualifierDataflow getDataflow(DepthFirstSearch dfs, XMethod xmethod, CFG cfg,
             ValueNumberDataflow vnaDataflow, ConstantPoolGen cpg, IAnalysisCache analysisCache,
-            MethodDescriptor methodDescriptor, TypeQualifierValue typeQualifierValue) throws CheckedAnalysisException {
+            MethodDescriptor methodDescriptor, TypeQualifierValue<?> typeQualifierValue) throws CheckedAnalysisException {
         ReverseDepthFirstSearch rdfs = analysisCache.getMethodAnalysis(ReverseDepthFirstSearch.class, methodDescriptor);
 
         BackwardTypeQualifierDataflowAnalysis analysis = new BackwardTypeQualifierDataflowAnalysis(dfs, rdfs, xmethod, cfg,
@@ -98,7 +98,7 @@ public class BackwardTypeQualifierDataflowFactory extends
 
     @Override
     protected void populateDatabase(BackwardTypeQualifierDataflow dataflow, ValueNumberDataflow vnaDataflow, XMethod xmethod,
-            TypeQualifierValue tqv) throws CheckedAnalysisException {
+            TypeQualifierValue<?> tqv) throws CheckedAnalysisException {
         assert TypeQualifierDatabase.USE_DATABASE;
 
         // Get the dataflow fact that propagated

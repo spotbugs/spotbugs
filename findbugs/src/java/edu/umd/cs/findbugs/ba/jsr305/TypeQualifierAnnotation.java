@@ -31,17 +31,17 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
 
 /**
  * A type qualifier applied to a field, method, parameter, or return value.
- * 
+ *
  * @author Bill Pugh
  * @author David Hovemeyer
  */
 public class TypeQualifierAnnotation {
 
-    public final TypeQualifierValue typeQualifier;
+    public final TypeQualifierValue<?> typeQualifier;
 
     public final When when;
 
-    private TypeQualifierAnnotation(TypeQualifierValue typeQualifier, When when) {
+    private TypeQualifierAnnotation(TypeQualifierValue<?> typeQualifier, When when) {
         this.typeQualifier = typeQualifier;
         this.when = when;
     }
@@ -57,10 +57,10 @@ public class TypeQualifierAnnotation {
     // TypeQualifierAnnotation> map = new DualKeyHashMap <TypeQualifierValue,
     // When, TypeQualifierAnnotation> ();
 
-    private static ThreadLocal<DualKeyHashMap<TypeQualifierValue, When, TypeQualifierAnnotation>> instance = new ThreadLocal<DualKeyHashMap<TypeQualifierValue, When, TypeQualifierAnnotation>>() {
+    private static ThreadLocal<DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation>> instance = new ThreadLocal<DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation>>() {
         @Override
-        protected DualKeyHashMap<TypeQualifierValue, When, TypeQualifierAnnotation> initialValue() {
-            return new DualKeyHashMap<TypeQualifierValue, When, TypeQualifierAnnotation>();
+        protected DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation> initialValue() {
+            return new DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation>();
         }
     };
 
@@ -108,7 +108,7 @@ public class TypeQualifierAnnotation {
 
     /**
      * Combine return type annotations.
-     * 
+     *
      * @param a
      *            a TypeQualifierAnnotation used on a return value
      * @param b
@@ -123,7 +123,7 @@ public class TypeQualifierAnnotation {
     }
 
     /**
-     * 
+     *
      * @param a
      *            a TypeQualifierAnnotation used on a method parameter
      * @param b
@@ -157,17 +157,17 @@ public class TypeQualifierAnnotation {
     }
 
     public static @Nonnull
-    Collection<TypeQualifierAnnotation> getValues(Map<TypeQualifierValue, When> map) {
+    Collection<TypeQualifierAnnotation> getValues(Map<TypeQualifierValue<?>, When> map) {
         Collection<TypeQualifierAnnotation> result = new LinkedList<TypeQualifierAnnotation>();
-        for (Map.Entry<TypeQualifierValue, When> e : map.entrySet()) {
+        for (Map.Entry<TypeQualifierValue<?>, When> e : map.entrySet()) {
             result.add(getValue(e.getKey(), e.getValue()));
         }
         return result;
     }
 
     public static @Nonnull
-    TypeQualifierAnnotation getValue(TypeQualifierValue desc, When when) {
-        DualKeyHashMap<TypeQualifierValue, When, TypeQualifierAnnotation> map = instance.get();
+    TypeQualifierAnnotation getValue(TypeQualifierValue<?> desc, When when) {
+        DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation> map = instance.get();
         TypeQualifierAnnotation result = map.get(desc, when);
         if (result != null)
             return result;

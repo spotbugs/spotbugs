@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 /**
  * Factory to create and cache TypeQualifierDataflow objects for a particular
  * method.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class TypeQualifierDataflowFactory<AnalysisType extends TypeQualifierDataflowAnalysis, DataflowType extends TypeQualifierDataflow<AnalysisType>> {
@@ -60,16 +60,16 @@ public abstract class TypeQualifierDataflowFactory<AnalysisType extends TypeQual
         }
     }
 
-    private HashMap<TypeQualifierValue, DataflowResult<DataflowType>> dataflowMap;
+    private final HashMap<TypeQualifierValue<?>, DataflowResult<DataflowType>> dataflowMap;
 
-    private MethodDescriptor methodDescriptor;
+    private final MethodDescriptor methodDescriptor;
 
     public TypeQualifierDataflowFactory(MethodDescriptor methodDescriptor) {
         this.methodDescriptor = methodDescriptor;
-        this.dataflowMap = new HashMap<TypeQualifierValue, DataflowResult<DataflowType>>();
+        this.dataflowMap = new HashMap<TypeQualifierValue<?>, DataflowResult<DataflowType>>();
     }
 
-    public DataflowType getDataflow(TypeQualifierValue typeQualifierValue) throws CheckedAnalysisException {
+    public DataflowType getDataflow(TypeQualifierValue<?> typeQualifierValue) throws CheckedAnalysisException {
         DataflowResult<DataflowType> result = dataflowMap.get(typeQualifierValue);
         if (result == null) {
             result = compute(typeQualifierValue);
@@ -78,7 +78,7 @@ public abstract class TypeQualifierDataflowFactory<AnalysisType extends TypeQual
         return result.get();
     }
 
-    private DataflowResult<DataflowType> compute(TypeQualifierValue typeQualifierValue) {
+    private DataflowResult<DataflowType> compute(TypeQualifierValue<?> typeQualifierValue) {
         DataflowResult<DataflowType> result = new DataflowResult<DataflowType>();
 
         try {
@@ -112,10 +112,10 @@ public abstract class TypeQualifierDataflowFactory<AnalysisType extends TypeQual
     }
 
     protected abstract DataflowType getDataflow(DepthFirstSearch dfs, XMethod xmethod, CFG cfg, ValueNumberDataflow vnaDataflow,
-            ConstantPoolGen cpg, IAnalysisCache analysisCache, MethodDescriptor methodDescriptor,
-            TypeQualifierValue typeQualifierValue) throws CheckedAnalysisException;
+            ConstantPoolGen cpg, IAnalysisCache analysisCache, MethodDescriptor methodDescriptor1,
+            TypeQualifierValue<?> typeQualifierValue) throws CheckedAnalysisException;
 
     protected abstract void populateDatabase(DataflowType dataflow, ValueNumberDataflow vnaDataflow, XMethod xmethod,
-            TypeQualifierValue tqv) throws CheckedAnalysisException;
+            TypeQualifierValue<?> tqv) throws CheckedAnalysisException;
 
 }

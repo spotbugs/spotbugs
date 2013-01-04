@@ -85,7 +85,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
      *            should check
      */
     public BackwardTypeQualifierDataflowAnalysis(DepthFirstSearch dfs, ReverseDepthFirstSearch rdfs, XMethod xmethod, CFG cfg,
-            ValueNumberDataflow vnaDataflow, ConstantPoolGen cpg, TypeQualifierValue typeQualifierValue) {
+            ValueNumberDataflow vnaDataflow, ConstantPoolGen cpg, TypeQualifierValue<?> typeQualifierValue) {
         super(xmethod, cfg, vnaDataflow, cpg, typeQualifierValue);
         this.dfs = dfs;
         this.rdfs = rdfs;
@@ -99,14 +99,6 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
         this.forwardTypeQualifierDataflow = forwardTypeQualifierDataflow;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowAnalysis#edgeTransfer
-     * (edu.umd.cs.findbugs.ba.Edge,
-     * edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValueSet)
-     */
     @Override
     public void edgeTransfer(Edge edge, TypeQualifierValueSet fact) throws DataflowAnalysisException {
         if (PRUNE_CONFLICTING_VALUES && forwardTypeQualifierDataflow != null) {
@@ -116,14 +108,6 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
         super.edgeTransfer(edge, fact);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transferInstruction(org
-     * .apache.bcel.generic.InstructionHandle,
-     * edu.umd.cs.findbugs.ba.BasicBlock, java.lang.Object)
-     */
     @Override
     public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, TypeQualifierValueSet fact)
             throws DataflowAnalysisException {
@@ -147,7 +131,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
             valueNumbers.retainAll(forwardFact.getValueNumbers());
 
             for (ValueNumber vn : valueNumbers) {
-                if (FlowValue.valuesConflict(typeQualifierValue.isStrictQualifier() && !xmethod.isIdentity(), 
+                if (FlowValue.valuesConflict(typeQualifierValue.isStrictQualifier() && !xmethod.isIdentity(),
                         forwardFact.getValue(vn), fact.getValue(vn))) {
                     fact.pruneValue(vn);
                 }
@@ -155,32 +139,14 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.ba.DataflowAnalysis#getBlockOrder(edu.umd.cs.findbugs
-     * .ba.CFG)
-     */
-    public BlockOrder getBlockOrder(CFG cfg) {
-        return new ReverseDFSOrder(cfg, rdfs, dfs);
+    public BlockOrder getBlockOrder(CFG cfg1) {
+        return new ReverseDFSOrder(cfg1, rdfs, dfs);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#isForwards()
-     */
     public boolean isForwards() {
         return false;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowAnalysis#
-     * registerSourceSinkLocations()
-     */
     @Override
     public void registerSourceSinkLocations() throws DataflowAnalysisException {
         registerInstructionSinks();
@@ -260,7 +226,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 
         if (TypeQualifierDataflowAnalysis.isIdentifyFunctionForTypeQualifiers(calledMethod))
             return;
-       
+
         for (int param = 0; param < calledMethod.getNumParams(); param++) {
             TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(calledMethod, param,
                     typeQualifierValue);

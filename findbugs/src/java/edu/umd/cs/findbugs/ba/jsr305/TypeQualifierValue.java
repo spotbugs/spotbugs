@@ -91,16 +91,16 @@ public class TypeQualifierValue<A extends Annotation> {
     private TypeQualifierValue(ClassDescriptor typeQualifier, @CheckForNull Object value) {
         this.typeQualifier = typeQualifier;
         this.value = value;
-        boolean isStrict = false; // will be set to true if this is a strict
+        boolean isStrict1 = false; // will be set to true if this is a strict
                                   // type qualifier value
-        boolean isExclusive = false; // will be set to true if this is an
+        boolean isExclusive1 = false; // will be set to true if this is an
                                      // exclusive type qualifier value
-        boolean isExhaustive = false; // will be set to true if this is an
+        boolean isExhaustive1 = false; // will be set to true if this is an
                                       // exhaustive type qualifier value
 
-        TypeQualifierValidator<A> validator = null;
+        TypeQualifierValidator<A> validator1 = null;
         Class<A> qualifierClass = null;
-        A proxy = null;
+        A proxy1 = null;
         try {
             XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, typeQualifier);
 
@@ -111,17 +111,17 @@ public class TypeQualifierValue<A extends Annotation> {
             // it will appear as an abstract method called "when".
             XMethod whenMethod = xclass.findMethod("when", "()Ljavax/annotation/meta/When;", false);
             if (whenMethod == null) {
-                isStrict = true;
+                isStrict1 = true;
             }
             for (XMethod xmethod : xclass.getXMethods()) {
                 if (xmethod.getName().equals("value") && xmethod.getSignature().startsWith("()")) {
-                    isExhaustive = xmethod.getAnnotation(EXHAUSTIVE_ANNOTATION) != null;
-                    if (isExhaustive) {
+                    isExhaustive1 = xmethod.getAnnotation(EXHAUSTIVE_ANNOTATION) != null;
+                    if (isExhaustive1) {
                         // exhaustive qualifiers are automatically exclusive
-                        isExclusive = true;
+                        isExclusive1 = true;
                     } else {
                         // see if there is an explicit @Exclusive annotation
-                        isExclusive = xmethod.getAnnotation(EXCLUSIVE_ANNOTATION) != null;
+                        isExclusive1 = xmethod.getAnnotation(EXCLUSIVE_ANNOTATION) != null;
                     }
 
                     break;
@@ -132,14 +132,13 @@ public class TypeQualifierValue<A extends Annotation> {
         } catch (CheckedAnalysisException e) {
             AnalysisContext.logError("Error looking up annotation class " + typeQualifier.toDottedClassName(), e);
         }
-        this.isStrict = isStrict;
-        this.isExclusive = isExclusive;
-        this.isExhaustive = isExhaustive;
+        this.isStrict = isStrict1;
+        this.isExclusive = isExclusive1;
+        this.isExhaustive = isExhaustive1;
         ClassDescriptor checkerName = DescriptorFactory.createClassDescriptor(typeQualifier.getClassName() + "$Checker");
         try {
             Global.getAnalysisCache().getClassAnalysis(ClassData.class, checkerName);
             // found it.
-//            System.out.println(checkerName);
             SecurityManager m = System.getSecurityManager();
             if (m == null){
                 // XXX "if" check below is the quick fix for bug 3599258 (Random obscure Eclipse failures during analysis)
@@ -149,8 +148,7 @@ public class TypeQualifierValue<A extends Annotation> {
             }
             Class<?> c = validatorLoader.loadClass(checkerName.getDottedClassName());
              if (TypeQualifierValidator.class.isAssignableFrom(c)) {
-                Class<? extends TypeQualifierValidator> checkerClass = c.asSubclass(TypeQualifierValidator.class);
-                validator = getValidator(checkerClass);
+                validator1 = getValidator((Class<? extends TypeQualifierValidator<A>>) c.asSubclass(TypeQualifierValidator.class));
                 qualifierClass = getQualifierClass(typeQualifier);
 
                 InvocationHandler handler = new InvocationHandler() {
@@ -161,7 +159,7 @@ public class TypeQualifierValue<A extends Annotation> {
                        throw new UnsupportedOperationException("Can't handle " + arg1);
                     }};
 
-                proxy =  qualifierClass.cast(Proxy.newProxyInstance(validatorLoader, new Class[] {qualifierClass}, handler));
+                proxy1 =  qualifierClass.cast(Proxy.newProxyInstance(validatorLoader, new Class[] {qualifierClass}, handler));
             }
         } catch (ClassNotFoundException e) {
             assert true; // ignore
@@ -172,30 +170,18 @@ public class TypeQualifierValue<A extends Annotation> {
         } catch (Throwable e) {
             AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName + " due to " + e.getClass().getSimpleName() + ":" + e.getMessage());
         }
-        this.validator = validator;
+        this.validator = validator1;
         this.typeQualifierClass = qualifierClass;
-        this.proxy = proxy;
+        this.proxy = proxy1;
     }
 
-    /**
-     * @param checkerClass
-     * @return
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     */
-    @SuppressWarnings("unchecked")
-    private TypeQualifierValidator<A> getValidator(Class<? extends TypeQualifierValidator> checkerClass)
+    private static <A extends Annotation> TypeQualifierValidator<A> getValidator(
+            Class<? extends TypeQualifierValidator<A>> checkerClass)
             throws InstantiationException, IllegalAccessException {
         return checkerClass.newInstance();
     }
 
-    /**
-     * @param typeQualifier
-     * @return
-     * @throws ClassNotFoundException
-     */
-    @SuppressWarnings("unchecked")
-    private Class<A> getQualifierClass(ClassDescriptor typeQualifier) throws ClassNotFoundException {
+    private static <A> Class<A> getQualifierClass(ClassDescriptor typeQualifier) throws ClassNotFoundException {
         return (Class<A>) validatorLoader.loadClass(typeQualifier.getDottedClassName());
     }
 
@@ -239,14 +225,13 @@ public class TypeQualifierValue<A extends Annotation> {
     static final class ValidationSecurityManager extends SecurityManager {
         @Override
         public void checkPermission(Permission perm) {
-//            System.out.println("Checking " + perm);
             if (performingValidation.get().get())
-                throw new SecurityException("not permissions granted while performing JSR-305 validation");
+                throw new SecurityException("No permissions granted while performing JSR-305 validation");
         }
         @Override
         public void checkPermission(Permission perm, Object context) {
             if (performingValidation.get().get())
-                throw new SecurityException("not permissions granted while performing JSR-305 validation");
+                throw new SecurityException("No permissions granted while performing JSR-305 validation");
         }
     }
 
@@ -286,6 +271,7 @@ public class TypeQualifierValue<A extends Annotation> {
      *            a value
      * @return an interned TypeQualifierValue object
      */
+    @SuppressWarnings("rawtypes")
     public static @Nonnull
     TypeQualifierValue<?> getValue(ClassDescriptor desc, Object value) {
         DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue<?>> map = instance.get().typeQualifierMap;
@@ -320,12 +306,12 @@ public class TypeQualifierValue<A extends Annotation> {
      *            a type qualifier (which must be exclusive)
      * @return Collection of complementary exclusive type qualifiers
      */
-    public static Collection<TypeQualifierValue> getComplementaryExclusiveTypeQualifierValue(TypeQualifierValue tqv) {
+    public static Collection<TypeQualifierValue<?>> getComplementaryExclusiveTypeQualifierValue(TypeQualifierValue<?> tqv) {
         assert tqv.isExclusiveQualifier();
 
-        LinkedList<TypeQualifierValue> result = new LinkedList<TypeQualifierValue>();
+        LinkedList<TypeQualifierValue<?>> result = new LinkedList<TypeQualifierValue<?>>();
 
-        for (TypeQualifierValue t : instance.get().allKnownTypeQualifiers) {
+        for (TypeQualifierValue<?> t : instance.get().allKnownTypeQualifiers) {
             //
             // Any TypeQualifierValue with the same
             // annotation class but a different value is a complementary
@@ -349,9 +335,9 @@ public class TypeQualifierValue<A extends Annotation> {
      * @return true if there are multiple variants of this type qualifier, false
      *         otherwise
      */
-    public static boolean hasMultipleVariants(TypeQualifierValue tqv) {
+    public static boolean hasMultipleVariants(TypeQualifierValue<?> tqv) {
         int count = 0;
-        for (TypeQualifierValue t : instance.get().allKnownTypeQualifiers) {
+        for (TypeQualifierValue<?> t : instance.get().allKnownTypeQualifiers) {
             if (t.typeQualifier.equals(tqv.typeQualifier)) {
                 count++;
             }
@@ -409,15 +395,10 @@ public class TypeQualifierValue<A extends Annotation> {
     public boolean equals(Object o) {
         if (!(o instanceof TypeQualifierValue))
             return false;
-        TypeQualifierValue other = (TypeQualifierValue) o;
+        TypeQualifierValue<?> other = (TypeQualifierValue<?>) o;
         return typeQualifier.equals(other.typeQualifier) && Util.nullSafeEquals(value, other.value);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
