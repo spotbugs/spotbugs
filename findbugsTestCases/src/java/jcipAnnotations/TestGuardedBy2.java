@@ -6,6 +6,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class TestGuardedBy2 {
 
+    @ExpectWarning("IS_FIELD_NOT_GUARDED")
     @GuardedBy("this")
     int x;
 
@@ -25,7 +26,6 @@ public class TestGuardedBy2 {
         z = v;
     }
 
-    @ExpectWarning("IS_FIELD_NOT_GUARDED")
     public int getXY() {
         return x + y;
     }

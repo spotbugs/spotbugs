@@ -23,6 +23,7 @@ public class Getter {
     }
 
     @NoWarning("IS2_INCONSISTENT_SYNC")
+    @ExpectWarning("IS_FIELD_NOT_GUARDED")
     @javax.annotation.concurrent.GuardedBy("this")
     int y;
 
@@ -30,12 +31,13 @@ public class Getter {
         return y;
     }
 
-    @ExpectWarning("IS_FIELD_NOT_GUARDED")
+
     public void setY(int y){
         this.y = y;
     }
 
     @NoWarning("IS2_INCONSISTENT_SYNC")
+    @ExpectWarning("IS_FIELD_NOT_GUARDED")
     @net.jcip.annotations.GuardedBy("this")
     int z;
 
@@ -43,7 +45,6 @@ public class Getter {
         return z;
     }
 
-    @ExpectWarning(value="IS_FIELD_NOT_GUARDED")
     public void setZ(int z){
         this.z = z;
     }
