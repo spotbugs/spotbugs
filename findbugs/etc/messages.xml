@@ -219,7 +219,7 @@ applied to method parameters and uses of those method parameters. </p>
   <Detector class="edu.umd.cs.findbugs.detect.CheckImmutableAnnotation">
     <Details>
 <![CDATA[
-<p> Looks for violations of the rules for classes annotated as net.jcip.annotations.Immutable.</p>
+<p> Looks for violations of the rules for classes annotated as net.jcip.annotations.Immutable or javax.annotation.concurrent.Immutable.</p>
 ]]>
     </Details>
   </Detector>
@@ -2196,8 +2196,8 @@ will need to be changed in order to compile it in later versions of Java.</p>
     <LongDescription>{1.givenClass} should be final since {0} is marked as Immutable.  </LongDescription>
     <Details>
 <![CDATA[
-  <p> The class is annotated with net.jcip.annotations.Immutable, and the rules for that annotation require
-that all fields are final.
+  <p> The class is annotated with net.jcip.annotations.Immutable or javax.annotation.concurrent.Immutable,
+  and the rules for those annotations require that all fields are final.
    .</p>
 ]]>
     </Details>
@@ -3107,8 +3107,8 @@ using the <code>equals(Object)</code> method instead.</p>
     <LongDescription>{1.givenClass} not guarded against concurrent access; locked {2}% of time</LongDescription>
     <Details>
 <![CDATA[
-  <p> This field is annotated with net.jcip.annotations.GuardedBy,
-but can be accessed in a way that seems to violate the annotation.</p>
+  <p> This field is annotated with net.jcip.annotations.GuardedBy or javax.annotation.concurrent.GuardedBy,
+but can be accessed in a way that seems to violate those annotations.</p>
 ]]>
 </Details>
   </BugPattern>
@@ -3137,6 +3137,7 @@ Thus, having a mutable instance field generally creates race conditions.
   </p>
   <ul>
   <li> The class contains a mix of locked and unlocked accesses,</li>
+  <li> The class is <b>not</b> annotated as javax.annotation.concurrent.NotThreadSafe,</li>
   <li> At least one locked access was performed by one of the class's own methods, and</li>
   <li> The number of unsynchronized field accesses (reads and writes) was no more than
        one third of all accesses, with writes being weighed twice as high as reads</li>
