@@ -108,7 +108,7 @@
     <target name="runEffort" depends="classes">
      <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
            classpath="${fb-ant.jar}"/>
-
+    	<echo>Test expected warnings with *min* effort</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
                          output="xml:withMessages" timestampNow="true" reportLevel="low" effort="min"  chooseVisitors="+CheckExpectedWarnings" outputFile="build/minEffort.xml">
             <sourcePath path="${basedir}/src/java" />
@@ -116,6 +116,7 @@
             <class location="${basedir}/build/classes" />
         </findbugs>
 
+    	<echo>Test expected warnings with *less* effort</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
                          output="xml:withMessages" timestampNow="true" reportLevel="low" effort="less"  chooseVisitors="+CheckExpectedWarnings" outputFile="build/lessEffort.xml">
             <sourcePath path="${basedir}/src/java" />
@@ -123,6 +124,7 @@
             <class location="${basedir}/build/classes" />
         </findbugs>
 
+    	<echo>Test expected warnings with *more* effort</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
                          output="xml:withMessages" timestampNow="true" reportLevel="low" effort="more"  chooseVisitors="+CheckExpectedWarnings" outputFile="build/moreEffort.xml">
             <sourcePath path="${basedir}/src/java" />
@@ -130,6 +132,7 @@
             <class location="${basedir}/build/classes" />
         </findbugs>
 
+    	<echo>Test expected warnings with *max* effort</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
                          output="xml:withMessages" timestampNow="true" reportLevel="low" effort="max"  chooseVisitors="+CheckExpectedWarnings" outputFile="build/maxEffort.xml">
             <sourcePath path="${basedir}/src/java" />
