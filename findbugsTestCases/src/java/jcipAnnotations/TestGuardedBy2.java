@@ -1,9 +1,10 @@
 package jcipAnnotations;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import net.jcip.annotations.GuardedBy;
+import javax.annotation.concurrent.GuardedBy;
 
-public class TestGuardedBy {
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
+public class TestGuardedBy2 {
 
     @GuardedBy("this")
     int x;
