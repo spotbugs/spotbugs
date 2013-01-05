@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.ElementValue;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -422,7 +423,13 @@ public class FindInconsistentSync2 implements Detector {
             boolean notThreadSafe = jcipAnotationDatabase.hasClassAnnotation(xfield.getClassName(), "NotThreadSafe");
             if (notThreadSafe)
                 continue;
-            boolean guardedByThis = "this".equals(jcipAnotationDatabase.getFieldAnnotation(xfield, "GuardedBy"));
+            ElementValue guardedByValue = jcipAnotationDatabase.getFieldAnnotation(xfield, "GuardedBy");
+            boolean guardedByThis;
+            if(guardedByValue != null){
+                guardedByThis = guardedByValue.stringifyValue().equals("this");
+            } else {
+                guardedByThis = false;
+            }
             boolean threadSafe = jcipAnotationDatabase.hasClassAnnotation(xfield.getClassName(), "ThreadSafe");
 
             WarningPropertySet<InconsistentSyncWarningProperty> propertySet = new WarningPropertySet<InconsistentSyncWarningProperty>();

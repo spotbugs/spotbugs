@@ -34,7 +34,7 @@ public class JCIPAnnotationDatabase {
     Map<String, Map<String, ElementValue>> classAnnotations = new HashMap<String, Map<String, ElementValue>>();
 
     @CheckForNull
-    public Object getClassAnnotation(@DottedClassName String dottedClassName, String annotationClass) {
+    public ElementValue getClassAnnotation(@DottedClassName String dottedClassName, String annotationClass) {
         Map<String, ElementValue> map = getEntryForClass(dottedClassName);
         return map == null? null : map.get(annotationClass);
     }
@@ -46,7 +46,7 @@ public class JCIPAnnotationDatabase {
     }
 
     @CheckForNull
-    public Object getFieldAnnotation(XField field, String annotationClass) {
+    public ElementValue getFieldAnnotation(XField field, String annotationClass) {
         Map<String, ElementValue> map = getEntryForClassMember(field);
         return map == null? null : map.get(annotationClass);
     }
@@ -57,7 +57,7 @@ public class JCIPAnnotationDatabase {
     }
 
     @CheckForNull
-    public Object getMethodAnnotation(XMethod method, String annotationClass) {
+    public ElementValue getMethodAnnotation(XMethod method, String annotationClass) {
         Map<String, ElementValue> map = getEntryForClassMember(method);
         return map == null? null : map.get(annotationClass);
     }
