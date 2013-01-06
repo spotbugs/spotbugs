@@ -8,9 +8,10 @@ import java.lang.annotation.Target;
 
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.Detector2;
+import edu.umd.cs.findbugs.Priorities;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.SOURCE)
 @Documented
 public @interface DetectorUnderTest {
-    Class<? extends Detector> value();
+    Class<? extends Priorities> value();
 }
