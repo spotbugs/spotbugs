@@ -40,8 +40,14 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
     public static class Parser {
         @CheckForNull
         public static NullnessAnnotation parse(@DottedClassName String className) {
-            if (className.equals("com.google.common.base.Nullable") || className.equals("org.jetbrains.annotations.Nullable")) {
+            if (className.equals("com.google.common.base.Nullable")
+                    || className.equals("org.eclipse.jdt.annotation.Nullable")
+                    || className.equals("org.jetbrains.annotations.Nullable")) {
                 return CHECK_FOR_NULL;
+            }
+            // Unfortunately there are mixed case Nonnull and NonNull annotations (JSR305, FB and JDT)
+            if (className.endsWith(".Nonnull")) {
+                return NONNULL;
             }
             for (NullnessAnnotation v : myValues) {
                 if (className.endsWith(v.name)) {

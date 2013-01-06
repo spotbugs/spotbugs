@@ -435,6 +435,17 @@ public class TypeQualifierApplications {
             // ignore
         }
 
+        // Try out default JDT (Eclipse) annotations
+        if(result == null){
+            AnnotationValue annotationValue = o.getAnnotation(TypeQualifierResolver.eclipseNonNullByDefault);
+            if(annotationValue != null){
+                Collection<AnnotationValue> resolvedTypeQualifiers = TypeQualifierResolver.resolveTypeQualifiers(annotationValue);
+                tqa = extractAnnotation(resolvedTypeQualifiers, typeQualifierValue);
+                if(tqa != null){
+                    return tqa;
+                }
+            }
+        }
         return result;
     }
 
