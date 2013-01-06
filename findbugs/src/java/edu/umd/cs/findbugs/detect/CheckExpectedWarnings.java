@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
@@ -82,6 +83,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
     private Set<String> possibleBugCodes;
 
     private boolean initialized = false;
+    private Map<ClassDescriptor, Collection<BugInstance>> warningsByClass;
     private Map<MethodDescriptor, Collection<BugInstance>> warningsByMethod;
     private Map<FieldDescriptor, Collection<BugInstance>> warningsByField;
 
@@ -126,6 +128,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
             // produced by this point.
             //
 
+            warningsByClass = new HashMap<ClassDescriptor, Collection<BugInstance>>();
             warningsByMethod = new HashMap<MethodDescriptor, Collection<BugInstance>>();
             warningsByField = new HashMap<FieldDescriptor, Collection<BugInstance>>();
 
@@ -153,6 +156,18 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                         warningsByField.put(fieldDescriptor, warnings);
                     }
                     warnings.add(warning);
+                }
+                if(field == null && method == null){
+                    ClassAnnotation clazz = warning.getPrimaryClass();
+                    if (clazz != null) {
+                        ClassDescriptor classDesc = clazz.getClassDescriptor();
+                        Collection<BugInstance> warnings = warningsByClass.get(classDesc);
+                        if (warnings == null) {
+                            warnings = new LinkedList<BugInstance>();
+                            warningsByClass.put(classDesc, warnings);
+                        }
+                        warnings.add(warning);
+                    }
                 }
             }
 
@@ -186,6 +201,14 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 
         XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDescriptor);
         List<? extends XMethod> methods = xclass.getXMethods();
+        if (DEBUG) {
+            System.out.println("CEW: checking " + xclass.toString());
+        }
+        check(xclass, expectWarning, true, HIGH_PRIORITY);
+        check(xclass, desireWarning, true, NORMAL_PRIORITY);
+        check(xclass, noWarning, false, HIGH_PRIORITY);
+        check(xclass, desireNoWarning, false, NORMAL_PRIORITY);
+
         for (XMethod xmethod : methods) {
             if (DEBUG) {
                 System.out.println("CEW: checking " + xmethod.toString());
@@ -207,6 +230,18 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 
     }
 
+    private void check(XClass xclass, ClassDescriptor annotation, boolean expectWarnings, int priority) {
+        AnnotationValue expect = xclass.getAnnotation(annotation);
+        if (expect == null)
+            return;
+        if (DEBUG) {
+            System.out.println("*** Found " + annotation + " annotation on " + xclass);
+        }
+        ClassDescriptor descriptor = xclass.getClassDescriptor();
+        Collection<BugInstance> warnings = warningsByClass.get(descriptor);
+        check(expect, descriptor, warnings, expectWarnings, priority, descriptor);
+    }
+
     private void check(XMethod xmethod, ClassDescriptor annotation, boolean expectWarnings, int priority) {
         AnnotationValue expect = xmethod.getAnnotation(annotation);
         if (expect == null)
@@ -216,8 +251,9 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         }
         FieldOrMethodDescriptor descriptor = xmethod.getMethodDescriptor();
         Collection<BugInstance> warnings = warningsByMethod.get(descriptor);
-        check(expect, descriptor, warnings, expectWarnings, priority);
+        check(expect, descriptor, warnings, expectWarnings, priority, descriptor.getClassDescriptor());
     }
+
     private void check(XField xfield, ClassDescriptor annotation, boolean expectWarnings, int priority) {
         AnnotationValue expect = xfield.getAnnotation(annotation);
         if (expect == null)
@@ -228,11 +264,11 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         }
         FieldOrMethodDescriptor descriptor = xfield.getFieldDescriptor();
         Collection<BugInstance> warnings = warningsByField.get(descriptor);
-        check(expect, descriptor, warnings, expectWarnings, priority);
+        check(expect, descriptor, warnings, expectWarnings, priority, descriptor.getClassDescriptor());
     }
 
-    private void check(AnnotationValue expect, FieldOrMethodDescriptor descriptor,
-            Collection<BugInstance> warnings, boolean expectWarnings, int priority) {
+    private void check(AnnotationValue expect, Object descriptor,
+            Collection<BugInstance> warnings, boolean expectWarnings, int priority, ClassDescriptor cd) {
 
         if (expect != null) {
 
@@ -263,33 +299,33 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                 }
             }
             if (expectedBugCodes == null || expectedBugCodes.trim().length() == 0) {
-                checkAnnotation(null, warnings, expectWarnings, priority, rank, num, descriptor, minPriority);
+                checkAnnotation(null, warnings, expectWarnings, priority, rank, num, descriptor, minPriority, cd);
             } else {
                 StringTokenizer tok = new StringTokenizer(expectedBugCodes, ",");
                 while (tok.hasMoreTokens()) {
                     String bugCode = tok.nextToken().trim();
                     if (!possibleBugCodes.contains(bugCode))
                         continue;
-                    checkAnnotation(bugCode, warnings, expectWarnings, priority, rank, num, descriptor, minPriority);
+                    checkAnnotation(bugCode, warnings, expectWarnings, priority, rank, num, descriptor, minPriority, cd);
                 }
             }
         }
     }
 
     public void checkAnnotation(@CheckForNull String bugCode, Collection<BugInstance> warnings, boolean expectWarnings, int priority,
-            Integer rank, Integer num, FieldOrMethodDescriptor methodDescriptor, int minPriority) {
+            Integer rank, Integer num, Object methodDescriptor, int minPriority, ClassDescriptor cd) {
 
         String bugCodeMessage = bugCode != null ? bugCode : "any bug";
         Collection<SourceLineAnnotation> bugs = countWarnings(warnings, bugCode, minPriority,
                 rank);
         if (expectWarnings && bugs.size() < num) {
-            BugInstance bug = makeWarning("FB_MISSING_EXPECTED_WARNING", methodDescriptor, priority).addString(bugCodeMessage);
+            BugInstance bug = makeWarning("FB_MISSING_EXPECTED_WARNING", methodDescriptor, priority, cd).addString(bugCodeMessage);
             if (!bugs.isEmpty()) {
                 bug.addString(String.format("Expected %d bugs, saw %d", num, bugs.size()));
             }
             reporter.reportBug(bug);
         } else if (bugs.size() > num) {
-            BugInstance bug = makeWarning("FB_UNEXPECTED_WARNING", methodDescriptor, priority).addString(bugCodeMessage);
+            BugInstance bug = makeWarning("FB_UNEXPECTED_WARNING", methodDescriptor, priority, cd).addString(bugCodeMessage);
             if (!expectWarnings) {
                 for (SourceLineAnnotation s : bugs) {
                     reporter.reportBug(bug.add(s));
@@ -309,12 +345,14 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
      * @param priority
      * @return
      */
-    public BugInstance makeWarning(String bugPattern, FieldOrMethodDescriptor descriptor, int priority) {
-        BugInstance bug = new BugInstance(this, bugPattern, priority).addClass(descriptor.getClassDescriptor());
+    public BugInstance makeWarning(String bugPattern, Object descriptor, int priority, ClassDescriptor cd) {
+        BugInstance bug = new BugInstance(this, bugPattern, priority).addClass(cd);
         if (descriptor instanceof FieldDescriptor)
             bug.addField((FieldDescriptor)descriptor);
         else if (descriptor instanceof MethodDescriptor)
             bug.addMethod((MethodDescriptor)descriptor);
+        else if (descriptor instanceof ClassDescriptor)
+            bug.addClass((ClassDescriptor)descriptor);
         if (DEBUG)
             System.out.println("Reporting " + bug);
         return bug;
