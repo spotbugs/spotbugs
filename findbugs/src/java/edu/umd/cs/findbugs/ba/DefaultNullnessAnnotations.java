@@ -403,17 +403,26 @@ public class DefaultNullnessAnnotations {
                 NullnessAnnotation.CHECK_FOR_NULL);
 
         database.addMethodParameterAnnotation("com.google.common.base.Preconditions","checkNotNull","(Ljava/lang/Object;)Ljava/lang/Object;",
-                false, 0, NullnessAnnotation.NONNULL);
+                true, 0, NullnessAnnotation.NONNULL);
         database.addMethodParameterAnnotation("com.google.common.base.Preconditions","checkNotNull","(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
-                false, 0, NullnessAnnotation.NONNULL);
+                true, 0, NullnessAnnotation.NONNULL);
         database.addMethodParameterAnnotation("com.google.common.base.Preconditions","checkNotNull","(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;",
-                false, 0, NullnessAnnotation.NONNULL);
+                true, 0, NullnessAnnotation.NONNULL);
         database.addMethodAnnotation("com.google.common.base.Preconditions","checkNotNull","(Ljava/lang/Object;)Ljava/lang/Object;",
-                false, NullnessAnnotation.NONNULL);
+                true, NullnessAnnotation.NONNULL);
         database.addMethodAnnotation("com.google.common.base.Preconditions","checkNotNull","(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
-                false, NullnessAnnotation.NONNULL);
+                true, NullnessAnnotation.NONNULL);
         database.addMethodAnnotation("com.google.common.base.Preconditions","checkNotNull","(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;",
-                false, NullnessAnnotation.NONNULL);
+                true, NullnessAnnotation.NONNULL);
+
+        database.addMethodParameterAnnotation("java.util.Objects","requireNonNull", "(Ljava/lang/Object;)Ljava/lang/Object;",
+                true, 0, NullnessAnnotation.NONNULL);
+        database.addMethodParameterAnnotation("java.util.Objects","requireNonNull", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;",
+                true, 0, NullnessAnnotation.NONNULL);
+        database.addMethodAnnotation("java.util.Objects","requireNonNull", "(Ljava/lang/Object;)Ljava/lang/Object;",
+                true, NullnessAnnotation.NONNULL);
+        database.addMethodAnnotation("java.util.Objects","requireNonNull", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;",
+                true, NullnessAnnotation.NONNULL);
 
         addEclipseSpecificAnnotations(database);
 
