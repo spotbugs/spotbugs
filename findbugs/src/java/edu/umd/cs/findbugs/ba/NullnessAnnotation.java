@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.ba;
 
 import javax.annotation.CheckForNull;
 
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+
 /**
  * @author pugh
  */
@@ -37,14 +39,18 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
 
     public static class Parser {
         @CheckForNull
-        public static NullnessAnnotation parse(String s) {
-            if (s.equals("com.google.common.base.Nullable") || s.equals("org.jetbrains.annotations.Nullable"))
+        public static NullnessAnnotation parse(@DottedClassName String className) {
+            if (className.equals("com.google.common.base.Nullable") || className.equals("org.jetbrains.annotations.Nullable")) {
                 return CHECK_FOR_NULL;
-            for (NullnessAnnotation v : myValues)
-                if (s.endsWith(v.name))
+            }
+            for (NullnessAnnotation v : myValues) {
+                if (className.endsWith(v.name)) {
                     return v;
-            if (s.endsWith("PossiblyNull"))
+                }
+            }
+            if (className.endsWith("PossiblyNull")) {
                 return CHECK_FOR_NULL;
+            }
             return null;
         }
     }
@@ -55,7 +61,6 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
 
     private NullnessAnnotation(String s, int i) {
         super(s, i);
-
     }
 
 }
