@@ -40,13 +40,6 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
         DefaultNullnessAnnotations.addDefaultNullnessAnnotations(this);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#parameterMustBeNonNull
-     * (edu.umd.cs.findbugs.ba.XMethod, int)
-     */
     public boolean parameterMustBeNonNull(XMethod m, int param) {
         if (param == 0) {
             if (m.getName().equals("equals") && m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic())
@@ -63,18 +56,11 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
             return false;
         XMethodParameter xmp = new XMethodParameter(m, param);
         NullnessAnnotation resolvedAnnotation = getResolvedAnnotation(xmp, true);
-       
+
 
         return resolvedAnnotation == NullnessAnnotation.NONNULL;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#getResolvedAnnotation
-     * (java.lang.Object, boolean)
-     */
     @CheckForNull
     @Override
     public NullnessAnnotation getResolvedAnnotation(final Object o, boolean getMinimal) {
@@ -125,73 +111,37 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
         }
     }
 
-    /**
-     * @param m
-     * @return
-     */
     public static boolean assertsFirstParameterIsNonnull(XMethod m) {
-        return (m.getName().equalsIgnoreCase("checkNonNull") || m.getName().equalsIgnoreCase("checkNotNull") || m.getName()
-                .equalsIgnoreCase("assertNotNull")) && m.getSignature().startsWith("(Ljava/lang/Object;");
+        return (m.getName().equalsIgnoreCase("checkNonNull")
+                || m.getName().equalsIgnoreCase("checkNotNull")
+                // JDK 7 java.util.Objects.requireNonNull(Object)
+                || m.getName().equals("requireNonNull")
+                // org.eclipse.core.runtime.Assert(Object)
+                || m.getName().equalsIgnoreCase("isNotNull")
+                || m.getName().equalsIgnoreCase("assertNotNull"))
+             && m.getSignature().startsWith("(Ljava/lang/Object;");
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.ba.AnnotationDatabase#addDefaultMethodAnnotation(
-     * java.lang.String, edu.umd.cs.findbugs.ba.AnnotationEnumeration)
-     */
     @Override
     public void addDefaultMethodAnnotation(String name, NullnessAnnotation annotation) {
         super.addDefaultMethodAnnotation(name, annotation);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.ba.AnnotationDatabase#addDefaultAnnotation(java.lang
-     * .String, java.lang.String, edu.umd.cs.findbugs.ba.AnnotationEnumeration)
-     */
     @Override
     public void addDefaultAnnotation(AnnotationDatabase.Target target, String c, NullnessAnnotation n) {
         super.addDefaultAnnotation(target, c, n);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.ba.AnnotationDatabase#addFieldAnnotation(java.lang
-     * .String, java.lang.String, java.lang.String, boolean,
-     * edu.umd.cs.findbugs.ba.AnnotationEnumeration)
-     */
     @Override
     public void addFieldAnnotation(String name, String name2, String sig, boolean isStatic, NullnessAnnotation annotation) {
         super.addFieldAnnotation(name, name2, sig, isStatic, annotation);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.ba.AnnotationDatabase#addMethodAnnotation(java.lang
-     * .String, java.lang.String, java.lang.String, boolean,
-     * edu.umd.cs.findbugs.ba.AnnotationEnumeration)
-     */
     @Override
     public void addMethodAnnotation(String name, String name2, String sig, boolean isStatic, NullnessAnnotation annotation) {
         super.addMethodAnnotation(name, name2, sig, isStatic, annotation);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.ba.AnnotationDatabase#addMethodParameterAnnotation
-     * (java.lang.String, java.lang.String, java.lang.String, boolean, int,
-     * edu.umd.cs.findbugs.ba.AnnotationEnumeration)
-     */
     @Override
     public void addMethodParameterAnnotation(String name, String name2, String sig, boolean isStatic, int param,
             NullnessAnnotation annotation) {
