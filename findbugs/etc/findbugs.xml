@@ -1,10 +1,10 @@
 <FindbugsPlugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
-          pluginid="edu.umd.cs.findbugs.plugins.core" 
+          pluginid="edu.umd.cs.findbugs.plugins.core"
           version="USE_FINDBUGS_VERSION"
           provider="FindBugs project" website="http://findbugs.sourceforge.net"
           update-url="http://update.findbugs.org/update-check">
-          
+
           <!--
   Plugin descriptor for FindBugs "core" plugin.
   This plugin is enabled by default.
@@ -12,7 +12,7 @@
           <Cloud id="edu.umd.cs.findbugs.cloud.doNothingCloud"
                     cloudClass="edu.umd.cs.findbugs.cloud.DoNothingCloud"
                     usernameClass="edu.umd.cs.findbugs.cloud.username.NoNameLookup"/>
-          
+
           <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SuppressI18N"
                     componentKind="edu.umd.cs.findbugs.bugReporter.BugReporterDecorator"
                     componentClass="edu.umd.cs.findbugs.bugReporter.SuppressionDecorator"
@@ -44,7 +44,7 @@
                     disabled="true">
                     <Property key="category">MALICIOUS_CODE</Property>
           </PluginComponent>
-          
+
 
           <FindBugsMain cmd="addMessages" kind="poweruser" class="edu.umd.cs.findbugs.AddMessages"/>
           <FindBugsMain cmd="analyze" analysis="true" class="edu.umd.cs.findbugs.FindBugs2"/>
@@ -53,14 +53,14 @@
           <FindBugsMain cmd="help" class="edu.umd.cs.findbugs.ShowHelp"/>
           <FindBugsMain cmd="version" class="edu.umd.cs.findbugs.Version"/>
           <FindBugsMain cmd="filter" class="edu.umd.cs.findbugs.workflow.Filter"/>
-          <FindBugsMain cmd="set" class="edu.umd.cs.findbugs.workflow.SetBugDatabaseInfo"/> 
-          
+          <FindBugsMain cmd="set" class="edu.umd.cs.findbugs.workflow.SetBugDatabaseInfo"/>
+
           <FindBugsMain cmd="history" kind="history" class="edu.umd.cs.findbugs.workflow.MineBugHistory"/>
           <FindBugsMain cmd="union" kind="history" class="edu.umd.cs.findbugs.workflow.UnionResults"/>
           <FindBugsMain cmd="merge" kind="history" class="edu.umd.cs.findbugs.workflow.Update"/>
-                  
-          <FindBugsMain cmd="dis" kind="utility" class="edu.umd.cs.findbugs.visitclass.PrintClass"/> 
-          
+
+          <FindBugsMain cmd="dis" kind="utility" class="edu.umd.cs.findbugs.visitclass.PrintClass"/>
+
           <OrderingConstraints>
                     <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.FieldItemSummary"/>
@@ -521,7 +521,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble" speed="fast"
                     reports="ICAST_IDIV_CAST_TO_DOUBLE,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL,ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindBadCast2" speed="fast"
-                    reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION,BC_BAD_CAST_TO_ABSTRACT_COLLECTION,BC_UNCONFIRMED_CAST,BC_UNCONFIRMED_CAST_OF_RETURN_VALUE,BC_IMPOSSIBLE_CAST,BC_IMPOSSIBLE_INSTANCEOF,BC_VACUOUS_INSTANCEOF,NP_NULL_INSTANCEOF,BC_IMPOSSIBLE_DOWNCAST,BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY" /> 
+                    reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION,BC_BAD_CAST_TO_ABSTRACT_COLLECTION,BC_UNCONFIRMED_CAST,BC_UNCONFIRMED_CAST_OF_RETURN_VALUE,BC_IMPOSSIBLE_CAST,BC_IMPOSSIBLE_INSTANCEOF,BC_VACUOUS_INSTANCEOF,NP_NULL_INSTANCEOF,BC_IMPOSSIBLE_DOWNCAST,BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY" />
 
           <Detector class="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue"
                     speed="fast" reports="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION,DMI_NONSERIALIZABLE_OBJECT_WRITTEN"/>
@@ -596,10 +596,12 @@
                     hidden="false"/>
           <Detector class="edu.umd.cs.findbugs.detect.DefaultEncodingDetector" speed="fast"
                     reports="DM_DEFAULT_ENCODING"/>
+          <Detector class="edu.umd.cs.findbugs.detect.CheckRelaxingNullnessAnnotation" speed="fast"
+                    reports="NP_METHOD_RETURN_RELAXING_ANNOTATION,NP_METHOD_PARAMETER_RELAXING_ANNOTATION"/>
 
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
-         
+
           <!-- Bug Codes -->
           <BugCode abbrev="USELESS_STRING"/>
           <BugCode abbrev="DMI" cweid="440"/>
@@ -645,7 +647,7 @@
           <BugPattern abbrev="NP" type="NP_SYNC_AND_NULL_CHECK_FIELD" category="MT_CORRECTNESS"
                     cweid="585"/>
           <BugPattern abbrev="NP" type="NP_BOOLEAN_RETURN_NULL" category="BAD_PRACTICE"/>
-	  <BugPattern abbrev="NP" type="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" category="CORRECTNESS"/>
+      <BugPattern abbrev="NP" type="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" category="CORRECTNESS"/>
           <BugPattern abbrev="VR" type="VR_UNRESOLVABLE_REFERENCE" category="CORRECTNESS"
                     experimental="true"/>
           <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD"
@@ -1072,7 +1074,7 @@
           <BugPattern abbrev="BC" type="BC_BAD_CAST_TO_CONCRETE_COLLECTION" category="STYLE"/>
           <BugPattern abbrev="BC" type="BC_UNCONFIRMED_CAST" category="STYLE"/>
           <BugPattern abbrev="BC" type="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE" category="STYLE"/>
-          
+
           <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY" category="CORRECTNESS"
                     deprecated="true"/>
           <!-- deprecated in favor of BC_IMPOSSIBLE_CAST -->
@@ -1159,4 +1161,6 @@
           <BugPattern abbrev="LG" type="LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE"
                     category="EXPERIMENTAL"/>
           <BugPattern abbrev="Dm" type="DM_DEFAULT_ENCODING" category="I18N" />
+          <BugPattern abbrev="NP" type="NP_METHOD_RETURN_RELAXING_ANNOTATION" category="CORRECTNESS" />
+          <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_RELAXING_ANNOTATION" category="CORRECTNESS" />
 </FindbugsPlugin>

@@ -11,12 +11,21 @@
 
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.DefaultAnnotationForFields;
-import edu.umd.cs.findbugs.annotations.DefaultAnnotationForMethods;
-import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.meta.TypeQualifierDefault;
+import javax.annotation.meta.When;
+
+import jsr305.FieldsNonNullByDefault;
+
+import edu.umd.cs.findbugs.annotations.DesireWarning;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
-import edu.umd.cs.findbugs.annotations.NonNull;
 
 /* ********************
  * Behavior at filing:  false positive NP from getField()
@@ -28,17 +37,27 @@ import edu.umd.cs.findbugs.annotations.NonNull;
  * Expected behavior:  no NP warning, parent class is annotated with @NonNull
  * ******************** */
 @NoWarning("NP")
-@DefaultAnnotationForFields(NonNull.class)
-@DefaultAnnotationForMethods(CheckForNull.class)
-@DefaultAnnotationForParameters(NonNull.class)
+@FieldsNonNullByDefault
+@MethodsAreCheckNullByDefault
+@ParametersAreNonnullByDefault
+// see comment in CheckRelaxingNullnessAnnotation.DetectorNode
+// we should flag the entire class as suspicious it relaxes parent contract.
+// Here the parent contract to never return null, but we relax it by applying "check for null"
+@DesireWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
 class Bug2672946B extends Bug2672946A {
     public Bug2672946B(Bug2672946B field) {
         super(field);
     }
 
-    @NoWarning("NP")
     @Override
     public Bug2672946B getField() {
         return (Bug2672946B) super.getField();
     }
+}
+
+@CheckForNull
+@TypeQualifierDefault(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@interface MethodsAreCheckNullByDefault {
+
 }

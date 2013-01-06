@@ -1554,6 +1554,14 @@ factory pattern to create these objects.</p>
 ]]>
       </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.CheckRelaxingNullnessAnnotation">
+    <Details>
+      <![CDATA[
+        <p>Checks that overriding methods do not relax @Nonnull (made @CheckForNull) on return values
+        or @CheckForNull (made @Nonnull) on parameters.</p>
+      ]]>
+      </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -8011,6 +8019,79 @@ after the call to initLogging, the logger configuration is lost
 <![CDATA[
 <p> Found a call to a method which will perform a byte to String (or String to byte) conversion, and will assume that the default platform encoding is suitable. This will cause the application behaviour to vary between platforms. Use an alternative API and specify a charset name or Charset object explicitly.  </p>
 ]]>
+      </Details>
+  </BugPattern>
+  <BugPattern type="NP_METHOD_PARAMETER_RELAXING_ANNOTATION">
+    <ShortDescription>Method relaxes nullness annotation on parameter</ShortDescription>
+    <LongDescription>Method {1} overrides the nullness annotation relaxing the ancestor method requirements on parameter.</LongDescription>
+    <Details>
+        <![CDATA[<p>
+        You should never relax the nullness requirement otherwise a NullPointerException may result.
+        For example, given the following classes:
+        <pre>
+          public class TestOverride {
+            static interface I {
+              void set(@CheckForNull Object o);
+            }
+
+            static interface SI extends I {
+              public void set(@Nonnull Object o);
+            }
+
+            void a(I i) {
+              i.set(null);
+            }
+
+            void b() {
+              a(new SI() {
+                public void set(Object o) {
+                  o.toString();
+                }
+              });
+            }
+        </pre>
+        In the example SI relaxes the nullness of the paramter for the set() method,
+        that means that the "i.set(null)" in the anonymous class in a() would not be warned,
+        causing to throw a NullPointerException when SI.set() tries to run o.toString().
+        </p>]]>
+      </Details>
+  </BugPattern>
+
+  <BugPattern type="NP_METHOD_RETURN_RELAXING_ANNOTATION">
+    <ShortDescription>Method relaxes nullness annotation on return value</ShortDescription>
+    <LongDescription>Method {1} overrides the nullness annotation relaxing the ancestor method requirements on return value.</LongDescription>
+    <Details>
+        <![CDATA[<p>
+        You should never relax the nullness requirement otherwise a NullPointerException may result.
+        For example, given the following classes:
+        <pre>
+          public class TestOverride {
+            static interface I {
+              @Nonnull
+              Object get();
+            }
+
+            static interface SI extends I {
+              @CheckForNull
+              Object get();
+            }
+
+            void a(I i) {
+              i.get().toString();
+            }
+
+            void b() {
+              a(new SI() {
+                public Object get() {
+                  return null;
+                }
+              });
+            }
+        </pre>
+        In the example SI relaxes the nullness of the return value for the get() method,
+        that means that the "return null" in the anonymous class in b() would not be warned,
+        causing i.get().toString() to throw a NullPointerException in a(i).
+        </p>]]>
       </Details>
   </BugPattern>
   <!--
