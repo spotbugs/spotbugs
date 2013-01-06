@@ -40,10 +40,16 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 /**
  * Scan application classes for NonNull annotations.
- * 
+ *
  * @author David Hovemeyer
  * @author William Pugh
+ *
+ * @deprecated AnnotationDatabases are being phased out, since annotations are
+ *             now stored directly in the XClass/XMethod/XField objects.
+ *             Resolving nullness annotations will be handled through the
+ *             JSR-305 type qualifier code.
  */
+@Deprecated
 public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
     private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug.annotation");
 
@@ -58,7 +64,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
     }
 
-    private NullnessAnnotationDatabase database;
+    private final NullnessAnnotationDatabase database;
 
     public BuildNonNullAnnotationDatabase(@CheckForNull NullnessAnnotationDatabase database) {
         this.database = database;
@@ -73,9 +79,9 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
     /*
      * * @param value
-     * 
+     *
      * @param map
-     * 
+     *
      * @param annotationTarget
      */
     private void handleClassElementValue(ClassElementValue value, Target annotationTarget) {
