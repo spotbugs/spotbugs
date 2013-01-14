@@ -67,7 +67,7 @@ import edu.umd.cs.findbugs.util.SubtypeTypeMatcher;
  * database with some known resources types needing to be released, and augment
  * the database with additional entries discovered through scanning referenced
  * classes for annotations.
- * 
+ *
  * @author David Hovemeyer
  */
 public class BuildObligationPolicyDatabase implements Detector2, NonReportingDetector {
@@ -76,7 +76,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.ba.interproc.PropertyDatabase#decodeProperty(
          * java.lang.String)
@@ -88,7 +88,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.ba.interproc.PropertyDatabase#encodeProperty(
          * java.lang.Object)
@@ -209,8 +209,9 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
             methodHasCloseInName = splitter.split().contains("close");
         }
 
-        for (int i = 0; i < xmethod.getNumParams(); i++)
-            if (paramObligationTypes[i] != null) {
+        for (int i = 0; i < xmethod.getNumParams(); i++) {
+            Obligation obligationType = paramObligationTypes[i];
+            if (obligationType != null) {
                 if (xmethod.getParameterAnnotation(i, willCloseWhenClosed) != null) {
                     //
                     // Calling this method deletes a parameter obligation
@@ -218,16 +219,16 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
                     // creates a new obligation for the object returned by
                     // the method.
                     //
-                    handleWillCloseWhenClosed(xmethod, paramObligationTypes[i]);
+                    handleWillCloseWhenClosed(xmethod, obligationType);
                 } else if (xmethod.getParameterAnnotation(i, willClose) != null) {
-                    if (paramObligationTypes[i] == null) {
+                    if (obligationType == null) {
                         // Hmm...
                         if (DEBUG_ANNOTATIONS) {
                             System.out.println("Method " + xmethod.toString() + " has param " + i + " annotated @WillClose, "
                                     + "but its type is not an obligation type");
                         }
                     } else {
-                        addParameterDeletesObligationDatabaseEntry(xmethod, paramObligationTypes[i],
+                        addParameterDeletesObligationDatabaseEntry(xmethod, obligationType,
                                 ObligationPolicyDatabaseEntryType.STRONG);
                     }
                     sawAnnotationsInApplicationCode = true;
@@ -237,7 +238,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
                 } else if (INFER_CLOSE_METHODS && methodHasCloseInName) {
                     // Method has "close" in its name.
                     // Assume that it deletes the obligation.
-                    addParameterDeletesObligationDatabaseEntry(xmethod, paramObligationTypes[i],
+                    addParameterDeletesObligationDatabaseEntry(xmethod, obligationType,
                             ObligationPolicyDatabaseEntryType.STRONG);
                 } else {
                     /*
@@ -251,12 +252,13 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
                     if (xmethod.getName().equals("<init>") || xmethod.isStatic()
                             || xmethod.getName().toLowerCase().indexOf("close") >= 0
                             || xmethod.getSignature().toLowerCase().indexOf("Closeable") >= 0)
-                        addParameterDeletesObligationDatabaseEntry(xmethod, paramObligationTypes[i],
+                        addParameterDeletesObligationDatabaseEntry(xmethod, obligationType,
                                 ObligationPolicyDatabaseEntryType.WEAK);
                 }
             }
+        }
 
-            
+
     }
 
     public void finishPass() {
@@ -282,6 +284,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
     }
 
     private void addBuiltInPolicies() {
+
         // Add the database entries describing methods that add and delete
         // file stream/reader obligations.
         addFileStreamEntries("InputStream");
@@ -299,7 +302,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
                 .getObjectTypeInstance("java.util.logging.StreamHandler")), new ExactStringMatcher("setOutputStream"),
                 new ExactStringMatcher("(Ljava/io/OutputStream;)V"), false, ObligationPolicyDatabaseActionType.DEL,
                 ObligationPolicyDatabaseEntryType.STRONG, javaIoOutputStreamObligation));
-        
+
         database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil
                 .getObjectTypeInstance("java.io.FileOutputStream")), new ExactStringMatcher("getChannel"),
                 new ExactStringMatcher("()Ljava/nio/channels/FileChannel;"), false, ObligationPolicyDatabaseActionType.DEL,
@@ -358,7 +361,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
     /**
      * Add an appropriate policy database entry for parameters marked with the
      * WillClose annotation.
-     * 
+     *
      * @param xmethod
      *            a method
      * @param obligation

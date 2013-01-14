@@ -23,8 +23,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+
+import javax.annotation.WillClose;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ARETURN;
@@ -43,15 +46,20 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
+import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /**
  * A cache for looking up the collection of ObligationPolicyDatabaseActions
  * associated with a given InstructionHandle. Avoids the need for repeated
  * (slow) lookups.
- * 
+ *
  * @author David Hovemeyer
  */
 public class InstructionActionCache {
@@ -60,11 +68,11 @@ public class InstructionActionCache {
     private final ObligationPolicyDatabase database;
 
     private final Map<InstructionHandle, Collection<ObligationPolicyDatabaseAction>> actionCache;
-    
+
     private final XMethod xmethod;
     private final TypeDataflow typeDataflow;
     private final ConstantPoolGen cpg;
-   
+
 
 
     public InstructionActionCache(ObligationPolicyDatabase database, XMethod xmethod, ConstantPoolGen cpg, TypeDataflow typeDataflow) {
@@ -75,6 +83,7 @@ public class InstructionActionCache {
         this.typeDataflow = typeDataflow;
     }
 
+    static final ClassDescriptor WILL_CLOSE = DescriptorFactory.createClassDescriptor(WillClose.class);
     public Collection<ObligationPolicyDatabaseAction> getActions(BasicBlock block, InstructionHandle handle) {
          Collection<ObligationPolicyDatabaseAction> actionList = actionCache.get(handle);
         if (actionList == null) {
@@ -83,29 +92,62 @@ public class InstructionActionCache {
             if (ins instanceof InvokeInstruction) {
 
                 InvokeInstruction inv = (InvokeInstruction) ins;
-                String signature = inv.getSignature(cpg);
-                String methodName = inv.getName(cpg);
+                XMethod invokedMethod = XFactory.createXMethod(inv, cpg);
+                String signature = invokedMethod.getSignature();
+                String methodName = invokedMethod.getName();
+
                 if (DEBUG_LOOKUP) {
-                    System.out.println("Looking up actions for call to " + methodName +signature);
+                    System.out.println("Looking up actions for call to " + invokedMethod);
                 }
-             
-                if (signature.indexOf(';') >= -1) {
+
+
+                if (invokedMethod.getAnnotationDescriptors().contains(WILL_CLOSE) && methodName.startsWith("close") && signature.endsWith(")V")) {
+                    actionList = Collections.singletonList(ObligationPolicyDatabaseAction.CLEAR);
+                } else if (signature.indexOf(';') >= -1) {
+                    ReferenceType receiverType = inv.getReferenceType(cpg);
+
+                    boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
                     actionList = new LinkedList<ObligationPolicyDatabaseAction>();
 
-                    if (signature.substring(0, signature.indexOf(')')).indexOf("Ljava/io/Closeable;") >= 0 ||  false && methodName.startsWith("close")) {
-                        actionList.add(ObligationPolicyDatabaseAction.CLEAR);
-                    } else {
+                    database.getActions(receiverType, methodName, signature, isStatic, actionList);
 
-                        ReferenceType receiverType = inv.getReferenceType(cpg);
-                        
-                        boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
+                    if (actionList.isEmpty()) {
 
-                        database.getActions(receiverType, methodName, signature, isStatic, actionList);
-                        if (actionList.isEmpty()) {
-                            actionList = Collections.emptyList();
+                        try {
+                        TypeFrame factAtLocation = null;
+                        SignatureParser sigParser = new SignatureParser(signature);
+//                        int startIndex = 0;
+//                        if (!xmethod.isStatic())
+//                            startIndex = 1;
+                        Iterator<String> signatureIterator = sigParser.parameterSignatureIterator();
+                        int parameters = sigParser.getNumParameters();
+                        for (int i = 0; i < parameters; i++) {
+                            String sig = signatureIterator.next();
+                            Collection<ClassDescriptor> annotations = invokedMethod.getParameterAnnotationDescriptors(i);
+                            if (annotations.contains(WILL_CLOSE) || sig.equals("Ljava/io/Closeable;")) {
+                                // closing this value
+                                if (factAtLocation == null)
+                                    factAtLocation = typeDataflow.getFactAtLocation( new Location(handle, block));
+
+                                Type argumentType = factAtLocation.getArgument(inv, cpg, i, sigParser);
+                                if (argumentType instanceof ObjectType) {
+                                    Obligation obligation = database.getFactory().getObligationByType((ObjectType) argumentType);
+                                    if (obligation != null)
+                                        actionList.add(new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.DEL, obligation));
+
+                                }
+
+                            }
                         }
-                    }
 
+                        } catch (CheckedAnalysisException e) {
+                            AnalysisContext.logError("Error checking " + invokedMethod, e);
+                        } catch (ClassNotFoundException e) {
+                            AnalysisContext.reportMissingClass(e);
+                        } finally { }
+
+
+                    }
                     if (DEBUG_LOOKUP && !actionList.isEmpty()) {
                         System.out.println("  At " + handle + ": " + actionList);
                     }
@@ -125,11 +167,11 @@ public class InstructionActionCache {
                                     Obligation sObligation = factory.getObligationByType(sType);
                                     actionList = Arrays.asList(
                                             new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.DEL, obligation),
-                                            new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.DEL, sObligation));                  
-                                } else 
+                                            new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.DEL, sObligation));
+                                } else
                                   actionList = Collections.singleton(new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.DEL,
                                         obligation));
-                               
+
                             }
                         }
                     }
@@ -140,7 +182,7 @@ public class InstructionActionCache {
                 }
 
             }
-            
+
             actionCache.put(handle, actionList);
         }
 
