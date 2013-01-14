@@ -45,7 +45,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Arrays;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.WillClose;
@@ -78,6 +77,14 @@ public class IO {
         }
     }
 
+    static byte[] copyOf(byte[] original, int newLength) {
+        byte[] copy = new byte[newLength];
+        System.arraycopy(original, 0, copy, 0,
+                         Math.min(original.length, newLength));
+        return copy;
+    }
+
+
     public static byte[] readAll(@WillClose InputStream in, int size) throws IOException {
         try {
             if (size == 0)
@@ -91,12 +98,12 @@ public class IO {
                 }
 
                 if (pos < size)
-                    return Arrays.copyOf(result, pos);
+                    return copyOf(result, pos);
                 int nextByte = in.read();
                 if (nextByte == -1)
                     return result;
                 size = size * 2 + 500;
-                result = Arrays.copyOf(result, size);
+                result = copyOf(result, size);
                 result[pos++] = (byte) nextByte;
             }
         } finally {
