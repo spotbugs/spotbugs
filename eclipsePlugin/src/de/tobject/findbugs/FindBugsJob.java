@@ -40,7 +40,7 @@ public abstract class FindBugsJob extends Job {
     private final static Semaphore analysisSem;
 
     static {
-        analysisSem = new Semaphore(MutexSchedulingRule.MAX_JOBS);
+        analysisSem = new Semaphore(MutexSchedulingRule.MAX_JOBS, true);
 
         // see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=298795
         // we must run this stupid code in the UI thread
@@ -116,9 +116,11 @@ public abstract class FindBugsJob extends Job {
 
     @Override
     public IStatus run(IProgressMonitor monitor) {
+        boolean acquired = false;
         try {
             if(supportsMulticore()){
                 analysisSem.acquire();
+                acquired = true;
                 if(monitor.isCanceled()){
                     return Status.CANCEL_STATUS;
                 }
@@ -133,7 +135,7 @@ public abstract class FindBugsJob extends Job {
         } catch (InterruptedException e) {
             return Status.CANCEL_STATUS;
         } finally {
-            if(supportsMulticore()){
+            if(acquired){
                 analysisSem.release();
             }
             monitor.done();
