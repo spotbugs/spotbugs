@@ -23,7 +23,6 @@ import java.lang.annotation.ElementType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.Map;
 
 import javax.annotation.CheckForNull;
@@ -64,41 +63,42 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     }
 
     static public class Builder {
-        int accessFlags;
+        private int accessFlags;
 
-        long variableHasName;
-        long variableIsSynthetic;
+        private long variableHasName;
+        private long variableIsSynthetic;
 
-        final @SlashedClassName
+        private final @SlashedClassName
         String className;
 
-        final String methodName, methodSignature;
+        private final String methodName, methodSignature;
 
-        String[] exceptions;
+        private String[] exceptions;
 
-        String methodSourceSignature;
+        private String methodSourceSignature;
 
-        boolean isUnconditionalThrower;
+        private boolean isUnconditionalThrower;
 
-        boolean isUnsupported;
+        private boolean isUnsupported;
 
-        boolean usesConcurrency;
+        private boolean usesConcurrency;
 
-        boolean isStub;
+        private boolean isStub;
 
-        boolean hasBackBranch;
+        private boolean hasBackBranch;
 
-        boolean isIdentity;
+        private boolean isIdentity;
 
-        int methodCallCount;
+        private int methodCallCount;
 
-        MethodDescriptor accessMethodForMethod;
-        FieldDescriptor accessMethodForField;
+        private MethodDescriptor accessMethodForMethod;
+        private FieldDescriptor accessMethodForField;
 
-        final Map<ClassDescriptor, AnnotationValue> methodAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(4);
+        @CheckForNull
+        private Map<ClassDescriptor, AnnotationValue> methodAnnotations;
 
-        final Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations = new HashMap<Integer, Map<ClassDescriptor, AnnotationValue>>(
-                4);
+        @CheckForNull
+        private Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations;
 
         public Builder(@SlashedClassName String className, String methodName, String methodSignature, int accessFlags) {
             this.className = className;
@@ -145,8 +145,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         }
 
         public void setIsIdentity() {
-            Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(0);
-            if (map != null) {
+            if (!getMethodParameterAnnotations(false).isEmpty()) {
                 // not identity if it has an annotation
                 return;
             }
@@ -157,32 +156,34 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
             this.accessFlags = accessFlags;
         }
 
-        public void addAccessFlags(int accessFlags) {
-            this.accessFlags |= accessFlags;
+        public void addAccessFlags(int accessFlags1) {
+            this.accessFlags |= accessFlags1;
         }
 
         public void addAnnotation(String name, AnnotationValue value) {
             ClassDescriptor annotationClass = DescriptorFactory.createClassDescriptorFromSignature(name);
-            methodAnnotations.put(annotationClass, value);
+            getMethodAnnotations(true).put(annotationClass, value);
         }
 
         public void addParameterAnnotation(int parameter, String name, AnnotationValue value) {
             ClassDescriptor annotationClass = DescriptorFactory.createClassDescriptorFromSignature(name);
-            Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(parameter);
+            Map<Integer, Map<ClassDescriptor, AnnotationValue>> parameterAnnotations = getMethodParameterAnnotations(true);
+            Map<ClassDescriptor, AnnotationValue> map = parameterAnnotations.get(parameter);
             if (map == null) {
                 map = new HashMap<ClassDescriptor, AnnotationValue>();
-                methodParameterAnnotations.put(parameter, map);
+                parameterAnnotations.put(parameter, map);
             }
             map.put(annotationClass, value);
         }
 
         public MethodInfo build() {
-            if (variableHasName != 0)
+            if (variableHasName != 0) {
                 variableIsSynthetic |= (~variableHasName);
+            }
             return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags,
                     isUnconditionalThrower, isUnsupported, usesConcurrency, hasBackBranch, isStub, isIdentity,
                     methodCallCount, exceptions, accessMethodForMethod, accessMethodForField,
-                    methodAnnotations, methodParameterAnnotations, variableIsSynthetic);
+                    getMethodAnnotations(false), getMethodParameterAnnotations(false), variableIsSynthetic);
         }
 
         public void setIsUnconditionalThrower() {
@@ -195,52 +196,52 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
         }
 
-        /**
-         * @param methodCallCount
-         */
         public void setNumberMethodCalls(int methodCallCount) {
             this.methodCallCount = methodCallCount;
 
         }
+
+        Map<Integer, Map<ClassDescriptor, AnnotationValue>> getMethodParameterAnnotations(boolean create) {
+            if(create && methodParameterAnnotations == null){
+                methodParameterAnnotations = new HashMap<Integer, Map<ClassDescriptor, AnnotationValue>>(4);
+            }
+            return methodParameterAnnotations == null? Collections.EMPTY_MAP : methodParameterAnnotations;
+        }
+
+        Map<ClassDescriptor, AnnotationValue> getMethodAnnotations(boolean create) {
+            if(create && methodAnnotations == null){
+                methodAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(4);
+            }
+            return methodAnnotations == null? Collections.EMPTY_MAP : methodAnnotations;
+        }
     }
 
-    final int accessFlags;
+    private final int accessFlags;
 
-    final long variableIsSynthetic;
+    private final long variableIsSynthetic;
 
-    final int methodCallCount;
+    private final int methodCallCount;
 
-    final boolean usesConcurrency;
+    private final boolean usesConcurrency;
 
-    final boolean hasBackBranch;
+    private final boolean hasBackBranch;
 
-    final boolean isStub;
+    private final boolean isStub;
 
-    final String methodSourceSignature;
+    private final String methodSourceSignature;
 
-    final @CheckForNull
+    private final @CheckForNull
     String[] exceptions;
 
-    Map<ClassDescriptor, AnnotationValue> methodAnnotations;
+    private Map<ClassDescriptor, AnnotationValue> methodAnnotations;
 
-    Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations;
+    private Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations;
 
-    static IdentityHashMap<MethodInfo, Void> unconditionalThrowers = new IdentityHashMap<MethodInfo, Void>();
-
-    static IdentityHashMap<MethodInfo, Void> unsupportedMethods = new IdentityHashMap<MethodInfo, Void>();
-
-    static IdentityHashMap<MethodInfo, MethodDescriptor> accessMethodForMethod = new IdentityHashMap<MethodInfo, MethodDescriptor>();
-    static IdentityHashMap<MethodInfo, FieldDescriptor> accessMethodForField = new IdentityHashMap<MethodInfo, FieldDescriptor>();
-    static IdentityHashMap<MethodInfo, Void> identifyMethods = new IdentityHashMap<MethodInfo, Void>();
-
-    public static void clearCaches() {
-        unsupportedMethods = new IdentityHashMap<MethodInfo, Void>();
-        unconditionalThrowers = new IdentityHashMap<MethodInfo, Void>();
-        accessMethodForMethod = new IdentityHashMap<MethodInfo, MethodDescriptor>();
-        accessMethodForField = new IdentityHashMap<MethodInfo, FieldDescriptor>();
-        identifyMethods = new IdentityHashMap<MethodInfo, Void>();
-    }
-
+    private final boolean unconditionalThrowers;
+    private final boolean unsupportedMethods;
+    private final MethodDescriptor accessMethodForMethod;
+    private final FieldDescriptor accessMethodForField;
+    private final boolean identifyMethods;
 
     MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature,
             int accessFlags, boolean isUnconditionalThrower, boolean isUnsupported, boolean usesConcurrency,
@@ -252,23 +253,20 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         super(className, methodName, methodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
         this.accessFlags = accessFlags;
         this.exceptions = exceptions;
-        if (exceptions != null)
-            for (int i = 0; i < exceptions.length; i++)
+        if (exceptions != null) {
+            for (int i = 0; i < exceptions.length; i++) {
                 exceptions[i] = DescriptorFactory.canonicalizeString(exceptions[i]);
+            }
+        }
         this.methodSourceSignature = DescriptorFactory.canonicalizeString(methodSourceSignature);
         this.methodAnnotations = Util.immutableMap(methodAnnotations);
         this.methodParameterAnnotations = Util.immutableMap(methodParameterAnnotations);
-        if (isUnconditionalThrower)
-            unconditionalThrowers.put(this, null);
-        if (isUnsupported)
-            unsupportedMethods.put(this, null);
-        if (accessMethodForMethod != null)
-            MethodInfo.accessMethodForMethod.put(this, accessMethodForMethod);
-        if (accessMethodForField!= null)
-            MethodInfo.accessMethodForField.put(this, accessMethodForField);
-        if (isIdentity) {
-            MethodInfo.identifyMethods.put(this, null);
-        }
+
+        this.unconditionalThrowers = isUnconditionalThrower;
+        this.unsupportedMethods = isUnsupported;
+        this.accessMethodForMethod = accessMethodForMethod;
+        this.accessMethodForField = accessMethodForField;
+        this.identifyMethods = isIdentity;
 
         this.usesConcurrency = usesConcurrency;
         this.hasBackBranch = hasBackBranch;
@@ -283,15 +281,15 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     }
 
     public boolean isUnconditionalThrower() {
-        return unconditionalThrowers.containsKey(this);
+        return unconditionalThrowers;
     }
 
     public boolean isIdentity() {
-        return MethodInfo.identifyMethods.containsKey(this);
+        return identifyMethods;
     }
 
     public boolean isUnsupported() {
-        return unsupportedMethods.containsKey(this);
+        return unsupportedMethods;
     }
 
     public int getNumParams() {
@@ -323,11 +321,6 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         return checkFlag(Constants.ACC_SYNCHRONIZED);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.XMethod#isReturnTypeReferenceType()
-     */
     public boolean isReturnTypeReferenceType() {
         SignatureParser parser = new SignatureParser(getSignature());
         String returnTypeSig = parser.getReturnTypeSignature();
@@ -348,47 +341,27 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         return methodSourceSignature;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     @Override
     public int compareTo(ComparableMethod rhs) {
         if (rhs instanceof MethodDescriptor) {
             return FieldOrMethodDescriptor.compareTo(this, (MethodDescriptor) rhs);
         }
 
-         if (rhs instanceof XMethod) {
+        if (rhs instanceof XMethod) {
             return XFactory.compare((XMethod) this, (XMethod) rhs);
         }
 
         throw new ClassCastException("Can't compare a " + this.getClass().getName() + " to a " + rhs.getClass().getName());
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getAccessFlags()
-     */
     public int getAccessFlags() {
         return accessFlags;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isFinal()
-     */
     public boolean isFinal() {
         return checkFlag(Constants.ACC_FINAL);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPrivate()
-     */
     public boolean isPrivate() {
         return checkFlag(Constants.ACC_PRIVATE);
     }
@@ -397,20 +370,10 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         return checkFlag(Opcodes.ACC_DEPRECATED);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isProtected()
-     */
     public boolean isProtected() {
         return checkFlag(Constants.ACC_PROTECTED);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPublic()
-     */
     public boolean isPublic() {
         return checkFlag(Constants.ACC_PUBLIC);
     }
@@ -419,11 +382,6 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         return checkFlag(Constants.ACC_SYNTHETIC);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isResolved()
-     */
     public boolean isResolved() {
         return true;
     }
@@ -501,11 +459,6 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         TypeQualifierApplications.updateAnnotations(this);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.XMethod#getMethodDescriptor()
-     */
     public MethodDescriptor getMethodDescriptor() {
         return this;
     }
@@ -525,24 +478,13 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.XMethod#isVarArgs()
-     */
     public boolean isVarArgs() {
         return checkFlag(Constants.ACC_VARARGS);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.XMethod#usesConcurrency()
-     */
     public boolean usesConcurrency() {
         return usesConcurrency;
     }
-
 
     public boolean hasBackBranch() {
         return hasBackBranch;
@@ -553,27 +495,17 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     public @CheckForNull
     MethodDescriptor getAccessMethodForMethod() {
-        return accessMethodForMethod.get(this);
+        return accessMethodForMethod;
     }
     public @CheckForNull
     FieldDescriptor getAccessMethodForField() {
-        return accessMethodForField.get(this);
+        return accessMethodForField;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.XMethod#bridgeFrom()
-     */
     public XMethod bridgeFrom() {
         return AnalysisContext.currentAnalysisContext().getBridgeFrom(this);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.XMethod#bridgeTo()
-     */
     public XMethod bridgeTo() {
         return AnalysisContext.currentAnalysisContext().getBridgeTo(this);
 
