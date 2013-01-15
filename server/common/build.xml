@@ -1,4 +1,4 @@
-<project name="webCloudServerCommon" default="compile">
+<project name="webCloudServerCommon" default="fulljar">
     <path id="common.classpath">
         <path location="../../webCloudProtocol/build/webCloudProtocol.jar"/>
         <fileset dir="lib" includes="*.jar"/>
@@ -11,12 +11,17 @@
     <target name="compile">
         <ant dir="../../webCloudProtocol" target="fulljar" inheritall="false"/>
         <mkdir dir="build/classes-ant"/>
-        <javac srcdir="src/java" destdir="build/classes-ant" classpathref="common.classpath" debug="on"   includeantruntime="false" />
+        <javac srcdir="src/java" destdir="build/classes-ant" classpathref="common.classpath" debug="on"   includeantruntime="false"
+                        source="1.6"
+                        target="1.6" />
     </target>
 
     <target name="compile-tests" depends="compile">
         <mkdir dir="build/classes-tests-ant"/>
-        <javac srcdir="src/junit" destdir="build/classes-tests-ant" debug="on">
+        <javac srcdir="src/junit" destdir="build/classes-tests-ant" debug="on"                         source="1.5"
+                        target="1.5"
+			includeantruntime="false" 
+>
             <classpath>
                 <path refid="common.classpath"/>
                 <path location="build/classes-ant"/>
