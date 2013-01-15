@@ -1,5 +1,8 @@
 package edu.umd.cs.findbugs.flybush;
 
+import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil.encodeHash;
+import static edu.umd.cs.findbugs.flybush.UpdateServlet.ONE_DAY_IN_MILLIS;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
@@ -10,7 +13,7 @@ import javax.jdo.Query;
 import javax.servlet.ServletException;
 
 import com.google.common.collect.Sets;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
+
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
@@ -21,9 +24,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTime
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UpdateIssueTimestamps.IssueGroup;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
-
-import static edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil.encodeHash;
-import static edu.umd.cs.findbugs.flybush.UpdateServlet.ONE_DAY_IN_MILLIS;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 
 @SuppressWarnings({ "UnusedDeclaration" })
 public abstract class UpdateServletTest extends AbstractFlybushServletTest {
@@ -558,7 +559,7 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         for (Class<?> cls : Arrays.asList(persistenceHelper.getDbIssueClass(), persistenceHelper.getDbIssueClass(),
                 persistenceHelper.getDbInvocationClass(), persistenceHelper.getSqlCloudSessionClass())) {
             try {
-                List objs = (List) getPersistenceManager().newQuery("select from " + cls.getName()).execute();
+                List<?> objs = (List<?>) getPersistenceManager().newQuery("select from " + cls.getName()).execute();
                 fail("some entities still exist: " + cls.getSimpleName() + ": " + objs);
             } catch (Exception ignored) {
             }

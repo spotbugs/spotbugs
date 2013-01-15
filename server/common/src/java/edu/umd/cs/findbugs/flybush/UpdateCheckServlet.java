@@ -1,5 +1,7 @@
 package edu.umd.cs.findbugs.flybush;
 
+import static java.util.Arrays.asList;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -20,13 +22,11 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import com.google.common.collect.Lists;
-import com.sun.org.apache.xpath.internal.FoundIndex;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import static java.util.Arrays.asList;
+import com.google.common.collect.Lists;
 
 public class UpdateCheckServlet extends AbstractFlybushServlet {
 
