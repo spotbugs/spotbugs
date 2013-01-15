@@ -26,12 +26,19 @@ public class UsageConsolidatorServlet extends AbstractFlybushServlet {
 
     public static final DateFormat DATE_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.ENGLISH);
 
+    @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         String uri = req.getRequestURI();
         PersistenceManager pm = getPersistenceManager();
         try {
             if (uri.equals("/consolidate-usage")) {
+                if (true) {
+                    LOGGER.severe("consolidate-usage request: " + uri);
+                    show404(resp);
+                    return;
+                }
+                
                 String dateStr = req.getParameter("dateStart");
                 String dateEndStr = req.getParameter("dateEnd");
                 if (dateStr == null || dateStr.equals("")) {
