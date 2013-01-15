@@ -53,4 +53,9 @@ class TestEnvironment implements ApiProxy.Environment {
         map.put("com.google.appengine.server_url_key", "http://localhost:8080");
         return map;
     }
+
+    @Override
+    public long getRemainingMillis() {
+       return 5000;
+    }
 }
