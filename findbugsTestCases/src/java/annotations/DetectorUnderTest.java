@@ -9,6 +9,11 @@ import java.lang.annotation.Target;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.Priorities;
+
+/**
+ * This annotation documents to which detector(s) annotated test samples are linked.
+ * Currently it is used for documentation only.
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.SOURCE)
 @Documented
