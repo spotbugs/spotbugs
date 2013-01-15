@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
+  <!-- 
   <cron>
     <url>/expire-sql-sessions</url>
     <description>Clear all expired SQL sessions from the database</description>
     <schedule>every day 00:00</schedule>
   </cron>
-  <cron>
-    <url>/consolidate-usage</url>
-    <description>Consolidate past usage</description>
-    <schedule>every day 00:05</schedule>
-  </cron>
+  -->
 </cronentries>
