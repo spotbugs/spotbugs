@@ -25,6 +25,8 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
 
@@ -702,6 +704,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             pushValue(result);
     }
 
+    public static final Pattern mapSignaturePattern = Pattern.compile("<(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*):L[^;]*;(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*):L[^;]*;>.*Ljava/util/(\\p{javaJavaIdentifierStart}(\\p{javaJavaIdentifierPart}|/)*)?Map<T\\1;T\\2;>;.*");
     public static boolean isStraightGenericMap(ClassDescriptor c) {
         if (c.matches(Map.class))
             return true;
@@ -714,14 +717,16 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         String sourceSignature = xc.getSourceSignature();
         if (sourceSignature == null)
             return false;
-        if (sourceSignature.startsWith("<") && !sourceSignature.contains("Map<TK;TV;>")) {
-            if (DEBUG) {
-                System.out.println(c + " has a complex generic signature: " + sourceSignature);
+        if (sourceSignature.startsWith("<")) {
+            Matcher matcher = mapSignaturePattern.matcher(sourceSignature);
+            if (!matcher.matches()) {
+                if (DEBUG) {
+                    System.out.println(c + " has a complex generic signature: " + sourceSignature);
+                }
+                // See Bug3470297 and Bug3470297a examples
+                return false;
             }
-            // See Bug3470297 and Bug3470297a examples
-            return false;
         }
-
 
         return true;
     }
