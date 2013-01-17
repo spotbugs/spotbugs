@@ -221,16 +221,8 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
                     //
                     handleWillCloseWhenClosed(xmethod, obligationType);
                 } else if (xmethod.getParameterAnnotation(i, willClose) != null) {
-                    if (obligationType == null) {
-                        // Hmm...
-                        if (DEBUG_ANNOTATIONS) {
-                            System.out.println("Method " + xmethod.toString() + " has param " + i + " annotated @WillClose, "
-                                    + "but its type is not an obligation type");
-                        }
-                    } else {
-                        addParameterDeletesObligationDatabaseEntry(xmethod, obligationType,
-                                ObligationPolicyDatabaseEntryType.STRONG);
-                    }
+                    addParameterDeletesObligationDatabaseEntry(xmethod, obligationType,
+                            ObligationPolicyDatabaseEntryType.STRONG);
                     sawAnnotationsInApplicationCode = true;
                 } else if (xmethod.getParameterAnnotation(i, willNotClose) != null) {
                     // No database entry needs to be added
