@@ -124,7 +124,7 @@ public class InstructionActionCache {
                         for (int i = 0; i < parameters; i++) {
                             String sig = signatureIterator.next();
                             Collection<ClassDescriptor> annotations = invokedMethod.getParameterAnnotationDescriptors(i);
-                            if (annotations.contains(WILL_CLOSE) || sig.equals("Ljava/io/Closeable;")) {
+                            if (annotations.contains(WILL_CLOSE) || sig.equals("Ljava/io/Closeable;") || methodName.startsWith("close")) {
                                 // closing this value
                                 if (factAtLocation == null)
                                     factAtLocation = typeDataflow.getFactAtLocation( new Location(handle, block));
