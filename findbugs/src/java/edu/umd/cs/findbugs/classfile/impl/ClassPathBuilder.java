@@ -221,7 +221,9 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
         // If not already located, try to locate any additional codebases
         // containing classes required for analysis.
-        locateCodebasesRequiredForAnalysis(classPath, progress);
+        if (!discoveredCodeBaseList.isEmpty()) {
+            locateCodebasesRequiredForAnalysis(classPath, progress);
+        }
 
         // Add all discovered codebases to the classpath
         for (DiscoveredCodeBase discoveredCodeBase : discoveredCodeBaseList) {
