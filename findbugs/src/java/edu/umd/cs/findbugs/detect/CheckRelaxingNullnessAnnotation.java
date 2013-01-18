@@ -25,10 +25,12 @@ import static org.objectweb.asm.Opcodes.ACC_STATIC;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
@@ -117,7 +119,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
 
         private final XMethod xmethod;
 
-        private Set<Integer> nonNullParameter;
+        private Map<Integer, NullnessAnnotation> nonNullParameter;
 
         private boolean checkForNullReturn;
 
@@ -138,12 +140,12 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
             boolean needsCheck = checkForNullReturn;
             if (invisibleParameterAnnotations != null || visibleParameterAnnotations != null) {
                 nonNullParameter = getNonnullOrNullableParams(visibleParameterAnnotations);
-                Set<Integer> nnp = getNonnullOrNullableParams(invisibleParameterAnnotations);
+                Map<Integer, NullnessAnnotation> nnp = getNonnullOrNullableParams(invisibleParameterAnnotations);
                 if (nnp != null) {
                     if (nonNullParameter == null) {
                         nonNullParameter = nnp;
                     } else {
-                        nonNullParameter.addAll(nnp);
+                        nonNullParameter.putAll(nnp);
                     }
                 }
                 needsCheck |= !nonNullParameter.isEmpty();
@@ -181,33 +183,31 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
         }
 
         private final boolean checkMethod(@Nonnull XMethod method) {
-            boolean done = false;
+            boolean foundAny = false;
             if (checkForNullReturn && containsNullness(method.getAnnotations(), NONNULL)) {
                 BugInstance bug = new BugInstance(CheckRelaxingNullnessAnnotation.this, "NP_METHOD_RETURN_RELAXING_ANNOTATION",
                         HIGH_PRIORITY);
                 bug.addClassAndMethod(xmethod);
                 bugReporter.reportBug(bug);
-                done = true;
+                foundAny = true;
             }
             if (nonNullParameter != null) {
-                BugInstance bug = null;
-                for (Integer paramIdx : nonNullParameter) {
-                    int i = paramIdx.intValue();
+                for(Map.Entry<Integer, NullnessAnnotation> e : nonNullParameter.entrySet()) {
+                    int i = e.getKey();
                     if (containsNullness(method.getParameterAnnotations(i), CHECK_FOR_NULL)) {
-                        if (bug == null) {
-                            bug = new BugInstance(CheckRelaxingNullnessAnnotation.this,
-                                    "NP_METHOD_PARAMETER_RELAXING_ANNOTATION", HIGH_PRIORITY);
+                        NullnessAnnotation a = e.getValue();
+                        BugInstance bug = new BugInstance(CheckRelaxingNullnessAnnotation.this,
+                                    "NP_METHOD_PARAMETER_RELAXING_ANNOTATION", a.equals(NONNULL) ? HIGH_PRIORITY : NORMAL_PRIORITY);
                             bug.addClassAndMethod(xmethod);
-                        }
+
                         bug.addParameterAnnotation(i, "Parameter {0} relaxes the nullness requirement of the superclass' method.");
+                        bugReporter.reportBug(bug);
+                        foundAny = true;
                     }
                 }
-                if (bug != null) {
-                    bugReporter.reportBug(bug);
-                    done = true;
-                }
+
             }
-            return done;
+            return foundAny;
         }
     }
 
@@ -261,11 +261,11 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
     }
 
     @CheckForNull
-    static Set<Integer> getNonnullOrNullableParams(@CheckForNull List<AnnotationNode>[] parameterAnnotations) {
+    static Map<Integer, NullnessAnnotation> getNonnullOrNullableParams(@CheckForNull List<AnnotationNode>[] parameterAnnotations) {
         if (parameterAnnotations == null) {
             return null;
         }
-        HashSet<Integer> nonNullParameter = new HashSet<Integer>();
+        Map<Integer, NullnessAnnotation> nonNullParameter = new HashMap<Integer, NullnessAnnotation>();
         for (int i = 0; i < parameterAnnotations.length; i++) {
             List<AnnotationNode> annotations = parameterAnnotations[i];
             if (annotations == null) {
@@ -276,7 +276,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
                 if (nullness == null || nullness == CHECK_FOR_NULL) {
                     continue;
                 }
-                nonNullParameter.add(i);
+                nonNullParameter.put(i, nullness);
             }
         }
         return nonNullParameter;
