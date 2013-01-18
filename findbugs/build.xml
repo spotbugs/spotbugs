@@ -50,6 +50,7 @@
     <property name="test.jar" value="${test.dir}/dumb.jar"/>
     <property name="sampleoutput.dir" value="build/sampleoutput"/>
     <property name="junittests.jar" value="build/junittests.jar"/>
+    <property name="baseline-anttask.jar" value="${findbugs-baseline.home}/lib/findbugs-ant.jar"/>
     <property name="anttask.jar" value="${jar.dir}/findbugs-ant.jar"/>
     <property name="scripts.props" value="etc/script.properties"/>
     <property name="scripts.stamp" value="${build.dir}/scripts.stamp"/>
@@ -542,6 +543,24 @@
     output="${sampleoutput.dir}/bcel-2.xml"
     />
   </target>
+
+  <target name="baseline-findbugscheck" depends="jars">
+    <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${baseline-anttask.jar}"/>
+    <findbugs home="${findbugs-baseline.home}"
+              output="xml:withMessages"
+              jvmargs="-ea -Xmx1200m  "
+              excludeFilter="findbugsExclude.xml"
+              projectName="FindBugs"
+              maxRank="20"
+              timeout="1800000"
+              outputFile="${build.dir}/findbugs-Baseline.xml" >
+      <class location="${classes.dir}" />
+      <sourcePath path="src/java:src/gui:src/junit:src/tools"/>
+      <auxClasspath refid="tools.classpath"/>
+      <auxClasspath path="lib/ant.jar"/>
+	</findbugs>
+   </target>
+
 
   <target name="findbugscheck" depends="anttask,junittests,jars">
     <property name="findbugs.home" value="." />
