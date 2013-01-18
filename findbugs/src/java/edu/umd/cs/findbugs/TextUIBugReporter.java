@@ -22,8 +22,6 @@ package edu.umd.cs.findbugs;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.charsets.UTF8;
 
@@ -39,8 +37,6 @@ import edu.umd.cs.findbugs.charsets.UTF8;
  * @author David Hovemeyer
  */
 public abstract class TextUIBugReporter extends AbstractBugReporter {
-    private static final Logger LOGGER = Logger.getLogger(TextUIBugReporter.class.getName());
-
     private boolean reportStackTrace;
 
     private boolean useLongBugCodes = false;
@@ -152,8 +148,11 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
     @Override
     public void reportQueuedErrors() {
+        boolean errors = analysisErrors || missingClasses || getQueuedErrors().size() > 0;
         analysisErrors = missingClasses = false;
         super.reportQueuedErrors();
+        if (errors)
+            emitLine("");
     }
 
     @Override
@@ -162,7 +161,6 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
             emitLine("The following errors occurred during analysis:");
             analysisErrors = true;
         }
-        LOGGER.log(Level.SEVERE, error.getMessage(), error.getException());
         emitLine("\t" + error.getMessage());
         if (error.getExceptionMessage() != null) {
             emitLine("\t\t" + error.getExceptionMessage());

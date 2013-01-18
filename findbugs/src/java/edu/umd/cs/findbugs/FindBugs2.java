@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -62,6 +63,7 @@ import edu.umd.cs.findbugs.classfile.IClassObserver;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.IClassPathBuilder;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
+import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
@@ -196,6 +198,7 @@ public class FindBugs2 implements IFindBugsEngine {
         Profiler profiler = bugReporter.getProjectStats().getProfiler();
 
         try {
+        try {
             // Get the class factory for creating classpath/codebase/etc.
             classFactory = ClassFactory.instance();
 
@@ -266,8 +269,11 @@ public class FindBugs2 implements IFindBugsEngine {
             }
 
             if (appClassList.size() == 0) {
+                Map<String, ICodeBaseEntry> codebase = classPath.getApplicationCodebaseEntries();
                 if (analysisOptions.noClassOk) {
                     System.err.println("No classfiles specified; output will have no warnings");
+                } else if  (codebase.isEmpty()) {
+                    throw new IOException("No files to analyze could be opened");
                 } else {
                     throw new NoClassesFoundToAnalyzeException(classPath);
                 }
@@ -295,6 +301,10 @@ public class FindBugs2 implements IFindBugsEngine {
             clearCaches();
             profiler.end(this.getClass());
             profiler.report();
+        }
+        } catch (IOException e) {
+            bugReporter.reportQueuedErrors();
+            throw e;
         }
     }
 
