@@ -20,9 +20,12 @@ package de.tobject.findbugs.actions;
 
 import java.util.ArrayList;
 
+import javax.annotation.CheckForNull;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -61,6 +64,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 
     private IVerticalRulerInfo ruler;
 
+    @CheckForNull
     private ITextEditor editor;
 
     /** Contains the markers of the currently selected line in the ruler margin. */
@@ -94,12 +98,13 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 
         // Start listening to the current editor
         if (targetEditor instanceof ITextEditor) {
-            editor = (ITextEditor) targetEditor;
+            ITextEditor textEditor = (ITextEditor) targetEditor;
+            editor = textEditor;
             // Check for editor's ruler context listener capability
-            if (editor instanceof ITextEditorExtension) {
-                ((ITextEditorExtension) editor).addRulerContextMenuListener(this);
+            if (textEditor instanceof ITextEditorExtension) {
+                ((ITextEditorExtension) textEditor).addRulerContextMenuListener(this);
             }
-            ruler = (IVerticalRulerInfo) editor.getAdapter(IVerticalRulerInfo.class);
+            ruler = (IVerticalRulerInfo) textEditor.getAdapter(IVerticalRulerInfo.class);
             if (ruler != null) {
                 control = ruler.getControl();
                 if (control != null && !control.isDisposed()) {
@@ -115,7 +120,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
     public void run(IAction action1) {
         this.action = action1;
         obtainFindBugsMarkers();
-        if (markers.size() <= 0) {
+        if (markers.size() == 0 && editor != null) {
             MessageDialog.openError(editor.getSite().getShell(), "Error Showing Bug Details",
                     "You must first select a FindBugs marker to view bug details.");
         } else {
@@ -140,7 +145,13 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 
         // Obtain all markers in the editor
         IResource resource = (IResource) editor.getEditorInput().getAdapter(IFile.class);
+        if(resource == null){
+            return;
+        }
         IMarker[] allMarkers = MarkerUtil.getMarkers(resource, IResource.DEPTH_ZERO);
+        if(allMarkers.length == 0) {
+            return;
+        }
         // Discover relevant markers, i.e. FindBugsMarkers
         AbstractMarkerAnnotationModel model = getModel();
         IDocument document = getDocument();
@@ -177,7 +188,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
      * @return true if the last mouse click falls on the same line as the marker
      */
     protected boolean includesRulerLine(Position position, IDocument document) {
-        if (position != null) {
+        if (position != null && ruler != null) {
             try {
                 int markerLine = document.getLineOfOffset(position.getOffset());
                 int line = ruler.getLineOfLastMouseButtonActivity();
@@ -196,7 +207,11 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
      *
      * @return AbstractMarkerAnnotatiosnModel from the editor
      */
+    @CheckForNull
     protected AbstractMarkerAnnotationModel getModel() {
+        if(editor == null) {
+            return null;
+        }
         IDocumentProvider provider = editor.getDocumentProvider();
         IAnnotationModel model = provider.getAnnotationModel(editor.getEditorInput());
         if (model instanceof AbstractMarkerAnnotationModel) {
@@ -211,6 +226,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
      * @return the document from the editor
      */
     protected IDocument getDocument() {
+        Assert.isNotNull(editor);
         IDocumentProvider provider = editor.getDocumentProvider();
         return provider.getDocument(editor.getEditorInput());
     }

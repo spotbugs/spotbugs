@@ -968,6 +968,7 @@ public final class MarkerUtil {
      * @return never null (empty array if nothing there or exception happens).
      *         Exception will be logged
      */
+    @Nonnull
     public static IMarker[] getMarkers(IResource fileOrFolder, int depth) {
         if(fileOrFolder.getType() == IResource.PROJECT) {
             if(!fileOrFolder.isAccessible()) {
