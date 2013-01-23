@@ -135,6 +135,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     private int instanceOccurrenceMax;
 
+    @CheckForNull
     private DetectorFactory detectorFactory;
 
     private final AtomicReference<XmlProps> xmlProps = new AtomicReference<XmlProps>();
@@ -259,15 +260,17 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * @param detectorName
      */
     public void adjustForDetector(String detectorName) {
-        detectorFactory = DetectorFactoryCollection.instance().getFactoryByClassName(detectorName);
-        if (detectorFactory != null) {
-            this.priority += detectorFactory.getPriorityAdjustment();
+        DetectorFactory factory = DetectorFactoryCollection.instance().getFactoryByClassName(detectorName);
+        detectorFactory = factory;
+        if (factory != null) {
+            this.priority += factory.getPriorityAdjustment();
             boundPriority();
             BugPattern bugPattern = getBugPattern();
             if (SystemProperties.ASSERTIONS_ENABLED && !bugPattern.getCategory().equals("EXPERIMENTAL")
-                    && !detectorFactory.getReportedBugPatterns().contains(bugPattern))
-                AnalysisContext.logError(detectorFactory.getShortName() + " doesn't note that it reports "
+                    && !factory.getReportedBugPatterns().contains(bugPattern)) {
+                AnalysisContext.logError(factory.getShortName() + " doesn't note that it reports "
                     + bugPattern + " in category " + bugPattern.getCategory());
+            }
         }
     }
 
@@ -2714,6 +2717,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         return instanceOccurrenceMax;
     }
 
+    @CheckForNull
     public DetectorFactory getDetectorFactory() {
         return detectorFactory;
     }

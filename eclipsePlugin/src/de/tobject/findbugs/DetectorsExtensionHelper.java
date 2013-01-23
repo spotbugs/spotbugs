@@ -58,7 +58,7 @@ public class DetectorsExtensionHelper {
     /** key is the plugin id, value is the plugin library path */
     public static synchronized SortedMap<String, String> getContributedDetectors() {
         if (contributedDetectors != null) {
-            return contributedDetectors;
+            return new TreeMap<String, String>(contributedDetectors);
         }
         TreeMap<String, String> set = new TreeMap<String, String>();
 
@@ -71,42 +71,44 @@ public class DetectorsExtensionHelper {
         for (IExtension extension : extensions) {
             IConfigurationElement[] elements = extension.getConfigurationElements();
             for (IConfigurationElement configElt : elements) {
-                String libPathAsString;
-                String pluginId;
-                IContributor contributor = null;
-                try {
-                    contributor = configElt.getContributor();
-                    if (contributor == null) {
-                        throw new IllegalArgumentException("Null contributor");
-                    }
-                    pluginId = configElt.getAttribute(PLUGIN_ID);
-                    if (pluginId == null) {
-                        throw new IllegalArgumentException("Missing '" + PLUGIN_ID + "'");
-                    }
-                    libPathAsString = configElt.getAttribute(LIBRARY_PATH);
-                    if (libPathAsString == null) {
-                        throw new IllegalArgumentException("Missing '" + LIBRARY_PATH + "'");
-                    }
-                    libPathAsString = resolveRelativePath(contributor, libPathAsString);
-                    if (libPathAsString == null) {
-                        throw new IllegalArgumentException("Failed to resolve library path for: " + pluginId);
-                    }
-                    if(set.containsKey(pluginId)) {
-                        throw new IllegalArgumentException("Duplicated '" + pluginId + "' contribution.");
-                    }
-                    set.put(pluginId, libPathAsString);
-                } catch (Throwable e) {
-                    String cName = contributor != null ? contributor.getName() : "unknown contributor";
-                    String message = "Failed to read contribution for '" + EXTENSION_POINT_ID
-                            + "' extension point from " + cName;
-                    FindbugsPlugin.getDefault().logException(e, message);
-                    continue;
-                }
-
+                addContribution(set, configElt);
             }
         }
         contributedDetectors = set;
-        return contributedDetectors;
+        return new TreeMap<String, String>(contributedDetectors);
+    }
+
+    private static void addContribution(TreeMap<String, String> set, IConfigurationElement configElt) {
+        String libPathAsString;
+        String pluginId;
+        IContributor contributor = null;
+        try {
+            contributor = configElt.getContributor();
+            if (contributor == null) {
+                throw new IllegalArgumentException("Null contributor");
+            }
+            pluginId = configElt.getAttribute(PLUGIN_ID);
+            if (pluginId == null) {
+                throw new IllegalArgumentException("Missing '" + PLUGIN_ID + "'");
+            }
+            libPathAsString = configElt.getAttribute(LIBRARY_PATH);
+            if (libPathAsString == null) {
+                throw new IllegalArgumentException("Missing '" + LIBRARY_PATH + "'");
+            }
+            libPathAsString = resolveRelativePath(contributor, libPathAsString);
+            if (libPathAsString == null) {
+                throw new IllegalArgumentException("Failed to resolve library path for: " + pluginId);
+            }
+            if(set.containsKey(pluginId)) {
+                throw new IllegalArgumentException("Duplicated '" + pluginId + "' contribution.");
+            }
+            set.put(pluginId, libPathAsString);
+        } catch (Throwable e) {
+            String cName = contributor != null ? contributor.getName() : "unknown contributor";
+            String message = "Failed to read contribution for '" + EXTENSION_POINT_ID
+                    + "' extension point from " + cName;
+            FindbugsPlugin.getDefault().logException(e, message);
+        }
     }
 
     /**
@@ -140,7 +142,7 @@ public class DetectorsExtensionHelper {
         }
         if (runningInDebugger) {
             // in case we are inside debugger & see bundle as directory
-            return createTemporaryJar(bundleName, bundleFile);
+            return resolvePluginClassesDir(bundleName, bundleFile);
         }
 
         // it's a directory, and we are in the production environment.
@@ -160,7 +162,7 @@ public class DetectorsExtensionHelper {
      * existing or contain invalid content
      */
     @CheckForNull
-    private static String createTemporaryJar(String bundleName, File sourceDir) {
+    private static String resolvePluginClassesDir(String bundleName, File sourceDir) {
          if (sourceDir.listFiles() == null) {
             FindbugsPlugin.getDefault().logException(new IllegalStateException("No files in the bundle!"),
                     "Failed to create temporary detector package for bundle " + sourceDir);

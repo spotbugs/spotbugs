@@ -20,9 +20,13 @@
 package de.tobject.findbugs.util;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.JavaCore;
@@ -31,7 +35,7 @@ import de.tobject.findbugs.FindbugsPlugin;
 
 /**
  * Project utility class.
- * 
+ *
  * @author Peter Friese
  * @version 1.0
  * @since 25.07.2003
@@ -42,7 +46,7 @@ public class ProjectUtilities {
 
     /**
      * Adds a FindBugs nature to a project.
-     * 
+     *
      * @param project
      *            The project the nature will be applied to.
      * @param monitor
@@ -77,7 +81,7 @@ public class ProjectUtilities {
     /**
      * Using the natures name, check whether the current project has FindBugs
      * nature.
-     * 
+     *
      * @return boolean <code>true</code>, if the FindBugs nature is assigned to
      *         the project, <code>false</code> otherwise.
      */
@@ -91,8 +95,23 @@ public class ProjectUtilities {
     }
 
     /**
+     * @return a (possibly empty) list of existing and opened projects with the FindBugs nature
+     */
+    @Nonnull
+    public static List<IProject> getFindBugsProjects(){
+        IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+        List<IProject> fbProj = new ArrayList<IProject>();
+        for (IProject aProject : projects) {
+            if (aProject.isAccessible() && ProjectUtilities.hasFindBugsNature(aProject)) {
+                fbProj.add(aProject);
+            }
+        }
+        return fbProj;
+    }
+
+    /**
      * Removes the FindBugs nature from a project.
-     * 
+     *
      * @param project
      *            The project the nature will be removed from.
      * @param monitor

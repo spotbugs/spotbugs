@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -39,8 +40,8 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker.MarkerConfidence;
 import edu.umd.cs.findbugs.AppVersion;
-import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
@@ -48,13 +49,13 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * Creates a FindBugs marker in a runnable window.
  */
 public class MarkerReporter implements IWorkspaceRunnable {
-    private final BugCollection collection;
+    private final SortedBugCollection collection;
 
     private final List<MarkerParameter> mpList;
 
     private final IProject project;
 
-    public MarkerReporter(List<MarkerParameter> mpList, BugCollection theCollection, IProject project) {
+    public MarkerReporter(List<MarkerParameter> mpList, SortedBugCollection theCollection, IProject project) {
 
         this.mpList = mpList;
         this.collection = theCollection;
@@ -73,8 +74,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
                 continue;
             }
             updateMarkerSeverity(store, mp);
-            // This triggers resource update on IResourceChangeListener's
-            // (BugTreeView)
+            // This triggers resource update on IResourceChangeListener's (BugTreeView)
             addMarker(mp);
         }
     }
@@ -85,9 +85,13 @@ public class MarkerReporter implements IWorkspaceRunnable {
     }
 
     private void addMarker(MarkerParameter mp) throws CoreException {
+        Map<String, Object> attributes = createMarkerAttributes(mp);
+        if(attributes.isEmpty()){
+            collection.remove(mp.bug);
+            return;
+        }
         IResource markerTarget = mp.resource.getMarkerTarget();
         IMarker[] existingMarkers = markerTarget.findMarkers(mp.markerType, true, IResource.DEPTH_ZERO);
-        Map<String, Object> attributes = createMarkerAttributes(mp);
 
         // XXX Workaround for bug 2785257 (has to be solved better)
         // see
@@ -137,8 +141,10 @@ public class MarkerReporter implements IWorkspaceRunnable {
 
     /**
      * @param mp
-     * @return attributes map which should be assigned to the given marker
+     * @return attributes map which should be assigned to the given marker. If the map is empty,
+     * the marker shouldn't be generated
      */
+    @Nonnull
     private Map<String, Object> createMarkerAttributes(MarkerParameter mp) {
         Map<String, Object> attributes = new HashMap<String, Object>(23);
         attributes.put(IMarker.LINE_NUMBER, mp.startLine);
@@ -163,8 +169,9 @@ public class MarkerReporter implements IWorkspaceRunnable {
         try {
             attributes.put(IMarker.MESSAGE, getMessage(mp));
         } catch (RuntimeException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error generating msg for " + mp.bug.getType());
-            attributes.put(IMarker.MESSAGE, "??? " + mp.bug.getType());
+            FindbugsPlugin.getDefault().logException(e, "Error generating msg for " + mp.bug.getType() + ", attributes: " + attributes);
+            attributes.clear();
+            return attributes;
         }
         attributes.put(IMarker.SEVERITY, mp.markerSeverity);
 
@@ -183,12 +190,12 @@ public class MarkerReporter implements IWorkspaceRunnable {
             if (pluginId != null) {
                 attributes.put(DETECTOR_PLUGIN_ID, pluginId);
             } else {
-                // XXX to avoid errors. Don't know what to do if the plugin is missing
-                attributes.put(DETECTOR_PLUGIN_ID, "edu.umd.cs.findbugs.plugins.core");
+                attributes.clear();
+                return attributes;
             }
         } else {
-            // XXX to avoid errors. Don't know what to do if the plugin is missing
-            attributes.put(DETECTOR_PLUGIN_ID, "edu.umd.cs.findbugs.plugins.core");
+            attributes.clear();
+            return attributes;
         }
 
         IJavaElement javaElt = mp.resource.getCorespondingJavaElement();

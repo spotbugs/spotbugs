@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -193,7 +195,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
     }
 
     private void initPreferencesStore(IProject currProject) {
-        workspaceStore = new ScopedPreferenceStore(new InstanceScope(), FindbugsPlugin.PLUGIN_ID);
+        workspaceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, FindbugsPlugin.PLUGIN_ID);
         if (currProject != null) {
             projectStore = new ScopedPreferenceStore(new ProjectScope(currProject), FindbugsPlugin.PLUGIN_ID);
             projectPropsInitiallyEnabled = FindbugsPlugin.isProjectSettingsEnabled(currProject);
@@ -602,9 +604,11 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         boolean markerSeveritiesChanged = reportConfigurationTab.isMarkerSeveritiesChanged();
 
         needRedisplayMarkers = pluginsChanged || markerSeveritiesChanged || reporterSettingsChanged;
-        if (getProject() != null) {
-            boolean builderEnabled = chkEnableFindBugs.getSelection();
 
+        boolean builderEnabled = false;
+
+        if (getProject() != null) {
+            builderEnabled = chkEnableFindBugs.getSelection();
             // Update whether or not FindBugs is run automatically.
             if (!natureEnabled && builderEnabled) {
                 addNature();
@@ -619,20 +623,14 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
                 analysisSettingsChanged = true;
                 FindbugsPlugin.setProjectSettingsEnabled(project, getPreferenceStore(), newSelection);
             }
-            if (analysisSettingsChanged) {
-                // trigger a Findbugs rebuild here
-                if (builderEnabled) {
-                    runFindbugsBuilder();
-                    needRedisplayMarkers = false;
-                } else {
-                    if (!getPreferenceStore().getBoolean(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD)) {
-                        remindAboutFullBuild();
-                    }
-                }
-            }
-        } else {
-            if (analysisSettingsChanged) {
-                // workspace change
+        }
+
+        if (analysisSettingsChanged) {
+            // trigger a Findbugs rebuild here
+            if (builderEnabled) {
+                runFindbugsBuilder();
+                needRedisplayMarkers = false;
+            } else {
                 if (!getPreferenceStore().getBoolean(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD)) {
                     remindAboutFullBuild();
                 }
@@ -642,7 +640,6 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         if (needRedisplayMarkers) {
             redisplayMarkers();
         }
-
 
         return true;
     }
@@ -662,11 +659,9 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
             MarkerUtil.redisplayMarkers(JavaCore.create(project));
         } else {
             // trigger redisplay for workbench change too
-            IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+            List<IProject> projects = ProjectUtilities.getFindBugsProjects();
             for (IProject aProject : projects) {
-                if (ProjectUtilities.hasFindBugsNature(aProject)) {
-                    MarkerUtil.redisplayMarkers(JavaCore.create(aProject));
-                }
+                MarkerUtil.redisplayMarkers(JavaCore.create(aProject));
             }
         }
     }
@@ -701,12 +696,24 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
     }
 
     private void runFindbugsBuilder() {
-        if (getProject() == null) {
-            // TODO workspace settings change: trigger workspace build
-            return;
+        IProject myProject = getProject();
+        if (myProject != null) {
+            runBuild(myProject);
+        } else {
+            // workspace settings change: trigger workspace build
+            List<IProject> projects = ProjectUtilities.getFindBugsProjects();
+            for (IProject iProject : projects) {
+                runBuild(iProject);
+            }
         }
+    }
 
-        StructuredSelection selection = new StructuredSelection(getProject());
+    /**
+     * Triggers FB analysis on given project
+     * @param myProject opened project with FindBugs nature
+     */
+    private static void runBuild(@Nonnull IProject myProject) {
+        StructuredSelection selection = new StructuredSelection(myProject);
         FindBugsAction action = new FindBugsAction();
         action.selectionChanged(null, selection);
         action.run(null);

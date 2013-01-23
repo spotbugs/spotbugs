@@ -78,6 +78,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.PackageMemberAnnotation;
@@ -115,7 +116,7 @@ public final class MarkerUtil {
      *            the project
      * @param monitor
      */
-    public static void createMarkers(final IJavaProject javaProject, final BugCollection theCollection, final ISchedulingRule rule, IProgressMonitor monitor) {
+    public static void createMarkers(final IJavaProject javaProject, final SortedBugCollection theCollection, final ISchedulingRule rule, IProgressMonitor monitor) {
         if (monitor.isCanceled()) {
             return;
         }
@@ -161,6 +162,10 @@ public final class MarkerUtil {
         Iterator<BugInstance> iterator = theCollection.iterator();
         while (iterator.hasNext() && !monitor.isCanceled()) {
             BugInstance bug = iterator.next();
+            DetectorFactory detectorFactory = bug.getDetectorFactory();
+            if(detectorFactory != null && !detectorFactory.getPlugin().isGloballyEnabled()){
+                continue;
+            }
             MarkerParameter mp = createMarkerParameter(project, bug);
             if (mp != null) {
                 bugParameters.add(mp);
@@ -519,11 +524,11 @@ public final class MarkerUtil {
         // remove any markers added by our builder
         // This triggers resource update on IResourceChangeListener's
         // (BugTreeView)
-        res.deleteMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);
-        if (res instanceof IProject) {
+    	res.deleteMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);
+    	if (res instanceof IProject) {
             IProject project = (IProject) res;
             FindbugsPlugin.clearBugCollection(project);
-        }
+        }        
     }
 
     /**
@@ -948,6 +953,15 @@ public final class MarkerUtil {
             FindbugsPlugin.getDefault().logException(e, "Exception while checking FindBugs type on marker.");
         }
         return false;
+    }
+
+    /**
+     * @param marker marker to check for plugin id
+     * @return detector plugin id, or empty string if the detector plugin is unknown
+     */
+    @Nonnull
+    public static String getPluginId(@Nonnull IMarker marker) {
+        return marker.getAttribute(FindBugsMarker.DETECTOR_PLUGIN_ID, "");
     }
 
     /**

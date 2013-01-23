@@ -59,6 +59,7 @@ import org.eclipse.ui.navigator.INavigatorContentService;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.MarkerUtil;
+import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * @author Andrei
@@ -348,21 +349,30 @@ public class BugContentProvider implements ICommonContentProvider {
         Set<IMarker> allMarkers = parent.getAllMarkers();
         GroupType childType = grouping.getChildType(mapper.getType());
         Map<Identifier, Set<IMarker>> groupIds = new HashMap<Identifier, Set<IMarker>>();
+        UserPreferences prefs = FindbugsPlugin.getCorePreferences(null, false);
+        Set<String> disabledPlugins = prefs.getCustomPlugins(false);
 
         // first, sort all bugs to the sets with same identifier type
         Set<String> errorMessages = new HashSet<String>();
         for (IMarker marker : allMarkers) {
             Identifier id = mapper.getIdentifier(marker);
             if (id == null) {
+                String pluginId = MarkerUtil.getPluginId(marker);
+                if(pluginId.length() == 0 || disabledPlugins.contains(pluginId)){
+                    // do not report errors for disabled plugins
+                    continue;
+                }
                 try {
                     String debugDescription = mapper.getDebugDescription(marker);
                     if(errorMessages.contains(debugDescription)) {
                         continue;
                     }
                     errorMessages.add(debugDescription);
-                    FindbugsPlugin.getDefault().logWarning(
+                    if(FindbugsPlugin.getDefault().isDebugging()){
+                        FindbugsPlugin.getDefault().logWarning(
                             "BugContentProvider.createGroups: failed to find " + debugDescription + " for marker on file "
                                     + marker.getResource());
+                    }
                 } catch (CoreException e) {
                     FindbugsPlugin.getDefault().logException(e, "Exception on retrieving debug data for: " + mapper.getType());
                 }
@@ -535,9 +545,11 @@ public class BugContentProvider implements ICommonContentProvider {
 
         Identifier id = mapper.getIdentifier(marker);
         if (id == null) {
-            FindbugsPlugin.getDefault().logWarning(
+            if(FindbugsPlugin.getDefault().isDebugging()){
+                FindbugsPlugin.getDefault().logWarning(
                     "BugContentProvider.createPatternGroups: " + "Failed to find bug id of type " + mapper.getType()
                             + " for marker on file " + marker.getResource());
+            }
             return;
         }
 

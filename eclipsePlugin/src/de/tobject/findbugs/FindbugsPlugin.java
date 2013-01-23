@@ -61,6 +61,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -250,7 +251,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
         // Register our save participant
         FindbugsSaveParticipant saveParticipant = new FindbugsSaveParticipant();
-        ResourcesPlugin.getWorkspace().addSaveParticipant(this, saveParticipant);
+        ResourcesPlugin.getWorkspace().addSaveParticipant(PLUGIN_ID, saveParticipant);
     }
 
     public static void dumpClassLoader(Class<?> c) {
@@ -284,7 +285,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         DetectorValidator validator = new DetectorValidator();
         final SortedSet<String> detectorPaths = new TreeSet<String>();
         SortedMap<String, String> contributedDetectors = DetectorsExtensionHelper.getContributedDetectors();
-        UserPreferences corePreferences = getCorePreferences(null, false);
+        UserPreferences corePreferences = getCorePreferences(null, force);
         detectorPaths.addAll(corePreferences.getCustomPlugins(true));
         if(DEBUG) {
             dumpClassLoader(FindbugsPlugin.class);
@@ -870,7 +871,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      *
      * @return the preferences for the project or prefs from workspace
      */
-    public static UserPreferences getCorePreferences(IProject project, boolean forceRead) {
+    public static UserPreferences getCorePreferences(@CheckForNull IProject project, boolean forceRead) {
         if (project == null || !isProjectSettingsEnabled(project)) {
             // read workspace (user) settings from instance area
             return getWorkspacePreferences();
@@ -890,10 +891,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      *
      * @return the preferences for the project or prefs from workspace
      */
-    public static IPreferenceStore getPluginPreferences(IProject project) {
+    public static IPreferenceStore getPluginPreferences(@CheckForNull IProject project) {
         if (project == null || !isProjectSettingsEnabled(project)) {
             // read workspace (user) settings from instance area
-            return new ScopedPreferenceStore(new InstanceScope(), FindbugsPlugin.PLUGIN_ID);
+            return new ScopedPreferenceStore(InstanceScope.INSTANCE, FindbugsPlugin.PLUGIN_ID);
         }
 
         // use project settings
@@ -1003,8 +1004,28 @@ public class FindbugsPlugin extends AbstractUIPlugin {
                 return;
             }
             IPreferenceStore store = getDefault().getPreferenceStore();
+            // Reset any existing custom plugins entries
+            int start = 0;
+            // 99 is paranoia.
+            while(start < 99){
+                String name = UserPreferences.KEY_PLUGIN + start;
+                if(store.contains(name)){
+                    store.setToDefault(name);
+                } else {
+                    break;
+                }
+                start ++;
+            }
             for (Entry<Object, Object> entry : props.entrySet()) {
                 store.putValue((String) entry.getKey(), (String) entry.getValue());
+            }
+            if(store instanceof IPersistentPreferenceStore){
+                IPersistentPreferenceStore store2 = (IPersistentPreferenceStore) store;
+                try {
+                    store2.save();
+                } catch (IOException e) {
+                    getDefault().logException(e, "Failed to save user preferences");
+                }
             }
         }
     }

@@ -50,7 +50,6 @@ import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.util.Util;
@@ -76,6 +75,11 @@ public class UserPreferences implements Cloneable {
 
     public static final String EFFORT_MAX = "max";
 
+    /**
+     * Key prefix for custom plugins, full key consists of a prefix + plugin index starting with 0
+     */
+    public static final String KEY_PLUGIN = "plugin";
+
     // Private constants
 
     private static final String PREF_FILE_NAME = ".Findbugs_prefs";
@@ -83,7 +87,7 @@ public class UserPreferences implements Cloneable {
     private static final int MAX_RECENT_FILES = 9;
 
     private static final String CLOUD_ID_KEY = "cloud_id";
-    
+
     private static final String DETECTOR_THRESHOLD_KEY = "detector_threshold";
 
     private static final String FILTER_SETTINGS_KEY = "filter_settings";
@@ -100,8 +104,6 @@ public class UserPreferences implements Cloneable {
 
     private static final String KEY_EXCLUDE_BUGS = "excludebugs";
 
-    private static final String KEY_PLUGIN = "plugin";
-
     // Fields
 
     private LinkedList<String> recentProjectsList;
@@ -113,7 +115,7 @@ public class UserPreferences implements Cloneable {
     private boolean runAtFullBuild;
 
     private String effort;
-    
+
     private String cloudId;
 
     private Map<String, Boolean> includeFilterFiles;
@@ -497,7 +499,7 @@ public class UserPreferences implements Cloneable {
     @Override
     public int hashCode() {
         return recentProjectsList.hashCode() + detectorEnablementMap.hashCode() + filterSettings.hashCode() + effort.hashCode()
-                + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode() + (runAtFullBuild ? 1 : 0) 
+                + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode() + (runAtFullBuild ? 1 : 0)
                 + Util.nullSafeHashcode(cloudId);
     }
 
