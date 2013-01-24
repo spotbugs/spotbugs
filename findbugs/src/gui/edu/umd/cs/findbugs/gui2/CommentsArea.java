@@ -172,7 +172,7 @@ public class CommentsArea {
             return null;
         return bugCollection.getCloud();
     }
-    
+
     public void updateBugCollection() {
         commentsPane.setBugCollection(getBugCollection());
     }
@@ -181,6 +181,10 @@ public class CommentsArea {
         commentsPane.refresh();
     }
 
+
+    public boolean canSetDesignations() {
+        return commentsPane.canSetDesignations();
+    }
     public void setDesignation(String designationKey) {
         commentsPane.setDesignation(designationKey);
     }

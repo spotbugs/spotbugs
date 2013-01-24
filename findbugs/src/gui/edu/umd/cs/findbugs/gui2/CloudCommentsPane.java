@@ -378,7 +378,7 @@ public abstract class CloudCommentsPane extends JPanel {
                     }
                 });
                 refresh();
-          
+
             }
         }
     }
@@ -412,6 +412,19 @@ public abstract class CloudCommentsPane extends JPanel {
 //        boolean b1 = text.trim().equals("");
         boolean b3 = text.equals(lastCommentText);
         return b && !b3;
+    }
+
+    public boolean canSetDesignations() {
+       List<BugInstance> bugs = getSelectedBugs();
+       if (bugs.isEmpty())
+           return true;
+       Cloud plugin = _bugCollection != null ? _bugCollection.getCloud() : null;
+       if (plugin == null)
+           return false;
+       for(BugInstance b : bugs)
+           if (plugin.canStoreUserAnnotation(b))
+               return true;
+       return false;
     }
 
     public void setDesignation(final String designationKey) {

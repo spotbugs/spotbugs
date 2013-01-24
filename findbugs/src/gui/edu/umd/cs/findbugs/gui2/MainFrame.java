@@ -67,6 +67,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
 import edu.umd.cs.findbugs.cloud.Cloud.SigninState;
+import edu.umd.cs.findbugs.cloud.DoNothingCloud;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.log.ConsoleLogger;
 import edu.umd.cs.findbugs.log.LogSync;
@@ -110,16 +111,16 @@ public class MainFrame extends FBFrame implements LogSync {
 
     private final ProjectPackagePrefixes projectPackagePrefixes = new ProjectPackagePrefixes();
 
-    private Logger logger = new ConsoleLogger(this);
+    private final Logger logger = new ConsoleLogger(this);
 
     @CheckForNull
     private File saveFile = null;
 
-    private CloudListener userAnnotationListener = new MyCloudListener();
+    private final CloudListener userAnnotationListener = new MyCloudListener();
 
-    private Cloud.CloudStatusListener cloudStatusListener = new MyCloudStatusListener();
+    private final Cloud.CloudStatusListener cloudStatusListener = new MyCloudStatusListener();
 
-    private ExecutorService backgroundExecutor = Executors.newCachedThreadPool();
+    private final ExecutorService backgroundExecutor = Executors.newCachedThreadPool();
 
     private final CountDownLatch mainFrameInitialized = new CountDownLatch(1);
 
@@ -142,31 +143,31 @@ public class MainFrame extends FBFrame implements LogSync {
 
     private final CommentsArea comments;
 
-    private JLabel statusBarLabel = new JLabel();
+    private final JLabel statusBarLabel = new JLabel();
 
-    private JTextField sourceSearchTextField = new JTextField(SEARCH_TEXT_FIELD_SIZE);
+    private final JTextField sourceSearchTextField = new JTextField(SEARCH_TEXT_FIELD_SIZE);
 
-    private JButton findButton = MainFrameHelper.newButton("button.find", "First");
+    private final JButton findButton = MainFrameHelper.newButton("button.find", "First");
 
-    private JButton findNextButton = MainFrameHelper.newButton("button.findNext", "Next");
+    private final JButton findNextButton = MainFrameHelper.newButton("button.findNext", "Next");
 
-    private JButton findPreviousButton = MainFrameHelper.newButton("button.findPrev", "Previous");
+    private final JButton findPreviousButton = MainFrameHelper.newButton("button.findPrev", "Previous");
 
-    private NavigableTextPane sourceCodeTextPane = new NavigableTextPane();
+    private final NavigableTextPane sourceCodeTextPane = new NavigableTextPane();
 
     private JPanel summaryTopPanel;
 
     JEditorPane summaryHtmlArea = new JEditorPane();
 
-    private JScrollPane summaryHtmlScrollPane = new JScrollPane(summaryHtmlArea);
+    private final JScrollPane summaryHtmlScrollPane = new JScrollPane(summaryHtmlArea);
 
-    private SourceCodeDisplay displayer = new SourceCodeDisplay(this);
+    private final SourceCodeDisplay displayer = new SourceCodeDisplay(this);
 
-    private ViewFilter viewFilter = new ViewFilter(this);
+    private final ViewFilter viewFilter = new ViewFilter(this);
 
     private SaveType saveType = SaveType.NOT_KNOWN;
 
-    private MainFrameLoadSaveHelper mainFrameLoadSaveHelper = new MainFrameLoadSaveHelper(this);
+    private final MainFrameLoadSaveHelper mainFrameLoadSaveHelper = new MainFrameLoadSaveHelper(this);
 
     final MainFrameTree mainFrameTree = new MainFrameTree(this);
 
@@ -415,7 +416,7 @@ public class MainFrame extends FBFrame implements LogSync {
      * Opens the analysis. Also clears the source and summary panes. Makes
      * comments enabled false. Sets the saveType and adds the file to the recent
      * menu.
-     * 
+     *
      * @param f
      * @return whether the operation was successful
      */
@@ -449,7 +450,7 @@ public class MainFrame extends FBFrame implements LogSync {
         setSaveFile(null);
         setProjectAndBugCollection(null, null);
     }
-    
+
     @SwingThread
     void setBugCollection(BugCollection bugCollection) {
         setProjectAndBugCollection(bugCollection.getProject(), bugCollection);
@@ -475,7 +476,7 @@ public class MainFrame extends FBFrame implements LogSync {
         }
         acquireDisplayWait();
         try {
-            
+
             if (this.bugCollection != bugCollection && this.bugCollection != null) {
                 Cloud plugin = this.bugCollection.getCloud();
                 if (plugin != null) {
@@ -804,7 +805,7 @@ public class MainFrame extends FBFrame implements LogSync {
                 BugPattern bugPattern = bug.getBugPattern();
                 String detailText =
                         bugPattern.getDetailText()
-                        +"<br><p> <b>Bug kind and pattern: " + 
+                        +"<br><p> <b>Bug kind and pattern: " +
                                 bugPattern.getAbbrev() + " - " + bugPattern.getType();
                 String txt = bugPattern.getDetailHTML(detailText);
                 summaryHtmlArea.setText(txt);
@@ -1023,7 +1024,14 @@ public class MainFrame extends FBFrame implements LogSync {
 
         toggleItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                comments.setDesignation(key);
+                Cloud cloud = getBugCollection().getCloud();
+                if (cloud instanceof DoNothingCloud) {
+                    JOptionPane.showMessageDialog(MainFrame.this, "No cloud selected; enable and select optional Bug Collection XML Pseudo-Cloud plugin to store designations in XML");
+                } else if (comments.canSetDesignations())
+                    comments.setDesignation(key);
+                else {
+                    JOptionPane.showMessageDialog(MainFrame.this, "The currently selected cloud cannot store these designations");
+                }
             }
         });
         MainFrameHelper.attachAcceleratorKey(toggleItem, keyEvent);
