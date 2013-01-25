@@ -320,7 +320,7 @@
                     reports="VO_VOLATILE_REFERENCE_TO_ARRAY,VO_VOLATILE_INCREMENT"/>
           <Detector class="edu.umd.cs.findbugs.detect.InheritanceUnsafeGetResource" speed="fast"
                     reports="UI_INHERITANCE_UNSAFE_GETRESOURCE"/>
-          <Detector class="edu.umd.cs.findbugs.detect.EmptyZipFileEntry" speed="moderate"
+          <Detector class="edu.umd.cs.findbugs.detect.EmptyZipFileEntry" speed="moderate" disabled="true"
                     reports="AM_CREATES_EMPTY_ZIP_FILE_ENTRY,AM_CREATES_EMPTY_JAR_FILE_ENTRY"/>
           <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPrivileged" speed="fast"
                     reports="DP_DO_INSIDE_DO_PRIVILEGED,DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"/>
