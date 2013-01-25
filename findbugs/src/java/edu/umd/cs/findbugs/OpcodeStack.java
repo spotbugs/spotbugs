@@ -230,6 +230,7 @@ public class OpcodeStack implements Constants2 {
         public static final @SpecialKind
         int SERVLET_OUTPUT = 23;
 
+        @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
         public static final HashMap<Integer, String> specialKindNames = new HashMap<Integer, String>();
 
         private static @SpecialKind int nextSpecialKind = asSpecialKind(SERVLET_OUTPUT + 1);
@@ -2205,6 +2206,7 @@ public class OpcodeStack implements Constants2 {
         }
     }
 
+    @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
     static final HashMap<String, String> boxedTypes = new HashMap<String, String>();
 
     static private void addBoxedType(Class<?>... clss) {
@@ -2788,7 +2790,7 @@ public class OpcodeStack implements Constants2 {
         else if (c instanceof ConstantLong)
             push(new Item("J", Long.valueOf(((ConstantLong) c).getBytes())));
         else
-            throw new UnsupportedOperationException("Constant type not expected");
+            throw new UnsupportedOperationException("StaticConstant type not expected");
     }
 
     private void pushByLocalObjectLoad(DismantleBytecode dbc, int register) {

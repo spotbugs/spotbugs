@@ -24,6 +24,7 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.model.ClassNameRewriter;
 
 /**
@@ -36,7 +37,7 @@ import edu.umd.cs.findbugs.model.ClassNameRewriter;
  * changes (e.g., "definitely null" to "null on simple path" for a null pointer
  * dereference). Also, we often change bug types between different versions of
  * FindBugs.
- * 
+ *
  * @see edu.umd.cs.findbugs.BugInstance
  * @see edu.umd.cs.findbugs.VersionInsensitiveBugComparator
  * @author David Hovemeyer
@@ -76,7 +77,7 @@ public class FuzzyBugComparator implements WarningComparator {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Iterator#hasNext()
          */
         public boolean hasNext() {
@@ -86,7 +87,7 @@ public class FuzzyBugComparator implements WarningComparator {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Iterator#next()
          */
         public BugAnnotation next() {
@@ -100,7 +101,7 @@ public class FuzzyBugComparator implements WarningComparator {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Iterator#remove()
          */
         public void remove() {
@@ -112,7 +113,7 @@ public class FuzzyBugComparator implements WarningComparator {
      * Keep track of which BugCollections the various BugInstances have come
      * from.
      */
-    private IdentityHashMap<BugInstance, BugCollection> bugCollectionMap;
+    private final IdentityHashMap<BugInstance, BugCollection> bugCollectionMap;
 
     private ClassNameRewriter classNameRewriter;
 
@@ -133,7 +134,7 @@ public class FuzzyBugComparator implements WarningComparator {
     /**
      * Register a BugCollection. This allows us to find the class and method
      * hashes for BugInstances to be compared.
-     * 
+     *
      * @param bugCollection
      *            a BugCollection
      */
@@ -143,7 +144,7 @@ public class FuzzyBugComparator implements WarningComparator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.WarningComparator#setClassNameRewriter(edu.umd.cs
      * .findbugs.model.MovedClassMap)
@@ -302,7 +303,7 @@ public class FuzzyBugComparator implements WarningComparator {
 
     /**
      * Compare source line annotations.
-     * 
+     *
      * @param rhsCollection
      *            lhs BugCollection
      * @param lhsCollection
@@ -328,6 +329,7 @@ public class FuzzyBugComparator implements WarningComparator {
     }
 
     // See "FindBugsAnnotationDescriptions.properties"
+    @StaticConstant
     private static final HashSet<String> significantDescriptionSet = new HashSet<String>();
     static {
         // Classes, methods, and fields are significant.

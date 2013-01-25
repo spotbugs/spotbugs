@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.sourceViewer;
 import java.text.CharacterIterator;
 import java.util.HashSet;
 
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
+
 public class JavaScanner {
     public final static int NORMAL_TEXT = 0;
 
@@ -35,6 +37,7 @@ public class JavaScanner {
 
     public final static int EOF = -1;
 
+    @StaticConstant
     private final static HashSet<String> KEYWORDS = new HashSet<String>();
 
     private final static int MAX_KEYWORD_LENGTH;

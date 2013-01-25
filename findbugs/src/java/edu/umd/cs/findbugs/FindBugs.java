@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.updates.UpdateChecker;
 import edu.umd.cs.findbugs.updates.UpdateChecker.PluginUpdate;
 import edu.umd.cs.findbugs.util.FutureValue;
@@ -168,7 +169,7 @@ public abstract class FindBugs {
     public static boolean isNoMains() {
         return noMains;
     }
-  
+
     public static final Logger LOGGER = Logger.getLogger(FindBugs.class.getPackage().getName());
 
     static {
@@ -179,6 +180,7 @@ public abstract class FindBugs {
      * Known URL protocols. Filename URLs that do not have an explicit protocol
      * are assumed to be files.
      */
+    @StaticConstant
     static public final Set<String> knownURLProtocolSet = new HashSet<String>();
     static {
         knownURLProtocolSet.add("file");
@@ -382,8 +384,8 @@ public abstract class FindBugs {
     @SuppressWarnings("DM_EXIT")
     public static void runMain(IFindBugsEngine findBugs, TextUICommandLine commandLine) throws IOException {
         boolean verbose = !commandLine.quiet() || commandLine.setExitCode();
-         
-          FutureValue<Collection<UpdateChecker.PluginUpdate>> 
+
+          FutureValue<Collection<UpdateChecker.PluginUpdate>>
         updateHolder = null;
         if (verbose)
             updateHolder  = DetectorFactoryCollection.instance().getUpdates();
@@ -422,7 +424,7 @@ public abstract class FindBugs {
             } catch (InterruptedException e) {
                 assert true;
             }
-                
+
             }
         }
 

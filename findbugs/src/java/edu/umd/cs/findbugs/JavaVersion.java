@@ -35,7 +35,7 @@ public class JavaVersion {
     private final String rest;
 
     /**
-     * Constant for the Java version we're currently running on.
+     * StaticConstant for the Java version we're currently running on.
      */
     private static JavaVersion runtimeVersion;
 
@@ -51,7 +51,7 @@ public class JavaVersion {
     }
 
     /**
-     * Constant for Java 1.5 (Tiger).
+     * StaticConstant for Java 1.5 (Tiger).
      */
     public static final JavaVersion JAVA_1_5 = new JavaVersion(1, 5);
 

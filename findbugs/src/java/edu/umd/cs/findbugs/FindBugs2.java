@@ -40,7 +40,6 @@ import org.apache.bcel.classfile.ClassFormatException;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.asm.FBClassReader;
-import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
@@ -965,7 +964,7 @@ public class FindBugs2 implements IFindBugsEngine {
     @SuppressWarnings({"UnusedDeclaration"})
     public static void createAnalysisContext(Project project, List<ClassDescriptor> appClassList,
             @CheckForNull String sourceInfoFileName) throws  IOException {
-        AnalysisCacheToAnalysisContextAdapter analysisContext = new AnalysisCacheToAnalysisContextAdapter();
+        AnalysisContext analysisContext = new AnalysisContext();
 
         // Make this the current analysis context
         AnalysisContext.setCurrentAnalysisContext(analysisContext);
@@ -983,7 +982,7 @@ public class FindBugs2 implements IFindBugsEngine {
     }
 
     public static void setAppClassList(List<ClassDescriptor> appClassList)  {
-        AnalysisCacheToAnalysisContextAdapter analysisContext = (AnalysisCacheToAnalysisContextAdapter) AnalysisContext
+        AnalysisContext analysisContext = AnalysisContext
                 .currentAnalysisContext();
 
         analysisContext.setAppClassList(appClassList);

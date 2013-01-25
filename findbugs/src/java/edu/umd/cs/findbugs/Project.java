@@ -189,7 +189,7 @@ public class Project implements XMLWriteable {
     }
 
     /**
-     * Constant used to name anonymous projects.
+     * StaticConstant used to name anonymous projects.
      */
     public static final String UNNAMED_PROJECT = "<<unnamed project>>";
 
