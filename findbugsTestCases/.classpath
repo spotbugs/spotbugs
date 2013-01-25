@@ -13,6 +13,7 @@
 	<classpathentry kind="lib" path="lib/intellij-annotations.jar"/>
 	<classpathentry kind="lib" path="lib/jcip-annotations.jar"/>
 	<classpathentry kind="lib" path="lib/testng-6.3.1.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.core-3.1.2.RELEASE.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/jsr305.jar"/>
 	<classpathentry kind="lib" path="lib/joda-time-1.6.jar"/>
