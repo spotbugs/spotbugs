@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 
 public class EmptyZipFileEntry extends BytecodeScanningDetector implements StatelessDetector {
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private int sawPutEntry;
 
