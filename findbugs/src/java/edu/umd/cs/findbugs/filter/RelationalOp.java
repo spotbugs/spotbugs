@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
+
 /**
  * @author pugh
  */
@@ -34,6 +36,7 @@ public abstract class RelationalOp {
 
     final String name;
 
+    @StaticConstant
     private static final Map<String, RelationalOp> map = new HashMap<String, RelationalOp>();
 
     public static RelationalOp byName(String s) {

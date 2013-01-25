@@ -39,15 +39,15 @@ import edu.umd.cs.findbugs.util.Util;
  * Extension to ObjectType that includes additional information about the
  * generic signature.
  * <p>
- * 
+ *
  * A GenericObjectType is either a parameterized type e.g.
  * <code>List&lt;String&gt;</code>, or a type variable e.g. <code>T</code>.
  * <p>
- * 
+ *
  * This class cannot be initialized directly. Instead, create a
  * GenericObjectType by calling GenericUtilities.getType(String) and passing in
  * the bytecode signature for the type.
- * 
+ *
  * @author Nat Ayewah
  */
 public class GenericObjectType extends ObjectType {
@@ -103,7 +103,7 @@ public class GenericObjectType extends ObjectType {
 
     /**
      * Get the TypeCategory that represents this Object
-     * 
+     *
      * @see GenericUtilities.TypeCategory
      */
     public GenericUtilities.TypeCategory getTypeCategory() {
@@ -168,7 +168,7 @@ public class GenericObjectType extends ObjectType {
     /**
      * Create a GenericObjectType that represents a Simple Type Variable or a
      * simple wildcard with no extensions
-     * 
+     *
      * @param variable
      *            the type variable e.g. <code>T</code>
      */
@@ -178,11 +178,11 @@ public class GenericObjectType extends ObjectType {
 
     /**
      * Create a GenericObjectType that represents a Wildcard with extensions
-     * 
+     *
      * @param variable
      *            the type variable e.g. <code>T</code>
      */
-    GenericObjectType(@Nonnull String wildcard, ReferenceType extension) {
+    GenericObjectType(@Nonnull String wildcard, @CheckForNull ReferenceType extension) {
         super(DescriptorFactory.canonicalizeString(Type.OBJECT.getClassName()));
         this.variable = DescriptorFactory.canonicalizeString(wildcard);
         this.extension = extension;
@@ -191,7 +191,7 @@ public class GenericObjectType extends ObjectType {
 
     /**
      * Create a GenericObjectType that represents a parameterized class
-     * 
+     *
      * @param class_name
      *            the class that is parameterized. e.g.
      *            <code>java.util.List</code>
@@ -225,7 +225,7 @@ public class GenericObjectType extends ObjectType {
      * <code>toString()</code> in case any existing code assumes that this
      * object is an ObjectType and expects similar string representation. i.e.
      * <code>toString()</code> is equivalent to <code>toString(false)</code>)
-     * 
+     *
      * @param includeGenerics
      *            if true then the string includes generic information in this
      *            object. Otherwise this returns the same value as

@@ -101,6 +101,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.props.WarningProperty;
@@ -129,6 +130,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
     /**
      * Classes that are suspicious if compared by reference.
      */
+    @StaticConstant
     private static final HashSet<String> DEFAULT_SUSPICIOUS_SET = new HashSet<String>();
 
     static {
@@ -347,10 +349,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             return "<empty string>";
         }
     }
-    
+
     private static final Type emptyStringTypeInstance = new EmptyStringType();
 
-    
+
     /**
      * Type representing a String passed as a parameter.
      */
@@ -740,7 +742,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         LinkedList<WarningWithProperties> refComparisonList = new LinkedList<WarningWithProperties>();
         LinkedList<WarningWithProperties> stringComparisonList = new LinkedList<WarningWithProperties>();
 
-        
+
         comparedForEqualityInThisMethod = new HashMap<String,Integer>();
         CFG cfg = classContext.getCFG(method);
         DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
@@ -846,7 +848,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                         && !className.equals("org.testng.Assert")
                     || isStatic && methodName.equals("equal") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)Z")
                        && className.equals("com.google.common.base.Objects");
-                       
+
               if (equalsMethod) {
                 checkEqualsComparison(location, jclass, method, methodGen, cpg, typeDataflow);
             }
@@ -1039,7 +1041,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
     }
 
     private Map<String, Integer> comparedForEqualityInThisMethod;
-    
+
     void addEqualsCheck(String type, int pc) {
         Integer oldPC = comparedForEqualityInThisMethod.get(type);
         if (oldPC == null || pc < oldPC)
@@ -1057,7 +1059,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 return;
             }
         }
-        String sourceFile = jclass.getSourceFileName(); 
+        String sourceFile = jclass.getSourceFileName();
 
         TypeFrame frame = typeDataflow.getFactAtLocation(location);
         if (frame.getStackDepth() < 2) {
@@ -1131,10 +1133,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             addEqualsCheck(lhsType_.getSignature(), handle.getPosition());
             addEqualsCheck(rhsType_.getSignature(), handle.getPosition());
         }
-        
+
         if (result == IncompatibleTypes.SEEMS_OK) return;
 
-       
+
         if (result.getPriority() > Priorities.LOW_PRIORITY)
             return;
 
@@ -1219,7 +1221,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         String invoked = inv.getClassName(cpg);
         String methodName = inv.getMethodName(cpg);
         String methodSig = inv.getSignature(cpg);
-        MethodDescriptor invokedMethod = 
+        MethodDescriptor invokedMethod =
             DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(invoked), methodName, methodSig, inv instanceof INVOKESTATIC);
         return invokedMethod;
     }

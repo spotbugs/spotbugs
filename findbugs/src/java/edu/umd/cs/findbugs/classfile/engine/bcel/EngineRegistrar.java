@@ -38,17 +38,18 @@ import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.IDatabaseFactory;
 import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.ReflectionDatabaseFactory;
+import edu.umd.cs.findbugs.classfile.analysis.MethodInfo.MethodInfoDatabase;
 
 /**
  * Register BCEL-framework analysis engines.
- * 
+ *
  * <p>
  * <b>NOTE</b>: the database factories will only work with
  * AnalysisCacheToAnalysisContextAdapter, not with LegacyAnalysisContext.
  * However, that's ok since the databases for BCEL-based analyses are only ever
  * accessed through the AnalysisContext.
  * </p>
- * 
+ *
  * @author David Hovemeyer
  */
 public class EngineRegistrar implements IAnalysisEngineRegistrar {
@@ -83,11 +84,13 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
             new ReflectionDatabaseFactory<ParameterNullnessPropertyDatabase>(ParameterNullnessPropertyDatabase.class),
             new ReflectionDatabaseFactory<ReturnValueNullnessPropertyDatabase>(ReturnValueNullnessPropertyDatabase.class),
             new ReflectionDatabaseFactory<DirectlyRelevantTypeQualifiersDatabase>(DirectlyRelevantTypeQualifiersDatabase.class),
-            new ReflectionDatabaseFactory<TypeQualifierDatabase>(TypeQualifierDatabase.class), };
+            new ReflectionDatabaseFactory<TypeQualifierDatabase>(TypeQualifierDatabase.class),
+            new ReflectionDatabaseFactory<MethodInfoDatabase>(MethodInfoDatabase.class),
+            };
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar#
      * registerAnalysisEngines(edu.umd.cs.findbugs.classfile.IAnalysisCache)
      */

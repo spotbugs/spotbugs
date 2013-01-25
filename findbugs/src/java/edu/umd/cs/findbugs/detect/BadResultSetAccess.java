@@ -27,10 +27,12 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class BadResultSetAccess extends OpcodeStackDetector {
 
+    @StaticConstant
     private static final Set<String> dbFieldTypesSet = new HashSet<String>() {
         static final long serialVersionUID = -3510636899394546735L;
         {
@@ -61,7 +63,7 @@ public class BadResultSetAccess extends OpcodeStackDetector {
         }
     };
 
-    private BugReporter bugReporter;
+    final private BugReporter bugReporter;
 
     public BadResultSetAccess(BugReporter bugReporter) {
         this.bugReporter = bugReporter;

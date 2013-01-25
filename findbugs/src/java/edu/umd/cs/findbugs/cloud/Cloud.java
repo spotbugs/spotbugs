@@ -103,7 +103,7 @@ public interface Cloud {
 
     /**
      * Returns true if communication has already been initiated (and perhaps completed).
-     * 
+     *
      */
     public boolean communicationInitiated();
     /**
@@ -339,8 +339,8 @@ public interface Cloud {
 
     enum SigninState {
         NO_SIGNIN_REQUIRED, UNAUTHENTICATED, SIGNING_IN, SIGNED_IN, SIGNIN_FAILED, SIGNIN_DECLINED, SIGNED_OUT, DISCONNECTED;
-        
-        
+
+
         /** Can download issues without asking to sign in */
         public boolean canDownload() {
             switch (this) {
@@ -352,9 +352,9 @@ public interface Cloud {
             default:
                 return false;
             }
-            
+
         }
-        
+
         /** Can upload issues without asking to sign in */
         public boolean canUpload() {
             switch (this) {
@@ -365,7 +365,7 @@ public interface Cloud {
             default:
                 return false;
             }
-            
+
         }
         /** Should ask to sign in if new issues to upload found */
         public boolean shouldAskToSignIn() {
@@ -392,9 +392,10 @@ public interface Cloud {
                 return false;
             }
         }
+        @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
         static final ResourceBundle names = ResourceBundle.getBundle(Cloud.class.getName(), Locale.getDefault());
 
-        
+
         @Override
         public String toString() {
             try {
@@ -435,12 +436,12 @@ public interface Cloud {
             return this == UserDesignation.OBSOLETE_CODE || this == UserDesignation.NEEDS_STUDY
                     || this == UserDesignation.UNCLASSIFIED;
         }
-        
+
         public boolean notAProblem() {
-            return this.score() < 0;  
+            return this.score() < 0;
         }
         public boolean shouldFix() {
-            return this.score() > 0;  
+            return this.score() > 0;
         }
     }
 

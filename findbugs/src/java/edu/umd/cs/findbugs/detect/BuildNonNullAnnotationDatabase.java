@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 /**
@@ -55,6 +56,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
     private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
 
+    @StaticConstant
     private static final Map<String, AnnotationDatabase.Target> defaultKind = new HashMap<String, AnnotationDatabase.Target>();
     static {
         defaultKind.put("", AnnotationDatabase.Target.ANY);

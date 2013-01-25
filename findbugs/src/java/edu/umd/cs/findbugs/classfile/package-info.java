@@ -9,5 +9,6 @@
  * using the ClassFactory singleton in that package.
  */
 @javax.annotation.ParametersAreNonnullByDefault
+@edu.umd.cs.findbugs.internalAnnotations.AnalysisContextContained
 package edu.umd.cs.findbugs.classfile;
 

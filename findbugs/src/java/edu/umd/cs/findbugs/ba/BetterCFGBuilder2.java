@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -167,8 +168,6 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
             return edgeType;
         }
     }
-
-    private static final LinkedList<EscapeTarget> emptyEscapeTargetList = new LinkedList<EscapeTarget>();
 
     /**
      * JSR subroutine. The top level subroutine is where execution starts. Each
@@ -437,7 +436,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         public Iterator<EscapeTarget> escapeTargetIterator(BasicBlock sourceBlock) {
             List<EscapeTarget> escapeTargetList = escapeTargetListMap.get(sourceBlock);
             if (escapeTargetList == null)
-                escapeTargetList = emptyEscapeTargetList;
+                escapeTargetList = Collections.emptyList();
             return escapeTargetList.iterator();
         }
     }

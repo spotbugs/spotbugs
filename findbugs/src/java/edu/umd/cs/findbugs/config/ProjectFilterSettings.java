@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugProperty;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 
 /**
  * Settings for user filtering of warnings for a project. This includes
@@ -60,6 +61,7 @@ public class ProjectFilterSettings implements Cloneable {
     public static final String DEFAULT_PRIORITY = MEDIUM_PRIORITY;
 
     /** Map of priority level names to their numeric values. */
+    @StaticConstant
     private static Map<String, Integer> priorityNameToValueMap = new HashMap<String, Integer>();
     static {
         priorityNameToValueMap.put(HIGH_PRIORITY, (Priorities.HIGH_PRIORITY));

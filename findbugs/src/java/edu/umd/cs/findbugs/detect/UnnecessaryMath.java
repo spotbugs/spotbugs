@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
  * Find occurrences of Math using constants, where the result of the calculation
  * can be determined statically. Replacing the math formula with the constant
  * performs better, and sometimes is more accurate.
- * 
+ *
  * @author Dave Brosius
  */
 public class UnnecessaryMath extends BytecodeScanningDetector implements StatelessDetector {
@@ -46,12 +46,13 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
 
     static final int SEEN_DCONST = 1;
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private int state = SEEN_NOTHING;
 
     private double constValue;
 
+    @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
     private static final Set<String> zeroMethods = new HashSet<String>() {
         {
             add("acos");
@@ -76,6 +77,7 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
         }
     };
 
+    @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
     private static final Set<String> oneMethods = new HashSet<String>() {
         {
             add("acos");
@@ -91,6 +93,7 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
         }
     };
 
+    @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
     private static final Set<String> anyMethods = new HashSet<String>() {
         {
             add("abs");

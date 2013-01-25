@@ -20,9 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
@@ -58,7 +56,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  * hierarchy using the {@link org.apache.bcel.Repository} class. Callers should
  * generally expect to handle ClassNotFoundException for when referenced classes
  * can't be found.
- * 
+ *
  * @author David Hovemeyer
  */
 public class Hierarchy {
@@ -67,7 +65,7 @@ public class Hierarchy {
     public static ClassDescriptor RUNTIME_EXCEPTION = DescriptorFactory.createClassDescriptor(RuntimeException.class);
     public static ClassDescriptor EXCEPTION = DescriptorFactory.createClassDescriptor(Exception.class);
     public static ClassDescriptor ERROR = DescriptorFactory.createClassDescriptor(Error.class);
-    
+
     /**
      * Type of java.lang.Exception.
      */
@@ -85,7 +83,7 @@ public class Hierarchy {
 
     /**
      * Determine whether one class (or reference type) is a subtype of another.
-     * 
+     *
      * @param clsName
      *            the name of the class or reference type
      * @param possibleSupertypeClassName
@@ -100,7 +98,7 @@ public class Hierarchy {
 
     /**
      * Determine if one reference type is a subtype of another.
-     * 
+     *
      * @param t
      *            a reference type
      * @param possibleSupertype
@@ -108,30 +106,15 @@ public class Hierarchy {
      * @return true if t is a subtype of possibleSupertype, false if not
      */
     public static boolean isSubtype(ReferenceType t, ReferenceType possibleSupertype) throws ClassNotFoundException {
-        if (true) {
-            return Global.getAnalysisCache().getDatabase(Subtypes2.class).isSubtype(t, possibleSupertype);
-        } else {
-            Map<ReferenceType, Boolean> subtypes = subtypeCache.get(possibleSupertype);
-            if (subtypes == null) {
-                subtypes = new HashMap<ReferenceType, Boolean>();
-                subtypeCache.put(possibleSupertype, subtypes);
-            }
-            Boolean result = subtypes.get(t);
-            if (result == null) {
-                result = Boolean.valueOf(t.isAssignmentCompatibleWith(possibleSupertype));
-                subtypes.put(t, result);
-            }
-            return result;
-        }
+        return Global.getAnalysisCache().getDatabase(Subtypes2.class).isSubtype(t, possibleSupertype);
     }
 
-    static Map<ReferenceType, Map<ReferenceType, Boolean>> subtypeCache = new HashMap<ReferenceType, Map<ReferenceType, Boolean>>();
 
     /**
      * Determine if the given ObjectType reference represents a
      * <em>universal</em> exception handler. That is, one that will catch any
      * kind of exception.
-     * 
+     *
      * @param catchType
      *            the ObjectType of the exception handler
      * @return true if catchType is null, or if catchType is java.lang.Throwable
@@ -150,13 +133,13 @@ public class Hierarchy {
         ClassDescriptor c = DescriptorFactory.getClassDescriptor(type);
         Subtypes2 subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
         return subtypes2.isSubtype(c, RUNTIME_EXCEPTION, ERROR);
-     
+
     }
 
     /**
      * Determine if method whose name and signature is specified is a monitor
      * wait operation.
-     * 
+     *
      * @param methodName
      *            name of the method
      * @param methodSig
@@ -169,12 +152,12 @@ public class Hierarchy {
 
     /**
      * Determine if given Instruction is a monitor wait.
-     * 
+     *
      * @param ins
      *            the Instruction
      * @param cpg
      *            the ConstantPoolGen for the Instruction
-     * 
+     *
      * @return true if the instruction is a monitor wait, false if not
      */
     public static boolean isMonitorWait(Instruction ins, ConstantPoolGen cpg) {
@@ -193,7 +176,7 @@ public class Hierarchy {
     /**
      * Determine if method whose name and signature is specified is a monitor
      * notify operation.
-     * 
+     *
      * @param methodName
      *            name of the method
      * @param methodSig
@@ -206,12 +189,12 @@ public class Hierarchy {
 
     /**
      * Determine if given Instruction is a monitor wait.
-     * 
+     *
      * @param ins
      *            the Instruction
      * @param cpg
      *            the ConstantPoolGen for the Instruction
-     * 
+     *
      * @return true if the instruction is a monitor wait, false if not
      */
     public static boolean isMonitorNotify(Instruction ins, ConstantPoolGen cpg) {
@@ -231,7 +214,7 @@ public class Hierarchy {
      * Look up the method referenced by given InvokeInstruction. This method
      * does <em>not</em> look for implementations in super or subclasses
      * according to the virtual dispatch rules.
-     * 
+     *
      * @param inv
      *            the InvokeInstruction
      * @param cpg
@@ -248,7 +231,7 @@ public class Hierarchy {
      * Look up the method referenced by given InvokeInstruction. This method
      * does <em>not</em> look for implementations in super or subclasses
      * according to the virtual dispatch rules.
-     * 
+     *
      * @param inv
      *            the InvokeInstruction
      * @param cpg
@@ -272,7 +255,7 @@ public class Hierarchy {
 
     /**
      * Visit all superclass methods which the given method overrides.
-     * 
+     *
      * @param method
      *            the method
      * @param chooser
@@ -288,7 +271,7 @@ public class Hierarchy {
 
     /**
      * Visit all superinterface methods which the given method implements.
-     * 
+     *
      * @param method
      *            the method
      * @param chooser
@@ -307,7 +290,7 @@ public class Hierarchy {
      * called by the given InvokeInstruction. One reason this method is useful
      * is that it indicates which declared exceptions are thrown by the called
      * methods.
-     * 
+     *
      * <p/>
      * <ul>
      * <li>For invokespecial, this is simply an exact lookup.
@@ -321,7 +304,7 @@ public class Hierarchy {
      * desired is given, so the extended lookup will not be required. Should
      * check.)
      * </ul>
-     * 
+     *
      * @param inv
      *            the InvokeInstruction
      * @param cpg
@@ -402,7 +385,7 @@ public class Hierarchy {
 
     /**
      * Find the declared exceptions for the method called by given instruction.
-     * 
+     *
      * @param inv
      *            the InvokeInstruction
      * @param cpg
@@ -421,7 +404,7 @@ public class Hierarchy {
 
     /**
      * Find a method in given class.
-     * 
+     *
      * @param javaClass
      *            the class
      * @param methodName
@@ -460,7 +443,7 @@ public class Hierarchy {
 
     /**
      * Find a method in given class.
-     * 
+     *
      * @param classDesc
      *            the class descriptor
      * @param methodName
@@ -490,7 +473,7 @@ public class Hierarchy {
 
     /**
      * Find a method in given class.
-     * 
+     *
      * @param javaClass
      *            the class
      * @param methodName
@@ -524,7 +507,7 @@ public class Hierarchy {
 
     /**
      * Find a method in given class.
-     * 
+     *
      * @param javaClass
      *            the class
      * @param methodName
@@ -606,7 +589,7 @@ public class Hierarchy {
 
     /**
      * Find a method in given list of classes, searching the classes in order.
-     * 
+     *
      * @param classList
      *            list of classes in which to search
      * @param methodName
@@ -623,7 +606,7 @@ public class Hierarchy {
 
     /**
      * Find a method in given list of classes, searching the classes in order.
-     * 
+     *
      * @param classList
      *            list of classes in which to search
      * @param methodName
@@ -651,7 +634,7 @@ public class Hierarchy {
     /**
      * Find XMethod for method in given list of classes, searching the classes
      * in order.
-     * 
+     *
      * @param classList
      *            list of classes in which to search
      * @param methodName
@@ -668,7 +651,7 @@ public class Hierarchy {
     /**
      * Find XMethod for method in given list of classes, searching the classes
      * in order.
-     * 
+     *
      * @param classList
      *            list of classes in which to search
      * @param methodName
@@ -695,7 +678,7 @@ public class Hierarchy {
     /**
      * Resolve possible method call targets. This works for both static and
      * instance method calls.
-     * 
+     *
      * @param invokeInstruction
      *            the InvokeInstruction
      * @param typeFrame
@@ -754,7 +737,7 @@ public class Hierarchy {
     /**
      * Resolve possible instance method call targets. Assumes that invokevirtual
      * and invokeinterface methods may call any subtype of the receiver class.
-     * 
+     *
      * @param receiverType
      *            type of the receiver object
      * @param invokeInstruction
@@ -771,7 +754,7 @@ public class Hierarchy {
 
     /**
      * Resolve possible instance method call targets.
-     * 
+     *
      * @param receiverType
      *            type of the receiver object
      * @param invokeInstruction
@@ -857,7 +840,7 @@ public class Hierarchy {
 
     /**
      * Return whether or not the given method is concrete.
-     * 
+     *
      * @param xmethod
      *            the method
      * @return true if the method is concrete, false otherwise
@@ -870,7 +853,7 @@ public class Hierarchy {
 
     /**
      * Find a field with given name defined in given class.
-     * 
+     *
      * @param className
      *            the name of the class
      * @param fieldName
@@ -898,7 +881,7 @@ public class Hierarchy {
      * Look up a field with given name and signature in given class, returning
      * it as an {@link XField XField} object. If a field can't be found in the
      * immediate class, its superclass is search, and so forth.
-     * 
+     *
      * @param className
      *            name of the class through which the field is referenced
      * @param fieldName
@@ -919,7 +902,7 @@ public class Hierarchy {
     /**
      * Look up the field referenced by given FieldInstruction, returning it as
      * an {@link XField XField} object.
-     * 
+     *
      * @param fins
      *            the FieldInstruction
      * @param cpg
@@ -948,7 +931,7 @@ public class Hierarchy {
     /**
      * Determine whether the given INVOKESTATIC instruction is an inner-class
      * field accessor method.
-     * 
+     *
      * @param inv
      *            the INVOKESTATIC instruction
      * @param cpg
@@ -963,7 +946,7 @@ public class Hierarchy {
 
     /**
      * Get the InnerClassAccess for access method called by given INVOKESTATIC.
-     * 
+     *
      * @param inv
      *            the INVOKESTATIC instruction
      * @param cpg

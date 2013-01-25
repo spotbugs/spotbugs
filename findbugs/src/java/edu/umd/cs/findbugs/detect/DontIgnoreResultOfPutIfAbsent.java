@@ -133,6 +133,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
 
     final static boolean DEBUG = false;
 
+    @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
     static HashSet<String> immutableClassNames = new HashSet<String>();
     static {
         immutableClassNames.add("java/lang/Integer");

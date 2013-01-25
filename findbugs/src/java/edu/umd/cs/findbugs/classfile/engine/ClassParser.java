@@ -244,7 +244,7 @@ public class ClassParser implements ClassParserInterface {
     /**
      * Read a constant from the constant pool.
      * 
-     * @return a Constant
+     * @return a StaticConstant
      * @throws InvalidClassFileFormatException
      * @throws IOException
      */

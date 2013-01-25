@@ -22,8 +22,13 @@ package edu.umd.cs.findbugs.ba;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -34,6 +39,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.AbstractBugReporter;
+import edu.umd.cs.findbugs.AnalysisCacheToRepositoryAdapter;
 import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.BugInstance.NoSuchBugPattern;
 import edu.umd.cs.findbugs.Project;
@@ -45,8 +51,10 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.ba.jsr305.DirectlyRelevantTypeQualifiersDatabase;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysisFeatures;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.ReturnValueNullnessPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -54,11 +62,14 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
+import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 import edu.umd.cs.findbugs.detect.UnreadFields;
 import edu.umd.cs.findbugs.detect.UnreadFieldsData;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * A context for analysis of a complete project. This serves as the repository
@@ -75,7 +86,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  * @see edu.umd.cs.findbugs.classfile.Global
  */
 @NotThreadSafe
-public abstract class AnalysisContext {
+public class AnalysisContext {
     public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.analysiscontext.debug");
 
     public static final boolean IGNORE_BUILTIN_MODELS = SystemProperties.getBoolean("findbugs.ignoreBuiltinModels");
@@ -112,13 +123,7 @@ public abstract class AnalysisContext {
         }
     };
 
-    public abstract INullnessAnnotationDatabase getNullnessAnnotationDatabase();
 
-    public abstract CheckReturnAnnotationDatabase getCheckReturnAnnotationDatabase();
-
-    public abstract AnnotationRetentionDatabase getAnnotationRetentionDatabase();
-
-    public abstract JCIPAnnotationDatabase getJCIPAnnotationDatabase();
 
     /**
      * save the original SyntheticRepository so we may obtain JavaClass objects
@@ -141,8 +146,10 @@ public abstract class AnalysisContext {
 
     private String databaseOutputDir;
 
-    protected AnalysisContext() {
+    public AnalysisContext() {
         this.boolPropertySet = new BitSet();
+        this.lookupFailureCallback = new DelegatingRepositoryLookupFailureCallback();
+
     }
 
     private void clear() {
@@ -151,21 +158,6 @@ public abstract class AnalysisContext {
         databaseOutputDir = null;
     }
 
-
-    /**
-     * Instantiate the CheckReturnAnnotationDatabase. Do this after the
-     * repository has been set up.
-     */
-    public abstract void initDatabases();
-
-    /**
-     * After a pass has been completed, allow the analysis context to update
-     * information.
-     *
-     * @param pass
-     *            -- the first pass is pass 0
-     */
-    public abstract void updateDatabases(int pass);
 
     /**
      * Get the AnalysisContext associated with this thread
@@ -250,9 +242,7 @@ public abstract class AnalysisContext {
         this.unreadFields = unreadFields;
     }
 
-    public abstract DirectlyRelevantTypeQualifiersDatabase getDirectlyRelevantTypeQualifiersDatabase();
-
-    private static boolean skipReportingMissingClass(@CheckForNull @DottedClassName String missing) {
+     private static boolean skipReportingMissingClass(@CheckForNull @DottedClassName String missing) {
         return missing == null || missing.length() == 0 || missing.charAt(0) == '[' || missing.endsWith("package-info");
     }
 
@@ -374,10 +364,6 @@ public abstract class AnalysisContext {
         return oldValue;
     }
 
-    /**
-     * Get the lookup failure callback.
-     */
-    public abstract RepositoryLookupFailureCallback getLookupFailureCallback();
 
     /**
      * Set the source path.
@@ -385,39 +371,6 @@ public abstract class AnalysisContext {
     public final void setProject(Project project) {
         this.project = project;
     }
-
-    /**
-     * Get the SourceFinder, for finding source files.
-     */
-    public abstract SourceFinder getSourceFinder();
-
-    // /**
-    // * Get the Subtypes database.
-    // *
-    // * @return the Subtypes database
-    // */
-    // @Deprecated // use Subtypes2 instead
-    // public abstract Subtypes getSubtypes();
-
-    /**
-     * Clear the BCEL Repository in preparation for analysis.
-     */
-    public abstract void clearRepository();
-
-    /**
-     * Clear the ClassContext cache. This should be done between analysis
-     * passes.
-     */
-    public abstract void clearClassContextCache();
-
-    /**
-     * Add an entry to the Repository's classpath.
-     *
-     * @param url
-     *            the classpath entry URL
-     * @throws IOException
-     */
-    public abstract void addClasspathEntry(String url) throws IOException;
 
     // /**
     // * Add an application class to the repository.
@@ -514,18 +467,6 @@ public abstract class AnalysisContext {
      * Lookup a class.
      * <em>Use this method instead of Repository.lookupClass().</em>
      *
-     * @param className
-     *            the name of the class
-     * @return the JavaClass representing the class
-     * @throws ClassNotFoundException
-     *             (but not really)
-     */
-    public abstract JavaClass lookupClass(@Nonnull @DottedClassName String className) throws ClassNotFoundException;
-
-    /**
-     * Lookup a class.
-     * <em>Use this method instead of Repository.lookupClass().</em>
-     *
      * @param classDescriptor
      *            descriptor specifying the class to look up
      * @return the class
@@ -587,22 +528,6 @@ public abstract class AnalysisContext {
     }
 
     /**
-     * Get the ClassContext for a class.
-     *
-     * @param javaClass
-     *            the class
-     * @return the ClassContext for that class
-     */
-    public abstract ClassContext getClassContext(JavaClass javaClass);
-
-    /**
-     * Get stats about hit rate for ClassContext cache.
-     *
-     * @return stats about hit rate for ClassContext cache
-     */
-    public abstract String getClassContextStats();
-
-    /**
      * If possible, load interprocedural property databases.
      */
     public final void loadInterproceduralDatabases() {
@@ -651,11 +576,6 @@ public abstract class AnalysisContext {
     }
 
     /**
-     * Get the SourceInfoMap.
-     */
-    public abstract SourceInfoMap getSourceInfoMap();
-
-    /**
      * Set the interprocedural database input directory.
      *
      * @param databaseInputDir
@@ -697,29 +617,7 @@ public abstract class AnalysisContext {
         return databaseOutputDir;
     }
 
-    /**
-     * Get the property database recording the types of values stored into
-     * fields.
-     *
-     * @return the database, or null if there is no database available
-     */
-    public abstract FieldStoreTypeDatabase getFieldStoreTypeDatabase();
 
-    /**
-     * Get the property database recording which methods unconditionally
-     * dereference parameters.
-     *
-     * @return the database, or null if there is no database available
-     */
-    public abstract ParameterNullnessPropertyDatabase getUnconditionalDerefParamDatabase();
-
-    /**
-     * Get the property database recording which methods always return nonnull
-     * values
-     *
-     * @return the database, or null if there is no database available
-     */
-    public abstract ReturnValueNullnessPropertyDatabase getReturnValueNullnessPropertyDatabase();
 
     /**
      * Load an interprocedural property database.
@@ -825,8 +723,6 @@ public abstract class AnalysisContext {
         }
     }
 
-    public abstract InnerClassAccessMap getInnerClassAccessMap();
-
     /**
      * Set the current analysis context for this thread.
      *
@@ -846,10 +742,6 @@ public abstract class AnalysisContext {
         currentAnalysisContext.remove();
     }
 
-    /**
-     * Get the Subtypes2 inheritance hierarchy database.
-     */
-    public abstract Subtypes2 getSubtypes2();
 
     /**
      * Get Collection of all XClass objects seen so far.
@@ -860,19 +752,332 @@ public abstract class AnalysisContext {
         return getSubtypes2().getXClassCollection();
     }
 
-    public abstract @CheckForNull
-    XMethod getBridgeTo(MethodInfo m);
-
-    public abstract @CheckForNull
-    XMethod getBridgeFrom(MethodInfo m);
-
-    public abstract void setBridgeMethod(MethodInfo from, MethodInfo to);
-
     private final SuppressionMatcher suppressionMatcher = new SuppressionMatcher();
+
+    private TypeQualifierNullnessAnnotationDatabase tqNullnessDatabase;
+
+    protected final RepositoryLookupFailureCallback lookupFailureCallback;
+
+    final Map<MethodInfo, MethodInfo> bridgeTo = new IdentityHashMap<MethodInfo, MethodInfo>();
+
+    final Map<MethodInfo, MethodInfo> bridgeFrom = new IdentityHashMap<MethodInfo, MethodInfo>();
 
     public SuppressionMatcher getSuppressionMatcher() {
         return suppressionMatcher;
     }
+
+    /**
+     * Add an entry to the Repository's classpath.
+     *
+     * @param url
+     *            the classpath entry URL
+     * @throws IOException
+     */
+    public void addClasspathEntry(String url) throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Clear the ClassContext cache. This should be done between analysis
+     * passes.
+     */
+    public void clearClassContextCache() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Clear the BCEL Repository in preparation for analysis.
+     */
+    public void clearRepository() {
+        // Set the backing store for the BCEL Repository to
+        // be the AnalysisCache.
+        Repository.setRepository(new AnalysisCacheToRepositoryAdapter());
+    }
+
+
+    public AnnotationRetentionDatabase getAnnotationRetentionDatabase() {
+        return getDatabase(AnnotationRetentionDatabase.class);
+    }
+
+
+    public CheckReturnAnnotationDatabase getCheckReturnAnnotationDatabase() {
+        return getDatabase(CheckReturnAnnotationDatabase.class);
+    }
+
+    /**
+     * Get the ClassContext for a class.
+     *
+     * @param javaClass
+     *            the class
+     * @return the ClassContext for that class
+     */
+    public ClassContext getClassContext(JavaClass javaClass) {
+        // This is a bit silly since we're doing an unnecessary
+        // ClassDescriptor->JavaClass lookup.
+        // However, we can be assured that it will succeed.
+
+        ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(
+                ClassName.toSlashedClassName(javaClass.getClassName()));
+
+        try {
+            return Global.getAnalysisCache().getClassAnalysis(ClassContext.class, classDescriptor);
+        } catch (CheckedAnalysisException e) {
+            IllegalStateException ise = new IllegalStateException("Could not get ClassContext for JavaClass");
+            ise.initCause(e);
+            throw ise;
+        }
+    }
+
+    /**
+     * Get stats about hit rate for ClassContext cache.
+     *
+     * @return stats about hit rate for ClassContext cache
+     */
+    public String getClassContextStats() {
+        return "<unknown ClassContext stats>";
+    }
+
+    /**
+     * Get the property database recording the types of values stored into
+     * fields.
+     *
+     * @return the database, or null if there is no database available
+     */
+    public FieldStoreTypeDatabase getFieldStoreTypeDatabase() {
+        return getDatabase(FieldStoreTypeDatabase.class);
+    }
+
+
+    public JCIPAnnotationDatabase getJCIPAnnotationDatabase() {
+        return getDatabase(JCIPAnnotationDatabase.class);
+    }
+
+    /**
+     * Get the lookup failure callback.
+     */
+    public RepositoryLookupFailureCallback getLookupFailureCallback() {
+        return lookupFailureCallback;
+    }
+
+    /**
+     * Get the SourceFinder, for finding source files.
+     */
+    public SourceFinder getSourceFinder() {
+        return project.getSourceFinder();
+    }
+
+    /**
+     * Get the SourceInfoMap.
+     */
+    public SourceInfoMap getSourceInfoMap() {
+        return getDatabase(SourceInfoMap.class);
+    }
+
+    /**
+     * Get the property database recording which methods unconditionally
+     * dereference parameters.
+     *
+     * @return the database, or null if there is no database available
+     */
+    public ParameterNullnessPropertyDatabase getUnconditionalDerefParamDatabase() {
+        return getDatabase(ParameterNullnessPropertyDatabase.class);
+    }
+
+    /**
+     * Instantiate the CheckReturnAnnotationDatabase. Do this after the
+     * repository has been set up.
+     */
+
+    public void initDatabases() {
+        // Databases are created on-demand - don't need to explicitly create
+        // them
+    }
+
+    /**
+     * Lookup a class.
+     * <em>Use this method instead of Repository.lookupClass().</em>
+     *
+     * @param className
+     *            the name of the class
+     * @return the JavaClass representing the class
+     * @throws ClassNotFoundException
+     *             (but not really)
+     */
+    public JavaClass lookupClass(@Nonnull @DottedClassName String className) throws ClassNotFoundException {
+        try {
+            if (className.length() == 0)
+                throw new IllegalArgumentException("Class name is empty");
+            if (!ClassName.isValidClassName(className)) {
+                throw new ClassNotFoundException("Invalid class name: " + className);
+            }
+            return Global.getAnalysisCache().getClassAnalysis(JavaClass.class,
+                    DescriptorFactory.instance().getClassDescriptor(ClassName.toSlashedClassName(className)));
+        } catch (CheckedAnalysisException e) {
+            throw new ClassNotFoundException("Class not found: " + className, e);
+        }
+    }
+
+    public InnerClassAccessMap getInnerClassAccessMap() {
+        return getDatabase(InnerClassAccessMap.class);
+    }
+
+    public void setAppClassList(List<ClassDescriptor> appClassCollection) {
+
+        // FIXME: we really should drive the progress callback here
+        HashSet<ClassDescriptor> appSet = new HashSet<ClassDescriptor>(appClassCollection);
+
+        Collection<ClassDescriptor> allClassDescriptors = new ArrayList<ClassDescriptor>(DescriptorFactory.instance()
+                .getAllClassDescriptors());
+        for (ClassDescriptor appClass : allClassDescriptors)
+            try {
+                XClass xclass = currentXFactory().getXClass(appClass);
+
+                if (xclass == null)
+                    continue;
+
+                // Add the application class to the database
+                if (appSet.contains(appClass))
+                    getSubtypes2().addApplicationClass(xclass);
+                else if (xclass instanceof ClassInfo)
+                    getSubtypes2().addClass(xclass);
+
+            } catch (Exception e) {
+                AnalysisContext.logError("Unable to get XClass for " + appClass, e);
+            }
+
+        if (true && Subtypes2.DEBUG) {
+            System.out.println(getSubtypes2().getGraph().getNumVertices() + " vertices in inheritance graph");
+        }
+    }
+
+    /**
+     * After a pass has been completed, allow the analysis context to update
+     * information.
+     *
+     * @param pass
+     *            -- the first pass is pass 0
+     */
+    public void updateDatabases(int pass) {
+        if (pass == 0) {
+            getCheckReturnAnnotationDatabase().loadAuxiliaryAnnotations();
+            getNullnessAnnotationDatabase().loadAuxiliaryAnnotations();
+        }
+
+    }
+
+    /**
+     * Get the property database recording which methods always return nonnull
+     * values
+     *
+     * @return the database, or null if there is no database available
+     */
+    public ReturnValueNullnessPropertyDatabase getReturnValueNullnessPropertyDatabase() {
+        return getDatabase(ReturnValueNullnessPropertyDatabase.class);
+    }
+
+    /**
+     * Get the Subtypes2 inheritance hierarchy database.
+     */
+    public Subtypes2 getSubtypes2() {
+        return Global.getAnalysisCache().getDatabase(Subtypes2.class);
+    }
+
+
+    public DirectlyRelevantTypeQualifiersDatabase getDirectlyRelevantTypeQualifiersDatabase() {
+        return Global.getAnalysisCache().getDatabase(DirectlyRelevantTypeQualifiersDatabase.class);
+    }
+
+
+    @CheckForNull
+    public XMethod getBridgeTo(MethodInfo m) {
+        return bridgeTo.get(m);
+    }
+
+
+    @CheckForNull
+    public XMethod getBridgeFrom(MethodInfo m) {
+        return bridgeFrom.get(m);
+    }
+
+
+    public void setBridgeMethod(MethodInfo from, MethodInfo to) {
+        bridgeTo.put(from, to);
+        bridgeFrom.put(to, from);
+    }
+
+    public INullnessAnnotationDatabase getNullnessAnnotationDatabase() {
+        if (IsNullValueAnalysisFeatures.USE_TYPE_QUALIFIERS) {
+            if (tqNullnessDatabase == null) {
+                tqNullnessDatabase = new TypeQualifierNullnessAnnotationDatabase();
+            }
+            return tqNullnessDatabase;
+        } else {
+            return getDatabase(NullnessAnnotationDatabase.class);
+        }
+    }
+
+    protected <E> E getDatabase(Class<E> cls) {
+        return Global.getAnalysisCache().getDatabase(cls);
+    }
+
+    static class DelegatingRepositoryLookupFailureCallback implements RepositoryLookupFailureCallback {
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see
+         * edu.umd.cs.findbugs.classfile.IErrorLogger#logError(java.lang.String)
+         */
+        public void logError(String message) {
+            Global.getAnalysisCache().getErrorLogger().logError(message);
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see
+         * edu.umd.cs.findbugs.classfile.IErrorLogger#logError(java.lang.String,
+         * java.lang.Throwable)
+         */
+        public void logError(String message, Throwable e) {
+            Global.getAnalysisCache().getErrorLogger().logError(message, e);
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see
+         * edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(java
+         * .lang.ClassNotFoundException)
+         */
+        public void reportMissingClass(ClassNotFoundException ex) {
+            Global.getAnalysisCache().getErrorLogger().reportMissingClass(ex);
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see
+         * edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu
+         * .umd.cs.findbugs.classfile.ClassDescriptor)
+         */
+        public void reportMissingClass(ClassDescriptor classDescriptor) {
+            Global.getAnalysisCache().getErrorLogger().reportMissingClass(classDescriptor);
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see
+         * edu.umd.cs.findbugs.classfile.IErrorLogger#reportSkippedAnalysis(
+         * edu.umd.cs.findbugs.classfile.MethodDescriptor)
+         */
+        public void reportSkippedAnalysis(MethodDescriptor method) {
+            Global.getAnalysisCache().getErrorLogger().reportSkippedAnalysis(method);
+        }
+
+    }
+
 }
 
 // vim:ts=4

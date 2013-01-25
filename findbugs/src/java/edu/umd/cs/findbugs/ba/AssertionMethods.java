@@ -45,7 +45,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 /**
  * Mark methodref constant pool entries of methods that are likely to implement
  * assertions. This is useful for pruning likely false paths.
- * 
+ *
  * @author David Hovemeyer
  */
 public class AssertionMethods implements Constants {
@@ -56,12 +56,12 @@ public class AssertionMethods implements Constants {
      * Bitset of methodref constant pool indexes referring to likely assertion
      * methods.
      */
-    private BitSet assertionMethodRefSet;
+    private final BitSet assertionMethodRefSet;
 
     private static class UserAssertionMethod {
-        private String className;
+        private final String className;
 
-        private String methodName;
+        private final String methodName;
 
         public UserAssertionMethod(String className, String methodName) {
             this.className = className;
@@ -77,6 +77,7 @@ public class AssertionMethods implements Constants {
         }
     }
 
+    @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
     private static final List<UserAssertionMethod> userAssertionMethodList = new ArrayList<UserAssertionMethod>();
 
     static {
@@ -97,7 +98,7 @@ public class AssertionMethods implements Constants {
 
     /**
      * Constructor.
-     * 
+     *
      * @param jclass
      *            the JavaClass containing the methodrefs
      */
@@ -122,11 +123,11 @@ public class AssertionMethods implements Constants {
 
                     String classNameLC = className.toLowerCase();
                     String methodNameLC = methodName.toLowerCase();
-                  
+
                     boolean voidReturnType = methodSig.endsWith(")V");
                     boolean boolReturnType = methodSig.endsWith(")Z");
-                    
-                    
+
+
 
                     if (DEBUG) {
                         System.out.print("Is " + className + "." + methodName + " assertion method: " + voidReturnType);
@@ -143,8 +144,8 @@ public class AssertionMethods implements Constants {
                                     || methodNameLC.equals("exit") || methodNameLC.startsWith("fail")
                                     || methodNameLC.startsWith("fatal") || methodNameLC.indexOf("assert") >= 0
                                     || methodNameLC.indexOf("legal") >= 0 || methodNameLC.indexOf("error") >= 0
-                                    || methodNameLC.indexOf("abort") >= 0 
-                                    // || methodNameLC.indexOf("check") >= 0 
+                                    || methodNameLC.indexOf("abort") >= 0
+                                    // || methodNameLC.indexOf("check") >= 0
                                     || methodNameLC.indexOf("failed") >= 0) || methodName.equals("addOrThrowException")) {
                         assertionMethodRefSet.set(i);
                         if (DEBUG) {
@@ -194,7 +195,7 @@ public class AssertionMethods implements Constants {
 
     /**
      * Does the given instruction refer to a likely assertion method?
-     * 
+     *
      * @param ins
      *            the instruction
      * @return true if the instruction likely refers to an assertion, false if

@@ -92,6 +92,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.props.GeneralWarningProperty;
 import edu.umd.cs.findbugs.props.WarningProperty;
@@ -294,7 +295,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         return false;
     }
 
-    final static LinkedHashSet<String> baseGenericTypes = new LinkedHashSet<String>();
+    @StaticConstant
+    final static Set<String> baseGenericTypes = new LinkedHashSet<String>();
     static {
         baseGenericTypes.addAll(Arrays.asList(new String[] { "java.util.Map", "java.util.Collection", "java.lang.Iterable",
                 "java.util.Iterator", "com.google.common.collect.Multimap", "com.google.common.collect.Multiset",

@@ -32,12 +32,13 @@ import edu.umd.cs.findbugs.ba.AnnotationDatabase;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase.Target;
 import edu.umd.cs.findbugs.ba.CheckReturnValueAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 /**
  * Scan application classes for CheckReturnValue annotations.
- * 
+ *
  * @author David Hovemeyer
  * @author William Pugh
  */
@@ -46,6 +47,7 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 
     private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
 
+    @StaticConstant
     private static final Map<String, AnnotationDatabase.Target> defaultKind = new HashMap<String, AnnotationDatabase.Target>();
     static {
         defaultKind.put("", AnnotationDatabase.Target.ANY);
@@ -71,8 +73,8 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 
         String annotationClassSimpleName = simpleClassName(annotationClassName);
 
-        if (annotationClassSimpleName.startsWith("DefaultAnnotation")) {
-            annotationClassSimpleName = annotationClassSimpleName.substring("DefaultAnnotation".length());
+        if (annotationClassSimpleName.startsWith(DEFAULT_ANNOTATION_ANNOTATION_CLASS)) {
+            annotationClassSimpleName = annotationClassSimpleName.substring(DEFAULT_ANNOTATION_ANNOTATION_CLASS.length());
 
             Target annotationTarget = defaultKind.get(annotationClassSimpleName);
             if (annotationTarget != Target.METHOD)

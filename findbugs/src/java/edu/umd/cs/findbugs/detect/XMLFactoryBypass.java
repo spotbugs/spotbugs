@@ -29,10 +29,12 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 
 public class XMLFactoryBypass extends BytecodeScanningDetector {
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
+    @StaticConstant
     private static final Set<String> xmlInterfaces = new HashSet<String>() {
         static final long serialVersionUID = -9117982073509840017L;
         {

@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.meta.TypeQualifierValidator;
 import javax.annotation.meta.When;
 
@@ -285,7 +286,7 @@ public class TypeQualifierValue<A extends Annotation> {
     }
     @SuppressWarnings("unchecked")
     public static @Nonnull <A extends Annotation>
-    TypeQualifierValue<A> getValue(Class <A> clazz, Object value) {
+    TypeQualifierValue<A> getValue(Class <A> clazz, @Nullable Object value) {
         return (TypeQualifierValue<A>) getValue(DescriptorFactory.createClassDescriptor(clazz), value);
     }
 

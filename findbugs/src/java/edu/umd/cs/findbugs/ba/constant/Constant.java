@@ -94,9 +94,9 @@ public class Constant {
      * Merge two Constants.
      * 
      * @param a
-     *            a Constant
+     *            a StaticConstant
      * @param b
-     *            another Constant
+     *            another StaticConstant
      * @return the merge (dataflow meet) of the two Constants
      */
     public static Constant merge(Constant a, Constant b) {

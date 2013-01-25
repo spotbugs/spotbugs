@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,7 +63,7 @@ public class InnerClassAccessMap {
      * Map of class names to maps of method names to InnerClassAccess objects
      * representing access methods.
      */
-    private Map<String, Map<String, InnerClassAccess>> classToAccessMap;
+    private final Map<String, Map<String, InnerClassAccess>> classToAccessMap;
 
     /*
      * ----------------------------------------------------------------------
@@ -174,13 +175,13 @@ public class InnerClassAccessMap {
      * and whether the field is loaded or stored.
      */
     private static class InstructionCallback implements BytecodeScanner.Callback {
-        private JavaClass javaClass;
+        private final JavaClass javaClass;
 
-        private String methodName;
+        private final String methodName;
 
-        private String methodSig;
+        private final String methodSig;
 
-        private byte[] instructionList;
+        private final byte[] instructionList;
 
         private InnerClassAccess access;
 
@@ -263,7 +264,7 @@ public class InnerClassAccessMap {
                 if (xfield != null && xfield.isStatic() == isStatic && isValidAccessMethod(methodSig, xfield, isLoad)) {
                     access = new InnerClassAccess(methodName, methodSig, xfield, isLoad);
                 }
-           
+
         }
 
         /**
@@ -323,8 +324,6 @@ public class InnerClassAccessMap {
         }
     }
 
-    private static final Map<String, InnerClassAccess> emptyMap = new HashMap<String, InnerClassAccess>();
-
     /**
      * Return a map of inner-class member access method names to the fields that
      * they access for given class name.
@@ -373,7 +372,7 @@ public class InnerClassAccessMap {
             }
 
             if (map.size() == 0)
-                map = emptyMap;
+                map = Collections.emptyMap();
             else
                 map = new HashMap<String, InnerClassAccess>(map);
 

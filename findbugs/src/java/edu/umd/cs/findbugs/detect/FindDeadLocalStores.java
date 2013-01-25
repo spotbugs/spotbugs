@@ -78,7 +78,7 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
@@ -87,7 +87,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
  * Find dead stores to local variables.
- * 
+ *
  * @author David Hovemeyer
  * @author Bill Pugh
  */
@@ -101,6 +101,7 @@ public class FindDeadLocalStores implements Detector {
     private static final String FINDBUGS_EXCLUDED_LOCALS_PROP_NAME = "findbugs.dls.exclusions";
 
     // Define a collection of excluded local variables...
+    @StaticConstant
     private static final Set<String> EXCLUDED_LOCALS = new HashSet<String>();
 
     private static final boolean DO_EXCLUDE_LOCALS = SystemProperties.getProperty(FINDBUGS_EXCLUDED_LOCALS_PROP_NAME) != null;
@@ -156,7 +157,7 @@ public class FindDeadLocalStores implements Detector {
         defensiveConstantValueOpcodes.set(Constants.LDC2_W);
     }
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     public FindDeadLocalStores(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -559,7 +560,7 @@ public class FindDeadLocalStores implements Detector {
     /**
      * If feature is enabled, suppress warnings where there is at least one live
      * store on the line where the warning would be reported.
-     * 
+     *
      * @param accumulator
      *            BugAccumulator containing warnings for method
      * @param liveStoreSourceLineSet
@@ -588,7 +589,7 @@ public class FindDeadLocalStores implements Detector {
     /**
      * Count stores, loads, and increments of local variables in method whose
      * CFG is given.
-     * 
+     *
      * @param localStoreCount
      *            counts of local stores (indexed by local)
      * @param localLoadCount
@@ -627,7 +628,7 @@ public class FindDeadLocalStores implements Detector {
     /**
      * Get the name of given local variable (if possible) and store it in the
      * HeuristicPropertySet.
-     * 
+     *
      * @param lvt
      *            the LocalVariableTable
      * @param local
@@ -649,7 +650,7 @@ public class FindDeadLocalStores implements Detector {
 
     /**
      * Is instruction at given location a store?
-     * 
+     *
      * @param location
      *            the location
      * @return true if instruction at given location is a store, false if not
@@ -661,7 +662,7 @@ public class FindDeadLocalStores implements Detector {
 
     /**
      * Is instruction at given location a load?
-     * 
+     *
      * @param location
      *            the location
      * @return true if instruction at given location is a load, false if not

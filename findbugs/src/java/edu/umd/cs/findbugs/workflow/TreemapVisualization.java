@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.PackageStats;
@@ -32,15 +33,15 @@ import edu.umd.cs.findbugs.util.Bag;
 
 public class TreemapVisualization {
 
-    static HashSet<String> buggyPackages = new HashSet<String>();
+    HashSet<String> buggyPackages = new HashSet<String>();
 
-    static HashSet<String> interiorPackages = new HashSet<String>();
+    HashSet<String> interiorPackages = new HashSet<String>();
 
-    static Bag<String> goodCodeSize = new Bag<String>(new TreeMap<String, Integer>());
+    Bag<String> goodCodeSize = new Bag<String>(new TreeMap<String, Integer>());
 
-    static Bag<String> goodCodeCount = new Bag<String>(new TreeMap<String, Integer>());
+    Bag<String> goodCodeCount = new Bag<String>(new TreeMap<String, Integer>());
 
-    public static void addInteriorPackages(String packageName) {
+    public void addInteriorPackages(String packageName) {
         String p = superpackage(packageName);
         if (p.length() > 0) {
             interiorPackages.add(p);
@@ -60,11 +61,11 @@ public class TreemapVisualization {
         return p;
     }
 
-    public static boolean isInteriorPackage(String packageName) {
+    public boolean isInteriorPackage(String packageName) {
         return interiorPackages.contains(packageName);
     }
 
-    public static void cleanCode(String packageName, int loc, int classes) {
+    public void cleanCode(String packageName, int loc, int classes) {
         String superpackage = superpackage(packageName);
         if (buggyPackages.contains(superpackage) || interiorPackages.contains(superpackage) || superpackage.length() == 0) {
             goodCodeCount.add(packageName, classes);
@@ -76,17 +77,7 @@ public class TreemapVisualization {
             cleanCode(superpackage, loc, classes);
     }
 
-    public static void main(String[] args) throws Exception {
-        FindBugs.setNoAnalysis();
-        DetectorFactoryCollection.instance(); // load plugins
-
-        SortedBugCollection bugCollection = new SortedBugCollection();
-        int argCount = 0;
-        if (argCount < args.length)
-            bugCollection.readXML(args[argCount++]);
-        else
-            bugCollection.readXML(System.in);
-
+    public void generateTreeMap(BugCollection bugCollection) {
         for (PackageStats p : bugCollection.getProjectStats().getPackageStats())
             if (p.getTotalBugs() > 0) {
                 buggyPackages.add(p.getPackageName());
@@ -115,6 +106,21 @@ public class TreemapVisualization {
                     .getKey().substring(11).replace('.', '\t'));
 
         }
+
+    }
+
+    public static void main(String[] args) throws Exception {
+        FindBugs.setNoAnalysis();
+        DetectorFactoryCollection.instance(); // load plugins
+
+        SortedBugCollection bugCollection = new SortedBugCollection();
+        int argCount = 0;
+        if (argCount < args.length)
+            bugCollection.readXML(args[argCount++]);
+        else
+            bugCollection.readXML(System.in);
+
+        new TreemapVisualization().generateTreeMap(bugCollection);
 
     }
 }

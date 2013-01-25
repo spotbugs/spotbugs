@@ -23,9 +23,11 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
+
 /**
  * Utility methods for working with zip/jar archives.
- * 
+ *
  * @author David Hovemeyer
  */
 public class Archive {
@@ -33,6 +35,7 @@ public class Archive {
     /**
      * File extensions that indicate an archive (zip, jar, or similar).
      */
+    @StaticConstant
     static public final Set<String> ARCHIVE_EXTENSION_SET = new HashSet<String>();
     static {
         ARCHIVE_EXTENSION_SET.add(".jar");
@@ -45,7 +48,7 @@ public class Archive {
     /**
      * Determine whether or not the given filename appears to identify a zip/jar
      * archive.
-     * 
+     *
      * @param fileName
      *            the filename
      * @return true if the filename appears to identify an archive, false
