@@ -60,6 +60,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.visitclass.Util;
 
 public class FindBadCast2 implements Detector {
 
@@ -388,6 +389,11 @@ public class FindBadCast2 implements Detector {
                             && abstractCollectionClasses.contains(refName);
                     boolean castToAbstractCollection = abstractCollectionClasses.contains(castName)
                             && veryAbstractCollectionClasses.contains(refName);
+                    int position = location.getHandle().getPosition();
+                    int catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getJavaClass().getConstantPool(), method.getCode(),
+                            "java/lang/ClassCastException", position);
+
+
 
                     if (!operandTypeIsExact) {
                         rank = Analyze.deepInstanceOf(refJavaClass, castJavaClass);
@@ -413,6 +419,8 @@ public class FindBadCast2 implements Detector {
                         System.out.println("  isParameter: " + valueNumber);
                         System.out.println("  score: " + rank);
                         System.out.println("  source is: " + valueSource);
+                        if (catchSize < Integer.MAX_VALUE)
+                            System.out.println("  catch block size is: " + catchSize);
                         if (constantClass != null)
                             System.out.println("  constant class " + constantClass + " at " + pcForConstantClass);
                         if (handle.getPrev() == null)
@@ -471,6 +479,8 @@ public class FindBadCast2 implements Detector {
                         else
                             priority--;
 
+
+
                         if (DEBUG)
                             System.out.println(" priority a: " + priority);
                         if (methodGen.getClassName().startsWith(refName) || methodGen.getClassName().startsWith(castName))
@@ -517,6 +527,15 @@ public class FindBadCast2 implements Detector {
 
                         if (DEBUG)
                             System.out.println(" priority h: " + priority);
+
+                        if (catchSize < 20)
+                            return;
+                        if (catchSize < Integer.MIN_VALUE)
+                            priority++;
+                        if (DEBUG)
+                            System.out.println(" priority i: " + priority);
+
+
                         if (priority < HIGH_PRIORITY)
                             priority = HIGH_PRIORITY;
                         if (priority <= LOW_PRIORITY) {

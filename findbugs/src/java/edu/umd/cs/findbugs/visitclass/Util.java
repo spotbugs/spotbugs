@@ -35,6 +35,8 @@ import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+
 
 /**
  * @author pugh
@@ -42,7 +44,7 @@ import org.apache.bcel.classfile.Method;
 public class Util {
     /**
      * Determine the outer class of obj.
-     * 
+     *
      * @param obj
      * @return JavaClass for outer class, or null if obj is not an outer class
      * @throws ClassNotFoundException
@@ -98,7 +100,7 @@ public class Util {
     }
 
     public static int getSizeOfSurroundingTryBlock(ConstantPool constantPool, Code code,
-            @CheckForNull String vmNameOfExceptionClass, int pc) {
+            @CheckForNull @SlashedClassName String vmNameOfExceptionClass, int pc) {
         int size = Integer.MAX_VALUE;
         int tightStartPC = 0;
         int tightEndPC = Integer.MAX_VALUE;
@@ -107,9 +109,12 @@ public class Util {
         for (CodeException catchBlock : code.getExceptionTable()) {
             if (vmNameOfExceptionClass != null) {
                 Constant catchType = constantPool.getConstant(catchBlock.getCatchType());
-                if (catchType == null || catchType instanceof ConstantClass
-                        && !((ConstantClass) catchType).getBytes(constantPool).equals(vmNameOfExceptionClass))
-                    continue;
+                if (catchType == null) continue;
+                if (catchType instanceof ConstantClass) {
+                    String name = ((ConstantClass) catchType).getBytes(constantPool);
+                       if (!name.equals(vmNameOfExceptionClass))
+                           continue;
+                }
             }
             int startPC = catchBlock.getStartPC();
             int endPC = catchBlock.getEndPC();
