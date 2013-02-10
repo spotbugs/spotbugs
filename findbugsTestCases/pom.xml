@@ -1,0 +1,197 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.google.code.findbugs</groupId>
+    <artifactId>findbugs-project</artifactId>
+    <version>2.0.3-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>findbugsTestCases</artifactId>
+  <packaging>jar</packaging>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>findbugs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>bcel</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jFormatString</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.jcip</groupId>
+      <artifactId>jcip-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>1.6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>6.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>tomcat</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>5.5.23</version>
+    </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-j2ee</artifactId>
+      <version>4.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>12.0</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit-version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.intellij</groupId>
+      <artifactId>annotations</artifactId>
+      <version>9.0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>3.1.2.RELEASE</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <sourceDirectory>${basedir}/src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+          <debug>true</debug>
+          <compilerArguments>
+            <Xlint:none />
+          </compilerArguments>
+          <includes>
+            <include>java/**/*.java</include>
+            <include>fakeAnnotations/**/*.java</include>
+            <include>fakeLibraries/**/*.java</include>
+          </includes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <id>integration-test</id>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <includeProjectDependencies>true</includeProjectDependencies>
+          <includePluginDependencies>false</includePluginDependencies>
+          <executableDependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>findbugs</artifactId>
+          </executableDependency>
+          <mainClass>edu.umd.cs.findbugs.FindBugs2</mainClass>
+          <arguments>
+            <argument>-xml:withMessages</argument>
+            <argument>-output</argument>
+            <argument>${project.build.directory}/findbugsCheckAll.xml</argument>
+            <argument>-projectName</argument>
+            <argument>FindBugsTestCases</argument>
+            <argument>${project.build.directory}</argument>
+          </arguments>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <id>integration-test</id>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <property name="compile_classpath" refid="maven.compile.classpath" />
+                <property name="runtime_classpath" refid="maven.runtime.classpath" />
+                <property name="test_classpath" refid="maven.test.classpath" />
+                <property name="plugin_classpath" refid="maven.plugin.classpath" />
+
+                <property name="findbugs.home"
+                  value="${project.build.directory}/findbugs" />
+
+                <java classname="edu.umd.cs.findbugs.FindBugs2"
+                  failonerror="true" timeout="1800000" fork="true">
+                  <classpath>
+                    <pathelement path="${compile_classpath}" />
+                  </classpath>
+                  <arg value="-xml:withMessages" />
+                  <arg value="-output" />
+                  <arg
+                    value="${project.build.directory}/findbugsJavaCheckAll.xml" />
+                  <arg value="-projectName" />
+                  <arg value="FindBugsTestCases" />
+                  <!-- <arg value="${maven.compile.classpath}" /> -->
+                  <arg value="${project.build.outputDirectory}" />
+                  <!-- <auxClasspath location="${compile_classpath}" /> -->
+                </java>
+
+<!-- 
+                <copy file="${com.google.code.findbugs:findbugs:jar}"
+                  tofile="${findbugs.home}/lib/findbugs.jar" />
+
+                <copy file="${com.google.code.findbugs:bcel:jar}"
+                  tofile="${findbugs.home}/lib/bcel.jar" />
+
+                <copy file="${dom4j:dom4j:jar}" tofile="${findbugs.home}/lib/dom4j.jar" />
+
+                <taskdef name="findbugs"
+                  classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
+                  <classpath refid="maven.compile.classpath" />
+                </taskdef>
+                <findbugs home="${findbugs.home}" output="xml:withMessages"
+                  failOnError="true"
+                  outputFile="${project.build.directory}/findbugsAntCheckAll.xml">
+                  <auxclasspath path="${compile_classpath}" />
+                  <class location="${project.build.outputDirectory}" />
+                </findbugs>
+ -->
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

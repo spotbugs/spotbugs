@@ -1,0 +1,37 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.google.code.findbugs</groupId>
+    <artifactId>plugins</artifactId>
+    <version>2.0.3-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>webCloudClient</artifactId>
+  <packaging>jar</packaging>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>webCloudProtocol</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <sourceDirectory>${basedir}/src/java</sourceDirectory>
+    <testSourceDirectory>${basedir}/src/junit</testSourceDirectory>
+    <resources>
+      <resource>
+        <directory>${basedir}/etc</directory>
+        <includes>
+          <include>*.xml</include>
+        </includes>
+      </resource>
+    </resources>
+  </build>
+
+</project>
