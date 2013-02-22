@@ -528,9 +528,9 @@ public class FindBadCast2 implements Detector {
                         if (DEBUG)
                             System.out.println(" priority h: " + priority);
 
-                        if (catchSize < 20)
+                        if (catchSize < 15)
                             return;
-                        if (catchSize < Integer.MIN_VALUE)
+                        if (catchSize < 25)
                             priority++;
                         if (DEBUG)
                             System.out.println(" priority i: " + priority);

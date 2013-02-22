@@ -33,7 +33,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.meta.TypeQualifierValidator;
 import javax.annotation.meta.When;
 
@@ -209,7 +208,7 @@ public class TypeQualifierValue<A extends Annotation> {
         instance.remove();
     }
 
-    public boolean canValidate(Object constantValue) {
+    public boolean canValidate(@CheckForNull Object constantValue) {
         if (validator == null)
             return false;
         return true;
@@ -237,7 +236,7 @@ public class TypeQualifierValue<A extends Annotation> {
     }
 
 
-    public When validate(Object constantValue) {
+    public When validate(@CheckForNull Object constantValue) {
         if (validator == null)
             throw new IllegalStateException("No validator");
         IAnalysisCache analysisCache = Global.getAnalysisCache();
@@ -274,7 +273,7 @@ public class TypeQualifierValue<A extends Annotation> {
      */
     @SuppressWarnings("rawtypes")
     public static @Nonnull
-    TypeQualifierValue<?> getValue(ClassDescriptor desc, Object value) {
+    TypeQualifierValue<?> getValue(ClassDescriptor desc, @CheckForNull  Object value) {
         DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue<?>> map = instance.get().typeQualifierMap;
         TypeQualifierValue<?> result = map.get(desc, value);
         if (result != null)
@@ -286,7 +285,7 @@ public class TypeQualifierValue<A extends Annotation> {
     }
     @SuppressWarnings("unchecked")
     public static @Nonnull <A extends Annotation>
-    TypeQualifierValue<A> getValue(Class <A> clazz, @Nullable Object value) {
+    TypeQualifierValue<A> getValue(Class <A> clazz, @CheckForNull Object value) {
         return (TypeQualifierValue<A>) getValue(DescriptorFactory.createClassDescriptor(clazz), value);
     }
 

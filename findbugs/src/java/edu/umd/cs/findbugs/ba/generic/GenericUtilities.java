@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.util.Util;
 /**
  * Utilities for adding support for generics. Most of these methods can be
  * applied to generic and non generic type information.
- * 
+ *
  * @author Nat Ayewah
  */
 public class GenericUtilities {
@@ -180,7 +180,7 @@ public class GenericUtilities {
 
     /**
      * Get the TypeCategory that represents this Object
-     * 
+     *
      * @see GenericUtilities.TypeCategory
      */
     public static final TypeCategory getTypeCategory(Type type) {
@@ -244,7 +244,7 @@ public class GenericUtilities {
      * that it also accepts signatures with generic information. e.g.
      * <code>Ljava/util/ArrayList&lt;TT;&gt;;</code>
      * <p>
-     * 
+     *
      * The signature should only contain one type. Use GenericSignatureParser to
      * break up a signature with many types or call createTypes(String) to
      * return a list of types
@@ -300,13 +300,13 @@ public class GenericUtilities {
         }
     }
 
-    public static ObjectType merge(Type t1, ObjectType t2) {
+    public static ObjectType merge(@CheckForNull Type t1, ObjectType t2) {
         if (t1 instanceof GenericObjectType)
             return merge((GenericObjectType) t1, t2);
         return t2;
     }
 
-    public static Type merge(GenericObjectType t1, Type t2) {
+    public static Type merge(@CheckForNull GenericObjectType t1, Type t2) {
         if (t1 == null)
             return t2;
         if (t2 instanceof ObjectType)
@@ -316,8 +316,8 @@ public class GenericUtilities {
         return t2;
     }
 
-    public static ObjectType merge(GenericObjectType t1, ObjectType t2) {
-        if (t2 instanceof GenericObjectType)
+    public static ObjectType merge(@CheckForNull GenericObjectType t1, ObjectType t2) {
+        if (t1 == null || t2 instanceof GenericObjectType)
             return t2;
         List<? extends ReferenceType> parameters = t1.getParameters();
         if (parameters == null)
@@ -386,7 +386,7 @@ public class GenericUtilities {
     /**
      * Parse a bytecode signature that has 1 or more (possibly generic) types
      * and return a list of the Types.
-     * 
+     *
      * @param signature
      *            bytecode signature e.g. e.g.
      *            <code>Ljava/util/ArrayList&lt;Ljava/lang/String;&gt;;Ljava/util/ArrayList&lt;TT;&gt;;Ljava/util/ArrayList&lt;*&gt;;</code>

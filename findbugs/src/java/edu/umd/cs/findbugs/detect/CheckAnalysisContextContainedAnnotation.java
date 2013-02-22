@@ -93,6 +93,8 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
+        default:
+            break;
         case Constants.IF_ICMPEQ:
         case Constants.IF_ICMPNE:
             OpcodeStack.Item left = stack.getStackItem(1);
@@ -101,6 +103,7 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
 
                 accumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this)
                         .addValueSource(left, this).addValueSource(right, this), this);
+            break;
         }
 
     }

@@ -46,7 +46,7 @@ import edu.umd.cs.findbugs.util.ClassName;
  * /docs/books/vmspec/2nd-edition/html/ClassFile.doc.html">
  * http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.html
  * </a>
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassParser implements ClassParserInterface {
@@ -62,11 +62,11 @@ public class ClassParser implements ClassParserInterface {
         }
     }
 
-    private DataInputStream in;
+    private final DataInputStream in;
 
-    private ClassDescriptor expectedClassDescriptor;
+    private final ClassDescriptor expectedClassDescriptor;
 
-    private ICodeBaseEntry codeBaseEntry;
+    private final ICodeBaseEntry codeBaseEntry;
 
     private Constant[] constantPool;
 
@@ -74,7 +74,7 @@ public class ClassParser implements ClassParserInterface {
 
     /**
      * Constructor.
-     * 
+     *
      * @param in
      *            the DataInputStream to read class data from
      * @param expectedClassDescriptor
@@ -90,7 +90,7 @@ public class ClassParser implements ClassParserInterface {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd
      * .cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder)
@@ -155,7 +155,7 @@ public class ClassParser implements ClassParserInterface {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd
      * .cs.findbugs.classfile.analysis.ClassInfo.Builder)
@@ -166,7 +166,7 @@ public class ClassParser implements ClassParserInterface {
 
     /**
      * Extract references to other classes.
-     * 
+     *
      * @return array of ClassDescriptors of referenced classes
      * @throws InvalidClassFileFormatException
      */
@@ -227,9 +227,10 @@ public class ClassParser implements ClassParserInterface {
     // L: long
     // D: double
     // i: 2-byte constant pool index
-    private static final String[] CONSTANT_FORMAT_MAP = { null, "8", // 1:
-                                                                     // CONSTANT_Utf8
-            null, "I", // 3: CONSTANT_Integer
+    private static final String[] CONSTANT_FORMAT_MAP = { null,
+            "8", // 1:CONSTANT_Utf8
+            null, // 2:
+            "I", // 3: CONSTANT_Integer
             "F", // 4: CONSTANT_Float
             "L", // 5: CONSTANT_Long
             "D", // 6: CONSTANT_Double
@@ -239,21 +240,32 @@ public class ClassParser implements ClassParserInterface {
             "ii", // 10: CONSTANT_Methodref
             "ii", // 11: CONSTANT_InterfaceMethodref
             "ii", // 12: CONSTANT_NameAndType
+             null, // 13:
+             null, // 14:
+             "bi", // 15: CONSTANT_MethodHandle
+             "i", // 16: CONSTANT_MethodType
+             null, // 17:
+             "ii", // 18: CONSTANT_InvokeDynamic
+
     };
 
     /**
      * Read a constant from the constant pool.
-     * 
+     *
      * @return a StaticConstant
      * @throws InvalidClassFileFormatException
      * @throws IOException
      */
     private Constant readConstant() throws InvalidClassFileFormatException, IOException {
         int tag = in.readUnsignedByte();
-        if (tag < 0 || tag >= CONSTANT_FORMAT_MAP.length || CONSTANT_FORMAT_MAP[tag] == null) {
+        if (tag < 0 || tag >= CONSTANT_FORMAT_MAP.length) {
             throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
         }
         String format = CONSTANT_FORMAT_MAP[tag];
+        if (format == null) {
+            throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
+        }
+
         Object[] data = new Object[format.length()];
         for (int i = 0; i < format.length(); i++) {
             char spec = format.charAt(i);
@@ -276,6 +288,9 @@ public class ClassParser implements ClassParserInterface {
             case 'i':
                 data[i] = in.readUnsignedShort();
                 break;
+            case 'b':
+                data[i] = in.readUnsignedByte();
+                break;
             default:
                 throw new IllegalStateException();
             }
@@ -287,7 +302,7 @@ public class ClassParser implements ClassParserInterface {
     /**
      * Get a class name from a CONSTANT_Class. Note that this may be an array
      * (e.g., "[Ljava/lang/String;").
-     * 
+     *
      * @param index
      *            index of the constant
      * @return the class name
@@ -311,7 +326,7 @@ public class ClassParser implements ClassParserInterface {
 
     /**
      * Get the ClassDescriptor of a class referenced in the constant pool.
-     * 
+     *
      * @param index
      *            index of the referenced class in the constant pool
      * @return the ClassDescriptor of the referenced class
@@ -325,7 +340,7 @@ public class ClassParser implements ClassParserInterface {
 
     /**
      * Get the UTF-8 string constant at given constant pool index.
-     * 
+     *
      * @param refIndex
      *            the constant pool index
      * @return the String at that index
@@ -340,7 +355,7 @@ public class ClassParser implements ClassParserInterface {
 
     /**
      * Check that a constant pool index is valid.
-     * 
+     *
      * @param expectedClassDescriptor
      *            class descriptor
      * @param constantPool
@@ -358,7 +373,7 @@ public class ClassParser implements ClassParserInterface {
 
     /**
      * Check that a constant has the expected tag.
-     * 
+     *
      * @param constant
      *            the constant to check
      * @param expectedTag
@@ -378,7 +393,7 @@ public class ClassParser implements ClassParserInterface {
 
     /**
      * Read field_info, return FieldDescriptor.
-     * 
+     *
      * @param thisClassDescriptor
      *            the ClassDescriptor of this class (being parsed)
      * @return the FieldDescriptor
@@ -389,7 +404,7 @@ public class ClassParser implements ClassParserInterface {
         return readFieldOrMethod(thisClassDescriptor, new FieldOrMethodDescriptorCreator<FieldDescriptor>() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.classfile.engine.ClassParser.
              * FieldOrMethodDescriptorCreator#create(java.lang.String,
              * java.lang.String, java.lang.String, int)
@@ -403,7 +418,7 @@ public class ClassParser implements ClassParserInterface {
 
     /**
      * Read method_info, read method descriptor.
-     * 
+     *
      * @param thisClassDescriptor
      * @return
      * @throws IOException
@@ -413,7 +428,7 @@ public class ClassParser implements ClassParserInterface {
         return readFieldOrMethod(thisClassDescriptor, new FieldOrMethodDescriptorCreator<MethodDescriptor>() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.classfile.engine.ClassParser.
              * FieldOrMethodDescriptorCreator#create(java.lang.String,
              * java.lang.String, java.lang.String, int)
@@ -427,7 +442,7 @@ public class ClassParser implements ClassParserInterface {
 
     /**
      * Read field_info or method_info. They have the same format.
-     * 
+     *
      * @param <E>
      *            descriptor type to return
      * @param thisClassDescriptor
@@ -459,7 +474,7 @@ public class ClassParser implements ClassParserInterface {
 
     /**
      * Read an attribute.
-     * 
+     *
      * @throws IOException
      * @throws InvalidClassFileFormatException
      */
@@ -481,7 +496,7 @@ public class ClassParser implements ClassParserInterface {
 
     /**
      * Read an InnerClasses attribute.
-     * 
+     *
      * @param attribute_length
      *            length of attribute (excluding first 6 bytes)
      * @throws InvalidClassFileFormatException
@@ -508,7 +523,7 @@ public class ClassParser implements ClassParserInterface {
 
     /**
      * Get the signature from a CONSTANT_NameAndType.
-     * 
+     *
      * @param index
      *            the index of the CONSTANT_NameAndType
      * @return the signature
