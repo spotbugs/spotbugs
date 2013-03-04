@@ -67,9 +67,12 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
                 System.out.printf("%d %s %s\n", sawGetLogger, loggerEscaped, loggerImported);
 
             }
-            if (sawGetLogger >= 0 && !loggerEscaped && !loggerImported)
+            if (sawGetLogger >= 0 && !loggerEscaped && !loggerImported) {
+                bugReporter.reportBug(new BugInstance("TESTING", NORMAL_PRIORITY)
+                 .addClassAndMethod(this).addString(
+                         String.format("LostLoggerDueToWeakReference: %d %s %s", sawGetLogger, loggerEscaped, loggerImported)));
                 bugAccumulator.reportAccumulatedBugs();
-            else
+            } else
                 bugAccumulator.clearBugs();
         }
     }
@@ -157,10 +160,6 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
         if (item.getSignature().endsWith("Logger;"))
             loggerEscaped = true;
 
-    }
-
-    private void emitWarning() {
-        System.out.println("Warn about " + getMethodName()); // TODO
     }
 
 }
