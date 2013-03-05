@@ -513,10 +513,18 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         URL u = plugin.getBundle().getEntry("/");
         try {
             URL bundleRoot = FileLocator.resolve(u);
+            String path = bundleRoot.getPath();
             if (FindBugsBuilder.DEBUG) {
-                System.out.println("Pluginpath: " + bundleRoot.getPath()); //$NON-NLS-1$
+                System.out.println("Pluginpath: " + path); //$NON-NLS-1$
             }
-            return bundleRoot.getPath();
+            if (path.endsWith("fb-trunk/eclipsePlugin/")) {
+                File f = new File(path);
+                f = f.getParentFile();
+                f = new File(f, "findbugs");
+                path = f.getPath() + "/";
+            }
+
+            return path;
         } catch (IOException e) {
             FindbugsPlugin.getDefault().logException(e, "IO Exception locating engine plugin");
         }
