@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.classfile.impl;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -618,7 +619,9 @@ public class ClassPathBuilder implements IClassPathBuilder {
                 scanJarManifestForClassPathEntries(workList, discoveredCodeBase.getCodeBase());
             } catch (IOException e) {
                 if (item.isAppCodeBase() || item.getHowDiscovered() == ICodeBase.SPECIFIED) {
-                    errorLogger.logError("Cannot open codebase " + item.getCodeBaseLocator(), e);
+                    if (e instanceof FileNotFoundException)
+                        errorLogger.logError("File not found: " + item.getCodeBaseLocator());
+                    else errorLogger.logError("Cannot open codebase " + item.getCodeBaseLocator(), e);
                 }
             } catch (ResourceNotFoundException e) {
                 if (item.getHowDiscovered() == ICodeBase.SPECIFIED) {
