@@ -129,6 +129,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     private String redoAnalysisFile = null;
 
+    private boolean mergeSimilarWarnings = true;
+
     private boolean xargs = false;
 
     private boolean scanNestedArchives = true;
@@ -149,6 +151,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         addSwitch("-justListOptions", "throw an exception that lists the provided options");
         makeOptionUnlisted("-justListOptions");
 
+
         addSwitch("-timestampNow", "set timestamp of results to be current time");
         addSwitch("-quiet", "suppress error messages");
         addSwitch("-longBugCodes", "report long bug codes");
@@ -159,6 +162,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
         addSwitch("-medium", "report only medium and high confidence warnings [default]");
         addSwitch("-high", "report only high confidence warnings");
         addOption("-maxRank", "rank", "only report issues with a bug rank at least as scary as that provided");
+        addSwitch("-dontCombineWarnings", "Don't combine warnings that differ only in line number");
+
         addSwitch("-sortByClass", "sort warnings by class");
         addSwitchWithOptionalExtraPart("-xml", "withMessages", "XML output (optionally with messages)");
         addSwitch("-xdocs", "xdoc XML output to use with Apache Maven");
@@ -170,6 +175,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         addOption("-redoAnalysis", "filename", "Redo analysis using configureation from previous analysis");
         addOption("-sourceInfo", "filename", "Specify source info file (line numbers for fields/classes)");
         addOption("-projectName", "project name", "Descriptive name of project");
+
         addOption("-reanalyze", "filename", "redo analysis in provided file");
 
         addOption("-outputFile", "filename", "Save output in named file");
@@ -232,6 +238,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
     public boolean applySuppression() {
         return applySuppression;
     }
+
     public boolean justPrintConfiguration() {
         return printConfiguration;
     }
@@ -285,6 +292,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
             priorityThreshold = Detector.NORMAL_PRIORITY;
         else if (option.equals("-high"))
             priorityThreshold = Detector.HIGH_PRIORITY;
+        else if (option.equals("-dontCombineWarnings"))
+            mergeSimilarWarnings = false;
         else if (option.equals("-sortByClass"))
             bugReporterType = SORTING_REPORTER;
         else if (option.equals("-xml")) {
@@ -654,6 +663,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
         findBugs.setAnalysisFeatureSettings(settingList);
 
+        findBugs.setMergeSimilarWarnings(mergeSimilarWarnings);
         findBugs.setReleaseName(releaseName);
         findBugs.setProjectName(projectName);
 
