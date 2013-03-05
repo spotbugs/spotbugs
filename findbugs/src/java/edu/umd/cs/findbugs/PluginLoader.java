@@ -1123,7 +1123,7 @@ public class PluginLoader {
         String name = "findbugs.xml";
         URL findbugsXML_URL = getResource(name);
         if (findbugsXML_URL == null) {
-            throw new PluginException("Couldn't find \"" + name + "\" in plugin");
+            throw new PluginException("Couldn't find \"" + name + "\" in plugin " + this);
         }
         if (DEBUG)
             System.out.println("PluginLoader found " + name + " at: " + findbugsXML_URL);
