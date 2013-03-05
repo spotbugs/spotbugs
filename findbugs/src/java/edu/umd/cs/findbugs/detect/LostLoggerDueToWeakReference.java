@@ -102,8 +102,13 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
                 if (getMethod().isStatic() && getMethodName().equals("main") && getMethodSig().equals("([Ljava/lang/String;)V"))
                     priority = NORMAL_PRIORITY;
                 ;
-                bugAccumulator.accumulateBug(
-                        new BugInstance(this, "LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE", priority).addClassAndMethod(this), this);
+
+                OpcodeStack.Item item = stack.getItemMethodInvokedOn(this);
+                BugInstance bug = new BugInstance(this, "LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE", priority).addClassAndMethod(this);
+                if (item.getXField() != null)
+                    bug.addField(item.getXField());
+                bug.addString("Testing");
+                bugAccumulator.accumulateBug(bug, this);
                 break;
             }
             checkForImport();
