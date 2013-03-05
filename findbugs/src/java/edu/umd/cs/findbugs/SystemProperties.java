@@ -38,9 +38,6 @@ public class SystemProperties {
 
     private static Properties properties = new Properties();
 
-    public static boolean RUNNING_IN_ECLIPSE = SystemProperties.class.getClassLoader().getClass().getCanonicalName()
-            .startsWith("org.eclipse.osgi");
-    
     public final static boolean ASSERTIONS_ENABLED;
 
     final static String OS_NAME;
