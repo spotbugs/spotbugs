@@ -65,12 +65,8 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
             if (false) {
                 System.out.println(getFullyQualifiedMethodName());
                 System.out.printf("%d %s %s\n", sawGetLogger, loggerEscaped, loggerImported);
-
             }
             if (sawGetLogger >= 0 && !loggerEscaped && !loggerImported) {
-                bugReporter.reportBug(new BugInstance("TESTING", NORMAL_PRIORITY)
-                 .addClassAndMethod(this).addString(
-                         String.format("LostLoggerDueToWeakReference: %d %s %s", sawGetLogger, loggerEscaped, loggerImported)));
                 bugAccumulator.reportAccumulatedBugs();
             } else
                 bugAccumulator.clearBugs();
@@ -85,6 +81,8 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
+        if (loggerEscaped || loggerImported)
+            return;
         switch (seen) {
         case INVOKESTATIC:
             if (getClassConstantOperand().equals("java/util/logging/Logger") && getNameConstantOperand().equals("getLogger")) {
@@ -101,13 +99,10 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
                 int priority = HIGH_PRIORITY;
                 if (getMethod().isStatic() && getMethodName().equals("main") && getMethodSig().equals("([Ljava/lang/String;)V"))
                     priority = NORMAL_PRIORITY;
-                ;
 
                 OpcodeStack.Item item = stack.getItemMethodInvokedOn(this);
-                BugInstance bug = new BugInstance(this, "LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE", priority).addClassAndMethod(this);
-                if (item.getXField() != null)
-                    bug.addField(item.getXField());
-                bug.addString("Testing");
+                BugInstance bug = new BugInstance(this, "LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE", priority)
+                .addClassAndMethod(this).addValueSource(item, this);
                 bugAccumulator.accumulateBug(bug, this);
                 break;
             }
