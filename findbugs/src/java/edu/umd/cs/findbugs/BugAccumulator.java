@@ -85,13 +85,12 @@ public class BugAccumulator {
     public void accumulateBug(BugInstance bug, SourceLineAnnotation sourceLine) {
         if (sourceLine == null)
             throw new NullPointerException("Missing source line");
-        if (!performAccumulation) {
-            reporter.reportBug(bug.addSourceLine(sourceLine));
-            return;
-        }
-
         int priority = bug.getPriority();
-        bug.setPriority(Priorities.NORMAL_PRIORITY);
+        if (!performAccumulation)
+            bug.addSourceLine(sourceLine);
+        else
+            bug.setPriority(Priorities.NORMAL_PRIORITY);
+
         Data d = map.get(bug);
         if (d == null) {
             String hash = bug.getInstanceHash();
@@ -130,6 +129,7 @@ public class BugAccumulator {
 
     public Iterable<? extends BugInstance> uniqueBugs() {
         return map.keySet();
+
     }
 
     public Iterable<? extends SourceLineAnnotation> locations(BugInstance bug) {
@@ -168,24 +168,11 @@ public class BugAccumulator {
         hashes.clear();
     }
 
-    /**
-     * @param bug
-     * @param classContext
-     * @param method
-     * @param location
-     */
     public void accumulateBug(BugInstance bug, ClassContext classContext, Method method, Location location) {
         accumulateBug(bug, SourceLineAnnotation.fromVisitedInstruction(classContext, method, location));
 
     }
 
-    /**
-     * @param bug
-     * @param classContext
-     * @param methodGen
-     * @param sourceFile
-     * @param location
-     */
     public void accumulateBug(BugInstance bug, ClassContext classContext, MethodGen methodGen, String sourceFile,
             Location location) {
         accumulateBug(bug, SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, location.getHandle()));
