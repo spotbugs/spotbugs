@@ -39,20 +39,20 @@ import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
  * A TypeMerger which applies standard Java semantics when merging Types.
  * Subclasses may override mergeReferenceTypes() in order to implement special
  * typing rules for reference types.
- * 
+ *
  * @author David Hovemeyer
  * @see TypeMerger
  */
 public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes {
-    private RepositoryLookupFailureCallback lookupFailureCallback;
+    private final RepositoryLookupFailureCallback lookupFailureCallback;
 
-    private ExceptionSetFactory exceptionSetFactory;
+    private final ExceptionSetFactory exceptionSetFactory;
 
     private static final ObjectType OBJECT_TYPE = ObjectTypeFactory.getInstance("java.lang.Object");
 
     /**
      * Constructor.
-     * 
+     *
      * @param lookupFailureCallback
      *            object used to report Repository lookup failures
      * @param exceptionSetFactory
@@ -142,7 +142,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
      * Default implementation of merging reference types. This just returns the
      * first common superclass, which is compliant with the JVM Spec. Subclasses
      * may override this method in order to implement extended type rules.
-     * 
+     *
      * @param aRef
      *            a ReferenceType
      * @param bRef
@@ -159,7 +159,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
             // We want to preserve the ExceptionSets associated,
             // in order to track the exact set of exceptions
             if (isObjectType(aType) && isObjectType(bType)
-                    && (aType == T_EXCEPTION || bType == T_EXCEPTION || isThrowable(aRef) && isThrowable(bRef))) {
+                    && ((aType == T_EXCEPTION || isThrowable(aRef))  && (bType == T_EXCEPTION ||   isThrowable(bRef)))) {
                 ExceptionSet union = exceptionSetFactory.createExceptionSet();
                 if (aType == T_OBJECT && aRef.getSignature().equals("Ljava/lang/Throwable;"))
                     return aRef;
@@ -220,10 +220,10 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
                                                     * ClassNotFoundException
                                                     */{
         try {
-            
+
                 Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
                 return subtypes2.isSubtype(ref, Type.THROWABLE);
-            
+
         } catch (ClassNotFoundException e) {
             // We'll just assume that it's not an exception type.
             lookupFailureCallback.reportMissingClass(e);

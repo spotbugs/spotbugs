@@ -31,6 +31,7 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Class for keeping track of exceptions that can be thrown by an instruction.
@@ -38,18 +39,18 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
  * exceptions are explicitly declared, thrown, or caught. Implicit exceptions
  * are runtime faults (NPE, array out of bounds) not explicitly handled by the
  * user code.
- * 
+ *
  * @author David Hovemeyer
  * @see TypeAnalysis
  */
 public class ExceptionSet implements Serializable {
     private static final long serialVersionUID = 1;
 
-    private ExceptionSetFactory factory;
+    private final ExceptionSetFactory factory;
 
-    private BitSet exceptionSet;
+    private final BitSet exceptionSet;
 
-    private BitSet explicitSet;
+    private final BitSet explicitSet;
 
     private int size;
 
@@ -199,7 +200,7 @@ public class ExceptionSet implements Serializable {
     /**
      * Checks to see if the exception set is a singleton set containing just the
      * named exception
-     * 
+     *
      * @param exceptionName
      *            (in dotted format)
      * @return true if it is
@@ -214,7 +215,7 @@ public class ExceptionSet implements Serializable {
 
     /**
      * Add an explicit exception.
-     * 
+     *
      * @param type
      *            type of the exception
      */
@@ -224,7 +225,7 @@ public class ExceptionSet implements Serializable {
 
     /**
      * Add an implicit exception.
-     * 
+     *
      * @param type
      *            type of the exception
      */
@@ -234,7 +235,7 @@ public class ExceptionSet implements Serializable {
 
     /**
      * Add an exception.
-     * 
+     *
      * @param type
      *            the exception type
      * @param explicit
@@ -254,7 +255,7 @@ public class ExceptionSet implements Serializable {
 
     /**
      * Add all exceptions in the given set.
-     * 
+     *
      * @param other
      *            the set
      */
