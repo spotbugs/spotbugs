@@ -60,7 +60,7 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 
     @Override
     public void visit(Code obj) {
-        if (hasThisDollarZero) {
+        if (hasThisDollarZero  && !getMethod().isSynthetic()) {
             super.visit(obj);
         }
     }
@@ -75,8 +75,8 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
         }
         XMethod invokedMethod = XFactory.createXMethod(getDottedClassConstantOperand(), getNameConstantOperand(),
                 getSigConstantOperand(), false);
-        if (invokedMethod.isResolved() && invokedMethod.getClassName().equals(getDottedClassConstantOperand())) {
-            // method is not inherited
+        if (invokedMethod.isResolved() && invokedMethod.getClassName().equals(getDottedClassConstantOperand())
+                || invokedMethod.isSynthetic()) {
             return;
         }
         // method is inherited
