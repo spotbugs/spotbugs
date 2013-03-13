@@ -2630,7 +2630,7 @@ public class OpcodeStack implements Constants2 {
                     break;
                 }
             } while (stack.jumpInfoChangedByBackwardsBranch && stack.backwardsBranch);
-            if (iteration > 10) {
+            if (iteration > 20&& iteration <= 40) {
                 AnalysisContext.logError("Iterative jump info converged after " + iteration + " iterations in " + xMethod + ", size " + method.getCode().getLength());
 
             }
