@@ -2625,12 +2625,15 @@ public class OpcodeStack implements Constants2 {
                             String.format("For %s, mismatch on existence of backedge: %s for precomputation, %s for bytecode analysis",
                                     xMethod, xMethod.hasBackBranch(), stack.backwardsBranch));
                 }
-                if (iteration++ > 6) {
-                     AnalysisContext.logError("Iterative jump info didn't converge after " + iteration + " iterators in " + xMethod + ", size " + method.getCode().getLength());
+                if (iteration++ > 40) {
+                     AnalysisContext.logError("Iterative jump info didn't converge after " + iteration + " iterations in " + xMethod + ", size " + method.getCode().getLength());
                     break;
                 }
             } while (stack.jumpInfoChangedByBackwardsBranch && stack.backwardsBranch);
+            if (iteration > 10) {
+                AnalysisContext.logError("Iterative jump info converged after " + iteration + " iterations in " + xMethod + ", size " + method.getCode().getLength());
 
+            }
             return new JumpInfo(stack.jumpEntries, stack.jumpStackEntries, stack.jumpEntryLocations);
         }
     }
