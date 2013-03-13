@@ -438,7 +438,7 @@ public class OpcodeStack implements Constants2 {
                 buf.append(", r");
                 buf.append(registerNumber);
             }
-            if (isCouldBeZero())
+            if (isCouldBeZero() && !isZero())
                 buf.append(", cbz");
             if (userValue != null) {
                 buf.append(", uv: ");
@@ -879,7 +879,15 @@ public class OpcodeStack implements Constants2 {
          * @return Returns the couldBeZero.
          */
         private boolean isCouldBeZero() {
-            return (flags & COULD_BE_ZERO_FLAG) != 0;
+            return (flags & COULD_BE_ZERO_FLAG) != 0
+                    || isZero();
+        }
+
+        /**
+         * @return
+         */
+        private boolean isZero() {
+            return constValue != null && constValue.equals(0);
         }
 
         /**
@@ -1003,16 +1011,24 @@ public class OpcodeStack implements Constants2 {
         List<Item> jumpEntry = null;
         if (jumpEntryLocations.get(dbc.getPC()))
             jumpEntry = jumpEntries.get(Integer.valueOf(dbc.getPC()));
+        boolean wasReachOnlyByBranch = isReachOnlyByBranch();
         if (jumpEntry != null) {
             setReachOnlyByBranch(false);
             List<Item> jumpStackEntry = jumpStackEntries.get(Integer.valueOf(dbc.getPC()));
 
             if (DEBUG2) {
-                System.out.println("XXXXXXX " + isReachOnlyByBranch());
-                System.out.println("merging lvValues at jump target " + dbc.getPC() + " -> " + jumpEntry);
-                System.out.println(" current lvValues " + lvValues);
-                System.out.println(" merging stack entry " + jumpStackEntry);
-                System.out.println(" current stack values " + stack);
+                if (wasReachOnlyByBranch) {
+                    System.out.println("Reached by branch at " + dbc.getPC() + " with " + jumpEntry);
+                    if (jumpStackEntry != null)
+                    System.out.println(" and stack " + jumpStackEntry);
+                } else if (!jumpEntry.equals(lvValues)
+                            || jumpStackEntry != null && !jumpStackEntry.equals(stack)) {
+
+                    System.out.println("Merging at " + dbc.getPC() + " with " + jumpEntry);
+                    if (jumpStackEntry != null)
+                    System.out.println(" and stack " + jumpStackEntry);
+
+                }
 
             }
             if (isTop()) {
@@ -1917,8 +1933,7 @@ public class OpcodeStack implements Constants2 {
             clear();
         } finally {
             if (DEBUG) {
-                System.out.println(dbc.getNextPC() + "pc : " + OPCODE_NAMES[seen] + "  stack depth: " + getStackDepth());
-                System.out.println(this);
+                System.out.printf("%4d: %14s %s%n", dbc.getNextPC(), OPCODE_NAMES[seen] ,  this);
             }
         }
     }
@@ -2473,10 +2488,11 @@ public class OpcodeStack implements Constants2 {
 
     }
 
-    private void mergeLists(List<Item> mergeInto, List<Item> mergeFrom, boolean errorIfSizesDoNotMatch) {
+    private boolean mergeLists(List<Item> mergeInto, List<Item> mergeFrom, boolean errorIfSizesDoNotMatch) {
         // merge stacks
         int intoSize = mergeInto.size();
         int fromSize = mergeFrom.size();
+        boolean changed = false;
         if (errorIfSizesDoNotMatch && intoSize != fromSize) {
             if (DEBUG2) {
                 System.out.println("Bad merging items");
@@ -2493,12 +2509,20 @@ public class OpcodeStack implements Constants2 {
                 System.out.println("jump items: " + mergeFrom);
             }
 
-            for (int i = 0; i < Math.min(intoSize, fromSize); i++)
-                mergeInto.set(i, Item.merge(mergeInto.get(i), mergeFrom.get(i)));
+            for (int i = 0; i < Math.min(intoSize, fromSize); i++) {
+                Item oldValue = mergeInto.get(i);
+                Item newValue = mergeFrom.get(i);
+                Item merged = Item.merge(oldValue, newValue);
+                if (merged != null && !merged.equals(oldValue)) {
+                        mergeInto.set(i, merged);
+                        changed = true;
+                }
+            }
             if (DEBUG2) {
                 System.out.println("merged items: " + mergeInto);
             }
         }
+        return changed;
     }
 
     public void clear() {
@@ -2512,11 +2536,24 @@ public class OpcodeStack implements Constants2 {
 
     BitSet exceptionHandlers = new BitSet();
 
+    boolean jumpInfoChanged = false;
+
     private Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
 
     private Map<Integer, List<Item>> jumpStackEntries = new HashMap<Integer, List<Item>>();
 
     private BitSet jumpEntryLocations = new BitSet();
+
+    public void printJumpEntries() {
+        for(int i=jumpEntryLocations.nextSetBit(0); i>=0; i=jumpEntryLocations.nextSetBit(i+1)) {
+            List<Item> stack = jumpStackEntries.get(i);
+            List<Item> locals = jumpEntries.get(i);
+            if (stack != null)
+            System.out.printf("%4d: %s::%s%n", i, stack, locals);
+            else
+                System.out.printf("%4d:    ::%s%n", i,  locals);
+        }
+    }
 
     public static class JumpInfo {
         final Map<Integer, List<Item>> jumpEntries;
@@ -2572,20 +2609,15 @@ public class OpcodeStack implements Constants2 {
                 DismantleBytecode branchAnalysis) {
             branchAnalysis.setupVisitorForClass(jclass);
             MethodInfo xMethod = (MethodInfo) XFactory.createXMethod(jclass, method);
-            int oldCount = 0;
-            while (true) {
+            do {
                 stack.resetForMethodEntry0(ClassName.toSlashedClassName(jclass.getClassName()), method);
                 branchAnalysis.doVisitMethod(method);
-                int newCount = stack.jumpEntries.size();
                 if (xMethod.hasBackBranch() != stack.backwardsBranch && !stack.encountedTop) {
                     AnalysisContext.logError(
                             String.format("For %s, mismatch on existence of backedge: %s for precomputation, %s for bytecode analysis",
                                     xMethod, xMethod.hasBackBranch(), stack.backwardsBranch));
                 }
-                if (newCount == oldCount || !stack.encountedTop || !stack.backwardsBranch)
-                    break;
-                oldCount = newCount;
-            }
+            } while (stack.jumpInfoChanged && stack.backwardsBranch);
 
             return new JumpInfo(stack.jumpEntries, stack.jumpStackEntries, stack.jumpEntryLocations);
         }
@@ -2597,15 +2629,13 @@ public class OpcodeStack implements Constants2 {
 
     private void addJumpValue(int from, int target) {
         if (DEBUG)
-            System.out.println("Set jump entry at " + methodName + ":" + target + "pc to " + stack + " : " + lvValues);
+            System.out.println("Set jump entry at " + methodName + ":" + target + " pc to " + stack + " : " + lvValues);
 
         if (from >= target)
             backwardsBranch = true;
         List<Item> atTarget = jumpEntries.get(Integer.valueOf(target));
         if (atTarget == null) {
-            if (DEBUG)
-                System.out.println("Was null");
-
+            jumpInfoChanged = true;
             jumpEntries.put(Integer.valueOf(target), new ArrayList<Item>(lvValues));
             jumpEntryLocations.set(target);
             if (stack.size() > 0) {
@@ -2613,10 +2643,12 @@ public class OpcodeStack implements Constants2 {
             }
             return;
         }
-        mergeLists(atTarget, lvValues, false);
+        if (mergeLists(atTarget, lvValues, false))
+            jumpInfoChanged = true;
         List<Item> stackAtTarget = jumpStackEntries.get(Integer.valueOf(target));
         if (stack.size() > 0 && stackAtTarget != null)
-            mergeLists(stackAtTarget, stack, false);
+            if (mergeLists(stackAtTarget, stack, false))
+                    jumpInfoChanged = true;
         if (DEBUG)
             System.out.println("merge target for " + methodName + ":" + target + "pc is " + atTarget);
     }
@@ -2702,6 +2734,7 @@ public class OpcodeStack implements Constants2 {
         top = false;
         encountedTop = false;
         backwardsBranch = false;
+        jumpInfoChanged = false;
 
         setReachOnlyByBranch(false);
         seenTransferOfControl = false;
