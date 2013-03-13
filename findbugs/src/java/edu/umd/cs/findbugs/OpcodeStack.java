@@ -1933,7 +1933,7 @@ public class OpcodeStack implements Constants2 {
             clear();
         } finally {
             if (DEBUG) {
-                System.out.printf("%4d: %14s %s%n", dbc.getNextPC(), OPCODE_NAMES[seen] ,  this);
+                System.out.printf("%4d: %14s %s%n", dbc.getPC(), OPCODE_NAMES[seen] ,  this);
             }
         }
     }
@@ -2457,7 +2457,7 @@ public class OpcodeStack implements Constants2 {
                     i.setSpecialKind(Item.NON_NEGATIVE);
             push(i);
         } else if (ClassName.isMathClass(clsName) && methodName.equals("abs")) {
-            Item i = pop();
+            Item i = new Item(pop());
             if (i.getSpecialKind() == Item.HASHCODE_INT)
                 i.setSpecialKind(Item.MATH_ABS_OF_HASHCODE);
             else if (i.getSpecialKind() == Item.RANDOM_INT)
@@ -2468,20 +2468,20 @@ public class OpcodeStack implements Constants2 {
         } else if (seen == INVOKEVIRTUAL && methodName.equals("hashCode") && signature.equals("()I") || seen == INVOKESTATIC
                 && clsName.equals("java/lang/System") && methodName.equals("identityHashCode")
                 && signature.equals("(Ljava/lang/Object;)I")) {
-            Item i = pop();
+            Item i = new Item(pop());
             i.setSpecialKind(Item.HASHCODE_INT);
             push(i);
         } else if (topIsTainted
                 && (methodName.startsWith("encode") && clsName.equals("javax/servlet/http/HttpServletResponse") || methodName
                         .equals("trim") && clsName.equals("java/lang/String"))) {
-            Item i = pop();
+            Item i = new Item(pop());
             i.setSpecialKind(Item.SERVLET_REQUEST_TAINTED);
             i.injection = injection;
             push(i);
         }
 
         if (!signature.endsWith(")V")) {
-            Item i = pop();
+            Item i = new Item(pop());
             i.source = XFactory.createReferencedXMethod(dbc);
             push(i);
         }
@@ -2501,14 +2501,13 @@ public class OpcodeStack implements Constants2 {
             }
         } else {
             if (DEBUG2) {
-                if (intoSize == fromSize)
-                    System.out.println("Merging items");
-                else
-                    System.out.println("Bad merging items");
-                System.out.println("current items: " + mergeInto);
-                System.out.println("jump items: " + mergeFrom);
+                if (intoSize != fromSize)
+                    System.out.printf("Bad merging %d items from %d items%n", intoSize, fromSize);
             }
 
+            List<Item> mergeIntoCopy = null;
+            if (DEBUG2)
+                mergeIntoCopy = new ArrayList<Item>(mergeInto);
             for (int i = 0; i < Math.min(intoSize, fromSize); i++) {
                 Item oldValue = mergeInto.get(i);
                 Item newValue = mergeFrom.get(i);
@@ -2518,8 +2517,11 @@ public class OpcodeStack implements Constants2 {
                         changed = true;
                 }
             }
-            if (DEBUG2) {
-                System.out.println("merged items: " + mergeInto);
+            if (DEBUG2 && changed) {
+                System.out.println("Merge results:");
+                System.out.println("updating: " + mergeIntoCopy);
+                System.out.println("    with: " + mergeFrom);
+                System.out.println("   gives: " + mergeInto);
             }
         }
         return changed;
@@ -2536,7 +2538,7 @@ public class OpcodeStack implements Constants2 {
 
     BitSet exceptionHandlers = new BitSet();
 
-    boolean jumpInfoChanged = false;
+    boolean jumpInfoChangedByBackwardsBranch = false;
 
     private Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
 
@@ -2609,8 +2611,13 @@ public class OpcodeStack implements Constants2 {
                 DismantleBytecode branchAnalysis) {
             branchAnalysis.setupVisitorForClass(jclass);
             MethodInfo xMethod = (MethodInfo) XFactory.createXMethod(jclass, method);
-            int count = 0;
+            int iteration = 1;
             do {
+                if (DEBUG && iteration > 1) {
+                    System.out.println("Iterative jump info for " + xMethod +", iteration " + iteration);
+                    stack.printJumpEntries();
+                    System.out.println();
+                }
                 stack.resetForMethodEntry0(ClassName.toSlashedClassName(jclass.getClassName()), method);
                 branchAnalysis.doVisitMethod(method);
                 if (xMethod.hasBackBranch() != stack.backwardsBranch && !stack.encountedTop) {
@@ -2618,11 +2625,11 @@ public class OpcodeStack implements Constants2 {
                             String.format("For %s, mismatch on existence of backedge: %s for precomputation, %s for bytecode analysis",
                                     xMethod, xMethod.hasBackBranch(), stack.backwardsBranch));
                 }
-                if (count++ > 3) {
-                    // AnalysisContext.logError("Iterative jump info didn't converge after " + count + " iterators in " + xMethod);
+                if (iteration++ > 6) {
+                     AnalysisContext.logError("Iterative jump info didn't converge after " + iteration + " iterators in " + xMethod + ", size " + method.getCode().getLength());
                     break;
                 }
-            } while (stack.jumpInfoChanged && stack.backwardsBranch);
+            } while (stack.jumpInfoChangedByBackwardsBranch && stack.backwardsBranch);
 
             return new JumpInfo(stack.jumpEntries, stack.jumpStackEntries, stack.jumpEntryLocations);
         }
@@ -2640,22 +2647,22 @@ public class OpcodeStack implements Constants2 {
             backwardsBranch = true;
         List<Item> atTarget = jumpEntries.get(Integer.valueOf(target));
         if (atTarget == null) {
-            jumpInfoChanged = true;
+            setJumpInfoChangedByBackwardBranch("new target", from, target);
             jumpEntries.put(Integer.valueOf(target), new ArrayList<Item>(lvValues));
             jumpEntryLocations.set(target);
             if (stack.size() > 0) {
                 jumpStackEntries.put(Integer.valueOf(target), new ArrayList<Item>(stack));
             }
-            return;
-        }
+        } else {
         if (mergeLists(atTarget, lvValues, false))
-            jumpInfoChanged = true;
+            setJumpInfoChangedByBackwardBranch("locals", from, target);
         List<Item> stackAtTarget = jumpStackEntries.get(Integer.valueOf(target));
         if (stack.size() > 0 && stackAtTarget != null)
             if (mergeLists(stackAtTarget, stack, false))
-                    jumpInfoChanged = true;
+                setJumpInfoChangedByBackwardBranch("stack", from, target);
+        }
         if (DEBUG)
-            System.out.println("merge target for " + methodName + ":" + target + "pc is " + atTarget);
+            System.out.println("merge target for " + methodName + ":" + target + " pc is " + atTarget);
     }
 
     private String methodName;
@@ -2724,6 +2731,15 @@ public class OpcodeStack implements Constants2 {
         }
     }
 
+    public boolean setJumpInfoChangedByBackwardBranch(String kind, int from, int to) {
+        if (this.jumpInfoChangedByBackwardsBranch || from < to)
+            return false;
+        if (DEBUG)
+            System.out.printf("%s jump info at %d changed by jump from %d%n", kind, to, from);
+        this.jumpInfoChangedByBackwardsBranch = true;
+        return true;
+    }
+
     private int resetForMethodEntry0(PreorderVisitor visitor) {
         return resetForMethodEntry0(visitor.getClassName(), visitor.getMethod());
     }
@@ -2739,7 +2755,7 @@ public class OpcodeStack implements Constants2 {
         top = false;
         encountedTop = false;
         backwardsBranch = false;
-        jumpInfoChanged = false;
+        jumpInfoChangedByBackwardsBranch = false;
 
         setReachOnlyByBranch(false);
         seenTransferOfControl = false;
@@ -3090,6 +3106,7 @@ public class OpcodeStack implements Constants2 {
             if (getStackDepth() > 0) {
                 Item next = getStackItem(0);
                 if (constructed.equals(next)) {
+                    next = new Item(next);
                     next.source = XFactory.createReferencedXMethod(dbc);
                     next.pc = dbc.getPC();
                 }
