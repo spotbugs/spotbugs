@@ -2609,6 +2609,7 @@ public class OpcodeStack implements Constants2 {
                 DismantleBytecode branchAnalysis) {
             branchAnalysis.setupVisitorForClass(jclass);
             MethodInfo xMethod = (MethodInfo) XFactory.createXMethod(jclass, method);
+            int count = 0;
             do {
                 stack.resetForMethodEntry0(ClassName.toSlashedClassName(jclass.getClassName()), method);
                 branchAnalysis.doVisitMethod(method);
@@ -2616,6 +2617,10 @@ public class OpcodeStack implements Constants2 {
                     AnalysisContext.logError(
                             String.format("For %s, mismatch on existence of backedge: %s for precomputation, %s for bytecode analysis",
                                     xMethod, xMethod.hasBackBranch(), stack.backwardsBranch));
+                }
+                if (count++ > 3) {
+                    // AnalysisContext.logError("Iterative jump info didn't converge after " + count + " iterators in " + xMethod);
+                    break;
                 }
             } while (stack.jumpInfoChanged && stack.backwardsBranch);
 
