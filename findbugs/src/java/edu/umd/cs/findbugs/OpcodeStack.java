@@ -2817,6 +2817,20 @@ public class OpcodeStack implements Constants2 {
         return stack.remove(stack.size() - 1);
     }
 
+    public void replace(int stackOffset, Item value) {
+            if (stackOffset < 0 || stackOffset >= stack.size()) {
+                AnalysisContext.logError("Can't get replace stack offset " + stackOffset + " from " + stack.toString() + " @ " + v.getPC()
+                        + " in " + v.getFullyQualifiedMethodName(), new IllegalArgumentException(stackOffset
+                        + " is not a value stack offset"));
+
+            }
+            int tos = stack.size() - 1;
+            int pos = tos - stackOffset;
+
+            stack.set(pos, value);
+
+        }
+
     public void replaceTop(Item newTop) {
         pop();
         push(newTop);
@@ -3112,6 +3126,7 @@ public class OpcodeStack implements Constants2 {
                     next = new Item(next);
                     next.source = XFactory.createReferencedXMethod(dbc);
                     next.pc = dbc.getPC();
+                    replace(0, next);
                 }
             }
             return;
