@@ -56,7 +56,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 
 public class FindSelfComparison2 implements Detector {
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     public FindSelfComparison2(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -84,6 +84,14 @@ public class FindSelfComparison2 implements Detector {
         }
     }
 
+     static boolean booleanComparisonMethod(String methodName) {
+        return methodName.equals("equals") ||methodName.equals("endsWith") || methodName.equals("startsWith")
+                || methodName.equals("contains") || methodName.equals("equalsIgnoreCase");
+    }
+
+     static boolean comparatorMethod(String methodName) {
+        return  methodName.equals("compareTo") || methodName.equals("compareToIgnoreCase");
+    }
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
         CFG cfg = classContext.getCFG(method);
         ValueNumberDataflow valueNumberDataflow = classContext.getValueNumberDataflow(method);
@@ -100,7 +108,7 @@ public class FindSelfComparison2 implements Detector {
             case INVOKEINTERFACE:
                 InvokeInstruction iins = (InvokeInstruction) ins;
                 String invoking = iins.getName(cpg);
-                if (invoking.equals("equals") || invoking.equals("compareTo")) {
+                if ( comparatorMethod(invoking) || booleanComparisonMethod(invoking) ) {
                     if (methodGen.getName().toLowerCase().indexOf("test") >= 0)
                         break;
                     if (methodGen.getClassName().toLowerCase().indexOf("test") >= 0)
@@ -113,8 +121,7 @@ public class FindSelfComparison2 implements Detector {
 
                     SignatureParser parser = new SignatureParser(sig);
                     if (parser.getNumParameters() == 1
-                            && (invoking.equals("equals") && sig.endsWith(";)Z") || invoking.equals("compareTo")
-                                    && sig.endsWith(";)I")))
+                            && ( booleanComparisonMethod(invoking)  && sig.endsWith(";)Z") || comparatorMethod(invoking) && sig.endsWith(";)I")))
                         checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPARISON", method, methodGen,
                                 sourceFile);
 

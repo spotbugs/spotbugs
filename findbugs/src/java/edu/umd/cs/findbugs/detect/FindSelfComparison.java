@@ -161,11 +161,12 @@ public class FindSelfComparison extends OpcodeStackDetector {
                 break;
             String name = getNameConstantOperand();
 
-            if (name.equals("equals") || name.equals("compareTo")) {
+            boolean booleanComparisonMethod = FindSelfComparison2.booleanComparisonMethod(name);
+            if (booleanComparisonMethod || FindSelfComparison2.comparatorMethod(name)) {
                 String sig = getSigConstantOperand();
                 SignatureParser parser = new SignatureParser(sig);
                 if (parser.getNumParameters() == 1
-                        && (name.equals("equals") && sig.endsWith(";)Z") || name.equals("compareTo") && sig.endsWith(";)I")))
+                        && (booleanComparisonMethod && sig.endsWith(";)Z") ||  FindSelfComparison2.comparatorMethod(name) && sig.endsWith(";)I")))
                     checkForSelfOperation(seen, "COMPARISON");
             }
             break;
