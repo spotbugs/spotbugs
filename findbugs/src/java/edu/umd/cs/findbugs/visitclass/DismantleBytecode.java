@@ -196,6 +196,18 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         return getReferencedXClass();
     }
 
+    public boolean isMethodCall() {
+        switch(opcode) {
+        default: return false;
+        case INVOKEDYNAMIC:
+        case INVOKEINTERFACE:
+        case INVOKESPECIAL:
+        case INVOKEVIRTUAL:
+        case INVOKESTATIC:
+            return true;
+
+        }
+    }
     public MethodDescriptor getMethodDescriptorOperand() {
         if (nameConstantOperand == NOT_AVAILABLE)
             throw new IllegalStateException("getMethodDescriptorOperand called but value not available");

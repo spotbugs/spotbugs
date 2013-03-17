@@ -216,7 +216,11 @@ public class FindSelfComparison2 implements Detector {
         BitSet occursMultipleTimes = classContext.linesMentionedMultipleTimes(method);
         if (line > 0 && occursMultipleTimes.get(line))
             return;
-        BugInstance bug = new BugInstance(this, prefix + op, priority).addClassAndMethod(methodGen, sourceFile).add(annotation)
+        BugInstance bug = new BugInstance(this, prefix + op, priority).addClassAndMethod(methodGen, sourceFile);
+        if (ins instanceof InvokeInstruction)
+            bug.addCalledMethod(classContext.getConstantPoolGen(), (InvokeInstruction) ins);
+
+        bug.add(annotation)
                 .addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
         bugReporter.reportBug(bug);
     }
