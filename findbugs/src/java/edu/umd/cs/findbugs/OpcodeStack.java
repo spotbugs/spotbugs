@@ -625,6 +625,11 @@ public class OpcodeStack implements Constants2 {
                 specialKind = NON_NEGATIVE;
         }
 
+        public void setCouldBeNegative() {
+            if (specialKind == NON_NEGATIVE)
+                specialKind = NOT_SPECIAL;
+        }
+
         public Item() {
             signature = "Ljava/lang/Object;";
             constValue = null;
@@ -1772,6 +1777,7 @@ public class OpcodeStack implements Constants2 {
             case I2B: {
                 it = pop();
                 Item newValue = new Item(it, "B");
+                newValue.setCouldBeNegative();
 
                 push(newValue);
             }
@@ -1803,7 +1809,12 @@ public class OpcodeStack implements Constants2 {
             break;
 
             case I2S:
-                changeSignatureOfTopElement("S");
+                {
+                    Item item1 = pop();
+                    Item newValue = new Item(item1, "S");
+                    newValue.setCouldBeNegative();
+                    push(newValue);
+                }
                 break;
 
             case L2I:
