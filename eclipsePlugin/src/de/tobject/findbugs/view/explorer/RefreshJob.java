@@ -87,7 +87,7 @@ class RefreshJob extends Job implements IViewerRefreshJob {
         if (!checkCancellation(monitor) && !deltas.isEmpty()) {
 
             final Set<BugGroup> changedParents = contentProvider.updateContent(deltas);
-            final boolean fullRefreshNeeded = changedParents.isEmpty();
+            final boolean fullRefreshNeeded = changedParents.isEmpty() || containsRoot(changedParents);
 
             Display.getDefault().syncExec(new Runnable() {
                 public void run() {
@@ -104,22 +104,13 @@ class RefreshJob extends Job implements IViewerRefreshJob {
                         } else {
                             // update the viewer based on the marker changes.
                             for (BugGroup parent : changedParents) {
-                                boolean isRoot = parent.getParent() == null;
                                 if (BugContentProvider.DEBUG) {
-                                    if (isRoot) {
-                                        System.out.println("Refreshing ROOT: " + parent);
-                                    } else {
-                                        System.out.println("Refreshing: " + parent);
-                                    }
+                                    System.out.println("Refreshing: " + parent);
                                 }
                                 if (checkCancellation(monitor)) {
                                     break;
                                 }
-                                if (isRoot) {
-                                    viewer.refresh();
-                                } else {
-                                    viewer.refresh(parent, true);
-                                }
+                                viewer.refresh(parent, true);
                             }
                         }
                     } finally {
@@ -135,6 +126,16 @@ class RefreshJob extends Job implements IViewerRefreshJob {
             monitor.done();
         }
         return monitor.isCanceled() ? Status.CANCEL_STATUS : Status.OK_STATUS;
+    }
+
+    private static boolean containsRoot(Set<BugGroup> changedParents) {
+        for (BugGroup parent : changedParents) {
+            boolean isRoot = parent.getParent() == null;
+            if(isRoot) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private List<DeltaInfo> fetchDeltas() {
