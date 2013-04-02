@@ -143,7 +143,7 @@
 
     <!-- Compile Java source files, and copy other files (properties,
         images, html, XSL stylesheets) that need to be part of the codebase. -->
-    <target name="errorprone" depends="init">
+    <target name="errorprone" depends="clean,init">
         <javac
                         destdir="${classes.dir}"
                         source="1.5"
