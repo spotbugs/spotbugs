@@ -10,9 +10,9 @@ public class WriteOnceProperties extends Properties {
 
     static class PropertyReadAt extends Exception {
         private static final long serialVersionUID = 1L;
-    };
+    }
 
-    private Map<String, PropertyReadAt> propertReadAt = new HashMap<String, PropertyReadAt>();
+    private final Map<String, PropertyReadAt> propertReadAt = new HashMap<String, PropertyReadAt>();
 
     private WriteOnceProperties(Properties initialValue) {
         super.putAll(initialValue);

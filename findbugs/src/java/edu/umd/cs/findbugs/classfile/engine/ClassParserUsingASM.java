@@ -311,7 +311,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                             boolean match = false;
                             if (parameterLoadState == ParameterLoadState.OTHER && !isStatic() && var == 0) {
                                     parameterLoadState = ParameterLoadState.LOADED_THIS;
-                                    ;
+
                                     match = true;
                             }
                             else if (parameterLoadState == ParameterLoadState.LOADED_THIS  && var > 0){

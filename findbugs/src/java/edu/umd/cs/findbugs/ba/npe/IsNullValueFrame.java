@@ -72,8 +72,8 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 
     private IsNullConditionDecision decision;
 
-    private boolean trackValueNumbers;
-    
+    private final boolean trackValueNumbers;
+
     public boolean isTrackValueNumbers() {
         return trackValueNumbers;
     }
@@ -218,7 +218,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.Frame#copyFrom(edu.umd.cs.findbugs.ba.Frame)
      */
     @Override
@@ -227,8 +227,6 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         decision = ((IsNullValueFrame) other).decision;
         if (trackValueNumbers) {
             knownValueMap = Util.makeSmallHashMap(((IsNullValueFrame) other).knownValueMap);
-            ;
-
         }
     }
 

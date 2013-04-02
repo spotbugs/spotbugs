@@ -60,8 +60,6 @@ import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
-;
-
 /**
  * RuntimeExceptionCapture
  * 

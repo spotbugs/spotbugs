@@ -36,9 +36,9 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 public class VolatileUsage extends BytecodeScanningDetector {
     enum IncrementState {
         START, GETFIELD, LOADCONSTANT, ADD
-    };
+    }
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     public VolatileUsage(BugReporter bugReporter) {
         this.bugReporter = bugReporter;

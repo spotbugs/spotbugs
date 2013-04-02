@@ -66,7 +66,7 @@ public class HTML {
             } else if (name.equals("p")) {
 
             }
-        };
+        }
 
         @Override
         protected void writeEmbeddedTags(AttributeSet attr) throws IOException {
@@ -94,17 +94,17 @@ public class HTML {
 
         @Override
         protected void incrIndent() {
-        };
+        }
 
         @Override
         protected void decrIndent() {
-        };
+        }
 
         @Override
         protected void emptyTag(Element elem) throws IOException, BadLocationException {
             if (elem.getName().equals("content"))
                 super.emptyTag(elem);
-        };
+        }
 
         @Override
         protected void text(Element elem) throws IOException, BadLocationException {
@@ -128,7 +128,7 @@ public class HTML {
     }
 
     private HTML() {
-    };
+    }
 
     public static void convertHtmlToText(Reader reader, Writer writer) throws IOException, BadLocationException {
 

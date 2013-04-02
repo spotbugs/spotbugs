@@ -97,7 +97,7 @@ public class FindUseOfNonSerializableValue implements Detector {
         }
     }
 
-    enum Use { STORE_INTO_HTTP_SESSION, PASSED_TO_WRITE_OBJECT, STORED_IN_SERIALZIED_FIELD };
+    enum Use { STORE_INTO_HTTP_SESSION, PASSED_TO_WRITE_OBJECT, STORED_IN_SERIALZIED_FIELD }
 
     @CheckForNull Use getUse(ConstantPoolGen cpg, Instruction ins) {
         if (ins instanceof InvokeInstruction) {

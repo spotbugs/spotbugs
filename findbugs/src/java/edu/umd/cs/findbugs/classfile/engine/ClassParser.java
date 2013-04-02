@@ -250,7 +250,7 @@ public class ClassParser implements ClassParserInterface {
     };
 
     /**
-     * Read a constant from the constant pool.
+     * Read a constant from the constant pool. Return null for
      *
      * @return a StaticConstant
      * @throws InvalidClassFileFormatException

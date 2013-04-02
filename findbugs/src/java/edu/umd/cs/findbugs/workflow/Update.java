@@ -549,7 +549,7 @@ public class Update {
             }
             throw new IllegalStateException();
         }
-    };
+    }
 
     private void matchBugs(Comparator<BugInstance> bugInstanceComparator, BugCollection origCollection,
             BugCollection newCollection) {

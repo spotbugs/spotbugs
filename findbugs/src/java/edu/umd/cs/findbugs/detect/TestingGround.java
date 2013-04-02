@@ -19,15 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.OpcodeStack.Item;
-import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class TestingGround extends OpcodeStackDetector {
@@ -41,48 +37,59 @@ public class TestingGround extends OpcodeStackDetector {
         this.accumulator = new BugAccumulator(bugReporter);
     }
 
+    enum State {
+        START, SAW_INIT, FOUND, NO, RETURNED;
+    }
+
+    State state;
+
     @Override
     public void visit(Code code) {
-        boolean interesting = true;
+        boolean interesting = getMethod().isPublic() && !getMethodSig().startsWith("()");
         if (interesting) {
+            state = State.START;
             // initialize any variables we want to initialize for the method
+//            System.out.println(getFullyQualifiedMethodName());
             super.visit(code); // make callbacks to sawOpcode for all opcodes
+//            System.out.println();
+            if (state == State.RETURNED)
+                bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this));
+
         }
         accumulator.reportAccumulatedBugs();
     }
 
     @Override
     public void sawOpcode(int seen) {
+//        System.out.printf("%6s %3d %s%n", state, getPC(), OPCODE_NAMES[seen]);
         switch (seen) {
-        case Constants.IF_ICMPEQ:
-        case Constants.IF_ICMPNE:
-            OpcodeStack.Item left = stack.getStackItem(1);
-            OpcodeStack.Item right = stack.getStackItem(0);
-            if (bad(left, right) || bad(right, left))
+        case INVOKESPECIAL:
+            if (getNameConstantOperand().equals("<init>") && state == State.START)
+                state = State.SAW_INIT;
+            else
+                state = State.NO;
+            break;
+        case INVOKESTATIC:
+            if (state == State.SAW_INIT && getNameConstantOperand().equals("doPrivileged")
+                    && getClassConstantOperand().equals("java/security/AccessController")) {
+                state = State.FOUND;
 
-                accumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this)
-                        .addValueSource(left, this).addValueSource(right, this), this);
+            } else
+                state = State.NO;
+            break;
+
+        case INVOKEVIRTUAL:
+        case INVOKEINTERFACE:
+            state = state.NO;
+            break;
+        case IRETURN:
+        case ARETURN:
+        case RETURN:
+            if (state == State.FOUND)
+                state = State.RETURNED;
+            else state = State.NO;
+
         }
-
-    }
-
-    private boolean bad(Item left, Item right) {
-        XMethod m = left.getReturnValueOf();
-
-        if (m == null)
-            return false;
-        Object value = right.getConstant();
-        if (!(value instanceof Integer) || ((Integer) value).intValue() == 0)
-            return false;
-        if (m.isStatic() || !m.isPublic())
-            return false;
-
-        if (m.getName().equals("compareTo") && m.getSignature().equals("(Ljava/lang/Object;)I"))
-            return true;
-        if (m.getName().equals("compare") && m.getSignature().equals("(Ljava/lang/Object;Ljava/lang/Object;)I"))
-            return true;
-
-        return false;
 
     }
 

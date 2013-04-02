@@ -50,7 +50,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
 
     enum FormatState {
         NONE, READY_FOR_FORMAT, EXPECTING_ASSIGNMENT
-    };
+    }
 
     FormatState state;
 
@@ -69,7 +69,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
      */
     @Override
@@ -163,7 +163,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
                             } catch (ClassNotFoundException e1) {
                                AnalysisContext.reportMissingClass(e1);
                             }
-                            
+
                         }
                         bugReporter.reportBug(new BugInstance(this, "VA_FORMAT_STRING_BAD_CONVERSION", HIGH_PRIORITY)
                                 .addClassAndMethod(this).addCalledMethod(this).addType(aSig)

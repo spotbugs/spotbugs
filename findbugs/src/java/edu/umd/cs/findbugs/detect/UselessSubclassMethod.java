@@ -41,9 +41,9 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 
     enum State {
         SEEN_NOTHING, SEEN_PARM, SEEN_LAST_PARM, SEEN_INVOKE, SEEN_RETURN, SEEN_INVALID
-    };
+    }
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private String superclassName;
 
