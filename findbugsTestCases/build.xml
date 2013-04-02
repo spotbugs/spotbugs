@@ -45,9 +45,24 @@
 
 
 
+    <target name="errorprone" depends="clean">
+        <mkdir dir="build/classes"/>
+        <javac  destdir="build/classes" source="1.7" debug="on"
+                        includeantruntime="false"
+		 compiler="com.google.errorprone.ErrorProneAntCompilerAdapter"
+            >
+            <src path="src/java"/>
+            <src path="src/fakeAnnotations"/>
+            <src path="src/fakeLibraries"/>
+            <classpath>
+                <path refid="build.classpath"/>
+            </classpath>
+		    <compilerarg value="-Xlint:none"/>
+		</javac>
+    </target>
     <target name="classes">
         <mkdir dir="build/classes"/>
-        <javac  destdir="build/classes" source="1.6" debug="on"
+        <javac  destdir="build/classes" source="1.7" debug="on"
                         includeantruntime="false"
             >
             <src path="src/java"/>

@@ -1,6 +1,8 @@
 package bugIdeas;
 
+import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2009_12_11a {
 
@@ -23,6 +25,7 @@ public class Ideas_2009_12_11a {
     }
 
     @ExpectWarning("EC_ARRAY_AND_NONARRAY")
+    @NoWarning(value="EC_INCOMPATIBLE_TYPES", confidence=Confidence.MEDIUM)
     public static void main(String args[]) {
         Ideas_2009_12_11a a = new Ideas_2009_12_11a();
         Ideas_2009_12_11a b = new Ideas_2009_12_11a();
