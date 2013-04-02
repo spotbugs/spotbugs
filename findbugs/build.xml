@@ -143,6 +143,23 @@
 
     <!-- Compile Java source files, and copy other files (properties,
         images, html, XSL stylesheets) that need to be part of the codebase. -->
+    <target name="errorprone" depends="init">
+        <javac
+                        destdir="${classes.dir}"
+                        source="1.5"
+                        target="1.5"
+                        includeantruntime="false"
+                        encoding="ISO-8859-1"
+                        deprecation="off"
+                        debug="on"
+			compiler="com.google.errorprone.ErrorProneAntCompilerAdapter"
+			>
+                    <compilerarg value="-Xlint:unchecked"/>
+                    <src path="${src.dir}"/>
+                    <src path="${src5.dir}"/>
+                    <classpath refid="findbugs.classpath"/>
+                </javac>
+	</target>
     <target name="classes" depends="init">
 
         <!-- Compile Java source files. -->
