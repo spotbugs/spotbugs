@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
  * and a "root" source directory (under which some number of "real" source
  * directories may be located), scan to find the source directories containing
  * the application's source files.
- * 
+ *
  * @author David Hovemeyer
  */
 public class DiscoverSourceDirectories {
@@ -92,7 +92,7 @@ public class DiscoverSourceDirectories {
 
         public void reportSkippedAnalysis(MethodDescriptor method) {
         }
-    };
+    }
 
     private static class NoOpProgress implements Progress {
         public void startScanningArchives(int numArchivesToScan) {
@@ -134,7 +134,7 @@ public class DiscoverSourceDirectories {
 
     private Progress progress;
 
-    private List<String> discoveredSourceDirectoryList;
+    private final List<String> discoveredSourceDirectoryList;
 
     /**
      * Constructor.
@@ -147,7 +147,7 @@ public class DiscoverSourceDirectories {
 
     /**
      * Set the Project for which we want to find source directories.
-     * 
+     *
      * @param project
      *            Project for which we want to find source directories
      */
@@ -158,7 +158,7 @@ public class DiscoverSourceDirectories {
     /**
      * Set the "root" source directory: we expect all of the actual source
      * directories to be underneath it.
-     * 
+     *
      * @param rootSourceDirectory
      *            the root source directory
      */
@@ -170,7 +170,7 @@ public class DiscoverSourceDirectories {
      * Set whether or not to scan the project for nested archives (i.e., if
      * there is a WAR or EAR file that contains jar files inside it.) Default is
      * false.
-     * 
+     *
      * @param scanForNestedArchives
      *            true if nested archives should be scanned, false otherwise
      */
@@ -181,7 +181,7 @@ public class DiscoverSourceDirectories {
     /**
      * Set the error logger to use to report errors during scanning. By default,
      * a no-op error logger is used.
-     * 
+     *
      * @param errorLogger
      *            error logger to use to report errors during scanning
      */
@@ -191,7 +191,7 @@ public class DiscoverSourceDirectories {
 
     /**
      * Set the progress callback to which scanning progress should be reported.
-     * 
+     *
      * @param progress
      *            the progress callback
      */
@@ -202,7 +202,7 @@ public class DiscoverSourceDirectories {
     /**
      * Get the list of discovered source directories. These can be added to a
      * Project.
-     * 
+     *
      * @return list of discovered source directories.
      */
     public List<String> getDiscoveredSourceDirectoryList() {
@@ -211,7 +211,7 @@ public class DiscoverSourceDirectories {
 
     /**
      * Execute the search for source directories.
-     * 
+     *
      * @throws edu.umd.cs.findbugs.classfile.CheckedAnalysisException
      * @throws java.io.IOException
      * @throws java.lang.InterruptedException

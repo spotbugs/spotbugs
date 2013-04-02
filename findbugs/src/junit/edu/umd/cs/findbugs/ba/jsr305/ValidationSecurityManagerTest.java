@@ -77,7 +77,7 @@ public class ValidationSecurityManagerTest {
             f.listFiles();
     }
 
-    @SlashedClassName static class AnnotationTemplate {};
+    @SlashedClassName static class AnnotationTemplate {}
     @Test
     public void test() throws InterruptedException {
         ValidationSecurityManager sm = ValidationSecurityManager.INSTANCE;

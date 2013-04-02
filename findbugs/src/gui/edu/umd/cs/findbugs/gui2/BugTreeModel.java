@@ -171,9 +171,9 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         assert result != null;
         return result;
     }
-        
+
     private @Nonnull Object getChild(BugAspects a, int index) {
-    
+
         int treeLevels = st.getOrderBeforeDivider().size();
         int queryDepth = a.size();
         assert queryDepth <= treeLevels;
@@ -316,7 +316,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
 
     /**
      * Swaps in a new BugTreeModel and a new JTree
-     * 
+     *
      */
     public void rebuild() {
         if (TRACE)
@@ -362,7 +362,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
                 }
             }
         }, "Rebuilding thread");
-       
+
     }
 
     public void crawl(final ArrayList<BugAspects> path, final int depth) {
@@ -620,7 +620,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
 
     enum TreeModification {
         REMOVE, INSERT, REMOVERESTRUCTURE, INSERTRESTRUCTURE
-    };
+    }
 
     private TreeModelEvent branchOperations(ArrayList<String> stringsToBranch, TreeModification whatToDo)
             throws BranchOperationException {

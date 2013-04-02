@@ -27,7 +27,7 @@ package edu.umd.cs.findbugs.gui2;
 public interface FilterListener {
     enum Action {
         FILTERING, UNFILTERING
-    };
+    }
 
     public void clearCache();
 

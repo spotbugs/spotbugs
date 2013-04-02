@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Bug annotation class for string values.
- * 
+ *
  * @author William Pugh
  * @see BugAnnotation
  */
@@ -35,12 +35,12 @@ public class StringAnnotation implements BugAnnotation {
     private static final long serialVersionUID = 1L;
 
     public static final String DEFAULT_ROLE = "STRING_DEFAULT";
-    
+
     public static final String STRING_CONSTANT_ROLE = "STRING_CONSTANT";
-    
+
     /** Used for non-string constants (e.g., null) */
     public static final String STRING_NONSTRING_CONSTANT_ROLE = "STRING_NONSTRING_CONSTANT";
-  
+
     public static final String REGEX_ROLE = "STRING_REGEX";
 
     public static final String ERROR_MSG_ROLE = "STRING_ERROR_MSG";
@@ -62,11 +62,11 @@ public class StringAnnotation implements BugAnnotation {
     private String description;
 
     static class QuotedStringMarker {
-    };
+    }
 
     /**
      * Constructor.
-     * 
+     *
      * @param value
      *            the String value
      */
@@ -96,7 +96,7 @@ public class StringAnnotation implements BugAnnotation {
 
     /**
      * Get the String value.
-     * 
+     *
      * @return the String value
      */
     public String getValue() {

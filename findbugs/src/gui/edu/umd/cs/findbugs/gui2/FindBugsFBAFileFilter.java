@@ -26,7 +26,7 @@ public final class FindBugsFBAFileFilter extends FindBugsFileFilter {
     public static final FindBugsFBAFileFilter INSTANCE = new FindBugsFBAFileFilter();
 
     private FindBugsFBAFileFilter() {
-    };
+    }
 
     @Override
     public boolean accept(File arg0) {

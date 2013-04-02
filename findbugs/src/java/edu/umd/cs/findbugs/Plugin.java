@@ -61,7 +61,7 @@ public class Plugin {
     private final String pluginId;
 
     private final String version;
-    private Date releaseDate;
+    private final Date releaseDate;
 
     private String provider;
 
@@ -104,7 +104,7 @@ public class Plugin {
 
     static Map<URI, Plugin> allPlugins = new LinkedHashMap<URI, Plugin>();
 
-    enum EnabledState { PLUGIN_DEFAULT, ENABLED, DISABLED};
+    enum EnabledState { PLUGIN_DEFAULT, ENABLED, DISABLED}
 
     private EnabledState enabled;
 
@@ -471,7 +471,7 @@ public class Plugin {
         return bugRanker;
     }
 
-    <T> void addFindBugsMain(Class<?> mainClass, String cmd, String description, String kind, boolean analysis) 
+    <T> void addFindBugsMain(Class<?> mainClass, String cmd, String description, String kind, boolean analysis)
             throws SecurityException, NoSuchMethodException {
         FindBugsMain main = new FindBugsMain(mainClass, cmd, description, kind, analysis);
         mainPlugins.put(cmd, main);
@@ -517,7 +517,7 @@ public class Plugin {
         }
         return null;
     }
-    
+
     public static synchronized void removePlugin(URI uri) {
        allPlugins.remove(uri);
     }
@@ -641,9 +641,9 @@ public class Plugin {
     public ClassLoader getClassLoader() {
         return getPluginLoader().getClassLoader();
     }
-    
+
     public @CheckForNull Plugin getParentPlugin() {
-        if (getPluginLoader().hasParent()) 
+        if (getPluginLoader().hasParent())
             return Plugin.getByPluginId(getPluginLoader().parentId);
         return null;
     }

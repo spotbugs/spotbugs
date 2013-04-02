@@ -466,7 +466,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     }
 
     boolean nextMatchedIsDisabled;
-    private final Set<String> outerElementTags = unmodifiableSet(new HashSet<String>(asList("And", "Match", "Or", "Not")));;
+    private final Set<String> outerElementTags = unmodifiableSet(new HashSet<String>(asList("And", "Match", "Or", "Not")));
 
     private void parseMatcher(String qName, Attributes attributes) throws SAXException {
         if (DEBUG)

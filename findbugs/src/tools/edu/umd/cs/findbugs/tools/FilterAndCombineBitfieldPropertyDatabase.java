@@ -68,12 +68,12 @@ public class FilterAndCombineBitfieldPropertyDatabase {
 
     enum Status {
         NOT_FOUND, EXPOSED, UNEXPOSED
-    };
+    }
 
     static Map<String, Status> classStatus = new HashMap<String, Status>();
 
     static Status getStatus(@DottedClassName String name) {
-        if (name.startsWith("com.sun") || name.startsWith("com.oracle") 
+        if (name.startsWith("com.sun") || name.startsWith("com.oracle")
                 || name.startsWith("sun") || name.startsWith("netscape"))
             return Status.UNEXPOSED;
         Status result = classStatus.get(name);

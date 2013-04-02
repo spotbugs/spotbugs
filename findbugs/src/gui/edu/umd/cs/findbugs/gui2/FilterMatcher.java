@@ -36,15 +36,15 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMatcher> {
     enum FilterWhere {
         FILTER_EXACTLY, FILTER_AT_OR_AFTER, FILTER_AT_OR_BEFORE, FILTER_ALL_BUT
-    };
+    }
 
     private static final long serialVersionUID = -4859486064351510016L;
 
-    private Sortables filterBy;
+    private final Sortables filterBy;
 
-    private String value;
+    private final String value;
 
-    private FilterWhere mode;
+    private final FilterWhere mode;
 
     protected boolean active;
 

@@ -12,7 +12,7 @@ public class UserPreferencesTest extends TestCase {
     }
 
     public void testClone() {
-        UserPreferences clone = (UserPreferences) prefs.clone();
+        UserPreferences clone = prefs.clone();
 
         Assert.assertEquals(prefs, clone);
         Assert.assertEquals(prefs.getClass(), clone.getClass());
