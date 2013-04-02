@@ -1,5 +1,5 @@
 #FindBugs User Preferences
-#Thu Aug 25 18:56:29 EDT 2011
+#Tue Jul 03 08:33:03 EDT 2012
 cloud_id=edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud
 detectorAbnormalFinallyBlockReturn=AbnormalFinallyBlockReturn|true
 detectorAbstractClassEmptyMethods=AbstractClassEmptyMethods|true
@@ -123,6 +123,7 @@ detectorInfiniteRecursiveLoop2=InfiniteRecursiveLoop2|false
 detectorInheritanceTypeChecking=InheritanceTypeChecking|true
 detectorInheritanceUnsafeGetResource=InheritanceUnsafeGetResource|true
 detectorInitializationChain=InitializationChain|true
+detectorInitializeNonnullFieldsInConstructor=InitializeNonnullFieldsInConstructor|true
 detectorInstantiateStaticClass=InstantiateStaticClass|true
 detectorIntCast2LongAsInstant=IntCast2LongAsInstant|true
 detectorInvalidJUnitTest=InvalidJUnitTest|true
