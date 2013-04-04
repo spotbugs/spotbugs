@@ -1160,6 +1160,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             priority += 1;
         }
 
+        
         if (DEBUG) {
             System.out.println("RCN" + priority + " " + redundantBranch.firstValue + " =? " + redundantBranch.secondValue + " : "
                     + warning);
@@ -1185,6 +1186,14 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                     return;
                 variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame,
                         "VALUE_OF");
+                if (variableAnnotation instanceof LocalVariableAnnotation) {
+                    LocalVariableAnnotation local = (LocalVariableAnnotation) variableAnnotation;
+                    if (!local.isNamed()) {
+                        if (warning.equals("RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE"))
+                            return;
+                        priority++;
+                    }
+                }
 
             }
         } catch (DataflowAnalysisException e) {
@@ -1195,9 +1204,15 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
         BugInstance bugInstance = new BugInstance(this, warning, priority).addClassAndMethod(classContext.getJavaClass(), method);
         LocalVariableAnnotation fallback = new LocalVariableAnnotation("?", -1, -1);
-        bugInstance.addOptionalUniqueAnnotationsWithFallback(fallback, variableAnnotation,
+        boolean foundSource =  bugInstance.tryAddingOptionalUniqueAnnotations(variableAnnotation,
                 BugInstance.getFieldOrMethodValueSource(item1), BugInstance.getFieldOrMethodValueSource(item2));
 
+        if (!foundSource) {
+            if (warning.equals("RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE"))
+                return;
+            bugInstance.setPriority(priority+1);
+            bugInstance.add(fallback);
+        }
         if (wouldHaveBeenAKaboom)
             bugInstance.addSourceLine(classContext, method, locationOfKaBoom);
 

@@ -15,9 +15,11 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.BugAccumulator;
+import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -29,6 +31,9 @@ import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 
 public class LoadOfKnownNullValue implements Detector {
 
@@ -186,16 +191,42 @@ public class LoadOfKnownNullValue implements Detector {
                     continue;
                 }
                 int priority = NORMAL_PRIORITY;
-
                 if (!v.isChecked())
                     priority++;
+                
+                BugAnnotation variableAnnotation = null;
+                try {
+                    // Get the value number
+                    ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAfterLocation(location);
+                    if (vnaFrame.isValid()) {
+                        
+                        ValueNumber valueNumber = vnaFrame.getTopValue();
+                        if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
+                            return;
+                        variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame,
+                                "VALUE_OF");
+                        if (variableAnnotation instanceof LocalVariableAnnotation) {
+                            LocalVariableAnnotation local = (LocalVariableAnnotation) variableAnnotation;
+                            if (!local.isNamed()) {
+                                priority++;
+                            }
+                        }
+
+                    }
+                } catch (DataflowAnalysisException e) {
+                    // ignore
+                } catch (CFGBuilderException e) {
+                    // ignore
+                }
+
                 // System.out.println("lineMentionedMultipleTimes: " +
                 // lineMentionedMultipleTimes);
                 // System.out.println("linesWithLoadsOfNonNullValues: " +
                 // linesWithLoadsOfNotDefinitelyNullValues);
 
                 bugAccumulator.accumulateBug(
-                        new BugInstance(this, "NP_LOAD_OF_KNOWN_NULL_VALUE", priority).addClassAndMethod(methodGen, sourceFile),
+                        new BugInstance(this, "NP_LOAD_OF_KNOWN_NULL_VALUE", priority).addClassAndMethod(methodGen, sourceFile)
+                            .addOptionalAnnotation(variableAnnotation),
                         sourceLineAnnotation);
             }
 

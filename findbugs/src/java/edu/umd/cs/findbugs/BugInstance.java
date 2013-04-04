@@ -2444,6 +2444,15 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
                 add(a);
         return this;
     }
+    
+    public boolean tryAddingOptionalUniqueAnnotations(BugAnnotation... annotations) {
+        HashSet<BugAnnotation> added = new HashSet<BugAnnotation>();
+        for (BugAnnotation a : annotations)
+            if (a != null && added.add(a))
+                add(a);
+        return !added.isEmpty();
+    }
+
 
     public BugInstance addOptionalUniqueAnnotationsWithFallback(BugAnnotation fallback, BugAnnotation... annotations) {
         HashSet<BugAnnotation> added = new HashSet<BugAnnotation>();
