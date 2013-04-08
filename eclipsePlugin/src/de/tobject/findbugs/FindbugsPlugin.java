@@ -342,6 +342,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             if(new Path(path).segmentCount() == 1) {
                 continue;
             }
+            path = FindBugsWorker.getFilterPath(path, null).toOSString();
             URI uri = new File(path).toURI();
             if(allPlugins.containsKey(uri)) {
                 continue;

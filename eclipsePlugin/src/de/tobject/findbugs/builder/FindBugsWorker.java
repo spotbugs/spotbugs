@@ -487,16 +487,12 @@ public class FindBugsWorker {
      *         common directory, otherwise unchanged path
      */
     private static IPath getRelativePath(IPath filePath, IPath commonPath) {
-        // TODO in Eclipse 3.5 we can use IPath.makeRelativeTo(IPath)
         if (!filePath.isAbsolute()) {
             return filePath;
         }
-        int matchingSegments = commonPath.matchingFirstSegments(filePath);
-        if (matchingSegments == commonPath.segmentCount()) {
-            // cut common prefix and discard device information
-            filePath = filePath.removeFirstSegments(matchingSegments).setDevice(null);
-        }
-        return filePath;
+        // since Equinox 3.5 we can use IPath.makeRelativeTo(IPath)
+        IPath relativeTo = filePath.makeRelativeTo(commonPath);
+        return relativeTo;
     }
 
     /**

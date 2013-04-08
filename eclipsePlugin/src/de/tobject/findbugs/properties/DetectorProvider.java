@@ -159,7 +159,7 @@ public class DetectorProvider extends PathsProvider {
             if(path.isSystem()) {
                 continue;
             }
-            String pathStr = path.getPath();
+            String pathStr = FindBugsWorker.getFilterPath(path.getPath(), null).toOSString();
             ValidationStatus status = validator.validate(pathStr);
             path.setStatus(status);
             if (!status.isOK() && path.isEnabled()) {
