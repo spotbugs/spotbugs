@@ -101,6 +101,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * <li>pluginList (list of plugin Jar files to load)
  * <li>projectFile (project filename)
  * <li>projectName (project name, for display in generated HTML)
+ * <li>userPrefs (user preferences filename)
  * <li>quietErrors (boolean - default false)
  * <li>relaxed (boolean - default false)
  * <li>reportLevel (enum experimental|low|medium|high)
@@ -159,6 +160,8 @@ public class FindBugsTask extends AbstractFindBugsTask {
     private String adjustPriority;
 
     private File projectFile;
+
+    private File userPreferencesFile;
 
     private File baselineBugs;
 
@@ -414,6 +417,13 @@ public class FindBugsTask extends AbstractFindBugsTask {
      */
     public void setProjectFile(File projectFile) {
         this.projectFile = projectFile;
+    }
+
+    /**
+     * Set the project file
+     */
+    public void setUserPreferencesFile(File userPreferencesFile) {
+        this.userPreferencesFile = userPreferencesFile;
     }
 
     /**
@@ -698,6 +708,10 @@ public class FindBugsTask extends AbstractFindBugsTask {
         if (projectFile != null) {
             addArg("-project");
             addArg(projectFile.getPath());
+        }
+        if (userPreferencesFile != null) {
+            addArg("-userPrefs");
+            addArg(userPreferencesFile.getPath());
         }
         if (applySuppression) {
             addArg("-applySuppression");

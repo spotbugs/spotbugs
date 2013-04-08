@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -146,6 +147,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
      */
     public TextUICommandLine() {
         addSwitch("-showPlugins", "show list of available detector plugins");
+
+        addOption("-userPrefs", "filename", "user preferences file, e.g /path/to/project/.settings/edu.umd.cs.findbugs.core.prefs for Eclipse projects");
 
         startOptionGroup("Output options:");
         addSwitch("-justListOptions", "throw an exception that lists the provided options");
@@ -535,6 +538,10 @@ public class TextUICommandLine extends FindBugsCommandLine {
             StringTokenizer tok = new StringTokenizer(argument, File.pathSeparator);
             while (tok.hasMoreTokens())
                 project.addSourceDir(new File(tok.nextToken()).getAbsolutePath());
+        } else if(option.equals("-userPrefs")){
+            UserPreferences prefs = UserPreferences.createDefaultUserPreferences();
+            prefs.read(new FileInputStream(argument));
+            project.setConfiguration(prefs);
         } else {
             super.handleOptionWithArgument(option, argument);
         }
