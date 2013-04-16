@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import javax.annotation.Nonnull;
+
 import edu.umd.cs.findbugs.util.HTML;
 
 /**
@@ -129,6 +131,13 @@ public class BugPattern implements Comparable<BugPattern> {
     }
 
     /**
+     * Get the BugCode
+     */
+    public @Nonnull BugCode getBugCode() {
+        return DetectorFactoryCollection.instance().getBugCode(abbrev);
+        
+    }
+    /**
      * Get the BugCategory
      */
     public String getCategory() {
@@ -217,7 +226,7 @@ public class BugPattern implements Comparable<BugPattern> {
 
 
     public String wrapInDescriptionLink(String text) {
-        return 
+        return
                 "<a href=\"http://findbugs.sourceforge.net/bugDescriptions.html#"
                         + type  +"\">"
                         + text + "</a>";
