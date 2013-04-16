@@ -452,9 +452,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
     private void checkNonNullReturnValue(XMethod thisMethod, Location location, ValueNumberFrame vnaFrame,
             UnconditionalValueDerefSet fact) throws DataflowAnalysisException {
         INullnessAnnotationDatabase database = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
-        if (database == null) {
-            return;
-        }
+
         if (database.getResolvedAnnotation(thisMethod, true) != NullnessAnnotation.NONNULL)
             return;
         if (reportPotentialDereference(location, invDataflow.getFactAtLocation(location))) {
@@ -478,9 +476,6 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
     private void checkNonNullPutField(Location location, ValueNumberFrame vnaFrame, UnconditionalValueDerefSet fact)
             throws DataflowAnalysisException {
         INullnessAnnotationDatabase database = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
-        if (database == null) {
-            return;
-        }
 
         FieldInstruction fieldIns = (FieldInstruction) location.getHandle().getInstruction();
 
@@ -547,9 +542,6 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         if (invFrame != null && !invFrame.isValid())
             return Collections.emptySet();
         INullnessAnnotationDatabase database = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
-        if (database == null) {
-            return Collections.emptySet();
-        }
 
         InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
         XMethod called = XFactory.createXMethod(inv, constantPool);
