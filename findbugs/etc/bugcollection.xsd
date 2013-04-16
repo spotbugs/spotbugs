@@ -242,6 +242,7 @@
                             use="optional"/>
                         
 						<xs:attribute name="rank" type="xs:unsignedInt" use="optional"/>
+						<xs:attribute name="cweid" type="xs:unsignedInt" use="optional"/>
 						
 						
 					</xs:complexType>

@@ -2146,20 +2146,28 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         writeXML(xmlOutput, null, false);
     }
 
+    public int getCWEid() {
+        BugPattern pattern = getBugPattern();
+
+        int cweid = pattern.getCWEid();
+        if (cweid != 0)
+            return cweid;
+        BugCode bugCode = pattern.getBugCode();
+        return bugCode.getCWEid();
+    }
     public void writeXML(XMLOutput xmlOutput, BugCollection bugCollection, boolean addMessages) throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("type", type).addAttribute("priority",
                 String.valueOf(priority));
 
         BugPattern pattern = getBugPattern();
-        if (pattern != null) {
-            // The bug abbreviation and pattern category are
-            // emitted into the XML for informational purposes only.
-            // (The information is redundant, but might be useful
-            // for processing tools that want to make sense of
-            // bug instances without looking at the plugin descriptor.)
-            attributeList.addAttribute("abbrev", pattern.getAbbrev());
-            attributeList.addAttribute("category", pattern.getCategory());
-        }
+
+        // The bug abbreviation and pattern category are
+        // emitted into the XML for informational purposes only.
+        // (The information is redundant, but might be useful
+        // for processing tools that want to make sense of
+        // bug instances without looking at the plugin descriptor.)
+        attributeList.addAttribute("abbrev", pattern.getAbbrev());
+        attributeList.addAttribute("category", pattern.getCategory());
 
         if (addMessages) {
             // Add a uid attribute, if we have a unique id.
@@ -2168,6 +2176,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             attributeList.addAttribute("instanceOccurrenceNum", Integer.toString(getInstanceOccurrenceNum()));
             attributeList.addAttribute("instanceOccurrenceMax", Integer.toString(getInstanceOccurrenceMax()));
             attributeList.addAttribute("rank", Integer.toString(getBugRank()));
+            
+            int cweid = getCWEid();
+            if (cweid != 0)
+                attributeList.addAttribute("cweid", Integer.toString(cweid));
+
 
         } else if (oldInstanceHash != null && !isInstanceHashConsistent()) {
             attributeList.addAttribute("oldInstanceHash", oldInstanceHash);
