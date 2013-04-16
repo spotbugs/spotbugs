@@ -556,7 +556,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
      *            the short bug type code
      * @return the description of that short bug type code means
      */
-    public BugCode getBugCode(String shortBugType) {
+    public @Nonnull BugCode getBugCode(String shortBugType) {
         BugCode bugCode = lookupBugCode(shortBugType);
         if (bugCode == null)
             throw new IllegalArgumentException("Error: missing bug code for key" + shortBugType);
@@ -567,7 +567,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
      * @param shortBugType the short bug type code
      * @return the description of that short bug type code means
      */
-    public BugCode lookupBugCode(String shortBugType) {
+    public @CheckForNull BugCode lookupBugCode(String shortBugType) {
         return bugCodeMap.get(shortBugType);
     }
 
