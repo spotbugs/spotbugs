@@ -325,13 +325,13 @@
     </pluginManagement>
   </build>
 
-  <modules>
-    <module>findbugs-annotations</module>
-    <module>findbugs</module>
-    <module>plugins</module>
-    <module>webCloudProtocol</module>
-    <!-- <module>eclipsePlugin</module> -->
-  </modules>
+<!--   <modules> -->
+<!--     <module>findbugs-annotations</module> -->
+<!--     <module>findbugs</module> -->
+<!--     <module>plugins</module> -->
+<!--     <module>webCloudProtocol</module> -->
+<!--     <module>eclipsePlugin</module> -->
+<!--   </modules> -->
 
   <profiles>
     <profile>
