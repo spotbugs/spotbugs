@@ -243,7 +243,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
                     bugAccumulator.accumulateBug(
                             new BugInstance(this, "SA_LOCAL_SELF_" + op, HIGH_PRIORITY).addClassAndMethod(this).add(
                                     localVariableAnnotation), this);
-            } else if (opCode == ISUB && registerLoadCount >= 2) { // let
+            } else if (false && opCode == ISUB && registerLoadCount >= 2) { // let
                                                                    // FindSelfComparison2
                                                                    // report
                                                                    // this; more
