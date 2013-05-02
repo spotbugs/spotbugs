@@ -857,7 +857,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         return projectPropsEnabled;
     }
 
-    public static void setProjectSettingsEnabled(IProject project, IPreferenceStore store, boolean enabled) {
+    public static void setProjectSettingsEnabled(IProject project,
+            @CheckForNull IPreferenceStore store, boolean enabled) {
         try {
             project.setSessionProperty(SESSION_PROPERTY_SETTINGS_ON, Boolean.valueOf(enabled));
         } catch (CoreException e) {

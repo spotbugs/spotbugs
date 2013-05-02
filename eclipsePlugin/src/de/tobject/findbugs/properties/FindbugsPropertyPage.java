@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import org.eclipse.core.resources.IProject;
@@ -144,7 +145,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 
     private boolean projectPropsInitiallyEnabled;
 
-    /** can be null */
+    @CheckForNull
     private ScopedPreferenceStore projectStore;
 
     /** never null */
@@ -621,7 +622,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
             boolean newSelection = enableProjectCheck.getSelection();
             if (projectPropsInitiallyEnabled != newSelection) {
                 analysisSettingsChanged = true;
-                FindbugsPlugin.setProjectSettingsEnabled(project, getPreferenceStore(), newSelection);
+                FindbugsPlugin.setProjectSettingsEnabled(project, projectStore, newSelection);
             }
         }
 
