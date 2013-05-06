@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
@@ -154,7 +155,19 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
      * @return the ValueNumber assigned to that parameter
      */
     public ValueNumber getEntryValueForParameter(int param) {
-        return getEntryValue(methodGen.isStatic() ? param : param + 1);
+        
+        SignatureParser sigParser = new SignatureParser(methodGen.getSignature());
+        int p = 0;
+        int slotOffset =  methodGen.isStatic() ? 0 : 1;
+
+        for ( String paramSig : sigParser.parameterSignatures()) {
+            if (p == param)
+                return getEntryValue(slotOffset);
+            param++;
+            slotOffset += SignatureParser.getNumSlotsForType(paramSig);
+        }
+        
+        throw new IllegalStateException();
     }
 
     public ValueNumberFrame createFact() {
