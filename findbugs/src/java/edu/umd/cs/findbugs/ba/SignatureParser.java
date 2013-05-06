@@ -169,6 +169,15 @@ public class SignatureParser {
         return new ParameterSignatureIterator();
     }
 
+   public Iterable<String> parameterSignatures() {
+       return new Iterable<String>() {
+
+        public Iterator<String> iterator() {
+            return new ParameterSignatureIterator();
+        }};
+    
+    }
+
     /**
      * Get the method return type signature.
      *
