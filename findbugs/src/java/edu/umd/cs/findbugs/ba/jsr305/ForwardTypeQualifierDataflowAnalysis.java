@@ -232,8 +232,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
         int param = 0;
         int slotOffset = 0;
 
-        for (Iterator<String> i = sigParser.parameterSignatureIterator(); i.hasNext();) {
-            String paramSig = i.next();
+        for ( String paramSig : sigParser.parameterSignatures()) {
 
             // Get the TypeQualifierAnnotation for this parameter
             SourceSinkInfo info;
