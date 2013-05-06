@@ -69,6 +69,7 @@ import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValueSet;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
@@ -221,6 +222,12 @@ public class CheckTypeQualifiers extends CFGDetector {
             System.out.println("----------------------------------------------------------------------");
         }
 
+        if (DEBUG_DATAFLOW) {
+            System.out.println("********* Valuenumber analysis *********");
+            DataflowCFGPrinter<ValueNumberFrame, ValueNumberAnalysis> p = new DataflowCFGPrinter<ValueNumberFrame, ValueNumberAnalysis>(vnaDataflow);
+            p.print(System.out);
+        }
+        
         ForwardTypeQualifierDataflow forwardDataflow = forwardDataflowFactory.getDataflow(typeQualifierValue);
 
         if (DEBUG_DATAFLOW && (DEBUG_DATAFLOW_MODE.startsWith("forward") || DEBUG_DATAFLOW_MODE.equals("both"))) {
