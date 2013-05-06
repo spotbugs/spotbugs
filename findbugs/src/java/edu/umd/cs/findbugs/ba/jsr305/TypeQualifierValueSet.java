@@ -325,7 +325,7 @@ public class TypeQualifierValueSet {
 
         for (ValueNumber vn : interesting) {
             FlowValue value = getValue(vn);
-            if (value == FlowValue.TOP || !isStrict && value == FlowValue.UNKNOWN) continue; 
+            if (value == FlowValue.TOP ||  /* !isStrict && */ value == FlowValue.UNKNOWN) continue;
             if (buf.length() > 1) {
                 buf.append(", ");
             }
