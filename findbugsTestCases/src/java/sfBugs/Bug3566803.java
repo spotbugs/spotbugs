@@ -6,8 +6,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import edu.umd.cs.findbugs.annotations.DesireWarning;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
+/** Now Bug1116 */
+
 public class Bug3566803 {
 
+    @ExpectWarning("ODR_OPEN_DATABASE_RESOURCE")
     public void notReported(String url, String username, String password) throws Exception {
         for (int i = 0; i < 10; i++) {
             if (i > 5) {
@@ -21,6 +27,7 @@ public class Bug3566803 {
         }
     }
 
+    @ExpectWarning("ODR_OPEN_DATABASE_RESOURCE")
     public void isReported(String url, String username, String password) throws Exception {
         Connection connection = DriverManager.getConnection(url, username, password);
         PreparedStatement pstmt = connection.prepareStatement("SELECT count(1) from tab");
@@ -30,6 +37,7 @@ public class Bug3566803 {
         }
     }
 
+    @DesireWarning("ODR_OPEN_DATABASE_RESOURCE")
     public static void main(String... strings) {
         Connection connection = null;
         PreparedStatement pstmt = null;
@@ -40,6 +48,8 @@ public class Bug3566803 {
                 String url = "";
                 String username = "";
                 String password = "";
+                
+                // Bug: We only close the resources opened in the last iteration
                 for (int i = 0; i < 10; i++) {
                                 connection = DriverManager.getConnection(url, username,
                                                 password);
