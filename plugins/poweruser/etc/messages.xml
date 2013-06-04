@@ -4,7 +4,7 @@
                   xsi:noNamespaceSchemaLocation="messagecollection.xsd">
 
   <Plugin>
-    <ShortDescription>Power user commnand lint tools</ShortDescription>
+    <ShortDescription>Power user commnand line tools</ShortDescription>
     <Details>
 <![CDATA[
 <p>
