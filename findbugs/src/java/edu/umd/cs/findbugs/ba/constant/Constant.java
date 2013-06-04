@@ -45,6 +45,9 @@ public class Constant {
         this.value = value;
     }
 
+    public Object getConstantValue() {
+        return value;
+    }
     /**
      * Return whether or not this value is a constant.
      * 
