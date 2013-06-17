@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.gui2;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -13,6 +14,13 @@ import org.apache.commons.lang.StringUtils;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 
 public class CloudCommentsPaneSwing extends CloudCommentsPane {
+
+    
+    @Override
+    public Dimension getPreferredSize() {
+        return super.getMinimumSize();
+        
+    }
 
     @Override
     protected void setupLinksOrButtons() {
