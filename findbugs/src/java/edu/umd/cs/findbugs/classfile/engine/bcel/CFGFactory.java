@@ -89,7 +89,7 @@ public class CFGFactory extends AnalysisFactory<CFG> {
             AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportSkippedAnalysis(descriptor);
             throw new MethodUnprofitableException(javaClassAndMethod);
         }
-        CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
+        CFGBuilder cfgBuilder = CFGBuilderFactory.create(descriptor, methodGen);
         cfgBuilder.build();
         CFG cfg = cfgBuilder.getCFG();
 

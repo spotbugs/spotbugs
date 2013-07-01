@@ -64,6 +64,8 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
     }
 
     public Type mergeTypes(Type a, Type b) throws DataflowAnalysisException {
+        if (a == null) return b;
+        if (b == null) return a;
         byte aType = a.getType(), bType = b.getType();
 
         if (aType == T_TOP) // Top is the identity element

@@ -23,9 +23,15 @@ import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Type;
+
+import edu.umd.cs.findbugs.ba.type.TypeMerger;
 
 /**
  * This class provides a convenient way of determining the exception handlers
@@ -41,15 +47,17 @@ public class ExceptionHandlerMap {
 
     private IdentityHashMap<InstructionHandle, CodeExceptionGen> startInstructionToHandlerMap;
 
+    private TypeMerger merger;
     /**
      * Constructor.
      * 
      * @param methodGen
      *            the method to build the map for
      */
-    public ExceptionHandlerMap(MethodGen methodGen) {
+    public ExceptionHandlerMap( MethodGen methodGen, TypeMerger merger) {
         codeToHandlerMap = new IdentityHashMap<InstructionHandle, List<CodeExceptionGen>>();
         startInstructionToHandlerMap = new IdentityHashMap<InstructionHandle, CodeExceptionGen>();
+        this.merger = merger;
         build(methodGen);
     }
 
@@ -87,7 +95,7 @@ public class ExceptionHandlerMap {
 
         // Map handler start instructions to the actual exception handlers
         for (CodeExceptionGen exceptionHandler : handlerList) {
-            startInstructionToHandlerMap.put(exceptionHandler.getHandlerPC(), exceptionHandler);
+            addExceptionHandler(exceptionHandler);
         }
 
         // For each instruction, determine which handlers it can reach
@@ -116,6 +124,35 @@ public class ExceptionHandlerMap {
         }
     }
 
+    public static CodeExceptionGen merge(@CheckForNull TypeMerger m, CodeExceptionGen e1, CodeExceptionGen e2) {
+        if (e1 == null) return e2;
+        if (e2 == null) return e1;
+        if (m == null)
+            return e1;
+        if ( ! e1.getHandlerPC().equals( e2.getHandlerPC() ) ){
+            // log error
+                        return e1;
+        }
+        try {
+            Type t = m.mergeTypes(e1.getCatchType(), e2.getCatchType());
+            return new CodeExceptionGen(e1.getStartPC(), e1.getEndPC(), e1.getHandlerPC(), (ObjectType) t);
+        } catch (DataflowAnalysisException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return e1;
+        }
+    }
+
+    
+    private void addExceptionHandler(CodeExceptionGen exceptionHandler) {
+        InstructionHandle handlerPC = exceptionHandler.getHandlerPC();
+        CodeExceptionGen existing = startInstructionToHandlerMap.get(handlerPC);
+        if (existing != null) {
+            exceptionHandler = merge (this.merger, existing, exceptionHandler);
+        }
+        startInstructionToHandlerMap.put(handlerPC, exceptionHandler);
+    }
+    
     private void addHandler(InstructionHandle handle, CodeExceptionGen exceptionHandler) {
         List<CodeExceptionGen> handlerList = codeToHandlerMap.get(handle);
         if (handlerList == null) {

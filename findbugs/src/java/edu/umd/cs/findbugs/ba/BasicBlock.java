@@ -29,6 +29,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.ba.type.TypeMerger;
 import edu.umd.cs.findbugs.graph.AbstractVertex;
 
 /**
@@ -397,11 +398,15 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
      * @param exceptionGen
      *            the CodeExceptionGen object for the block
      */
-    public void setExceptionGen(CodeExceptionGen exceptionGen) {
-        this.exceptionGen = exceptionGen;
+    public void setExceptionGen(TypeMerger m, CodeExceptionGen exceptionGen) {
+        if (this.exceptionGen != null) {
+            AnalysisContext.logError("Multiple exception handlers");
+        }
+       
+       this.exceptionGen = exceptionGen;
     }
 
-    /**
+      /**
      * Return whether or not the basic block contains the given instruction.
      * 
      * @param handle

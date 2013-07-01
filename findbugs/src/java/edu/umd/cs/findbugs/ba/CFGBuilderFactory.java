@@ -23,6 +23,8 @@ import javax.annotation.Nonnull;
 
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+
 
 /**
  * Factory object to create CFGBuilders for methods. Using a CFGBuilderFactory
@@ -35,6 +37,7 @@ import org.apache.bcel.generic.MethodGen;
  * @see CFGBuilder
  */
 public class CFGBuilderFactory {
+
     /**
      * Create a CFGBuilder to build a CFG for given method.
      * 
@@ -42,8 +45,8 @@ public class CFGBuilderFactory {
      *            the method
      * @return a CFGBuilder for the method
      */
-    public static CFGBuilder create(@Nonnull MethodGen methodGen) {
-        return new BetterCFGBuilder2(methodGen);
+    public static CFGBuilder create(@Nonnull MethodDescriptor descriptor, @Nonnull MethodGen methodGen) {
+        return new BetterCFGBuilder2(descriptor, methodGen);
     }
 }
 

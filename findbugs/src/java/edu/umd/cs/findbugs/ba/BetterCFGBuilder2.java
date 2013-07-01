@@ -70,9 +70,16 @@ import org.apache.bcel.generic.PUTSTATIC;
 import org.apache.bcel.generic.ReturnInstruction;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.type.ExceptionSetFactory;
+import edu.umd.cs.findbugs.ba.type.StandardTypeMerger;
 import edu.umd.cs.findbugs.bcel.generic.NONNULL2Z;
 import edu.umd.cs.findbugs.bcel.generic.NULL2Z;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * A CFGBuilder that really tries to construct accurate control flow graphs. The
@@ -318,7 +325,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                 // Block is an exception handler?
                 CodeExceptionGen exceptionGen = exceptionHandlerMap.getHandlerForStartInstruction(start);
                 if (exceptionGen != null)
-                    block.setExceptionGen(exceptionGen);
+                    block.setExceptionGen(null, exceptionGen);
 
                 addItem(new WorkListItem(start, block));
             }
@@ -597,10 +604,22 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
      * @param methodGen
      *            the method to build a CFG for
      */
-    public BetterCFGBuilder2(@Nonnull MethodGen methodGen) {
+    public BetterCFGBuilder2(@Nonnull MethodDescriptor descriptor, @Nonnull MethodGen methodGen) {
         this.methodGen = methodGen;
         this.cpg = methodGen.getConstantPool();
-        this.exceptionHandlerMap = new ExceptionHandlerMap(methodGen);
+        IAnalysisCache analysisCache = Global.getAnalysisCache();
+        StandardTypeMerger merger = null;
+        ExceptionSetFactory exceptionSetFactory;
+        try {
+            exceptionSetFactory = analysisCache.getMethodAnalysis(ExceptionSetFactory.class, descriptor);
+            merger = new StandardTypeMerger( AnalysisContext.currentAnalysisContext()
+                    .getLookupFailureCallback(), exceptionSetFactory);
+        } catch (CheckedAnalysisException e) {
+            AnalysisContext.logError("Unable to generate exceptionSetFactory for " + descriptor, e);
+        }
+        
+        
+        this.exceptionHandlerMap = new ExceptionHandlerMap(methodGen, merger);
         this.usedInstructionSet = new BitSet();
         this.jsrSubroutineMap = new IdentityHashMap<InstructionHandle, Subroutine>();
         this.subroutineWorkList = new LinkedList<Subroutine>();
@@ -1040,7 +1059,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
             // Set exception handler status
             if (subBlock.isExceptionHandler())
-                resultBlock.setExceptionGen(subBlock.getExceptionGen());
+                resultBlock.setExceptionGen(null, subBlock.getExceptionGen());
 
             // Add control edges (including inlining JSR subroutines)
             Iterator<Edge> edgeIter = subCFG.outgoingEdgeIterator(subBlock);
@@ -1176,9 +1195,10 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
             if (methodName != null && !method.getName().equals(methodName))
                 continue;
 
+            MethodDescriptor descriptor = DescriptorFactory.instance().getMethodDescriptor(jclass, method);
             MethodGen methodGen = new MethodGen(method, jclass.getClassName(), classGen.getConstantPool());
 
-            CFGBuilder cfgBuilder = new BetterCFGBuilder2(methodGen);
+            CFGBuilder cfgBuilder = new BetterCFGBuilder2(descriptor, methodGen);
             cfgBuilder.build();
 
             CFG cfg = cfgBuilder.getCFG();
