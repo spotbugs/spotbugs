@@ -863,7 +863,7 @@
             output="${bugdesc.output}">
             <jvmarg value="-ea"/>
             <jvmarg value="-Dfindbugs.home=."/>
-            <jvmarg value="-Dfindbugs.desc.unabridged=${bugdesc.unabridged}"/>
+            <jvmarg value="-Dfindbugs.bugdesc.unabridged=${bugdesc.unabridged}"/>
             <classpath refid="tools.classpath"/>
             <arg value="${bugdesc.title}"/>
             <arg value="${doc.html.gen.header}"/>

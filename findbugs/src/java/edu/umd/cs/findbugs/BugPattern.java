@@ -226,6 +226,11 @@ public class BugPattern implements Comparable<BugPattern> {
 
 
     public String wrapInDescriptionLink(String text) {
+        if (isExperimental())
+            return
+                    "<a href=\"http://findbugs.sourceforge.net/allBugDescriptions.html#"
+                            + type  +"\">"
+                            + text + "</a>";
         return
                 "<a href=\"http://findbugs.sourceforge.net/bugDescriptions.html#"
                         + type  +"\">"
