@@ -53,32 +53,17 @@ public class Bug1181 {
     @NoWarning("NP")
     public void test() {
         ClassA classA = new ClassA();
-        String maybeNull = classA.methodThatMightReturnNull();
-
-        // in case the following is commented in the method local analysis
-        // determines that maybeNull might be null below
-        // when isEmpty is called
-
-        // if (maybeNull == null) {
-        // System.out.print("maybeNull is null");
-        // }
+        String nullable = classA.methodThatMightReturnNull();
 
         // would expect findbugs warning about possible null dereferencing here
-        boolean empty = maybeNull.isEmpty();
+        boolean empty = nullable.isEmpty();
         System.out.println(empty);
 
-        String nullForSure = classA.methodThatAlwaysReturnsNull();
+        String nullable2 = classA.methodThatAlwaysReturnsNull();
 
-        // in case the following is commented in the method local analysis
-        // determines that maybeNull might be null below
-        // when isEmpty is called
-
-        // if (nullForSure == null) {
-        // System.out.print("nullForSure is null");
-        // }
 
         // would expect findbugs warning about possible null dereferencing here
-        empty = nullForSure.isEmpty();
+        empty = nullable2.isEmpty();
         System.out.println(empty);
 
         // would expect findbugs warning about possibly passing a null value to
@@ -88,7 +73,7 @@ public class Bug1181 {
         // would expect findbugs warning about possibly passing a null value to
         // a method that does not allow null as
         // parameter
-        methodThatTakesAStringArgumentButNotNull(maybeNull);
+        methodThatTakesAStringArgumentButNotNull(nullable);
 
         // would expect findbugs warning about possibly passing a null value to
         // a method that does not allow null as
@@ -97,63 +82,49 @@ public class Bug1181 {
         // would expect findbugs warning about possibly passing a null value to
         // a method that does not allow null as
         // parameter
-        methodThatTakesAStringArgumentButNotNull(nullForSure);
+        methodThatTakesAStringArgumentButNotNull(nullable2);
 
     }
 
     @ExpectWarning(value="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", num=4)
     public void test2() {
-        ClassA2 classA = new ClassA2();
-        String maybeNull = classA.methodThatMightReturnNull();
+        ClassA2 classA2 = new ClassA2();
+        String maybeNull = classA2.methodThatMightReturnNull();
 
-        // in case the following is commented in the method local analysis
-        // determines that maybeNull might be null below
-        // when isEmpty is called
-
-        // if (maybeNull == null) {
-        // System.out.print("maybeNull is null");
-        // }
 
         // would expect findbugs warning about possible null dereferencing here
         boolean empty = maybeNull.isEmpty();
         System.out.println(empty);
 
-        String nullForSure = classA.methodThatAlwaysReturnsNull();
-
-        // in case the following is commented in the method local analysis
-        // determines that maybeNull might be null below
-        // when isEmpty is called
-
-        // if (nullForSure == null) {
-        // System.out.print("nullForSure is null");
-        // }
+        String nullForSure = classA2.methodThatAlwaysReturnsNull();
 
         // would expect findbugs warning about possible null dereferencing here
         empty = nullForSure.isEmpty();
         System.out.println(empty);
 
-        // would expect findbugs warning about possibly passing a null value to
-        // a method that does not allow null as
-        // parameter
-        methodThatTakesAStringArgumentButNotNull(classA.methodThatMightReturnNull());
-        // would expect findbugs warning about possibly passing a null value to
-        // a method that does not allow null as
-        // parameter
-        methodThatTakesAStringArgumentButNotNull(maybeNull);
+        // No warning, since method argument is flagged as @Nullable
+        methodThatTakesAStringArgumentButNotNull(classA2.methodThatMightReturnNull());
 
-        // would expect findbugs warning about possibly passing a null value to
-        // a method that does not allow null as
-        // parameter
-        methodThatTakesAStringArgumentButNotNull(classA.methodThatAlwaysReturnsNull());
-        // would expect findbugs warning about possibly passing a null value to
-        // a method that does not allow null as
-        // parameter
-        methodThatTakesAStringArgumentButNotNull(nullForSure);
+        // Warning expected
+        methodThatTakesAStringArgumentButNotNull2(classA2.methodThatMightReturnNull());
+
+
+     // No warning, since method argument is flagged as @Nullable
+        methodThatTakesAStringArgumentButNotNull(classA2.methodThatAlwaysReturnsNull());
+
+        // Warning expected
+        methodThatTakesAStringArgumentButNotNull2(classA2.methodThatAlwaysReturnsNull());
+
 
     }
     
     @ExpectWarning("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE")
     public void methodThatTakesAStringArgumentButNotNull(@Nullable String string) {
+        String lowerCase = string.trim();
+        System.out.println(lowerCase);
+    }
+    
+    public void methodThatTakesAStringArgumentButNotNull2(String string) {
         String lowerCase = string.trim();
         System.out.println(lowerCase);
     }
