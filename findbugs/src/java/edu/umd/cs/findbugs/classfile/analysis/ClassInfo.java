@@ -109,7 +109,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
                 MethodInfo method = e.getKey();
                 String signature = e.getValue();
                 for (MethodInfo m : methodInfoList)
-                    if (m.getName().equals(m.getName()) && m.getSignature().equals(signature)) {
+                    if (m.getName().equals(method.getName()) && m.getSignature().equals(signature)) {
                         context.setBridgeMethod(method, m);
 
                     }
