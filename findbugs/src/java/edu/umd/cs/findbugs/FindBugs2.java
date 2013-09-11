@@ -567,6 +567,7 @@ public class FindBugs2 implements IFindBugsEngine {
     }
 
     protected void configureFilters(UserPreferences userPreferences) {
+        IllegalArgumentException deferredError = null;
         Set<Entry<String, Boolean>> excludeBugFiles = userPreferences.getExcludeBugsFiles().entrySet();
         for (Entry<String, Boolean> entry : excludeBugFiles) {
             if (entry.getValue() == null || !entry.getValue()) {
@@ -578,8 +579,8 @@ public class FindBugs2 implements IFindBugsEngine {
                 String message = "Unable to read filter: " + entry.getKey() + " : " + e.getMessage();
                 if (getBugReporter() != null) {
                     getBugReporter().logError(message, e);
-                } else {
-                    throw new IllegalArgumentException(message, e);
+                } else if (deferredError != null){
+                    deferredError = new IllegalArgumentException(message, e);
                 }
             }
         }
@@ -594,12 +595,13 @@ public class FindBugs2 implements IFindBugsEngine {
                 String message = "Unable to read filter: " + entry.getKey() + " : " + e.getMessage();
                 if (getBugReporter() != null) {
                     getBugReporter().logError(message, e);
-                } else {
-                    throw new IllegalArgumentException(message, e);
+                } else if (deferredError != null){
+                    deferredError = new IllegalArgumentException(message, e);
                 }
             }
         }
         Set<Entry<String, Boolean>> excludeFilterFiles = userPreferences.getExcludeFilterFiles().entrySet();
+        
         for (Entry<String, Boolean> entry : excludeFilterFiles) {
             Boolean value = entry.getValue();
             if (value == null || !value) {
@@ -612,11 +614,13 @@ public class FindBugs2 implements IFindBugsEngine {
                 String message = "Unable to read filter: " + excludeFilterFile + " : " + e.getMessage();
                 if (getBugReporter() != null) {
                     getBugReporter().logError(message, e);
-                } else {
-                    throw new IllegalArgumentException(message, e);
+                } else if (deferredError != null){
+                    deferredError = new IllegalArgumentException(message, e);
                 }
             }
         }
+        if (deferredError != null)
+            throw deferredError;
     }
 
     /*
