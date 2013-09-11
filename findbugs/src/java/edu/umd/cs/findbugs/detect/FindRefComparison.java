@@ -101,8 +101,8 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
@@ -844,10 +844,12 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                         refComparisonList);
             }
             boolean equalsMethod = !isStatic && methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z")
-                    || isStatic &&  methodName.equals("assertEquals") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)V")
-                        && !className.equals("org.testng.Assert")
+                    || isStatic &&  methodName.equals("assertEquals")
+                        && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)V")
                     || isStatic && methodName.equals("equal") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)Z")
-                       && className.equals("com.google.common.base.Objects");
+                       && className.equals("com.google.common.base.Objects")
+                    || isStatic && methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)Z")
+                       && className.equals("java.util.Objects");
 
               if (equalsMethod) {
                 checkEqualsComparison(location, jclass, method, methodGen, cpg, typeDataflow);
@@ -1122,11 +1124,14 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             IncompatibleTypes result2 = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_, true);
             if (result2.getPriority() <= Priorities.NORMAL_PRIORITY)
                 pattern = "EC_INCOMPATIBLE_ARRAY_COMPARE";
+            else if (calledMethodAnnotation != null && calledMethodAnnotation.getClassName().equals("org.testng.Assert"))
+                return;
             bugAccumulator.accumulateBug(new BugInstance(this, pattern, NORMAL_PRIORITY).addClassAndMethod(methodGen, sourceFile)
                     .addFoundAndExpectedType(rhsType_, lhsType_)
                     .addSomeSourceForTopTwoStackValues(classContext, method, location)
                     .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
                     SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
+            return;
         }
 
         if (result.getPriority() >= Priorities.LOW_PRIORITY) {
