@@ -984,7 +984,6 @@ public class TypeQualifierApplications {
 
         AnnotatedObject o = xmethod;
         while (true) {
-            o = o.getContainingScope();
             if (o == null)
                 return null;
 
@@ -1008,6 +1007,9 @@ public class TypeQualifierApplications {
             }
             if (stopAtClassScope && o instanceof XClass)
                 return null;
+           
+            o = o.getContainingScope();
+            
         }
 
     }
