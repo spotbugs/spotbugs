@@ -88,9 +88,11 @@
 
         <target name="clean">
                 <delete dir="build/classes"/>
-            <delete dir="${basedir}/classesEclipse" />
-            <mkdir dir="${basedir}/classesEclipse" />
+                <mkdir dir="build/classes" />
                 <delete file="build/all.jar"/>
+		<delete failonerror="false">
+		   <fileset dir="build" includes="*.xml"/>
+        	</delete>
         </target>
 
 
@@ -112,7 +114,7 @@
     <findbugs home="${findbugs-baseline.home}"  jvmargs="-ea -Xmx600m"
                          output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/baseline.xml">
             <sourcePath path="${basedir}/src/java" />
-            <auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar:lib/guava.jar:lib/testng-6.3.1.jar:lib/org.springframework.core-3.1.2.RELEASE.jar"/>
+	    <auxclasspath refid="build.classpath"/>
             <class location="${basedir}/build/classes" />
         </findbugs>
     </target>
@@ -125,7 +127,7 @@
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
                          output="xml:withMessages" timestampNow="true" reportLevel="low" effort="min"  chooseVisitors="+CheckExpectedWarnings" outputFile="build/minEffort.xml">
             <sourcePath path="${basedir}/src/java" />
-            <auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar:lib/guava.jar:lib/testng-6.3.1.jar:lib/org.springframework.core-3.1.2.RELEASE.jar"/>
+	    <auxclasspath refid="build.classpath"/>
             <class location="${basedir}/build/classes" />
         </findbugs>
 
@@ -133,7 +135,7 @@
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
                          output="xml:withMessages" timestampNow="true" reportLevel="low" effort="less"  chooseVisitors="+CheckExpectedWarnings" outputFile="build/lessEffort.xml">
             <sourcePath path="${basedir}/src/java" />
-            <auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar:lib/guava.jar:lib/testng-6.3.1.jar:lib/org.springframework.core-3.1.2.RELEASE.jar"/>
+	    <auxclasspath refid="build.classpath"/>
             <class location="${basedir}/build/classes" />
         </findbugs>
 
@@ -141,7 +143,7 @@
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
                          output="xml:withMessages" timestampNow="true" reportLevel="low" effort="more"  chooseVisitors="+CheckExpectedWarnings" outputFile="build/moreEffort.xml">
             <sourcePath path="${basedir}/src/java" />
-            <auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar:lib/guava.jar:lib/testng-6.3.1.jar:lib/org.springframework.core-3.1.2.RELEASE.jar"/>
+	    <auxclasspath refid="build.classpath"/>
             <class location="${basedir}/build/classes" />
         </findbugs>
 
@@ -149,7 +151,7 @@
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
                          output="xml:withMessages" timestampNow="true" reportLevel="low" effort="max"  chooseVisitors="+CheckExpectedWarnings" outputFile="build/maxEffort.xml">
             <sourcePath path="${basedir}/src/java" />
-            <auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar:lib/guava.jar:lib/testng-6.3.1.jar:lib/org.springframework.core-3.1.2.RELEASE.jar"/>
+	    <auxclasspath refid="build.classpath"/>
             <class location="${basedir}/build/classes" />
         </findbugs>
 
@@ -164,7 +166,7 @@
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
                          output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/normal.xml">
             <sourcePath path="${basedir}/src/java" />
-            <auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar:lib/guava.jar:lib/testng-6.3.1.jar:lib/org.springframework.core-3.1.2.RELEASE.jar"/>
+	    <auxclasspath refid="build.classpath"/>
             <class location="${basedir}/build/classes" />
         </findbugs>
 
@@ -173,7 +175,7 @@
                          output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/normalEclipse.xml"
             noClassOk="true">
             <sourcePath path="${basedir}/src/java" />
-            <auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar:lib/joda-time-1.6.jar:lib/guava.jar:lib/testng-6.3.1.jar:lib/org.springframework.core-3.1.2.RELEASE.jar"/>
+	    <auxclasspath refid="build.classpath"/>
             <class location="${basedir}/classesEclipse" />
         </findbugs>
     </target>
