@@ -40,7 +40,7 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 
     @Override
     public void visitJavaClass(JavaClass obj) {
-        hasThisDollarZero = false;
+        isInnerClass = false;
         // totally skip methods not defined in inner classes
         if (obj.getClassName().indexOf('$') >= 0) {
             super.visitJavaClass(obj);
@@ -49,24 +49,26 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 
     }
 
-    boolean hasThisDollarZero;
+    boolean isInnerClass;
 
     @Override
     public void visit(Field f) {
-        if (f.getName().equals("this$0")) {
-            hasThisDollarZero = true;
+        if (f.getName().startsWith("this$")) {
+            isInnerClass = true;
         }
     }
 
     @Override
     public void visit(Code obj) {
-        if (hasThisDollarZero  && !getMethod().isSynthetic()) {
+        if (isInnerClass  && !getMethod().isSynthetic()) {
+//            System.out.println(getFullyQualifiedMethodName());
             super.visit(obj);
         }
     }
 
     @Override
     public void sawOpcode(int seen) {
+//        System.out.printf("%3d : %s%n", getPC(), OPCODE_NAMES[seen]);
         if (seen != INVOKEVIRTUAL) {
             return;
         }
@@ -107,6 +109,7 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
                     priority++;
                 }
 
+//                System.out.println("Found it");
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", priority)
                                 .addClassAndMethod(this).addMethod(invokedMethod).describe("METHOD_INHERITED")
