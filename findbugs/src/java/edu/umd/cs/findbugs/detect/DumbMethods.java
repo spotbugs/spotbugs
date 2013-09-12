@@ -65,6 +65,7 @@ import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -191,6 +192,7 @@ public class DumbMethods extends OpcodeStackDetector {
         sinceBufferedInputStreamReady = 100000;
         sawCheckForNonNegativeSignedByte = -1000;
         sawLoadOfMinValue = false;
+        previousMethodCall = null;
 
     }
 
@@ -206,11 +208,41 @@ public class DumbMethods extends OpcodeStackDetector {
     
     boolean sawLoadOfMinValue = false;
 
+    MethodDescriptor previousMethodCall = null;
 
     @Override
     public void sawOpcode(int seen) {
-        // System.out.printf("%3d %12s %s%n", getPC(), OPCODE_NAMES[seen],
-        // stack);
+        
+        if (isMethodCall()) {
+            MethodDescriptor called = getMethodDescriptorOperand();
+
+            if (previousMethodCall != null && !stack.isJumpTarget(getPC())) {
+                if (called.getName().equals("toString")
+                        && called.getClassDescriptor().getClassName().equals("java/lang/Integer")
+                        && (previousMethodCall.getName().equals("<init>")
+                        && previousMethodCall.getSignature().equals("(I)V") ||
+                         previousMethodCall.getName().equals("valueOf")
+                        && previousMethodCall.getSignature().equals("(I)Ljava/lang/Integer;"))
+                        
+                        
+                        ) {
+                    BugInstance bug = new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(this)
+                            .addCalledMethod(this) .addString("new Integer(myInt).toString() => to be replaced by Integer.toString(myInt)");
+                    accumulator.accumulateBug(bug, this);
+
+                }  else   if (called.getName().equals("intValue")
+                        && called.getClassDescriptor().getClassName().equals("java/lang/Integer")
+                        && previousMethodCall.getName().equals("<init>")
+                        && previousMethodCall.getSignature().equals("(Ljava/lang/String;)V")) {
+                    BugInstance bug = new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(this)
+                            .addCalledMethod(this).addString("new Integer(myString).intValue() => to be replaced by Integer.parseString(myString)");
+                    accumulator.accumulateBug(bug, this);
+                }
+            }
+            previousMethodCall = called;
+        } else
+            previousMethodCall = null;
+        
 
         if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
             Constant c = getConstantRefOperand();
@@ -311,9 +343,9 @@ public class DumbMethods extends OpcodeStackDetector {
         
         if (seen == INVOKESTATIC && (getClassConstantOperand().equals("com/google/common/base/Preconditions")
              && getNameConstantOperand().equals("checkNotNull")
-             || getClassConstantOperand().equals("com/google/common/base/Strings") 
+             || getClassConstantOperand().equals("com/google/common/base/Strings")
              && (getNameConstantOperand().equals("nullToEmpty") ||
-                     getNameConstantOperand().equals("emptyToNull") || 
+                     getNameConstantOperand().equals("emptyToNull") ||
                      getNameConstantOperand().equals("isNullOrEmpty")))
              ) {
             int args = PreorderVisitor.getNumberArguments(getSigConstantOperand());
@@ -510,7 +542,7 @@ public class DumbMethods extends OpcodeStackDetector {
 
         }
 
-        if (!sawLoadOfMinValue && seen == INVOKESTATIC && 
+        if (!sawLoadOfMinValue && seen == INVOKESTATIC &&
                 ClassName.isMathClass(getClassConstantOperand()) && getNameConstantOperand().equals("abs")
                 ) {
             OpcodeStack.Item item0 = stack.getStackItem(0);

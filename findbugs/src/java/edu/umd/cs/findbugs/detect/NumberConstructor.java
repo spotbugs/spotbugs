@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -53,7 +55,15 @@ import edu.umd.cs.findbugs.util.ClassName;
  */
 public class NumberConstructor extends OpcodeStackDetector {
 
-    private final Map<String, XMethod> boxClasses = new HashMap<String, XMethod>();
+    static class Pair {
+        final XMethod boxingMethod;
+        public Pair(XMethod boxingMethod, XMethod parsingMethod) {
+            this.boxingMethod = boxingMethod;
+            this.parsingMethod = parsingMethod;
+        }
+        final XMethod parsingMethod;
+    }
+    private final Map<String, Pair> boxClasses = new HashMap<String, Pair>();
 
     private final BugAccumulator bugAccumulator;
 
@@ -65,19 +75,20 @@ public class NumberConstructor extends OpcodeStackDetector {
      */
     public NumberConstructor(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
-        handle("java/lang/Byte", false, "(B)V");
-        handle("java/lang/Character", false, "(C)V");
-        handle("java/lang/Short", false, "(S)V");
-        handle("java/lang/Integer", false, "(I)V");
-        handle("java/lang/Long", false, "(J)V");
-        handle("java/lang/Float", true, "(F)V");
-        handle("java/lang/Double", true, "(D)V");
+        handle("java/lang/Byte", false, "(B)");
+        handle("java/lang/Character", false, "(C)");
+        handle("java/lang/Short", false, "(S)");
+        handle("java/lang/Integer", false, "(I)");
+        handle("java/lang/Long", false, "(J)");
+        handle("java/lang/Float", true, "(F)");
+        handle("java/lang/Double", true, "(D)");
 
     }
 
     private void handle(@SlashedClassName String className, boolean isFloatingPoint, String sig) {
-        XMethod m = XFactory.createXMethod(ClassName.toDottedClassName(className), "valueOf", sig, true);
-        boxClasses.put(className, m);
+        XMethod boxingMethod = XFactory.createXMethod(ClassName.toDottedClassName(className), "valueOf", sig + "L" + className +";", true);
+        XMethod parsingMethod = XFactory.createXMethod(ClassName.toDottedClassName(className), "valueOf", "(Ljava/lang/String;)" + "L" + className +";", true);
+        boxClasses.put(className, new Pair(boxingMethod, parsingMethod));
     }
 
     /**
@@ -100,6 +111,32 @@ public class NumberConstructor extends OpcodeStackDetector {
         bugAccumulator.reportAccumulatedBugs();
     }
 
+    private boolean matchArguments(String sig1, String sig2) {
+        int lastParen = sig1.indexOf(')');
+        String args = sig1.substring(0, lastParen+1);
+        return sig2.startsWith(args);
+    }
+    
+    private @CheckForNull XMethod  getShouldCall() {
+        String cls = getClassConstantOperand();
+        Pair pair =  boxClasses.get(cls);
+        if (pair == null)
+            return null;
+        XMethod shouldCall ;
+        if (getSigConstantOperand().startsWith("(Ljava/lang/String;)"))
+            shouldCall = pair.parsingMethod;
+        else
+            shouldCall = pair.boxingMethod;
+        
+        if (shouldCall == null) {
+            return null;
+        }
+
+        if (matchArguments(getSigConstantOperand(), shouldCall.getSignature()))
+            return shouldCall;
+        
+        return null;
+    }
     @Override
     public void sawOpcode(int seen) {
         // only acts on constructor invoke
@@ -110,15 +147,10 @@ public class NumberConstructor extends OpcodeStackDetector {
         if (!"<init>".equals(getNameConstantOperand())) {
             return;
         }
-        String cls = getClassConstantOperand();
-        XMethod shouldCall = boxClasses.get(cls);
-        if (shouldCall == null) {
+        @SlashedClassName String cls = getClassConstantOperand();
+        XMethod shouldCall = getShouldCall();
+        if (shouldCall == null)
             return;
-        }
-
-        if (!shouldCall.getSignature().substring(0, 3).equals(getSigConstantOperand().substring(0, 3))) {
-            return;
-        }
 
         int prio;
         String type;
@@ -133,7 +165,6 @@ public class NumberConstructor extends OpcodeStackDetector {
                 if (value < -128 || value > 127)
                     prio = LOW_PRIORITY;
             }
-
             type = "DM_NUMBER_CTOR";
         }
 
