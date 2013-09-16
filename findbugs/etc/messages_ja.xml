@@ -249,7 +249,7 @@
     <Details>
 <![CDATA[
 <p>
-このディテクタは、net.jcip.annotations.Immutable または <code>javax.annotation.concurrent.Immutable</code> としてアノテートされたクラスのルール違反を探します。
+このディテクタは、net.jcip.annotations.Immutable または javax.annotation.concurrent.Immutable としてアノテートされたクラスのルール違反を探します。
 </p>
 ]]>
     </Details>
@@ -4227,15 +4227,23 @@ final でない public static フィールドは、悪質なコードや偶然�
   </BugPattern>
 
   <BugPattern type="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD">
-    <ShortDescription>継承されたメソッドなのか外部のメソッドなのかあいまいなメソッドの呼び出し</ShortDescription>
-    <LongDescription>継承されたメソッドなのか外部のメソッドなのかあいまいなメソッド {2} を呼び出しています。{1}</LongDescription>
+    <ShortDescription>潜在的な継承されたメソッドなのか外部のメソッドなのかあいまいなメソッドの呼び出し</ShortDescription>
+    <LongDescription>潜在的な継承されたメソッドなのか外部のメソッドなのかあいまいなメソッド {2} を呼び出しています。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 内部クラスは、継承されたメソッドか外部クラスで定義されたメソッドなのかどちらとも解釈できるメソッドを呼び出しています。
-Java の仕様上は継承したメソッドを呼び出しますが、これは意図したことではないかもしれません。
+たとえば、<code>foo(17)</code> を呼び出します。それはスーパークラスと外部のメソッドの両方で定義されています。
+Java のセマンティックスでは、継承したメソッドを呼び出しますが、これは意図したことではないかもしれません。
+</p>
+<p>
 本当に継承されたメソッドを呼び出すつもりなら super を付けて (例：super.foo(17)) 呼び出してください。
 そうすれば、外部クラスのメソッドではなく継承されたメソッドを呼び出したいことがこのコードを読む人と FindBugs に明確になります。
+</p>
+<p>
+<code>this.foo(17)</code> を呼び出す場合は、継承されたメソッドが呼び出されます。
+しかしながら、FindBugs はクラスファイルを見るだけなので、<code>this.foo(17)</code> と <code>foo(17)</code> の呼び出しの違いを見分けることができません。
+潜在的なあいまいな呼び出しについて文句を言うでしょう。
 </p>
 ]]>
     </Details>
