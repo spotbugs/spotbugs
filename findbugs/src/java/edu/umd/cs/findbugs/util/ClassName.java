@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.util;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.meta.When;
 
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -52,11 +53,25 @@ public abstract class ClassName {
         return "L" + className + ";";
     }
 
+    public static @CheckForNull String getPrimitiveType(@SlashedClassName String cls) {
+        if (!cls.startsWith("java/lang/")) return null;
+        cls = cls.substring(10);
+        if (cls.equals("Integer")) return "I";
+        if (cls.equals("Float")) return "F";
+        if (cls.equals("Double")) return "D";
+        if (cls.equals("Long")) return "J";
+        if (cls.equals("Byte")) return "B";
+        if (cls.equals("Character")) return "C";
+        if (cls.equals("Short")) return "S";
+        if (cls.equals("Boolean")) return "Z";
+        return null;
+    }
+    
     /**
      * Converts from signature to slashed class name
      * (e.g., from Ljava/lang/String; to java/lang/String).
      * Returns null if it is the signature for an array or
-     * primitive type. 
+     * primitive type.
      */
     public static @javax.annotation.CheckForNull
     @SlashedClassName

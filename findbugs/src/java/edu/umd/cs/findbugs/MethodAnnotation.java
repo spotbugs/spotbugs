@@ -85,7 +85,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     public static final String METHOD_COMPUTED_IN = "METHOD_COMPUTED_IN";
 
     public static final String METHOD_ALTERNATIVE_TARGET = "METHOD_ALTERNATIVE_TARGET";
-
+    
+    public static final String METHOD_PREFERRED = "METHOD_PREFERRED";
+    
     /**
      * Constructor.
      *
@@ -98,7 +100,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
      * @param isStatic
      *            true if the method is static, false if not
      */
-    public MethodAnnotation(String className, String methodName, String methodSig, boolean isStatic) {
+    public MethodAnnotation(@DottedClassName String className, String methodName, String methodSig, boolean isStatic) {
         super(className, DEFAULT_ROLE);
         this.methodName = methodName;
         if (methodSig.indexOf(".") >= 0) {

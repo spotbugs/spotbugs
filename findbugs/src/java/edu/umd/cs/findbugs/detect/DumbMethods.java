@@ -219,23 +219,22 @@ public class DumbMethods extends OpcodeStackDetector {
             if (previousMethodCall != null && !stack.isJumpTarget(getPC())) {
                 if (called.getName().equals("toString")
                         && called.getClassDescriptor().getClassName().equals("java/lang/Integer")
-                        && (previousMethodCall.getName().equals("<init>")
-                        && previousMethodCall.getSignature().equals("(I)V") ||
-                         previousMethodCall.getName().equals("valueOf")
-                        && previousMethodCall.getSignature().equals("(I)Ljava/lang/Integer;"))
-                        
-                        
+                        && previousMethodCall.getName().equals("valueOf")
+                        && previousMethodCall.getSignature().equals("(I)Ljava/lang/Integer;")
                         ) {
+                    MethodAnnotation preferred = new MethodAnnotation("java.lang.Integer", "toString", "(I)Ljava/lang/String;", true);
                     BugInstance bug = new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(this)
-                            .addCalledMethod(this) .addString("new Integer(myInt).toString() => to be replaced by Integer.toString(myInt)");
+                            .addCalledMethod(this).addMethod(preferred).describe(MethodAnnotation.METHOD_PREFERRED);
                     accumulator.accumulateBug(bug, this);
 
                 }  else   if (called.getName().equals("intValue")
                         && called.getClassDescriptor().getClassName().equals("java/lang/Integer")
                         && previousMethodCall.getName().equals("<init>")
                         && previousMethodCall.getSignature().equals("(Ljava/lang/String;)V")) {
+                    MethodAnnotation preferred = new MethodAnnotation("java.lang.Integer", "parseString", "(Ljava/lang/String;)I", true);
+                    
                     BugInstance bug = new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(this)
-                            .addCalledMethod(this).addString("new Integer(myString).intValue() => to be replaced by Integer.parseString(myString)");
+                            .addCalledMethod(this).addMethod(preferred).describe(MethodAnnotation.METHOD_PREFERRED);
                     accumulator.accumulateBug(bug, this);
                 }
             }
@@ -956,14 +955,8 @@ public class DumbMethods extends OpcodeStackDetector {
             if ((seen == INVOKESPECIAL) && getNameConstantOperand().equals("<init>")) {
                 String cls = getClassConstantOperand();
                 String sig = getSigConstantOperand();
-                if ((cls.equals("java/lang/Integer") && sig.equals("(I)V"))
-                        || (cls.equals("java/lang/Float") && sig.equals("(F)V"))
-                        || (cls.equals("java/lang/Double") && sig.equals("(D)V"))
-                        || (cls.equals("java/lang/Long") && sig.equals("(J)V"))
-                        || (cls.equals("java/lang/Byte") && sig.equals("(B)V"))
-                        || (cls.equals("java/lang/Character") && sig.equals("(C)V"))
-                        || (cls.equals("java/lang/Short") && sig.equals("(S)V"))
-                        || (cls.equals("java/lang/Boolean") && sig.equals("(Z)V"))) {
+                String primitiveType = ClassName.getPrimitiveType(cls);
+                if (primitiveType != null && sig.charAt(1) == primitiveType.charAt(0)) {
                     primitiveObjCtorSeen = cls;
                 } else {
                     primitiveObjCtorSeen = null;
@@ -971,8 +964,12 @@ public class DumbMethods extends OpcodeStackDetector {
             } else if ((primitiveObjCtorSeen != null) && (seen == INVOKEVIRTUAL) && getNameConstantOperand().equals("toString")
                     && getClassConstantOperand().equals(primitiveObjCtorSeen)
                     && getSigConstantOperand().equals("()Ljava/lang/String;")) {
+                BugInstance bug = new BugInstance(this, "DM_BOXED_PRIMITIVE_TOSTRING", NORMAL_PRIORITY).addClassAndMethod(this).addCalledMethod(this);
+                MethodAnnotation preferred = new MethodAnnotation(ClassName.toDottedClassName(primitiveObjCtorSeen),
+                        "toString", "("+ClassName.getPrimitiveType(primitiveObjCtorSeen)+")Ljava/lang/String;", true);
+                bug.addMethod(preferred).describe(MethodAnnotation.METHOD_PREFERRED);
                 accumulator.accumulateBug(
-                        new BugInstance(this, "DM_BOXED_PRIMITIVE_TOSTRING", LOW_PRIORITY).addClassAndMethod(this), this);
+                        bug, this);
 
                 primitiveObjCtorSeen = null;
             } else {
@@ -983,7 +980,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 ctorSeen = true;
             } else if (ctorSeen && (seen == INVOKEVIRTUAL) && getClassConstantOperand().equals("java/lang/Object")
                     && getNameConstantOperand().equals("getClass") && getSigConstantOperand().equals("()Ljava/lang/Class;")) {
-                accumulator.accumulateBug(new BugInstance(this, "DM_NEW_FOR_GETCLASS", LOW_PRIORITY).addClassAndMethod(this),
+                accumulator.accumulateBug(new BugInstance(this, "DM_NEW_FOR_GETCLASS", NORMAL_PRIORITY).addClassAndMethod(this),
                         this);
                 ctorSeen = false;
             } else {
