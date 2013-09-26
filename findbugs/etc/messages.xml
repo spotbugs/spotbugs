@@ -2468,6 +2468,16 @@ to immediately undo the work of the boxing.
 ]]>
     </Details>
   </BugPattern>
+    <BugPattern type="DM_BOXED_PRIMITIVE_FOR_PARSING">
+    <ShortDescription>Boxing/unboxing to parse a primitive</ShortDescription>
+    <LongDescription>Boxing/unboxing to parse a primitive {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p>A boxed primitive is created from a String, just to extract the unboxed primitive value.
+  It is more efficient to just call the static parseXXX method.</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DM_NEW_FOR_GETCLASS">
     <ShortDescription>Method allocates an object, only to get the class object</ShortDescription>
     <LongDescription>{1} allocates an object, only to get the class object</LongDescription>

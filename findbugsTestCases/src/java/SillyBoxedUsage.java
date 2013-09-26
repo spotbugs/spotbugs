@@ -1,3 +1,4 @@
+import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
@@ -41,5 +42,25 @@ public class SillyBoxedUsage {
     @NoWarning("DM_BOXED_PRIMITIVE_TOSTRING")
     public String testGood(byte b, char c, short s, long j, boolean z) {
         return Byte.toString(b) + Character.toString(c) + Short.toString(s) + Long.toString(j) + Boolean.toString(z);
+    }
+    
+    @ExpectWarning("DM_BOXED_PRIMITIVE_FOR_PARSING")
+    public int testParsingBad1(String value) {
+        return new Integer(value).intValue();
+    }
+    
+    @NoWarning("DM_BOXED_PRIMITIVE_FOR_PARSING")
+    public int testParsingGood1(String value) {
+        return Integer.parseInt(value);
+    }
+    
+    @DesireWarning("DM_BOXED_PRIMITIVE_FOR_PARSING")
+    public long testParsingBad2(String value) {
+        return new Long(value).longValue();
+    }
+    
+    @NoWarning("DM_BOXED_PRIMITIVE_FOR_PARSING")
+    public long testParsingGood2(String value) {
+        return Long.parseLong(value);
     }
 }

@@ -73,7 +73,7 @@ public abstract class ClassName {
      * Returns null if it is the signature for an array or
      * primitive type.
      */
-    public static @javax.annotation.CheckForNull
+    public static @CheckForNull
     @SlashedClassName
     String fromFieldSignature(String signature) {
         if (signature.charAt(0) != 'L') {

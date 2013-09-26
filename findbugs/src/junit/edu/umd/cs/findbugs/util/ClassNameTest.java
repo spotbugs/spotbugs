@@ -41,6 +41,19 @@ public class ClassNameTest extends TestCase {
         assertEquals("java/lang/Integer", ClassName.extractClassName("[[[Ljava/lang/Integer;"));
         assertEquals("java/lang/Integer", ClassName.extractClassName("java/lang/Integer"));
     }
+    
+    public void testGetPrimitiveType() {
+        assertEquals("I", ClassName.getPrimitiveType("java/lang/Integer"));
+        assertEquals("F", ClassName.getPrimitiveType("java/lang/Float"));
+        assertEquals("D", ClassName.getPrimitiveType("java/lang/Double"));
+        assertEquals("J", ClassName.getPrimitiveType("java/lang/Long"));
+        assertEquals("B", ClassName.getPrimitiveType("java/lang/Byte"));
+        assertEquals("C", ClassName.getPrimitiveType("java/lang/Character"));
+        assertEquals("S", ClassName.getPrimitiveType("java/lang/Short"));
+        assertEquals("Z", ClassName.getPrimitiveType("java/lang/Boolean"));
+        assertNull(ClassName.getPrimitiveType("java/lang/String"));
+        assertNull(ClassName.getPrimitiveType("java/util/HashMap"));
+    }
 
     public void testExtractClassNameBad() {
         try {
