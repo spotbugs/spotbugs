@@ -86,7 +86,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
     public static final String METHOD_ALTERNATIVE_TARGET = "METHOD_ALTERNATIVE_TARGET";
     
-    public static final String METHOD_PREFERRED = "METHOD_PREFERRED";
+    public static final String SHOULD_CALL = "SHOULD_CALL";
     
     /**
      * Constructor.

@@ -224,7 +224,7 @@ public class DumbMethods extends OpcodeStackDetector {
                         ) {
                     MethodAnnotation preferred = new MethodAnnotation("java.lang.Integer", "toString", "(I)Ljava/lang/String;", true);
                     BugInstance bug = new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(this)
-                            .addCalledMethod(this).addMethod(preferred).describe(MethodAnnotation.METHOD_PREFERRED);
+                            .addCalledMethod(this).addMethod(preferred).describe(MethodAnnotation.SHOULD_CALL);
                     accumulator.accumulateBug(bug, this);
 
                 }  else   if (called.getName().equals("intValue")
@@ -234,7 +234,7 @@ public class DumbMethods extends OpcodeStackDetector {
                     MethodAnnotation preferred = new MethodAnnotation("java.lang.Integer", "parseString", "(Ljava/lang/String;)I", true);
                     
                     BugInstance bug = new BugInstance(this, "DM_BOXED_PRIMITIVE_FOR_PARSING", HIGH_PRIORITY).addClassAndMethod(this)
-                            .addCalledMethod(this).addMethod(preferred).describe(MethodAnnotation.METHOD_PREFERRED);
+                            .addCalledMethod(this).addMethod(preferred).describe(MethodAnnotation.SHOULD_CALL);
                     accumulator.accumulateBug(bug, this);
                 }
             }
@@ -967,7 +967,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 BugInstance bug = new BugInstance(this, "DM_BOXED_PRIMITIVE_TOSTRING", NORMAL_PRIORITY).addClassAndMethod(this).addCalledMethod(this);
                 MethodAnnotation preferred = new MethodAnnotation(ClassName.toDottedClassName(primitiveObjCtorSeen),
                         "toString", "("+ClassName.getPrimitiveType(primitiveObjCtorSeen)+")Ljava/lang/String;", true);
-                bug.addMethod(preferred).describe(MethodAnnotation.METHOD_PREFERRED);
+                bug.addMethod(preferred).describe(MethodAnnotation.SHOULD_CALL);
                 accumulator.accumulateBug(
                         bug, this);
 
