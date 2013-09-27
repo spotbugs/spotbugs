@@ -165,8 +165,12 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
 
     public Object getChild(Object o, int index) {
         int childCount = getChildCount(o);
-        if (index < 0 || index >= childCount)
+        if (index < 0 || index >= childCount) {
+            if (SystemProperties.ASSERTIONS_ENABLED) {
+                System.out.printf("Unable to get child %d of %d from %s:%s%n" , index, childCount, o.getClass().getSimpleName(), o);
+            }
             return null;
+        }
         Object result = getChild((BugAspects) o, index);
         assert result != null;
         return result;
