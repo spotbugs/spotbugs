@@ -1,3 +1,5 @@
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class SelfFieldOperation {
     int x, y;
 
@@ -21,10 +23,12 @@ public class SelfFieldOperation {
 
     Integer a, b;
 
+    @ExpectWarning("SA_FIELD_SELF_COMPARISON")
     boolean e() {
         return a.equals(a);
     }
 
+    @ExpectWarning("SA_FIELD_SELF_COMPARISON")
     int c() {
         return a.compareTo(a);
     }
