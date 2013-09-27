@@ -9,6 +9,8 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 /**
  * We found a problem with the new OpenJDK that everyone is now using to compile
  * and run java code. In particular, the java.util.logging.Logger behavior has
@@ -27,6 +29,7 @@ public class Ideas_2009_05_06 {
      * only keeps weak references).
      */
 
+    @ExpectWarning("LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE")
     public static void initLogging() throws SecurityException, IOException {
         Logger logger = Logger.getLogger("edu.umd.cs.findbugs");
         logger.addHandler(new FileHandler()); // call to change logger

@@ -24,6 +24,11 @@ public class Ideas_2010_09_13 {
     public int testShiftWarning(int x) {
         return x << SHIFT_AMOUNT;
     }
+    
+    @ExpectWarning("ICAST_BAD_SHIFT_AMOUNT")
+    public long testShiftWarning2(int x) {
+        return x << SHIFT_AMOUNT;
+    }
 
     final Random r = new Random();
 
@@ -33,6 +38,5 @@ public class Ideas_2010_09_13 {
         if (x == Integer.MIN_VALUE)
             return 0;
         return x;
-
     }
 }

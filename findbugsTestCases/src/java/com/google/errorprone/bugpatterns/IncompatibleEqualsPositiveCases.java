@@ -18,11 +18,14 @@ package com.google.errorprone.bugpatterns;
 
 import com.google.common.base.Objects;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 /**
  * @author Bill Pugh (bill.pugh@gmail.com)
  */
 public class IncompatibleEqualsPositiveCases {
 
+    @ExpectWarning("EC_ARRAY_AND_NONARRAY,EC_UNRELATED_TYPES")
     public boolean testEquality(String s, Integer i, Double d, Object a[]) {
 
         //BUG: Suggestion includes "false"
@@ -57,6 +60,7 @@ public class IncompatibleEqualsPositiveCases {
         return false;
     }
     
+    @ExpectWarning("EC_ARRAY_AND_NONARRAY,EC_UNRELATED_TYPES")
     public boolean testObjectsEquals(String s, Integer i, Double d, Object a[]) {
 
         //BUG: Suggestion includes "false"
@@ -91,6 +95,7 @@ public class IncompatibleEqualsPositiveCases {
     }
 
     
+    @ExpectWarning("EC_ARRAY_AND_NONARRAY,EC_UNRELATED_TYPES")
     public boolean testGuavaEquals(String s, Integer i, Double d, Object a[]) {
 
         //BUG: Suggestion includes "false"

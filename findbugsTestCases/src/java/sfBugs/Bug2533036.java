@@ -1,5 +1,7 @@
 package sfBugs;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class Bug2533036 {
     private static class X {
     }
@@ -16,6 +18,7 @@ public class Bug2533036 {
     static void m1(Z z) {
     }
 
+    @ExpectWarning("BC_UNCONFIRMED_CAST")
     static void m2(X x) {
         m1((Z) x);
     }

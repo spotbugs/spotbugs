@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Ideas_2008_10_14 {
 
@@ -34,6 +35,7 @@ public class Ideas_2008_10_14 {
 
     Set<A> setA = new HashSet<A>();
 
+    @ExpectWarning("SA")
     boolean contained(A a) {
         return setA.contains(setA);
     }

@@ -16,8 +16,14 @@
 
 package com.google.errorprone.bugpatterns;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
 import com.google.common.base.Objects;
+
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 /**
  * @author Bill Pugh (bill.pugh@gmail.com)
@@ -25,6 +31,7 @@ import com.google.common.base.Objects;
 public class  IncompatibleEqualsNegativeCases {
 
 
+    @NoWarning("EC")
     public boolean testEquality(Object o, String s1, String s2, Integer i) {
 
         if (o.equals(s1)) 
@@ -39,6 +46,23 @@ public class  IncompatibleEqualsNegativeCases {
         return false;
     }
     
+    @NoWarning("EC")
+    public boolean testObjectsEqual(Object o, String s1, String s2, Integer i) {
+
+        if (java.util.Objects.equals(o, s1)) 
+            return true;
+        if (java.util.Objects.equals(s1, o)) 
+            return true;
+        if (java.util.Objects.equals(s1, s1))
+            return true;
+        if (java.util.Objects.equals(i, 17))
+            return true;
+       
+        return false;
+    }
+ 
+    
+    @NoWarning("EC")
     public boolean testGuavaEqual(Object o, String s1, String s2, Integer i) {
 
         if (Objects.equal(o, s1)) 
@@ -53,10 +77,12 @@ public class  IncompatibleEqualsNegativeCases {
         return false;
     }
  
+    @NoWarning("EC")
     public void testAssertFalse(String s, Integer i) {
         assertFalse(s.equals(i));
     }
     
+    @NoWarning("EC")
     public boolean testCollection(Collection<String> c, HashSet<String> s, TreeSet<String> s2, Set<String> s3,  Object o) {
         if (c.equals(s))
             return true;
@@ -71,6 +97,7 @@ public class  IncompatibleEqualsNegativeCases {
         
         return false;
     }
+    @NoWarning("EC")
     public boolean testCollectionWithGuava(Collection<String> c, HashSet<String> s, TreeSet<String> s2, Set<String> s3,  Object o) {
         if (Objects.equal(c, s))
             return true;
@@ -91,6 +118,12 @@ public class  IncompatibleEqualsNegativeCases {
     }
     
     public static class DifferentClassesButMightBeEqual {
+        DifferentClassesButMightBeEqual(int value) {
+            this.value = value;
+        }
+        DifferentClassesButMightBeEqual() {
+            this(42);
+        }
         int value;
 
         @Override
@@ -111,6 +144,7 @@ public class  IncompatibleEqualsNegativeCases {
         static class Two extends DifferentClassesButMightBeEqual {
         };
 
+        @NoWarning("EC")
         public static void foobar() {
             One one = new One();
             Two two = new Two();
