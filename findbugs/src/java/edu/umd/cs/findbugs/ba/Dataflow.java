@@ -183,7 +183,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
             }
 
             if (numIterations >= MAX_ITERS + 9) {
-                throw new AssertionError("Too many iterations (" + numIterations + ") in dataflow when analyzing "
+                throw new DataflowAnalysisException("Too many iterations (" + numIterations + ") in dataflow when analyzing "
                         + getFullyQualifiedMethodName());
             }
 
@@ -268,7 +268,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
                         int direction = blockOrder.compare(block, logicalPred);
                         
-                        if (DEBUG) 
+                        if (DEBUG)
                             debug(block, "direction " + direction + " for " + blockId(logicalPred) + "\n");
                         if (direction < 0)
                             sawBackEdge = true;
