@@ -111,7 +111,7 @@
     <echo>fb-ant jar is ${fb-baseline-ant.jar}</echo>
      <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
            classpath="${fb-baseline-ant.jar}"/>
-    <findbugs home="${findbugs-baseline.home}"  jvmargs="-ea -Xmx600m"
+    <findbugs home="${findbugs-baseline.home}"  jvmargs="-Xmx900m -Dfindbugs.sf.comment=true -Dcew.debug=true"
                          output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/baseline.xml">
             <sourcePath path="${basedir}/src/java" />
 	    <auxclasspath refid="build.classpath"/>
@@ -162,13 +162,46 @@
     <target name="runNormal" depends="classes">
      <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
            classpath="${fb-ant.jar}"/>
+<taskdef name="filterBugs" classname="edu.umd.cs.findbugs.anttask.FilterBugsTask"
+           classpath="${fb-ant.jar}"/>
+<taskdef name="printBugs" classname="edu.umd.cs.findbugs.anttask.ConvertXmlToTextTask"
+           classpath="${fb-ant.jar}"/>
+
     	<echo>Test expected warnings with javac bytecode</echo>
-        <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
+        <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m -Dfindbugs.sf.comment=false"
                          output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/normal.xml">
             <sourcePath path="${basedir}/src/java" />
 	    <auxclasspath refid="build.classpath"/>
             <class location="${basedir}/build/classes" />
         </findbugs>
+	<filterBugs home="${findbugs.home}" 
+		priority="1"
+		bugPattern="FB"
+		inputFile="build/normal.xml"
+		outputFile="build/unexpected.xml">
+	</filterBugs>
+	<printBugs home="${findbugs.home}" 
+		inputFile="build/unexpected.xml"
+		format="text">
+	</printBugs>
+
+    	<echo>Test expected warnings with javac bytecode and source</echo>
+        <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m -Dfindbugs.sf.comment=true"
+                         output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/analyzeSource.xml">
+            <sourcePath path="${basedir}/src/java" />
+	    <auxclasspath refid="build.classpath"/>
+            <class location="${basedir}/build/classes" />
+        </findbugs>
+	  <filterBugs home="${findbugs.home}"
+                priority="1"
+                bugPattern="FB"
+                inputFile="build/analyzeSource.xml"
+                outputFile="build/unexpectedWithSource.xml">
+        </filterBugs>
+        <printBugs home="${findbugs.home}"
+                inputFile="build/unexpectedWithSource.xml"
+                format="text">
+	</printBugs>
 
     	<echo>Test expected warnings with ecj bytecode</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
@@ -178,6 +211,17 @@
 	    <auxclasspath refid="build.classpath"/>
             <class location="${basedir}/classesEclipse" />
         </findbugs>
+	  <filterBugs home="${findbugs.home}"
+                priority="1"
+                bugPattern="FB"
+                inputFile="build/normalEclipse.xml"
+                outputFile="build/unexpectedEclipse.xml">
+        </filterBugs>
+        <printBugs home="${findbugs.home}"
+                inputFile="build/unexpectedEclipse.xml"
+                format="text">
+	</printBugs>
+
     </target>
 
 
