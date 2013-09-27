@@ -230,7 +230,10 @@ public class FindSelfComparison extends OpcodeStackDetector {
             int fr0 = item0.getFieldLoadedFromRegister();
             int fr1 = item1.getFieldLoadedFromRegister();
             if (field0 != null && field0.equals(field1) && fr0 != -1 && fr0 == fr1) {
-                BugInstance bug = new BugInstance(this, "SA_FIELD_SELF_" + op, NORMAL_PRIORITY)
+                int priority = NORMAL_PRIORITY;
+                if (field0.isVolatile())
+                    priority++;
+                BugInstance bug = new BugInstance(this, "SA_FIELD_SELF_" + op, priority)
                         .addClassAndMethod(this);
                 if (this.isMethodCall())
                     bug.addCalledMethod(this);
