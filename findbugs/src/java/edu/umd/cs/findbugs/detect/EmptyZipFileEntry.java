@@ -27,6 +27,11 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 
+/**
+ * This detector is currently disabled by default.
+ * It generates false positives when creating directory entries.
+ * 
+ */
 public class EmptyZipFileEntry extends BytecodeScanningDetector implements StatelessDetector {
 
     private final BugReporter bugReporter;
