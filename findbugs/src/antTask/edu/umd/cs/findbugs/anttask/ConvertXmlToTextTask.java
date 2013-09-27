@@ -111,9 +111,6 @@ public class ConvertXmlToTextTask extends AbstractFindBugsTask {
         if (input == null) {
             throw new BuildException("input attribute is required", getLocation());
         }
-        if (output == null) {
-            throw new BuildException("output attribute is required", getLocation());
-        }
         if (!format.equals("text") && !(format.equals("html") || format.startsWith("html:"))) {
             throw new BuildException("invalid value " + format + " for format attribute", getLocation());
         }
@@ -139,7 +136,8 @@ public class ConvertXmlToTextTask extends AbstractFindBugsTask {
             addArg("-applySuppression");
         }
         addArg(input);
-        addArg(output);
+        if (output != null)
+            addArg(output);
     }
 
     /*
