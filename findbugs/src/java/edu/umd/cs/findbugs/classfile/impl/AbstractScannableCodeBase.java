@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 
@@ -38,7 +39,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 
     private boolean isAppCodeBase;
 
-    private int howDiscovered;
+    private ICodeBase.Discovered howDiscovered;
 
     private long lastModifiedTime;
 
@@ -94,7 +95,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#setHowDiscovered(int)
      */
-    public void setHowDiscovered(int howDiscovered) {
+    public void setHowDiscovered(ICodeBase.Discovered howDiscovered) {
         this.howDiscovered = howDiscovered;
     }
 
@@ -103,7 +104,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getHowDiscovered()
      */
-    public int getHowDiscovered() {
+    public ICodeBase.Discovered getHowDiscovered() {
         return howDiscovered;
     }
 

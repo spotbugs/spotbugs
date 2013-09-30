@@ -29,6 +29,7 @@ import java.util.NoSuchElementException;
 
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
@@ -53,7 +54,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 
     private boolean isAppCodeBase;
 
-    private int howDiscovered;
+    private ICodeBase.Discovered howDiscovered;
 
     private long lastModifiedTime;
 
@@ -162,7 +163,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#setHowDiscovered(int)
      */
-    public void setHowDiscovered(int howDiscovered) {
+    public void setHowDiscovered(ICodeBase.Discovered howDiscovered) {
         this.howDiscovered = howDiscovered;
     }
 
@@ -171,7 +172,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getHowDiscovered()
      */
-    public int getHowDiscovered() {
+    public ICodeBase.Discovered getHowDiscovered() {
         return howDiscovered;
     }
 

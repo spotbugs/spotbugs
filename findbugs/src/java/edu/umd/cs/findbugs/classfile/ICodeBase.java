@@ -26,21 +26,24 @@ package edu.umd.cs.findbugs.classfile;
  * @author David Hovemeyer
  */
 public interface ICodeBase {
-    /** Codebase was explicitly specified. */
-    public static final int SPECIFIED = 0;
+    
+    enum Discovered {
 
-    /** Codebase was discovered as a nested archive in another codebase. */
-    public static final int NESTED = 1;
+        /** Codebase was explicitly specified. */
+        SPECIFIED,
 
-    /**
-     * Codebase was referenced in the Class-Path attribute of a Jar manifest of
-     * another codebase.
-     */
-    public static final int IN_JAR_MANIFEST = 2;
+        /** Codebase was discovered as a nested archive in another codebase. */
+        NESTED,
 
-    /** Codebase was discovered in the system classpath. */
-    public static final int IN_SYSTEM_CLASSPATH = 3;
+        /**
+         * Codebase was referenced in the Class-Path attribute of a Jar manifest
+         * of another codebase.
+         */
+        IN_JAR_MANIFEST,
 
+        /** Codebase was discovered in the system classpath. */
+        IN_SYSTEM_CLASSPATH,
+    }
     /**
      * Get the codebase locator describing the location of this codebase.
      * 
@@ -80,7 +83,7 @@ public interface ICodeBase {
      *            one of the constants SPECIFIED, NESTED, IN_JAR_MANIFEST, or
      *            IN_SYSTEM_CLASSPATH
      */
-    public void setHowDiscovered(int howDiscovered);
+    public void setHowDiscovered(ICodeBase.Discovered howDiscovered);
 
     /**
      * Return how this codebase was discovered.
@@ -88,7 +91,7 @@ public interface ICodeBase {
      * @return one of the constants SPECIFIED, NESTED, IN_JAR_MANIFEST, or
      *         IN_SYSTEM_CLASSPATH
      */
-    public int getHowDiscovered();
+    public ICodeBase.Discovered getHowDiscovered();
 
     /**
      * Return whether or not this code base contains any source files.
