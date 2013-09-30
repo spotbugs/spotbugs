@@ -1,5 +1,5 @@
 #FindBugs User Preferences
-#Tue Jul 03 08:33:03 EDT 2012
+#Mon Sep 30 11:54:09 EDT 2013
 cloud_id=edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud
 detectorAbnormalFinallyBlockReturn=AbnormalFinallyBlockReturn|true
 detectorAbstractClassEmptyMethods=AbstractClassEmptyMethods|true
@@ -23,6 +23,7 @@ detectorCalledMethods=CalledMethods|true
 detectorCheckCalls=CheckCalls|false
 detectorCheckExpectedWarnings=CheckExpectedWarnings|false
 detectorCheckImmutableAnnotation=CheckImmutableAnnotation|true
+detectorCheckRelaxingNullnessAnnotation=CheckRelaxingNullnessAnnotation|true
 detectorCheckTypeQualifiers=CheckTypeQualifiers|true
 detectorCloneIdiom=CloneIdiom|true
 detectorComparatorIdiom=ComparatorIdiom|true
