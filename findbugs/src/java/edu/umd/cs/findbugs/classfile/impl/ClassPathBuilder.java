@@ -610,7 +610,9 @@ public class ClassPathBuilder implements IClassPathBuilder {
                 // In addition, if it is an application codebase then
                 // make a list of application classes.
                 if (discoveredCodeBase.getCodeBase() instanceof IScannableCodeBase
-                        && discoveredCodeBase.codeBase.isApplicationCodeBase()) {
+                        && ( discoveredCodeBase.codeBase.isApplicationCodeBase()
+                                || item.getHowDiscovered() == ICodeBase.Discovered.SPECIFIED)
+                        ) {
                     scanCodebase(classPath, workList, discoveredCodeBase);
                 }
 
