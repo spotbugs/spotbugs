@@ -111,7 +111,7 @@
     <echo>fb-ant jar is ${fb-baseline-ant.jar}</echo>
      <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
            classpath="${fb-baseline-ant.jar}"/>
-    <findbugs home="${findbugs-baseline.home}"  jvmargs="-Xmx900m -Dfindbugs.sf.comment=true -Dcew.debug=true"
+    <findbugs home="${findbugs-baseline.home}"  jvmargs="-ea -Xmx900m"
                          output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/baseline.xml">
             <sourcePath path="${basedir}/src/java" />
 	    <auxclasspath refid="build.classpath"/>
