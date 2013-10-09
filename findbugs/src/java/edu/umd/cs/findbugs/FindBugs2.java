@@ -579,7 +579,7 @@ public class FindBugs2 implements IFindBugsEngine {
                 String message = "Unable to read filter: " + entry.getKey() + " : " + e.getMessage();
                 if (getBugReporter() != null) {
                     getBugReporter().logError(message, e);
-                } else if (deferredError != null){
+                } else if (deferredError == null){
                     deferredError = new IllegalArgumentException(message, e);
                 }
             }
@@ -595,7 +595,7 @@ public class FindBugs2 implements IFindBugsEngine {
                 String message = "Unable to read filter: " + entry.getKey() + " : " + e.getMessage();
                 if (getBugReporter() != null) {
                     getBugReporter().logError(message, e);
-                } else if (deferredError != null){
+                } else if (deferredError == null){
                     deferredError = new IllegalArgumentException(message, e);
                 }
             }
@@ -614,7 +614,7 @@ public class FindBugs2 implements IFindBugsEngine {
                 String message = "Unable to read filter: " + excludeFilterFile + " : " + e.getMessage();
                 if (getBugReporter() != null) {
                     getBugReporter().logError(message, e);
-                } else if (deferredError != null){
+                } else if (deferredError == null){
                     deferredError = new IllegalArgumentException(message, e);
                 }
             }
