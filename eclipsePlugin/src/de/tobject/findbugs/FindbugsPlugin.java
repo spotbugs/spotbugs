@@ -1199,4 +1199,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         saveCurrentBugCollection(project, null);
     }
 
+
+    public static void log(String msg) {
+        log(msg, null);
+     }
+
+     public static void log(String msg, Exception e) {
+        plugin.getLog().log(new Status(IStatus.INFO, plugin.getBundle().getSymbolicName(),  msg, e));
+     }
 }

@@ -66,7 +66,7 @@ import edu.umd.cs.findbugs.log.Profiler;
 public class Reporter extends AbstractBugReporter implements FindBugsProgress {
 
     /** Controls debugging for the reporter */
-    public static boolean DEBUG = Boolean.getBoolean("findbugsPlugin.debug");
+    public static boolean DEBUG = true || Boolean.getBoolean("findbugsPlugin.debug");
 
     private final IJavaProject project;
 
@@ -113,6 +113,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
 
     void printToStream(String message) {
         if (DEBUG) {
+            FindbugsPlugin.log(message);
             System.out.println(message);
         }
         if (isStreamReportingEnabled()) {
@@ -314,4 +315,6 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
             printToStream("start archive: " + name);
         }
     }
+
+
 }
