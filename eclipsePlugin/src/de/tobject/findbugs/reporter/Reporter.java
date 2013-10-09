@@ -66,7 +66,7 @@ import edu.umd.cs.findbugs.log.Profiler;
 public class Reporter extends AbstractBugReporter implements FindBugsProgress {
 
     /** Controls debugging for the reporter */
-    public static boolean DEBUG;
+    public static boolean DEBUG = Boolean.getBoolean("findbugsPlugin.debug");
 
     private final IJavaProject project;
 
@@ -93,6 +93,9 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
      */
     public Reporter(IJavaProject project, Project findBugsProject, IProgressMonitor monitor) {
         super();
+        if (DEBUG) {
+            System.out.println("Eclipse FindBugs plugin debugging enabled");
+        }
         this.monitor = monitor;
         this.project = project;
         // TODO we do not need to sort bugs, so we can optimize performance and
@@ -109,6 +112,9 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
     }
 
     void printToStream(String message) {
+        if (DEBUG) {
+            System.out.println(message);
+        }
         if (isStreamReportingEnabled()) {
             try {
                 stream.write(message);
@@ -304,6 +310,8 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
     }
 
     public void startArchive(String name) {
-        // printToStream("start archive: " + name);
+        if (DEBUG) {
+            printToStream("start archive: " + name);
+        }
     }
 }
