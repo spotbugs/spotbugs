@@ -132,13 +132,17 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
         case Constants.IF_ICMPNE:
             OpcodeStack.Item left = stack.getStackItem(1);
             OpcodeStack.Item right = stack.getStackItem(0);
-            if (badUseOfCompareResult(left, right))
-
+            if (badUseOfCompareResult(left, right)) {
+                XMethod returnValueOf = left.getReturnValueOf();
+                assert returnValueOf != null;
                 bugAccumulator.accumulateBug(new BugInstance(this, "RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addMethod(left.getReturnValueOf()).describe(MethodAnnotation.METHOD_CALLED).addValueSource(right, this), this);
-            else if (badUseOfCompareResult(right, left))
+                        .addClassAndMethod(this).addMethod(returnValueOf).describe(MethodAnnotation.METHOD_CALLED).addValueSource(right, this), this);
+            } else if (badUseOfCompareResult(right, left)) {
+                XMethod returnValueOf = right.getReturnValueOf();
+                assert returnValueOf != null;
                 bugAccumulator.accumulateBug(new BugInstance(this, "RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addMethod(right.getReturnValueOf()).describe(MethodAnnotation.METHOD_CALLED).addValueSource(left, this), this);
+                        .addClassAndMethod(this).addMethod(returnValueOf).describe(MethodAnnotation.METHOD_CALLED).addValueSource(left, this), this);
+            }
         }
 
         checkForInitWithoutCopyOnStack: if (seen == INVOKESPECIAL && getNameConstantOperand().equals("<init>")) {
