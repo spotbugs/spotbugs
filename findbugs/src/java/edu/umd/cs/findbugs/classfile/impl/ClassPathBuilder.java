@@ -676,9 +676,9 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
             // If resource is a nested archive, add it to the worklist
             if (scanNestedArchives && (codeBase.isApplicationCodeBase() || codeBase instanceof DirectoryCodeBase)
-                    && Archive.isArchiveFileName(entry.getResourceName())) {
+                    && Archive.isLibraryFileName(entry.getResourceName())) {
                 if (VERBOSE) {
-                    System.out.println("Entry is an archive!");
+                    System.out.println("Entry is an library!");
                 }
                 ICodeBaseLocator nestedArchiveLocator = classFactory.createNestedArchiveCodeBaseLocator(codeBase,
                         entry.getResourceName());

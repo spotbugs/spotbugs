@@ -55,11 +55,25 @@ public class Archive {
      *         otherwise
      */
     public static boolean isArchiveFileName(String fileName) {
+        String extension = getExtension(fileName);
+        return ARCHIVE_EXTENSION_SET.contains(extension);
+    }
+
+    /**
+     * @param fileName
+     * @return
+     */
+    private static String getExtension(String fileName) {
         int lastDot = fileName.lastIndexOf('.');
         if (lastDot < 0) {
-            return false;
+            return fileName;
         }
         String extension = fileName.substring(lastDot).toLowerCase(Locale.ENGLISH);
-        return ARCHIVE_EXTENSION_SET.contains(extension);
+        return extension;
+    }
+    
+    public static boolean isLibraryFileName(String fileName) {
+        String extension = getExtension(fileName);
+        return extension.equals(".jar");
     }
 }
