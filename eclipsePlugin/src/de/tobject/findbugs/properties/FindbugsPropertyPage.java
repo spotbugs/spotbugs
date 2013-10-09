@@ -26,8 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
@@ -145,7 +145,8 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 
     private boolean projectPropsInitiallyEnabled;
 
-    @CheckForNull
+    //  Nonnull if there is a current project
+    @Nullable
     private ScopedPreferenceStore projectStore;
 
     /** never null */
