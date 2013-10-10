@@ -778,11 +778,16 @@ public class FindBugs2 implements IFindBugsEngine {
     private void buildClassPath() throws InterruptedException, IOException, CheckedAnalysisException {
         IClassPathBuilder builder = classFactory.createClassPathBuilder(bugReporter);
 
+        {
+        HashSet<String> seen = new HashSet<String>();
         for (String path : project.getFileArray()) {
+            if (seen.add(path))
             builder.addCodeBase(classFactory.createFilesystemCodeBaseLocator(path), true);
         }
         for (String path : project.getAuxClasspathEntryList()) {
+            if (seen.add(path))
             builder.addCodeBase(classFactory.createFilesystemCodeBaseLocator(path), false);
+        }
         }
 
         builder.scanNestedArchives(analysisOptions.scanNestedArchives);
