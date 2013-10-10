@@ -119,8 +119,10 @@ public abstract class FindBugsJob extends Job {
         boolean acquired = false;
         try {
             if(supportsMulticore()){
+                FindbugsPlugin.log("Acquiring analysisSem");
                 analysisSem.acquire();
                 acquired = true;
+                FindbugsPlugin.log("Acquired analysisSem");
                 if(monitor.isCanceled()){
                     return Status.CANCEL_STATUS;
                 }
@@ -136,6 +138,8 @@ public abstract class FindBugsJob extends Job {
             return Status.CANCEL_STATUS;
         } finally {
             if(acquired){
+                FindbugsPlugin.log("releasing analysisSem");
+
                 analysisSem.release();
             }
             monitor.done();

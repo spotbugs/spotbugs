@@ -94,7 +94,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
     public Reporter(IJavaProject project, Project findBugsProject, IProgressMonitor monitor) {
         super();
         if (DEBUG) {
-            System.out.println("Eclipse FindBugs plugin debugging enabled");
+            printToStream("Eclipse FindBugs plugin debugging enabled");
         }
         this.monitor = monitor;
         this.project = project;
@@ -236,17 +236,19 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
     }
 
     public void observeClass(ClassDescriptor classDescriptor) {
+        String className = classDescriptor.getDottedClassName();
+
+        if (DEBUG) {
+            System.out.println("Observing class: " + className); //$NON-NLS-1$
+        }
+
         if (monitor.isCanceled()) {
             // causes break in FindBugs main loop
             Thread.currentThread().interrupt();
         }
 
         int work = (pass * 99) + 1;
-        String className = classDescriptor.getDottedClassName();
 
-        if (DEBUG) {
-            System.out.println("Observing class: " + className); //$NON-NLS-1$
-        }
 
         // Update progress monitor
         if (pass <= 0) {

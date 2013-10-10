@@ -182,11 +182,16 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
         FindBugsJob fbJob = new StartedFromBuilderJob("Finding bugs in " + resource.getName() + "...", resource, resources);
         if(runAsJob) {
             // run asynchronously, so there might be more similar jobs waiting to run
+            FindbugsPlugin.log("cancelSimilarJobs");
             FindBugsJob.cancelSimilarJobs(fbJob);
+            FindbugsPlugin.log("scheduleAsSystem");
             fbJob.scheduleAsSystem();
+            FindbugsPlugin.log("done scheduleAsSystem");
         } else {
             // run synchronously (in same thread)
+            FindbugsPlugin.log("running fbJob");
             fbJob.run(monitor);
+            FindbugsPlugin.log("done fbJob");
         }
     }
 

@@ -218,8 +218,10 @@ public class FindBugsWorker {
         }
 
         st.newPoint("runFindBugs");
+        FindbugsPlugin.log("Running findbugs");
 
         runFindBugs(findBugs);
+        FindbugsPlugin.log("Done running findbugs");
 
         // Merge new results into existing results
         // if the argument is project, then it's not incremental
@@ -266,7 +268,7 @@ public class FindBugsWorker {
     }
 
     /**
-     * Clear assotiated markers
+     * Clear associated markers
      *
      * @param files
      */
@@ -306,9 +308,8 @@ public class FindBugsWorker {
      *            done
      */
     private void runFindBugs(final FindBugs2 findBugs) {
-        // bug 1828973 was fixed by findbugs engine, so that workaround to start
-        // the
-        // analysis in an extra thread is not more needed
+        FindbugsPlugin.log("Running findbugs in thread " + Thread.currentThread().getName());
+        System.setProperty("findbugs.progress", "true");
         try {
             // Perform the analysis! (note: This is not thread-safe)
             findBugs.execute();

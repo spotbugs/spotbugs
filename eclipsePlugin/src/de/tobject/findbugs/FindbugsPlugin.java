@@ -1205,6 +1205,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      }
 
      public static void log(String msg, Exception e) {
-        plugin.getLog().log(new Status(IStatus.INFO, plugin.getBundle().getSymbolicName(),  msg, e));
+        plugin.getLog().log(new Status(IStatus.INFO, FindbugsPlugin.PLUGIN_ID,  msg, e));
      }
 }
