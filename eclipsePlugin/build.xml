@@ -38,6 +38,7 @@
     <property name="fb.noUpdateChecks.dir" value="../plugins/noUpdateChecks"/>
 
     <property name="src.dir" value="src"/>
+    <property name="zip.dir" value="zips"/>
     <property name="dist.dir" value="dist"/>
 
     <!-- the binaries/classes, built by javac -->
@@ -85,6 +86,7 @@
         <fileset dir="${lib.dir}" includes="${jars.required}"/>
         <fileset dir="${eclipsePlugin.dir}">
             <include name="**/*.jar"/>
+            <exclude name="**/datanucleus-enhancer*.jar"/>
             <exclude name="edu.umd.cs.findbugs.**/*.jar"/>
         </fileset>
     </path>
@@ -109,12 +111,14 @@
         </condition>
         <mkdir dir="${dist.dir}"/>
         <mkdir dir="${bin.dir}"/>
+        <mkdir dir="${zip.dir}"/>
         <mkdir dir="${lib.dir}"/>
     </target>
 
     <target name="clean" depends="init,fbclean" description="Clean up temporary files">
         <delete includeemptydirs="true" >
             <fileset dir="${bin.dir}"  includes="**/*"/>
+            <fileset dir="${zip.dir}"  includes="**/*"/>
             <fileset dir="${lib.dir}"  includes="**/*"/>
             <!-- defaultexcludes is required to delete .svn and .cvsignore -->
             <fileset dir="${dist.dir}" includes="**/*" defaultexcludes="false"/>
@@ -232,7 +236,7 @@
         </copy>
 
         <!-- Create plugin zipfile. -->
-        <zip destfile="${bin.dir}/${plugin.id}_${plugin.version}.zip">
+        <zip destfile="${zip.dir}/${plugin.id}_${plugin.version}.zip">
             <zipfileset prefix="${plugin.id}_${plugin.version}" dir="${dist.dir}" includes="**"/>
         </zip>
     </target>
@@ -258,7 +262,7 @@
                     destPath="${dist.dir}/src/eclipsePlugin-${plugin.version}"/>
         </svn>
 
-        <zip destfile="${bin.dir}/eclipsePlugin-${plugin.version}-source.zip" compress="true">
+        <zip destfile="${zip.dir}/eclipsePlugin-${plugin.version}-source.zip" compress="true">
             <zipfileset dir="${dist.dir}/src" includes="eclipsePlugin-${plugin.version}/**"/>
         </zip>
     </target>
@@ -378,19 +382,27 @@
     <property name="anttask.jar" value="${findbugs.home}/lib/findbugs-ant.jar"/>
     <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
 
-    <findbugs home="."
+    <findbugs home="${findbugs.home}"
               output="xml"
               cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
               jvmargs="-ea -Xmx1200m -Dfindbugs.failOnCloudError=true -Dfindbugs.cloud.token=238b6fc80cec17ec"
               projectName="FindBugs Eclipse plugin"
               maxRank="20"
+	      excludeFilter="findbugsExclude.xml"
               timeout="1800000"
               outputFile="findbugscheckAll.xml" >
       <class location="${bin.dir}" />
-      <sourcePath path="${srd.dir}"/>
+      <sourcePath path="${src.dir}:${findbugs.home}/src/java"/>
       <auxClasspath refid="plugin.classpath"/>
       <auxClasspath path="lib/ant.jar"/>
     </findbugs>
+    <filterBugs home="${findbugs.home}"
+              withMessages="true"
+              notAProblem="false"
+              jvmargs="-ea -Xmx1200m"
+              input="findbugscheckAll.xml"
+              output="findbugscheck.xml" >
+    </filterBugs>
 
 
    </target>
