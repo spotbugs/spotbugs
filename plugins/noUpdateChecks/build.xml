@@ -22,7 +22,7 @@
         </xmlvalidate>
     </target>
 
-    <target name="plugin-jar">
+    <target name="plugin-jar" depends="clean">
         <jar destfile="build/noUpdateChecks.jar" manifest="META-INF/MANIFEST.MF">
             <fileset dir="etc">
                 <include name="findbugs.xml"/>
