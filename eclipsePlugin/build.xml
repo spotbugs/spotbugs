@@ -94,11 +94,9 @@
     <!-- Need these jars for ant target 'srcdist', which uses subversion.  Grab them at:
          http://subclipse.tigris.org/files/documents/906/43359/svnant-1.2.1.zip -->
     <path id="svn.classpath">
-        <pathelement location="${svnant.home}/lib/svnant.jar"/>
-        <pathelement location="${svnant.home}/lib/svnClientAdapter.jar"/>
-        <pathelement location="${svnant.home}/lib/svnkit.jar"/>
-        <pathelement location="${svnant.home}/lib/svnjavahl.jar"/>
-        <pathelement location="${svnant.home}/lib/ganymed.jar"/>
+	 <fileset dir="${svnant.home}/lib">
+          <include name="*.jar"/>
+         </fileset>
     </path>
 
     <target name="init">
@@ -263,7 +261,8 @@
         <taskdef resource="org/tigris/subversion/svnant/svnantlib.xml"
             format="xml" classpathref="svn.classpath"/>
 
-        <svn username="guest" password="" javahl="false">
+	<svnSetting username="guest" password="" id="svn.settings" />
+	<svn refid="svn.settings" >
             <!-- Use 'export' rather than 'checkout' to exclude the .svn stuff -->
             <export srcUrl="http://findbugs.googlecode.com/svn/trunk/eclipsePlugin"
                     revision="HEAD"
