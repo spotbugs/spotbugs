@@ -82,12 +82,10 @@
     </path>
 
         <path id="svn.classpath">
-                <pathelement location="${svnant.home}/lib/svnant.jar"/>
-                <pathelement location="${svnant.home}/lib/svnClientAdapter.jar"/>
-                <pathelement location="${svnant.home}/lib/svnkit.jar"/>
-                <pathelement location="${svnant.home}/lib/ganymed.jar"/>
-                <pathelement location="${svnant.home}/lib/svnjavahl.jar"/>
-                <pathelement location="${svnant.home}/lib/jna.jar"/>
+
+         <fileset dir="${svnant.home}/lib">
+          <include name="*.jar"/>
+         </fileset>
         </path>
 
 
@@ -757,7 +755,7 @@
     <target name="-get-svn-revision" if="svnant.home">
         <taskdef resource="org/tigris/subversion/svnant/svnantlib.xml"
                  classpathref="svn.classpath"/>
-        <svn svnkit="false" javahl="false">
+        <svn>
             <status path="." revisionProperty="svnrnum"/>
         </svn>
         <echo>${svnrnum}</echo>
@@ -1219,7 +1217,7 @@
     </target>
 
     <!-- Build source distribution. -->
-    <target name="srcdist" description="Source distribution" unless="doNotExportSrc">
+    <target name="srcdist" description="Source distribution" unless="doNotExportSrc" depends="version">
         <echo>
             ${svnant.home}
         </echo>
@@ -1227,7 +1225,8 @@
         <delete dir="${build.dir}/src/findbugs-${release.number}"/>
         <typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="svn.classpath"/>
 
-                <svn username="guest" password="" javahl="false">
+		<svnSetting username="guest" password="" id="svn.settings" />
+                <svn refid="svn.settings" >
                     <!-- Use 'export' rather than 'checkout' to exclude the .svn stuff -->
                     <export srcUrl="http://findbugs.googlecode.com/svn/trunk/findbugs"
                             revision="HEAD"
