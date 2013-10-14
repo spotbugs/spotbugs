@@ -163,6 +163,11 @@
         <loadproperties srcFile="${bin.dir}/version.properties" >
           <filterchain><linecontains><contains value="release.base"/></linecontains></filterchain>
         </loadproperties>
+        <loadproperties srcFile="${bin.dir}/version.properties" >
+          <filterchain><linecontains><contains value="findbugs.svn.revision"/></linecontains></filterchain>
+        </loadproperties>
+
+        <echo>svnversion ${findbugs.svn.revision}</echo>
 
         <!-- 2) read plugin base version from META-INF/MANIFEST.MF to ${eclipse.release.base} -->
         <loadfile srcFile="META-INF/MANIFEST.MF" property="eclipse.release.base">
@@ -183,11 +188,14 @@
         </fail>
 
         <!-- 4) set the values for plugin.version -->
-        <property name="plugin.version" value="${release.base}.${plugin.date}" />
+        <property name="plugin.qualifier" value="${plugin.date}-${findbugs.svn.revision}" />
+        <property name="plugin.version" value="${release.base}.${plugin.qualifier}" />
 
+        <echo>plugin qualifier  ${plugin.qualifier}</echo>
+        <echo>plugin version  ${plugin.version}</echo>
         <!-- 5) Copy META-INF/MANIFEST.MF to ${dist.dir}, "qualifier" to current date -->
         <copy file="META-INF/MANIFEST.MF" toFile="${dist.dir}/META-INF/MANIFEST.MF" overwrite="true">
-          <filterset begintoken="q" endtoken="r"><filter token="ualifie" value="${plugin.date}"/></filterset>
+          <filterset begintoken="q" endtoken="r"><filter token="ualifie" value="${plugin.qualifier}"/></filterset>
         </copy>
     </target>
 
