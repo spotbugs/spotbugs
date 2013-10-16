@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.MethodGen;
 
@@ -49,6 +51,8 @@ public class BugAccumulator {
 
     private final HashMap<String, BugInstance> hashes = new HashMap<String, BugInstance>();
 
+    private BugInstance lastBug;
+    private SourceLineAnnotation lastSourceLine;
     static class Data {
         public Data(int priority, SourceLineAnnotation primarySource) {
             this.priority = priority;
@@ -74,6 +78,24 @@ public class BugAccumulator {
         performAccumulation = AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.MERGE_SIMILAR_WARNINGS);
     }
 
+    public @CheckForNull
+    SourceLineAnnotation getLastBugLocation() {
+        return lastSourceLine;
+    }
+
+    public void forgetLastBug() {
+        Data d = map.get(lastBug);
+        if (d != null) {
+
+            d.allSource.remove(lastSourceLine);
+            if (d.allSource.isEmpty()) {
+                map.remove(lastBug);
+                hashes.remove(lastBug.getInstanceHash());
+            }
+        }
+        lastBug = null;
+        lastSourceLine = null;
+    }
     /**
      * Accumulate a warning at given source location.
      *
@@ -91,6 +113,8 @@ public class BugAccumulator {
         else
             bug.setPriority(Priorities.NORMAL_PRIORITY);
 
+        lastBug = bug;
+        lastSourceLine = sourceLine;
         Data d = map.get(bug);
         if (d == null) {
             String hash = bug.getInstanceHash();
@@ -166,6 +190,8 @@ public class BugAccumulator {
     public void clearBugs() {
         map.clear();
         hashes.clear();
+        lastBug = null;
+        lastSourceLine = null;
     }
 
     public void accumulateBug(BugInstance bug, ClassContext classContext, Method method, Location location) {

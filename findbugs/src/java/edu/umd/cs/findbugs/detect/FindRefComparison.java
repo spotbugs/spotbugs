@@ -842,7 +842,13 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             if ( methodName.equals("assertSame") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)V")) {
                 checkRefComparison(location, jclass, method, methodGen, visitor, typeDataflow, stringComparisonList,
                         refComparisonList);
-            }
+            } else if ( methodName.equals("assertFalse") && methodSig.equals("(Z)V")) {
+                SourceLineAnnotation lastLocation = bugAccumulator.getLastBugLocation();
+                InstructionHandle prevHandle = location.getHandle().getPrev();
+                if (lastLocation != null && prevHandle != null && lastLocation.getEndBytecode() == prevHandle.getPosition())
+                   bugAccumulator.forgetLastBug();
+               
+            } else {
             boolean equalsMethod = !isStatic && methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z")
                     || isStatic &&  methodName.equals("assertEquals")
                         && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)V")
@@ -853,6 +859,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
               if (equalsMethod) {
                 checkEqualsComparison(location, jclass, method, methodGen, cpg, typeDataflow);
+            }
             }
         }
 
