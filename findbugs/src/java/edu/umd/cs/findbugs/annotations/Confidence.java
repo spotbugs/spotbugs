@@ -24,10 +24,7 @@ import javax.annotation.Nonnull;
 import edu.umd.cs.findbugs.Priorities;
 
 /**
- * @see edu.umd.cs.findbugs.BugRankCategory
- * @see edu.umd.cs.findbugs.BugRanker
- * @see Priorities
- * @author pugh
+ * Describes the confidence with which FindBugs reports a bug instance.
  */
 public enum Confidence {
     HIGH(Priorities.HIGH_PRIORITY), MEDIUM(Priorities.NORMAL_PRIORITY), LOW(Priorities.LOW_PRIORITY), IGNORE(
@@ -35,12 +32,7 @@ public enum Confidence {
 
     private final int confidenceValue;
 
-    /**
-     * @param prio
-     *            value in range between {@link Priorities#HIGH_PRIORITY} and
-     *            {@link Priorities#IGNORE_PRIORITY} constants
-     * @return matching confidence value
-     */
+    /** Given a numeric confidence value, report the corresponding confidence enum value */
     @Nonnull
     static public Confidence getConfidence(int prio) {
         for(Confidence c : values()) {

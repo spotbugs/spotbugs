@@ -26,17 +26,18 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.CONSTRUCTOR,
         ElementType.LOCAL_VARIABLE, ElementType.PACKAGE })
 @Retention(RetentionPolicy.CLASS)
+/**
+ *  Used to suppress FindBugs warnings.
+ *  @deprecated - Use {@link SuppressFBWarnings} instead, to avoid name conflicts with {@link java.lang.SuppressWarnings}.
+ * @author pugh
+ */
 public @interface SuppressWarnings {
     /**
      * The set of FindBugs warnings that are to be suppressed by the compiler in the
      * annotated element.
      * 
-     * @deprecated - Use {@link SuppressFBWarnings} instead, to avoid name conflicts
-     * with {@link java.lang.SuppressWarnings}.
      */
-    @Deprecated
     String[] value() default {};
 
-    @Deprecated
     String justification() default "";
 }
