@@ -234,10 +234,11 @@ public class FindSelfComparison extends OpcodeStackDetector {
                 if (field0.isVolatile())
                     priority++;
                 BugInstance bug = new BugInstance(this, "SA_FIELD_SELF_" + op, priority)
-                        .addClassAndMethod(this);
+                        .addClassAndMethod(this).addField(field0);
+                
                 if (this.isMethodCall())
                     bug.addCalledMethod(this);
-                bugAccumulator.accumulateBug(bug.addField(field0), this);
+                bugAccumulator.accumulateBug(bug, this);
             }
 
             else if (opCode == IXOR && item0.equals(item1)) {
