@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.ba.generic;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import junit.framework.TestCase;
 
 import org.apache.bcel.generic.ReferenceType;
@@ -42,14 +44,15 @@ public class TestGenericObjectType extends TestCase {
 
     GenericUtilities.TypeCategory typeCategory;
 
-    String variable;
+    @Nullable String variable;
 
-    Type extension;
+    @Nullable Type extension;
 
     List<ReferenceType> parameters;
 
     public void initTest(String bytecodeSignature, String javaSignature, String underlyingClass,
-            GenericUtilities.TypeCategory typeCategory, String variable, Type extension, List<ReferenceType> parameters) {
+            GenericUtilities.TypeCategory typeCategory,
+            @Nullable String variable, @Nullable Type extension, @Nullable List<ReferenceType> parameters) {
         this.obj = (GenericObjectType) GenericUtilities.getType(bytecodeSignature);
         this.javaSignature = javaSignature;
         this.underlyingClass = underlyingClass;
@@ -90,7 +93,7 @@ public class TestGenericObjectType extends TestCase {
         }
     }
 
-    private void compareTypes(Type a, Type b) {
+    private static void compareTypes(Type a, Type b) {
         assertEquals(a, b);
         if (a instanceof GenericObjectType || b instanceof GenericObjectType) {
             assertTrue(a instanceof GenericObjectType && b instanceof GenericObjectType);
