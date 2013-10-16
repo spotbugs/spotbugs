@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 import edu.umd.cs.findbugs.util.Util;
@@ -60,6 +61,7 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class TypeQualifierValue<A extends Annotation> {
     public static final boolean DEBUG = SystemProperties.getBoolean("tqv.debug");
+    public static final boolean DEBUG_CLASSLOADING = SystemProperties.getBoolean("tqv.debug.classloading");
 
     private static final ClassDescriptor EXCLUSIVE_ANNOTATION = DescriptorFactory.instance().getClassDescriptor(
             javax.annotation.meta.Exclusive.class);
@@ -146,7 +148,7 @@ public class TypeQualifierValue<A extends Annotation> {
                 // found it.
                 SecurityManager m = System.getSecurityManager();
                 if (m == null) {
-                    System.out.println("Setting ValidationSecurityManager");
+                    if (DEBUG_CLASSLOADING) System.out.println("Setting ValidationSecurityManager");
                     System.setSecurityManager(ValidationSecurityManager.INSTANCE);
                 }
 
@@ -197,7 +199,9 @@ public class TypeQualifierValue<A extends Annotation> {
 
     @SuppressWarnings("unchecked")
     private static <A> Class<A> getQualifierClass(ClassDescriptor typeQualifier) throws ClassNotFoundException {
-        String className = typeQualifier.getClassName();
+        @DottedClassName String className = typeQualifier.getDottedClassName();
+        if (DEBUG_CLASSLOADING)
+            System.out.println("Getting qualifier class for " + className);
         if (className.startsWith("javax.annotation"))
             return (Class<A>) Class.forName(className);
         ClassData data;

@@ -34,8 +34,10 @@ final class ValidationSecurityManager extends SecurityManager {
     final static ValidatorClassLoader VALIDATOR_LOADER = new ValidatorClassLoader();
 
     
-    {
-        new RuntimeException("Creating ValidationSecurityManager #").printStackTrace();
+    static {
+        if (TypeQualifierValue.DEBUG_CLASSLOADING)
+            new RuntimeException("Creating ValidationSecurityManager #").printStackTrace();
+
     }
     public static <A extends Annotation> When sandboxedValidation(A proxy, TypeQualifierValidator<A> v, @CheckForNull
     Object constantValue) {
@@ -45,10 +47,19 @@ final class ValidationSecurityManager extends SecurityManager {
         try {
             performingValidation.set(Boolean.TRUE);
 
-            When result = v.forConstantValue(proxy, constantValue);
-            if (!performingValidation.get())
-                throw new IllegalStateException("performingValidation not set when validation completes");
-            return result;
+            try {
+                When result = v.forConstantValue(proxy, constantValue);
+                if (!performingValidation.get())
+                    throw new IllegalStateException("performingValidation not set when validation completes");
+                return result;
+            } catch (ClassCastException e) {
+                Class<? extends Annotation> c = proxy.getClass();
+                System.out.println(c.getName() + " extends " + c.getSuperclass().getName());
+                for(Class<?> i : c.getInterfaces())
+                        System.out.println("  " + i.getName());
+                throw e;
+            }
+            
         } finally {
             performingValidation.set(Boolean.FALSE);
         }
