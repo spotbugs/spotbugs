@@ -695,8 +695,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 // bugReporter.logError("Error analyzing " + method.toString(),
                 // e);
             }
+            bugAccumulator.reportAccumulatedBugs();
         }
-        bugAccumulator.reportAccumulatedBugs();
+
     }
 
     /**
@@ -845,8 +846,11 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             } else if ( methodName.equals("assertFalse") && methodSig.equals("(Z)V")) {
                 SourceLineAnnotation lastLocation = bugAccumulator.getLastBugLocation();
                 InstructionHandle prevHandle = location.getHandle().getPrev();
-                if (lastLocation != null && prevHandle != null && lastLocation.getEndBytecode() == prevHandle.getPosition())
+                if (lastLocation != null && prevHandle != null && lastLocation.getEndBytecode() == prevHandle.getPosition()){
                    bugAccumulator.forgetLastBug();
+                   if (DEBUG)
+                       System.out.println("Forgetting last bug due to call to " + className +"." + methodName);
+                }
                
             } else {
             boolean equalsMethod = !isStatic && methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z")
