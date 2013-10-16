@@ -139,12 +139,14 @@ public class TypeQualifierValue<A extends Annotation> {
             // fix for bug 3599258 (Random obscure Eclipse failures during
             // analysis)
 
+            if (!SystemProperties.RUNNING_IN_ECLIPSE)
             try {
                 Global.getAnalysisCache().getClassAnalysis(ClassData.class, checkerName);
 
                 // found it.
                 SecurityManager m = System.getSecurityManager();
                 if (m == null) {
+                    System.out.println("Setting ValidationSecurityManager");
                     System.setSecurityManager(ValidationSecurityManager.INSTANCE);
                 }
 
@@ -195,9 +197,28 @@ public class TypeQualifierValue<A extends Annotation> {
 
     @SuppressWarnings("unchecked")
     private static <A> Class<A> getQualifierClass(ClassDescriptor typeQualifier) throws ClassNotFoundException {
-        return (Class<A>) ValidationSecurityManager.VALIDATOR_LOADER.loadClass(typeQualifier.getDottedClassName());
+        String className = typeQualifier.getClassName();
+        if (className.startsWith("javax.annotation"))
+            return (Class<A>) Class.forName(className);
+        ClassData data;
+        try {
+            data = Global.getAnalysisCache().getClassAnalysis(ClassData.class, typeQualifier);
+        } catch (CheckedAnalysisException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new ClassNotFoundException("No class data found for " + typeQualifier, e);
+        }
+        byte [] b = data.getData();
+        
+        ValidatorClassLoader validatorLoader = ValidationSecurityManager.VALIDATOR_LOADER;
+        return (Class<A>) validatorLoader.findClass(typeQualifier.getDottedClassName(), b);
     }
 
+    static byte[] loadClassData(String name) throws CheckedAnalysisException {
+        ClassDescriptor d = DescriptorFactory.createClassDescriptorFromDottedClassName(name);
+        ClassData data = Global.getAnalysisCache().getClassAnalysis(ClassData.class, d);
+        return data.getData();
+    }
     static class Data {
         /**
          * Cache in which constructed TypeQualifierValues are interned.

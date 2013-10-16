@@ -31,8 +31,12 @@ final class ValidationSecurityManager extends SecurityManager {
 
     static final ValidationSecurityManager INSTANCE = new ValidationSecurityManager();
 
-    final static ClassLoader VALIDATOR_LOADER = new ValidatorClassLoader();
+    final static ValidatorClassLoader VALIDATOR_LOADER = new ValidatorClassLoader();
 
+    
+    {
+        new RuntimeException("Creating ValidationSecurityManager #").printStackTrace();
+    }
     public static <A extends Annotation> When sandboxedValidation(A proxy, TypeQualifierValidator<A> v, @CheckForNull
     Object constantValue) {
         if (performingValidation.get())

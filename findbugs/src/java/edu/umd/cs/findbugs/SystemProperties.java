@@ -40,6 +40,9 @@ public class SystemProperties {
 
     public final static boolean ASSERTIONS_ENABLED;
 
+    public static boolean RUNNING_IN_ECLIPSE = SystemProperties.class.getClassLoader().getClass().getCanonicalName()
+                          .startsWith("org.eclipse.osgi");
+            
     final static String OS_NAME;
     static {
         boolean tmp = false;

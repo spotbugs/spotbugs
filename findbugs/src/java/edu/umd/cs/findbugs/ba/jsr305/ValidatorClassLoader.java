@@ -20,42 +20,50 @@
 package edu.umd.cs.findbugs.ba.jsr305;
 
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 
 /**
  * @author pugh
  */
-public class ValidatorClassLoader extends ClassLoader {
+class ValidatorClassLoader extends ClassLoader {
 
     ValidatorClassLoader() {
         super(ClassLoader.getSystemClassLoader().getParent());
+        new RuntimeException("Creating ValidatorClassLoader #").printStackTrace();
     }
     @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
         if (name.startsWith("javax.annotation"))
                 return Class.forName(name);
-        byte[] b;
+       
         try {
-            b = loadClassData(name);
-            return defineClass(name, b, 0, b.length);
+            System.out.println("Looking for class data for " + name);
+            byte[] b = TypeQualifierValue.loadClassData(name);
+            return findClass(name, b);
         } catch (CheckedAnalysisException e) {
-//            e.printStackTrace();
+            e.printStackTrace();
             return super.findClass(name);
         } catch (RuntimeException e) {
-//            e.printStackTrace();
+            e.printStackTrace();
             throw e;
         }
 
 
     }
 
-    private byte[] loadClassData(String name) throws CheckedAnalysisException {
-        ClassDescriptor d = DescriptorFactory.createClassDescriptorFromDottedClassName(name);
-        ClassData data = Global.getAnalysisCache().getClassAnalysis(ClassData.class, d);
-        return data.getData();
+    public Class<?> findClass(String name, byte [] b) throws ClassNotFoundException {
+        try {
+            System.out.println("Loading " + b.length + " bytes for class " + name);
+            Class<?> result = defineClass(name, b, 0, b.length);
+            System.out.println("defined class");
+            return result;
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+
     }
+    
+    
 
 }
