@@ -25,7 +25,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
  */
 public class IncompatibleEqualsPositiveCases {
 
-    @ExpectWarning("EC_ARRAY_AND_NONARRAY,EC_UNRELATED_TYPES")
+    @ExpectWarning(value="EC", num=7)
     public boolean testEquality(String s, Integer i, Double d, Object a[]) {
 
         //BUG: Suggestion includes "false"
@@ -60,7 +60,7 @@ public class IncompatibleEqualsPositiveCases {
         return false;
     }
     
-    @ExpectWarning("EC_ARRAY_AND_NONARRAY,EC_UNRELATED_TYPES")
+    @ExpectWarning(value="EC", num=7)
     public boolean testObjectsEquals(String s, Integer i, Double d, Object a[]) {
 
         //BUG: Suggestion includes "false"
@@ -95,7 +95,7 @@ public class IncompatibleEqualsPositiveCases {
     }
 
     
-    @ExpectWarning("EC_ARRAY_AND_NONARRAY,EC_UNRELATED_TYPES")
+    @ExpectWarning(value="EC", num=7)
     public boolean testGuavaEquals(String s, Integer i, Double d, Object a[]) {
 
         //BUG: Suggestion includes "false"
