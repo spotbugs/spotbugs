@@ -278,7 +278,7 @@ public class Plugin {
     /**
      * Add a BugCategory reported by the Plugin.
      *
-     * @param bugCode
+     * @param bugCategory
      */
     public void addBugCategory(BugCategory bugCategory) {
         BugCategory old = bugCategories.get(bugCategory.getCategory());
@@ -599,9 +599,6 @@ public class Plugin {
         }
     }
 
-    /**
-     * @return
-     */
     public void setGloballyEnabled(boolean enabled) {
         if (isCorePlugin()) {
             if (!enabled)

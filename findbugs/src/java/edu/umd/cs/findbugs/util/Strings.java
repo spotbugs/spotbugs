@@ -112,7 +112,7 @@ public class Strings {
      * escape sequences. This method will be invoked automatically the first
      * time a string is escaped/unescaped.
      * 
-     * @see <a href="http://www.w3.org/TR/REC-xml/#charsets>Extensible Markup
+     * @see <a href="http://www.w3.org/TR/REC-xml/#charsets">Extensible Markup
      *      Language (XML) 1.0 (Fifth Edition)</a>
      */
     public static void initializeEscapeMap() {
@@ -151,7 +151,7 @@ public class Strings {
      *            a string
      * @return the same string with characters not permitted by the XML
      *         specification escaped
-     * @see <a href="http://www.w3.org/TR/REC-xml/#charsets>Extensible Markup
+     * @see <a href="http://www.w3.org/TR/REC-xml/#charsets">Extensible Markup
      *      Language (XML) 1.0 (Fifth Edition)</a>
      * @see <a
      *      href="http://commons.apache.org/lang/api/org/apache/commons/lang/StringEscapeUtils.html#escapeXml(java.lang.String)">org.apache.commons.lang.StringEscapeUtils
@@ -228,7 +228,7 @@ public class Strings {
      * @param s
      *            a string
      * @return the same string with XML entities/escape sequences unescaped
-     * @see <a href="http://www.w3.org/TR/REC-xml/#charsets>Extensible Markup
+     * @see <a href="http://www.w3.org/TR/REC-xml/#charsets">Extensible Markup
      *      Language (XML) 1.0 (Fifth Edition)</a>
      * @see <a
      *      href="http://commons.apache.org/lang/api/org/apache/commons/lang/StringEscapeUtils.html#unescapeXml(java.lang.String)">org.apache.commons.lang.StringEscapeUtils

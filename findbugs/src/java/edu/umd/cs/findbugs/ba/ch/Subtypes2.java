@@ -134,12 +134,12 @@ public class Subtypes2 {
     final static ObjectType COLLECTION_TYPE = ObjectTypeFactory.getInstance(Collection.class);
     final static ObjectType MAP_TYPE = ObjectTypeFactory.getInstance(Map.class);
 
-    static public boolean isCollection(ReferenceType target) throws ClassNotFoundException {      
+    static public boolean isCollection(ReferenceType target) throws ClassNotFoundException {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
         return subtypes2.isSubtype(target, COLLECTION_TYPE);
     }
     /** A collection, a map, or some other container */
-    static public boolean isContainer(ReferenceType target) throws ClassNotFoundException {      
+    static public boolean isContainer(ReferenceType target) throws ClassNotFoundException {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
         return subtypes2.isSubtype(target, COLLECTION_TYPE)
                 || subtypes2.isSubtype(target, MAP_TYPE);
@@ -450,7 +450,7 @@ public class Subtypes2 {
         }
         }
         if (false) {
-            if (subName.equals("java/lang/Error") && superName.equals("java/lang/RuntimeException")) 
+            if (subName.equals("java/lang/Error") && superName.equals("java/lang/RuntimeException"))
                     System.out.println("huh");
             System.out.println("sub: " + subDesc);
             System.out.println("SUP: " + superDesc);
@@ -1067,7 +1067,6 @@ public class Subtypes2 {
      * @param classDescriptor
      *            a ClassDescriptor
      * @return SupertypeQueryResults for the class named by the ClassDescriptor
-     * @throws ClassNotFoundException
      */
     public SupertypeQueryResults getSupertypeQueryResults(ClassDescriptor classDescriptor) {
         SupertypeQueryResults supertypeQueryResults = supertypeSetMap.get(classDescriptor);
@@ -1084,8 +1083,6 @@ public class Subtypes2 {
      * @param classDescriptor
      *            a ClassDescriptor
      * @return SupertypeQueryResults containing known supertypes of the class
-     * @throws ClassNotFoundException
-     *             if the class can't be found
      */
     private SupertypeQueryResults computeSupertypes(ClassDescriptor classDescriptor) // throws
                                                                                      // ClassNotFoundException

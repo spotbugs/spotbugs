@@ -66,8 +66,8 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
 
     private JButton cancelButton;
 
-    public AnalyzingDialog(@Nonnull final Project project) {
-        this(project, new AnalysisCallback() {
+    public static void show(@Nonnull final Project project) {
+        AnalysisCallback callback = new AnalysisCallback() {
             public void analysisFinished(BugCollection results) {
                 MainFrame instance = MainFrame.getInstance();
                 assert results.getProject() == project;
@@ -85,8 +85,43 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
                 instance.updateProjectAndBugCollection(null);
                 instance.releaseDisplayWait();
             }
-        }, false);
+        };
+        show(project, callback, false);
+        
     }
+    
+    /**
+     * 
+     * @param project
+     *            The Project to analyze
+     * @param callback
+     *            contains what to do if the analysis is interrupted and what to
+     *            do if it finishes normally
+     * @param joinThread
+     *            Whether or not this constructor should return before the
+     *            analysis is complete. If true, the constructor does not return
+     *            until the analysis is either finished or interrupted.
+     */
+    
+    public static void show(@Nonnull Project project, AnalysisCallback callback, boolean joinThread) {
+        AnalyzingDialog dialog = new AnalyzingDialog(project, callback, joinThread);
+        MainFrame.getInstance().acquireDisplayWait();
+        try {
+            dialog.analysisThread.start();
+            if (joinThread)
+                try {
+                    dialog.analysisThread.join();
+                } catch (InterruptedException e) {
+                }
+        } finally {
+            if (joinThread)
+                MainFrame.getInstance().releaseDisplayWait();
+
+        }
+        
+    }
+    
+   
 
     /**
      * 
@@ -105,23 +140,6 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
             throw new NullPointerException("null project");
         this.project = project;
         this.callback = callback;
-        initComponents();
-        MainFrame.getInstance().acquireDisplayWait();
-        try {
-            analysisThread.start();
-            if (joinThread)
-                try {
-                    analysisThread.join();
-                } catch (InterruptedException e) {
-                }
-        } finally {
-            if (joinThread) 
-                MainFrame.getInstance().releaseDisplayWait();
-
-        }
-    }
-
-    private void initComponents() {
         statusLabel = new JLabel(" ");
         progressBar = new JProgressBar();
         progressBar.setStringPainted(true);
@@ -138,7 +156,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
                 cancel();
             }
         });
-
+        
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
@@ -156,11 +174,12 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
                 try {
                     setVisible(true);
                 } catch (Throwable e) {
-                    project.getGuiCallback().showMessageDialog("ERROR DURING ANALYSIS:\n\n"
+                    AnalyzingDialog.this.project.getGuiCallback().showMessageDialog("ERROR DURING ANALYSIS:\n\n"
                             + e.getClass().getSimpleName() + ": " + e.getMessage());
                 }
             }
         });
+        
     }
 
     private void cancel() {

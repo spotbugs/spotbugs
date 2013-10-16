@@ -126,8 +126,6 @@ public class Filter extends OrMatcher {
      * @param fileName
      *            name of the filter file
      * @throws IOException
-     * @throws SAXException
-     * @throws FilterException
      */
     public Filter(String fileName) throws IOException {
         try {

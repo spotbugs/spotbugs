@@ -137,22 +137,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor {
         }
     }
 
-    /**
-     * Constructor.
-     *
-     * @param classDescriptor
-     *            ClassDescriptor representing the class name
-     * @param superclassDescriptor
-     *            ClassDescriptor representing the superclass name
-     * @param interfaceDescriptorList
-     *            ClassDescriptors representing implemented interface names
-     * @param codeBaseEntry
-     *            codebase entry class was loaded from
-     * @param accessFlags
-     *            class's access flags
-     * @param usesConcurrency
-     *            TODO
-     */
+
     ClassNameAndSuperclassInfo(ClassDescriptor classDescriptor, ClassDescriptor superclassDescriptor,
             ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags,
             /* TODO: We aren't doing anything with this */

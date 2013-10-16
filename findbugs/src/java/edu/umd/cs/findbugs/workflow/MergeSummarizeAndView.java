@@ -204,13 +204,6 @@ public class MergeSummarizeAndView {
 
     final MSVOptions options;
 
-    /**
-     * @param options
-     * @throws NoSuchMethodException
-     * @throws ClassNotFoundException
-     * @throws InterruptedException
-     */
-
     public MergeSummarizeAndView(MSVOptions options) {
         this.options = options;
     }

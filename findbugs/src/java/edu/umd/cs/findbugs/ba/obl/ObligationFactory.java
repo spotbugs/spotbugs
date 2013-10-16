@@ -123,7 +123,6 @@ public class ObligationFactory {
      *            a ClassDescriptor naming a class type
      * @return an Obligation that is a supertype of the given type, or null if
      *         there is no such Obligation
-     * @throws ClassNotFoundException
      */
     public @CheckForNull
     Obligation getObligationByType(ClassDescriptor classDescriptor) {

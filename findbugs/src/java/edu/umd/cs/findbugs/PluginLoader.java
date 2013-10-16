@@ -175,7 +175,7 @@ public class PluginLoader {
      *            the URL of the plugin Jar file
      * @param parent
      *            the parent classloader
-     * @deprecated Use {@link #PluginLoader(URL,ClassLoader,boolean,boolean)} instead
+     * @deprecated Use {@link #PluginLoader(URL,URI,ClassLoader,boolean,boolean)} instead
      */
     @Deprecated
     public PluginLoader(URL url, ClassLoader parent) throws PluginException {

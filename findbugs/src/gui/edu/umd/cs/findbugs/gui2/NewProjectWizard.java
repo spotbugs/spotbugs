@@ -205,7 +205,7 @@ public class NewProjectWizard extends FBDialog {
         for (CloudPlugin c : DetectorFactoryCollection.instance().getRegisteredClouds().values()) {
             String fbid = c.getFindbugsPluginId();
             Plugin plugin = Plugin.getByPluginId(fbid);
-            if (plugin == null) 
+            if (plugin == null)
                 continue;
             Boolean fbPluginStatus = project.getPluginStatus(plugin);
             if ((!c.isHidden() || c.getId().equals(cloudId)) && !Boolean.FALSE.equals(fbPluginStatus))
@@ -276,13 +276,13 @@ public class NewProjectWizard extends FBDialog {
                 if (keepGoing) {
                     mainFrame.setProject(p);
                 }
-                if (projectChanged && (isNewProject 
+                if (projectChanged && (isNewProject
                         || JOptionPane.showConfirmDialog(NewProjectWizard.this, edu.umd.cs.findbugs.L10N
                                 .getLocalString("dlg.project_settings_changed_lbl",
                                         "Project settings have been changed.  Perform a new analysis with the changed files?"),
                                 edu.umd.cs.findbugs.L10N.getLocalString("dlg.redo_analysis_question_lbl", "Redo analysis?"),
                                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)) {
-                    new AnalyzingDialog(p);
+                    AnalyzingDialog.show(p);
                 } else if (!Util.nullSafeEquals(newCloudId, oldCloudId)) {
                     BugCollection bugs = mainFrame.getBugCollection();
                     try {

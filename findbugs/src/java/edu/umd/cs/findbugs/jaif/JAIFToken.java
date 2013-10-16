@@ -23,7 +23,8 @@ package edu.umd.cs.findbugs.jaif;
  * One lexical token of an external annotations file.
  * 
  * @author David Hovemeyer
- * @see http://pag.csail.mit.edu/jsr308/annotation-file-utilities/
+ * @see <a href="http://pag.csail.mit.edu/jsr308/annotation-file-utilities/">
+ * http://pag.csail.mit.edu/jsr308/annotation-file-utilities/</a>
  */
 class JAIFToken {
     JAIFTokenKind kind;

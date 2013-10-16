@@ -339,7 +339,6 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
     }
 
     /**
-     * @param isLocked
      * @return
      */
     private boolean isLocked() {

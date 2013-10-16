@@ -329,7 +329,6 @@ public abstract class Frame<ValueType> {
      *            the ConstantPoolGen for the class containing the method
      * @return number of arguments; note that this excludes the object instance
      *         for instance methods
-     * @throws DataflowAnalysisException
      */
     public int getNumArguments(InvokeInstruction ins, ConstantPoolGen cpg) {
         SignatureParser parser = new SignatureParser(ins.getSignature(cpg));

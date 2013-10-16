@@ -119,7 +119,6 @@ public class ClassFeatureSet implements XMLWriteable {
      *            the method
      * @return true if the method overrides a superclass/superinterface method,
      *         false if not
-     * @throws ClassNotFoundException
      */
     private boolean overridesSuperclassMethod(JavaClass javaClass, Method method) {
         if (method.isStatic())

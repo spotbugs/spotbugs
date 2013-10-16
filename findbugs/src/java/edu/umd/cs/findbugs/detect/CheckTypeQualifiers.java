@@ -310,15 +310,7 @@ public class CheckTypeQualifiers extends CFGDetector {
         }
     }
 
-    /**
-     * @param methodDescriptor2
-     * @param cfg2
-     * @param typeQualifierValue
-     * @param forwardsFact
-     * @param loc
-     * @param factAtLocation
-     * @throws DataflowAnalysisException
-     */
+
     private void checkForEqualityTest(XMethod  xmethod, CFG cfg, TypeQualifierValue typeQualifierValue,
             TypeQualifierValueSet forwardsFact, Location loc, ValueNumberFrame factAtLocation) throws DataflowAnalysisException {
         InstructionHandle handle = loc.getHandle();

@@ -164,7 +164,6 @@ public class ClassContext {
      * @param methodDescriptor
      *            method descriptor identifying the analyzed method
      * @return the analysis object
-     * @throws CheckedAnalysisException
      */
     public Object getMethodAnalysis(Class<?> analysisClass, MethodDescriptor methodDescriptor) {
         Map<MethodDescriptor, Object> objectMap = getObjectMap(analysisClass);

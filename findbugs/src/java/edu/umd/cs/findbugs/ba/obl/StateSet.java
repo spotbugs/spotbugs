@@ -191,7 +191,7 @@ public class StateSet {
         if (stateMap.isEmpty()) {
             State s = new State(factory);
             s.getObligationSet().add(obligation);
-            updatedStateMap.put(s.getObligationSet(), s);  
+            updatedStateMap.put(s.getObligationSet(), s);
         } else for (State state : stateMap.values()) {
             checkCircularity(state, obligation, basicBlockId);
             state.getObligationSet().add(obligation);
@@ -209,7 +209,7 @@ public class StateSet {
      * @param basicBlockId
      *            the id of the basic block (path component) removing the
      *            obligation
-     * @throws NonexistentObligationException
+     * @throws ObligationAcquiredOrReleasedInLoopException
      */
     public void deleteObligation(final Obligation obligation, int basicBlockId)
             throws ObligationAcquiredOrReleasedInLoopException {
@@ -276,7 +276,7 @@ public class StateSet {
         if (o == null || o.getClass() != this.getClass())
             return false;
         StateSet other = (StateSet) o;
-        return this.isTop == other.isTop && this.isBottom == other.isBottom 
+        return this.isTop == other.isTop && this.isBottom == other.isBottom
                 && this.onExceptionPath == other.onExceptionPath && this.stateMap.equals(other.stateMap);
     }
 

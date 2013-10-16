@@ -817,7 +817,6 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
      * @param invokeInstruction
      * @param nullArgSet
      * @param definitelyNullArgSet
-     * @throws ClassNotFoundException
      */
     private void checkNonNullParam(Location location, ConstantPoolGen cpg, TypeDataflow typeDataflow,
             InvokeInstruction invokeInstruction, BitSet nullArgSet, BitSet definitelyNullArgSet) {

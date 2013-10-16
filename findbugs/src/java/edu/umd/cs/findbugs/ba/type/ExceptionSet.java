@@ -31,7 +31,6 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
-import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Class for keeping track of exceptions that can be thrown by an instruction.

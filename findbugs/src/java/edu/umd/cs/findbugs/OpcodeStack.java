@@ -105,7 +105,7 @@ public class OpcodeStack implements Constants2 {
      * will not use iterative opcode stack evaluation.
      *
      * This is primarily for detectors that need to be backwards compatible with
-     * versions of FindBugs that do not support {@link OpcodeStackDetector.WithCustomJumpInfo }}
+     * versions of FindBugs that do not support {@link edu.umd.cs.findbugs.bcel.OpcodeStackDetector.WithCustomJumpInfo }}
      */
     @Documented
     @Target({ElementType.TYPE, ElementType.PACKAGE})

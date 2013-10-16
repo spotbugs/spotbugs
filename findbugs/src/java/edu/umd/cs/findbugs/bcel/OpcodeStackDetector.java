@@ -79,7 +79,7 @@ abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
     abstract public void sawOpcode(int seen);
 
     /**
-     * @return true if this detector is annotated with  {@link OpcodeStack.CustomUserValue}
+     * @return true if this detector is annotated with  {@link edu.umd.cs.findbugs.OpcodeStack.CustomUserValue}
      * and thus should not reuse generic OpcodeStack information
      * from an iterative evaluation of the opcode stack. Such detectors
      * will not use iterative opcode stack evaluation.

@@ -95,7 +95,7 @@ public class FindBugsViewerTask extends Task {
     /**
      * Sets the file that contains the XML output of a findbugs report.
      * 
-     * @param bugReport
+     * @param loadbugs
      *            XML output from a findbugs session
      */
     public void setLoadbugs(File loadbugs) {

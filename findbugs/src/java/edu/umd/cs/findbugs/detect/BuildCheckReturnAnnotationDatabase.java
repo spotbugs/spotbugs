@@ -32,8 +32,8 @@ import edu.umd.cs.findbugs.ba.AnnotationDatabase;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase.Target;
 import edu.umd.cs.findbugs.ba.CheckReturnValueAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 /**

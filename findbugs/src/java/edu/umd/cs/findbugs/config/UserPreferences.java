@@ -50,6 +50,7 @@ import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.util.Util;

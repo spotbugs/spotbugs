@@ -121,7 +121,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
      * @param fileName
      *            name of the database file
      * @throws IOException
-     * @throws MethodPropertyDatabaseFormatException
+     * @throws PropertyDatabaseFormatException
      */
     public void readFromFile(String fileName) throws IOException, PropertyDatabaseFormatException {
         read(new FileInputStream(fileName));
@@ -134,7 +134,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
      * @param in
      *            the InputStream
      * @throws IOException
-     * @throws MethodPropertyDatabaseFormatException
+     * @throws PropertyDatabaseFormatException
      */
     public void read(@WillClose InputStream in) throws IOException, PropertyDatabaseFormatException {
         BufferedReader reader = null;
@@ -257,7 +257,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
      * @param propStr
      *            String containing the encoded property
      * @return the property
-     * @throws MethodPropertyDatabaseFormatException
+     * @throws PropertyDatabaseFormatException
      */
     protected abstract ValueType decodeProperty(String propStr) throws PropertyDatabaseFormatException;
 

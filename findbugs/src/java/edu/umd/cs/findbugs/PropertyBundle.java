@@ -195,11 +195,6 @@ public class PropertyBundle {
 
     }
 
-    /**
-     * @param name
-     *            property name
-     * @return string value (or null if the property does not exist)
-     */
     public void setProperty(String name, String value) {
         properties.setProperty(name, value);
     }

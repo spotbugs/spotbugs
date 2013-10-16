@@ -211,7 +211,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
         if (code == null)
             throw new IllegalArgumentException(method.getName() + " has no code");
         for (Attribute a : code.getAttributes()) {
-            if (a instanceof LocalVariableTypeTable) 
+            if (a instanceof LocalVariableTypeTable)
                 visitor.setLocalTypeTable((LocalVariableTypeTable) a);
         }
         this.methodGen = methodGen;
@@ -811,7 +811,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
      *            the basic block
      * @return the set of exceptions that can be thrown by the block
      */
-    private ExceptionSet computeThrownExceptionTypes(BasicBlock basicBlock) throws 
+    private ExceptionSet computeThrownExceptionTypes(BasicBlock basicBlock) throws
             DataflowAnalysisException {
 
         ExceptionSet exceptionTypeSet = exceptionSetFactory.createExceptionSet();

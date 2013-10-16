@@ -212,11 +212,6 @@ public class SystemProperties {
 
     }
 
-    /**
-     * @param name
-     *            property name
-     * @return string value (or null if the property does not exist)
-     */
     public static void setProperty(String name, String value) {
         properties.setProperty(name, value);
     }

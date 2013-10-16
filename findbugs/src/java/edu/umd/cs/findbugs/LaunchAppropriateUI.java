@@ -139,8 +139,6 @@ public class LaunchAppropriateUI {
      * Any other value (or the absence of any value) will not change the default
      * behavior, which is to launch the newer "gui2" on systems that support it.
      *
-     * @param args
-     *            the command line arguments
      * @return an integer UI code: TEXTUI, GUI1, GUI2, SHOW_VERSION, SHOW_HELP,
      *         or possibly another user-set int value
      */

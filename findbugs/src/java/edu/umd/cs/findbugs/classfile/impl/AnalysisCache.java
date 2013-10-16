@@ -185,7 +185,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     @SuppressWarnings("unchecked")
     private <E> Map<ClassDescriptor, E> getAllClassAnalysis(Class<E> analysisClass)  {
-        Map<ClassDescriptor, Object> descriptorMap 
+        Map<ClassDescriptor, Object> descriptorMap
         = findOrCreateDescriptorMap(classAnalysisMap, classAnalysisEngineMap,
                 analysisClass);
         return (Map<ClassDescriptor, E>) descriptorMap;
@@ -245,7 +245,7 @@ public class AnalysisCache implements IAnalysisCache {
         }
         // Get the descriptor->result map for this analysis class,
         // creating if necessary
-        Map<ClassDescriptor, Object> descriptorMap = findOrCreateDescriptorMap(classAnalysisMap, 
+        Map<ClassDescriptor, Object> descriptorMap = findOrCreateDescriptorMap(classAnalysisMap,
                 classAnalysisEngineMap,
                 analysisClass);
 
@@ -436,8 +436,6 @@ public class AnalysisCache implements IAnalysisCache {
      * @param <DescriptorType>
      *            type of descriptor used as the map's key type (ClassDescriptor
      *            or MethodDescriptor)
-     * @param <E>
-     *            type of analysis class
      * @param analysisClassToDescriptorMapMap
      *            analysis class to descriptor map map
      * @param engineMap
@@ -448,7 +446,7 @@ public class AnalysisCache implements IAnalysisCache {
      */
     private static <DescriptorType> Map<DescriptorType, Object> findOrCreateDescriptorMap(
             final Map<Class<?>, Map<DescriptorType, Object>> analysisClassToDescriptorMapMap,
-            final Map<Class<?>, ? extends IAnalysisEngine<DescriptorType, ?>> engineMap, 
+            final Map<Class<?>, ? extends IAnalysisEngine<DescriptorType, ?>> engineMap,
                     final Class<?> analysisClass) {
         Map<DescriptorType, Object> descriptorMap = analysisClassToDescriptorMapMap.get(analysisClass);
         if (descriptorMap == null) {

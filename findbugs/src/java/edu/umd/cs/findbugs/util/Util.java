@@ -546,10 +546,6 @@ public class Util {
         return s;
     }
 
-    /**
-     * @return
-     * @throws NoSuchAlgorithmException
-     */
     static public @Nonnull MessageDigest getMD5Digest() {
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");

@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.classfile;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -92,15 +92,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     final boolean isResolved;
 
-    /**
-     * @param className
-     * @param fieldName
-     * @param fieldSignature
-     * @param isStatic
-     * @param accessFlags
-     * @param fieldAnnotations
-     * @param isResolved
-     */
+
     private FieldInfo(@SlashedClassName String className, String fieldName, String fieldSignature,
             @CheckForNull String fieldSourceSignature, int accessFlags, Map<ClassDescriptor, AnnotationValue> fieldAnnotations,
             boolean isResolved) {

@@ -63,7 +63,7 @@ public class UnionBugs2 extends AbstractFindBugsTask {
     /**
      * The File everything should get merged into
      * 
-     * @param file
+     * @param arg
      */
     public void setTo(String arg) {
         this.to = arg;

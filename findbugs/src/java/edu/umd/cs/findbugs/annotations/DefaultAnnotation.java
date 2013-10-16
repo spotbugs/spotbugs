@@ -19,9 +19,15 @@
 
 package edu.umd.cs.findbugs.annotations;
 
-import java.lang.annotation.*;
-import javax.annotation.*;
-import javax.annotation.meta.*;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import javax.annotation.Nonnegative;
+import javax.annotation.meta.TypeQualifierDefault;
 
 
 /**
@@ -36,9 +42,9 @@ import javax.annotation.meta.*;
  * that you want to allow to be null.
  * 
  * @deprecated -  Use the JSR305 annotations instead.
- * For example, you can use {@link javax.annotations.ParametersAreNonnullByDefault} instead
+ * For example, you can use {@link javax.annotation.ParametersAreNonnullByDefault} instead
  * of @DefaultAnnotation(NonNull.class) so that method parameters are nonnull by default in the annotated
- * element. You can also use {@link javax.annotations.meta.TypeQualifierDefault}
+ * element. You can also use {@link javax.annotation.meta.TypeQualifierDefault}
  * in general to define your own annotation that specifies a default type qualifier. For example,
  * <p><pre><code>
  * {@link Nonnegative}
