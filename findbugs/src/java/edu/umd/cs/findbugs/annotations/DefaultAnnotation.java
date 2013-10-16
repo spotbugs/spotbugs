@@ -19,16 +19,10 @@
 
 package edu.umd.cs.findbugs.annotations;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
+import javax.annotation.*;
+import javax.annotation.meta.*;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import javax.annotation.meta.TypeQualifierDefault;
-import javax.swing.JApplet;
 
 /**
  * Indicates that all members of the class or package should be annotated with
@@ -41,10 +35,18 @@ import javax.swing.JApplet;
  * package, and then use @Nullable only on those parameters, methods or fields
  * that you want to allow to be null.
  * 
- * @deprecated -  use the JSR305 annotations instead,
+ * @deprecated -  Use the JSR305 annotations instead.
  * For example, you can use {@link javax.annotations.ParametersAreNonnullByDefault} instead
- * of @DefaultAnnotation(NonNull.class), and {@link javax.annotations.meta.TypeQualifierDefault}
- * in general to define a type qualifier default. The JSR305 {@link javax.annotation.CheckReturnValue}
+ * of @DefaultAnnotation(NonNull.class) so that method parameters are nonnull by default in the annotated
+ * element. You can also use {@link javax.annotations.meta.TypeQualifierDefault}
+ * in general to define your own annotation that specifies a default type qualifier. For example,
+ * <p><pre><code>
+ * {@link Nonnegative}
+ * {@link TypeQualifierDefault}({@link ElementType#PARAMETER})
+ * public @interface ParametersAreNonnegativeByDefault {}
+ * </code></pre>
+ * 
+ * <p>The JSR305 {@link javax.annotation.CheckReturnValue}
  * annotation can be applied to a type or package, and it will act as a default for all methods
  * in that class or package unless otherwise overridden.
  * 
