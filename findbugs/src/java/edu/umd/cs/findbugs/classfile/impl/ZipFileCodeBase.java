@@ -72,7 +72,6 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
                 throw new IOException("Error opening zip file " + file + " of " + file.length() + " bytes", e);
             }
             DataInputStream in = new DataInputStream(new FileInputStream(file));
-            ZipException e2 = new ZipException("Error opening zip file " + file + " of " + file.length() + " bytes");
             int magicBytes;
             try {
                 magicBytes = in.readInt();
@@ -83,6 +82,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
             if (magicBytes != 0x504b0304)
                 throw new IOException(String.format("Wrong magic bytes of %x for zip file %s of %d bytes", magicBytes, file,
                         file.length()));
+            ZipException e2 = new ZipException("Error opening zip file " + file + " of " + file.length() + " bytes");
             e2.initCause(e);
             throw e2;
         }
