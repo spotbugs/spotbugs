@@ -10,7 +10,7 @@ import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Key;
-import edu.umd.cs.findbugs.flybush.DbUsageEntry;
+
 import edu.umd.cs.findbugs.flybush.DbUsageSummary;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)

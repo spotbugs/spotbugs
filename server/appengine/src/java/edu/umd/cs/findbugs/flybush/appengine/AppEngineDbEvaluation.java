@@ -2,6 +2,7 @@ package edu.umd.cs.findbugs.flybush.appengine;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Text;
+
 import edu.umd.cs.findbugs.flybush.DbEvaluation;
 import edu.umd.cs.findbugs.flybush.DbInvocation;
 import edu.umd.cs.findbugs.flybush.DbIssue;
@@ -11,6 +12,7 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+
 import java.util.Set;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
@@ -51,9 +53,10 @@ public class AppEngineDbEvaluation implements DbEvaluation {
     @Persistent
     private Set<String> packages;
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public Comparable<?> getWho() {
-        return who;
+    public Comparable getWho() {
+        return (Comparable) who;
     }
 
     @Override
@@ -157,8 +160,8 @@ public class AppEngineDbEvaluation implements DbEvaluation {
         if (getWhen() > o.getWhen())
             return 1;
 
-        @SuppressWarnings({ "RedundantCast" })
-        int whoCompare = comparePossiblyNull((Comparable) getWho(), (Comparable) o.getWho());
+        @SuppressWarnings("unchecked")
+        int whoCompare = comparePossiblyNull( getWho(),  o.getWho());
         if (whoCompare != 0)
             return whoCompare;
 
