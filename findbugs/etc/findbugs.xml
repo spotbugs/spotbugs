@@ -60,6 +60,7 @@
           <FindBugsMain cmd="merge" kind="history" class="edu.umd.cs.findbugs.workflow.Update"/>
 
           <FindBugsMain cmd="dis" kind="utility" class="edu.umd.cs.findbugs.visitclass.PrintClass"/>
+          <FindBugsMain cmd="errors" class="edu.umd.cs.findbugs.workflow.ListErrors"/>
 
           <OrderingConstraints>
                     <SplitPass>

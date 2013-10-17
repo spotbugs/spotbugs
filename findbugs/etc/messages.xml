@@ -55,6 +55,10 @@ This plugin contains all of the standard FindBugs detectors.
   <FindBugsMain cmd="dis" class="edu.umd.cs.findbugs.workflow.PrintClass">
     <Description>Disassemble a class file</Description>
   </FindBugsMain>
+  <FindBugsMain cmd="errors" class="edu.umd.cs.findbugs.workflowListErrors">
+    <Description>List analysis errors stored in results file
+         </Description>
+  </FindBugsMain>
 
   <!-- On changing this, please also update default cloud id in FindbugsPlugin -->
   <Cloud id="edu.umd.cs.findbugs.cloud.doNothingCloud">
