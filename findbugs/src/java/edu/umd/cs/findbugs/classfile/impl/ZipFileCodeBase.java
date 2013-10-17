@@ -55,29 +55,33 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
         try {
             this.zipFile = new ZipFile(file);
             setLastModifiedTime(file.lastModified());
-        } catch (ZipException e) {
+        } catch (IOException e) {
             if (!file.exists()) {
                 File parent = file.getParentFile();
                 if (!(parent.exists() && parent.isDirectory() && parent.canRead()))
-                    throw new ZipException("Can't read directory containing zip file: " + file);
-                throw new ZipException("Zip file doesn't exist: " + file);
+                    throw new IOException("Can't read directory containing zip file: " + file);
+                throw new IOException("Zip file doesn't exist: " + file);
             }
             if (!file.canRead())
-                throw new ZipException("Can't read file zip file: " + file);
+                throw new IOException("Can't read file zip file: " + file);
             if (!file.isFile())
-                throw new ZipException("Zip file isn't a normal file: " + file);
+                throw new IOException("Zip file isn't a normal file: " + file);
             if (file.length() == 0)
-                throw new ZipException("Zip file is empty: " + file);
+                throw new IOException("Zip file is empty: " + file);
+            if (!(e instanceof ZipException)) {
+                throw new IOException("Error opening zip file " + file + " of " + file.length() + " bytes", e);
+            }
             DataInputStream in = new DataInputStream(new FileInputStream(file));
             ZipException e2 = new ZipException("Error opening zip file " + file + " of " + file.length() + " bytes");
             int magicBytes;
             try {
                 magicBytes = in.readInt();
+                in.close();
             } catch (IOException e3) {
-                throw new ZipException(String.format("Unable read first 4 bytes of zip file %s of %d bytes", file, file.length()));
+                throw new IOException(String.format("Unable read first 4 bytes of zip file %s of %d bytes", file, file.length()));
             }
             if (magicBytes != 0x504b0304)
-                throw new ZipException(String.format("Wrong magic bytes of %x for zip file %s of %d bytes", magicBytes, file,
+                throw new IOException(String.format("Wrong magic bytes of %x for zip file %s of %d bytes", magicBytes, file,
                         file.length()));
             e2.initCause(e);
             throw e2;
