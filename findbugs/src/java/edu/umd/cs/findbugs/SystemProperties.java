@@ -24,9 +24,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.IllegalFormatException;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.io.IO;
@@ -239,14 +241,25 @@ public class SystemProperties {
     private static final String URL_REWRITE_FORMAT = getOSDependentProperty("findbugs.urlRewriteFormat");
 
     private static final Pattern URL_REWRITE_PATTERN;
+    
     static {
         Pattern p = null;
-        if (URL_REWRITE_PATTERN_STRING != null && URL_REWRITE_FORMAT != null)
+        if (URL_REWRITE_PATTERN_STRING != null && URL_REWRITE_FORMAT != null) {
             try {
                 p = Pattern.compile(URL_REWRITE_PATTERN_STRING);
-            } catch (Exception e) {
-                assert true;
+                String ignored = String.format(URL_REWRITE_FORMAT, "");
+            } catch (PatternSyntaxException e) {
+                throw new IllegalArgumentException("Bad findbugs.urlRewritePattern '" + URL_REWRITE_PATTERN_STRING + "' - "
+                        + e.getClass().getSimpleName() + ": "+ e.getMessage());
+            } catch (IllegalFormatException e) {
+                throw new IllegalArgumentException("Bad findbugs.urlRewriteFormat '" + URL_REWRITE_FORMAT + "' - "
+                        + e.getClass().getSimpleName() + ": " + e.getMessage());
             }
+        } else if (URL_REWRITE_PATTERN_STRING != null) {
+            throw new IllegalArgumentException("findbugs.urlRewritePattern is set but not findbugs.urlRewriteFormat");
+        } else if (URL_REWRITE_FORMAT != null) {
+            throw new IllegalArgumentException("findbugs.urlRewriteFormat is set but not findbugs.urlRewritePattern");
+        }
         URL_REWRITE_PATTERN = p;
     }
 
@@ -254,7 +267,7 @@ public class SystemProperties {
         if (URL_REWRITE_PATTERN == null || URL_REWRITE_FORMAT == null)
             return u;
         Matcher m = URL_REWRITE_PATTERN.matcher(u);
-        if (!m.matches())
+        if (!m.matches() || m.groupCount() == 0)
             return u;
         String result = String.format(URL_REWRITE_FORMAT, m.group(1));
         return result;
