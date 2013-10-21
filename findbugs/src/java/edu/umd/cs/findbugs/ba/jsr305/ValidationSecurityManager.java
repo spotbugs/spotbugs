@@ -31,8 +31,7 @@ final class ValidationSecurityManager extends SecurityManager {
 
     static final ValidationSecurityManager INSTANCE = new ValidationSecurityManager();
 
-    final static ValidatorClassLoader VALIDATOR_LOADER = new ValidatorClassLoader();
-
+   
     
     static {
         if (TypeQualifierValue.DEBUG_CLASSLOADING)
@@ -46,7 +45,8 @@ final class ValidationSecurityManager extends SecurityManager {
 
         try {
             performingValidation.set(Boolean.TRUE);
-
+            if (TypeQualifierValue.DEBUG_CLASSLOADING)
+                System.out.println("Performing validation in thread " + Thread.currentThread().getName());
             try {
                 When result = v.forConstantValue(proxy, constantValue);
                 if (!performingValidation.get())
@@ -62,21 +62,37 @@ final class ValidationSecurityManager extends SecurityManager {
             
         } finally {
             performingValidation.set(Boolean.FALSE);
+            if (TypeQualifierValue.DEBUG_CLASSLOADING)
+                System.out.println("Validation finished in thread " + Thread.currentThread().getName());
+           
         }
     }
 
 
     @Override
     public void checkPermission(Permission perm) {
-        if (performingValidation.get() && inValidation())
-            throw new SecurityException("No permissions granted while performing JSR-305 validation");
+        if (TypeQualifierValue.DEBUG_CLASSLOADING)
+            System.out.println("Checking for " + perm + " permission in thread " + Thread.currentThread().getName());
+        if (performingValidation.get() && inValidation()) {
+            SecurityException e = new SecurityException("No permissions granted while performing JSR-305 validation");
+            if (TypeQualifierValue.DEBUG_CLASSLOADING)
+                e.printStackTrace(System.out);
+            throw e;
+        }
 
     }
 
     @Override
     public void checkPermission(Permission perm, Object context) {
-        if (performingValidation.get() && inValidation())
-            throw new SecurityException("No permissions granted while performing JSR-305 validation");
+        if (TypeQualifierValue.DEBUG_CLASSLOADING)
+            System.out.println("Checking for " + perm + " permission with content in thread " + Thread.currentThread().getName());
+        
+        if (performingValidation.get() && inValidation()) {
+            SecurityException e = new SecurityException("No permissions granted while performing JSR-305 validation");
+            if (TypeQualifierValue.DEBUG_CLASSLOADING)
+                e.printStackTrace(System.out);
+            throw e;
+        }
     }
 
     private ValidationSecurityManager() { }
@@ -84,7 +100,7 @@ final class ValidationSecurityManager extends SecurityManager {
     private boolean inValidation() {
         for (Class<?> c : getClassContext()) {
             if (TypeQualifierValidator.class.isAssignableFrom(c)
-                    || c.getClassLoader() == VALIDATOR_LOADER)
+                    || c.getClassLoader() == ValidatorClassLoader.INSTANCE)
                 return true;
         }
         return false;

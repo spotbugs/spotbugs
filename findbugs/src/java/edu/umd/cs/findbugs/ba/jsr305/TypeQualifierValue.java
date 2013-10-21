@@ -90,13 +90,12 @@ public class TypeQualifierValue<A extends Annotation> {
     private TypeQualifierValue(ClassDescriptor typeQualifier, @CheckForNull Object value) {
         this.typeQualifier = typeQualifier;
         this.value = value;
-        boolean isStrict1 = false; // will be set to true if this is a strict
-                                  // type qualifier value
-        boolean isExclusive1 = false; // will be set to true if this is an
-                                     // exclusive type qualifier value
-        boolean isExhaustive1 = false; // will be set to true if this is an
-                                      // exhaustive type qualifier value
-
+        /**  will be set to true if this is a strict type qualifier value */
+        boolean isStrict1 = false;
+        /**  will be set to true if this is an exclusive type qualifier value */
+        boolean isExclusive1 = false;
+        /** will be set to true if this is an exhaustive type qualifier value */
+        boolean isExhaustive1 = false;
         TypeQualifierValidator<A> validator1 = null;
         Class<A> qualifierClass = null;
         XClass xclass  = null;
@@ -135,56 +134,66 @@ public class TypeQualifierValue<A extends Annotation> {
         this.isStrict = isStrict1;
         this.isExclusive = isExclusive1;
         this.isExhaustive = isExhaustive1;
+        
+        
         if (xclass != null) {
             ClassDescriptor checkerName = DescriptorFactory.createClassDescriptor(typeQualifier.getClassName() + "$Checker");
-            // XXX don't do this if running in Eclipse; check below is the quick
-            // fix for bug 3599258 (Random obscure Eclipse failures during
-            // analysis)
 
-            if (!SystemProperties.RUNNING_IN_ECLIPSE)
-            try {
-                Global.getAnalysisCache().getClassAnalysis(ClassData.class, checkerName);
+            if (!SystemProperties.RUNNING_IN_ECLIPSE) {
+                /**   don't do this if running in Eclipse; check below is the quick
+                fix for bug 3599258 (Random obscure Eclipse failures during
+                 analysis) */
 
-                // found it.
+                try {
+                    Global.getAnalysisCache().getClassAnalysis(ClassData.class, checkerName);
+
+                    // found it.
+                    SecurityManager m = System.getSecurityManager();
+                    if (m == null) {
+                        if (DEBUG_CLASSLOADING) System.out.println("Setting ValidationSecurityManager");
+                        System.setSecurityManager(ValidationSecurityManager.INSTANCE);
+                    }
+
+                    Class<?> c = ValidatorClassLoader.INSTANCE.loadClass(checkerName.getDottedClassName());
+                    if (TypeQualifierValidator.class.isAssignableFrom(c)) {
+
+                        @SuppressWarnings("unchecked")
+                        Class<? extends TypeQualifierValidator<A>> validatorClass = (Class<? extends TypeQualifierValidator<A>>) c
+                        .asSubclass(TypeQualifierValidator.class);
+                        validator1 = getValidator(validatorClass);
+                        qualifierClass = getQualifierClass(typeQualifier);
+
+                        InvocationHandler handler = new InvocationHandler() {
+
+                            public Object invoke(Object arg0, Method arg1, Object[] arg2) throws Throwable {
+                                if (arg1.getName() == "value")
+                                    return TypeQualifierValue.this.value;
+                                throw new UnsupportedOperationException("Can't handle " + arg1);
+                            }
+                        };
+
+                        proxy1 = qualifierClass.cast(Proxy.newProxyInstance(ValidatorClassLoader.INSTANCE,
+                                new Class[] { qualifierClass }, handler));
+                    }
+
+                } catch (ClassNotFoundException e) {
+                    assert true; // ignore
+                } catch (CheckedAnalysisException e) {
+                    assert true; // ignore
+                } catch (Exception e) {
+                    AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName, e);
+                } catch (Throwable e) {
+                    AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName + " due to "
+                            + e.getClass().getSimpleName() + ":" + e.getMessage());
+                }
+            }
+            else if (DEBUG_CLASSLOADING) {
                 SecurityManager m = System.getSecurityManager();
                 if (m == null) {
                     if (DEBUG_CLASSLOADING) System.out.println("Setting ValidationSecurityManager");
                     System.setSecurityManager(ValidationSecurityManager.INSTANCE);
                 }
-
-                Class<?> c = ValidationSecurityManager.VALIDATOR_LOADER.loadClass(checkerName.getDottedClassName());
-                if (TypeQualifierValidator.class.isAssignableFrom(c)) {
-
-                    @SuppressWarnings("unchecked")
-                    Class<? extends TypeQualifierValidator<A>> validatorClass = (Class<? extends TypeQualifierValidator<A>>) c
-                            .asSubclass(TypeQualifierValidator.class);
-                    validator1 = getValidator(validatorClass);
-                    qualifierClass = getQualifierClass(typeQualifier);
-
-                    InvocationHandler handler = new InvocationHandler() {
-
-                        public Object invoke(Object arg0, Method arg1, Object[] arg2) throws Throwable {
-                            if (arg1.getName() == "value")
-                                return TypeQualifierValue.this.value;
-                            throw new UnsupportedOperationException("Can't handle " + arg1);
-                        }
-                    };
-
-                    proxy1 = qualifierClass.cast(Proxy.newProxyInstance(ValidationSecurityManager.VALIDATOR_LOADER,
-                            new Class[] { qualifierClass }, handler));
-                }
-            } catch (ClassNotFoundException e) {
-                assert true; // ignore
-            } catch (CheckedAnalysisException e) {
-                assert true; // ignore
-            } catch (Exception e) {
-                AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName, e);
-            } catch (Throwable e) {
-                AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName + " due to "
-                        + e.getClass().getSimpleName() + ":" + e.getMessage());
             }
-
-
         }
         this.validator = validator1;
         this.typeQualifierClass = qualifierClass;
@@ -212,10 +221,9 @@ public class TypeQualifierValue<A extends Annotation> {
             e.printStackTrace();
             throw new ClassNotFoundException("No class data found for " + typeQualifier, e);
         }
-        byte [] b = data.getData();
         
-        ValidatorClassLoader validatorLoader = ValidationSecurityManager.VALIDATOR_LOADER;
-        return (Class<A>) validatorLoader.findClass(typeQualifier.getDottedClassName(), b);
+        ValidatorClassLoader validatorLoader = ValidatorClassLoader.INSTANCE;
+        return (Class<A>) validatorLoader.loadClass(typeQualifier.getDottedClassName());
     }
 
     static byte[] loadClassData(String name) throws CheckedAnalysisException {
