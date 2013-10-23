@@ -505,6 +505,14 @@ public class OpcodeStack implements Constants2 {
             this(signature, Integer.valueOf(constValue));
         }
 
+        
+        public static Item initialArgument(String signature, int reg) {
+            Item it = new Item(signature);
+            it.setInitialParameter(true);
+            it.registerNumber = reg;
+            return it;
+          
+        }
         public Item(String signature) {
             this(signature, UNKNOWN);
         }
@@ -1076,6 +1084,8 @@ public class OpcodeStack implements Constants2 {
                 }
             }
             setTop(true);
+            
+           
         }
 
     }
@@ -2586,6 +2596,7 @@ public class OpcodeStack implements Constants2 {
         }
     }
 
+
     public static class JumpInfoFactory extends AnalysisFactory<JumpInfo> {
 
         public JumpInfoFactory() {
@@ -2595,7 +2606,6 @@ public class OpcodeStack implements Constants2 {
         public JumpInfo analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
             Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
             JavaClass jclass = getJavaClass(analysisCache, descriptor.getClassDescriptor());
-
             Code code = method.getCode();
             if (code == null) {
                 return null;
@@ -2610,6 +2620,8 @@ public class OpcodeStack implements Constants2 {
             };
             return computeJumpInfo(jclass, method, stack, branchAnalysis);
         }
+
+       
 
         /**
          * @param jclass
@@ -2718,6 +2730,8 @@ public class OpcodeStack implements Constants2 {
                 jump = ((OpcodeStackDetector.WithCustomJumpInfo) visitor).customJumpInfo();
             } else if ((visitor instanceof OpcodeStackDetector) && !((OpcodeStackDetector)visitor).isUsingCustomUserValue()) {
                 jump = getJumpInfo();
+            } else {
+                jump = StackMapAnalyzer.getFromStackMap( Global.getAnalysisCache(), visitor.getMethodDescriptor());
             }
             if (jump != null) {
                 learnFrom(jump);
@@ -2737,6 +2751,7 @@ public class OpcodeStack implements Constants2 {
             if (!mi.hasBackBranch())
                 return null;
         }
+        
         try {
             return analysisCache.getMethodAnalysis(JumpInfo.class, xMethod.getMethodDescriptor());
         } catch (CheckedAnalysisException e) {
