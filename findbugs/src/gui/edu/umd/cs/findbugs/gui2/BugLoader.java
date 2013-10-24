@@ -289,7 +289,7 @@ public class BugLoader {
 
         RedoAnalysisCallback ac = new RedoAnalysisCallback();
 
-        new AnalyzingDialog(p, ac, true);
+        AnalyzingDialog.show(p, ac, true);
 
         if (ac.finished)
             return ac.getBugCollection();
@@ -316,12 +316,12 @@ public class BugLoader {
 
         RedoAnalysisCallback ac = new RedoAnalysisCallback();
 
-        new AnalyzingDialog(p, ac, true);
+        AnalyzingDialog.show(p, ac, true);
 
         if (!ac.finished)
             return null;
         if (current == null)
-            current =  ac.getBugCollection();   
+            current =  ac.getBugCollection();
         else {
             current =  update.mergeCollections(current, ac.getBugCollection(), true, false);
             if (current.hasDeadBugs()) {

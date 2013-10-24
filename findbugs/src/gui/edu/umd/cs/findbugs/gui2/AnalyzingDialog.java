@@ -103,7 +103,8 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
      *            until the analysis is either finished or interrupted.
      */
     
-    public static void show(@Nonnull Project project, AnalysisCallback callback, boolean joinThread) {
+    public static void show(@Nonnull
+    Project project, AnalysisCallback callback, boolean joinThread) {
         AnalyzingDialog dialog = new AnalyzingDialog(project, callback, joinThread);
         MainFrame.getInstance().acquireDisplayWait();
         try {
@@ -116,9 +117,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
         } finally {
             if (joinThread)
                 MainFrame.getInstance().releaseDisplayWait();
-
         }
-        
     }
     
    
@@ -135,7 +134,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
      *            analysis is complete. If true, the constructor does not return
      *            until the analysis is either finished or interrupted.
      */
-    public AnalyzingDialog(@Nonnull Project project, AnalysisCallback callback, boolean joinThread) {
+    private AnalyzingDialog(@Nonnull Project project, AnalysisCallback callback, boolean joinThread) {
         if (project == null)
             throw new NullPointerException("null project");
         this.project = project;
