@@ -22,7 +22,8 @@
 						href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_BOXED_PRIMITIVE_FOR_PARSING">DM_BOXED_PRIMITIVE_FOR_PARSING</a>,
 						<a
 						href="http://findbugs.sourceforge.net/bugDescriptions.html#NP_METHOD_RETURN_RELAXING_ANNOTATION">NP_METHOD_RETURN_RELAXING_ANNOTATION</a>,
-						and <a
+						and 
+						<a
 						href="http://findbugs.sourceforge.net/bugDescriptions.html#NP_METHOD_PARAMETER_RELAXING_ANNOTATION">NP_METHOD_PARAMETER_RELAXING_ANNOTATION</a>
 					</li>
 					<li>When dataflow does't terminate, make sure we continue with
@@ -33,6 +34,7 @@
 					
 					<li>Get parameter annotations from default parameters
 						annotations applied to the method.
+					<li>Add subversion change number to eclipse plugin qualifier.
 					
 					<li>Disabled detector for <a
 						href="http://findbugs.sourceforge.net/bugDescriptions.html#AM_CREATES_EMPTY_JAR_FILE_ENTRY">AM_CREATES_EMPTY_JAR_FILE_ENTRY</a>;
@@ -43,7 +45,7 @@
 						org.testng.Assert.assertEquals</li>
 					<li>Add logic that understands more of the Google Guava APIs.
 					<li>Disable type qualifier validator execution within Eclipse plugin; 
-						too many problems with class loading and security manager
+						too many problems with class loading and security manager (see #1154 Random obscure Eclipse failures)
 					
 				<li>Fixed false positives for the following bug patterns (17
 						occurrences in findbugsTestCases):
