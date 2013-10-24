@@ -226,10 +226,10 @@ public class DetectorFactory {
      * @return true if the created Detectors report warnings, false if not
      */
     public boolean isReportingDetector() {
-        return !isDetectorClassSubtypeOf(TrainingDetector.class) && !isDetectorClassSubtypeOf(NonReportingDetector.class);
-
+        return !isDetectorClassSubtypeOf(TrainingDetector.class) && !isDetectorClassSubtypeOf(FirstPassDetector.class);
     }
 
+    
     /**
      * Check to see if we are running on a recent-enough JRE for this detector
      * to be enabled.
