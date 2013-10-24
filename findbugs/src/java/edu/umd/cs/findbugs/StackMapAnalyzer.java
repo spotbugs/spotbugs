@@ -49,6 +49,8 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author pugh
  */
 public  class StackMapAnalyzer {
+    
+    static final boolean DEBUG = false;
     enum StackFrameType {
         SAME_FRAME, SAME_LOCALS_1_STACK_ITEM_FRAME,
         CHOP_FRAME, APPEND_FRAME, FULL_FRAME;
@@ -92,14 +94,16 @@ public  class StackMapAnalyzer {
         Type[] argTypes = Type.getArgumentTypes(descriptor.getSignature());
         int reg = 0;
         if (!descriptor.isStatic()) {
-            Item it = Item.initialArgument("L" + descriptor.getSlashedClassName() + ";", reg);
+            Item it = Item.typeOnly("L" + descriptor.getSlashedClassName() + ";");
             locals.add(it);
             reg += it.getSize();
         }
         for (Type argType : argTypes) {
-            Item it = Item.initialArgument(argType.getSignature(), reg);
+            Item it = Item.typeOnly(argType.getSignature());
             locals.add(it);
             reg += it.getSize();
+            if (it.usesTwoSlots())
+                locals.add(null);
         }
         return locals;
     }
@@ -133,6 +137,8 @@ public  class StackMapAnalyzer {
     }
     static  public  @CheckForNull JumpInfo getFromStackMap(IAnalysisCache analysisCache, MethodDescriptor descriptor)  {
         Method method;
+        if (true)
+            return null;
         try {
             method = analysisCache.getMethodAnalysis(Method.class, descriptor);
         } catch (CheckedAnalysisException e1) {
@@ -154,8 +160,10 @@ public  class StackMapAnalyzer {
          List<Item> locals = getInitialLocals(descriptor);
          List<Item> stack = new ArrayList<Item>();
          BitSet jumpEntryLocations = new BitSet();
+         if (DEBUG) {
          System.out.println(descriptor);
          System.out.println(locals);
+         }
          int pc = 0;
          for(StackMapTableEntry e : stackMapTable.getStackMapTable()) {
              pc += e.getByteCodeOffsetDelta();
@@ -166,37 +174,49 @@ public  class StackMapAnalyzer {
                  break;
              case SAME_LOCALS_1_STACK_ITEM_FRAME:
                  stack.clear();
-                 add(stack, e.getTypesOfStackItems());
+                 addStack(stack, e.getTypesOfStackItems());
                  break;
              case CHOP_FRAME :
                  stack.clear();
-                 for(int i = 0; i < e.getNumberOfLocals(); i++)
-                     locals.remove(locals.size()-1);
+                 for(int i = 0; i < e.getNumberOfLocals(); i++) {
+                     Item it = locals.remove(locals.size()-1);
+                     if (it == null) {
+                         it = locals.remove(locals.size()-1);
+                         assert it.usesTwoSlots();
+                     }
+                 }
                  break;
 
              case APPEND_FRAME:
 
                  stack.clear();
-                 add(locals, e.getTypesOfLocals());
+                 addLocals(locals, e.getTypesOfLocals());
                  
                  break;
              case FULL_FRAME:
                  stack.clear();
                  locals.clear();
-                 add(locals, e.getTypesOfLocals());
-                 add(stack, e.getTypesOfStackItems());
+                 addLocals(locals, e.getTypesOfLocals());
+                 addStack(stack, e.getTypesOfStackItems());
                  break;
                  
              }
-             System.out.printf("%4d %4d %2d %2d  %12s %s%n", e.getByteCodeOffsetDelta(),
+             if (DEBUG) {
+             System.out.printf("%4d %2d %2d  %12s %s%n",
                    
                      pc,   e.getNumberOfLocals(), e.getNumberOfStackItems(), stackFrameType, e);
              System.out.printf("     %s :: %s%n", stack, locals);
+             }
+             if (pc > 0) {
              jumpEntries.put(pc, new ArrayList<Item>(locals));
-             jumpStackEntries.put(pc, new ArrayList<Item>(stack));
+             if (!stack.isEmpty())
+                 jumpStackEntries.put(pc, new ArrayList<Item>(stack));
              jumpEntryLocations.set(pc);
+             }
+             pc++;
          }
-         System.out.println("\n");
+         if (DEBUG)
+             System.out.println("\n");
          return new JumpInfo(jumpEntries, jumpStackEntries, jumpEntryLocations);
       
     }
@@ -204,33 +224,49 @@ public  class StackMapAnalyzer {
     static  private Item getItem(StackMapType t) {
 
         switch (t.getType()) {
-        case Constants.ITEM_Bogus:
+       
         case Constants.ITEM_Double:
-            return new Item("D");
+            return Item.typeOnly("D");
         case Constants.ITEM_Float:
-            return new Item("F");
+            return  Item.typeOnly("F");
         case Constants.ITEM_Integer:
-            return new Item("I");
+            return  Item.typeOnly("I");
         case Constants.ITEM_Long:
-            return new Item("J");
+            return  Item.typeOnly("J");
+        case Constants.ITEM_Bogus:
         case Constants.ITEM_NewObject:
-            return new Item("Ljava/lang/Object;");
+            return Item.typeOnly("Ljava/lang/Object;");
         case Constants.ITEM_Null:
-            return new Item();
+            Item it = new Item();
+            it.setSpecialKind(Item.TYPE_ONLY);
+            return it;
         case Constants.ITEM_InitObject:
-
+            return Item.typeOnly("Ljava/lang/Object;");
         case Constants.ITEM_Object:
             int index = t.getIndex();
             ConstantClass c = (ConstantClass) t.getConstantPool().getConstant(index);
-            return new Item(c.getBytes(t.getConstantPool()));
+            String name = c.getBytes(t.getConstantPool());
+            if (name.charAt(0) != '[') name = "L" + name + ";";
+            return Item.typeOnly(name);
         default:
             throw new IllegalArgumentException("Bad item type: " + t.getType());
 
         }
     }
-    static private void add(List<Item> lst, StackMapType[] typesOfStackItems) {
-        for(StackMapType t : typesOfStackItems)
-            lst.add(getItem(t));
+    static private void addLocals(List<Item> lst, StackMapType[] typesOfStackItems) {
+        for(StackMapType t : typesOfStackItems) {
+            Item item = getItem(t);
+            lst.add(item);
+            if (item.usesTwoSlots())
+                lst.add(null);
+        }
+        
+    }
+    static private void addStack(List<Item> lst, StackMapType[] typesOfStackItems) {
+        for(StackMapType t : typesOfStackItems) {
+            Item item = getItem(t);
+            lst.add(item);
+        }
         
     }
 }

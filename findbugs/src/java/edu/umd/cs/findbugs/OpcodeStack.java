@@ -27,6 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,6 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
-import edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
@@ -229,11 +229,14 @@ public class OpcodeStack implements Constants2 {
 
         public static final @SpecialKind
         int SERVLET_OUTPUT = 23;
+        
+        public static final @SpecialKind
+        int TYPE_ONLY = 24;
 
         @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
         public static final HashMap<Integer, String> specialKindNames = new HashMap<Integer, String>();
 
-        private static @SpecialKind int nextSpecialKind = asSpecialKind(SERVLET_OUTPUT + 1);
+        private static @SpecialKind int nextSpecialKind = asSpecialKind(TYPE_ONLY + 1);
 
         public static @SpecialKind
         int defineNewSpecialKind(String name) {
@@ -316,6 +319,9 @@ public class OpcodeStack implements Constants2 {
 
         }
 
+        public boolean usesTwoSlots() {
+            return getSize() == 2;
+        }
         @Override
         public boolean equals(Object o) {
             if (!(o instanceof Item))
@@ -398,7 +404,9 @@ public class OpcodeStack implements Constants2 {
             case SERVLET_OUTPUT:
                 buf.append(", servlet_output");
                 break;
-
+            case TYPE_ONLY:
+                buf.append(", type_only");
+                break;
             case NOT_SPECIAL:
                 break;
             default:
@@ -457,6 +465,10 @@ public class OpcodeStack implements Constants2 {
             if (i1.equals(i2))
                 return i1;
             Item m = new Item();
+            if (i1.getSpecialKind() == TYPE_ONLY && i2.getSpecialKind() != TYPE_ONLY)
+                return i2;
+            else if (i2.getSpecialKind() == TYPE_ONLY && i1.getSpecialKind() != TYPE_ONLY)
+                return i1;
             m.flags = i1.flags & i2.flags;
             m.setCouldBeZero(i1.isCouldBeZero() || i2.isCouldBeZero());
             if (i1.pc == i2.pc)
@@ -516,7 +528,11 @@ public class OpcodeStack implements Constants2 {
         public Item(String signature) {
             this(signature, UNKNOWN);
         }
-
+        public static Item typeOnly(String signature) {
+            Item it = new Item(signature, UNKNOWN);
+            it.setSpecialKind(TYPE_ONLY);
+            return it;
+        }
         public Item(Item it) {
             this.signature = it.signature;
             this.constValue = it.constValue;
@@ -2509,6 +2525,7 @@ public class OpcodeStack implements Constants2 {
 
     }
 
+    boolean foobar = false;
     private boolean mergeLists(List<Item> mergeInto, List<Item> mergeFrom, boolean errorIfSizesDoNotMatch) {
         // merge stacks
         int intoSize = mergeInto.size();
@@ -2529,14 +2546,25 @@ public class OpcodeStack implements Constants2 {
             List<Item> mergeIntoCopy = null;
             if (DEBUG2)
                 mergeIntoCopy = new ArrayList<Item>(mergeInto);
-            for (int i = 0; i < Math.min(intoSize, fromSize); i++) {
+            int common = Math.min(intoSize, fromSize);
+            for (int i = 0; i < common; i++) {
                 Item oldValue = mergeInto.get(i);
                 Item newValue = mergeFrom.get(i);
                 Item merged = Item.merge(oldValue, newValue);
                 if (merged != null && !merged.equals(oldValue)) {
-                        mergeInto.set(i, merged);
-                        changed = true;
+                    if (foobar)
+                        System.out.println("foobar");
+                    mergeInto.set(i, merged);
+                    changed = true;
                 }
+            }
+            if (false) for (int i = common; i < fromSize; i++) {
+                Item newValue = mergeFrom.get(i);
+                if (foobar)
+                    System.out.println("foobar");
+                mergeInto.add(newValue);
+                changed = true;
+
             }
             if (DEBUG2 && changed) {
                 System.out.println("Merge results:");
@@ -2559,8 +2587,8 @@ public class OpcodeStack implements Constants2 {
 
     BitSet exceptionHandlers = new BitSet();
 
-    boolean jumpInfoChangedByBackwardsBranch = false;
-
+    private boolean jumpInfoChangedByBackwardsBranch = false;
+    
     private Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
 
     private Map<Integer, List<Item>> jumpStackEntries = new HashMap<Integer, List<Item>>();
@@ -2597,7 +2625,7 @@ public class OpcodeStack implements Constants2 {
     }
 
 
-    public static class JumpInfoFactory extends AnalysisFactory<JumpInfo> {
+    public static class JumpInfoFactory extends edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory<JumpInfo> {
 
         public JumpInfoFactory() {
             super("Jump info for opcode stack", JumpInfo.class);
@@ -2610,18 +2638,55 @@ public class OpcodeStack implements Constants2 {
             if (code == null) {
                 return null;
             }
-            final OpcodeStack stack = new OpcodeStack();
-
-            DismantleBytecode branchAnalysis = new DismantleBytecode() {
-                @Override
-                public void sawOpcode(int seen) {
-                    stack.sawOpcode(this, seen);
-                }
-            };
-            return computeJumpInfo(jclass, method, stack, branchAnalysis);
+           
+            JumpStackComputation branchAnalysis = new JumpStackComputation(descriptor);
+            
+            return computeJumpInfo(jclass, method, branchAnalysis);
         }
 
+       static class JumpStackComputation extends BytecodeScanningDetector {
+
+           static final boolean DEBUG = false;
+           final MethodDescriptor descriptor;
+           private JumpStackComputation(MethodDescriptor descriptor) {
+            this.descriptor = descriptor;
+        }
+
+        protected OpcodeStack stack = new OpcodeStack();
+
+           public OpcodeStack getStack() {
+               return stack;
+           }
+
+           @Override
+           public final void visitCode(Code obj) {
+               if (!getMethodDescriptor().equals(descriptor))
+                   throw new IllegalStateException();
+               if (DEBUG) System.out.println(descriptor);
+               stack.resetForMethodEntry0(this);
+               super.visitCode(obj);
+               if (DEBUG) System.out.println();
+           }
+
+           @Override
+            public void sawOpcode(int seen) {
+               stack.precomputation(this);
+               stack.mergeJumps(this);
+               
+               if (DEBUG) System.out.printf("%4d %-15s %s%n", getPC(), OPCODE_NAMES[seen], stack);
+               try {
+               stack.sawOpcode(this, seen);
+               } catch (RuntimeException e) {
+                   e.printStackTrace();
+                   throw e;
+               }
+           }
+
+        
+         
+           
        
+       }
 
         /**
          * @param jclass
@@ -2630,34 +2695,39 @@ public class OpcodeStack implements Constants2 {
          * @param branchAnalysis
          * @return
          */
-        public static JumpInfo computeJumpInfo(JavaClass jclass, Method method, final OpcodeStack stack,
-                DismantleBytecode branchAnalysis) {
+        public static JumpInfo computeJumpInfo(JavaClass jclass, Method method,
+                JumpStackComputation branchAnalysis) {
             branchAnalysis.setupVisitorForClass(jclass);
             MethodInfo xMethod = (MethodInfo) XFactory.createXMethod(jclass, method);
+            
             int iteration = 1;
+            OpcodeStack myStack = branchAnalysis.stack;
+            if (false)
+                myStack.learnFrom(StackMapAnalyzer.getFromStackMap( Global.getAnalysisCache(), branchAnalysis.descriptor));
             do {
-                if (DEBUG && iteration > 1) {
+                if (DEBUG && iteration > 1 ) {
                     System.out.println("Iterative jump info for " + xMethod +", iteration " + iteration);
-                    stack.printJumpEntries();
+                    myStack.printJumpEntries();
                     System.out.println();
                 }
-                stack.resetForMethodEntry0(ClassName.toSlashedClassName(jclass.getClassName()), method);
+                // myStack.resetForMethodEntry0(ClassName.toSlashedClassName(jclass.getClassName()), method);
                 branchAnalysis.doVisitMethod(method);
-                if (xMethod.hasBackBranch() != stack.backwardsBranch && !stack.encountedTop) {
+                if (xMethod.hasBackBranch() != myStack.backwardsBranch && !myStack.encountedTop) {
                     AnalysisContext.logError(
                             String.format("For %s, mismatch on existence of backedge: %s for precomputation, %s for bytecode analysis",
-                                    xMethod, xMethod.hasBackBranch(), stack.backwardsBranch));
+                                    xMethod, xMethod.hasBackBranch(), myStack.backwardsBranch));
                 }
                 if (iteration++ > 40) {
-                     AnalysisContext.logError("Iterative jump info didn't converge after " + iteration + " iterations in " + xMethod + ", size " + method.getCode().getLength());
+                     AnalysisContext.logError("Iterative jump info didn't converge after " + iteration + " iterations in " + xMethod
+                             + ", size " + method.getCode().getLength());
                     break;
                 }
-            } while (stack.jumpInfoChangedByBackwardsBranch && stack.backwardsBranch);
+            } while (myStack.isJumpInfoChangedByBackwardsBranch() && myStack.backwardsBranch);
             if (iteration > 20&& iteration <= 40) {
                 AnalysisContext.logError("Iterative jump info converged after " + iteration + " iterations in " + xMethod + ", size " + method.getCode().getLength());
 
             }
-            return new JumpInfo(stack.jumpEntries, stack.jumpStackEntries, stack.jumpEntryLocations);
+            return new JumpInfo(myStack.jumpEntries, myStack.jumpStackEntries, myStack.jumpEntryLocations);
         }
     }
 
@@ -2696,6 +2766,8 @@ public class OpcodeStack implements Constants2 {
     DismantleBytecode v;
 
     public void learnFrom(JumpInfo info) {
+        if (info == null)
+            return;
         jumpEntries = new HashMap<Integer, List<Item>>(info.jumpEntries);
         jumpStackEntries = new HashMap<Integer, List<Item>>(info.jumpStackEntries);
         jumpEntryLocations = (BitSet) info.jumpEntryLocations.clone();
@@ -2723,9 +2795,8 @@ public class OpcodeStack implements Constants2 {
         Code code = v.getMethod().getCode();
         if (code == null)
             return result;
-
+        JumpInfo jump = null;
         if (useIterativeAnalysis) {
-            JumpInfo jump = null;
             if (visitor instanceof OpcodeStackDetector.WithCustomJumpInfo) {
                 jump = ((OpcodeStackDetector.WithCustomJumpInfo) visitor).customJumpInfo();
             } else if ((visitor instanceof OpcodeStackDetector) && !((OpcodeStackDetector)visitor).isUsingCustomUserValue()) {
@@ -2733,16 +2804,20 @@ public class OpcodeStack implements Constants2 {
             } else {
                 jump = StackMapAnalyzer.getFromStackMap( Global.getAnalysisCache(), visitor.getMethodDescriptor());
             }
-            if (jump != null) {
-                learnFrom(jump);
-            }
-
+        } else {
+            jump = StackMapAnalyzer.getFromStackMap( Global.getAnalysisCache(), visitor.getMethodDescriptor());
         }
-
+        learnFrom(jump);
         return result;
 
     }
 
+    int nullSafeSize(@CheckForNull Collection<?> c) {
+        if (c == null)
+            return 0;
+        return c.size();
+    }
+    
     private JumpInfo getJumpInfo() {
         IAnalysisCache analysisCache = Global.getAnalysisCache();
         XMethod xMethod = XFactory.createXMethod(v.getThisClass(), v.getMethod());
@@ -2754,26 +2829,29 @@ public class OpcodeStack implements Constants2 {
         
         try {
             return analysisCache.getMethodAnalysis(JumpInfo.class, xMethod.getMethodDescriptor());
+            
         } catch (CheckedAnalysisException e) {
             AnalysisContext.logError("Error getting jump information", e);
             return null;
         }
     }
 
-    public boolean setJumpInfoChangedByBackwardBranch(String kind, int from, int to) {
-        if (this.jumpInfoChangedByBackwardsBranch || from < to)
-            return false;
-        if (DEBUG)
+    public void setJumpInfoChangedByBackwardBranch(String kind, int from, int to) {
+        if (from < to)
+            return ;
+        
+        
+        if (DEBUG && !this.isJumpInfoChangedByBackwardsBranch())
             System.out.printf("%s jump info at %d changed by jump from %d%n", kind, to, from);
-        this.jumpInfoChangedByBackwardsBranch = true;
-        return true;
+        this.setJumpInfoChangedByBackwardsBranch(from,to);
+        return ;
     }
 
     private int resetForMethodEntry0(PreorderVisitor visitor) {
         return resetForMethodEntry0(visitor.getClassName(), visitor.getMethod());
     }
 
-    private int resetForMethodEntry0(@SlashedClassName String className, Method m) {
+     int resetForMethodEntry0(@SlashedClassName String className, Method m) {
         methodName = m.getName();
 
         if (DEBUG)
@@ -2784,7 +2862,7 @@ public class OpcodeStack implements Constants2 {
         top = false;
         encountedTop = false;
         backwardsBranch = false;
-        jumpInfoChangedByBackwardsBranch = false;
+        clearJumpInfoChangedByBackwardsBranch();
 
         setReachOnlyByBranch(false);
         seenTransferOfControl = false;
@@ -2801,16 +2879,12 @@ public class OpcodeStack implements Constants2 {
         Type[] argTypes = Type.getArgumentTypes(signature);
         int reg = 0;
         if (!m.isStatic()) {
-            Item it = new Item("L" + className + ";");
-            it.setInitialParameter(true);
-            it.registerNumber = reg;
+            Item it = Item.initialArgument("L" + className + ";", reg);
             setLVValue(reg, it);
             reg += it.getSize();
         }
         for (Type argType : argTypes) {
-            Item it = new Item(argType.getSignature());
-            it.registerNumber = reg;
-            it.setInitialParameter(true);
+            Item it = Item.initialArgument(argType.getSignature(), reg);
             setLVValue(reg, it);
             reg += it.getSize();
         }
@@ -3292,6 +3366,24 @@ public class OpcodeStack implements Constants2 {
      */
     boolean isReachOnlyByBranch() {
         return reachOnlyByBranch;
+    }
+
+    /**
+     * @return Returns the jumpInfoChangedByBackwardsBranch.
+     */
+    boolean isJumpInfoChangedByBackwardsBranch() {
+        return jumpInfoChangedByBackwardsBranch;
+    }
+
+
+    void clearJumpInfoChangedByBackwardsBranch() {
+        this.jumpInfoChangedByBackwardsBranch = false;
+    }
+    /**
+     * @param jumpInfoChangedByBackwardsBranch The jumpInfoChangedByBackwardsBranch to set.
+     */
+    void setJumpInfoChangedByBackwardsBranch(int from, int to) {
+        this.jumpInfoChangedByBackwardsBranch = true;
     }
 }
 
