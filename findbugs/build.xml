@@ -685,7 +685,7 @@
     </target>
 
     <!-- Run JUnit test cases -->
-    <target name="test" depends="runjunit,foundFindbugsTestCases"/>
+    <target name="test" depends="runjunit,foundFindbugsTestCases" description="Run tests"/>
 
     <target name="runjunit" depends="junittests,jars,compileFindbugsTestCases">
         <echo>Running JUnit test cases for FindBugs...</echo>
@@ -762,12 +762,12 @@
     </target>
 
 
-    <target name="checkdocs">
+    <target name="checkdocs" depends="clean">
         <!-- FIXME: check whether docs are up to date -->
     </target>
 
     <!-- Generate formatted documentation. -->
-    <target name="docs" depends="classes,version,bugdesc,checkdocs" unless="docs.uptodate">
+    <target name="docs" depends="classes,version,bugdesc,checkdocs" unless="docs.uptodate" description="Make documentation">
         <loadproperties srcFile="${doc.props.file}"/>
 
         <!-- Generate HTML docs (the website). -->
