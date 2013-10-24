@@ -194,6 +194,8 @@ public class InfiniteLoop extends OpcodeStackDetector {
 
     @Override
     public void visit(Code obj) {
+        if (DEBUG)
+            System.out.println(getFullyQualifiedMethodName());
         clearRegModified();
         backwardBranches.clear();
         forwardConditionalBranches.clear();
@@ -255,6 +257,9 @@ public class InfiniteLoop extends OpcodeStackDetector {
             }
 
         }
+        if (DEBUG)
+            System.out.println();
+       
     }
 
     /**
@@ -277,10 +282,11 @@ public class InfiniteLoop extends OpcodeStackDetector {
         addForwardJump(getPC(), target);
     }
 
+    static final boolean DEBUG = false;
     @Override
     public void sawOpcode(int seen) {
-        if (false)
-            System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stack);
+        if (DEBUG)
+            System.out.printf("%3d %-15s %s%n", getPC(),  OPCODE_NAMES[seen], stack);
         if (isRegisterStore())
             regModifiedAt(getRegisterOperand(), getPC());
         switch (seen) {
