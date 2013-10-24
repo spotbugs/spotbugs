@@ -343,6 +343,7 @@ public class ExecutionPlan {
 
     private void buildPassList(ConstraintGraph constraintGraph) throws OrderingConstraintException {
 
+        int passCount = 0;
         while (constraintGraph.getNumVertices() > 0) {
             List<DetectorNode> inDegreeZeroList = new LinkedList<DetectorNode>();
             // Get all of the detectors nodes with in-degree 0.
@@ -352,6 +353,14 @@ public class ExecutionPlan {
                 DetectorNode node = i.next();
                 if (constraintGraph.getNumIncomingEdges(node) == 0) {
                     inDegreeZeroList.add(node);
+                } else if (DEBUG ) {
+                    System.out.println("Can't schedule " + node.getFactory().getShortName());
+                    Iterator<ConstraintEdge> incomingEdgeIterator = constraintGraph.incomingEdgeIterator(node);
+                    while (incomingEdgeIterator.hasNext()) {
+                        ConstraintEdge edge = incomingEdgeIterator.next();
+                        System.out.println("  requires " + edge.getSource().getFactory().getShortName());
+                        
+                    }
                 }
 
             }
@@ -370,6 +379,7 @@ public class ExecutionPlan {
             // it doesn't assign them a position in the pass.
             AnalysisPass pass = new AnalysisPass();
             addPass(pass);
+            passCount++;
             for (DetectorNode node : inDegreeZeroList) {
                 assignToPass(node.getFactory(), pass);
             }
