@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs;
 
 import java.lang.reflect.Field;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -41,6 +43,7 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.OpcodeStack.JumpInfo;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -50,6 +53,30 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  */
 public  class StackMapAnalyzer {
     
+    
+
+    
+    public static class StackMapAnalysisFactory extends edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory<JumpInfoFromStackMap> {
+        public StackMapAnalysisFactory() {
+            super("Jump info for opcode stack from stack map analysis", JumpInfoFromStackMap.class);
+        }
+        
+        public JumpInfoFromStackMap analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) {
+            
+            return getFromStackMap( analysisCache,  descriptor);
+                
+           
+        }
+    }
+    
+    static class JumpInfoFromStackMap extends JumpInfo {
+
+
+        JumpInfoFromStackMap(Map<Integer, List<Item>> jumpEntries, Map<Integer, List<Item>> jumpStackEntries, BitSet jumpEntryLocations) {
+            super(jumpEntries, jumpStackEntries, jumpEntryLocations);
+        }
+        
+    }
     static final boolean DEBUG = false;
     enum StackFrameType {
         SAME_FRAME, SAME_LOCALS_1_STACK_ITEM_FRAME,
@@ -108,37 +135,52 @@ public  class StackMapAnalyzer {
         return locals;
     }
     
-    static Field frame_type_field;
+    static final @CheckForNull Field frame_type_field;
     static {
-        Class<StackMapTableEntry> c = StackMapTableEntry.class;
+        Field f;
         try {
-            frame_type_field = c.getDeclaredField("frame_type");
-        } catch (NoSuchFieldException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        f = AccessController.doPrivileged(new PrivilegedAction<Field>() {
+            
+            public Field run() {
+                Class<StackMapTableEntry> c = StackMapTableEntry.class;
+                Field result;
+                try {
+                    result = c.getDeclaredField("frame_type");
+                    result.setAccessible(true);
+                    return result;
+                } catch (NoSuchFieldException e) {
+                    throw new AssertionError("frame_type field doesn't exist", e);
+                } catch (SecurityException e) {
+                    return null;
+                }
+               
+            }
+           
+        });
+        } catch (Exception e) {
+            AnalysisContext.logError("Unable to create frame_type accessor",e );
+            f = null;
         }
-        frame_type_field.setAccessible(true);
+      System.out.println("Frame type field is null:" + (f == null));
+      frame_type_field = f;
     }
     
-    static  public int getFrameType(StackMapTableEntry e) {
+    static int getFrameType(StackMapTableEntry e) {
+        if (frame_type_field == null)
+            return -1;
         try {
             return (Integer) frame_type_field.get(e);
         } catch (IllegalArgumentException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+          return -1;
         } catch (IllegalAccessException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+           return -1;
         }
-        return -1;
     }
-    static  public  @CheckForNull JumpInfo getFromStackMap(IAnalysisCache analysisCache, MethodDescriptor descriptor)  {
-        Method method;
-        if (true)
+    static  private  @CheckForNull JumpInfoFromStackMap getFromStackMap(IAnalysisCache analysisCache, MethodDescriptor descriptor)  {
+        if (frame_type_field == null)
             return null;
+
+        Method method;
         try {
             method = analysisCache.getMethodAnalysis(Method.class, descriptor);
         } catch (CheckedAnalysisException e1) {
@@ -217,7 +259,7 @@ public  class StackMapAnalyzer {
          }
          if (DEBUG)
              System.out.println("\n");
-         return new JumpInfo(jumpEntries, jumpStackEntries, jumpEntryLocations);
+         return new JumpInfoFromStackMap(jumpEntries, jumpStackEntries, jumpEntryLocations);
       
     }
     
@@ -269,4 +311,5 @@ public  class StackMapAnalyzer {
         }
         
     }
+
 }

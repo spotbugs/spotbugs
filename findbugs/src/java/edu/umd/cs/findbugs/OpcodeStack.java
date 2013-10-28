@@ -54,6 +54,7 @@ import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.OpcodeStack.Item.SpecialKind;
+import edu.umd.cs.findbugs.StackMapAnalyzer.JumpInfoFromStackMap;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ClassMember;
@@ -2703,7 +2704,7 @@ public class OpcodeStack implements Constants2 {
             int iteration = 1;
             OpcodeStack myStack = branchAnalysis.stack;
             if (false)
-                myStack.learnFrom(StackMapAnalyzer.getFromStackMap( Global.getAnalysisCache(), branchAnalysis.descriptor));
+                myStack.learnFrom(myStack.getJumpInfoFromStackMap());
             do {
                 if (DEBUG && iteration > 1 ) {
                     System.out.println("Iterative jump info for " + xMethod +", iteration " + iteration);
@@ -2802,10 +2803,10 @@ public class OpcodeStack implements Constants2 {
             } else if ((visitor instanceof OpcodeStackDetector) && !((OpcodeStackDetector)visitor).isUsingCustomUserValue()) {
                 jump = getJumpInfo();
             } else {
-                jump = StackMapAnalyzer.getFromStackMap( Global.getAnalysisCache(), visitor.getMethodDescriptor());
+                jump = getJumpInfoFromStackMap();
             }
         } else {
-            jump = StackMapAnalyzer.getFromStackMap( Global.getAnalysisCache(), visitor.getMethodDescriptor());
+            jump = getJumpInfoFromStackMap();
         }
         learnFrom(jump);
         return result;
@@ -2832,6 +2833,23 @@ public class OpcodeStack implements Constants2 {
             
         } catch (CheckedAnalysisException e) {
             AnalysisContext.logError("Error getting jump information", e);
+            return null;
+        }
+    }
+    private JumpInfoFromStackMap getJumpInfoFromStackMap() {
+        IAnalysisCache analysisCache = Global.getAnalysisCache();
+        XMethod xMethod = XFactory.createXMethod(v.getThisClass(), v.getMethod());
+        if (xMethod instanceof MethodInfo) {
+            MethodInfo mi = (MethodInfo) xMethod;
+            if (!mi.hasBackBranch())
+                return null;
+        }
+        
+        try {
+            return analysisCache.getMethodAnalysis(JumpInfoFromStackMap.class, xMethod.getMethodDescriptor());
+            
+        } catch (CheckedAnalysisException e) {
+            AnalysisContext.logError("Error getting jump information from StackMap", e);
             return null;
         }
     }

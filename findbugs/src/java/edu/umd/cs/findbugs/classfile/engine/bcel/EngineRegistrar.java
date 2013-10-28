@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.StackMapAnalyzer.StackMapAnalysisFactory;
 import edu.umd.cs.findbugs.ba.AnnotationRetentionDatabase;
 import edu.umd.cs.findbugs.ba.CheckReturnAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.InnerClassAccessMap;
@@ -69,7 +70,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
             new BlockTypeAnalysisFactory(), new CallListDataflowFactory(), new UnconditionalValueDerefDataflowFactory(),
             new CompactLocationNumberingFactory(),  new ReturnPathTypeDataflowFactory(),
             new ForwardTypeQualifierDataflowFactoryFactory(), new BackwardTypeQualifierDataflowFactoryFactory(),
-            new OpcodeStack.JumpInfoFactory(), new ObligationDataflowFactory(), };
+            new OpcodeStack.JumpInfoFactory(), new StackMapAnalysisFactory(), new ObligationDataflowFactory(), };
 
     private static final IDatabaseFactory<?>[] databaseFactoryList = {
             // new ReflectionDatabaseFactory<Subtypes>(Subtypes.class),
