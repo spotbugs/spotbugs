@@ -1166,6 +1166,9 @@ public class FindBugs2 implements IFindBugsEngine {
                                 classCollection.size(), classDescriptor);
                     }
                    count++;
+                   if (!isNonReportingFirstPass && count % 1000 == 0)
+                       yourkitController.advanceGeneration(String.format("Pass %d.%02d", passCount, count/1000));
+                       
 
                     // Check to see if class is excluded by the class screener.
                     // In general, we do not want to screen classes from the
