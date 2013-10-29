@@ -78,6 +78,7 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
@@ -193,7 +194,7 @@ public class FindDeadLocalStores implements Detector {
     }
 
     private void analyzeMethod(ClassContext classContext, Method method) throws DataflowAnalysisException, CFGBuilderException {
-        if (method.isSynthetic() || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE)
+        if (BCELUtil.isSynthetic(method) || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE)
             return;
 
         if (DEBUG) {
@@ -509,8 +510,8 @@ public class FindDeadLocalStores implements Detector {
                 String sourceFile = javaClass.getSourceFileName();
                 if (Subtypes2.isJSP(javaClass))
                     propertySet.addProperty(DeadLocalStoreProperty.IN_JSP_PAGE);
-                else if (javaClass.isSynthetic() || sourceFile != null && !sourceFile.endsWith(".java")) {
-                    if (sourceFile.endsWith(".gxp") && (lvName.startsWith("gxp$") || lvName.startsWith("gxp_")))
+                else if (BCELUtil.isSynthetic(javaClass) || sourceFile != null && !sourceFile.endsWith(".java")) {
+                    if (sourceFile != null && sourceFile.endsWith(".gxp") && (lvName.startsWith("gxp$") || lvName.startsWith("gxp_")))
                         continue;
                     propertySet.addProperty(DeadLocalStoreProperty.NOT_JAVA);
                 }

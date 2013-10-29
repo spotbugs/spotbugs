@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -289,7 +290,7 @@ public class Naming extends PreorderVisitor implements Detector {
 
     @Override
     public void visitJavaClass(JavaClass obj) {
-        if (obj.isSynthetic())
+        if (BCELUtil.isSynthetic(obj))
             return;
         String name = obj.getClassName();
         if (!visited.add(name))

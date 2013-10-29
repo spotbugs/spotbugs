@@ -41,6 +41,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -69,7 +70,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
     public void visit(Field obj) {
         if (obj.getName().equals("this$0"))
             isInnerClass = true;
-        if (!obj.isFinal() && !obj.isStatic() && !obj.isSynthetic())
+        if (!obj.isFinal() && !obj.isStatic() && !BCELUtil.isSynthetic(obj))
             hasNonFinalFields = true;
     }
 

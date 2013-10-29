@@ -34,6 +34,7 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
@@ -155,7 +156,7 @@ public class ClassFeatureSet implements XMLWriteable {
      * @return true if the member is synthetic
      */
     private boolean isSynthetic(FieldOrMethod member) {
-        if (member.isSynthetic()) // this never works, but worth a try
+        if (BCELUtil.isSynthetic(member)) // this never works, but worth a try
             return true;
 
         String name = member.getName();

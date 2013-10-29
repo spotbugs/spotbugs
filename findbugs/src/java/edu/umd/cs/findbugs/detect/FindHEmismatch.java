@@ -48,6 +48,7 @@ import edu.umd.cs.findbugs.ba.EqualsKindSummary;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -343,7 +344,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         int accessFlags = obj.getAccessFlags();
         if ((accessFlags & ACC_STATIC) != 0)
             return;
-        if (!obj.getName().startsWith("this$") && !obj.isSynthetic() && !obj.isTransient())
+        if (!obj.getName().startsWith("this$") && !BCELUtil.isSynthetic(obj) && !obj.isTransient())
             hasFields = true;
     }
 
@@ -433,7 +434,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
             }
         } else if (name.equals("compareTo") && sig.endsWith(")I") && !obj.isStatic()) {
             MethodAnnotation tmp = MethodAnnotation.fromVisitedMethod(this);
-            if (obj.isSynthetic())
+            if (BCELUtil.isSynthetic(obj))
                 hasCompareToBridgeMethod = true;
             if (sig.equals("(Ljava/lang/Object;)I")) {
                 hasCompareToObject = true;

@@ -66,6 +66,7 @@ import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -500,7 +501,7 @@ public class UnreadFields extends OpcodeStackDetector {
                     priority--;
                 if (getThisClass().isPrivate() || getMethod().isPrivate())
                     priority++;
-                if (getClassName().indexOf('$') != -1 || getMethod().isSynthetic() || f.isSynthetic()
+                if (getClassName().indexOf('$') != -1 || BCELUtil.isSynthetic(getMethod()) || f.isSynthetic()
                         || f.getName().indexOf('$') >= 0)
                     priority++;
 
