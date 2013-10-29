@@ -10,7 +10,7 @@
     Use the all target to build the update site, binary and source packages.
 -->
 
-<project name="fbeclipse" default="dist">
+<project name="fbeclipse" default="site">
 
     <!-- Eclipse plugin id, will never change -->
     <property name="plugin.id" value="edu.umd.cs.findbugs.plugin.eclipse" />
