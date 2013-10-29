@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.asm;
 
+import java.util.ArrayList;
+
 import org.objectweb.asm.tree.ClassNode;
 
 import edu.umd.cs.findbugs.BugReporter;
@@ -52,9 +54,14 @@ abstract public class ClassNodeDetector extends ClassNode implements Detector2 {
         return this.getClass().getName();
     }
 
+    @SuppressWarnings("rawtypes")
     public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
 
         FBClassReader cr = Global.getAnalysisCache().getClassAnalysis(FBClassReader.class, classDescriptor);
+        this.interfaces = new ArrayList();
+        this.innerClasses = new ArrayList();
+        this.fields = new ArrayList();
+        this.methods = new ArrayList();
         cr.accept(this, 0);
     }
 
