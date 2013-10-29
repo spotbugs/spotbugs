@@ -26,6 +26,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Synthetic;
@@ -36,6 +37,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public class UselessSubclassMethod extends BytecodeScanningDetector implements StatelessDetector {
 
@@ -45,7 +47,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 
     private final BugReporter bugReporter;
 
-    private String superclassName;
+    private @DottedClassName String superclassName;
 
     private State state;
 
@@ -132,7 +134,9 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
                 if ((state == State.SEEN_RETURN) && (invokePC != 0)) {
                     // Do this check late, as it is potentially expensive
                     Method superMethod = findSuperclassMethod(superclassName, getMethod());
-                    if ((superMethod == null) || accessModifiersAreDifferent(getMethod(), superMethod))
+                    if ((superMethod == null) || differentAttributes(getMethod(), superMethod)
+                            || getMethod().isProtected()
+                            && !samePackage(getDottedClassName(), superclassName))
                         return;
 
                     bugReporter.reportBug(new BugInstance(this, "USM_USELESS_SUBCLASS_METHOD", LOW_PRIORITY).addClassAndMethod(
@@ -144,6 +148,16 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
         }
     }
 
+    public String getPackage(@DottedClassName String classname) {
+        int i = classname.lastIndexOf('.');
+        if (i < 0)
+            return "";
+        return classname.substring(0,i);
+    }
+    public boolean samePackage(@DottedClassName String classname1, @DottedClassName String classname2) {
+        return getPackage(classname1).equals(getPackage(classname2));
+        
+    }
     @Override
     public void sawOpcode(int seen) {
         switch (state) {
@@ -234,7 +248,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
             state = State.SEEN_INVALID;
     }
 
-    private Method findSuperclassMethod(String superclassName, Method subclassMethod) throws ClassNotFoundException {
+    private Method findSuperclassMethod(@DottedClassName String superclassName, Method subclassMethod) throws ClassNotFoundException {
 
         String methodName = subclassMethod.getName();
         Type[] subArgs = null;
@@ -256,22 +270,39 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
         }
 
         if (!superclassName.equals("Object")) {
-            String superSuperClassName = superClass.getSuperclassName();
+            @DottedClassName String superSuperClassName = superClass.getSuperclassName();
             if (superSuperClassName.equals(superclassName)) {
                 throw new ClassNotFoundException("superclass of " + superclassName + " is itself");
             }
-            return findSuperclassMethod(superClass.getSuperclassName(), subclassMethod);
+            return findSuperclassMethod(superSuperClassName, subclassMethod);
         }
 
         return null;
     }
 
-    private boolean accessModifiersAreDifferent(Method m1, Method m2) {
+    HashSet<String> thrownExceptions(Method m) {
+        HashSet<String> result = new HashSet<String>();
+        ExceptionTable exceptionTable = m.getExceptionTable();
+        if (exceptionTable != null)
+            for (String e : exceptionTable.getExceptionNames())
+                result.add(e);
+        return result;
+    }
+    private boolean differentAttributes(Method m1, Method m2) {
+        if (m1.getAnnotationEntries().length > 0 || m2.getAnnotationEntries().length > 0)
+            return true;
         int access1 = m1.getAccessFlags()
                 & (Constants.ACC_PRIVATE | Constants.ACC_PROTECTED | Constants.ACC_PUBLIC | Constants.ACC_FINAL);
         int access2 = m2.getAccessFlags()
                 & (Constants.ACC_PRIVATE | Constants.ACC_PROTECTED | Constants.ACC_PUBLIC | Constants.ACC_FINAL);
 
-        return access1 != access2;
+        
+        m1.getAnnotationEntries();
+        if (access1 != access2)
+            return true;
+        if (!thrownExceptions(m1).equals(thrownExceptions(m2)))
+            return false;
+        m1.getExceptionTable();
+        return false;
     }
 }
