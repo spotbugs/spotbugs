@@ -115,7 +115,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     private int rankThreshold;
 
-    private boolean analysisUnderway, relaxed;
+    private boolean relaxedSet, relaxed;
 
     private int errorCount;
 
@@ -150,19 +150,32 @@ public abstract class AbstractBugReporter implements BugReporter {
     public void setRankThreshold(int threshold) {
         this.rankThreshold = threshold;
     }
+    
+    public void setIsRelaxed(boolean relaxed) {
+        this.relaxed = relaxed;
+        this.relaxedSet = true;
+    }
 
-    // Subclasses must override doReportBug(), not this method.
-    public final void reportBug(@Nonnull BugInstance bugInstance) {
-        if (priorityThreshold == 0) {
-            throw new IllegalStateException("Priority threshold not set");
-        }
-        if (!analysisUnderway) {
+    protected boolean isRelaxed() {
+        if (!relaxedSet) {
             if (FindBugsAnalysisFeatures.isRelaxedMode()) {
                 relaxed = true;
             }
 
-            analysisUnderway = true;
+            relaxedSet = true;
         }
+        return relaxed;
+    }
+    // Subclasses must override doReportBug(), not this method.
+    public final void reportBug(@Nonnull BugInstance bugInstance) {
+        if (isRelaxed()) {
+            doReportBug(bugInstance);
+            return;
+        }
+        if (priorityThreshold == 0) {
+            throw new IllegalStateException("Priority threshold not set");
+        }
+
         ClassAnnotation primaryClass = bugInstance.getPrimaryClass();
         if (primaryClass != null && !AnalysisContext.currentAnalysisContext().isApplicationClass(primaryClass.getClassName())) {
             if (DEBUG) {
@@ -172,7 +185,7 @@ public abstract class AbstractBugReporter implements BugReporter {
         }
         int priority = bugInstance.getPriority();
         int bugRank = bugInstance.getBugRank();
-        if (priority <= priorityThreshold && bugRank <= rankThreshold || relaxed) {
+        if (priority <= priorityThreshold && bugRank <= rankThreshold) {
             doReportBug(bugInstance);
         } else {
             if (DEBUG) {

@@ -24,12 +24,14 @@ import java.io.File;
 import edu.umd.cs.findbugs.util.Util;
 
 enum SaveType {
-    NOT_KNOWN, XML_ANALYSIS, FBP_FILE, FBA_FILE;
+    NOT_KNOWN, HTML_OUTPUT, XML_ANALYSIS, FBP_FILE, FBA_FILE;
     public FindBugsFileFilter getFilter() {
         switch (this) {
         case XML_ANALYSIS:
             return FindBugsAnalysisFileFilter.INSTANCE;
-        case FBP_FILE:
+        case HTML_OUTPUT:
+            return FindBugsHtmlFileFilter.INSTANCE;
+       case FBP_FILE:
             return FindBugsFBPFileFilter.INSTANCE;
         case FBA_FILE:
             return FindBugsFBAFileFilter.INSTANCE;
@@ -49,6 +51,8 @@ enum SaveType {
     public String getFileExtension() {
         switch (this) {
 
+        case HTML_OUTPUT:
+            return ".html";
         case XML_ANALYSIS:
             return ".xml";
         case FBP_FILE:
@@ -63,11 +67,13 @@ enum SaveType {
     public static SaveType forFile(File f) {
         String extension = Util.getFileExtension(f);
 
-        if (extension.equals("fbp"))
-            return FBP_FILE;
+        if (extension.equals("html") || extension.equals("htm"))
+            return HTML_OUTPUT;
         if (extension.equals("fba"))
             return FBA_FILE;
         if (extension.equals("xml"))
+            return XML_ANALYSIS;
+        if (extension.equals("html"))
             return XML_ANALYSIS;
         if (f.getName().toLowerCase().endsWith("xml.gz"))
             return XML_ANALYSIS;

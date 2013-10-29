@@ -15,9 +15,12 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.HTMLBugReporter;
 import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
 
@@ -40,6 +43,7 @@ public class MainFrameLoadSaveHelper implements Serializable {
         saveOpenFileChooser.addChoosableFileFilter(FindBugsFBPFileFilter.INSTANCE);
         saveOpenFileChooser.addChoosableFileFilter(FindBugsFBAFileFilter.INSTANCE);
         saveOpenFileChooser.setFileFilter(FindBugsAnalysisFileFilter.INSTANCE);
+        saveOpenFileChooser.addChoosableFileFilter(FindBugsHtmlFileFilter.INSTANCE);
         filterOpenFileChooser = new FBFileChooser();
         filterOpenFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         filterOpenFileChooser.setFileFilter(FindBugsFilterFileFilter.INSTANCE);
@@ -282,7 +286,12 @@ public class MainFrameLoadSaveHelper implements Serializable {
                 int response = -1;
 
                 switch (fileType) {
-                case XML_ANALYSIS:
+                case HTML_OUTPUT:
+                    response = JOptionPane.showConfirmDialog(saveOpenFileChooser,
+                            L10N.getLocalString("dlg.analysis_exists_lbl", "This html output already exists.\nReplace it?"),
+                            L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION,
+                            JOptionPane.WARNING_MESSAGE);
+                    break;case XML_ANALYSIS:
                     response = JOptionPane.showConfirmDialog(saveOpenFileChooser,
                             L10N.getLocalString("dlg.analysis_exists_lbl", "This analysis already exists.\nReplace it?"),
                             L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION,
@@ -317,6 +326,9 @@ public class MainFrameLoadSaveHelper implements Serializable {
 
             switch (fileType) {
 
+            case HTML_OUTPUT:
+                successful = printHtml(f);
+                break;
             case XML_ANALYSIS:
                 successful = saveAnalysis(f);
                 break;
@@ -420,6 +432,37 @@ public class MainFrameLoadSaveHelper implements Serializable {
         return SaveReturn.SAVE_SUCCESSFUL;
     }
 
+    SaveReturn printHtml(final File f) {
+
+        Future<Object> waiter = mainFrame.getBackgroundExecutor().submit(new Callable<Object>() {
+            public Object call() throws Exception {
+                HTMLBugReporter reporter = new HTMLBugReporter( mainFrame.getProject(), "default.xsl");
+                reporter.setIsRelaxed(true);
+                reporter.setOutputStream(UTF8.printStream(new FileOutputStream(f)));
+                for(BugInstance bug : mainFrame.getBugCollection().getCollection()) {
+                    try {
+                    if (mainFrame.getViewFilter().show(bug)) {
+                        reporter.reportBug(bug);
+                    }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                };
+                reporter.finish();
+                return null;
+            }
+        });
+        try {
+            waiter.get();
+        } catch (InterruptedException e) {
+            return SaveReturn.SAVE_ERROR;
+        } catch (ExecutionException e) {
+            return SaveReturn.SAVE_ERROR;
+        }
+
+        return SaveReturn.SAVE_SUCCESSFUL;
+    }
+    
     /**
      * Save current analysis as file passed in. Return SAVE_SUCCESSFUL if save
      * successful. Method doesn't do much. This method is more if need to do
