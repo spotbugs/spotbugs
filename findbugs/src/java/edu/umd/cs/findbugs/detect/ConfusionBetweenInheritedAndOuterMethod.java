@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 
 public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDetector {
 
@@ -60,7 +61,7 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 
     @Override
     public void visit(Code obj) {
-        if (isInnerClass  && !getMethod().isSynthetic()) {
+        if (isInnerClass  && !BCELUtil.isSynthetic(getMethod())) {
 //            System.out.println(getFullyQualifiedMethodName());
             super.visit(obj);
         }

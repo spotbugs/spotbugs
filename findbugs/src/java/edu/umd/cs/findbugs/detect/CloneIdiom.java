@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -185,7 +186,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 
     @Override
     public void visit(Method obj) {
-        if (obj.isAbstract() || obj.isSynthetic())
+        if (obj.isAbstract() || BCELUtil.isSynthetic(obj))
             return;
         if (!obj.isPublic())
             return;

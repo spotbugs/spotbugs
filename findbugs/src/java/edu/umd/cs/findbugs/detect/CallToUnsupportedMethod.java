@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 
 public class CallToUnsupportedMethod implements Detector {
 
@@ -88,7 +89,7 @@ public class CallToUnsupportedMethod implements Detector {
      */
     private void analyzeMethod(ClassContext classContext, Method method) throws MethodUnprofitableException, CFGBuilderException,
             DataflowAnalysisException {
-        if (method.isSynthetic() || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE)
+        if (BCELUtil.isSynthetic(method)|| (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE)
             return;
         CFG cfg = classContext.getCFG(method);
         TypeDataflow typeDataflow = classContext.getTypeDataflow(method);

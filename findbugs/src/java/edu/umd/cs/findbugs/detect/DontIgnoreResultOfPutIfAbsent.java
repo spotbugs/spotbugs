@@ -68,6 +68,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -193,7 +194,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     }
 
     private void analyzeMethod(ClassContext classContext, Method method) throws DataflowAnalysisException, CFGBuilderException {
-        if (method.isSynthetic() || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE)
+        if (BCELUtil.isSynthetic(method) || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE)
             return;
 
         if (DEBUG) {

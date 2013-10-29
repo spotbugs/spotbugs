@@ -69,6 +69,7 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -1093,7 +1094,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     public BugInstance addClassAndMethod(MethodGen methodGen, String sourceFile) {
         addClass(methodGen.getClassName());
         addMethod(methodGen, sourceFile);
-        if (methodGen.isSynthetic())
+        if (BCELUtil.isSynthetic(methodGen))
             foundInSyntheticMethod();
         return this;
     }
@@ -1111,7 +1112,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     public BugInstance addClassAndMethod(JavaClass javaClass, Method method) {
         addClass(javaClass.getClassName());
         addMethod(javaClass, method);
-        if (method.isSynthetic())
+        
+        if (BCELUtil.isSynthetic(method))
             foundInSyntheticMethod();
         return this;
     }

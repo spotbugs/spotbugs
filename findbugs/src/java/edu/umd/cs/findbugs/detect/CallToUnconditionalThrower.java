@@ -48,6 +48,7 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class CallToUnconditionalThrower extends PreorderVisitor implements Detector {
@@ -73,7 +74,7 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
     }
 
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
-        if (method.isSynthetic() || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE)
+        if (BCELUtil.isSynthetic(method) || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE)
             return;
         CFG cfg = classContext.getCFG(method);
 

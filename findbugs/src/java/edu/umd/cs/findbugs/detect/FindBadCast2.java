@@ -11,12 +11,10 @@ import javax.annotation.CheckForNull;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.Synthetic;
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INSTANCEOF;
@@ -59,6 +57,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.Util;
 
@@ -126,17 +125,6 @@ public class FindBadCast2 implements Detector {
         return bytecodeSet != null && (bytecodeSet.get(Constants.CHECKCAST) || bytecodeSet.get(Constants.INSTANCEOF));
     }
 
-    private boolean isSynthetic(Method m) {
-        if (m.isSynthetic())
-            return true;
-        Attribute[] attrs = m.getAttributes();
-        for (Attribute attr : attrs) {
-            if (attr instanceof Synthetic)
-                return true;
-        }
-        return false;
-    }
-
     private Set<ValueNumber> getParameterValueNumbers(ClassContext classContext, Method method, CFG cfg)
             throws DataflowAnalysisException, CFGBuilderException {
         ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
@@ -150,7 +138,7 @@ public class FindBadCast2 implements Detector {
     }
 
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
-        if (isSynthetic(method) || !prescreen(classContext, method))
+        if (BCELUtil.isSynthetic(method) || !prescreen(classContext, method))
             return;
         BugAccumulator accumulator = new BugAccumulator(bugReporter);
 

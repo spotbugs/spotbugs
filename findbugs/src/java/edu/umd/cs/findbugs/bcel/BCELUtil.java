@@ -20,9 +20,13 @@
 package edu.umd.cs.findbugs.bcel;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.FieldOrMethod;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Synthetic;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldGenOrMethodGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
@@ -153,5 +157,23 @@ public abstract class BCELUtil {
     
     public static ObjectType getObjectTypeInstance(Class<?> clazz) {
         return  getObjectTypeInstance(clazz.getName());
+    }
+    
+    public static boolean isSynthetic(FieldOrMethod m) {
+        if (m.isSynthetic())
+            return true;
+        for(Attribute a : m.getAttributes())
+            if (a instanceof Synthetic)
+                return true;
+        return false;
+    }
+    
+    public static boolean isSynthetic(FieldGenOrMethodGen m) {
+        if (m.isSynthetic())
+            return true;
+        for(Attribute a : m.getAttributes())
+            if (a instanceof Synthetic)
+                return true;
+        return false;
     }
 }
