@@ -2358,11 +2358,17 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     public BugInstance addSomeSourceForTopTwoStackValues(ClassContext classContext, Method method, Location location) {
         int pc = location.getHandle().getPosition();
-        OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
-        BugAnnotation a1 = getSomeSource(classContext, method, location, stack, 1);
-        BugAnnotation a0 = getSomeSource(classContext, method, location, stack, 0);
-        addOptionalUniqueAnnotations(a0, a1);
-
+        try {
+            OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
+            BugAnnotation a1 = getSomeSource(classContext, method, location, stack, 1);
+            BugAnnotation a0 = getSomeSource(classContext, method, location, stack, 0);
+            addOptionalUniqueAnnotations(a0, a1);
+        } catch (UnreachableCodeException e) {
+            if (SystemProperties.ASSERTIONS_ENABLED) {
+                AnalysisContext.logError(e.getMessage(), e);
+            }
+            assert true;
+        }
         return this;
 
     }
