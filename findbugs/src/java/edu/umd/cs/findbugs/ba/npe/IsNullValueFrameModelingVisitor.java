@@ -185,7 +185,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
                     IsNullValueFrame frame = getFrame();
                     for (ValueNumber vn : nonnullParameters) {
                         IsNullValue knownValue = frame.getKnownValue(vn);
-                        if (knownValue != null && knownValue.mightBeNull()) {
+                        if (knownValue != null && !knownValue.isDefinitelyNotNull()) {
                             if (knownValue.isDefinitelyNull()) {
                                 frame.setTop();
                                 return;
@@ -194,7 +194,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
                         }
                         for (int i = 0; i < vnaFrame.getNumSlots(); i++) {
                             IsNullValue value = frame.getValue(i);
-                            if (vnaFrame.getValue(i).equals(vn) && value.mightBeNull()) {
+                            if (vnaFrame.getValue(i).equals(vn) && !value.isDefinitelyNotNull()) {
                                 frame.setValue(i, kaboom);
                                 if (value.isDefinitelyNull()) {
                                     frame.setTop();
