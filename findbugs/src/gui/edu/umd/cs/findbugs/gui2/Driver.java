@@ -141,7 +141,7 @@ public class Driver {
         for (String pid : plugins) {
             Plugin plugin = Plugin.getByPluginId(pid);
             if (plugin != null) {
-                if (plugin.cannotDisable())
+                if (enabled && plugin.cannotDisable())
                     JOptionPane.showMessageDialog(null,
                             "Cannot disable plugin: " + plugin.getPluginId() + "\n" + plugin.getShortDescription(),
                             "Cannot disable plugin", JOptionPane.ERROR_MESSAGE);
