@@ -213,13 +213,10 @@ public class TypeQualifierValue<A extends Annotation> {
             System.out.println("Getting qualifier class for " + className);
         if (className.startsWith("javax.annotation"))
             return (Class<A>) Class.forName(className);
-        ClassData data;
         try {
-            data = Global.getAnalysisCache().getClassAnalysis(ClassData.class, typeQualifier);
+            Global.getAnalysisCache().getClassAnalysis(ClassData.class, typeQualifier);
         } catch (CheckedAnalysisException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw new ClassNotFoundException("No class data found for " + typeQualifier, e);
+            throw new ClassNotFoundException("No class data found for " + className);
         }
         
         ValidatorClassLoader validatorLoader = ValidatorClassLoader.INSTANCE;
