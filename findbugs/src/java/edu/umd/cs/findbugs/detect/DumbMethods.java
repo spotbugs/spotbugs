@@ -227,12 +227,30 @@ public class DumbMethods extends OpcodeStackDetector {
                             .addCalledMethod(this).addMethod(preferred).describe(MethodAnnotation.SHOULD_CALL);
                     accumulator.accumulateBug(bug, this);
 
-                }  else   if (called.getName().equals("intValue")
+                }  else if (called.getName().equals("intValue")
                         && called.getClassDescriptor().getClassName().equals("java/lang/Integer")
-                        && previousMethodCall.getName().equals("<init>")
-                        && previousMethodCall.getSignature().equals("(Ljava/lang/String;)V")) {
-                    MethodAnnotation preferred = new MethodAnnotation("java.lang.Integer", "parseString", "(Ljava/lang/String;)I", true);
-                    
+                        && previousMethodCall.getSlashedClassName().equals("java/lang/Integer")
+                        && (previousMethodCall.getName().equals("<init>")
+                                && previousMethodCall.getSignature().equals("(Ljava/lang/String;)V")
+                                || previousMethodCall.getName().equals("valueOf")
+                                && previousMethodCall.getSignature().equals("(Ljava/lang/String;)Ljava/lang/Integer;")
+                                )) {
+
+                    MethodAnnotation preferred = new MethodAnnotation("java.lang.Integer", "parseInt", "(Ljava/lang/String;)I", true);
+
+                    BugInstance bug = new BugInstance(this, "DM_BOXED_PRIMITIVE_FOR_PARSING", HIGH_PRIORITY).addClassAndMethod(this)
+                            .addCalledMethod(this).addMethod(preferred).describe(MethodAnnotation.SHOULD_CALL);
+                    accumulator.accumulateBug(bug, this);
+                }  else if (called.getName().equals("longValue")
+                        && called.getClassDescriptor().getClassName().equals("java/lang/Long")
+                        && previousMethodCall.getSlashedClassName().equals("java/lang/Long")
+                        && ( previousMethodCall.getName().equals("<init>")
+                                && previousMethodCall.getSignature().equals("(Ljava/lang/String;)V")
+                                ||  previousMethodCall.getName().equals("valueOf")
+                                && previousMethodCall.getSignature().equals("(Ljava/lang/String;)Ljava/lang/Long;"))
+                        ) {
+                    MethodAnnotation preferred = new MethodAnnotation("java.lang.Long", "parseLong", "(Ljava/lang/String;)J", true);
+
                     BugInstance bug = new BugInstance(this, "DM_BOXED_PRIMITIVE_FOR_PARSING", HIGH_PRIORITY).addClassAndMethod(this)
                             .addCalledMethod(this).addMethod(preferred).describe(MethodAnnotation.SHOULD_CALL);
                     accumulator.accumulateBug(bug, this);
