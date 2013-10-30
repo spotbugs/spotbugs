@@ -33,6 +33,9 @@ public class SaveTypeTest extends TestCase {
     }
 
     public void testSaveTypes() {
+        check(SaveType.HTML_OUTPUT, "/home/pugh/bugs.html");
+        check(SaveType.HTML_OUTPUT, "/home/pugh/bugs.htm");
+        check(SaveType.HTML_OUTPUT, "/home/pugh/bugs.HTML");
         check(SaveType.XML_ANALYSIS, "/home/pugh/bugs.xml");
         check(SaveType.XML_ANALYSIS, "/home/pugh/bugs.XML");
         check(SaveType.XML_ANALYSIS, "/home/pugh/bugs.xml.gz");

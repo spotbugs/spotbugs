@@ -71,6 +71,8 @@ enum SaveType {
             return HTML_OUTPUT;
         if (extension.equals("fba"))
             return FBA_FILE;
+        if (extension.equals("fbp"))
+            return FBP_FILE;
         if (extension.equals("xml"))
             return XML_ANALYSIS;
         if (extension.equals("html"))
