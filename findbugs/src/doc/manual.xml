@@ -938,6 +938,19 @@ These options are only accepted by the Text User Interface.
   </listitem>
   </varlistentry>
 
+  <varlistentry>
+  <term><command>-userPrefs</command> <replaceable>edu.umd.cs.findbugs.core.prefs</replaceable></term>
+  <listitem>
+    <para>
+    Set the path of the user preferences file to use, which might override some of the options abobe.
+    Specifying <literal>auxClasspath</literal> as first argument would mean some later
+    options will override them, as last argument would mean they will override some previous options).
+    This rationale behind this option is to reuse FindBugs Eclipse project settings for command
+    line execution.
+    </para>
+  </listitem>
+  </varlistentry>
+
 <!--
   <varlistentry>
   <term><command></command> <replaceable></replaceable></term>
@@ -1232,8 +1245,8 @@ using the &FindBugs; task.
        elements may be specified as children of a single <literal>findbugs</literal> element.
        </para>
        <para>In addition to or instead of specifying a <literal>class</literal> element,
-       the  &FindBugs; task can contain one or more <literal>fileset</literal> element(s) that 
-       specify files to be analyzed. 
+       the  &FindBugs; task can contain one or more <literal>fileset</literal> element(s) that
+       specify files to be analyzed.
        For example, you might use a fileset to specify that all of the jar files in a directory
        should be analyzed.
        </para>
@@ -1292,7 +1305,7 @@ using the &FindBugs; task.
        <para>
        An optional attribute.  It specifies
        the confidence/priority threshold for reporting issues.  If set to "low", confidence is not used to filter bugs.
-       If set to "medium" (the default), low confidence issues are supressed. 
+       If set to "medium" (the default), low confidence issues are supressed.
        If set to "high", only high confidence bugs are reported.
        </para>
     </listitem>
