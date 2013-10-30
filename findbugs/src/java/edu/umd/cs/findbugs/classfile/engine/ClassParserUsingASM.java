@@ -412,15 +412,37 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
                         }
 
-                        @Override
-                        public void visitJumpInsn(int opcode, Label label) {
+                        private void sawBranchTo(Label label) {
                             sawBranch = true;
                             if (labelsSeen.contains(label))
                                 sawBackBranch = true;
+                        }
+
+                        @Override
+                        public void visitJumpInsn(int opcode, Label label) {
+                            sawBranchTo(label);
                             identityState = IdentityMethodState.NOT;
                             super.visitJumpInsn(opcode, label);
-
                         }
+
+                        @Override
+                        public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
+                            sawBranchTo(dflt);
+                            for (Label lbl : labels)
+                                sawBranchTo(lbl);
+                            identityState = IdentityMethodState.NOT;
+                            super.visitLookupSwitchInsn(dflt, keys, labels);
+                        }
+
+                        @Override
+                        public void visitTableSwitchInsn(int min, int max, Label dflt, Label[] labels) {
+                            sawBranchTo(dflt);
+                            for (Label lbl : labels)
+                                sawBranchTo(lbl);
+                            identityState = IdentityMethodState.NOT;
+                            super.visitTableSwitchInsn(min, max, dflt, labels);
+                        }
+                        
                         @Override
                         public void visitLabel(Label label) {
                             labelsSeen.add(label);
