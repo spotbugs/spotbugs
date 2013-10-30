@@ -78,6 +78,7 @@ public class TestFooNoControlFlow2 {
     }
 
     @NoWarning("TQ")
+    @ExpectWarning("SA_FIELD_SELF_ASSIGNMENT")
     public void ok22() {
         Object foo2 = foo;
         foo = foo2;
@@ -90,6 +91,7 @@ public class TestFooNoControlFlow2 {
     }
 
     @NoWarning("TQ")
+    @ExpectWarning("SA_FIELD_SELF_ASSIGNMENT")
     public void ok11() {
         Object notFoo2 = notFoo;
         notFoo = notFoo2;
