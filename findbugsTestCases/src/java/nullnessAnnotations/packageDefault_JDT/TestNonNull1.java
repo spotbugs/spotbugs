@@ -12,6 +12,7 @@ public class TestNonNull1 {
         return o;
     }
 
+    @ExpectWarning("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE")
     public Object g(@Nullable Object o) {
         return o;
     }

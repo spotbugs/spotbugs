@@ -1,3 +1,5 @@
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class SelfLocalOperation {
 
     int f(int x, int y) {
@@ -20,10 +22,12 @@ public class SelfLocalOperation {
         return x;
     }
 
+    @ExpectWarning("SA_LOCAL_SELF_COMPARISON")
     boolean e(Object x, Object y) {
         return x.equals(x);
     }
 
+    @ExpectWarning("SA_LOCAL_SELF_COMPARISON")
     int c(Integer x, Integer y) {
         return x.compareTo(x);
     }

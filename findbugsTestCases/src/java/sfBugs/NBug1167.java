@@ -2,10 +2,13 @@ package sfBugs;
 
 import java.sql.ResultSet;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 
 
 public class NBug1167
 {
+    @ExpectWarning("NP_ALWAYS_NULL")
     public void fails() 
     {
         ResultSet rs = null;
