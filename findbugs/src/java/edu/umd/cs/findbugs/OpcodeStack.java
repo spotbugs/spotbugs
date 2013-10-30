@@ -1283,6 +1283,7 @@ public class OpcodeStack implements Constants2 {
                     if (item != null) {
                         Item itm = new Item(item);
                         itm.setLoadedFromField(fieldOperand, Integer.MAX_VALUE);
+                        itm.setPC(dbc.getPC());
                         push(itm);
                         break;
                     }
@@ -1292,7 +1293,7 @@ public class OpcodeStack implements Constants2 {
                 if (field.getFieldName().equals("separator") && field.getClassName().equals("java.io.File")) {
                     i.setSpecialKind(Item.FILE_SEPARATOR_STRING);
                 }
-
+                i.setPC(dbc.getPC());
                 push(i);
                 break;
             }
@@ -1380,8 +1381,16 @@ public class OpcodeStack implements Constants2 {
             case MONITORENTER:
             case MONITOREXIT:
             case POP:
+                pop();
+                break;
+                
             case PUTSTATIC:
                 pop();
+                eraseKnowledgeOf(dbc.getXFieldOperand());
+                break;
+            case PUTFIELD:
+                pop(2);
+                eraseKnowledgeOf(dbc.getXFieldOperand());
                 break;
 
             case IF_ACMPEQ:
@@ -1470,9 +1479,7 @@ public class OpcodeStack implements Constants2 {
                 if (it.getSize() == 1)
                     pop();
                 break;
-            case PUTFIELD:
-                pop(2);
-                break;
+
 
             case IALOAD:
             case SALOAD:
@@ -1638,13 +1645,16 @@ public class OpcodeStack implements Constants2 {
                         Item addr = pop();
                         Item itm = new Item(item);
                         itm.setLoadedFromField(fieldOperand, addr.getRegisterNumber());
+                        itm.setPC(dbc.getPC());
                         push(itm);
                         break;
                     }
                 }
                 Item item = pop();
                 int reg = item.getRegisterNumber();
-                push(new Item(dbc.getSigConstantOperand(), FieldAnnotation.fromReferencedField(dbc), reg));
+                Item valueLoaded = new Item(dbc.getSigConstantOperand(), FieldAnnotation.fromReferencedField(dbc), reg);
+                valueLoaded.setPC(dbc.getPC());
+                push(valueLoaded);
 
             }
                 break;
@@ -1974,6 +1984,18 @@ public class OpcodeStack implements Constants2 {
                 System.out.printf("%4d: %14s %s%n", dbc.getPC(), OPCODE_NAMES[seen] ,  this);
             }
         }
+    }
+
+    /**
+     * @param fieldOperand
+     */
+    private void eraseKnowledgeOf(XField fieldOperand) {
+        for (Item item : stack)
+            if (item != null && fieldOperand.equals(item.getXField()))
+                item.setLoadedFromField(null, -1);
+        for (Item item : lvValues)
+            if (item != null && fieldOperand.equals(item.getXField()))
+                item.setLoadedFromField(null, -1);
     }
 
     /**
@@ -3303,6 +3325,7 @@ public class OpcodeStack implements Constants2 {
                         i.fieldLoadedFromRegister = -1;
                 }
         }
+        it.registerNumber = register;
         setLVValue(register, it);
     }
 
