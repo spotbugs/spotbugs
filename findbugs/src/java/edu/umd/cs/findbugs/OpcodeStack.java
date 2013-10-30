@@ -2654,7 +2654,7 @@ public class OpcodeStack implements Constants2 {
             super("Jump info for opcode stack", JumpInfo.class);
         }
 
-        public JumpInfo analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+        public @CheckForNull JumpInfo analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
             Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
             JavaClass jclass = getJavaClass(analysisCache, descriptor.getClassDescriptor());
             Code code = method.getCode();
@@ -2694,21 +2694,14 @@ public class OpcodeStack implements Constants2 {
            @Override
             public void sawOpcode(int seen) {
                stack.precomputation(this);
-               stack.mergeJumps(this);
                
                if (DEBUG) System.out.printf("%4d %-15s %s%n", getPC(), OPCODE_NAMES[seen], stack);
                try {
                stack.sawOpcode(this, seen);
                } catch (RuntimeException e) {
-                   e.printStackTrace();
                    throw e;
                }
            }
-
-        
-         
-           
-       
        }
 
         /**
@@ -2718,10 +2711,13 @@ public class OpcodeStack implements Constants2 {
          * @param branchAnalysis
          * @return
          */
-        public static JumpInfo computeJumpInfo(JavaClass jclass, Method method,
+        public static @CheckForNull JumpInfo computeJumpInfo(JavaClass jclass, Method method,
                 JumpStackComputation branchAnalysis) {
             branchAnalysis.setupVisitorForClass(jclass);
-            MethodInfo xMethod = (MethodInfo) XFactory.createXMethod(jclass, method);
+            XMethod createXMethod = XFactory.createXMethod(jclass, method);
+            if (!(createXMethod instanceof MethodInfo))
+                return null;
+            MethodInfo xMethod = (MethodInfo) createXMethod;
             
             int iteration = 1;
             OpcodeStack myStack = branchAnalysis.stack;
