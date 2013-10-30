@@ -943,7 +943,7 @@ These options are only accepted by the Text User Interface.
   <listitem>
     <para>
     Set the path of the user preferences file to use, which might override some of the options abobe.
-    Specifying <literal>auxClasspath</literal> as first argument would mean some later
+    Specifying <literal>userPrefs</literal> as first argument would mean some later
     options will override them, as last argument would mean they will override some previous options).
     This rationale behind this option is to reuse FindBugs Eclipse project settings for command
     line execution.
@@ -1523,6 +1523,19 @@ using the &FindBugs; task.
               that will be set to "true" if any warnings are reported by
               &FindBugs; on the analyzed program.
           </para>
+      </listitem>
+  </varlistentry>
+
+  <varlistentry>
+      <term><literal>userPrefs</literal></term>
+      <listitem>
+          <para>
+              Set the path of the user preferences file to use, which might override some of the options abobe.
+              Specifying <literal>userPrefs</literal> as first argument would mean some later
+              options will override them, as last argument would mean they will override some previous options).
+              This rationale behind this option is to reuse FindBugs Eclipse project settings for command
+              line execution.
+            </para>
       </listitem>
   </varlistentry>
 
