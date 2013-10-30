@@ -67,7 +67,7 @@
         bcel.jar,
         annotations.jar,
         jFormatString.jar,
-        commons-lang-2.4.jar,
+        commons-lang-2.6.jar,
         asm-3.3.jar,
         asm-tree-3.3.jar,
         asm-commons-3.3.jar,
@@ -75,7 +75,7 @@
         asm-util-3.3.jar,
         asm-xml-3.3.jar,
         dom4j-1.6.1.jar,
-        jaxen-1.1.1.jar" />
+        jaxen-1.1.6.jar" />
 
     <!-- list of all libraries, copied from FB core project, plus old libraries not more used -->
     <property name="jars.cleanup" value="${jars.required},
@@ -94,7 +94,7 @@
     <!-- Need these jars for ant target 'srcdist', which uses subversion.  Grab them at:
          http://subclipse.tigris.org/files/documents/906/43359/svnant-1.2.1.zip -->
     <path id="svn.classpath">
-	 <fileset dir="${svnant.home}/lib">
+     <fileset dir="${svnant.home}/lib">
           <include name="*.jar"/>
          </fileset>
     </path>
@@ -261,8 +261,8 @@
         <taskdef resource="org/tigris/subversion/svnant/svnantlib.xml"
             format="xml" classpathref="svn.classpath"/>
 
-	<svnSetting username="guest" password="" id="svn.settings" />
-	<svn refid="svn.settings" >
+    <svnSetting username="guest" password="" id="svn.settings" />
+    <svn refid="svn.settings" >
             <!-- Use 'export' rather than 'checkout' to exclude the .svn stuff -->
             <export srcUrl="http://findbugs.googlecode.com/svn/trunk/eclipsePlugin"
                     revision="HEAD"
@@ -395,7 +395,7 @@
               jvmargs="-ea -Xmx1200m -Dfindbugs.failOnCloudError=true -Dfindbugs.cloud.token=238b6fc80cec17ec"
               projectName="FindBugs Eclipse plugin"
               maxRank="20"
-	      excludeFilter="findbugsExclude.xml"
+          excludeFilter="findbugsExclude.xml"
               timeout="1800000"
               outputFile="findbugscheckAll.xml" >
       <class location="${bin.dir}" />
