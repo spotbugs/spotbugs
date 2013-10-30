@@ -67,10 +67,10 @@
         <pathelement location="${jar.dir}/asm-3.3.jar"/>
         <pathelement location="${jar.dir}/asm-commons-3.3.jar"/>
         <pathelement location="${jar.dir}/asm-tree-3.3.jar"/>
-        <pathelement location="${jar.dir}/jaxen-1.1.1.jar"/>
+        <pathelement location="${jar.dir}/jaxen-1.1.6.jar"/>
         <pathelement location="${jar.dir}/jsr305.jar"/>
         <pathelement location="${jar.dir}/jFormatString.jar"/>
-        <pathelement location="${jar.dir}/commons-lang-2.4.jar"/>
+        <pathelement location="${jar.dir}/commons-lang-2.6.jar"/>
         <pathelement location="${jar.dir}/jcip-annotations.jar"/>
     </path>
 
