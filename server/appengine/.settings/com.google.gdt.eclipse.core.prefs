@@ -1,5 +1,4 @@
-#Wed Jun 02 17:13:24 EDT 2010
 eclipse.preferences.version=1
-jarsExcludedFromWebInfLib=C\:/Users/Keith/eclipse-workspace/AppEngineCloudServer/lib/mockito-all-1.8.2.jar|C\:/Users/Keith/Projects/Libraries/appengine-java-sdk-1.2.8/lib/impl/appengine-api-stubs.jar|C\:/Users/Keith/Projects/Libraries/appengine-java-sdk-1.2.8/lib/impl/appengine-local-runtime.jar|C\:/Users/Keith/eclipse-workspace/AppEngineCloudServer/lib/appengine-api-stubs.jar|C\:/Users/Keith/eclipse-workspace/AppEngineCloudServer/lib/appengine-local-runtime.jar
+jarsExcludedFromWebInfLib=C\:/Users/Keith/eclipse-workspace/AppEngineCloudServer/lib/mockito-all-1.8.2.jar|C\:/Users/Keith/Projects/Libraries/appengine-java-sdk-1.2.8/lib/impl/appengine-api-stubs.jar|C\:/Users/Keith/Projects/Libraries/appengine-java-sdk-1.2.8/lib/impl/appengine-local-runtime.jar|C\:/Users/Keith/eclipse-workspace/AppEngineCloudServer/lib/appengine-api-stubs.jar|C\:/Users/Keith/eclipse-workspace/AppEngineCloudServer/lib/appengine-local-runtime.jar|/Users/pugh/Documents/fb-trunk/server/appengine/lib/appengine-api-stubs.jar|/Users/pugh/Documents/fb-trunk/server/appengine/lib/appengine-local-runtime.jar|/Users/pugh/Documents/fb-trunk/server/appengine/lib/mockito-all-1.8.2.jar
 warSrcDir=war
 warSrcDirIsOutput=true

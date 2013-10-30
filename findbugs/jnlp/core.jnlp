@@ -19,9 +19,9 @@
     <jar href="asm-3.3.jar"/>
     <jar href="asm-tree-3.3.jar"/>
     <jar href="asm-commons-3.3.jar"/>
-    <jar href="jaxen-1.1.1.jar"/>
+    <jar href="jaxen-1.1.6.jar"/>
     <jar href="jFormatString.jar"/>
-    <jar href="commons-lang-2.4.jar"/>
+    <jar href="commons-lang-2.6.jar"/>
     <jar href="jsr305.jar"/>
   </resources> 
   <component-desc />

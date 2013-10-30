@@ -62,9 +62,9 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
-      <library name="commons-lang-2.4.jar">
+      <library name="commons-lang-2.6.jar">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/commons-lang-2.4.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/commons-lang-2.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -80,9 +80,9 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
-      <library name="jaxen-1.1.1.jar">
+      <library name="jaxen-1.1.6.jar">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/jaxen-1.1.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/jaxen-1.1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
