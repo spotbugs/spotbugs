@@ -54,6 +54,9 @@
   <FindBugsMain cmd="dis" class="edu.umd.cs.findbugs.workflow.PrintClass">
     <Description>Disassemble a class file</Description>
   </FindBugsMain>
+  <FindBugsMain cmd="errors" class="edu.umd.cs.findbugs.workflowListErrors">
+    <Description>List analysis errors stored in results file</Description>
+  </FindBugsMain>
   
   <!-- これを変えたら FindbugsPlugin のデフォルト ID も更新して下さい -->
   <Cloud id="edu.umd.cs.findbugs.cloud.doNothingCloud">
@@ -2878,6 +2881,19 @@ JLS セクション15.25を参照してください。
    <tr><td>new Short(1).toString()</td><td>Short.toString(1)</td></tr>
    <tr><td>new Boolean(true).toString()</td><td>Boolean.toString(true)</td></tr>
 </table>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="DM_BOXED_PRIMITIVE_FOR_PARSING">
+    <ShortDescription>ボクシング/アンボクシングはプリミティブを解析する</ShortDescription>
+    <LongDescription>ボクシング/アンボクシングは、プリミティブ {1} を解析しています。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+ボックス化されたプリミティブは、String から生成されていて、アンボックス化されたプリミティブ値を抽出します。
+static parseXXX メソッドを呼び出す方が効率的です。
+</p>
 ]]>
     </Details>
   </BugPattern>
