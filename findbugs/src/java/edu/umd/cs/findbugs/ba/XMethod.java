@@ -158,7 +158,8 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
      *         parameter
      */
     public Collection<AnnotationValue> getParameterAnnotations(int param);
-
+    
+    public boolean hasParameterAnnotations();
     /**
      * Get ClassDescriptors (annotation classes) of annotations applied directly
      * to this method.

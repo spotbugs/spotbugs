@@ -21,12 +21,14 @@ package edu.umd.cs.findbugs.ba;
 
 import javax.annotation.CheckForNull;
 
+import edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.log.Profiler;
 
 /**
  * @author pugh
  */
+@Deprecated
 public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnotation> implements INullnessAnnotationDatabase {
 
     public NullnessAnnotationDatabase() {
@@ -47,7 +49,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
             else if (m.getName().equals("main") && m.getSignature().equals("([Ljava/lang/String;)V") && m.isStatic()
                     && m.isPublic())
                 return true;
-            else if (assertsFirstParameterIsNonnull(m))
+            else if (TypeQualifierNullnessAnnotationDatabase.assertsFirstParameterIsNonnull(m))
                 return true;
             else if (m.getName().equals("compareTo") && m.getSignature().endsWith(";)Z") && !m.isStatic())
                 return true;
@@ -80,7 +82,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
                     else if (m.getName().equals("main") && m.getSignature().equals("([Ljava/lang/String;)V") && m.isStatic()
                             && m.isPublic())
                         return NullnessAnnotation.NONNULL;
-                    else if (assertsFirstParameterIsNonnull(m))
+                    else if (TypeQualifierNullnessAnnotationDatabase.assertsFirstParameterIsNonnull(m))
                         return NullnessAnnotation.NONNULL;
                     else if (m.getName().equals("compareTo") && m.getSignature().endsWith(";)Z") && !m.isStatic())
                         return NullnessAnnotation.NONNULL;
@@ -111,16 +113,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
         }
     }
 
-    public static boolean assertsFirstParameterIsNonnull(XMethod m) {
-        return (m.getName().equalsIgnoreCase("checkNonNull")
-                || m.getName().equalsIgnoreCase("checkNotNull")
-                // JDK 7 java.util.Objects.requireNonNull(Object)
-                || m.getName().equals("requireNonNull")
-                // org.eclipse.core.runtime.Assert(Object)
-                || m.getName().equalsIgnoreCase("isNotNull")
-                || m.getName().equalsIgnoreCase("assertNotNull"))
-             && m.getSignature().startsWith("(Ljava/lang/Object;");
-    }
+    
 
     @Override
     public void addDefaultMethodAnnotation(String name, NullnessAnnotation annotation) {
