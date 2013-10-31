@@ -203,7 +203,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         }
 
         if (seen == ATHROW) {
-            int sz = edu.umd.cs.findbugs.visitclass.Util.getSizeOfSurroundingTryBlock(getMethod(), null, getPC());
+            int sz = edu.umd.cs.findbugs.visitclass.Util.getSizeOfSurroundingTryBlock(getMethod(), (String) null, getPC());
             if (sz == Integer.MAX_VALUE) {
 
                 BitSet dead = new BitSet();

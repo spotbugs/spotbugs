@@ -36,6 +36,7 @@ import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 
 /**
@@ -67,6 +68,12 @@ public class Util {
         return null;
     }
 
+    public static int getSizeOfSurroundingTryBlock(@CheckForNull Method method, Class<? extends Throwable> exceptionClass, int pc) {
+        if (method == null)
+            return Integer.MAX_VALUE;
+
+        return getSizeOfSurroundingTryBlock(method, ClassName.toSlashedClassName(exceptionClass), pc);
+    }
     public static int getSizeOfSurroundingTryBlock(@CheckForNull Method method, String vmNameOfExceptionClass, int pc) {
         if (method == null)
             return Integer.MAX_VALUE;
