@@ -19,13 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.math.BigDecimal;
-
 import org.apache.bcel.classfile.Code;
 
-import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class TestingGround2 extends OpcodeStackDetector {
@@ -47,30 +43,7 @@ public class TestingGround2 extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKESPECIAL && getClassConstantOperand().equals("java/math/BigDecimal")
-                && getNameConstantOperand().equals("<init>") && getSigConstantOperand().equals("(D)V")) {
-            OpcodeStack.Item top = stack.getStackItem(0);
-            Object value = top.getConstant();
-            if (value instanceof Double) {
-                double arg = ((Double) value).doubleValue();
-                String dblString = Double.toString(arg);
-                BigDecimal bigDecimal = new BigDecimal(arg);
-                String bigDecimalString = bigDecimal.toString();
-                BigDecimal bigDecimalFromString = new BigDecimal(bigDecimalString);
-                boolean ok = dblString.equals(bigDecimalString) || dblString.equals(bigDecimalString + ".0")
-                        || bigDecimal.equals(bigDecimalFromString);
-
-                if (!ok) {
-                    boolean scary = dblString.length() <= 8 && dblString.toUpperCase().indexOf("E") == -1;
-                    bugReporter.reportBug(new BugInstance(this, "TESTING", scary ? NORMAL_PRIORITY : LOW_PRIORITY)
-                            .addClassAndMethod(this).addCalledMethod(this).addString("Value as double: " + dblString)
-                            .addString("Value as BigDecimal: " + bigDecimalString)
-                            .addString("Constructing a BigDecimal from a double doesn't give the same result as from the equivalent String").addSourceLine(this));
-                }
-            }
-
-        }
-
+     
     }
 
 }
