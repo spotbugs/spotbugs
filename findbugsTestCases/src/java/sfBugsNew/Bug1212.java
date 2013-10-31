@@ -1,5 +1,7 @@
 package sfBugsNew;
 
+import edu.umd.cs.findbugs.annotations.DesireNoWarning;
+
 public class Bug1212 {
 
     @DesireNoWarning("TESTING")
