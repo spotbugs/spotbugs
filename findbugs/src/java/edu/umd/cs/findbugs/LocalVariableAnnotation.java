@@ -181,6 +181,10 @@ public class LocalVariableAnnotation implements BugAnnotation {
      */
     public static LocalVariableAnnotation getParameterLocalVariableAnnotation(Method method, int local) {
         LocalVariableAnnotation lva = getLocalVariableAnnotation(method, local, 0, 0);
+        if (lva.isNamed())
+            lva.setDescription(LocalVariableAnnotation.PARAMETER_NAMED_ROLE);
+        else
+            lva.setDescription(LocalVariableAnnotation.PARAMETER_ROLE);
         return lva;
     }
 
