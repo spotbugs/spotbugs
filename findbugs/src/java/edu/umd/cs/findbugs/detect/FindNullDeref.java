@@ -82,7 +82,6 @@ import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
-import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.OpcodeStackScanner;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.SignatureParser;
@@ -106,6 +105,7 @@ import edu.umd.cs.findbugs.ba.npe.PointerUsageRequiringNonNullValue;
 import edu.umd.cs.findbugs.ba.npe.RedundantBranch;
 import edu.umd.cs.findbugs.ba.npe.ReturnPathType;
 import edu.umd.cs.findbugs.ba.npe.ReturnPathTypeDataflow;
+import edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.npe.UsagesRequiringNonNullValues;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
@@ -1458,7 +1458,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                                 return;
                         invokedMethod = MethodAnnotation.fromXMethod(mp.getMethod());
                         if (mp.getParameterNumber() == 0
-                                && NullnessAnnotationDatabase.assertsFirstParameterIsNonnull(invokedXMethod))
+                                && TypeQualifierNullnessAnnotationDatabase.assertsFirstParameterIsNonnull(invokedXMethod))
                             return;
                         parameterNumber = mp.getParameterNumber();
                         bugType = "NP_NULL_PARAM_DEREF";

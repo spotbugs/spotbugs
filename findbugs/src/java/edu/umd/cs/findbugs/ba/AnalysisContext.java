@@ -51,7 +51,6 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.ba.jsr305.DirectlyRelevantTypeQualifiersDatabase;
-import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysisFeatures;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.ReturnValueNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase;
@@ -1005,15 +1004,12 @@ public class AnalysisContext {
         bridgeFrom.put(to, from);
     }
 
-    public INullnessAnnotationDatabase getNullnessAnnotationDatabase() {
-        if (IsNullValueAnalysisFeatures.USE_TYPE_QUALIFIERS) {
+    public TypeQualifierNullnessAnnotationDatabase getNullnessAnnotationDatabase() {
             if (tqNullnessDatabase == null) {
                 tqNullnessDatabase = new TypeQualifierNullnessAnnotationDatabase();
             }
             return tqNullnessDatabase;
-        } else {
-            return getDatabase(NullnessAnnotationDatabase.class);
-        }
+       
     }
 
     protected <E> E getDatabase(Class<E> cls) {

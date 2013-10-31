@@ -42,7 +42,7 @@ import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.LineNumberTable;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.XClass;
@@ -422,14 +422,14 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         return opcode == LOOKUPSWITCH || opcode == TABLESWITCH;
     }
 
-    @SuppressWarnings("EI")
+    @SuppressFBWarnings("EI")
     public int[] getSwitchOffsets() {
         if (switchOffsets == null)
             throw new IllegalStateException("getSwitchOffsets called but value not available");
         return switchOffsets;
     }
 
-    @SuppressWarnings("EI")
+    @SuppressFBWarnings("EI")
     public int[] getSwitchLabels() {
         if (switchLabels == null)
             throw new IllegalStateException("getSwitchLabels called but value not available");

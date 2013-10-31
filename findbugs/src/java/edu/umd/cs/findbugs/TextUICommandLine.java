@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
 
 import org.dom4j.DocumentException;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
@@ -252,7 +252,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     Map<String, String> parsedOptions = new LinkedHashMap<String, String>();
 
-    @SuppressWarnings("DM_EXIT")
+    @SuppressFBWarnings("DM_EXIT")
     @Override
     protected void handleOption(String option, String optionExtraPart) {
         parsedOptions.put(option, optionExtraPart);
@@ -370,7 +370,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
     }
 
     protected @CheckForNull File outputFile;
-    @SuppressWarnings("DM_EXIT")
+    @SuppressFBWarnings("DM_EXIT")
     @Override
     protected void handleOptionWithArgument(String option, String argument) throws IOException {
         parsedOptions.put(option, argument);

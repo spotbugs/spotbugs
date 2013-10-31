@@ -30,7 +30,7 @@ import javax.annotation.CheckForNull;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
@@ -50,7 +50,7 @@ public class ObligationFactory {
     // // XXX: this is just for debugging.
     // static ObligationFactory lastInstance;
 
-    @SuppressWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
+    @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     public ObligationFactory() {
         this.classNameToObligationMap = new HashMap<String, Obligation>();
         // lastInstance = this;

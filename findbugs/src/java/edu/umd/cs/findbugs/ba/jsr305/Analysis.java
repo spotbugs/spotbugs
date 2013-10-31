@@ -208,7 +208,7 @@ public class Analysis {
      * @param result
      * @param m
      */
-    public static void addKnownTypeQualifiersForParameters(HashSet<TypeQualifierValue<?>> result, XMethod m) {
+    public static void addKnownTypeQualifiersForParameters(HashSet<? super TypeQualifierValue<?>> result, XMethod m) {
         int numParameters = new SignatureParser(m.getSignature()).getNumParameters();
         for (int p = 0; p < numParameters; p++) {
             addKnownTypeQualifiers(result, TypeQualifierApplications.getApplicableApplications(m, p));
@@ -219,7 +219,7 @@ public class Analysis {
      * @param result
      * @param applicableApplications
      */
-    public static void addKnownTypeQualifiers(HashSet<TypeQualifierValue<?>> result,
+    public static void addKnownTypeQualifiers(HashSet<? super TypeQualifierValue<?>> result,
             Collection<TypeQualifierAnnotation> applicableApplications) {
         for (TypeQualifierAnnotation t : applicableApplications) {
             if (t.when != When.UNKNOWN) {

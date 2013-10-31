@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 
 import org.dom4j.DocumentException;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Add an annotation string to every BugInstance in a BugCollection.
@@ -71,7 +71,7 @@ public class AddAnnotation {
         }
     }
 
-    @SuppressWarnings("DM_EXIT")
+    @SuppressFBWarnings("DM_EXIT")
     public static void main(String[] argv) throws Exception {
         if (argv.length != 2) {
             System.err.println("Usage: " + AddAnnotation.class.getName() + " <results file> <annotation>");

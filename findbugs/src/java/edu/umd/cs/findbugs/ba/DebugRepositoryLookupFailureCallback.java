@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import edu.umd.cs.findbugs.AbstractBugReporter;
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
@@ -39,7 +39,7 @@ public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFai
      * edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#reportMissingClass
      * (java.lang.ClassNotFoundException)
      */
-    @SuppressWarnings("DM_EXIT")
+    @SuppressFBWarnings("DM_EXIT")
     public void reportMissingClass(ClassNotFoundException ex) {
         String missing = AbstractBugReporter.getMissingClassName(ex);
         if (missing == null || missing.charAt(0) == '[')
@@ -57,7 +57,7 @@ public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFai
      * edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd
      * .cs.findbugs.classfile.ClassDescriptor)
      */
-    @SuppressWarnings("DM_EXIT")
+    @SuppressFBWarnings("DM_EXIT")
     public void reportMissingClass(ClassDescriptor classDescriptor) {
         System.out.println("Missing class: " + classDescriptor);
         System.exit(1);
@@ -70,7 +70,7 @@ public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFai
      * edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#logError(java.
      * lang.String)
      */
-    @SuppressWarnings("DM_EXIT")
+    @SuppressFBWarnings("DM_EXIT")
     public void logError(String message) {
         System.err.println("Error: " + message);
         System.exit(1);
@@ -83,7 +83,7 @@ public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFai
      * edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#logError(java.
      * lang.String, java.lang.Throwable)
      */
-    @SuppressWarnings("DM_EXIT")
+    @SuppressFBWarnings("DM_EXIT")
     public void logError(String message, Throwable e) {
         if (e instanceof MissingClassException) {
             MissingClassException missingClassEx = (MissingClassException) e;

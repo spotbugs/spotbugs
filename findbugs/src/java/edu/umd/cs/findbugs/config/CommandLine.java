@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.util.Util;
@@ -257,7 +257,7 @@ public abstract class CommandLine {
      *            usage synopsis
      * @return number of arguments parsed
      */
-    @SuppressWarnings("DM_EXIT")
+    @SuppressFBWarnings("DM_EXIT")
     public int parse(String argv[], int minArgs, int maxArgs, String usage) {
         try {
             int count = parse(argv);

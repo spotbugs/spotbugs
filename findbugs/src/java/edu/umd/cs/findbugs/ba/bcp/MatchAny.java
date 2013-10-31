@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.ba.bcp;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -49,7 +49,7 @@ public class MatchAny extends PatternElement {
      * @param childList
      *            list of child PatternElements
      */
-    @SuppressWarnings("EI2")
+    @SuppressFBWarnings("EI2")
     public MatchAny(PatternElement[] childList) {
         this.childList = childList;
     }

@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.CheckReturnValue;
 import javax.annotation.meta.When;
 
 import org.objectweb.asm.Type;
@@ -665,7 +666,7 @@ public class TypeQualifierApplications {
      *         supertype methods, or null if there is no inherited
      *         TypeQualifierAnnotation
      */
-    private static TypeQualifierAnnotation getInheritedTypeQualifierAnnotation(XMethod o, TypeQualifierValue<?> typeQualifierValue) {
+    public static TypeQualifierAnnotation getInheritedTypeQualifierAnnotation(XMethod o, TypeQualifierValue<?> typeQualifierValue) {
         assert !o.isStatic();
 
         ReturnTypeAnnotationAccumulator accumulator = new ReturnTypeAnnotationAccumulator(typeQualifierValue, o);
@@ -897,7 +898,7 @@ public class TypeQualifierApplications {
      * @return TypeQualifierAnnotation directly applied to the parameter, or
      *         null if there is no directly applied TypeQualifierAnnotation
      */
-    public static @CheckForNull
+    public static @CheckForNull @CheckReturnValue
     TypeQualifierAnnotation getDirectTypeQualifierAnnotation(XMethod xmethod, int parameter, TypeQualifierValue<?> typeQualifierValue) {
         XMethod bridge = xmethod.bridgeTo();
         if (bridge != null)
@@ -924,7 +925,7 @@ public class TypeQualifierApplications {
      * @return effective inherited TypeQualifierAnnotation on the parameter, or
      *         null if there is not effective TypeQualifierAnnotation
      */
-    private static @CheckForNull
+    public static @CheckForNull
     TypeQualifierAnnotation getInheritedTypeQualifierAnnotation(XMethod xmethod, int parameter,
             TypeQualifierValue<?> typeQualifierValue) {
         assert !xmethod.isStatic();

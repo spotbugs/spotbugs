@@ -25,7 +25,6 @@ import edu.umd.cs.findbugs.ba.AnnotationRetentionDatabase;
 import edu.umd.cs.findbugs.ba.CheckReturnAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.InnerClassAccessMap;
 import edu.umd.cs.findbugs.ba.JCIPAnnotationDatabase;
-import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.jsr305.DirectlyRelevantTypeQualifiersDatabase;
@@ -79,7 +78,6 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
             new ReflectionDatabaseFactory<CheckReturnAnnotationDatabase>(CheckReturnAnnotationDatabase.class),
             new ReflectionDatabaseFactory<AnnotationRetentionDatabase>(AnnotationRetentionDatabase.class),
             new ReflectionDatabaseFactory<JCIPAnnotationDatabase>(JCIPAnnotationDatabase.class),
-            new ReflectionDatabaseFactory<NullnessAnnotationDatabase>(NullnessAnnotationDatabase.class),
             new ReflectionDatabaseFactory<SourceInfoMap>(SourceInfoMap.class),
             new ReflectionDatabaseFactory<FieldStoreTypeDatabase>(FieldStoreTypeDatabase.class),
             new ReflectionDatabaseFactory<ParameterNullnessPropertyDatabase>(ParameterNullnessPropertyDatabase.class),

@@ -25,7 +25,7 @@ import java.util.HashMap;
 import org.apache.bcel.generic.InstructionHandle;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * A cache mapping instructions and input values to the output values they
@@ -49,7 +49,7 @@ public class ValueNumberCache {
 
         private int cachedHashCode;
 
-        @SuppressWarnings("EI2")
+        @SuppressFBWarnings("EI2")
         public Entry(InstructionHandle handle, ValueNumber[] inputValueList) {
             this.handle = handle;
             this.inputValueList = inputValueList;

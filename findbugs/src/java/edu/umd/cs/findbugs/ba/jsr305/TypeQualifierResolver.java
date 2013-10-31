@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba.jsr305;
 
 import java.lang.annotation.ElementType;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -170,6 +171,8 @@ public class TypeQualifierResolver {
      * @return Collection of resolved type qualifier AnnotationValues
      */
     public static Collection<AnnotationValue> resolveTypeQualifiers(Collection<AnnotationValue> values) {
+        if (values.isEmpty())
+            return Collections.emptyList();
         LinkedList<AnnotationValue> result = new LinkedList<AnnotationValue>();
         LinkedList<ClassDescriptor> onStack = new LinkedList<ClassDescriptor>();
         for (AnnotationValue value : values)

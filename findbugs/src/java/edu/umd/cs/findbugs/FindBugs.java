@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 
 import org.dom4j.DocumentException;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
@@ -364,7 +364,7 @@ public abstract class FindBugs {
      *
      * @param commandLine
      */
-    @SuppressWarnings("DM_EXIT")
+    @SuppressFBWarnings("DM_EXIT")
     public static void showHelp(TextUICommandLine commandLine) {
         showSynopsis();
         ShowHelp.showGeneralOptions();
@@ -381,7 +381,7 @@ public abstract class FindBugs {
      * @param commandLine
      *            the TextUICommandLine used to configure the IFindBugsEngine
      */
-    @SuppressWarnings("DM_EXIT")
+    @SuppressFBWarnings("DM_EXIT")
     public static void runMain(IFindBugsEngine findBugs, TextUICommandLine commandLine) throws IOException {
         boolean verbose = !commandLine.quiet() || commandLine.setExitCode();
 

@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Perform a depth first search on a graph. Algorithm based on Cormen, et. al,
@@ -244,7 +244,7 @@ public abstract class AbstractDepthFirstSearch<GraphType extends Graph<EdgeType,
      * 
      * @return the array of finish times
      */
-    @SuppressWarnings("EI")
+    @SuppressFBWarnings("EI")
     public int[] getFinishTimeList() {
         return finishTimeList;
     }

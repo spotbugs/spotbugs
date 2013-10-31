@@ -24,7 +24,7 @@ package edu.umd.cs.findbugs.graph;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Comparator to compare GraphVertex objects by their visitation times in a
@@ -56,7 +56,7 @@ public class VisitationTimeComparator<VertexType extends GraphVertex<VertexType>
      * @param direction
      *            either ASCENDING or DESCENDING
      */
-    @SuppressWarnings("EI2")
+    @SuppressFBWarnings("EI2")
     public VisitationTimeComparator(int[] visitationTimeList, int direction) {
         m_visitationTimeList = visitationTimeList;
         m_direction = direction;
