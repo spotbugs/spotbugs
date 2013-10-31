@@ -39,6 +39,7 @@ public abstract class FindBugsJob extends Job {
 
     private final static Semaphore analysisSem;
 
+    private static final boolean DEBUG = false;
     static {
         analysisSem = new Semaphore(MutexSchedulingRule.MAX_JOBS, true);
 
@@ -119,10 +120,14 @@ public abstract class FindBugsJob extends Job {
         boolean acquired = false;
         try {
             if(supportsMulticore()){
-                FindbugsPlugin.log("Acquiring analysisSem");
+                if (DEBUG) {
+                    FindbugsPlugin.log("Acquiring analysisSem");
+                }
                 analysisSem.acquire();
                 acquired = true;
-                FindbugsPlugin.log("Acquired analysisSem");
+                if (DEBUG) {
+                    FindbugsPlugin.log("Acquired analysisSem");
+                }
                 if(monitor.isCanceled()){
                     return Status.CANCEL_STATUS;
                 }
@@ -132,13 +137,17 @@ public abstract class FindBugsJob extends Job {
             // Do nothing when operation cancelled.
             return Status.CANCEL_STATUS;
         } catch (CoreException ex) {
-            FindbugsPlugin.getDefault().logException(ex, createErrorMessage());
+            if (DEBUG) {
+                FindbugsPlugin.getDefault().logException(ex, createErrorMessage());
+            }
             return ex.getStatus();
         } catch (InterruptedException e) {
             return Status.CANCEL_STATUS;
         } finally {
             if(acquired){
-                FindbugsPlugin.log("releasing analysisSem");
+                if (DEBUG) {
+                    FindbugsPlugin.log("releasing analysisSem");
+                }
 
                 analysisSem.release();
             }
