@@ -211,6 +211,26 @@ public class Hierarchy2 {
 
     }
 
+
+    public static @CheckForNull XMethod findFirstSuperMethod(XMethod m) {
+        
+        try {
+            @CheckForNull ClassDescriptor c = m.getClassDescriptor();
+            XClass xc = getXClass(c);
+            c = xc.getSuperclassDescriptor();
+            while (c != null) {
+                xc = getXClass(c);
+                XMethod xm = xc.findMatchingMethod(m.getMethodDescriptor());
+                if (xm != null)
+                    return xm;
+                c = xc.getSuperclassDescriptor();
+            }
+        } catch (CheckedAnalysisException e) {
+            AnalysisContext.logError("Error finding super methods for " + m, e);
+        }
+        return null;
+    }
+    
     private static void findSuperMethods(@CheckForNull ClassDescriptor c, XMethod m, Set<XMethod> accumulator) {
         if (c == null)
             return;
