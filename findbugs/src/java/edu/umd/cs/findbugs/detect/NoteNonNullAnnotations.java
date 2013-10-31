@@ -26,6 +26,7 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 
@@ -42,9 +43,15 @@ import edu.umd.cs.findbugs.bcel.BCELUtil;
 public class NoteNonNullAnnotations extends BuildNonNullAnnotationDatabase implements Detector, NonReportingDetector {
 
     public NoteNonNullAnnotations(BugReporter bugReporter) {
-        super(
-                AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase() instanceof NullnessAnnotationDatabase ? (NullnessAnnotationDatabase) AnalysisContext
-                        .currentAnalysisContext().getNullnessAnnotationDatabase() : null);
+        super(getDatabase());
+    }
+
+    /**
+     * @return
+     */
+    private static NullnessAnnotationDatabase getDatabase() {
+        INullnessAnnotationDatabase nullnessAnnotationDatabase = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
+        return nullnessAnnotationDatabase instanceof NullnessAnnotationDatabase ? (NullnessAnnotationDatabase) nullnessAnnotationDatabase : null;
     }
 
     public void visitClassContext(ClassContext classContext) {

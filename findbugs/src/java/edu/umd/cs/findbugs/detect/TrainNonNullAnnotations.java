@@ -22,9 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.TrainingDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 
 /**
  * Training detector to store NonNull, PossiblyNull and CheckForNull annotations
@@ -41,9 +39,7 @@ import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 public class TrainNonNullAnnotations extends BuildNonNullAnnotationDatabase implements Detector, TrainingDetector {
 
     public TrainNonNullAnnotations(BugReporter bugReporter) {
-        super(
-                AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase() instanceof NullnessAnnotationDatabase ? (NullnessAnnotationDatabase) AnalysisContext
-                        .currentAnalysisContext().getNullnessAnnotationDatabase() : null);
+        super(null);
     }
 
     /*
