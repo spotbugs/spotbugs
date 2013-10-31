@@ -96,10 +96,11 @@ public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode implem
             // we'll use at a later point to find relevant qualifiers
             // stemming from called methods.
 
+            if (!Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {
             XMethod m = getXMethodOperand();
             if (m != null)
                 updateApplicableAnnotations(m);
-
+            }
             break;
 
         case GETSTATIC:
