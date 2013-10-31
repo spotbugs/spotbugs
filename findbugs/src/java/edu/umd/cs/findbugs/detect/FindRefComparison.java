@@ -1107,11 +1107,19 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                     int priority = NORMAL_PRIORITY;
                     if (a instanceof FieldAnnotation && ((FieldAnnotation) a).isStatic())
                         priority = LOW_PRIORITY;
-                    if (isNullFrame.isValid() && isNullFrame.getTopValue().isDefinitelyNull())
+                    if (isNullFrame.isValid() && isNullFrame.getTopValue().isDefinitelyNull()) {
+                        String type = "EC_NULL_ARG";
+                        if (calledMethodAnnotation != null && calledMethodAnnotation.isStatic())
+                            type = "DMI_DOH";
+                        BugInstance bug = new BugInstance(this, type, priority + priorityModifier).addClassAndMethod(methodGen, sourceFile)
+                        .addOptionalAnnotation(calledMethodAnnotation);
+                        if (type.equals("DMI_DOH"))
+                            bug.addString("Use \"== null\" to check for a value being null");
                         bugAccumulator.accumulateBug(
-                                new BugInstance(this, "EC_NULL_ARG", priority).addClassAndMethod(methodGen, sourceFile),
+                                bug,
                                 SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile,
                                         location.getHandle()));
+                    }
                 } catch (CFGBuilderException e) {
                     AnalysisContext.logError("Error getting null value analysis", e);
                 }

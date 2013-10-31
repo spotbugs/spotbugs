@@ -100,9 +100,9 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
             OpcodeStack.Item left = stack.getStackItem(1);
             OpcodeStack.Item right = stack.getStackItem(0);
             if (bad(left, right) || bad(right, left))
-
                 accumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this)
-                        .addValueSource(left, this).addValueSource(right, this), this);
+                        .addValueSource(left, this).addValueSource(right, this)
+                        .addString("Just check the sign of the result of compare or compareTo, not specific values such as 1 or -1"), this);
             break;
         }
 
