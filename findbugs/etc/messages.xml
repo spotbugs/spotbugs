@@ -8046,75 +8046,37 @@ after the call to initLogging, the logger configuration is lost
       </Details>
   </BugPattern>
   <BugPattern type="NP_METHOD_PARAMETER_RELAXING_ANNOTATION">
-    <ShortDescription>Method relaxes nullness annotation on parameter</ShortDescription>
+    <ShortDescription>Method tightens nullness annotation on parameter</ShortDescription>
     <LongDescription>Method {1} overrides the nullness annotation relaxing the ancestor method requirements on parameter.</LongDescription>
     <Details>
         <![CDATA[<p>
-        You should never relax the nullness requirement otherwise a NullPointerException may result.
-        For example, given the following classes:
-        <pre>
-          public class TestOverride {
-            static interface I {
-              void set(@CheckForNull Object o);
-            }
-
-            static interface SI extends I {
-              public void set(@Nonnull Object o);
-            }
-
-            void a(I i) {
-              i.set(null);
-            }
-
-            void b() {
-              a(new SI() {
-                public void set(Object o) {
-                  o.toString();
-                }
-              });
-            }
-        </pre>
-        In the example SI relaxes the nullness of the paramter for the set() method,
-        that means that the "i.set(null)" in the anonymous class in a() would not be warned,
-        causing to throw a NullPointerException when SI.set() tries to run o.toString().
+        A method should always implement the contract of a method it overrides. Thus, if a method takes a parameter
+	that is marked as @Nullable, you shouldn't override that method in a subclass with a method where that parameter is @Nonnull.
+	Doing so violates the contract that the method should handle a null parameter.
+        </p>]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION">
+    <ShortDescription>Method tightens nullness annotation on parameter</ShortDescription>
+    <LongDescription>Method {1} overrides the nullness annotation of parameter {2} in an incompatible way</LongDescription>
+    <Details>
+        <![CDATA[<p>
+        A method should always implement the contract of a method it overrides. Thus, if a method takes a parameter
+	that is marked as @Nullable, you shouldn't override that method in a subclass with a method where that parameter is @Nonnull.
+	Doing so violates the contract that the method should handle a null parameter.
         </p>]]>
       </Details>
   </BugPattern>
 
   <BugPattern type="NP_METHOD_RETURN_RELAXING_ANNOTATION">
     <ShortDescription>Method relaxes nullness annotation on return value</ShortDescription>
-    <LongDescription>Method {1} overrides the nullness annotation relaxing the ancestor method requirements on return value.</LongDescription>
+    <LongDescription>Method {1} overrides the return value nullness annotation in an incompatible way.</LongDescription>
     <Details>
         <![CDATA[<p>
-        You should never relax the nullness requirement otherwise a NullPointerException may result.
-        For example, given the following classes:
-        <pre>
-          public class TestOverride {
-            static interface I {
-              @Nonnull
-              Object get();
-            }
-
-            static interface SI extends I {
-              @CheckForNull
-              Object get();
-            }
-
-            void a(I i) {
-              i.get().toString();
-            }
-
-            void b() {
-              a(new SI() {
-                public Object get() {
-                  return null;
-                }
-              });
-            }
-        </pre>
-        In the example SI relaxes the nullness of the return value for the get() method,
-        that means that the "return null" in the anonymous class in b() would not be warned,
-        causing i.get().toString() to throw a NullPointerException in a(i).
+        A method should always implement the contract of a method it overrides. Thus, if a method takes is annotated
+	as returning a @Nonnull value, 
+	you shouldn't override that method in a subclass with a method annotated as returning a @Nullable or @CheckForNull value.
+	Doing so violates the contract that the method shouldn't return null.
         </p>]]>
       </Details>
   </BugPattern>

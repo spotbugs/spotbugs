@@ -189,17 +189,7 @@
                                         class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations"/>
                               <Later class="edu.umd.cs.findbugs.detect.MethodReturnCheck"/>
                     </SplitPass>
-                    <!-- NoteNonNullAnnotations, NoteUnconditionalParamDerefs
-         should happen in an earlier pass than FindNullDeref. -->
-                    <SplitPass>
-                              <Earlier class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"/>
-                              <Later class="edu.umd.cs.findbugs.detect.TrainUnconditionalDerefParams"
-                              />
-                    </SplitPass>
-                    <SplitPass>
-                              <Earlier class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"/>
-                              <Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
-                    </SplitPass>
+
                     <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation"/>
                               <Later class="edu.umd.cs.findbugs.detect.FindInconsistentSync2"/>
@@ -248,10 +238,6 @@
                               <Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
                               <Later class="edu.umd.cs.findbugs.detect.ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass" />
                     </WithinPass>
-                    <SplitPass>
-                              <Earlier class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"/>
-                              <Later class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs" />
-                    </SplitPass>
                     <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.Methods"/>
                               <Later class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs" />
@@ -305,11 +291,11 @@
           <Detector class="edu.umd.cs.findbugs.detect.FieldItemSummary" speed="fast" reports=""
                     hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations" speed="fast"
-                    reports="" hidden="true"/>
+                    reports="" hidden="true" disabled="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs" speed="slow"
                     reports="NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT,NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteNonnullReturnValues" speed="slow"
-                    reports="" hidden="true"/>
+                    reports="" hidden="true" disabled="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.SynchronizeOnClassLiteralNotGetClass"
                     speed="fast" reports="WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL"
                     hidden="false"/>
@@ -598,7 +584,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.DefaultEncodingDetector" speed="fast"
                     reports="DM_DEFAULT_ENCODING"/>
           <Detector class="edu.umd.cs.findbugs.detect.CheckRelaxingNullnessAnnotation" speed="fast"
-                    reports="NP_METHOD_RETURN_RELAXING_ANNOTATION,NP_METHOD_PARAMETER_RELAXING_ANNOTATION"/>
+                    reports="NP_METHOD_RETURN_RELAXING_ANNOTATION,NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION"/>
 
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
@@ -1164,5 +1150,6 @@
                     category="EXPERIMENTAL"/>
           <BugPattern abbrev="Dm" type="DM_DEFAULT_ENCODING" category="I18N" />
           <BugPattern abbrev="NP" type="NP_METHOD_RETURN_RELAXING_ANNOTATION" category="STYLE" />
-          <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_RELAXING_ANNOTATION" category="STYLE" />
+          <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION" category="STYLE" />
+          <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_RELAXING_ANNOTATION" category="STYLE" deprecated="true" />
 </FindbugsPlugin>
