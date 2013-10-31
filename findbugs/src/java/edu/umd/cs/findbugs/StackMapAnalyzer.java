@@ -149,7 +149,7 @@ public  class StackMapAnalyzer {
                     result.setAccessible(true);
                     return result;
                 } catch (NoSuchFieldException e) {
-                    throw new AssertionError("frame_type field doesn't exist", e);
+                    throw new AssertionError("frame_type field doesn't exist");
                 } catch (SecurityException e) {
                     return null;
                 }
