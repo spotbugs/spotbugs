@@ -1990,6 +1990,7 @@ public class OpcodeStack implements Constants2 {
      * @param fieldOperand
      */
     private void eraseKnowledgeOf(XField fieldOperand) {
+        if (fieldOperand == null) return;
         for (Item item : stack)
             if (item != null && fieldOperand.equals(item.getXField()))
                 item.setLoadedFromField(null, -1);
