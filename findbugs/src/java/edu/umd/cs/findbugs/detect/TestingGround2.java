@@ -54,13 +54,18 @@ public class TestingGround2 extends OpcodeStackDetector {
             if (value instanceof Double) {
                 double arg = ((Double) value).doubleValue();
                 String dblString = Double.toString(arg);
-                String bigDecimalString = new BigDecimal(arg).toString();
-                boolean ok = dblString.equals(bigDecimalString) || dblString.equals(bigDecimalString + ".0");
+                BigDecimal bigDecimal = new BigDecimal(arg);
+                String bigDecimalString = bigDecimal.toString();
+                BigDecimal bigDecimalFromString = new BigDecimal(bigDecimalString);
+                boolean ok = dblString.equals(bigDecimalString) || dblString.equals(bigDecimalString + ".0")
+                        || bigDecimal.equals(bigDecimalFromString);
 
                 if (!ok) {
                     boolean scary = dblString.length() <= 8 && dblString.toUpperCase().indexOf("E") == -1;
                     bugReporter.reportBug(new BugInstance(this, "TESTING", scary ? NORMAL_PRIORITY : LOW_PRIORITY)
-                            .addClassAndMethod(this).addString(dblString).addSourceLine(this));
+                            .addClassAndMethod(this).addCalledMethod(this).addString("Value as double: " + dblString)
+                            .addString("Value as BigDecimal: " + bigDecimalString)
+                            .addString("Constructing a BigDecimal from a double doesn't give the same result as from the equivalent String").addSourceLine(this));
                 }
             }
 
