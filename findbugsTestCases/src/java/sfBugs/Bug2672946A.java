@@ -11,19 +11,18 @@
 
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.DefaultAnnotationForFields;
-import edu.umd.cs.findbugs.annotations.DefaultAnnotationForMethods;
-import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
-import edu.umd.cs.findbugs.annotations.NonNull;
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-@DefaultAnnotationForFields(NonNull.class)
-@DefaultAnnotationForMethods(CheckForNull.class)
-@DefaultAnnotationForParameters(NonNull.class)
+import jsr305.FieldsNonNullByDefault;
+
 /* ********************
  * Behavior at filing: False positive NP, see Bug2672946B.java for details
  * ********************
  */
+@ParametersAreNonnullByDefault
+@FieldsNonNullByDefault
+@MethodsAreCheckNullByDefault
 class Bug2672946A {
 
     private Bug2672946A field;
@@ -32,8 +31,13 @@ class Bug2672946A {
         this.field = field;
     }
 
-    @NonNull
+    @Nonnull
     public Bug2672946A getField() {
+        return this.field;
+    }
+    
+    @Nonnull
+    public Bug2672946A getField2() {
         return this.field;
     }
 }

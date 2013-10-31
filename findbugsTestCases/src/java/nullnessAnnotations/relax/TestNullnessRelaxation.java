@@ -47,11 +47,11 @@ public class TestNullnessRelaxation {
 		@ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
 		String get();
 
-		@ExpectWarning("NP_METHOD_PARAMETER_RELAXING_ANNOTATION")
+		@ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
 		public Integer set(@Nonnull Number o);
 
 		@CheckForNull
-		@ExpectWarning("NP_METHOD_PARAMETER_RELAXING_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
+		@ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
 		public Integer set2(@Nonnull Integer o);
 	}
 	
@@ -62,13 +62,13 @@ public class TestNullnessRelaxation {
             return null;
         }
 
-        @ExpectWarning("NP_METHOD_PARAMETER_RELAXING_ANNOTATION")
+        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
         public Integer set(@Nonnull Number o){
             return null;
         }
 
         @CheckForNull
-        @ExpectWarning("NP_METHOD_PARAMETER_RELAXING_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
+        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public Integer set2(@Nonnull Integer o){
             return null;
         }
@@ -86,13 +86,13 @@ public class TestNullnessRelaxation {
             return null;
         }
 
-        @ExpectWarning("NP_METHOD_PARAMETER_RELAXING_ANNOTATION")
+        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
         public Integer set(@Nonnull Number o){
             return null;
         }
 
         @CheckForNull
-        @ExpectWarning("NP_METHOD_PARAMETER_RELAXING_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
+        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public Integer set2(@Nonnull Integer o){
             return null;
         }
