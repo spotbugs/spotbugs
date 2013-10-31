@@ -592,8 +592,9 @@ public class CheckTypeQualifiers extends CFGDetector {
                 Method method = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor);
                 LocalVariableAnnotation lva = LocalVariableAnnotation.getParameterLocalVariableAnnotation(method,
                         sourceSinkInfo.getLocal());
-                lva.setDescription(lva.isSignificant() ? "LOCAL_VARIABLE_PARAMETER_VALUE_SOURCE_NAMED"
-                        : "LOCAL_VARIABLE_PARAMETER_VALUE_SOURCE");
+                lva.setDescription(lva.isSignificant() ? LocalVariableAnnotation.PARAMETER_VALUE_SOURCE_NAMED_ROLE
+                        : LocalVariableAnnotation.PARAMETER_VALUE_SOURCE_ROLE);
+                
                 warning.add(lva);
             } catch (CheckedAnalysisException e) {
                 warning.addSourceLine(methodDescriptor, sourceSinkInfo.getLocation()).describe("SOURCE_LINE_VALUE_SOURCE");
