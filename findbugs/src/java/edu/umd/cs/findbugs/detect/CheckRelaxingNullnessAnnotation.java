@@ -39,10 +39,12 @@ import javax.annotation.Nonnull;
 
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.AnnotationNode;
+import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.asm.ClassNodeDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
@@ -197,10 +199,23 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
                     if (containsNullness(method.getParameterAnnotations(i), CHECK_FOR_NULL)) {
                         NullnessAnnotation a = e.getValue();
                         BugInstance bug = new BugInstance(CheckRelaxingNullnessAnnotation.this,
-                                    "NP_METHOD_PARAMETER_RELAXING_ANNOTATION", a.equals(NONNULL) ? HIGH_PRIORITY : NORMAL_PRIORITY);
+                                    "NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION", a.equals(NONNULL) ? HIGH_PRIORITY : NORMAL_PRIORITY);
                             bug.addClassAndMethod(xmethod);
-
-                        bug.addParameterAnnotation(i, "Parameter {0} relaxes the nullness requirement of the superclass' method.");
+                        LocalVariableAnnotation lva = null;
+                        if (localVariables != null) {
+                            for(LocalVariableNode lvn : (List<LocalVariableNode>)localVariables) {
+                                if (lvn.index == i+1) {
+                                    lva = new LocalVariableAnnotation(lvn.name, i+1, 0);
+                                    lva.setDescription(LocalVariableAnnotation.PARAMETER_NAMED_ROLE);
+                                    break;
+                                }
+                            }
+                        }
+                        if (lva==null) {
+                            lva = new LocalVariableAnnotation("?", i+1, 0);
+                            lva.setDescription(LocalVariableAnnotation.PARAMETER_ROLE);
+                        }
+                        bug.add(lva);
                         bugReporter.reportBug(bug);
                         foundAny = true;
                     }
