@@ -187,6 +187,10 @@ class UnresolvedXMethod extends AbstractMethod {
         return map.keySet();
     }
 
+    public boolean hasParameterAnnotations() {
+        return !methodParameterAnnotations.isEmpty();
+    }
+    
     public @Nullable
     AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
