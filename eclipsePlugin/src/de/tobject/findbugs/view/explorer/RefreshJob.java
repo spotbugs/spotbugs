@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.navigator.CommonViewer;
 
@@ -97,6 +98,9 @@ class RefreshJob extends Job implements IViewerRefreshJob {
                     viewer.getControl().setRedraw(false);
                     try {
                         if (fullRefreshNeeded) {
+                            // Attempt to fix https://sourceforge.net/p/findbugs/bugs/1213/
+                            // discard selection (if any) before refreshing content
+                            viewer.setSelection(StructuredSelection.EMPTY);
                             viewer.refresh();
                             if (BugContentProvider.DEBUG) {
                                 System.out.println("Refreshing ROOT!!!");
