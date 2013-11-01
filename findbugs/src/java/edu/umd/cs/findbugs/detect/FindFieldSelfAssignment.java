@@ -46,12 +46,14 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
     public void visit(Code obj) {
 //        System.out.println(getFullyQualifiedMethodName());
         state = 0;
+        lastMethodCall = -1;
         super.visit(obj);
         initializedFields.clear();
     }
 
     int register;
 
+    int lastMethodCall;
     Set<String> initializedFields = new HashSet<String>();
 
     @Override
@@ -64,14 +66,14 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
             XField f = top.getXField();
             int registerNumber = next.getRegisterNumber();
             if (f != null && f.equals(getXFieldOperand()) && registerNumber >= 0
-                    && registerNumber == top.getFieldLoadedFromRegister()) {
+                    && registerNumber == top.getFieldLoadedFromRegister() && (top.getPC() == -1 || top.getPC() > lastMethodCall)) {
                 int priority = NORMAL_PRIORITY;
 
                 LocalVariableAnnotation possibleMatch = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(),
                         getMethod(), getNameConstantOperand(), getSigConstantOperand());
                 if (possibleMatch != null)
                     priority--;
-                else 
+                else
                     possibleMatch = LocalVariableAnnotation.findUniqueBestMatchingParameter(getClassContext(), getMethod(),
                             getNameConstantOperand(), getSigConstantOperand());
                 if (possibleMatch == null) {
@@ -91,6 +93,8 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
 
             }
         }
+        if (isMethodCall())
+            lastMethodCall = getPC();
         switch (state) {
         case 0:
             if (seen == DUP)
