@@ -175,7 +175,7 @@ public class Footprint {
     }
 
     /**
-     * Wrapper so that possbile NoClassDefFoundError can be caught.
+     * Wrapper so that possible NoClassDefFoundError can be caught.
      * Instantiating this class will throw a NoClassDefFoundError on JDK 1.4 and
      * earlier, or will throw a ClassCastException on a 1.5-compliant non-sun
      * JRE where the osBean is not a sunBean. (If compiled by Eclipse,
