@@ -851,7 +851,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                    if (DEBUG)
                        System.out.println("Forgetting last bug due to call to " + className +"." + methodName);
                 }
-               
+
             } else {
             boolean equalsMethod = !isStatic && methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z")
                     || isStatic &&  methodName.equals("assertEquals")
@@ -1109,8 +1109,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                         priority = LOW_PRIORITY;
                     if (isNullFrame.isValid() && isNullFrame.getTopValue().isDefinitelyNull()) {
                         String type = "EC_NULL_ARG";
-                        if (calledMethodAnnotation != null && calledMethodAnnotation.isStatic())
+                        if (calledMethodAnnotation != null && calledMethodAnnotation.isStatic()){
                             type = "DMI_DOH";
+                            priority = LOW_PRIORITY;
+                        }
                         BugInstance bug = new BugInstance(this, type, priority + priorityModifier).addClassAndMethod(methodGen, sourceFile)
                         .addOptionalAnnotation(calledMethodAnnotation);
                         if (type.equals("DMI_DOH"))
