@@ -394,7 +394,7 @@ public abstract class AbstractFindBugsTask extends Task {
             log(be.toString());
         }
         String returnProperty = getFindbugsEngine().getProject().getProperty(execReturnCodeIdentifier);
-        int rc = returnProperty == null ? 0 : Integer.valueOf(returnProperty).intValue();
+        int rc = returnProperty == null ? 0 : Integer.parseInt(returnProperty);
 
         afterExecuteJavaProcess(rc);
     }
