@@ -1,6 +1,8 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import javax.annotation.CheckForNull;
+
+// import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 public class Bug1633245 {
     interface Foo {
