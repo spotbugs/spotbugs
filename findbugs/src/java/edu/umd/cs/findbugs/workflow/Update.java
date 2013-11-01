@@ -406,6 +406,10 @@ public class Update {
 
         if (commandLine.outputFilename == null)
             verbose = false;
+        if (mostRecent > 0) {
+            argCount = Math.max(argCount, args.length - mostRecent);
+        }
+
         String[] firstPathParts = getFilePathParts(args[argCount]);
         int commonPrefix = firstPathParts.length;
         for (int i = argCount + 1; i <= (args.length - 1); i++) {
@@ -413,10 +417,7 @@ public class Update {
             commonPrefix = Math.min(commonPrefix, lengthCommonPrefix(firstPathParts, getFilePathParts(args[i])));
         }
 
-        if (mostRecent > 0) {
-            argCount = Math.max(argCount, args.length - mostRecent);
-        }
-        String origFilename = args[argCount++];
+               String origFilename = args[argCount++];
         BugCollection origCollection;
         origCollection = new SortedBugCollection();
         if (verbose)
