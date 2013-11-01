@@ -54,6 +54,8 @@ public class FindSelfComparison extends OpcodeStackDetector {
 
     XField putFieldXField;
 
+    int lastMethodCall;
+    
     static final boolean DEBUG = false;
     @Override
     public void visit(Code obj) {
@@ -61,6 +63,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
             System.out.println(getFullyQualifiedMethodName());
         whichRegister = -1;
         registerLoadCount = 0;
+        lastMethodCall = -1;
         resetDoubleAssignmentState();
         super.visit(obj);
         resetDoubleAssignmentState();
@@ -86,7 +89,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
         if (DEBUG)
             System.out.printf("%3d %-15s %s%n", getPC(), OPCODE_NAMES[seen], stack);
        
-
+       
         if (stack.hasIncomingBranches(getPC()))
             resetDoubleAssignmentState();
 
@@ -159,6 +162,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
         switch (seen) {
         case INVOKEVIRTUAL:
         case INVOKEINTERFACE:
+//        case INVOKESTATIC:
             if (getClassName().toLowerCase().indexOf("test") >= 0)
                 break;
             if (getMethodName().toLowerCase().indexOf("test") >= 0)
@@ -173,8 +177,10 @@ public class FindSelfComparison extends OpcodeStackDetector {
             if (booleanComparisonMethod || FindSelfComparison2.comparatorMethod(name)) {
                 String sig = getSigConstantOperand();
                 SignatureParser parser = new SignatureParser(sig);
-                if (parser.getNumParameters() == 1
-                        && (booleanComparisonMethod && sig.endsWith(";)Z") ||  FindSelfComparison2.comparatorMethod(name) && sig.endsWith(";)I")))
+                int numParameters = parser.getNumParameters();
+                if ((numParameters == 1 ||  seen == INVOKESTATIC && numParameters  == 2)
+                        && (booleanComparisonMethod && sig.endsWith(";)Z")
+                                ||  FindSelfComparison2.comparatorMethod(name) && sig.endsWith(";)I")))
                     checkForSelfOperation(seen, "COMPARISON");
             }
             break;
@@ -216,6 +222,10 @@ public class FindSelfComparison extends OpcodeStackDetector {
             whichRegister = -1;
             registerLoadCount = 0;
         }
+        
+        if (isMethodCall())
+            lastMethodCall = getPC();
+
     }
 
     int whichRegister;
@@ -239,10 +249,24 @@ public class FindSelfComparison extends OpcodeStackDetector {
             boolean possibleClone = source.getStartLine() > 0 && linesMentionedMultipleTimes.get(source.getStartLine());
             LineNumberTable lineNumberTable = getCode().getLineNumberTable();
             int linesDifference = 0;
-            if (lineNumberTable != null && item0.getPC() != -1 && item1.getPC() != -1) {
-                int line0 = lineNumberTable.getSourceLine(item0.getPC());
-                int line1 = lineNumberTable.getSourceLine(item1.getPC());
-                linesDifference = Math.abs(line0-line1);
+            if (item0.getPC() != -1 && item1.getPC() != -1) {
+                if (lineNumberTable != null) {
+                    int line0 = lineNumberTable.getSourceLine(item0.getPC());
+                    int line1 = lineNumberTable.getSourceLine(item1.getPC());
+                    int firstPos = Math.min(item0.getPC(), item1.getPC());
+                    int lastPos = Math.min(item0.getPC(), item1.getPC());
+                    if (firstPos < lastMethodCall && line0 != line1)
+                        return;
+
+                    linesDifference = Math.abs(line0 - line1);
+                } else {
+                    int firstPos = Math.min(item0.getPC(), item1.getPC());
+                    int lastPos = Math.min(item0.getPC(), item1.getPC());
+
+                    if (firstPos < lastMethodCall && lastPos - firstPos > 4)
+                        return;
+
+                }
             }
             XField field0 = item0.getXField();
             XField field1 = item1.getXField();
