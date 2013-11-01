@@ -6,7 +6,6 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-Activator: de.tobject.findbugs.FindbugsTestPlugin
 Bundle-Vendor: FindBugs Project
 Require-Bundle: edu.umd.cs.findbugs.plugin.eclipse,
- org.junit4,
  org.eclipse.jdt.ui,
  org.eclipse.jdt.core,
  org.eclipse.jdt.junit,
@@ -14,7 +13,8 @@ Require-Bundle: edu.umd.cs.findbugs.plugin.eclipse,
  org.eclipse.ui.ide,
  org.eclipse.ui.navigator,
  org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.junit
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
