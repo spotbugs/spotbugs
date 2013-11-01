@@ -254,18 +254,17 @@ public class FindSelfComparison extends OpcodeStackDetector {
                     int line0 = lineNumberTable.getSourceLine(item0.getPC());
                     int line1 = lineNumberTable.getSourceLine(item1.getPC());
                     int firstPos = Math.min(item0.getPC(), item1.getPC());
-                    int lastPos = Math.min(item0.getPC(), item1.getPC());
                     if (firstPos < lastMethodCall && line0 != line1)
                         return;
 
                     linesDifference = Math.abs(line0 - line1);
                 } else {
                     int firstPos = Math.min(item0.getPC(), item1.getPC());
-                    int lastPos = Math.min(item0.getPC(), item1.getPC());
+                    int lastPos = Math.max(item0.getPC(), item1.getPC());
 
                     if (firstPos < lastMethodCall && lastPos - firstPos > 4)
                         return;
-
+                    linesDifference = (lastPos - firstPos)/10;
                 }
             }
             XField field0 = item0.getXField();
