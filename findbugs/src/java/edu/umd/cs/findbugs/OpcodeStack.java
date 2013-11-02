@@ -538,6 +538,7 @@ public class OpcodeStack implements Constants2 {
             this.signature = it.signature;
             this.constValue = it.constValue;
             this.source = it.source;
+            this.fieldLoadedFromRegister = it.fieldLoadedFromRegister;
             this.registerNumber = it.registerNumber;
             this.userValue = it.userValue;
             this.injection = it.injection;
@@ -2850,11 +2851,8 @@ public class OpcodeStack implements Constants2 {
             if (!mi.hasBackBranch())
                 return null;
         }
-        String name = xMethod.getName();
-        
         try {
             return analysisCache.getMethodAnalysis(JumpInfo.class, xMethod.getMethodDescriptor());
-            
         } catch (CheckedAnalysisException e) {
             AnalysisContext.logError("Error getting jump information", e);
             return null;
@@ -3327,7 +3325,8 @@ public class OpcodeStack implements Constants2 {
                         i.fieldLoadedFromRegister = -1;
                 }
         }
-        it.registerNumber = register;
+        if (it.registerNumber == -1)
+            it.registerNumber = register;
         setLVValue(register, it);
     }
 
