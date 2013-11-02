@@ -24,9 +24,7 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 
@@ -50,9 +48,8 @@ public class NoteNonNullAnnotations extends BuildNonNullAnnotationDatabase imple
      * @return
      */
     private static NullnessAnnotationDatabase getDatabase() {
-        INullnessAnnotationDatabase nullnessAnnotationDatabase = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
-        return nullnessAnnotationDatabase instanceof NullnessAnnotationDatabase ? (NullnessAnnotationDatabase) nullnessAnnotationDatabase : null;
-    }
+        return null;
+        }
 
     public void visitClassContext(ClassContext classContext) {
 

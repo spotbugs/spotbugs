@@ -343,8 +343,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     BugCollection bugCollection = this.bugCollection;
                     assert bugCollection != null;
                     String packageName = getRequiredAttribute(attributes, "package", qName);
-                    int numClasses = Integer.valueOf(getRequiredAttribute(attributes, "total_types", qName));
-                    int size = Integer.valueOf(getRequiredAttribute(attributes, "total_size", qName));
+                    int numClasses = Integer.parseInt(getRequiredAttribute(attributes, "total_types", qName));
+                    int size = Integer.parseInt(getRequiredAttribute(attributes, "total_size", qName));
                     bugCollection.getProjectStats().putPackageStats(packageName, numClasses, size);
 
                 } else if (outerElement.equals("PackageStats")) {
@@ -353,7 +353,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     if (qName.equals("ClassStats")) {
                         String className = getRequiredAttribute(attributes, "class", qName);
                         Boolean isInterface = Boolean.valueOf(getRequiredAttribute(attributes, "interface", qName));
-                        int size = Integer.valueOf(getRequiredAttribute(attributes, "size", qName));
+                        int size = Integer.parseInt(getRequiredAttribute(attributes, "size", qName));
                         String sourceFile = getOptionalAttribute(attributes, "sourceFile");
                         bugCollection.getProjectStats().addClass(className, sourceFile, isInterface, size, false);
                     }
@@ -382,9 +382,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                             String releaseName = getOptionalAttribute(attributes, "release");
                             String codeSize = getOptionalAttribute(attributes, "codeSize");
                             String numClasses = getOptionalAttribute(attributes, "numClasses");
-                            AppVersion appVersion = new AppVersion(Long.valueOf(sequence));
+                            AppVersion appVersion = new AppVersion(Long.parseLong(sequence));
                             if (timestamp != null)
-                                appVersion.setTimestamp(Long.valueOf(timestamp));
+                                appVersion.setTimestamp(Long.parseLong(timestamp));
                             if (releaseName != null)
                                 appVersion.setReleaseName(releaseName);
                             if (codeSize != null)
@@ -605,7 +605,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             s = getOptionalAttribute(attributes, "timestamp"); // optional
             if (s != null)
                 try {
-                    long timestamp = Long.valueOf(s);
+                    long timestamp = Long.parseLong(s);
                     bugInstance.setUserAnnotationTimestamp(timestamp);
                 } catch (NumberFormatException nfe) {
                     // ok to contine -- just won't set a timestamp for the user

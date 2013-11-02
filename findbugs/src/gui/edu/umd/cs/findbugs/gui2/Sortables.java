@@ -102,7 +102,7 @@ public enum Sortables implements Comparator<String> {
             if (appVersion != null) {
                 String timestamp = new Timestamp(appVersion.getTimestamp()).toString();
                 return appVersion.getReleaseName() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
-            } else 
+            } else
                 return "#" + seqNum;
         }
 
@@ -153,8 +153,8 @@ public enum Sortables implements Comparator<String> {
                 return 0;
 
             // Numerical (except that -1 is last)
-            int first = Integer.valueOf(one);
-            int second = Integer.valueOf(two);
+            int first = Integer.parseInt(one);
+            int second = Integer.parseInt(two);
             if (first == second)
                 return 0;
             if (first < 0)
