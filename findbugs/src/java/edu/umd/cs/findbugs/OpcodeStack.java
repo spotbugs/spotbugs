@@ -2508,12 +2508,12 @@ public class OpcodeStack implements Constants2 {
                 (methodName.equals("nextInt")  && signature.equals("()I")
                         || methodName.equals("nextLong")  && signature.equals("()J"))
                 ) {
-            Item i = pop();
+            Item i = new Item(pop());
             i.setSpecialKind(Item.RANDOM_INT);
             push(i);
         } else if (methodName.equals("size") && signature.equals("()I")
                 && Subtypes2.instanceOf(ClassName.toDottedClassName(clsName), "java.util.Collection")) {
-            Item i = pop();
+            Item i = new Item(pop());
             if (i.getSpecialKind() == Item.NOT_SPECIAL)
                     i.setSpecialKind(Item.NON_NEGATIVE);
             push(i);
@@ -2563,8 +2563,12 @@ public class OpcodeStack implements Constants2 {
             }
         } else {
             if (DEBUG2) {
-                if (intoSize != fromSize)
+                if (intoSize != fromSize) {
                     System.out.printf("Bad merging %d items from %d items%n", intoSize, fromSize);
+                    System.out.println("current items: " + mergeInto);
+                    System.out.println("jump items: " + mergeFrom);
+                }
+                
             }
 
             List<Item> mergeIntoCopy = null;
@@ -2846,6 +2850,7 @@ public class OpcodeStack implements Constants2 {
             if (!mi.hasBackBranch())
                 return null;
         }
+        String name = xMethod.getName();
         
         try {
             return analysisCache.getMethodAnalysis(JumpInfo.class, xMethod.getMethodDescriptor());
@@ -3305,7 +3310,7 @@ public class OpcodeStack implements Constants2 {
     }
 
     private void pushByLocalStore(int register) {
-        Item it = pop();
+        Item it = new Item(pop());
         if (it.getRegisterNumber() != register) {
             for (Item i : lvValues)
                 if (i != null) {
@@ -3327,7 +3332,7 @@ public class OpcodeStack implements Constants2 {
     }
 
     private void pushByLocalLoad(String signature, int register) {
-        Item oldItem = getLVValue(register);
+        Item oldItem = new Item(getLVValue(register));
 
         Item newItem = oldItem;
         if (newItem.signature.equals("Ljava/lang/Object;") && !signature.equals("Ljava/lang/Object;")) {
