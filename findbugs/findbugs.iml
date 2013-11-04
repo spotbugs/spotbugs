@@ -16,11 +16,11 @@
       <excludeFolder url="file://$MODULE_DIR$/build/junitclasses" />
       <excludeFolder url="file://$MODULE_DIR$/classesEclipse" />
     </content>
-    <content url="file://$CODE_DIR$/findbugs/sandbox">
-      <excludeFolder url="file://$CODE_DIR$/findbugs/sandbox/localCloud" />
+    <content url="file://$MODULE_DIR$/sandbox">
+      <excludeFolder url="file://$MODULE_DIR$/sandbox/localCloud" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="jdk" jdkName="J2SE-1.5" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="module-library">
       <library name="AppleJavaExtensions.jar">
         <CLASSES>
