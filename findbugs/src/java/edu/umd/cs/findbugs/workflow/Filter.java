@@ -59,6 +59,7 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.Cloud.SigninState;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -694,6 +695,7 @@ public class Filter {
 
     static SourceSearcher sourceSearcher;
 
+ 
     public static void main(String[] args) throws Exception {
         FindBugs.setNoAnalysis();
         DetectorFactoryCollection.instance();
@@ -751,15 +753,20 @@ public class Filter {
 
         }
 
-        if ((commandLine.maxAgeSpecified || commandLine.notAProblemSpecified || commandLine.shouldFixSpecified)
-                && !origCollection.getCloud().waitUntilIssueDataDownloaded(20, TimeUnit.SECONDS)) {
-            if (verbose)
-                System.out.println("Waiting for cloud information required for filtering");
-            if (!origCollection.getCloud().waitUntilIssueDataDownloaded(1, TimeUnit.MINUTES)) {
+        if (commandLine.maxAgeSpecified || commandLine.notAProblemSpecified || commandLine.shouldFixSpecified) {
+
+            Cloud cloud = origCollection.getCloud();
+            SigninState signinState = cloud.getSigninState();
+            if (!signinState.canDownload()) {
+                disconnect(verbose, commandLine, resultCollection,  cloud.getCloudName() + " state is " + signinState
+                        + "; ignoring filtering options that require cloud access");
+
+            } else if (!cloud.waitUntilIssueDataDownloaded(20, TimeUnit.SECONDS)) {
                 if (verbose)
-                    System.out.println("Unable to connect to cloud; ignoring filtering options that require cloud access");
-                resultCollection.addError("Unable to connect to cloud; ignoring filtering options that require cloud access");
-                commandLine.maxAgeSpecified = commandLine.notAProblemSpecified = commandLine.shouldFixSpecified = false;
+                    System.out.println("Waiting for cloud information required for filtering");
+                if (!cloud.waitUntilIssueDataDownloaded(1, TimeUnit.MINUTES))
+                    disconnect(verbose, commandLine, resultCollection,
+                            "Unable to connect to cloud; ignoring filtering options that require cloud access");
             }
         }
 
@@ -813,6 +820,16 @@ public class Filter {
 
         }
 
+    }
+
+
+
+    private static void disconnect(boolean verbose, final FilterCommandLine commandLine, SortedBugCollection resultCollection,
+           String msg) {
+        if (verbose)
+            System.out.println(msg);
+        resultCollection.addError(msg);
+        commandLine.maxAgeSpecified = commandLine.notAProblemSpecified = commandLine.shouldFixSpecified = false;
     }
 
 }
