@@ -570,7 +570,7 @@
               timeout="1800000"
               outputFile="${build.dir}/findbugs-Baseline.xml" >
       <class location="${classes.dir}" />
-      <sourcePath path="src/java:src/gui:src/junit:src/tools"/>
+      <sourcePath path="src/java:src/gui:src/junit:src/tools:src/antTask"/>
       <auxClasspath refid="tools.classpath"/>
       <auxClasspath path="lib/ant.jar"/>
 	</findbugs>
@@ -591,7 +591,7 @@
               timeout="1800000"
               outputFile="${build.dir}/findbugscheckAll.xml" >
       <class location="${classes.dir}" />
-      <sourcePath path="src/java:src/gui:src/junit:src/tools"/>
+      <sourcePath path="src/java:src/gui:src/junit:src/tools:src/antTask"/>
       <auxClasspath refid="tools.classpath"/>
       <auxClasspath path="lib/ant.jar"/>
     </findbugs>
@@ -618,7 +618,7 @@
               timeout="1800000"
               outputFile="${build.dir}/findbugscheck.xml" >
       <class location="${classes.dir}" />
-      <sourcePath path="src/java:src/gui:src/junit:src/tools"/>
+      <sourcePath path="src/java:src/gui:src/junit:src/tools:src/antTask"/>
       <auxClasspath refid="tools.classpath"/>
     </findbugs>
   </target>
@@ -715,6 +715,7 @@
         <taskdef resource="checkstyletask.properties"
                  classpath="build-lib/checkstyle-all-5.1.jar"/>
         <checkstyle config="etc/checkstyle.xml" failonviolation="false">
+            <fileset dir="src/antTask"/>
             <fileset dir="src/java"/>
             <fileset dir="src/gui"/>
             <fileset dir="src/junit"/>
@@ -1300,7 +1301,7 @@
         Windowtitle="FindBugs ${release.number} API"
         bottom="&lt;font size='-1'&gt;&lt;a href='http://findbugs.sourceforge.net/' target='_parent'&gt;FindBugs&lt;/a&gt;&amp;trade; is licenced under the LGPL. Copyright &amp;copy; 2006 University of Maryland.&lt;/font&gt;"
         nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false"
-        sourcepath="src/java:src/gui" splitindex="true" use="true" version="true">
+        sourcepath="src/java:src/gui:src/antTask" splitindex="true" use="true" version="true">
     <classpath refid="findbugs.classpath"/>
     </javadoc>
         </target>
@@ -1312,7 +1313,7 @@
         packagenames="edu.umd.cs.findbugs.annotations"
         doctitle="FindBugs Annotation Documentation"
         nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false"
-        sourcepath="src/gui" splitindex="true" use="true" version="true"/>
+        sourcepath="src/java:src/gui:src/antTask" splitindex="true" use="true" version="true"/>
         </target>
 
     <!-- Download, patch, and build a modified BCEL 5.2.  Install resulting bcel.jar in lib. -->
