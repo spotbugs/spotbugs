@@ -752,12 +752,15 @@ public class Filter {
         }
 
         if ((commandLine.maxAgeSpecified || commandLine.notAProblemSpecified || commandLine.shouldFixSpecified)
-              && !origCollection.getCloud().waitUntilIssueDataDownloaded(20, TimeUnit.SECONDS)) {
-              
+                && !origCollection.getCloud().waitUntilIssueDataDownloaded(20, TimeUnit.SECONDS)) {
+            if (verbose)
+                System.out.println("Waiting for cloud information required for filtering");
+            if (!origCollection.getCloud().waitUntilIssueDataDownloaded(1, TimeUnit.MINUTES)) {
                 if (verbose)
                     System.out.println("Unable to connect to cloud; ignoring filtering options that require cloud access");
                 resultCollection.addError("Unable to connect to cloud; ignoring filtering options that require cloud access");
                 commandLine.maxAgeSpecified = commandLine.notAProblemSpecified = commandLine.shouldFixSpecified = false;
+            }
         }
 
         commandLine.getReady(origCollection);
