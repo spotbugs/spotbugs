@@ -10,8 +10,8 @@
 
     <target name="compile">
         <ant dir="../../webCloudProtocol" target="fulljar" inheritall="false"/>
-        <mkdir dir="build/classes-ant"/>
-        <javac srcdir="src/java" destdir="build/classes-ant" classpathref="common.classpath" debug="on"   includeantruntime="false"
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src/java" destdir="build/classes" classpathref="common.classpath" debug="on"   includeantruntime="false"
                         source="1.6"
                         target="1.6" />
     </target>
@@ -24,7 +24,7 @@
 >
             <classpath>
                 <path refid="common.classpath"/>
-                <path location="build/classes-ant"/>
+                <path location="build/classes"/>
             </classpath>
         </javac>
     </target>
@@ -32,7 +32,7 @@
     <target name="fulljar-check" depends="compile">
         <uptodate property="fulljar-not-necessary"
                   targetfile="build/webCloudServerCommon.jar">
-            <srcfiles dir="build/classes-ant" includes="**/*"/>
+            <srcfiles dir="build/classes" includes="**/*"/>
             <srcfiles dir="lib" includes="**/*"/>
             <srcfiles file="../../webCloudProtocol/build/webCloudProtocol.jar"/>
         </uptodate>
@@ -41,7 +41,7 @@
     <target name="fulljar" depends="fulljar-check" unless="fulljar-not-necessary">
         <mkdir dir="build"/>
         <jar jarfile="build/webCloudServerCommon.jar">
-            <fileset dir="build/classes-ant"/>
+            <fileset dir="build/classes"/>
 
             <zipfileset src="../../webCloudProtocol/build/webCloudProtocol.jar"/>
 

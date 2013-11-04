@@ -16,5 +16,5 @@
 	<classpathentry kind="lib" path="lib/charts4j-1.3.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/webCloudProtocol"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.5.jar" sourcepath="C:/Users/Keith/Code/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar"/>
-	<classpathentry kind="output" path="classes"/>
+	<classpathentry kind="output" path="classesEclipse"/>
 </classpath>
