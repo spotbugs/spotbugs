@@ -178,5 +178,7 @@
     <target name="clean">
         <delete dir="dist"/>
         <delete dir="build"/>
+        <delete dir="classes"/>
+        <mkdir dir="classes"/>
     </target>
 </project>
