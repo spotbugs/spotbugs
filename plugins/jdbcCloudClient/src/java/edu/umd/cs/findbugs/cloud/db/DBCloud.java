@@ -747,14 +747,7 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
         }
     }
 
-    public void waitUntilIssueDataDownloaded() {
-        initiateCommunication();
-        try {
-            initialSyncDone.await();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
+
 
     private boolean initializationIsDoomed() throws IOException {
         if (!super.initialize())
@@ -1919,8 +1912,29 @@ public class DBCloud extends AbstractCloud implements OnlineCloud {
             initiateCommunication();
             initialSyncDone.await();
         } catch (InterruptedException e) {
-
+            throw new RuntimeException(e);
         }
-
     }
+
+    public boolean waitUntilNewIssuesUploaded(long timeout, TimeUnit unit)
+            throws InterruptedException {
+        initiateCommunication();
+        return initialSyncDone.await(timeout, unit);
+    }
+
+    public void waitUntilIssueDataDownloaded() {
+        initiateCommunication();
+        try {
+            initialSyncDone.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean waitUntilIssueDataDownloaded(long timeout, TimeUnit unit)
+            throws InterruptedException {
+        initiateCommunication();
+        return initialSyncDone.await(timeout, unit);
+    }
+
 }

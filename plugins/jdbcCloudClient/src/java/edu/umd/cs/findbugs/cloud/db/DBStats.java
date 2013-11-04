@@ -204,8 +204,6 @@ public class DBStats {
         }
         I18N i18n = I18N.instance();
 
-        // TODO: this this
-
         DBCloud cloud = new DBCloud(null, null, new Properties());
         cloud.initialize();
         Connection c = cloud.getConnection();
