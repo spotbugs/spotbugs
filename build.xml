@@ -31,6 +31,7 @@
         <!-- <ant dir="plugins/jdbcCloudClient" /> -->
         <ant dir="plugins/jira" target="test" />
         <ant dir="plugins/webCloudClient" target="test" />
+        <ant dir="NullPointerBenchmark" target="findbugscheck"/>
 
         <!-- <ant dir="bluej" /> -->
         <!--<ant dir="eclipsePlugin" />-->
@@ -41,8 +42,12 @@
 
     <target name="clean">
         <ant dir="findbugs" target="clean"/>
+        <ant dir="bluej" target="clean"/>
+        <ant dir="sandbox/localCloud" target="clean"/>
+        <ant dir="NullPointerBenchmark" target="clean"/>
         <ant dir="plugins/bugCollectionCloud" target="clean"/>
         <ant dir="plugins/noUpdateChecks" target="clean"/>
+        <ant dir="plugins/webCloudClient" target="clean"/>
         <ant dir="plugins/googlecode" target="clean"/>
         <ant dir="plugins/jdbcCloudClient" target="clean"/>
         <ant dir="plugins/jira" target="clean"/>
