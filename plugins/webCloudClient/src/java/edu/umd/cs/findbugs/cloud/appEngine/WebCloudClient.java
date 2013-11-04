@@ -152,7 +152,13 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
             LOGGER.log(Level.WARNING, "", e);
         }
     }
+    
+    public boolean waitUntilNewIssuesUploaded(long timeout, TimeUnit unit) throws InterruptedException {
+        checkInitialized();
+        return newIssuesUploaded.await(timeout, unit);
+    }
 
+    
     public void waitUntilIssueDataDownloaded() {
         checkInitialized();
         try {
@@ -169,6 +175,22 @@ public class WebCloudClient extends AbstractCloud implements OnlineCloud {
 
     }
 
+    public boolean waitUntilIssueDataDownloaded(long timeout, TimeUnit unit) throws InterruptedException {
+        checkInitialized();
+        try {
+            bugsPopulated.await();
+
+        } catch (InterruptedException e) {
+            LOGGER.log(Level.WARNING, "interrupted", e);
+            return false;
+        }
+
+        initiateCommunication();
+
+        LOGGER.fine("Waiting for issue data to be downloaded");
+
+        return issueDataDownloaded.await(timeout, unit);
+    }
     public boolean availableForInitialization() {
         return true;
     }
