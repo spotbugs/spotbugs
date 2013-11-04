@@ -74,7 +74,8 @@ public class YourKitController {
         if (controller == null)
             return;
         try {
-            captureMemorySnapshot.invoke(controller);          
+            System.gc();
+            captureMemorySnapshot.invoke(controller);
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
