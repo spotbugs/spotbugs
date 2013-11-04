@@ -32,6 +32,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.asm.FBClassReader;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Debug;
@@ -59,7 +60,8 @@ public class AnalysisCache implements IAnalysisCache {
     /**
      *
      */
-    private static final int MAX_JAVACLASS_RESULTS_TO_CACHE = 5000;
+    private static final int MAX_JAVACLASS_RESULTS_TO_CACHE = 3000;
+    private static final int MAX_FBCLASSREADER_RESULTS_TO_CACHE = 3000;
 
     private static final int MAX_CONSTANT_POOL_GEN_RESULTS_TO_CACHE = 500;
 
@@ -465,6 +467,8 @@ public class AnalysisCache implements IAnalysisCache {
         IAnalysisEngine<DescriptorType, ?> engine = engineMap.get(analysisClass);
         if (analysisClass.equals(JavaClass.class)) {
             descriptorMap = new MapCache<DescriptorType, Object>(MAX_JAVACLASS_RESULTS_TO_CACHE);
+        } else if (analysisClass.equals(FBClassReader.class)) {
+            descriptorMap = new MapCache<DescriptorType, Object>(MAX_FBCLASSREADER_RESULTS_TO_CACHE);
         } else if (analysisClass.equals(ConstantPoolGen.class)) {
             descriptorMap = new MapCache<DescriptorType, Object>(MAX_CONSTANT_POOL_GEN_RESULTS_TO_CACHE);
         } else if (analysisClass.equals(ClassContext.class)) {
