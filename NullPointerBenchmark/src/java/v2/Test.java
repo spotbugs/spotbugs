@@ -1,6 +1,8 @@
 package v2;
 
+import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Test {
 
@@ -12,6 +14,7 @@ public class Test {
      * of the ifp1
      */
 
+    @NoWarning("NP")
     int fp1(int level) {
         Object x = null;
         if (level > 0)
@@ -21,6 +24,7 @@ public class Test {
         return 0;
     }
 
+    @DesireWarning("NP")
     int tp1(int level) {
         Object x = null;
         if (level > 0)
@@ -30,6 +34,7 @@ public class Test {
         return 0;
     }
 
+    @NoWarning("NP")
     int fp2(boolean b) {
         Object x = null;
         if (b)
@@ -39,6 +44,7 @@ public class Test {
         return 0;
     }
 
+    @DesireWarning("NP")
     int tp2(boolean b) {
         Object x = null;
         if (b)
@@ -48,6 +54,7 @@ public class Test {
         return 0;
     }
 
+    @NoWarning("NP")
     int fp3(Object x) {
         Object y = null;
         if (x != null)
@@ -69,6 +76,7 @@ public class Test {
             return x.hashCode();
     }
 
+    @ExpectWarning("NP")
     int tp4(boolean b) {
         Object x = null;
         Object y = null;
@@ -82,6 +90,7 @@ public class Test {
             return x.hashCode();
     }
 
+    @NoWarning("NP")
     int fp4(boolean b) {
         Object x = null;
         Object y = null;
@@ -118,6 +127,7 @@ public class Test {
         return helper1(x, b);
     }
 
+    @NoWarning("NP")
     int ifp1(boolean b) {
         Object x = null;
         if (!b)
@@ -135,6 +145,15 @@ public class Test {
         Object x = null;
         if (b)
             x = "x";
+        return helper3(x);
+    }
+    @NoWarning("NP")
+    int itf3(boolean b) {
+        Object x = null;
+        if (b)
+            x = "x";
+        if (!b)
+            x = "y";
         return helper3(x);
     }
 

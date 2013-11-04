@@ -1,6 +1,7 @@
 package v2;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class TestFields {
 
@@ -17,6 +18,7 @@ public class TestFields {
         this.x = x;
     }
 
+    @NoWarning("NP")
     int fp1(int level) {
         x = null;
         if (level > 0)
@@ -35,6 +37,7 @@ public class TestFields {
         return 0;
     }
 
+    @NoWarning("NP")
     int fp2(boolean b) {
         x = null;
         if (b)
@@ -53,6 +56,7 @@ public class TestFields {
         return 0;
     }
 
+    @NoWarning("NP")
     int fp3() {
         Object y = null;
         if (x != null)
@@ -88,6 +92,7 @@ public class TestFields {
             return x.hashCode();
     }
 
+    @NoWarning("NP")
     int fp4(boolean b) {
         x = null;
         Object y = null;
@@ -124,6 +129,7 @@ public class TestFields {
         return helper1(b);
     }
 
+    @NoWarning("NP")
     int ifp1(boolean b) {
         x = null;
         if (!b)
@@ -141,6 +147,15 @@ public class TestFields {
         x = null;
         if (b)
             x = "x";
+        return helper3();
+    }
+    @NoWarning("NP")
+    int itf3(boolean b) {
+        x = null;
+        if (b)
+            x = "x";
+        if (!b)
+            x = "y";
         return helper3();
     }
 
