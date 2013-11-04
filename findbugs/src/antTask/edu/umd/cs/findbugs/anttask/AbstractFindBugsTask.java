@@ -361,7 +361,7 @@ public abstract class AbstractFindBugsTask extends Task {
      */
     private void execFindbugs() throws BuildException {
 
-        System.out.println("Executing findbugs from ant task");
+        System.out.println("Executing findbugs " + this.getClass().getSimpleName() + " from ant task");
         createFindbugsEngine();
         configureFindbugsEngine();
 
