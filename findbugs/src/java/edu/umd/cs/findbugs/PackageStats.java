@@ -29,6 +29,8 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
@@ -39,17 +41,75 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * @author Mike Fagan
  * @author Jay Dunning
  */
-public class PackageStats implements XMLWriteable {
 
-    public static class ClassStats implements XMLWriteable, Cloneable {
+class BugCounts {
+    protected int[] nBugs;
+    
+    @OverridingMethodsMustInvokeSuper
+    public void addError(BugInstance bug) {
+        ensureNonnullBugCounts();
+        ++nBugs[bug.getPriority()];
+        ++nBugs[0];
+    }
+    
+    protected void ensureNonnullBugCounts() {
+        if (nBugs == null)
+            nBugs = new int[] { 0, 0, 0, 0, 0 };
+        
+    }
+    public final int getTotalBugs() {
+        if (nBugs == null)
+            return 0;
+        return nBugs[0];
+    }
+
+    public final int getBugsAtPriority(int p) {
+        if (nBugs == null)
+            return 0;
+        return nBugs[p];
+    }
+    
+    public void clearBugCounts() {
+        nBugs = null;
+
+    }
+    
+    /**
+     * Add priority attributes to a started tag. Each priority at offset n,
+     * where n &gt; 0, is output using attribute priority_n if the value at
+     * offset n is greater than zero.
+     *
+     * @param xmlOutput
+     *            an output stream for which startTag has been called but
+     *            stopTag has not.
+     * @param bugs
+     *            an array for which the element at offset n is the number of
+     *            bugs for priority n.
+     */
+    public  void writeBugPriorities(XMLOutput xmlOutput) throws IOException {
+        if (nBugs == null)
+            return;
+        writeBugPriorities(xmlOutput, nBugs);
+    }
+    public static void writeBugPriorities(XMLOutput xmlOutput, @Nonnull int nBugs[]) throws IOException {
+        int i = nBugs.length;
+        while (--i > 0) {
+            if (nBugs[i] > 0) {
+                xmlOutput.addAttribute("priority_" + i, String.valueOf(nBugs[i]));
+            }
+        }
+    }
+}
+
+public class PackageStats extends BugCounts implements XMLWriteable {
+
+  
+    public static class ClassStats extends BugCounts implements XMLWriteable, Cloneable {
         private final String name;
 
         private final String sourceFile;
 
         private boolean isInterface;
-
-        // nBugs[0] is total; nBugs[n] is total for bug priority n
-        private final int[] nBugs = new int[] { 0, 0, 0, 0, 0 };
 
         private int size;
 
@@ -76,19 +136,6 @@ public class PackageStats implements XMLWriteable {
             this.size = size;
         }
 
-        public void addError(BugInstance bug) {
-            ++nBugs[bug.getPriority()];
-            ++nBugs[0];
-        }
-
-        public int getTotalBugs() {
-            return nBugs[0];
-        }
-
-        public int getBugsAtPriority(int p) {
-            return nBugs[p];
-        }
-
         public int size() {
             return size;
         }
@@ -112,8 +159,8 @@ public class PackageStats implements XMLWriteable {
                 xmlOutput.addAttribute("sourceFile", sourceFile);
             xmlOutput.addAttribute("interface", String.valueOf(isInterface));
             xmlOutput.addAttribute("size", String.valueOf(size));
-            xmlOutput.addAttribute("bugs", String.valueOf(nBugs[0]));
-            writeBugPriorities(xmlOutput, nBugs);
+            xmlOutput.addAttribute("bugs", String.valueOf(getTotalBugs()));
+            writeBugPriorities(xmlOutput);
 
             xmlOutput.stopTag(true);
         }
@@ -121,11 +168,7 @@ public class PackageStats implements XMLWriteable {
         /**
          *
          */
-        public void clearBugCounts() {
-            for (int i = 0; i < nBugs.length; i++)
-                nBugs[i] = 0;
-
-        }
+       
     }
 
     public static final String ELEMENT_NAME = "PackageStats";
@@ -133,10 +176,6 @@ public class PackageStats implements XMLWriteable {
     public static final int ALL_ERRORS = 0;
 
     private final String packageName;
-
-    // nBugs[0] is total; nBugs[n] is total for bug priority n
-    private int[] nBugs = new int[] { 0, 0, 0, 0, 0 };
-
     private int size;
 
     private int numClasses;
@@ -167,10 +206,6 @@ public class PackageStats implements XMLWriteable {
         return packageMembers.values();
     }
 
-    public int getTotalBugs() {
-        return nBugs[0];
-    }
-
     public int size() {
         return size;
     }
@@ -179,9 +214,6 @@ public class PackageStats implements XMLWriteable {
         this.size = size;
     }
 
-    public int getBugsAtPriority(int p) {
-        return nBugs[p];
-    }
 
     private ClassStats getClassStats(String name, String sourceFile) {
         ClassStats result = packageMembers.get(name);
@@ -199,13 +231,10 @@ public class PackageStats implements XMLWriteable {
         return result;
     }
 
+    @Override
     public void addError(BugInstance bug) {
+        super.addError(bug);
         SourceLineAnnotation source = bug.getPrimarySourceLineAnnotation();
-        if (bug.getPriority() >= nBugs.length)
-            return;
-        ++nBugs[bug.getPriority()];
-        ++nBugs[0];
-
         // see bug https://sourceforge.net/tracker/index.php?func=detail&aid=3322583&group_id=96405&atid=614693
         // always add class stats to see useful details in package stats fancy.xsl output
         getClassStats(source.getClassName(), source.getSourceFile()).addError(bug);
@@ -232,7 +261,7 @@ public class PackageStats implements XMLWriteable {
             this.numClasses = 0;
         }
         packageMembers.put(classStats.getName(), classStats);
-        if (updatePackageStats) 
+        if (updatePackageStats)
             size += classStats.size();
     }
 
@@ -255,13 +284,13 @@ public class PackageStats implements XMLWriteable {
         xmlOutput.startTag(ELEMENT_NAME);
 
         xmlOutput.addAttribute("package", packageName);
-        xmlOutput.addAttribute("total_bugs", String.valueOf(nBugs[0]));
+        xmlOutput.addAttribute("total_bugs", String.valueOf(getTotalBugs()));
         int numClasses = packageMembers.size();
         if (numClasses == 0)
             numClasses = this.numClasses;
         xmlOutput.addAttribute("total_types", String.valueOf(numClasses));
         xmlOutput.addAttribute("total_size", String.valueOf(size));
-        writeBugPriorities(xmlOutput, nBugs);
+        writeBugPriorities(xmlOutput);
 
         xmlOutput.stopTag(false);
 
@@ -278,32 +307,13 @@ public class PackageStats implements XMLWriteable {
 
     }
 
-    /**
-     * Add priority attributes to a started tag. Each priority at offset n,
-     * where n &gt; 0, is output using attribute priority_n if the value at
-     * offset n is greater than zero.
-     *
-     * @param xmlOutput
-     *            an output stream for which startTag has been called but
-     *            stopTag has not.
-     * @param bugs
-     *            an array for which the element at offset n is the number of
-     *            bugs for priority n.
-     */
-    public static void writeBugPriorities(XMLOutput xmlOutput, int[] bugs) throws IOException {
-        int i = bugs.length;
-        while (--i > 0) {
-            if (bugs[i] > 0) {
-                xmlOutput.addAttribute("priority_" + i, String.valueOf(bugs[i]));
-            }
-        }
-    }
+   
 
     public void recomputeFromClassStats() {
-        for (int i = 0; i < nBugs.length; i++)
-            nBugs[i] = 0;
+        super.clearBugCounts();
         size = 0;
         numClasses = packageMembers.size();
+        ensureNonnullBugCounts();
         for (ClassStats classStats : packageMembers.values()) {
             for (int i = 0; i < nBugs.length; i++)
                 nBugs[i] += classStats.getBugsAtPriority(i);
@@ -314,9 +324,9 @@ public class PackageStats implements XMLWriteable {
     /**
      *
      */
+    @Override
     public void clearBugCounts() {
-        for (int i = 0; i < nBugs.length; i++)
-            nBugs[i] = 0;
+        super.clearBugCounts();
 
         for (ClassStats classStats : packageMembers.values()) {
             classStats.clearBugCounts();
