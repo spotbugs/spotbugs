@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
 import edu.umd.cs.findbugs.BugCollection;
@@ -348,6 +349,7 @@ public class AbstractCloudTest extends TestCase {
             return "user";
         }
 
+        @Override
         public SigninState getSigninState() {
             return SigninState.NO_SIGNIN_REQUIRED;
         }
@@ -369,6 +371,7 @@ public class AbstractCloudTest extends TestCase {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void bugsPopulated() {
             throw new UnsupportedOperationException();
         }
@@ -387,6 +390,16 @@ public class AbstractCloudTest extends TestCase {
 
         public void waitUntilIssueDataDownloaded() {
         }
+        public boolean waitUntilNewIssuesUploaded(long timeout, TimeUnit unit) throws InterruptedException {
+            return true;
+        }
+
+        public void waitUntilNewIssuesUploaded() {
+
+        }
+        public boolean waitUntilIssueDataDownloaded(long timeout, TimeUnit unit) throws InterruptedException {
+            return true;
+        }
 
         public Collection<String> getProjects(String className) {
             return Collections.emptyList();
@@ -400,6 +413,7 @@ public class AbstractCloudTest extends TestCase {
             return false;
         }
 
+        @Override
         public String getCloudName() {
             return "test";
         }
@@ -427,6 +441,7 @@ public class AbstractCloudTest extends TestCase {
          * edu.umd.cs.findbugs.cloud.Cloud#getBugIsUnassigned(edu.umd.cs.findbugs
          * .BugInstance)
          */
+        @Override
         public boolean getBugIsUnassigned(BugInstance b) {
             throw new UnsupportedOperationException();
         }
@@ -438,6 +453,7 @@ public class AbstractCloudTest extends TestCase {
          * edu.umd.cs.findbugs.cloud.Cloud#getReviewers(edu.umd.cs.findbugs.
          * BugInstance)
          */
+        @Override
         public Set<String> getReviewers(BugInstance b) {
             throw new UnsupportedOperationException();
         }
@@ -449,6 +465,7 @@ public class AbstractCloudTest extends TestCase {
          * edu.umd.cs.findbugs.cloud.Cloud#getWillNotBeFixed(edu.umd.cs.findbugs
          * .BugInstance)
          */
+        @Override
         public boolean getWillNotBeFixed(BugInstance b) {
             throw new UnsupportedOperationException();
         }
@@ -474,13 +491,7 @@ public class AbstractCloudTest extends TestCase {
             return map.values();
         }
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see edu.umd.cs.findbugs.cloud.Cloud#waitUntilNewIssuesUploaded()
-         */
-        public void waitUntilNewIssuesUploaded() {
 
-        }
+      
     }
 }

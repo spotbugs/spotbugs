@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.CheckForNull;
 
@@ -98,6 +99,13 @@ public class DoNothingCloud implements Cloud {
     public void waitUntilIssueDataDownloaded() {
     }
 
+    public boolean waitUntilNewIssuesUploaded(long timeout, TimeUnit unit) throws InterruptedException {
+        return true;
+    }
+
+    public boolean waitUntilIssueDataDownloaded(long timeout, TimeUnit unit) throws InterruptedException {
+        return true;
+    }
     public void bugsPopulated() {
     }
 
@@ -338,4 +346,6 @@ public class DoNothingCloud implements Cloud {
     public boolean isInitialized() {
         return true;
     }
+
+   
 }

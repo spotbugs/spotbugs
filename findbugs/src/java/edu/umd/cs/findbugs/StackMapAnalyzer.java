@@ -78,37 +78,33 @@ public  class StackMapAnalyzer {
         
     }
     static final boolean DEBUG = false;
+
     enum StackFrameType {
-        SAME_FRAME, SAME_LOCALS_1_STACK_ITEM_FRAME,
-        CHOP_FRAME, APPEND_FRAME, FULL_FRAME;
-        
+        SAME_FRAME, SAME_LOCALS_1_STACK_ITEM_FRAME, CHOP_FRAME, APPEND_FRAME, FULL_FRAME;
+
         static StackFrameType get(int frame_type) {
             if (frame_type >= Constants.SAME_FRAME && frame_type <= Constants.SAME_FRAME_MAX) {
                 return SAME_FRAME;
-        } else if (frame_type >= Constants.SAME_LOCALS_1_STACK_ITEM_FRAME && frame_type <= Constants.SAME_LOCALS_1_STACK_ITEM_FRAME_MAX) {
+            } else if (frame_type >= Constants.SAME_LOCALS_1_STACK_ITEM_FRAME
+                    && frame_type <= Constants.SAME_LOCALS_1_STACK_ITEM_FRAME_MAX) {
                 return SAME_LOCALS_1_STACK_ITEM_FRAME;
-        } else if (frame_type == Constants.SAME_LOCALS_1_STACK_ITEM_FRAME_EXTENDED) {
+            } else if (frame_type == Constants.SAME_LOCALS_1_STACK_ITEM_FRAME_EXTENDED) {
                 return SAME_LOCALS_1_STACK_ITEM_FRAME;
-        } else if (frame_type >= Constants.CHOP_FRAME && frame_type <= Constants.CHOP_FRAME_MAX) {
-            return CHOP_FRAME;
-        } else if (frame_type == Constants.SAME_FRAME_EXTENDED) {
+            } else if (frame_type >= Constants.CHOP_FRAME && frame_type <= Constants.CHOP_FRAME_MAX) {
+                return CHOP_FRAME;
+            } else if (frame_type == Constants.SAME_FRAME_EXTENDED) {
                 return SAME_FRAME;
-        } else if (frame_type >= Constants.APPEND_FRAME && frame_type <= Constants.APPEND_FRAME_MAX) {
+            } else if (frame_type >= Constants.APPEND_FRAME && frame_type <= Constants.APPEND_FRAME_MAX) {
                 return APPEND_FRAME;
-        } else if (frame_type == Constants.FULL_FRAME) {
-            return FULL_FRAME;
-               
-        } else {
+            } else if (frame_type == Constants.FULL_FRAME) {
+                return FULL_FRAME;
+            } else {
                 /* Can't happen */
-                throw new ClassFormatException ("Invalid frame type : " + frame_type);
+                throw new ClassFormatException("Invalid frame type : " + frame_type);
+            }
         }
-
-    };
-        
-    
-        
-        
     }
+
     static @CheckForNull StackMapTable getStackMapTable(Code code) {
         for(Attribute a : code.getAttributes())
             if (a instanceof StackMapTable)

@@ -33,6 +33,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import org.dom4j.DocumentException;
@@ -435,7 +436,7 @@ public class Filter {
                 return false;
             if (callsPattern != null) {
                 MethodAnnotation m = bug.getAnnotationWithRole(MethodAnnotation.class, MethodAnnotation.METHOD_CALLED);
-                if (m == null) 
+                if (m == null)
                     return false;
                 if (!callsPattern.matcher(m.getClassName()).find()  && !callsPattern.matcher(m.getMethodName()).find())
                     return false;
@@ -483,7 +484,7 @@ public class Filter {
             
             if (sloppyUniqueSpecified) {
                 boolean unique = uniqueSloppy.add(bug);
-                if (unique != sloppyUnique) 
+                if (unique != sloppyUnique)
                     return false;
             }
 
@@ -750,8 +751,14 @@ public class Filter {
 
         }
 
-        if (commandLine.maxAgeSpecified || commandLine.notAProblemSpecified || commandLine.shouldFixSpecified)
-            origCollection.getCloud().waitUntilIssueDataDownloaded();
+        if ((commandLine.maxAgeSpecified || commandLine.notAProblemSpecified || commandLine.shouldFixSpecified)
+              && !origCollection.getCloud().waitUntilIssueDataDownloaded(20, TimeUnit.SECONDS)) {
+              
+                if (verbose)
+                    System.out.println("Unable to connect to cloud; ignoring filtering options that require cloud access");
+                resultCollection.addError("Unable to connect to cloud; ignoring filtering options that require cloud access");
+                commandLine.maxAgeSpecified = commandLine.notAProblemSpecified = commandLine.shouldFixSpecified = false;
+        }
 
         commandLine.getReady(origCollection);
 

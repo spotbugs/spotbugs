@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
@@ -62,6 +63,14 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     public void initiateCommunication() {
     }
 
+    public boolean waitUntilNewIssuesUploaded(long timeout, TimeUnit unit) throws InterruptedException {
+        return true;
+    }
+
+    public boolean waitUntilIssueDataDownloaded(long timeout, TimeUnit unit) throws InterruptedException {
+        return true;
+    }
+    
     @Override
     public Mode getMode() {
         return Mode.COMMUNAL;
@@ -102,6 +111,7 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     public void setMode(Mode m) {
     }
 
+    @Override
     public void bugsPopulated() {
         assert true;
 

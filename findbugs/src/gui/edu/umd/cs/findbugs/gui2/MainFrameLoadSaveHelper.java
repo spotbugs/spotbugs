@@ -447,7 +447,7 @@ public class MainFrameLoadSaveHelper implements Serializable {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                };
+                }
                 reporter.finish();
                 return null;
             }

@@ -28,6 +28,7 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.CheckForNull;
 
@@ -94,12 +95,18 @@ public interface Cloud {
      * Waits until all new issues have been uploaded
      */
     public void waitUntilNewIssuesUploaded();
+    
+    public boolean waitUntilNewIssuesUploaded(long timeout, TimeUnit unit)
+            throws InterruptedException;
 
     /**
      * Waits until all data about this bug collection has been received from the
      * cloud.
      */
     public void waitUntilIssueDataDownloaded();
+
+    public boolean waitUntilIssueDataDownloaded(long timeout, TimeUnit unit)
+            throws InterruptedException;
 
     /**
      * Returns true if communication has already been initiated (and perhaps completed).
