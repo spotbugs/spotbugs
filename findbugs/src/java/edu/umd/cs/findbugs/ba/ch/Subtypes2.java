@@ -851,6 +851,7 @@ public class Subtypes2 {
         return result;
     }
 
+     
     /**
      * Get Collection of all XClass objects (resolved classes) seen so far.
      *
@@ -1030,6 +1031,39 @@ public class Subtypes2 {
         return new HashSet<ClassDescriptor>(result);
     }
 
+    
+    public boolean hasKnownSubclasses(ClassDescriptor classDescriptor) throws ClassNotFoundException {
+        LinkedList<ClassVertex> workList = new LinkedList<ClassVertex>();
+
+        ClassVertex startVertex = resolveClassVertex(classDescriptor);
+        if (!startVertex.isInterface())
+            return true;
+        workList.addLast(startVertex);
+
+        Set<ClassDescriptor> result = new HashSet<ClassDescriptor>();
+
+        while (!workList.isEmpty()) {
+            ClassVertex current = workList.removeFirst();
+
+            if (!result.add(current.getClassDescriptor())) {
+                // Already added this class
+                continue;
+            }
+
+            // Add class to the result
+            if (current.isResolved() && !current.isInterface())
+                return true;
+
+            // Add all known subtype vertices to the work list
+            Iterator<InheritanceEdge> i = graph.incomingEdgeIterator(current);
+            while (i.hasNext()) {
+                InheritanceEdge edge = i.next();
+                workList.addLast(edge.getSource());
+            }
+        }
+
+        return false;
+    }
     private Set<ClassDescriptor> computeKnownSupertypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
         LinkedList<ClassVertex> workList = new LinkedList<ClassVertex>();
 

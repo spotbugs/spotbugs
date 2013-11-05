@@ -103,6 +103,8 @@ public class IncompatibleTypes {
 
     public static final IncompatibleTypes UNRELATED_INTERFACES = new IncompatibleTypes("Unrelated interfaces",
             Priorities.NORMAL_PRIORITY);
+    public static final IncompatibleTypes UNRELATED_INTERFACES_WITHOUT_IMPLEMENTATIONS = new IncompatibleTypes("Unrelated interfaces without implementations",
+            Priorities.LOW_PRIORITY);
 
     public static final IncompatibleTypes UNRELATED_UTIL_INTERFACE = new IncompatibleTypes("Unrelated java.util interface",
             Priorities.HIGH_PRIORITY);
@@ -128,6 +130,9 @@ public class IncompatibleTypes {
 
     static public @Nonnull
     IncompatibleTypes getPriorityForAssumingCompatible(Type expectedType, Type actualType, boolean pointerEquality) {
+        if (expectedType.equals(actualType))
+            return SEEMS_OK;
+        
         if (!(expectedType instanceof ReferenceType))
             return SEEMS_OK;
         if (!(actualType instanceof ReferenceType))
@@ -292,13 +297,16 @@ public class IncompatibleTypes {
             Set<ClassDescriptor> commonSubtypes = subtypes2.getTransitiveCommonSubtypes(lhsDescriptor, rhsDescriptor);
 
             if (commonSubtypes.isEmpty()) {
+                if (lhs.isInterface() && rhs.isInterface()) {
+                    if (!subtypes2.hasKnownSubclasses(lhsDescriptor) || !subtypes2.hasKnownSubclasses(rhsDescriptor))
+                        return UNRELATED_INTERFACES_WITHOUT_IMPLEMENTATIONS;
+                    return UNRELATED_INTERFACES;
+                }
                 if (lhs.isFinal() || rhs.isFinal())
                     return UNRELATED_FINAL_CLASS_AND_INTERFACE;
                 if (lhsDescriptor.getClassName().startsWith("java/util/")
                         || rhsDescriptor.getClassName().startsWith("java/util/"))
                     return UNRELATED_UTIL_INTERFACE;
-                if (lhs.isInterface() && rhs.isInterface())
-                    return UNRELATED_INTERFACES;
                 return UNRELATED_CLASS_AND_INTERFACE;
             }
 
@@ -306,17 +314,7 @@ public class IncompatibleTypes {
         return SEEMS_OK;
     }
 
-    private static boolean containsAtLeastOneInstantiableClass(Set<ClassDescriptor> commonSubtypes)
-            throws CheckedAnalysisException {
-        IAnalysisCache cache = Global.getAnalysisCache();
-        for (ClassDescriptor classDescriptor : commonSubtypes) {
+ 
 
-            XClass xclass = cache.getClassAnalysis(XClass.class, classDescriptor);
-
-            if (!xclass.isInterface() && !xclass.isAbstract())
-                return true;
-        }
-        return false;
-    }
 
 }
