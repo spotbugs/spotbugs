@@ -1033,11 +1033,13 @@ public class Subtypes2 {
 
     
     public boolean hasKnownSubclasses(ClassDescriptor classDescriptor) throws ClassNotFoundException {
-        LinkedList<ClassVertex> workList = new LinkedList<ClassVertex>();
-
+       
         ClassVertex startVertex = resolveClassVertex(classDescriptor);
         if (!startVertex.isInterface())
             return true;
+        
+        LinkedList<ClassVertex> workList = new LinkedList<ClassVertex>();
+
         workList.addLast(startVertex);
 
         Set<ClassDescriptor> result = new HashSet<ClassDescriptor>();
