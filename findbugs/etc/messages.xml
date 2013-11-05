@@ -6260,6 +6260,7 @@ there is no easy way to eliminate these false positives.
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="DLS_DEAD_LOCAL_STORE_IN_RETURN">
     <ShortDescription>Useless assignment in return statement</ShortDescription>
     <LongDescription>Useless assignment in return from {1}</LongDescription>
@@ -6272,6 +6273,22 @@ has effect. Please verify that this statement does the right thing.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="DLS_DEAD_LOCAL_INCREMENT_IN_RETURN">
+    <ShortDescription>Useless increment in return statement</ShortDescription>
+    <LongDescription>Useless increment in return from {1}</LongDescription>
+    <Details>
+      <![CDATA[
+<p>This statement has a return such as <code>return x++;</code>. 
+A postfix increment/decrement does not impact the value of the expression,
+so this increment/decrement has no effect. 
+Please verify that this statement does the right thing.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
+
   <BugPattern type="DLS_DEAD_STORE_OF_CLASS_LITERAL">
     <ShortDescription>Dead store of class literal</ShortDescription>
     <LongDescription>Dead store of {3}.class in {1}</LongDescription>

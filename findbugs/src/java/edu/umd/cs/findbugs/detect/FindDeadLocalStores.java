@@ -44,6 +44,7 @@ import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.IINC;
 import org.apache.bcel.generic.INVOKESPECIAL;
+import org.apache.bcel.generic.IRETURN;
 import org.apache.bcel.generic.IndexedInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -451,7 +452,11 @@ public class FindDeadLocalStores implements Detector {
                             && method.getSignature().equals("([Ljava/lang/String;)V"))
                         propertySet.addProperty(DeadLocalStoreProperty.DEAD_INCREMENT_IN_MAIN);
 
-                    propertySet.addProperty(DeadLocalStoreProperty.DEAD_INCREMENT);
+                    InstructionHandle next = location.getHandle().getNext();
+                    if (next != null && next.getInstruction() instanceof IRETURN)
+                        propertySet.addProperty(DeadLocalStoreProperty.DEAD_INCREMENT_IN_RETURN);
+                    else
+                        propertySet.addProperty(DeadLocalStoreProperty.DEAD_INCREMENT);
                     if (localIncrementCount[local] == 1) {
                         propertySet.addProperty(DeadLocalStoreProperty.SINGLE_DEAD_INCREMENT);
                     } else
@@ -522,6 +527,8 @@ public class FindDeadLocalStores implements Detector {
                     bugPattern = "DLS_DEAD_LOCAL_STORE_OF_NULL";
                 else if (shadowedField != null)
                     bugPattern = "DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD";
+                else if (propertySet.containsProperty(DeadLocalStoreProperty.DEAD_INCREMENT_IN_RETURN))
+                    bugPattern = "DLS_DEAD_LOCAL_INCREMENT_IN_RETURN";
                 else
                     bugPattern = "DLS_DEAD_LOCAL_STORE";
                 BugInstance bugInstance = new BugInstance(this, bugPattern, NORMAL_PRIORITY).addClassAndMethod(methodGen,
