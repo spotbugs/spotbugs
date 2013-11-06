@@ -893,6 +893,7 @@
         <filterset id="doc.filters">
             <filter token="VERSION" value="${release.number}" />
             <filter token="RELEASE_DATE" value="${release.date}" />
+            <filter token="FINDBUGS_SVN_REVISION" value="${findbugs.svn.revision}" />
             <filter token="ECLIPSE_UI_VERSION" value="${eclipse.ui.version}" />
             <filter token="WEBSITE" value="${findbugs.website}"/>
             <filter token="DOWNLOADS_WEBSITE" value="${findbugs.downloads.website}"/>
