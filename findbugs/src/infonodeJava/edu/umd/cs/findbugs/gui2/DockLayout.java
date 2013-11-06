@@ -76,7 +76,7 @@ public class DockLayout implements FindBugsLayoutManager {
             super(title, true);
             addItemListener(this);
             this.view = view;
-//			view.addListener(new Listener());
+//            view.addListener(new Listener());
         }
 
         // Menu item has been checked or unchecked
@@ -88,22 +88,22 @@ public class DockLayout implements FindBugsLayoutManager {
                 view.close();
         }
 
-//		private class Listener extends DockingWindowAdapter
-//		{
-//			@Override
-//			public void windowAdded(DockingWindow addedToWindow, DockingWindow addedWindow)
-//			{
-//				if (addedWindow.equals(view))
-//					ViewMenuItem.this.setSelected(true);
-//			}
+//        private class Listener extends DockingWindowAdapter
+//        {
+//            @Override
+//            public void windowAdded(DockingWindow addedToWindow, DockingWindow addedWindow)
+//            {
+//                if (addedWindow.equals(view))
+//                    ViewMenuItem.this.setSelected(true);
+//            }
 //
-//			@Override
-//			public void windowRemoved(DockingWindow removedFromWindow, DockingWindow removedWindow)
-//			{
-//				if (removedWindow.equals(view))
-//					ViewMenuItem.this.setSelected(false);
-//			}
-//		}
+//            @Override
+//            public void windowRemoved(DockingWindow removedFromWindow, DockingWindow removedWindow)
+//            {
+//                if (removedWindow.equals(view))
+//                    ViewMenuItem.this.setSelected(false);
+//            }
+//        }
     }
     private View commentsView = null;
     final MainFrame frame;
@@ -158,7 +158,7 @@ public class DockLayout implements FindBugsLayoutManager {
         tabs = new TabWindow(new DockingWindow[]{summaryView, commentsView, sourceView});
         tabs.addListener(new DockParentListener());
         tabs.setSelectedTab(0);
-//		tabs.getWindowProperties().setCloseEnabled(false);
+//        tabs.getWindowProperties().setCloseEnabled(false);
 
         rootWindow.setWindow(new SplitWindow(false, 0.4f, topView, tabs));
 

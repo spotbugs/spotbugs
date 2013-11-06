@@ -51,7 +51,7 @@ public class OSXAdapter extends ApplicationAdapter {
     @Override
     public void handlePreferences(ApplicationEvent ae) {
         if (mainApp != null) {
-//			mainApp.preferences();
+//            mainApp.preferences();
             ae.setHandled(true);
         } else {
             throw new IllegalStateException("handlePreferences: MyApp instance " +

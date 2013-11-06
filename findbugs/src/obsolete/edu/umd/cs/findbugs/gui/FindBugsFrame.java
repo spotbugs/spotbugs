@@ -10,12 +10,12 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.     See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA     02111-1307     USA
  */
 
 /*
@@ -2101,8 +2101,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 
     private void bugTreeBugDetailsSplitterPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_bugTreeBugDetailsSplitterPropertyChange
         // Here we want to
-        //	 (1) Keep the View:Bug details checkbox item up to date, and
-        //	 (2) keep the details window synchronized with the current bug instance
+        //     (1) Keep the View:Bug details checkbox item up to date, and
+        //     (2) keep the details window synchronized with the current bug instance
         String propertyName = evt.getPropertyName();
         if (propertyName.equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
             boolean isMaximized = isSplitterMaximized(bugTreeBugDetailsSplitter, evt);
@@ -2419,12 +2419,12 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
     /**
      * Localise the given AbstractButton, setting the text and optionally mnemonic
      * Note that AbstractButton includes menus and menu items.
-     * @param button		The button to localise
-     * @param key		   The key to look up in resource bundle
+     * @param button        The button to localise
+     * @param key           The key to look up in resource bundle
      * @param defaultString default String to use if key not found
-     * @param setMnemonic	whether or not to set the mnemonic. According to Sun's
-     *					  guidelines, default/cancel buttons should not have mnemonics
-     *					  but instead should use Return/Escape
+     * @param setMnemonic    whether or not to set the mnemonic. According to Sun's
+     *                      guidelines, default/cancel buttons should not have mnemonics
+     *                      but instead should use Return/Escape
      */
     private void localiseButton(AbstractButton button, String key, String defaultString,
                                 boolean setMnemonic) {
@@ -2625,9 +2625,9 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
      * whose class is the same as the given class.
      *
      * @param tree the tree
-     * @param c	the class
+     * @param c    the class
      * @return an instance of the given kind of object which is in the
-     *		 current selection, or null if there is no matching object
+     *         current selection, or null if there is no matching object
      */
     private static <E> E getTreeSelectionOf(JTree tree, Class<E> c) {
         TreePath selPath = tree.getSelectionPath();
@@ -2680,7 +2680,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
      * that we have top and bottom components).
      *
      * @param splitter the JSplitPane
-     * @param evt	  the event that is changing the splitter value
+     * @param evt      the event that is changing the splitter value
      */
     private boolean isSplitterMaximized(JSplitPane splitter, java.beans.PropertyChangeEvent evt) {
         Integer location = (Integer) evt.getNewValue();
@@ -2688,8 +2688,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
         int height = splitter.getHeight();
         int hopefullyMaxDivider = height - (splitter.getDividerSize() + DIVIDER_FUDGE);
         //System.out.println("Splitter: "+(splitter==consoleSplitter?"consoleSplitter":"bugTreeBugDetailsSplitter")+
-        //	": height="+height+",location="+location+
-        //	",hopefullyMax="+hopefullyMaxDivider);
+        //    ": height="+height+",location="+location+
+        //    ",hopefullyMax="+hopefullyMaxDivider);
         boolean isMaximized = location.intValue() >= hopefullyMaxDivider;
         return isMaximized;
     }
@@ -2747,8 +2747,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
                 copyItem.setEnabled(hasSelection);
                 selectAllItem.setEnabled(true);
             }
-            //			} else if (view.equals("BugTree")) {
-            //			} else if (view.equals("ReportPanel")) {
+            //            } else if (view.equals("BugTree")) {
+            //            } else if (view.equals("ReportPanel")) {
 
         } else {
             cutItem.setEnabled(false);
@@ -2792,7 +2792,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
      * If the project already has a valid filename, use that filename.
      * Otherwise, prompt for one.
      *
-     * @param project	 the Project to save
+     * @param project     the Project to save
      * @param dialogTitle the title for the save dialog (if needed)
      */
     private boolean saveProject(Project project, String dialogTitle) {
@@ -2802,12 +2802,12 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
     /**
      * Offer to save the current Project to a file.
      *
-     * @param project		the Project to save
-     * @param dialogTitle	the title for the save dialog (if needed)
+     * @param project        the Project to save
+     * @param dialogTitle    the title for the save dialog (if needed)
      * @param chooseFilename if true, force a dialog to prompt the user
-     *					   for a filename
+     *                       for a filename
      * @return true if the project is saved successfully, false if the user
-     *		 cancels or an error occurs
+     *         cancels or an error occurs
      */
     private boolean saveProject(Project project, String dialogTitle, boolean chooseFilename) {
         boolean useRelativePaths;
@@ -2858,10 +2858,10 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
     /**
      * Hook to call before closing a project.
      *
-     * @param project		 the project being closed
+     * @param project         the project being closed
      * @param savePromptTitle title to use for the "Save project?" dialog
      * @return true if user has confirmed that the project should be closed,
-     *		 false if the close is cancelled
+     *         false if the close is cancelled
      */
     private boolean closeProjectHook(Project project, String savePromptTitle) {
         if (project == null || !project.isModified())
@@ -2948,7 +2948,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
         // An immediate inline call to set the scroll position does nothing.
         // So, use invokeLater(), even though this results in flashing.
         // [What we really need is a way to set the text WITHOUT changing
-        // the caret position.	Need to investigate.]
+        // the caret position.    Need to investigate.]
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 bySummary.getViewport().setViewPosition(new Point(0, 0));
@@ -3298,10 +3298,10 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
     /**
      * Update the source view window.
      *
-     * @param project	 the project (containing the source directories to search)
+     * @param project     the project (containing the source directories to search)
      * @param analysisRun the analysis run (containing the mapping of classes to source files)
-     * @param srcLine	 the source line annotation (specifying source file to load and
-     *					which lines to highlight)
+     * @param srcLine     the source line annotation (specifying source file to load and
+     *                    which lines to highlight)
      * @return true if the source was shown successfully, false otherwise
      */
     private boolean viewSource(Project project, AnalysisRun analysisRun, final SourceLineAnnotation srcLine)
@@ -3421,7 +3421,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
         // An immediate inline call to set the scroll position does nothing.
         // So, use invokeLater(), even though this results in flashing.
         // [What we really need is a way to set the text WITHOUT changing
-        // the caret position.	Need to investigate.]
+        // the caret position.    Need to investigate.]
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 bugDescriptionScrollPane.getViewport().setViewPosition(new Point(0, 0));
@@ -3528,7 +3528,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
     @SuppressWarnings("DM_EXIT")
     void exitFindBugs() {
         // TODO: offer to save work, etc.
-//		UserPreferences.getUserPreferences().storeUserDetectorPreferences();
+//        UserPreferences.getUserPreferences().storeUserDetectorPreferences();
         UserPreferences.getUserPreferences().write();
         System.exit(0);
     }
@@ -3569,7 +3569,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
      * Run a file chooser dialog.
      * If a file is chosen, then the current directory is updated.
      *
-     * @param dialog	  the file chooser dialog
+     * @param dialog      the file chooser dialog
      * @param dialogTitle the dialog title
      * @return the outcome
      */
@@ -3618,8 +3618,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
      * @param message the message to write
      */
     public void writeToLog(String message) {
-//		consoleMessageArea.append(message);
-//		consoleMessageArea.append("\n");
+//        consoleMessageArea.append(message);
+//        consoleMessageArea.append("\n");
     }
 
     /**
@@ -3706,7 +3706,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
                 String theme = null;
                 if (arg.equals("plastic")) {
                     // You can get the Plastic look and feel from jgoodies.com:
-                    //	http://www.jgoodies.com/downloads/libraries.html
+                    //    http://www.jgoodies.com/downloads/libraries.html
                     // Just put "plastic.jar" in the lib directory, right next
                     // to the other jar files.
                     theme = "com.jgoodies.plaf.plastic.PlasticXPLookAndFeel";
@@ -3779,14 +3779,14 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
             project = commandLine.getProject();
         }
 
-        //	  Uncomment one of these to test I18N
-        //		Locale.setDefault( Locale.FRENCH );
-        //		Locale.setDefault( Locale.GERMAN );
-        //		Locale.setDefault( Locale.JAPANESE );
-        //		Locale.setDefault( new Locale( "et" ));
-        //		Locale.setDefault( new Locale( "fi" ));
-        //		Locale.setDefault( new Locale( "es" ));
-        //		Locale.setDefault( new Locale( "pl" ));
+        //      Uncomment one of these to test I18N
+        //        Locale.setDefault( Locale.FRENCH );
+        //        Locale.setDefault( Locale.GERMAN );
+        //        Locale.setDefault( Locale.JAPANESE );
+        //        Locale.setDefault( new Locale( "et" ));
+        //        Locale.setDefault( new Locale( "fi" ));
+        //        Locale.setDefault( new Locale( "es" ));
+        //        Locale.setDefault( new Locale( "pl" ));
 
         // Load plugins!
         DetectorFactoryCollection.instance();

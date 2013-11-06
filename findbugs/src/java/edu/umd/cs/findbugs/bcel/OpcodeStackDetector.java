@@ -36,7 +36,7 @@ abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
     private final boolean isUsingCustomUserValue;
 
     public OpcodeStackDetector() {
-    	super();
+        super();
         isUsingCustomUserValue = getClass().isAnnotationPresent(OpcodeStack.CustomUserValue.class);
     }
 
