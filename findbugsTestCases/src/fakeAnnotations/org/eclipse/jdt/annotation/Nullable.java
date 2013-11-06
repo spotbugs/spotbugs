@@ -1,6 +1,8 @@
 package org.eclipse.jdt.annotation;
 
-import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.ElementType.LOCAL_VARIABLE;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

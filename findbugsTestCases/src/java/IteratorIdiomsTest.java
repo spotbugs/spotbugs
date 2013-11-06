@@ -2,11 +2,10 @@
 
 import java.util.Iterator;
 
+import annotations.DetectorUnderTest;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 import edu.umd.cs.findbugs.detect.IteratorIdioms;
-
-import annotations.DetectorUnderTest;
 
 @DetectorUnderTest(IteratorIdioms.class)
 public class IteratorIdiomsTest implements Iterator {

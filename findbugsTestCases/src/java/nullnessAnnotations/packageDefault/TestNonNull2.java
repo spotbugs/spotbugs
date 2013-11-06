@@ -4,7 +4,6 @@ import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
-import edu.umd.cs.findbugs.annotations.Nullable;
 
 class TestNonNull2 extends TestNonNull1 implements Interface1 {
 

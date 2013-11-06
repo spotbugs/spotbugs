@@ -19,7 +19,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import com.google.inject.servlet.RequestScoped;
 
 /**
  * @author eaftan@google.com (Eddie Aftandilian)

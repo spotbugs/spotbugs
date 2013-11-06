@@ -4,7 +4,6 @@ import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import annotations.DetectorUnderTest;
-
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 import edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer;

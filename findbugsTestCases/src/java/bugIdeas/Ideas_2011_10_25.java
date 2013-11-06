@@ -1,9 +1,5 @@
 package bugIdeas;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import edu.umd.cs.findbugs.annotations.DesireWarning;
 
 public class Ideas_2011_10_25 {
 //    static int counter;

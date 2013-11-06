@@ -1,12 +1,5 @@
 package sfBugs;
 
-import java.beans.IntrospectionException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.xml.sax.SAXException;
 
 public class Bug3593868 {
 

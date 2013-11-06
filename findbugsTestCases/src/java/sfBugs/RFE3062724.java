@@ -5,8 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.Confidence;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class RFE3062724 {
 

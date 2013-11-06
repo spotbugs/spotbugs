@@ -1,7 +1,6 @@
 package bugIdeas;
 
 import javax.annotation.Nonnull;
-import javax.resource.spi.IllegalStateException;
 
 import com.google.common.base.Preconditions;
 

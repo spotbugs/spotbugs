@@ -11,9 +11,9 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
-import edu.umd.cs.findbugs.annotations.Confidence;
 
 public class Ideas_2011_08_02 {
 

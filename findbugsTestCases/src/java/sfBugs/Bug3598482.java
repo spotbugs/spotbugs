@@ -1,9 +1,5 @@
 package sfBugs;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Locale;
-
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3598482 {

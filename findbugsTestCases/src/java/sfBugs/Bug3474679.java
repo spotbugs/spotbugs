@@ -6,7 +6,6 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 

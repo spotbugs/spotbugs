@@ -7,9 +7,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
-import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.NoWarning;
 
 class BadCast {
 

@@ -1,6 +1,5 @@
 package bugIdeas;
 
-import java.util.Random;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;

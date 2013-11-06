@@ -23,7 +23,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import annotations.DetectorUnderTest;
-
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.detect.CheckRelaxingNullnessAnnotation;
 

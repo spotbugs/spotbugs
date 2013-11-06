@@ -4,9 +4,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2009_10_13a {
 

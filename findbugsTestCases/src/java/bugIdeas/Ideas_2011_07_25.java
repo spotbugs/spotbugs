@@ -2,9 +2,9 @@ package bugIdeas;
 
 import com.google.common.base.Preconditions;
 
+import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
-import edu.umd.cs.findbugs.annotations.Confidence;
 
 /** Bug pattern suggested by Curtis Light and Kevin Bourrillion.
  * Variations on test1 version occur 80+ times in Google's codebase. */

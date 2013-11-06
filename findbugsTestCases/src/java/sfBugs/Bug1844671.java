@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug1844671 {

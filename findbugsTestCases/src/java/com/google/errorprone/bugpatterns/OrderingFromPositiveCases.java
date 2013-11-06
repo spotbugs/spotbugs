@@ -16,9 +16,9 @@
 
 package com.google.errorprone.bugpatterns;
 
-import com.google.common.collect.Ordering;
-
 import java.util.Comparator;
+
+import com.google.common.collect.Ordering;
 
 /**
  * Positive test cases for theOrdering.from(new Comparator<T>() { ... }) check

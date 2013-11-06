@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import annotations.DetectorUnderTest;
-
 import edu.umd.cs.findbugs.annotations.NoWarning;
 import edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer;
 

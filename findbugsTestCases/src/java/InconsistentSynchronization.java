@@ -1,4 +1,3 @@
-import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class InconsistentSynchronization {

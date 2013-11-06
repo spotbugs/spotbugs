@@ -1,7 +1,7 @@
 package jcipAnnotations;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import net.jcip.annotations.GuardedBy;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class TestGuardedBy {
     @ExpectWarning("IS_FIELD_NOT_GUARDED")

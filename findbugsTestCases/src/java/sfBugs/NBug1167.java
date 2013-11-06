@@ -1,8 +1,5 @@
 package sfBugs;
 
-import java.sql.ResultSet;
-
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 
 

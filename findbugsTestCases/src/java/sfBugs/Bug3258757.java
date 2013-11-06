@@ -1,6 +1,7 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.*;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class Bug3258757 {
     public static void main(String[] args) {

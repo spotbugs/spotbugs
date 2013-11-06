@@ -16,11 +16,8 @@
 
 package com.google.errorprone.bugpatterns;
 
-import java.awt.Color;
-import java.awt.Font;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.URI;
 import java.util.Locale;
 
 /**

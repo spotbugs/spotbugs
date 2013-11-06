@@ -1,7 +1,7 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.NoWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3277814 {
 

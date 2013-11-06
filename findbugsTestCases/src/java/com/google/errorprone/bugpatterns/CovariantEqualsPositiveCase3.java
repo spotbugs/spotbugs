@@ -16,7 +16,6 @@
 
 package com.google.errorprone.bugpatterns;
 
-import java.lang.String;
 
 /**
  *

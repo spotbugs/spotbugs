@@ -19,16 +19,7 @@
 
 package nullnessAnnotations.relax;
 
-import javax.annotation.Nonnull;
-
-import nullnessAnnotations.relax.TestNullnessRelaxation.Clazz1;
-import nullnessAnnotations.relax.TestNullnessRelaxation.Clazz2;
-import nullnessAnnotations.relax.TestNullnessRelaxation.I;
-import nullnessAnnotations.relax.TestNullnessRelaxation.SI2;
-import nullnessAnnotations.relax.TestNullnessRelaxation.SI3;
-import nullnessAnnotations.relax.TestNullnessRelaxation.SI4;
 import annotations.DetectorUnderTest;
-
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NonNull;

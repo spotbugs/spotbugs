@@ -17,8 +17,8 @@
 package com.google.errorprone.bugpatterns;
 
 import java.math.BigInteger;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author alexeagle@google.com (Alex Eagle)

@@ -16,7 +16,12 @@
 
 package com.google.errorprone.bugpatterns;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author alexeagle@google.com (Alex Eagle)

@@ -1,6 +1,5 @@
 package bugIdeas;
 
-import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Ideas_2013_03_15 {

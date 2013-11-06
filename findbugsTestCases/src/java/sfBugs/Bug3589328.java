@@ -6,7 +6,6 @@ import javax.annotation.Nonnull;
 
 import com.google.common.base.Function;
 
-import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3589328 {

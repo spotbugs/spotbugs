@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.TreeSet;
 
 import annotations.DetectorUnderTest;
-
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 import edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer;

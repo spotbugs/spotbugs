@@ -2,7 +2,6 @@ package bugIdeas;
 
 import javax.annotation.Nullable;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2010_06_16 {

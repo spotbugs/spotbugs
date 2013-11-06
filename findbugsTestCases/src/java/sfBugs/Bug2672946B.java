@@ -20,7 +20,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.meta.TypeQualifierDefault;
 
 import jsr305.FieldsNonNullByDefault;
-import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 

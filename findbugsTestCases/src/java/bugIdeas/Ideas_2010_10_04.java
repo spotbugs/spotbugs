@@ -2,9 +2,9 @@ package bugIdeas;
 
 import java.util.Arrays;
 
+import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
-import edu.umd.cs.findbugs.annotations.Confidence;
 
 public class Ideas_2010_10_04 {
 

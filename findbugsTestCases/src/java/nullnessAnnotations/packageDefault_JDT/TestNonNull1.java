@@ -1,7 +1,8 @@
 package nullnessAnnotations.packageDefault_JDT;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import org.eclipse.jdt.annotation.Nullable;
+
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class TestNonNull1 {
 
