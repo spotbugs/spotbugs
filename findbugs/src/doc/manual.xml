@@ -1527,11 +1527,11 @@ using the &FindBugs; task.
   </varlistentry>
 
   <varlistentry>
-      <term><literal>userPrefs</literal></term>
+      <term><literal>userPreferencesFile</literal></term>
       <listitem>
           <para>
-              Set the path of the user preferences file to use, which might override some of the options abobe.
-              Specifying <literal>userPrefs</literal> as first argument would mean some later
+              Optional attribute. Set the path of the user preferences file to use, which might override some of the options abobe.
+              Specifying <literal>userPreferencesFile</literal> as first argument would mean some later
               options will override them, as last argument would mean they will override some previous options).
               This rationale behind this option is to reuse FindBugs Eclipse project settings for command
               line execution.
