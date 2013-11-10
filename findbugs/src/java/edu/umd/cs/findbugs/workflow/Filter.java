@@ -764,7 +764,7 @@ public class Filter {
             } else if (!cloud.waitUntilIssueDataDownloaded(20, TimeUnit.SECONDS)) {
                 if (verbose)
                     System.out.println("Waiting for cloud information required for filtering");
-                if (!cloud.waitUntilIssueDataDownloaded(1, TimeUnit.MINUTES))
+                if (!cloud.waitUntilIssueDataDownloaded(60, TimeUnit.SECONDS))
                     disconnect(verbose, commandLine, resultCollection,
                             "Unable to connect to cloud; ignoring filtering options that require cloud access");
             }
