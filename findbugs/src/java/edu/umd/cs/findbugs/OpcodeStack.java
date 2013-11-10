@@ -547,6 +547,8 @@ public class OpcodeStack implements Constants2 {
             this.pc = it.pc;
         }
 
+        
+        
         public Item(Item it, String signature) {
             this(it);
             this.signature = DescriptorFactory.canonicalizeString(signature);
@@ -560,8 +562,16 @@ public class OpcodeStack implements Constants2 {
                     this.constValue = (char) constantNumericValue.intValue();
                 else if (signature.equals("I"))
                     this.constValue = constantNumericValue.intValue();
+                else if (signature.equals("D"))
+                    this.constValue = constantNumericValue.doubleValue();
+                else if (signature.equals("F"))
+                    this.constValue = constantNumericValue.floatValue();
 
             }
+            char s = signature.charAt(0);
+            if (s != 'L' && s != '[')
+                this.source = null;
+
             setSpecialKindFromSignature();
         }
 
@@ -2000,17 +2010,7 @@ public class OpcodeStack implements Constants2 {
                 item.setLoadedFromField(null, -1);
     }
 
-    /**
-     *
-     */
-    private void changeSignatureOfTopElement(String newSignature) {
-        {
-            Item item = pop();
-            Item newValue = new Item(item, newSignature);
 
-            push(newValue);
-        }
-    }
 
     public void precomputation(DismantleBytecode dbc) {
         if (registerTestedFoundToBeNonnegative >= 0) {
