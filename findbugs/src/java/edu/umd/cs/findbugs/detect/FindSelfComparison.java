@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
@@ -56,7 +57,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
 
     int lastMethodCall;
     
-    static final boolean DEBUG = false;
+    static final boolean DEBUG = SystemProperties.getBoolean("fsc.debug");
     @Override
     public void visit(Code obj) {
         if (DEBUG)
