@@ -223,7 +223,7 @@ public class DumbMethods extends OpcodeStackDetector {
                         && previousMethodCall.getSignature().equals("(I)Ljava/lang/Integer;")
                         ) {
                     MethodAnnotation preferred = new MethodAnnotation("java.lang.Integer", "toString", "(I)Ljava/lang/String;", true);
-                    BugInstance bug = new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(this)
+                    BugInstance bug = new BugInstance(this, "DM_BOXED_PRIMITIVE_TOSTRING", HIGH_PRIORITY).addClassAndMethod(this)
                             .addCalledMethod(this).addMethod(preferred).describe(MethodAnnotation.SHOULD_CALL);
                     accumulator.accumulateBug(bug, this);
 
