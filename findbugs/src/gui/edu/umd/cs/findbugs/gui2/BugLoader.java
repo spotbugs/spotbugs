@@ -187,8 +187,11 @@ public class BugLoader {
             String msg = SystemProperties.getOSDependentProperty("findbugs.unableToLoadViaURL");
             if (msg == null)
                 msg = e.getMessage();
-            else
-                msg = String.format(msg);
+            else try {
+                msg = String.format(msg, url);
+            } catch (Exception e2) {
+                msg = e.getMessage();
+            }
             JOptionPane.showMessageDialog(mainFrame, "Could not read " + url + "\n" + msg);
             if (SystemProperties.getBoolean("findbugs.failIfUnableToLoadViaURL"))
                 System.exit(1);
