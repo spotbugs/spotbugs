@@ -142,8 +142,11 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
         addMethodAnnotation("java.lang.String", "<init>", "()V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
         addDefaultMethodAnnotation("java.math.BigDecimal", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
-        addMethodAnnotation("java.math.BigDecimal", "inflate", "()Ljava/math/BigDecimal;", false,
+        addMethodAnnotation("java.math.BigDecimal", "inflate", "()Ljava/math/BigInteger;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
+        addMethodAnnotation("java.math.BigDecimal", "precision", "()I", false,
+                CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
+        
         addMethodAnnotation("java.math.BigDecimal", "toBigIntegerExact", "()Ljava/math/BigInteger;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
         addMethodAnnotation("java.math.BigDecimal", "longValueExact", "()J", false,
@@ -162,8 +165,6 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 
         addDefaultMethodAnnotation("java.math.BigInteger", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
-        addMethodAnnotation("java.math.BigInteger", "precision", "()I", true,
-                CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
         addMethodAnnotation("java.math.BigInteger", "addOne", "([IIII)I", true,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
         addMethodAnnotation("java.math.BigInteger", "subN", "([I[II)I", true,
@@ -189,9 +190,9 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
         addDefaultMethodAnnotation("jsr166z.forkjoin.ParallelDoubleArray", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
         
         
-        addMethodAnnotation(java.sql.Statement.class, "executeQuery", "(Ljava/lang/String;)Ljava/sql/ResultSet;", false, 
+        addMethodAnnotation(java.sql.Statement.class, "executeQuery", "(Ljava/lang/String;)Ljava/sql/ResultSet;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-        addMethodAnnotation(java.sql.PreparedStatement.class, "executeQuery", "()Ljava/sql/ResultSet;", false, 
+        addMethodAnnotation(java.sql.PreparedStatement.class, "executeQuery", "()Ljava/sql/ResultSet;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
         AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(missingClassWarningsSuppressed);
 
@@ -212,13 +213,13 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
      */
     private void addWarningAboutSubmit(Class<? extends ExecutorService> c) {
         addMethodAnnotation(c.getName(), "submit",
-                "(Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;", false, 
+                "(Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
         addMethodAnnotation(c.getName(), "submit",
-                "(Ljava/lang/Runnable;)Ljava/util/concurrent/Future;", false, 
+                "(Ljava/lang/Runnable;)Ljava/util/concurrent/Future;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW_BAD_PRACTICE);
         addMethodAnnotation(c.getName(), "submit",
-                "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;", false, 
+                "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
     }
 
