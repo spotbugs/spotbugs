@@ -278,37 +278,7 @@ public class DefaultNullnessAnnotations {
                 0, NullnessAnnotation.CHECK_FOR_NULL);
         database.addMethodParameterAnnotation("java.util.concurrent.Phaser", "<init>", "(Ljava/util/concurrent/Phaser;I)V",
                 false, 0, NullnessAnnotation.CHECK_FOR_NULL);
-
-        if (ICSE10_NULLNESS_PAPER) {
-            database.addMethodAnnotation("java.util.HashMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false,
-                    NullnessAnnotation.CHECK_FOR_NULL);
-            database.addMethodAnnotation("java.util.Hashtable", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false,
-                    NullnessAnnotation.CHECK_FOR_NULL);
-            database.addMethodAnnotation("java.util.Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false,
-                    NullnessAnnotation.CHECK_FOR_NULL);
-            database.addMethodAnnotation("java.util.SortedMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false,
-                    NullnessAnnotation.CHECK_FOR_NULL);
-            database.addMethodAnnotation("java.util.TreeMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false,
-                    NullnessAnnotation.CHECK_FOR_NULL);
-        }
-
-        if (false) {
-            database.addMethodAnnotation("java.util.concurrent.ConcurrentMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;",
-                    false, NullnessAnnotation.CHECK_FOR_NULL);
-            database.addMethodAnnotation("java.util.concurrent.ConcurrentMap", "remove",
-                    "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
-            database.addMethodAnnotation("java.util.concurrent.ConcurrentMap", "putIfAbsent",
-                    "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
-            database.addMethodAnnotation("java.util.concurrent.ConcurrentMap", "replace",
-                    "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
-            database.addMethodAnnotation("java.util.concurrent.ConcurrentHashMap", "get",
-                    "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
-            database.addMethodAnnotation("java.util.concurrent.ConcurrentHashMap", "remove",
-                    "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
-            database.addMethodAnnotation("java.util.concurrent.ConcurrentHashMap", "putIfAbsent",
-                    "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
-        }
-
+        
         database.addMethodAnnotation("java.util.concurrent.locks.ReadWriteLock", "readLock",
                 "()Ljava/util/concurrent/locks/Lock;", false, NullnessAnnotation.NONNULL);
         database.addMethodAnnotation("java.util.concurrent.locks.ReadWriteLock", "writeLock",
@@ -424,6 +394,13 @@ public class DefaultNullnessAnnotations {
         database.addMethodAnnotation("java.util.Objects","requireNonNull", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;",
                 true, NullnessAnnotation.NONNULL);
 
+        
+        database.addMethodAnnotation("org.w3c.dom.Element","getAttribute", "(Ljava/lang/String;)Ljava/lang/String;",
+                false, NullnessAnnotation.NONNULL);
+        database.addMethodAnnotation("org.w3c.dom.Element","getAttributeNS", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+                false, NullnessAnnotation.NONNULL);
+       
+        
         addEclipseSpecificAnnotations(database);
 
         AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(missingClassWarningsSuppressed);
