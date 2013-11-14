@@ -359,4 +359,13 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
         return false;
     }
 
+    @Override
+    public void report() {
+        // Report any fields that were not accessed, but are potentially
+        // accessible
+        for (BugInstance bug : pendingBugs.values()) {
+            reporter.reportBug(bug);
+        }
+    }
+
 }
