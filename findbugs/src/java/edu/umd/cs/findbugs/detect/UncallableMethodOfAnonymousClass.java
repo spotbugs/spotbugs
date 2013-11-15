@@ -104,6 +104,17 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
         if (clazz == null)
             return false;
         JavaClass superClass = clazz.getSuperClass();
+        if (superClass == null)
+            return false;
+        try {
+            XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class,
+                    DescriptorFactory.createClassDescriptorFromDottedClassName(superClass.getClassName()));
+            if (xClass.hasStubs())
+                return true;
+        } catch (CheckedAnalysisException e) {
+            return true;
+        }
+        
         if (definedInThisClassOrSuper(superClass, method))
             return true;
         for (JavaClass i : clazz.getInterfaces())
