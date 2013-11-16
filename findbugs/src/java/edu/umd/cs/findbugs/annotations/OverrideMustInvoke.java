@@ -39,6 +39,7 @@ import java.lang.annotation.Target;
  * @deprecated - Use {@link javax.annotation.OverridingMethodsMustInvokeSuper} instead
  **/
 @Documented
+@Deprecated
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.CLASS)
 public @interface OverrideMustInvoke {
