@@ -3,6 +3,7 @@ package edu.umd.cs.findbugs.updates;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -31,6 +32,7 @@ import javax.annotation.WillClose;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
@@ -126,7 +128,7 @@ public class UpdateChecker {
         return Long.parseLong(oldSeen) + DONT_REMIND_WINDOW;
         } catch (Exception e) {
             return 0;
-        }  
+        }
     }
     static final long DONT_REMIND_WINDOW = 3L*24*60*60*1000;
     public boolean updatesHaveBeenSeenBefore(Collection<UpdateChecker.PluginUpdate> updates) {
@@ -155,6 +157,8 @@ public class UpdateChecker {
     private void waitForCompletion(final CountDownLatch latch, final boolean force) {
         Util.runInDameonThread(new Runnable() {
             public void run() {
+                if (DEBUG)
+                    System.out.println("Checking for version updates");
                 try {
                     if (! latch.await(15, TimeUnit.SECONDS)) {
                         logError(Level.INFO, "Update check timed out");
@@ -195,14 +199,14 @@ public class UpdateChecker {
             return;
         }
         final String entryPoint = getEntryPoint();
-        if ((entryPoint.contains("edu.umd.cs.findbugs.FindBugsTestCase") 
+        if ((entryPoint.contains("edu.umd.cs.findbugs.FindBugsTestCase")
                 || entryPoint.contains("edu.umd.cs.findbugs.cloud.appEngine.AbstractWebCloudTest"))
                 && (url.getScheme().equals("http") || url.getScheme().equals("https"))) {
             LOGGER.fine("Skipping update check because we're running in FindBugsTestCase and using "
                     + url.getScheme());
             return;
         }
-        Util.runInDameonThread(new Runnable() {
+        Runnable r = new Runnable() {
             public void run() {
                 try {
                     actuallyCheckforUpdates(url, plugins, entryPoint);
@@ -214,21 +218,31 @@ public class UpdateChecker {
                     latch.countDown();
                 }
             }
-        }, "Check for updates");
+        };
+        if (DEBUG)
+            r.run();
+        else
+            Util.runInDameonThread(r, "Check for updates");
     }
 
+    static final boolean DEBUG = false;
     /** protected for testing */
     protected void actuallyCheckforUpdates(URI url, Collection<Plugin> plugins, String entryPoint) throws IOException {
         LOGGER.fine("Checking for updates at " + url + " for " + getPluginNames(plugins));
+        if (DEBUG)
+            System.out.println(url);
         HttpURLConnection conn = (HttpURLConnection) url.toURL().openConnection();
         conn.setDoInput(true);
         conn.setDoOutput(true);
         conn.setRequestMethod("POST");
         conn.connect();
         OutputStream out = conn.getOutputStream();
-        writeXml(out, plugins, entryPoint);
+        writeXml(out, plugins, entryPoint, true);
         // for debugging:
-//        writeXml(System.out, plugins, entryPoint);
+        if (DEBUG) {
+            System.out.println("Sending");
+            writeXml(System.out, plugins, entryPoint, false);
+        }
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) {
             logError(SystemProperties.ASSERTIONS_ENABLED ? Level.WARNING : Level.FINE,
@@ -241,7 +255,8 @@ public class UpdateChecker {
     }
 
     /** protected for testing */
-    protected final void writeXml(OutputStream out, Collection<Plugin> plugins, String entryPoint) throws IOException {
+    protected final void writeXml(OutputStream out, Collection<Plugin> plugins, String entryPoint,
+            boolean finish) throws IOException {
         OutputStreamXMLOutput xmlOutput = new OutputStreamXMLOutput(out);
         try {
             xmlOutput.beginDocument();
@@ -283,7 +298,8 @@ public class UpdateChecker {
             xmlOutput.closeTag("findbugs-invocation");
             xmlOutput.flush();
         } finally {
-            xmlOutput.finish();
+            if (finish)
+                xmlOutput.finish();
         }
     }
 
@@ -293,11 +309,13 @@ public class UpdateChecker {
     InputStream inputStream) {
         try {
             Document doc = new SAXReader().read(inputStream);
-//            StringWriter stringWriter = new StringWriter();
-//            XMLWriter xmlWriter = new XMLWriter(stringWriter);
-//            xmlWriter.write(doc);
-//            xmlWriter.close();
-//            System.out.println("UPDATE RESPONSE: " + stringWriter.toString());
+            if (DEBUG) {
+                StringWriter stringWriter = new StringWriter();
+                XMLWriter xmlWriter = new XMLWriter(stringWriter);
+                xmlWriter.write(doc);
+                xmlWriter.close();
+                System.out.println("UPDATE RESPONSE: " + stringWriter.toString());
+            }
             List<Element> pluginEls =  XMLUtil.selectNodes(doc, "fb-plugin-updates/plugin");
             Map<String, Plugin> map = new HashMap<String, Plugin>();
             for (Plugin p : plugins)
@@ -390,7 +408,7 @@ public class UpdateChecker {
             Preferences prefs = Preferences.userNodeForPackage(UpdateChecker.class);
             long uuid = prefs.getLong("uuid", 0);
             if (uuid == 0) {
-                uuid = random.nextLong(); 
+                uuid = random.nextLong();
                 prefs.putLong("uuid", uuid);
             }
             return Long.toString(uuid, 16);
@@ -475,7 +493,7 @@ public class UpdateChecker {
         URI redirect = checker.getRedirectURL(false);
         if (redirect != null)
             System.out.println("All update checks redirected to " + redirect);
-        checker.writeXml(System.out, dfc.plugins(), "UpdateChecker");
+        checker.writeXml(System.out, dfc.plugins(), "UpdateChecker", true);
         
         
     }
