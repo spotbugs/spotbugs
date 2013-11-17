@@ -39,7 +39,11 @@
 
                 <p>
                     FindBugs requires JRE (or JDK) 1.5.0 or later to run.&nbsp; However, it can analyze programs
-                    compiled for any version of Java, from 1.0 to 1.7. The current version of FindBugs is @VERSION@,
+                    compiled for any version of Java, from 1.0 to 1.7. Some classfiles compiled for Java 1.8 give 
+                    FindBugs problems, the next major release of FindBugs will handle Java 1.8 classfiles.
+                    
+                <p> The current version of FindBugs is @VERSION@,
+
                     released on @RELEASE_DATE@. <a href="reportingBugs.html">We are very interested in getting
                         feedback on how to improve FindBugs</a>. File bug reports on <a
                         href="http://sourceforge.net/tracker/?func=browse&amp;group_id=96405&amp;atid=614693"> our
@@ -55,6 +59,7 @@
                     <a href="#changes">Changes</a> | <a href="#talks">Talks</a> | <a href="#papers">Papers </a> | <a
                         href="#sponsors">Sponsors</a> | <a href="#support">Support</a>
                 </p>
+
                 <h1>FindBugs 2.0.3 Release</h1>
                 <p>FindBugs 2.0.3 is intended to be a minor bug fix release over
                 FindBugs 2.0.2. Although than some improvements to existing bug detectors
@@ -110,18 +115,21 @@
                     <dd>
                         <a href="http://kenai.com/projects/sqe/pages/Home">SQE: Software Quality Environment</a>
                     </dd>
+                    <dt><a href="https://wiki.jenkins-ci.org/display/JENKINS">Jenkins</a></dt>
+                    <dd> <a href="https://wiki.jenkins-ci.org/display/JENKINS/FindBugs+Plugin">Jenkins FindBugs Plugin</a>
+                 
                     <dt>
                         <a href="http://wiki.hudson-ci.org/display/HUDSON/Home">Hudson</a>
                     </dt>
                     <dd>
-                        <a href="http://wiki.hudson-ci.org/display/HUDSON/FindBugs+Plugin">http://wiki.hudson-ci.org/display/HUDSON/FindBugs+Plugin</a>
+                        <a href="http://wiki.hudson-ci.org/display/HUDSON/FindBugs+Plugin"> HUDSON FindBugs Plugin</a>
                     </dd>
                     <dt>
                         <a href="http://www.jetbrains.com/idea/">IntelliJ</a>
                     </dt>
                     <dd>
                         Several plugins, see <a href="http://code.google.com/p/findbugs/wiki/IntellijFindBugsPlugins">http://code.google.com/p/findbugs/wiki/IntellijFindBugsPlugins</a>
-                        for a descrption.
+                        for a description.
 
                     </dd>
                 </dl>
@@ -129,7 +137,13 @@
 
                 <h1>New</h1>
                 <ul>
-                    <li>We've releasing FindBugs 2.0.3.
+
+                <li>jFormatString library republished at 
+                <a href="http://code.google.com/p/j-format-string">http://code.google.com/p/j-format-string</a>.
+                This is the library we use for compile time checking of format strings. It is separately published to
+                                 
+                <li>We're releasing FindBugs 2.0.3.
+
                     Mostly small changes to address false positives, with one important fix to the Eclipse plugin
                     to fix a problem that had prevented the plugin from running in some versions of Eclipse.
                         Check the <a href="Changes.html">change log</a> for more details.
@@ -160,7 +174,7 @@
                     the systems at Google. A fixit might work to improve web accessibility, internal testing, removing
                     TODO's from internal software, etc.
 
-                    <p>On May 13-14, 2009, Google held a global fixit for UMD's FindBugs tool a static analysis tool for
+                    <p>In 2009, Google held a global fixit for UMD's FindBugs tool a static analysis tool for
                         finding coding mistakes in Java software. The focus of the fixit was to get feedback on the
                         4,000 highest confidence issues found by FindBugs at Google, and let Google engineers decide
                         which issues, if any, needed fixing.</p>
@@ -191,10 +205,10 @@
                     <a name="talks">Talks about FindBugs</a>
                 </h2>
                 <ul>
-                    <p>
+                    <li>
                         <a href="http://www.cs.umd.edu/~pugh/MistakesThatMatter.pdf">Mistakes That Matter</a>, JavaOne,
                         2009
-                    </p>
+                    </li>
                     <li><a href="http://youtu.be/jflQSFhYTEo?hd=1">Youtube video</a> showing of demo
                         of our 2.0 Eclipse plugin (5 minutes)</li>
                     <li><a href="http://findbugs.cs.umd.edu/talks/findbugs.mov">Quicktime movie</a> showing of demo
@@ -238,8 +252,7 @@
                         href="http://www.cs.umd.edu/~pugh">Bill Pugh</a> and <a
                         href="http://andrei.gmxhome.de/privat.html">Andrey Loskutov</a>.
                 </p>
-                <p>Current funding for FindBugs comes from a Google Faculty Research Awards. We'd be interested in
-                    any offers of support or sponsorship.</p>
+                <p>The most recent funding for FindBugs comes from a Google Faculty Research Awards.</p>
                 <h2>
                     <a name="support">Additional Support</a>
                 </h2>
@@ -266,7 +279,8 @@
                 </p>
                 <p>Any opinions, findings and conclusions or recommendations expressed in this material are those of
                     the author(s) and do not necessarily reflect the views of the National Science Foundation (NSF).
-                    @HTML_FOOTER@</p>
+                  </p>
+                    @HTML_FOOTER@
             </td>
         </tr>
     </table>
