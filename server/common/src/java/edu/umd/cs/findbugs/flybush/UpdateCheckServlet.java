@@ -3,6 +3,7 @@ package edu.umd.cs.findbugs.flybush;
 import static java.util.Arrays.asList;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,6 +15,7 @@ import java.util.regex.Pattern;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
@@ -28,7 +30,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.google.common.collect.Lists;
 
-public class UpdateCheckServlet extends AbstractFlybushServlet {
+public class UpdateCheckServlet extends AbstractFlybushUpdateServlet {
 
     public static final String PLUGIN_RELEASE_DATE_FMT = "MM/dd/yyyy hh:mm aa z";
     private static final Pattern RC_REGEX = Pattern.compile("[\\d\\.]+-rc\\d+");
@@ -37,6 +39,13 @@ public class UpdateCheckServlet extends AbstractFlybushServlet {
     private static final Pattern ALPHA_REGEX = Pattern.compile("[\\d\\.]+-alpha\\d+");
     private static final Pattern STABLE_REGEX = Pattern.compile("[\\d\\.]+");
 
+    @Override
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setStatus(200);
+        resp.setContentType("text/plain");
+        resp.getWriter().println("OK");
+    }
+    
     @SuppressWarnings({"unchecked"})
     @Override
     protected void handlePost(PersistenceManager pm, HttpServletRequest req, HttpServletResponse resp, String uri)
@@ -88,7 +97,8 @@ public class UpdateCheckServlet extends AbstractFlybushServlet {
     @SuppressWarnings("unchecked")
     private void writeResponseXml(PersistenceManager pm, HttpServletResponse resp, List<DbUsageEntry> entries)
             throws XMLStreamException, IOException {
-        XMLStreamWriter writer = XMLOutputFactory.newFactory().createXMLStreamWriter(resp.getOutputStream());
+        StringWriter w = new StringWriter();
+        XMLStreamWriter writer = XMLOutputFactory.newFactory().createXMLStreamWriter(w);
         writer = makeIndentingStreamWriterIfPossible(writer);
         writer.writeStartDocument();
         writer.writeStartElement("fb-plugin-updates");
@@ -113,6 +123,12 @@ public class UpdateCheckServlet extends AbstractFlybushServlet {
 //                if (found != null)
                 channel = findOrDetectChannel(found);
 
+                String javaVersion = found.getJavaVersion();
+                if (javaVersion != null && javaVersion.startsWith("1.")) {
+                    int userJavaVersion = Integer.parseInt(javaVersion.substring(2));
+                    if (userJavaVersion < result.getJavaVersion())
+                        continue;
+                }
                 try {
                     oldPluginId = writePluginUpdate(writer, df, oldPluginId, result, channel);
                     if (oldPluginId != null)
@@ -127,6 +143,7 @@ public class UpdateCheckServlet extends AbstractFlybushServlet {
         writer.writeEndElement(); // fb-plugin-updates
         writer.writeEndDocument();
         writer.close();
+        resp.getWriter().println(w.toString());
     }
 
     private String findOrDetectChannel(DbUsageEntry found) {

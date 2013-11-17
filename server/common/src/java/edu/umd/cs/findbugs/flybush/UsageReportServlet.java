@@ -42,7 +42,7 @@ import com.googlecode.charts4j.LineChart;
 import com.googlecode.charts4j.Plots;
 import org.apache.commons.lang.StringEscapeUtils;
 
-public class UsageReportServlet extends AbstractFlybushServlet {
+public class UsageReportServlet extends AbstractFlybushCloudServlet {
     public static final Pattern DEV_VERSION_REGEX = Pattern.compile("(.*-dev-(\\d{6})).*");
     private int form_id = 0;
 
@@ -54,6 +54,7 @@ public class UsageReportServlet extends AbstractFlybushServlet {
         return new SimpleDateFormat("M/d", Locale.ENGLISH);
     }
 
+    @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         String uri = req.getRequestURI();
@@ -273,6 +274,7 @@ public class UsageReportServlet extends AbstractFlybushServlet {
     private List<Entry<String, Integer>> sortEntries(Iterable<Entry<String, Integer>> entries) {
         List<Entry<String, Integer>> list = Lists.newArrayList(entries);
         Collections.sort(list, new Comparator<Entry<String, Integer>>() {
+            @Override
             public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
                 int a = o1.getValue();
                 int b = o2.getValue();
@@ -415,6 +417,7 @@ public class UsageReportServlet extends AbstractFlybushServlet {
         final long last = Collections.max(unixtimes);
 
         return new Iterable<Calendar>() {
+            @Override
             public Iterator<Calendar> iterator() {
                 return new Iterator<Calendar>() {
                     private Calendar cal = Calendar.getInstance();
@@ -422,10 +425,12 @@ public class UsageReportServlet extends AbstractFlybushServlet {
                         cal.setTimeInMillis(first);
                     }
 
+                    @Override
                     public boolean hasNext() {
                         return cal.getTimeInMillis() <= last;
                     }
 
+                    @Override
                     public Calendar next() {
                         if (!hasNext())
                             throw new NoSuchElementException();
@@ -434,6 +439,7 @@ public class UsageReportServlet extends AbstractFlybushServlet {
                         return toReturn;
                     }
 
+                    @Override
                     public void remove() {
                         throw new UnsupportedOperationException();
                     }

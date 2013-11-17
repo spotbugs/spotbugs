@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.collect.Maps;
 
-public class UsageConsolidatorServlet extends AbstractFlybushServlet {
+public class UsageConsolidatorServlet extends AbstractFlybushCloudServlet {
 
     /**
      * update this when adding a new DbUsageSummary field, or when changing / fixing

@@ -18,7 +18,7 @@ import org.mockito.Mockito;
 
 
 @SuppressWarnings({ "unused" })
-public abstract class ReportServletTest extends AbstractFlybushServletTest {
+public abstract class ReportServletTest extends AbstractFlybushCloudServletTest {
     
     private static final boolean WORKING = false;
     
@@ -31,7 +31,7 @@ public abstract class ReportServletTest extends AbstractFlybushServletTest {
     }
 
     @Override
-    protected AbstractFlybushServlet createServlet() {
+    protected AbstractFlybushCloudServlet createServlet() {
         return new ReportServlet() {
             @Override
             protected void showChartImg(HttpServletResponse resp, GChart chart) throws IOException {

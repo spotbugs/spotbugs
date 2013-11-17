@@ -53,7 +53,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
-public class ReportServlet extends AbstractFlybushServlet {
+public class ReportServlet extends AbstractFlybushCloudServlet {
     private int form_id = 0;
 
     private static  DateFormat DATE_TIME_FORMAT() {
@@ -68,6 +68,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         return new SimpleDateFormat("M/d", Locale.ENGLISH);
     }
 
+    @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         String uri = req.getRequestURI();
@@ -102,6 +103,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         Map<String, Integer> issueCountByUser = Maps.newHashMap();
         Multimap<String, String> issuesByUser = Multimaps.newSetMultimap(Maps.<String, Collection<String>>newHashMap(),
                 new Supplier<Set<String>>() {
+                    @Override
                     public Set<String> get() {
                         return Sets.newHashSet();
                     }
@@ -704,6 +706,7 @@ public class ReportServlet extends AbstractFlybushServlet {
         final long last = Collections.max(unixtimes);
 
         return new Iterable<Calendar>() {
+            @Override
             public Iterator<Calendar> iterator() {
                 return new Iterator<Calendar>() {
                     private Calendar cal = Calendar.getInstance();
@@ -711,10 +714,12 @@ public class ReportServlet extends AbstractFlybushServlet {
                         cal.setTimeInMillis(first);
                     }
 
+                    @Override
                     public boolean hasNext() {
                         return cal.getTimeInMillis() <= last;
                     }
 
+                    @Override
                     public Calendar next() {
                         if (!hasNext())
                             throw new NoSuchElementException();
@@ -723,6 +728,7 @@ public class ReportServlet extends AbstractFlybushServlet {
                         return toReturn;
                     }
 
+                    @Override
                     public void remove() {
                         throw new UnsupportedOperationException();
                     }
@@ -823,6 +829,7 @@ public class ReportServlet extends AbstractFlybushServlet {
     private List<Entry<String, Integer>> sortEntriesByValue(Collection<Entry<String, Integer>> entries) {
         List<Entry<String, Integer>> result = new ArrayList<Entry<String, Integer>>(entries);
         Collections.sort(result, new Comparator<Entry<String, Integer>>() {
+            @Override
             public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
                 int numbers = o1.getValue().compareTo(o2.getValue());
                 if (numbers != 0)

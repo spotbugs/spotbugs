@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluatio
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 
 @SuppressWarnings("serial")
-public class QueryServlet extends AbstractFlybushServlet {
+public class QueryServlet extends AbstractFlybushCloudServlet {
 
     @Override
     protected void handlePost(PersistenceManager pm, HttpServletRequest req, HttpServletResponse resp, String uri)

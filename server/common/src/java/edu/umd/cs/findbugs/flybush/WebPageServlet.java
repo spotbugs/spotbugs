@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringEscapeUtils;
 
-public class WebPageServlet extends AbstractFlybushServlet {
+public class WebPageServlet extends AbstractFlybushCloudServlet {
     private static  DateFormat TIMESTAMP_FORMAT() {
         return new SimpleDateFormat("MMM d, ''yy 'at' h:mm aa z", Locale.ENGLISH);
     }

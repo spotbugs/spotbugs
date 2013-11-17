@@ -11,10 +11,10 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 @SuppressWarnings({"UnusedDeclaration"})
-public abstract class UpdateCheckServletTest extends AbstractFlybushServletTest {
+public abstract class UpdateCheckServletTest extends AbstractFlybushServletTest<UsagePersistenceHelper> {
 
     @Override
-    protected AbstractFlybushServlet createServlet() {
+    protected UpdateCheckServlet createServlet() {
         return new UpdateCheckServlet();
     }
 

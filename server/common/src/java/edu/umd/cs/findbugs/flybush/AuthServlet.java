@@ -23,7 +23,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 @SuppressWarnings("serial")
-public class AuthServlet extends AbstractFlybushServlet {
+public class AuthServlet extends AbstractFlybushCloudServlet {
 
     static {
         // run on startup to configure DyuProject to request e-mail addresses

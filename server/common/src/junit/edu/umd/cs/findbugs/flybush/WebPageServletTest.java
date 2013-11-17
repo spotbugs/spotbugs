@@ -1,6 +1,6 @@
 package edu.umd.cs.findbugs.flybush;
 
-public class WebPageServletTest extends AbstractFlybushServletTest {
+public class WebPageServletTest extends AbstractFlybushCloudServletTest {
 
     @Override
     protected void setUp() throws Exception {
@@ -8,7 +8,7 @@ public class WebPageServletTest extends AbstractFlybushServletTest {
     }
 
     @Override
-    protected AbstractFlybushServlet createServlet() {
+    protected AbstractFlybushCloudServlet createServlet() {
         return new WebPageServlet();
     }
 

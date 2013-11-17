@@ -1,5 +1,8 @@
 package edu.umd.cs.findbugs.flybush;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.verify;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -9,11 +12,8 @@ import javax.jdo.Query;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.FindIssuesResponse;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.verify;
-
 @SuppressWarnings({ "UnusedDeclaration" })
-public abstract class AuthServletTest extends AbstractFlybushServletTest {
+public abstract class AuthServletTest extends AbstractFlybushCloudServletTest {
     private long currentTimeMillis;
 
     @Override
@@ -23,9 +23,10 @@ public abstract class AuthServletTest extends AbstractFlybushServletTest {
     }
 
     @Override
-    protected AbstractFlybushServlet createServlet() {
+    protected AbstractFlybushCloudServlet createServlet() {
         return new AuthServlet() {
-            long getCurrentTimeMillis() {
+           @Override
+        protected long getCurrentTimeMillis() {
                 return currentTimeMillis;
             }
         };

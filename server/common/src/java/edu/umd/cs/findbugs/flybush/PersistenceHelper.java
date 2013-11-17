@@ -1,16 +1,11 @@
 package edu.umd.cs.findbugs.flybush;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 
 import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
 
-public abstract class PersistenceHelper {
-
-    public abstract PersistenceManagerFactory getPersistenceManagerFactory() throws IOException;
-    public abstract PersistenceManager getPersistenceManager() throws IOException;
+public abstract class PersistenceHelper extends BasePersistenceHelper {
 
     public abstract DbUser createDbUser(String openidUrl, String email);
     public abstract SqlCloudSession createSqlCloudSession(long id, Date date, Object userKey, String email);
@@ -19,7 +14,6 @@ public abstract class PersistenceHelper {
     public abstract DbEvaluation createDbEvaluation();
     public abstract DbClientVersionStats createDbClientVersionStats(String application, String version, long dayStart);
     public abstract DbUsageEntry createDbUsageEntry();
-    public abstract DbPluginUpdateXml createPluginUpdateXml(String value);
     public abstract DbPluginUpdateXml createPluginUpdateXml();
     public abstract DbUsageSummary createDbUsageSummary();
 

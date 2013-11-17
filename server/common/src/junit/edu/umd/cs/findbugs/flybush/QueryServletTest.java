@@ -15,14 +15,14 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 
 @SuppressWarnings({ "UnusedDeclaration" })
-public abstract class QueryServletTest extends AbstractFlybushServletTest {
+public abstract class QueryServletTest extends AbstractFlybushCloudServletTest {
     
     private static final boolean WORKING = false;
     
     private static final Logger LOGGER = Logger.getLogger(QueryServletTest.class.getName());
 
     @Override
-    protected AbstractFlybushServlet createServlet() {
+    protected AbstractFlybushCloudServlet createServlet() {
         return new QueryServlet();
     }
 

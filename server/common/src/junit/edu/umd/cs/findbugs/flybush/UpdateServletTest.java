@@ -27,10 +27,10 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.WebCloudProtoUtil;
 
 @SuppressWarnings({ "UnusedDeclaration" })
-public abstract class UpdateServletTest extends AbstractFlybushServletTest {
+public abstract class UpdateServletTest extends AbstractFlybushCloudServletTest {
 
     @Override
-    protected AbstractFlybushServlet createServlet() {
+    protected AbstractFlybushCloudServlet createServlet() {
         return new UpdateServlet();
     }
 
@@ -53,46 +53,6 @@ public abstract class UpdateServletTest extends AbstractFlybushServletTest {
         assertEquals("recent@test.com", getDbUser(findSqlSession(101).get(0).getUser()).getEmail());
     }
 
-    @SuppressWarnings({ "unchecked" })
-    public void testUpdateDbJune29CommentStyle() throws Exception {
-        DbIssue issue = createDbIssue("fad2");
-        DbEvaluation eval = createEvaluation(issue, "someone", 200);
-        persistenceHelper.convertToOldCommentStyleForTesting(eval);
-        getPersistenceManager().makePersistentAll(issue);
-        assertTrue(persistenceHelper.isOldCommentStyle(eval));
-
-        executeGet("/update-db-jun29");
-        getPersistenceManager().refreshAll(issue);
-        assertFalse(persistenceHelper.isOldCommentStyle(eval));
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    public void testUpdateDbJune29PrimaryClass() throws Exception {
-        DbIssue issue = createDbIssue("fad2");
-        DbEvaluation eval = createEvaluation(issue, "someone", 200);
-        eval.setPrimaryClass(null);
-        assertNull(eval.getPrimaryClass());
-        getPersistenceManager().makePersistentAll(issue);
-
-        executeGet("/update-db-jun29");
-        getPersistenceManager().refreshAll(issue);
-        assertEquals("my.class", eval.getPrimaryClass());
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    public void testUpdateDbJune29Package() throws Exception {
-        DbIssue issue = createDbIssue("fad2");
-        issue.setPrimaryClass("a.b.c.D");
-        DbEvaluation eval = createEvaluation(issue, "someone", 200);
-        eval.setPackages(Sets.<String> newHashSet());
-        getPersistenceManager().makePersistentAll(issue);
-
-        executeGet("/update-db-jun29");
-        getPersistenceManager().refreshAll(issue);
-        assertTrue(eval.getPackages().contains("a"));
-        assertTrue(eval.getPackages().contains("a.b"));
-        assertTrue(eval.getPackages().contains("a.b.c"));
-    }
 
     @SuppressWarnings({ "unchecked" })
     public void testUpdateEvaluationEmails() throws Exception {

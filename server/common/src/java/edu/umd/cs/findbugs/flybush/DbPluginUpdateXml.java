@@ -26,9 +26,7 @@ import java.util.Date;
  *    release date, etc)
  */
 public interface DbPluginUpdateXml {
-    String getContents();
-    void setContents(String contents);
-
+    
     void setDate(Date date);
     Date getDate();
 
@@ -43,6 +41,10 @@ public interface DbPluginUpdateXml {
     
     String getVersion();
     void setVersion(String version);
+
+    /** i.e., 7 for Java 7 aka JDK 1.7.x */
+    int getJavaVersion();
+    void setJavaVersion(int version);
 
     String getChannel();
     void setChannel(String channel);

@@ -47,6 +47,7 @@ public class UsageDataConsolidator {
     private static <K,V> SetMultimap<K, V> newHashSetMultiMap() {
         return Multimaps.newSetMultimap(Maps.<K, Collection<V>>newHashMap(),
                 new Supplier<Set<V>>() {
+                    @Override
                     public Set<V> get() {
                         return Sets.newHashSet();
                     }
@@ -119,7 +120,7 @@ public class UsageDataConsolidator {
         int count = 0;
         for (DbUsageEntry entry : entries) {
             if (++count % 1000 == 0) {
-                AbstractFlybushServlet.LOGGER.info("Processed " + count);
+                AbstractFlybushCloudServlet.LOGGER.info("Processed " + count);
             }
             String uuidStr = entry.getUuid();
             Long uuid = Long.parseLong(uuidStr, 16);
