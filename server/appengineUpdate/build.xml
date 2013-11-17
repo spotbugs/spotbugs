@@ -1,0 +1,9 @@
+<project name="appengine web update"  default="build">
+
+	<target name="build">
+		<ant dir="../webUpdateCheck" target="fulljar" inheritall="false" />
+		<copy file="../webUpdateCheck/build/webUpdateServerCommon.jar" todir="war/WEB-INF/lib" />
+	</target>
+
+</project>
+
