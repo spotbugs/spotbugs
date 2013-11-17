@@ -131,7 +131,7 @@ public class WebCloudNameLookup implements NameLookup {
         try {
             String host = new URL(url).getHost();
             InetAddress.getByName(host);
-        } catch (MalformedURLException e) { 
+        } catch (MalformedURLException e) {
             assert true;
             /* this will come out later */
             }
@@ -178,18 +178,17 @@ public class WebCloudNameLookup implements NameLookup {
 
     // ======================= end of public methods =======================
 
+    private static SecureRandom secureRandom = new SecureRandom();
+    
     private long loadOrCreateSessionId() {
         long id = loadSessionId();
         if (id != 0) {
             LOGGER.info("Using saved session ID: " + id);
             return id;
         }
-        SecureRandom r = new SecureRandom();
-        while (id == 0)
-            id = r.nextLong();
-//        if (id == 0) { // 0 is reserved for no session id
-//            id = 42;
-//        }
+         while (id == 0)
+            id = secureRandom.nextLong();
+
         if (isSavingSessionInfoEnabled())
             saveSessionInformation(id);
 
