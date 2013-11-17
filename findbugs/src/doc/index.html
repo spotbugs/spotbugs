@@ -39,23 +39,29 @@
 
                 <p>
                     FindBugs requires JRE (or JDK) 1.5.0 or later to run.&nbsp; However, it can analyze programs
-                    compiled for any version of Java, from 1.0 to 1.8. The current version of FindBugs is @VERSION@,
+                    compiled for any version of Java, from 1.0 to 1.7. The current version of FindBugs is @VERSION@,
                     released on @RELEASE_DATE@. <a href="reportingBugs.html">We are very interested in getting
                         feedback on how to improve FindBugs</a>. File bug reports on <a
                         href="http://sourceforge.net/tracker/?func=browse&amp;group_id=96405&amp;atid=614693"> our
                         sourceforge bug tracker</a>
                 </p>
+                <p>The current version of FindBugs may encounter errors when analyzing 
+                Java 1.8 bytecode, due to changes in the classfile format. After FindBugs 2.0.3
+                is released, work will start on the next major release of FindBugs, which will
+                be able to analyze Java 1.8 (and will require Java 1.7 to compile and run).
+                
 
                 <p>
                     <a href="#changes">Changes</a> | <a href="#talks">Talks</a> | <a href="#papers">Papers </a> | <a
                         href="#sponsors">Sponsors</a> | <a href="#support">Support</a>
                 </p>
-                <h1>FindBugs 2.0 Release</h1>
-                <p>After many delays, we have released FindBugs 2.0. We are pretty happy and confident about the
-                    functionality, although we know the documentation of the changes in 2.0 is lacking. We decided that
-                    releasing 2.0 took precedence over fixing the documentation. Anyone currently using FindBugs 1.3.9
-                    should find FindBugs 2.0 to largely be a drop-in replacement that offers better accuracy and
-                    performance.</p>
+                <h1>FindBugs 2.0.3 Release</h1>
+                <p>FindBugs 2.0.3 is intended to be a minor bug fix release over
+                FindBugs 2.0.2. Although than some improvements to existing bug detectors
+                and analysis engines, and a few new bug patterns, and some 
+                important bug fixes to the Eclipse plugin, no significant changes
+                should be observed. Consult the <a href="Changes.html">Change log</a>
+                for more details.</p>
 
                 <p>
                     Also check out <a href="http://code.google.com/p/findbugs/w/list">http://code.google.com/p/findbugs/w/list</a>
@@ -64,7 +70,7 @@
 
 
                 <h3>
-                    <a href="findbugs2.html">Major changes in FindBugs 2.0</a>
+                    <a href="findbugs2.html">Major changes in FindBugs 2.0 (from FindBugs 1.3.x)</a>
                 </h3>
                 <ul>
                     <li><a href="findbugs2.html#cloud">FindBugs Communal cloud</a></li>
@@ -123,7 +129,7 @@
 
                 <h1>New</h1>
                 <ul>
-                    <li>We've released FindBugs 2.0.2.
+                    <li>We've releasing FindBugs 2.0.3.
                     Mostly small changes to address false positives, with one important fix to the Eclipse plugin
                     to fix a problem that had prevented the plugin from running in some versions of Eclipse.
                         Check the <a href="Changes.html">change log</a> for more details.
@@ -154,7 +160,7 @@
                     the systems at Google. A fixit might work to improve web accessibility, internal testing, removing
                     TODO's from internal software, etc.
 
-                    <p>On May 13-14, Google held a global fixit for UMD's FindBugs tool a static analysis tool for
+                    <p>On May 13-14, 2009, Google held a global fixit for UMD's FindBugs tool a static analysis tool for
                         finding coding mistakes in Java software. The focus of the fixit was to get feedback on the
                         4,000 highest confidence issues found by FindBugs at Google, and let Google engineers decide
                         which issues, if any, needed fixing.</p>
