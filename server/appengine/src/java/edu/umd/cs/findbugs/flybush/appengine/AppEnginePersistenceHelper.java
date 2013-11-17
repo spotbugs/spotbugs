@@ -36,9 +36,6 @@ import edu.umd.cs.findbugs.flybush.DbClientVersionStats;
 import edu.umd.cs.findbugs.flybush.DbEvaluation;
 import edu.umd.cs.findbugs.flybush.DbInvocation;
 import edu.umd.cs.findbugs.flybush.DbIssue;
-import edu.umd.cs.findbugs.flybush.DbPluginUpdateXml;
-import edu.umd.cs.findbugs.flybush.DbUsageEntry;
-import edu.umd.cs.findbugs.flybush.DbUsageSummary;
 import edu.umd.cs.findbugs.flybush.DbUser;
 import edu.umd.cs.findbugs.flybush.PersistenceHelper;
 
@@ -79,22 +76,6 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
     @Override
     public Class<AppEngineSqlCloudSession> getSqlCloudSessionClass() {
         return AppEngineSqlCloudSession.class;
-    }
-
-    @Override
-    public DbUsageEntry createDbUsageEntry() {
-        return new AppEngineDbUsageEntry();
-    }
-
-
-    @Override
-    public DbPluginUpdateXml createPluginUpdateXml() {
-        return new AppEngineDbPluginUpdateXml();
-    }
-
-    @Override
-    public DbUsageSummary createDbUsageSummary() {
-        return new AppEngineDbUsageSummary();
     }
 
     @Override
@@ -144,21 +125,7 @@ public class AppEnginePersistenceHelper extends PersistenceHelper {
         return AppEngineDbClientVersionStats.class;
     }
 
-    @Override
-    public Class<? extends DbUsageEntry> getDbUsageEntryClass() {
-        return AppEngineDbUsageEntry.class;
-    }
-
-    @Override
-    public Class<? extends DbPluginUpdateXml> getDbPluginUpdateXmlClass() {
-        return AppEngineDbPluginUpdateXml.class;
-    }
-
-    @Override
-    public Class<? extends DbUsageSummary> getDbUsageSummaryClass() {
-        return AppEngineDbUsageSummary.class;
-    }
-
+    
     @Override
     public <E> E getObjectById(PersistenceManager pm, Class<? extends E> cls, Object key) {
         return pm.getObjectById(cls, key);
