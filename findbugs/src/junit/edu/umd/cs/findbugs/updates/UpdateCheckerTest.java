@@ -47,6 +47,7 @@ public class UpdateCheckerTest extends TestCase {
     private Map<String, String> globalOptions;
     private String uploadedXml;
 
+    @Override
     protected void setUp() throws Exception {
         updateCollector = new ArrayList<UpdateChecker.PluginUpdate>();
         errors = new StringBuilder();
@@ -63,7 +64,7 @@ public class UpdateCheckerTest extends TestCase {
                 checked.put(urlStr, plugins);
                 ByteArrayInputStream stream = new ByteArrayInputStream(responseXml.getBytes("UTF-8"));
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
-                writeXml(out, plugins, "x.y.z");
+                writeXml(out, plugins, "x.y.z", true);
                 uploadedXml = new String(out.toByteArray(), "UTF-8");
                 parseUpdateXml(url, plugins, stream);
             }
