@@ -25,9 +25,7 @@ public abstract class AbstractFlybushCloudServlet extends AbstractFlybushServlet
             throw new ServletException("Couldn't load persistence helper " + helperCls, e);
         }
     }
-    protected String getCloudName() {
-        return jspHelper.getCloudName();
-    }
+
 
     
    

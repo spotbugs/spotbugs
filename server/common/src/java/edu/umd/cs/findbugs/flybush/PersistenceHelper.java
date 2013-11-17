@@ -13,20 +13,14 @@ public abstract class PersistenceHelper extends BasePersistenceHelper {
     public abstract DbIssue createDbIssue();
     public abstract DbEvaluation createDbEvaluation();
     public abstract DbClientVersionStats createDbClientVersionStats(String application, String version, long dayStart);
-    public abstract DbUsageEntry createDbUsageEntry();
-    public abstract DbPluginUpdateXml createPluginUpdateXml();
-    public abstract DbUsageSummary createDbUsageSummary();
-
+    
     public abstract Class<? extends DbUser> getDbUserClass();
     public abstract Class<? extends SqlCloudSession> getSqlCloudSessionClass();
     public abstract Class<? extends DbInvocation> getDbInvocationClass();
     public abstract Class<? extends DbIssue> getDbIssueClass();
     public abstract Class<? extends DbEvaluation> getDbEvaluationClass();
     public abstract Class<? extends DbClientVersionStats> getDbClientVersionStatsClass();
-    public abstract Class<? extends DbUsageEntry> getDbUsageEntryClass();
-    public abstract Class<? extends DbPluginUpdateXml> getDbPluginUpdateXmlClass();
-    public abstract Class<? extends DbUsageSummary> getDbUsageSummaryClass();
-
+    
     public String getDbUserClassname() {
         return getDbUserClass().getName();
     }
@@ -45,16 +39,7 @@ public abstract class PersistenceHelper extends BasePersistenceHelper {
     public String getDbClientVersionStatsClassname() {
         return getDbClientVersionStatsClass().getName();
     }
-    public String getDbUsageEntryClassname() {
-        return getDbUsageEntryClass().getName();
-    }
-    public String getDbPluginUpdateXmlClassname() {
-        return getDbPluginUpdateXmlClass().getName();
-    }
-
-    public String getDbUsageSummaryClassname() {
-        return getDbUsageSummaryClass().getName();
-    }
+    
 
 
     public abstract int clearAllData();
