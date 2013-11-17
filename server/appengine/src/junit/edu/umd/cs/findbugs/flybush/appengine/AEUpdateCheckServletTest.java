@@ -5,7 +5,7 @@ import edu.umd.cs.findbugs.flybush.UpdateCheckServletTest;
 public class AEUpdateCheckServletTest extends UpdateCheckServletTest {
     @Override
     protected void setUp() throws Exception {
-        setFlybushServletTestHelper(new AppEngineTestHelper());
+        setFlybushServletTestHelper(new AppEngineUpdateTestHelper());
         super.setUp();
     }
 }

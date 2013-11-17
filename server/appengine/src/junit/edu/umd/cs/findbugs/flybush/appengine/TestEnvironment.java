@@ -58,4 +58,9 @@ class TestEnvironment implements ApiProxy.Environment {
     public long getRemainingMillis() {
        return 5000;
     }
+
+    @Override
+    public String getModuleId() {
+        return "FindBugsCloud";
+    }
 }

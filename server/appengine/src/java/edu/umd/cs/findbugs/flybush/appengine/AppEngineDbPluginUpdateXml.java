@@ -37,6 +37,8 @@ public class AppEngineDbPluginUpdateXml implements DbPluginUpdateXml {
     @Persistent
     private String version;
 
+    @Persistent Integer javaVersion;
+    
     @Persistent
     private String channel;
 
@@ -47,20 +49,6 @@ public class AppEngineDbPluginUpdateXml implements DbPluginUpdateXml {
     private String url;
 
     public AppEngineDbPluginUpdateXml() {
-    }
-
-    public AppEngineDbPluginUpdateXml(String value) {
-        setContents(value);
-    }
-
-    @Override
-    public String getContents() {
-        return text == null ? null : text.getValue();
-    }
-
-    @Override
-    public void setContents(String contents) {
-        text = contents == null ? null : new Text(contents);
     }
 
     @Override
@@ -157,5 +145,18 @@ public class AppEngineDbPluginUpdateXml implements DbPluginUpdateXml {
         sb.append(", url='").append(url).append('\'');
         sb.append('}');
         return sb.toString();
+    }
+
+    @Override
+    public int getJavaVersion() {
+        if (javaVersion == null)
+            return 5;
+        return javaVersion;
+    }
+
+    @Override
+    public void setJavaVersion(int version) {
+        this.javaVersion = version;
+        
     }
 }

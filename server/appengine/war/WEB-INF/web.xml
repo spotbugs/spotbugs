@@ -17,8 +17,12 @@
     </filter-mapping>
 
     <context-param>
-        <param-name>edu.umd.cs.findbugs.flybush.persistenceHelper</param-name>
+        <param-name>edu.umd.cs.findbugs.flybush.cloudPersistenceHelper</param-name>
         <param-value>edu.umd.cs.findbugs.flybush.appengine.AppEnginePersistenceHelper</param-value>
+    </context-param>
+    <context-param>
+        <param-name>edu.umd.cs.findbugs.flybush.usagePersistenceHelper</param-name>
+        <param-value>edu.umd.cs.findbugs.flybush.appengine.AppEngineUsagePersistenceHelper</param-value>
     </context-param>
 
     <servlet>
@@ -62,6 +66,10 @@
         <servlet-name>UpdateXmlUploadServlet</servlet-name>
         <servlet-class>edu.umd.cs.findbugs.flybush.XmlUploadServlet</servlet-class>
     </servlet>
+        <servlet>
+        <servlet-name>TimeServlet</servlet-name>
+        <servlet-class>edu.umd.cs.findbugs.flybush.TimeServlet</servlet-class>
+    </servlet>
 
     <servlet-mapping>
         <servlet-name>RemoteApiServlet</servlet-name>
@@ -90,7 +98,6 @@
         <url-pattern>/set-bug-link</url-pattern>
         <url-pattern>/expire-sql-sessions</url-pattern>
         <url-pattern>/update-evaluation-emails</url-pattern>
-        <url-pattern>/update-db-jun29</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>WebPageServlet</servlet-name>
@@ -117,6 +124,10 @@
         <url-pattern>/upload</url-pattern>
         <url-pattern>/create-default-versions</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TimeServlet</servlet-name>
+        <url-pattern>/time</url-pattern>
+    </servlet-mapping>
 
     <security-constraint>
         <web-resource-collection>
@@ -138,10 +149,6 @@
         <web-resource-collection>
             <web-resource-name>Consolidate usage</web-resource-name>
             <url-pattern>/consolidate-usage</url-pattern>
-        </web-resource-collection>
-        <web-resource-collection>
-            <web-resource-name>Update DB: june 29</web-resource-name>
-            <url-pattern>/update-db-jun29</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>Update XML uploader</web-resource-name>
