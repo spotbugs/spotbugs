@@ -6879,7 +6879,7 @@ FindBugs は、バイトコードベースのツールなので誤検出をな�
     <ShortDescription>return 文に役に立たない代入がある</ShortDescription>
     <LongDescription>{1} からの return 文に役に立たない代入があります。</LongDescription>
     <Details>
-      <![CDATA[
+<![CDATA[
 <p>
 この文は、return 文でローカル変数に代入をしています。この代入は効果がありません。
 この文が正しいことを確かめてください。
@@ -6888,6 +6888,20 @@ FindBugs は、バイトコードベースのツールなので誤検出をな�
     </Details>
   </BugPattern>
 
+  <BugPattern type="DLS_DEAD_LOCAL_INCREMENT_IN_RETURN">
+    <ShortDescription>return 文に役に立たないインクリメントがある</ShortDescription>
+    <LongDescription>{1} からの　return に役に立たないインクリメントがあります。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+<code>return x++;</code> のような return 文があります。
+接頭辞インクリメント/デクリメントは 式の値に影響を与えないので、インクリメント/デクリメントは効果がありません。
+この文が正しいのか確かめてください。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
   <BugPattern type="DLS_DEAD_STORE_OF_CLASS_LITERAL">
     <ShortDescription>クラスリテラルの無効な代入</ShortDescription>
     <LongDescription>{3}.class の無効な代入です。{1}</LongDescription>
@@ -8567,87 +8581,47 @@ byte から String (または String から byte) への変換で、デフォル
   </BugPattern>
 
   <BugPattern type="NP_METHOD_PARAMETER_RELAXING_ANNOTATION">
-    <ShortDescription>メソッドはパラメータで nullness アノテーションを緩和する</ShortDescription>
-    <LongDescription>メソッド {1} は、パラメータで祖先メソッドの要件を緩和する nullness アノテーションをオーバライドしています。</LongDescription>
+    <ShortDescription>メソッドはパラメータで nullness アノテーションを強化する</ShortDescription>
+    <LongDescription>メソッド {1} は、パラメータで祖先メソッドの要件を緩和している nullness アノテーションをオーバライドしています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-nullness 要件を決して緩和するべきではありません。さもなければ、NullPointerException が起きるかもしれません。
+メソッドは、オーバライドするメソッドの規約を常に実装するべきです。
+したがって、メソッドが @Nullable としてマークされるパラメーターを取るならば、サブクラスでパラメーターを @Nonnull にしてメソッドをオーバーライドするべきでありません。
+そうするこによって、メソッドが null パラメーターを扱うべきである規約に違反します。
 </p>
-<blockquote><pre>
-public class TestOverride {
-  static interface I {
-    void set(@CheckForNull Object o);
-  }
+]]>
+    </Details>
+  </BugPattern>
 
-  static interface SI extends I {
-    public void set(@Nonnull Object o);
-  }
-
-   void a(I i) {
-     i.set(null);
-   }
-
-  void b() {
-    a(new SI() {
-      public void set(Object o) {
-        o.toString();
-      }
-    });
-  }
-}
-</pre></blockquote>
+  <BugPattern type="NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION">
+    <ShortDescription>メソッドはパラメータで nullness アノテーションを強化する</ShortDescription>
+    <LongDescription>メソッド {1} は、互換性のない方法でパラメーター {2} の nullness アノテーションをオーバーライドしています。</LongDescription>
+    <Details>
+<![CDATA[
 <p>
-例では、<code>SI</code> は <code>set()</code> メソッドのパラメータで nullness を緩和します。
-<code>a()</code> の無名クラスの <code>i.set(null)</code> が警告されないことを意味します。
-<code>SI.set()</code> が <code>o.toString()</code> を実行しようと試みると NullPointerException をスローする原因となります。
+メソッドは、オーバライドするメソッドの規約を常に実装するべきです。
+したがって、メソッドが @Nullable としてマークされるパラメーターを取るならば、サブクラスでパラメーターを @Nonnull にしてメソッドをオーバーライドするべきでありません。
+そうするこによって、メソッドが null パラメーターを扱うべきである規約に違反します。
 </p>
 ]]>
       </Details>
   </BugPattern>
 
   <BugPattern type="NP_METHOD_RETURN_RELAXING_ANNOTATION">
-    <ShortDescription>メソッドは戻り値で nullness アノテーションを緩和する</ShortDescription>
-    <LongDescription>メソッド {1} は、戻り値で祖先メソッドの要件を緩和する nullness アノテーションをオーバライドしています。</LongDescription>
+    <ShortDescription>メソッドは戻り値で nullness アノテーションを緩和させる</ShortDescription>
+    <LongDescription>メソッド {1} は、互換性のない方法で戻り値の nullness アノテーションをオーバーライドしています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-nullness 要件を決して緩和するべきではありません。さもなければ、NullPointerException が起きるかもしれません。
-</p>
-<blockquote><pre>
-public class TestOverride {
-  static interface I {
-    @Nonnull
-    Object get();
-  }
-
-  static interface SI extends I {
-    @CheckForNull
-    Object get();
-  }
-
-  void a(I i) {
-    i.get().toString();
-  }
-
-  void b() {
-    a(new SI() {
-      public Object get() {
-        return null;
-      }
-    });
-  }
-}
-</pre></blockquote>
-<p>
-例では、<code>SI</code> は <code>get()</code> メソッドの戻り値で nullness を緩和します。
-<code>b()</code> の無名クラスの <code>return null</code> が警告されないことを意味します。
-<code>a(i)()</code> の <code>i.get().toString()</code> が NullPointerException をスローする原因となります。
+メソッドは、オーバライドするメソッドの規約を常に実装するべきです。
+したがって、メソッドが @Nonnull 値を返すようにアノテートしているならば、サブクラスでメソッドが  @Nullable または @CheckForNull 値を返すようにアノテートしてメソッドをオーバーライドするべきでありません。
+そうするこによって、メソッドが null を返すべきでない規約に違反します。
 </p>
 ]]>
       </Details>
   </BugPattern>
-
+  
   <!--
   **********************************************************************
   BugCodes
