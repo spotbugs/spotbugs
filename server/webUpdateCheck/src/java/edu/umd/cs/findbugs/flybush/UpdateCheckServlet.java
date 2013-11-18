@@ -152,20 +152,28 @@ public class UpdateCheckServlet extends AbstractFlybushUpdateServlet {
             return userChannel;
         } else {
             String pluginVersion = found.getPluginVersion();
-            String channel = null;
-            if (pluginVersion != null) {
-                if (STABLE_REGEX.matcher(pluginVersion).matches()) channel = "stable";
-                if (RC_REGEX.matcher(pluginVersion).matches()) channel = "rc";
-                if (BETA_REGEX.matcher(pluginVersion).matches()) channel = "beta";
-                if (ALPHA_REGEX.matcher(pluginVersion).matches()) channel = "alpha";
-                if (DEV_REGEX.matcher(pluginVersion).matches()) channel = "dev";
-                if (channel == null)
-                    LOGGER.warning("version does not match any regex: " + pluginVersion);
-                else
-                    LOGGER.info("version matches! " + pluginVersion  + " is " + channel);
-            }
-            return channel;
+            return getChannel(pluginVersion);
         }
+    }
+
+    /**
+     * @param pluginVersion
+     * @return
+     */
+    public String getChannel(String pluginVersion) {
+        String channel = null;
+        if (pluginVersion != null) {
+            if (STABLE_REGEX.matcher(pluginVersion).matches()) channel = "stable";
+            if (RC_REGEX.matcher(pluginVersion).matches()) channel = "rc";
+            if (BETA_REGEX.matcher(pluginVersion).matches()) channel = "beta";
+            if (ALPHA_REGEX.matcher(pluginVersion).matches()) channel = "alpha";
+            if (DEV_REGEX.matcher(pluginVersion).matches()) channel = "dev";
+            if (channel == null)
+                LOGGER.warning("version does not match any regex: " + pluginVersion);
+            else
+                LOGGER.info("version matches! " + pluginVersion  + " is " + channel);
+        }
+        return channel;
     }
 
     private DbUsageEntry findSubmittedPluginUsageEntry(List<DbUsageEntry> entries, String pluginId) {
@@ -287,8 +295,9 @@ public class UpdateCheckServlet extends AbstractFlybushUpdateServlet {
                         if (name.equals("country")) entry.setLocaleCountry(value);
                         if (name.equals("uuid")) entry.setUuid(value);
                     }
+                    if (entry.getPluginChannel() == null)
+                        entry.setPluginChannel(getChannel(entry.getVersion()));
                 } else if (qName.equals("plugin")) {
-
                     String id = null;
                     String name = null;
                     String version = null;
@@ -300,6 +309,8 @@ public class UpdateCheckServlet extends AbstractFlybushUpdateServlet {
                         if (qname.equals("version")) version = attributes.getValue(i);
                         if (qname.equals("channel")) channel = attributes.getValue(i);
                     }
+                    if (channel == null)
+                        channel = getChannel(version);
                     if (id != null) {
                         plugins.add(asList(id, name, version, channel));
                     }

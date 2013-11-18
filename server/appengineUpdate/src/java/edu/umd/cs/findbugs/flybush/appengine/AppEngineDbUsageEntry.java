@@ -2,6 +2,7 @@ package edu.umd.cs.findbugs.flybush.appengine;
 
 import java.util.Date;
 
+import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -9,6 +10,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
+
 import edu.umd.cs.findbugs.flybush.DbUsageEntry;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
@@ -19,36 +21,66 @@ public class AppEngineDbUsageEntry implements DbUsageEntry {
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;
 
+    @Extension(vendorName="datanucleus", key="gae.unindexed", value="true")
     @Persistent
     private String ipAddress;
+    
+    @Extension(vendorName="datanucleus", key="gae.unindexed", value="true")
     @Persistent
     private String country;
+    
+    @Extension(vendorName="datanucleus", key="gae.unindexed", value="true")
     @Persistent
     private String version;
+    
+    @Extension(vendorName="datanucleus", key="gae.unindexed", value="true")
     @Persistent
     private String appName;
+    
+    @Extension(vendorName="datanucleus", key="gae.unindexed", value="true")
     @Persistent
     private String appVersion;
+    
+    @Extension(vendorName="datanucleus", key="gae.unindexed", value="true")
     @Persistent
     private String entryPoint;
+    
+    @Extension(vendorName="datanucleus", key="gae.unindexed", value="true")
     @Persistent
     private String os;
+    
+    @Extension(vendorName="datanucleus", key="gae.unindexed", value="true")
     @Persistent
     private String javaVersion;
+    
+    @Extension(vendorName="datanucleus", key="gae.unindexed", value="true")
     @Persistent
     private String language;
+    
+    @Extension(vendorName="datanucleus", key="gae.unindexed", value="true")
     @Persistent
     private String localeCountry;
+    
+    @Extension(vendorName="datanucleus", key="gae.unindexed", value="true")
     @Persistent
     private String uuid;
+    
+    @Extension(vendorName="datanucleus", key="gae.unindexed", value="true")
     @Persistent
     private String plugin;
+    
+    @Extension(vendorName="datanucleus", key="gae.unindexed", value="true")
     @Persistent
     private String pluginName;
+    
+    @Extension(vendorName="datanucleus", key="gae.unindexed", value="true")
     @Persistent
     private String pluginVersion;
+    
+    @Extension(vendorName="datanucleus", key="gae.unindexed", value="true")
     @Persistent
     private String pluginChannel;
+    
     @Persistent
     private Date date;
 
