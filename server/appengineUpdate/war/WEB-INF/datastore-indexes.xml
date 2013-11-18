@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <datastore-indexes autoGenerate="true">
-    <datastore-index kind="AppEngineDbEvaluation" ancestor="false" source="auto">
-        <property name="email" direction="asc"/>
-        <property name="when" direction="asc"/>
-    </datastore-index>
-    <datastore-index kind="AppEngineDbEvaluation" ancestor="false" source="auto">
-        <property name="packages" direction="asc"/>
-        <property name="when" direction="asc"/>
-    </datastore-index>
-    <datastore-index kind="AppEngineDbClientVersionStats" ancestor="false" source="auto">
-        <property name="dayStart" direction="asc"/>
-        <property name="application" direction="asc"/>
-        <property name="version" direction="asc"/>
-    </datastore-index>
     <datastore-index kind="AppEngineDbUsageSummary" ancestor="false" source="manual">
         <property name="date" direction="asc"/>
         <property name="category" direction="asc"/>
