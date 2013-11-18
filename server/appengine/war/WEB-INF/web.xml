@@ -50,23 +50,7 @@
         <servlet-name>ReportServlet</servlet-name>
         <servlet-class>edu.umd.cs.findbugs.flybush.ReportServlet</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>UsageReportServlet</servlet-name>
-        <servlet-class>edu.umd.cs.findbugs.flybush.UsageReportServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UsageConsolidatorServlet</servlet-name>
-        <servlet-class>edu.umd.cs.findbugs.flybush.UsageConsolidatorServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateCheckServlet</servlet-name>
-        <servlet-class>edu.umd.cs.findbugs.flybush.UpdateCheckServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateXmlUploadServlet</servlet-name>
-        <servlet-class>edu.umd.cs.findbugs.flybush.XmlUploadServlet</servlet-class>
-    </servlet>
-        <servlet>
+          <servlet>
         <servlet-name>TimeServlet</servlet-name>
         <servlet-class>edu.umd.cs.findbugs.flybush.TimeServlet</servlet-class>
     </servlet>
@@ -107,26 +91,13 @@
         <servlet-name>ReportServlet</servlet-name>
         <url-pattern>/stats</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UsageReportServlet</servlet-name>
-        <url-pattern>/usage</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UsageConsolidatorServlet</servlet-name>
-        <url-pattern>/consolidate-usage</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateCheckServlet</servlet-name>
-        <url-pattern>/update-check</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateXmlUploadServlet</servlet-name>
-        <url-pattern>/upload</url-pattern>
-        <url-pattern>/create-default-versions</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
+     <servlet-mapping>
         <servlet-name>TimeServlet</servlet-name>
         <url-pattern>/time</url-pattern>
+    </servlet-mapping>
+        <servlet-mapping>
+        <servlet-name>TimeServlet</servlet-name>
+        <url-pattern>/consolidate-usage</url-pattern>
     </servlet-mapping>
 
     <security-constraint>
@@ -145,10 +116,6 @@
         <web-resource-collection>
             <web-resource-name>Expire SQL Sessions</web-resource-name>
             <url-pattern>/expire-sql-sessions</url-pattern>
-        </web-resource-collection>
-        <web-resource-collection>
-            <web-resource-name>Consolidate usage</web-resource-name>
-            <url-pattern>/consolidate-usage</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>Update XML uploader</web-resource-name>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
-    <application>findbugs-update</application>
-    <version>1</version>
+    <application>findbugs-cloud</application>
+    <version>3</version>
     <sessions-enabled>true</sessions-enabled>
     <threadsafe>true</threadsafe>
 
