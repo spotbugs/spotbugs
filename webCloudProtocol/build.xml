@@ -10,6 +10,9 @@
         </fileset>
     </path>
 
+    <target name="clean">
+	<delete dir="${classes.dir}"/>
+    </target>
     <target name="classes">
         <mkdir dir="${classes.dir}"/>
         <javac  destdir="${classes.dir}"
