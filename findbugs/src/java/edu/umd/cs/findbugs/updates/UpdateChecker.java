@@ -225,7 +225,7 @@ public class UpdateChecker {
             Util.runInDameonThread(r, "Check for updates");
     }
 
-    static final boolean DEBUG = false;
+    static final boolean DEBUG = SystemProperties.getBoolean("findbugs.updatecheck.debug");
     /** protected for testing */
     protected void actuallyCheckforUpdates(URI url, Collection<Plugin> plugins, String entryPoint) throws IOException {
         LOGGER.fine("Checking for updates at " + url + " for " + getPluginNames(plugins));
