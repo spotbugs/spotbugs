@@ -57,10 +57,6 @@
         <url-pattern>/usage</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UsageConsolidatorServlet</servlet-name>
-        <url-pattern>/consolidate-usage</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>UpdateCheckServlet</servlet-name>
         <url-pattern>/update-check</url-pattern>
     </servlet-mapping>
@@ -78,10 +74,6 @@
         <web-resource-collection>
             <web-resource-name>Remote API</web-resource-name>
             <url-pattern>/remote_api</url-pattern>
-        </web-resource-collection>
-       <web-resource-collection>
-            <web-resource-name>Consolidate usage</web-resource-name>
-            <url-pattern>/consolidate-usage</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>Update XML uploader</web-resource-name>
