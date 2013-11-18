@@ -1,5 +1,5 @@
 #FindBugs User Preferences
-#Mon Sep 30 11:54:09 EDT 2013
+#Thu Nov 07 08:16:06 EST 2013
 cloud_id=edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud
 detectorAbnormalFinallyBlockReturn=AbnormalFinallyBlockReturn|true
 detectorAbstractClassEmptyMethods=AbstractClassEmptyMethods|true
@@ -256,6 +256,6 @@ detectorXMLFactoryBypass=XMLFactoryBypass|true
 detector_threshold=2
 effort=default
 excludefilter0=findbugsExclude.xml|true
-filter_settings=Medium|BAD_PRACTICE,CORRECTNESS,I18N,MT_CORRECTNESS,PERFORMANCE,SECURITY,STYLE|false|15
-filter_settings_neg=MALICIOUS_CODE,NOISE,EXPERIMENTAL|
+filter_settings=Medium|BAD_PRACTICE,CORRECTNESS,EXPERIMENTAL,I18N,MT_CORRECTNESS,PERFORMANCE,SECURITY,STYLE|false|15
+filter_settings_neg=MALICIOUS_CODE,NOISE|
 run_at_full_build=false
