@@ -45,7 +45,10 @@
         <servlet-name>TimeServlet</servlet-name>
         <servlet-class>edu.umd.cs.findbugs.flybush.TimeServlet</servlet-class>
     </servlet>
-
+   <servlet>
+        <servlet-name>CountServlet</servlet-name>
+        <servlet-class>edu.umd.cs.findbugs.flybush.CountServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RemoteApiServlet</servlet-name>
         <url-pattern>/remote_api</url-pattern>
@@ -69,7 +72,10 @@
         <servlet-name>TimeServlet</servlet-name>
         <url-pattern>/time</url-pattern>
     </servlet-mapping>
-
+    <servlet-mapping>
+        <servlet-name>CountServlet</servlet-name>
+        <url-pattern>/count</url-pattern>
+    </servlet-mapping>
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>Remote API</web-resource-name>
