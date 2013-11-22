@@ -305,7 +305,7 @@ public abstract class CommandLine {
 
         while (arg < argv.length) {
             String option = argv[arg];
-            if (option.equals("-help"))
+            if (option.equals("-help") || option.equals("-h"))
                 throw new HelpRequestedException();
             if (!option.startsWith("-"))
                 break;
