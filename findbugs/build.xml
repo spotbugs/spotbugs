@@ -891,6 +891,7 @@
         <!-- Filter set used for generating text substitution values for
             documentation. -->
         <filterset id="doc.filters">
+            <filter token="VERSION_BASE" value="${release.base}" />
             <filter token="VERSION" value="${release.number}" />
             <filter token="RELEASE_DATE" value="${release.date}" />
             <filter token="FINDBUGS_SVN_REVISION" value="${findbugs.svn.revision}" />
