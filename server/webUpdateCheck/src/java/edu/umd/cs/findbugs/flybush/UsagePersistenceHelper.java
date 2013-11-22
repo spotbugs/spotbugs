@@ -33,6 +33,8 @@ public abstract class UsagePersistenceHelper extends BasePersistenceHelper {
 
     public abstract int clearAllData();
 
+    public abstract int count(String kind);
+    
     public abstract <E> E getObjectById(PersistenceManager pm, Class<? extends E> cls, Object key);
 
     public abstract String getEmailOfCurrentAppengineUser();

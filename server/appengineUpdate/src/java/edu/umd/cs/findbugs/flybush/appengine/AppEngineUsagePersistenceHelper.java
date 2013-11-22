@@ -18,6 +18,7 @@ import javax.jdo.PersistenceManagerFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.taskqueue.Queue;
@@ -74,6 +75,13 @@ public class AppEngineUsagePersistenceHelper extends UsagePersistenceHelper {
         return deleted;
     }
 
+    public int count(String kind) {
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        PreparedQuery pquery = ds.prepare(new Query(kind).setKeysOnly());
+        FetchOptions f =  FetchOptions.Builder.withChunkSize(5000);
+        return pquery.countEntities(f);
+    }
+    
     @Override
     public Class<? extends DbUsageEntry> getDbUsageEntryClass() {
         return AppEngineDbUsageEntry.class;

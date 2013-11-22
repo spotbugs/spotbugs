@@ -16,7 +16,7 @@ import edu.umd.cs.findbugs.flybush.FlybushServletTestHelper;
 
 
 public class AppEngineTestHelper 
-        implements FlybushServletTestHelper<AppEnginePersistenceHelper> {
+        implements FlybushServletTestHelper<AppEngineUsagePersistenceHelper> {
     private PersistenceManager persistenceManager;
 
     private PersistenceManager actualPersistenceManager;
@@ -64,8 +64,8 @@ public class AppEngineTestHelper
 
 
     @Override
-    public AppEnginePersistenceHelper createPersistenceHelper(final PersistenceManager persistenceManager) {
-        return new AppEnginePersistenceHelper() {
+    public AppEngineUsagePersistenceHelper createPersistenceHelper(final PersistenceManager persistenceManager) {
+        return new AppEngineUsagePersistenceHelper() {
             @Override
             public PersistenceManagerFactory getPersistenceManagerFactory() {
                 throw new UnsupportedOperationException();

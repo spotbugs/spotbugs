@@ -13,6 +13,7 @@ import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.servlet.ServletException;
@@ -92,6 +93,7 @@ public class UpdateCheckServlet extends AbstractFlybushUpdateServlet {
         } catch (XMLStreamException e) {
             LOGGER.log(Level.WARNING, "Exception while writing XML", e);
         }
+        LOGGER.log(Level.INFO, "Handled query");
     }
 
     @SuppressWarnings("unchecked")
@@ -146,7 +148,7 @@ public class UpdateCheckServlet extends AbstractFlybushUpdateServlet {
         resp.getWriter().println(w.toString());
     }
 
-    private String findOrDetectChannel(DbUsageEntry found) {
+    private @CheckForNull String findOrDetectChannel(DbUsageEntry found) {
         String userChannel = found.getPluginChannel();
         if (userChannel != null) {
             return userChannel;
@@ -160,19 +162,28 @@ public class UpdateCheckServlet extends AbstractFlybushUpdateServlet {
      * @param pluginVersion
      * @return
      */
-    public String getChannel(String pluginVersion) {
+    public @CheckForNull
+    String getChannel(String pluginVersion) {
+        if (pluginVersion == null)
+            return null;
+        pluginVersion = pluginVersion.trim();
+        if (pluginVersion.isEmpty())
+            return null;
         String channel = null;
-        if (pluginVersion != null) {
-            if (STABLE_REGEX.matcher(pluginVersion).matches()) channel = "stable";
-            if (RC_REGEX.matcher(pluginVersion).matches()) channel = "rc";
-            if (BETA_REGEX.matcher(pluginVersion).matches()) channel = "beta";
-            if (ALPHA_REGEX.matcher(pluginVersion).matches()) channel = "alpha";
-            if (DEV_REGEX.matcher(pluginVersion).matches()) channel = "dev";
-            if (channel == null)
-                LOGGER.warning("version does not match any regex: " + pluginVersion);
-            else
-                LOGGER.info("version matches! " + pluginVersion  + " is " + channel);
-        }
+
+        if (STABLE_REGEX.matcher(pluginVersion).matches())
+            channel = "stable";
+        if (RC_REGEX.matcher(pluginVersion).matches())
+            channel = "rc";
+        if (BETA_REGEX.matcher(pluginVersion).matches())
+            channel = "beta";
+        if (ALPHA_REGEX.matcher(pluginVersion).matches())
+            channel = "alpha";
+        if (DEV_REGEX.matcher(pluginVersion).matches())
+            channel = "dev";
+        if (channel == null)
+            LOGGER.warning("version does not match any regex: " + pluginVersion);
+        
         return channel;
     }
 

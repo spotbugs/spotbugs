@@ -243,6 +243,7 @@ public class AppEngineDbUsageEntry implements DbUsageEntry {
         this.date = date;
     }
 
+
     @Override
     public DbUsageEntry copy() {
         AppEngineDbUsageEntry copy = new AppEngineDbUsageEntry();

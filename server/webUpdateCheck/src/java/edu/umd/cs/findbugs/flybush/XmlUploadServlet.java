@@ -25,11 +25,11 @@ public class XmlUploadServlet extends AbstractFlybushUpdateServlet {
             Date date = new Date(System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
             update.setDate(date);
             update.setMessage("message");
-            update.setPluginId("edu.umd.cs.findbugs.plugins.core");
+            update.setPluginId("edu.umd.cs.findbugs.plugins.test");
             update.setReleaseDate(date);
             update.setUrl("http://findbugs.cs.umd.edu");
             update.setUser("findbugs.cs.umd.edu");
-            update.setVersion("2.0.4");
+            update.setVersion("2.0.3");
             update.setJavaVersion(5);
             pm.currentTransaction().begin();
             try {

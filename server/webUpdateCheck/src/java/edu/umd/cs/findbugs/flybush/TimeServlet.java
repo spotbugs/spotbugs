@@ -15,7 +15,7 @@ public class TimeServlet extends HttpServlet {
         resp.setStatus(200);
         resp.setContentType("text/plain");
         resp.getWriter().println(
-                "OK @ " + new Date() + " aka " + System.currentTimeMillis());
+                "OK @ " + new Date());
     }
 
     @Override
