@@ -17,5 +17,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/webCloudProtocol"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.5.jar" sourcepath="C:/Users/Keith/Code/Libraries/commons-lang-2.5/commons-lang-2.5-sources.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/web common"/>
+	<classpathentry kind="var" path="JSR305_ANNOTATIONS"/>
 	<classpathentry kind="output" path="classesEclipse"/>
 </classpath>

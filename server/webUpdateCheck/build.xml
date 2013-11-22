@@ -2,6 +2,7 @@
 	<path id="common.classpath">
 		<path location="../../webCloudProtocol/build/webCloudProtocol.jar" />
 		<path location="../webCommon/build/classes" />
+		<path location="../../findbugs/lib/jsr305.jar"/>
 		<fileset dir="lib" includes="*.jar" />
 	</path>
 
