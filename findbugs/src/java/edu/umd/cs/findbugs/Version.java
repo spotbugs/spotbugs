@@ -44,7 +44,7 @@ public class Version {
     /**
      * Major version number.
      */
-    public static final int MAJOR = 2;
+    public static final int MAJOR = 3;
 
     /**
      * Minor version number.
@@ -54,12 +54,12 @@ public class Version {
     /**
      * Patch level.
      */
-    public static final int PATCHLEVEL = 3;
+    public static final int PATCHLEVEL = 0;
 
     /**
      * Development version or release candidate?
      */
-    public static final boolean IS_DEVELOPMENT = false;
+    public static final boolean IS_DEVELOPMENT = true;
 
     /**
      * Release candidate number. "0" indicates that the version is not a release
