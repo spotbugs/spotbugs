@@ -27,10 +27,12 @@ import edu.umd.cs.findbugs.cloud.CloudPlugin;
  */
 public class NoNameLookup implements NameLookup {
 
+    @Override
     public String getUsername() {
         return "no name";
     }
 
+    @Override
     public boolean signIn(CloudPlugin plugin, BugCollection bugCollection) {
         return true;
     }

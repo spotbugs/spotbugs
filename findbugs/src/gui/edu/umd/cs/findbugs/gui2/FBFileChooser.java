@@ -140,6 +140,7 @@ public class FBFileChooser extends JFileChooser {
         setAccessory(accessory);
 
         showHiddenFileCheckBox.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                 setFileHidingEnabled(!showHiddenFileCheckBox.isSelected());
             }

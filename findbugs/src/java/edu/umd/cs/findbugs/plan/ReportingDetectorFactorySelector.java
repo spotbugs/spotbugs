@@ -48,6 +48,7 @@ public class ReportingDetectorFactorySelector implements DetectorFactorySelector
      * edu.umd.cs.findbugs.plan.DetectorFactorySelector#selectFactory(edu.umd
      * .cs.findbugs.DetectorFactory)
      */
+    @Override
     public boolean selectFactory(DetectorFactory factory) {
         return (plugin == null || plugin == factory.getPlugin()) && factory.isReportingDetector();
     }

@@ -473,6 +473,7 @@ public enum Sortables implements Comparator<String> {
     Sortables(String prettyName) {
         this.prettyName = prettyName;
         this.bugLeafNodeComparator = new Comparator<BugLeafNode>() {
+            @Override
             public int compare(BugLeafNode one, BugLeafNode two) {
                 return Sortables.this.compare(Sortables.this.getFrom(one.getBug()), Sortables.this.getFrom(two.getBug()));
             }
@@ -498,6 +499,7 @@ public enum Sortables implements Comparator<String> {
         return value;
     }
 
+    @Override
     public int compare(String one, String two) {
         // Lexicographical by default
         return one.compareTo(two);

@@ -43,10 +43,12 @@ public abstract class BackwardDataflowAnalysis<Fact> extends AbstractDataflowAna
         return rdfs;
     }
 
+    @Override
     public boolean isForwards() {
         return false;
     }
 
+    @Override
     public BlockOrder getBlockOrder(CFG cfg) {
         return new ReverseDFSOrder(cfg, rdfs, dfs);
     }

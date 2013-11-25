@@ -39,6 +39,7 @@ public class RedundantInterfaces extends PreorderVisitor implements Detector, St
         this.bugReporter = bugReporter;
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass obj = classContext.getJavaClass();
 
@@ -75,6 +76,7 @@ public class RedundantInterfaces extends PreorderVisitor implements Detector, St
         }
     }
 
+    @Override
     public void report() {
     }
 }

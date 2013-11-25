@@ -54,6 +54,7 @@ public class ClassFactory implements IClassFactory {
      * 
      * @see edu.umd.cs.findbugs.classfile.impl.IClassFactory#createClassPath()
      */
+    @Override
     public IClassPath createClassPath() {
         return new ClassPathImpl();
     }
@@ -65,6 +66,7 @@ public class ClassFactory implements IClassFactory {
      * edu.umd.cs.findbugs.classfile.IClassFactory#createClassPathBuilder(edu
      * .umd.cs.findbugs.classfile.IErrorLogger)
      */
+    @Override
     public IClassPathBuilder createClassPathBuilder(IErrorLogger errorLogger) {
         return new ClassPathBuilder(this, errorLogger);
     }
@@ -75,6 +77,7 @@ public class ClassFactory implements IClassFactory {
      * @see edu.umd.cs.findbugs.classfile.impl.IClassFactory#
      * createFilesystemCodeBaseLocator(java.lang.String)
      */
+    @Override
     public ICodeBaseLocator createFilesystemCodeBaseLocator(String pathName) {
         // Attempt to canonicalize the pathname.
         // It's not fatal if we can't.
@@ -94,6 +97,7 @@ public class ClassFactory implements IClassFactory {
      * createNestedArchiveCodeBaseLocator
      * (edu.umd.cs.findbugs.classfile.ICodeBase, java.lang.String)
      */
+    @Override
     public ICodeBaseLocator createNestedArchiveCodeBaseLocator(ICodeBase parentCodeBase, String path) {
         return new NestedZipFileCodeBaseLocator(parentCodeBase, path);
     }
@@ -130,6 +134,7 @@ public class ClassFactory implements IClassFactory {
      * edu.umd.cs.findbugs.classfile.IClassFactory#createAnalysisCache(edu.umd
      * .cs.findbugs.classfile.IClassPath)
      */
+    @Override
     public IAnalysisCache createAnalysisCache(IClassPath classPath, BugReporter errorLogger) {
         IAnalysisCache analysisCache = new AnalysisCache(classPath, errorLogger);
         return analysisCache;

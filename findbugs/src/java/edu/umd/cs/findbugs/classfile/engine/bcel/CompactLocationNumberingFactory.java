@@ -46,6 +46,7 @@ public class CompactLocationNumberingFactory extends AnalysisFactory<CompactLoca
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
      */
+    @Override
     public CompactLocationNumbering analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
             throws CheckedAnalysisException {
         Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);

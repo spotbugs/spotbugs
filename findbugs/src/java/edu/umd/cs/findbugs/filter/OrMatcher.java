@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class OrMatcher extends CompoundMatcher {
 
+    @Override
     public boolean match(BugInstance bugInstance) {
         Iterator<Matcher> i = childIterator();
         while (i.hasNext()) {
@@ -37,6 +38,7 @@ public class OrMatcher extends CompoundMatcher {
         return false;
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         if (numberChildren() == 1) {
             childIterator().next().writeXML(xmlOutput, false);

@@ -72,6 +72,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
         this.bugReporter = bugReporter;
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         classContext.getJavaClass().accept(this);
     }
@@ -208,6 +209,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
      * 
      * @see edu.umd.cs.findbugs.Detector#report()
      */
+    @Override
     public void report() {
         // do nothing
 

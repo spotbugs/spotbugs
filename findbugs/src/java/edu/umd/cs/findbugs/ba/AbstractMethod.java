@@ -31,15 +31,18 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
         super(className, methodName, methodSig, accessFlags);
     }
 
+    @Override
     public int getNumParams() {
         // FIXME: cache this?
         return new SignatureParser(getSignature()).getNumParameters();
     }
 
+    @Override
     public boolean isNative() {
         return (getAccessFlags() & Constants.ACC_NATIVE) != 0;
     }
 
+    @Override
     public boolean isSynchronized() {
         return (getAccessFlags() & Constants.ACC_SYNCHRONIZED) != 0;
     }
@@ -54,11 +57,13 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
      * 
      * @see edu.umd.cs.findbugs.ba.XMethod#getMethodDescriptor()
      */
+    @Override
     public MethodDescriptor getMethodDescriptor() {
         return DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(getClassName()), getName(),
                 getSignature(), isStatic());
     }
     
+    @Override
     public XMethod resolveAccessMethodForMethod() {
         MethodDescriptor access = getAccessMethodForMethod();
         if (access != null) 

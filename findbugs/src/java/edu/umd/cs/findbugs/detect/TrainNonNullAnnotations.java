@@ -49,6 +49,7 @@ public class TrainNonNullAnnotations extends BuildNonNullAnnotationDatabase impl
      * edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba
      * .ClassContext)
      */
+    @Override
     public void visitClassContext(ClassContext classContext) {
         classContext.getJavaClass().accept(this);
     }
@@ -58,6 +59,7 @@ public class TrainNonNullAnnotations extends BuildNonNullAnnotationDatabase impl
      * 
      * @see edu.umd.cs.findbugs.Detector#report()
      */
+    @Override
     public void report() {
         // TODO: FIX for new version of annnotations
         // AnalysisContext.currentAnalysisContext().storePropertyDatabase(

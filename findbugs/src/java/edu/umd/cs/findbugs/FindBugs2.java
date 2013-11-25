@@ -144,10 +144,12 @@ public class FindBugs2 implements IFindBugsEngine {
              *
              * @see edu.umd.cs.findbugs.IClassScreener#matches(java.lang.String)
              */
+            @Override
             public boolean matches(String fileName) {
                 return true;
             }
 
+            @Override
             public boolean vacuous() {
                 return true;
             }
@@ -177,6 +179,7 @@ public class FindBugs2 implements IFindBugsEngine {
      * @param detectorFactoryCollection
      *            The detectorFactoryCollection to set.
      */
+    @Override
     public void setDetectorFactoryCollection(DetectorFactoryCollection detectorFactoryCollection) {
         this.detectorFactoryCollection = detectorFactoryCollection;
     }
@@ -189,6 +192,7 @@ public class FindBugs2 implements IFindBugsEngine {
      * @throws IOException
      * @throws InterruptedException
      */
+    @Override
     public void execute() throws IOException, InterruptedException {
 
         if (FindBugs.isNoAnalysis())
@@ -354,6 +358,7 @@ public class FindBugs2 implements IFindBugsEngine {
      *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getBugReporter()
      */
+    @Override
     public BugReporter getBugReporter() {
         return bugReporter;
     }
@@ -363,6 +368,7 @@ public class FindBugs2 implements IFindBugsEngine {
      *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getProject()
      */
+    @Override
     public Project getProject() {
         return project;
     }
@@ -374,6 +380,7 @@ public class FindBugs2 implements IFindBugsEngine {
      * edu.umd.cs.findbugs.IFindBugsEngine#addClassObserver(edu.umd.cs.findbugs
      * .classfile.IClassObserver)
      */
+    @Override
     public void addClassObserver(IClassObserver classObserver) {
         classObserverList.add(classObserver);
     }
@@ -384,6 +391,7 @@ public class FindBugs2 implements IFindBugsEngine {
      * @see edu.umd.cs.findbugs.IFindBugsEngine#addFilter(java.lang.String,
      * boolean)
      */
+    @Override
     public void addFilter(String filterFileName, boolean include) throws IOException, FilterException {
         bugReporter = FindBugs.configureFilter(bugReporter, filterFileName, include);
     }
@@ -394,6 +402,7 @@ public class FindBugs2 implements IFindBugsEngine {
      * @see
      * edu.umd.cs.findbugs.IFindBugsEngine#addBaselineBugs(java.lang.String)
      */
+    @Override
     public void excludeBaselineBugs(String baselineBugs) throws IOException, DocumentException {
         bugReporter = FindBugs.configureBaselineFilter(bugReporter, baselineBugs);
     }
@@ -404,6 +413,7 @@ public class FindBugs2 implements IFindBugsEngine {
      * @see
      * edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingInput(java.lang.String)
      */
+    @Override
     public void enableTrainingInput(String trainingInputDir) {
         this.analysisOptions.trainingInputDir = trainingInputDir;
     }
@@ -415,6 +425,7 @@ public class FindBugs2 implements IFindBugsEngine {
      * edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingOutput(java.lang.String
      * )
      */
+    @Override
     public void enableTrainingOutput(String trainingOutputDir) {
         this.analysisOptions.trainingOutputDir = trainingOutputDir;
     }
@@ -424,6 +435,7 @@ public class FindBugs2 implements IFindBugsEngine {
      *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getBugCount()
      */
+    @Override
     public int getBugCount() {
         return errorCountingBugReporter.getBugCount();
     }
@@ -433,6 +445,7 @@ public class FindBugs2 implements IFindBugsEngine {
      *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getCurrentClass()
      */
+    @Override
     public String getCurrentClass() {
         return currentClassName;
     }
@@ -442,6 +455,7 @@ public class FindBugs2 implements IFindBugsEngine {
      *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getErrorCount()
      */
+    @Override
     public int getErrorCount() {
         return errorCountingBugReporter.getErrorCount();
     }
@@ -451,6 +465,7 @@ public class FindBugs2 implements IFindBugsEngine {
      *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getMissingClassCount()
      */
+    @Override
     public int getMissingClassCount() {
         return errorCountingBugReporter.getMissingClassCount();
     }
@@ -461,14 +476,17 @@ public class FindBugs2 implements IFindBugsEngine {
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getReleaseName()
      */
 
+    @Override
     public String getReleaseName() {
         return analysisOptions.releaseName;
     }
 
+    @Override
     public String getProjectName() {
         return analysisOptions.projectName;
     }
 
+    @Override
     public void setProjectName(String name) {
         analysisOptions.projectName = name;
     }
@@ -480,6 +498,7 @@ public class FindBugs2 implements IFindBugsEngine {
      * edu.umd.cs.findbugs.IFindBugsEngine#setAnalysisFeatureSettings(edu.umd
      * .cs.findbugs.config.AnalysisFeatureSetting[])
      */
+    @Override
     public void setAnalysisFeatureSettings(AnalysisFeatureSetting[] settingList) {
         this.analysisOptions.analysisFeatureSettingList = settingList;
     }
@@ -491,6 +510,7 @@ public class FindBugs2 implements IFindBugsEngine {
      * edu.umd.cs.findbugs.IFindBugsEngine#setBugReporter(edu.umd.cs.findbugs
      * .BugReporter)
      */
+    @Override
     public void setBugReporter(BugReporter bugReporter) {
         this.bugReporter = this.errorCountingBugReporter = new ErrorCountingBugReporter(bugReporter);
 
@@ -504,6 +524,7 @@ public class FindBugs2 implements IFindBugsEngine {
      * edu.umd.cs.findbugs.IFindBugsEngine#setClassScreener(edu.umd.cs.findbugs
      * .ClassScreener)
      */
+    @Override
     public void setClassScreener(IClassScreener classScreener) {
         this.classScreener = classScreener;
     }
@@ -515,6 +536,7 @@ public class FindBugs2 implements IFindBugsEngine {
      * edu.umd.cs.findbugs.IFindBugsEngine#setProgressCallback(edu.umd.cs.findbugs
      * .FindBugsProgress)
      */
+    @Override
     public void setProgressCallback(FindBugsProgress progressCallback) {
         this.progress = progressCallback;
     }
@@ -526,6 +548,7 @@ public class FindBugs2 implements IFindBugsEngine {
      * edu.umd.cs.findbugs.IFindBugsEngine#setProject(edu.umd.cs.findbugs.Project
      * )
      */
+    @Override
     public void setProject(Project project) {
         this.project = project;
     }
@@ -535,6 +558,7 @@ public class FindBugs2 implements IFindBugsEngine {
      *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#setRelaxedReportingMode(boolean)
      */
+    @Override
     public void setRelaxedReportingMode(boolean relaxedReportingMode) {
         this.analysisOptions.relaxedReportingMode = relaxedReportingMode;
     }
@@ -544,6 +568,7 @@ public class FindBugs2 implements IFindBugsEngine {
      *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#setReleaseName(java.lang.String)
      */
+    @Override
     public void setReleaseName(String releaseName) {
         this.analysisOptions.releaseName = releaseName;
     }
@@ -554,10 +579,12 @@ public class FindBugs2 implements IFindBugsEngine {
      * @see
      * edu.umd.cs.findbugs.IFindBugsEngine#setSourceInfoFile(java.lang.String)
      */
+    @Override
     public void setSourceInfoFile(String sourceInfoFile) {
         this.analysisOptions.sourceInfoFileName = sourceInfoFile;
     }
 
+    @Override
     public void setUserPreferences(UserPreferences userPreferences) {
         this.analysisOptions.userPreferences = userPreferences;
         // TODO should set it here too, but gui2 seems to have issues with it
@@ -628,6 +655,7 @@ public class FindBugs2 implements IFindBugsEngine {
      *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#emitTrainingOutput()
      */
+    @Override
     public boolean emitTrainingOutput() {
         return analysisOptions.trainingOutputDir != null;
     }
@@ -637,6 +665,7 @@ public class FindBugs2 implements IFindBugsEngine {
      *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getUserPreferences()
      */
+    @Override
     public UserPreferences getUserPreferences() {
         return analysisOptions.userPreferences;
     }
@@ -653,6 +682,7 @@ public class FindBugs2 implements IFindBugsEngine {
      *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getTrainingInputDir()
      */
+    @Override
     public String getTrainingInputDir() {
         return analysisOptions.trainingInputDir;
     }
@@ -662,6 +692,7 @@ public class FindBugs2 implements IFindBugsEngine {
      *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getTrainingOutputDir()
      */
+    @Override
     public String getTrainingOutputDir() {
         return analysisOptions.trainingOutputDir;
     }
@@ -671,6 +702,7 @@ public class FindBugs2 implements IFindBugsEngine {
      *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#useTrainingInput()
      */
+    @Override
     public boolean useTrainingInput() {
         return analysisOptions.trainingInputDir != null;
     }
@@ -680,6 +712,7 @@ public class FindBugs2 implements IFindBugsEngine {
      *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#setScanNestedArchives(boolean)
      */
+    @Override
     public void setScanNestedArchives(boolean scanNestedArchives) {
         this.analysisOptions.scanNestedArchives = scanNestedArchives;
     }
@@ -689,6 +722,7 @@ public class FindBugs2 implements IFindBugsEngine {
      *
      * @see edu.umd.cs.findbugs.IFindBugsEngine#setNoClassOk(boolean)
      */
+    @Override
     public void setNoClassOk(boolean noClassOk) {
         this.analysisOptions.noClassOk = noClassOk;
     }
@@ -1028,6 +1062,7 @@ public class FindBugs2 implements IFindBugsEngine {
              * edu.umd.cs.findbugs.DetectorFactoryChooser#choose(edu.umd.cs.
              * findbugs.DetectorFactory)
              */
+            @Override
             public boolean choose(DetectorFactory factory) {
                 boolean result = FindBugs.isDetectorEnabled(FindBugs2.this, factory, rankThreshold) || forcedEnabled.contains(factory);
                 if (ExecutionPlan.DEBUG)
@@ -1035,6 +1070,7 @@ public class FindBugs2 implements IFindBugsEngine {
                 return result;
             }
 
+            @Override
             public void enable(DetectorFactory factory) {
                 forcedEnabled.add(factory);
                 factory.setEnabledButNonReporting(true);
@@ -1130,6 +1166,7 @@ public class FindBugs2 implements IFindBugsEngine {
                 if (!isNonReportingFirstPass) {
                     OutEdges<ClassDescriptor> outEdges = new OutEdges<ClassDescriptor>() {
 
+                        @Override
                         public Collection<ClassDescriptor> getOutEdges(ClassDescriptor e) {
                             try {
                                 XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, e);
@@ -1319,22 +1356,27 @@ public class FindBugs2 implements IFindBugsEngine {
     }
 
 
+    @Override
     public void setAbridgedMessages(boolean xmlWithAbridgedMessages) {
         analysisOptions.abridgedMessages = xmlWithAbridgedMessages;
     }
 
+    @Override
     public void setMergeSimilarWarnings(boolean mergeSimilarWarnings) {
         this.analysisOptions.mergeSimilarWarnings = mergeSimilarWarnings;
     }
 
+    @Override
     public void setApplySuppression(boolean applySuppression) {
         this.analysisOptions.applySuppression = applySuppression;
     }
 
+    @Override
     public void setRankThreshold(int rankThreshold) {
         this.rankThreshold = rankThreshold;
     }
 
+    @Override
     public void finishSettings() {
         if (analysisOptions.applySuppression) {
             bugReporter = new FilterBugReporter(bugReporter, getProject().getSuppressionFilter(), false);
@@ -1347,6 +1389,7 @@ public class FindBugs2 implements IFindBugsEngine {
     @Nonnull
     Set<String> explicitlyDisabledBugReporterDecorators = Collections.emptySet();
 
+    @Override
     public void setBugReporterDecorators(Set<String> explicitlyEnabled, Set<String> explicitlyDisabled) {
         explicitlyEnabledBugReporterDecorators = explicitlyEnabled;
         explicitlyDisabledBugReporterDecorators = explicitlyDisabled;

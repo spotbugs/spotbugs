@@ -747,6 +747,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
     }
 
+    @Override
     public void build() throws CFGBuilderException {
         InstructionList instructionList = methodGen.getInstructionList();
         optimize(instructionList);
@@ -780,6 +781,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         }
     }
 
+    @Override
     public CFG getCFG() {
         return cfg;
     }

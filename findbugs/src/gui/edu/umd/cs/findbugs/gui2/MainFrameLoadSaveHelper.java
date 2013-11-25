@@ -435,6 +435,7 @@ public class MainFrameLoadSaveHelper implements Serializable {
     SaveReturn printHtml(final File f) {
 
         Future<Object> waiter = mainFrame.getBackgroundExecutor().submit(new Callable<Object>() {
+            @Override
             public Object call() throws Exception {
                 HTMLBugReporter reporter = new HTMLBugReporter( mainFrame.getProject(), "default.xsl");
                 reporter.setIsRelaxed(true);
@@ -472,6 +473,7 @@ public class MainFrameLoadSaveHelper implements Serializable {
     SaveReturn saveAnalysis(final File f) {
 
         Future<Object> waiter = mainFrame.getBackgroundExecutor().submit(new Callable<Object>() {
+            @Override
             public Object call() throws Exception {
                 BugSaver.saveBugs(f, mainFrame.getBugCollection(), mainFrame.getProject());
                 return null;
@@ -521,6 +523,7 @@ public class MainFrameLoadSaveHelper implements Serializable {
     void loadAnalysis(final File file) {
 
         Runnable runnable = new Runnable() {
+            @Override
             public void run() {
                 mainFrame.acquireDisplayWait();
                 try {
@@ -545,6 +548,7 @@ public class MainFrameLoadSaveHelper implements Serializable {
     void loadAnalysis(final URL url) {
 
         Runnable runnable = new Runnable() {
+            @Override
             public void run() {
                 mainFrame.acquireDisplayWait();
                 try {
@@ -568,6 +572,7 @@ public class MainFrameLoadSaveHelper implements Serializable {
     void loadProjectFromFile(final File f) {
 
         Runnable runnable = new Runnable() {
+            @Override
             public void run() {
                 final Project project = BugLoader.loadProject(mainFrame, f);
                 final BugCollection bc = project == null ? null : BugLoader.doAnalysis(project);

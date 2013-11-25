@@ -61,6 +61,7 @@ public class NestedZipFileCodeBaseLocator implements ICodeBaseLocator {
      * edu.umd.cs.findbugs.classfile.ICodeBaseLocator#createRelativeCodeBaseLocator
      * (java.lang.String)
      */
+    @Override
     public ICodeBaseLocator createRelativeCodeBaseLocator(String relativePath) {
         // The relative path indicates another codebase (archive) in the same
         // parent codebase
@@ -72,6 +73,7 @@ public class NestedZipFileCodeBaseLocator implements ICodeBaseLocator {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseLocator#openCodeBase()
      */
+    @Override
     public ICodeBase openCodeBase() throws ResourceNotFoundException, IOException {
         return ClassFactory.createNestedZipFileCodeBase(this);
     }

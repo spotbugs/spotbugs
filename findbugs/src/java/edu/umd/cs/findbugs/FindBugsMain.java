@@ -61,6 +61,7 @@ public class FindBugsMain implements Comparable<FindBugsMain> {
         mainMethod.invoke(null, (Object) args);
     }
 
+    @Override
     public int compareTo(FindBugsMain that) {
         int result = kind.compareTo(that.kind);
         if (result != 0)

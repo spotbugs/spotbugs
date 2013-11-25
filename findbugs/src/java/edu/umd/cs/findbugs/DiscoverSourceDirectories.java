@@ -78,47 +78,61 @@ public class DiscoverSourceDirectories {
 
     private static class NoOpErrorLogger implements IErrorLogger {
 
+        @Override
         public void reportMissingClass(ClassNotFoundException ex) {
         }
 
+        @Override
         public void reportMissingClass(ClassDescriptor classDescriptor) {
         }
 
+        @Override
         public void logError(String message) {
         }
 
+        @Override
         public void logError(String message, Throwable e) {
         }
 
+        @Override
         public void reportSkippedAnalysis(MethodDescriptor method) {
         }
     }
 
     private static class NoOpProgress implements Progress {
+        @Override
         public void startScanningArchives(int numArchivesToScan) {
         }
 
+        @Override
         public void doneScanningArchives() {
         }
 
+        @Override
         public void startScanningClasses(int numClassesToScan) {
         }
 
+        @Override
         public void finishClass() {
         }
 
+        @Override
         public void doneScanningClasses() {
         }
 
+        @Override
         public void finishArchive() {
         }
 
+        @Override
         public void startRecursiveDirectorySearch() {
         }
 
+        @Override
         public void doneRecursiveDirectorySearch() {
         }
 
+        @Override
         public void startArchive(String name) {
         }
 
@@ -225,6 +239,7 @@ public class DiscoverSourceDirectories {
         // Find all directories underneath the root source directory
         progress.startRecursiveDirectorySearch();
         RecursiveFileSearch rfs = new RecursiveFileSearch(rootSourceDirectory, new FileFilter() {
+            @Override
             public boolean accept(File pathname) {
                 return pathname.isDirectory();
             }
@@ -387,6 +402,7 @@ public class DiscoverSourceDirectories {
 
         IErrorLogger errorLogger = new IErrorLogger() {
 
+            @Override
             public void reportMissingClass(ClassNotFoundException ex) {
                 String className = ClassNotFoundExceptionParser.getMissingClassName(ex);
                 if (className != null) {
@@ -396,18 +412,22 @@ public class DiscoverSourceDirectories {
                 }
             }
 
+            @Override
             public void reportMissingClass(ClassDescriptor classDescriptor) {
                 logError("Missing class: " + classDescriptor.toDottedClassName());
             }
 
+            @Override
             public void logError(String message) {
                 System.err.println("Error: " + message);
             }
 
+            @Override
             public void logError(String message, Throwable e) {
                 logError(message + ": " + e.getMessage());
             }
 
+            @Override
             public void reportSkippedAnalysis(MethodDescriptor method) {
                 logError("Skipped analysis of method " + method.toString());
             }
@@ -416,43 +436,52 @@ public class DiscoverSourceDirectories {
 
         DiscoverSourceDirectories.Progress progress = new DiscoverSourceDirectories.Progress() {
 
+            @Override
             public void startRecursiveDirectorySearch() {
                 System.out.print("Scanning directories...");
                 System.out.flush();
             }
 
+            @Override
             public void doneRecursiveDirectorySearch() {
                 System.out.println("done");
             }
 
+            @Override
             public void startScanningArchives(int numArchivesToScan) {
                 System.out.print("Scanning " + numArchivesToScan + " archives..");
                 System.out.flush();
             }
 
+            @Override
             public void doneScanningArchives() {
                 System.out.println("done");
             }
 
+            @Override
             public void startScanningClasses(int numClassesToScan) {
                 System.out.print("Scanning " + numClassesToScan + " classes...");
                 System.out.flush();
             }
 
+            @Override
             public void finishClass() {
                 System.out.print(".");
                 System.out.flush();
             }
 
+            @Override
             public void doneScanningClasses() {
                 System.out.println("done");
             }
 
+            @Override
             public void finishArchive() {
                 System.out.print(".");
                 System.out.flush();
             }
 
+            @Override
             public void startArchive(String name) {
                 // noop
             }

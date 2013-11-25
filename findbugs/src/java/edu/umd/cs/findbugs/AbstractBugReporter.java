@@ -139,10 +139,12 @@ public abstract class AbstractBugReporter implements BugReporter {
         rankThreshold = BugRanker.VISIBLE_RANK_MAX;
     }
 
+    @Override
     public void setErrorVerbosity(int level) {
         this.verbosityLevel = level;
     }
 
+    @Override
     public void setPriorityThreshold(int threshold) {
         this.priorityThreshold = threshold;
     }
@@ -167,6 +169,7 @@ public abstract class AbstractBugReporter implements BugReporter {
         return relaxed;
     }
     // Subclasses must override doReportBug(), not this method.
+    @Override
     public final void reportBug(@Nonnull BugInstance bugInstance) {
         if (isRelaxed()) {
             doReportBug(bugInstance);
@@ -219,6 +222,7 @@ public abstract class AbstractBugReporter implements BugReporter {
         return null;
     }
 
+    @Override
     public void reportMissingClass(ClassNotFoundException ex) {
         if (DEBUG_MISSING_CLASSES) {
             System.out.println("Missing class: " + ex.toString());
@@ -272,6 +276,7 @@ public abstract class AbstractBugReporter implements BugReporter {
      * edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd
      * .cs.findbugs.classfile.ClassDescriptor)
      */
+    @Override
     public void reportMissingClass(ClassDescriptor classDescriptor) {
         if (DEBUG_MISSING_CLASSES) {
             System.out.println("Missing class: " + classDescriptor);
@@ -300,10 +305,12 @@ public abstract class AbstractBugReporter implements BugReporter {
      *
      * @param method
      */
+    @Override
     public void reportSkippedAnalysis(MethodDescriptor method) {
         // TODO: log this
     }
 
+    @Override
     public void logError(String message) {
         if (verbosityLevel == SILENT) {
             return;
@@ -329,6 +336,7 @@ public abstract class AbstractBugReporter implements BugReporter {
         return missingClassMessageList;
     }
 
+    @Override
     public void logError(String message, Throwable e) {
 
         if (e instanceof MethodUnprofitableException) {
@@ -361,10 +369,12 @@ public abstract class AbstractBugReporter implements BugReporter {
         }
     }
 
+    @Override
     public void reportQueuedErrors() {
         // Report unique errors in order of their sequence
         Error[] errorList = errorSet.toArray(new Error[errorSet.size()]);
         Arrays.sort(errorList, new Comparator<Error>() {
+            @Override
             public int compare(Error o1, Error o2) {
                 return o1.getSequence() - o2.getSequence();
             }
@@ -378,10 +388,12 @@ public abstract class AbstractBugReporter implements BugReporter {
         }
     }
 
+    @Override
     public void addObserver(BugReporterObserver observer) {
         observerList.add(observer);
     }
 
+    @Override
     public ProjectStats getProjectStats() {
         return projectStats;
     }

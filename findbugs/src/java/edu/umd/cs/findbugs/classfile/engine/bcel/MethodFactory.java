@@ -45,6 +45,7 @@ public class MethodFactory extends AnalysisFactory<Method> {
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
      */
+    @Override
     public Method analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, descriptor.getClassDescriptor());
         Method[] methodList = jclass.getMethods();

@@ -2660,6 +2660,7 @@ public class OpcodeStack implements Constants2 {
             super("Jump info for opcode stack", JumpInfo.class);
         }
 
+        @Override
         public @CheckForNull JumpInfo analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
             Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
             JavaClass jclass = getJavaClass(analysisCache, descriptor.getClassDescriptor());

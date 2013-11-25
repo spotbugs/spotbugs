@@ -669,6 +669,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
      * org.apache.bcel.classfile.Visitor#visitAnnotation(org.apache.bcel.classfile
      * .Annotations)
      */
+    @Override
     public void visitAnnotation(Annotations arg0) {
         // TODO Auto-generated method stub
 
@@ -681,6 +682,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
      * org.apache.bcel.classfile.Visitor#visitAnnotationDefault(org.apache.bcel
      * .classfile.AnnotationDefault)
      */
+    @Override
     public void visitAnnotationDefault(AnnotationDefault arg0) {
         // TODO Auto-generated method stub
 
@@ -693,6 +695,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
      * org.apache.bcel.classfile.Visitor#visitAnnotationEntry(org.apache.bcel
      * .classfile.AnnotationEntry)
      */
+    @Override
     public void visitAnnotationEntry(AnnotationEntry arg0) {
         // TODO Auto-generated method stub
 
@@ -705,6 +708,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
      * org.apache.bcel.classfile.Visitor#visitEnclosingMethod(org.apache.bcel
      * .classfile.EnclosingMethod)
      */
+    @Override
     public void visitEnclosingMethod(EnclosingMethod arg0) {
         // TODO Auto-generated method stub
 
@@ -717,6 +721,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
      * org.apache.bcel.classfile.Visitor#visitParameterAnnotation(org.apache
      * .bcel.classfile.ParameterAnnotations)
      */
+    @Override
     public void visitParameterAnnotation(ParameterAnnotations arg0) {
     }
 
@@ -727,6 +732,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
      * org.apache.bcel.classfile.Visitor#visitStackMapTable(org.apache.bcel.
      * classfile.StackMapTable)
      */
+    @Override
     public void visitStackMapTable(StackMapTable arg0) {
         // TODO Auto-generated method stub
 
@@ -739,6 +745,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
      * org.apache.bcel.classfile.Visitor#visitStackMapTableEntry(org.apache.
      * bcel.classfile.StackMapTableEntry)
      */
+    @Override
     public void visitStackMapTableEntry(StackMapTableEntry arg0) {
         // TODO Auto-generated method stub
 

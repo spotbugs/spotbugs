@@ -47,15 +47,18 @@ public class Dom4JXMLOutput implements XMLOutput {
         stack.addLast(topLevel);
     }
 
+    @Override
     public void beginDocument() {
     }
 
+    @Override
     public void openTag(String tagName) {
         Branch top = stack.getLast();
         Element element = top.addElement(tagName);
         stack.addLast(element);
     }
 
+    @Override
     public void openTag(String tagName, XMLAttributeList attributeList) {
         Branch top = stack.getLast();
         Element element = top.addElement(tagName);
@@ -67,42 +70,50 @@ public class Dom4JXMLOutput implements XMLOutput {
         }
     }
 
+    @Override
     public void openCloseTag(String tagName) {
         openTag(tagName);
         closeTag(tagName);
     }
 
+    @Override
     public void openCloseTag(String tagName, XMLAttributeList attributeList) {
         openTag(tagName, attributeList);
         closeTag(tagName);
     }
 
+    @Override
     public void startTag(String tagName) {
         Branch top = stack.getLast();
         Element element = top.addElement(tagName);
         stack.addLast(element);
     }
 
+    @Override
     public void addAttribute(String name, String value) {
         Element element = (Element) stack.getLast();
         element.addAttribute(name, value);
     }
 
+    @Override
     public void stopTag(boolean close) {
         if (close) {
             closeTag(null);
         }
     }
 
+    @Override
     public void closeTag(String tagName) {
         stack.removeLast();
     }
 
+    @Override
     public void writeText(String text) {
         Element top = (Element) stack.getLast();
         top.addText(text);
     }
 
+    @Override
     public void writeCDATA(String cdata) {
         Element top = (Element) stack.getLast();
         top.addCDATA(cdata);
@@ -151,6 +162,7 @@ public class Dom4JXMLOutput implements XMLOutput {
         }
     }
 
+    @Override
     public void finish() {
     }
 }

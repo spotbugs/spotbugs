@@ -50,6 +50,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
          * 
          * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#hasNext()
          */
+        @Override
         public boolean hasNext() throws InterruptedException {
             return fileNameIterator.hasNext();
         }
@@ -59,6 +60,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
          * 
          * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
          */
+        @Override
         public ICodeBaseEntry next() throws InterruptedException {
             final String fileName = fileNameIterator.next();
 
@@ -100,6 +102,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
              * 
              * @see java.io.FileFilter#accept(java.io.File)
              */
+            @Override
             public boolean accept(File pathname) {
                 return true;
             }
@@ -112,6 +115,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#iterator()
      */
+    @Override
     public ICodeBaseIterator iterator() throws InterruptedException {
         if (!searchPerformed) {
             rfs.search();
@@ -126,6 +130,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
      */
+    @Override
     public String getPathName() {
         return directory.getPath();
     }
@@ -135,6 +140,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
      */
+    @Override
     public void close() {
         // Nothing to do
     }
@@ -145,6 +151,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
      */
+    @Override
     public ICodeBaseEntry lookupResource(String resourceName) {
         // Translate resource name, in case a resource name
         // has been overridden and the resource is being accessed

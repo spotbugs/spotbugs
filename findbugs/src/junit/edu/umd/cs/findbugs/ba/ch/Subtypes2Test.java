@@ -137,6 +137,7 @@ public class Subtypes2Test extends FindBugsTestCase {
              * 
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
+            @Override
             public void run() throws Throwable {
                 Subtypes2 test = getSubtypes2();
 
@@ -152,6 +153,7 @@ public class Subtypes2Test extends FindBugsTestCase {
              * 
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
+            @Override
             public void run() throws Throwable {
                 Subtypes2 test = getSubtypes2();
 
@@ -167,6 +169,7 @@ public class Subtypes2Test extends FindBugsTestCase {
              * 
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
+            @Override
             public void run() throws Throwable {
                 Subtypes2 test = getSubtypes2();
 
@@ -179,6 +182,7 @@ public class Subtypes2Test extends FindBugsTestCase {
 
     public void testInterfaceIsSubtypeOfObject() throws Throwable {
         executeFindBugsTest(new RunnableWithExceptions() {
+            @Override
             public void run() throws ClassNotFoundException {
                 Subtypes2 test = getSubtypes2();
 
@@ -194,6 +198,7 @@ public class Subtypes2Test extends FindBugsTestCase {
              * 
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
+            @Override
             public void run() throws Throwable {
                 Subtypes2 test = getSubtypes2();
 
@@ -210,6 +215,7 @@ public class Subtypes2Test extends FindBugsTestCase {
              * 
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
+            @Override
             public void run() throws Throwable {
                 Subtypes2 test = getSubtypes2();
 
@@ -225,6 +231,7 @@ public class Subtypes2Test extends FindBugsTestCase {
              * 
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
+            @Override
             public void run() throws Throwable {
                 Subtypes2 test = getSubtypes2();
 
@@ -240,6 +247,7 @@ public class Subtypes2Test extends FindBugsTestCase {
              * 
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
+            @Override
             public void run() throws Throwable {
                 Subtypes2 test = getSubtypes2();
 
@@ -257,6 +265,7 @@ public class Subtypes2Test extends FindBugsTestCase {
              * 
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
+            @Override
             public void run() throws Exception {
                 Subtypes2 test = getSubtypes2();
 
@@ -272,6 +281,7 @@ public class Subtypes2Test extends FindBugsTestCase {
              * 
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
+            @Override
             public void run() throws Exception {
                 Subtypes2 test = getSubtypes2();
 
@@ -289,6 +299,7 @@ public class Subtypes2Test extends FindBugsTestCase {
              * 
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
+            @Override
             public void run() throws Throwable {
                 Subtypes2 test = getSubtypes2();
 
@@ -310,6 +321,7 @@ public class Subtypes2Test extends FindBugsTestCase {
              * 
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
+            @Override
             public void run() throws Throwable {
                 Subtypes2 test = getSubtypes2();
 
@@ -329,6 +341,7 @@ public class Subtypes2Test extends FindBugsTestCase {
              * 
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
+            @Override
             public void run() throws Throwable {
                 Subtypes2 test = getSubtypes2();
 
@@ -352,6 +365,7 @@ public class Subtypes2Test extends FindBugsTestCase {
     public void testArrayFirstCommonSuperclassTricky() throws Exception {
         executeFindBugsTest(new RunnableWithExceptions() {
 
+            @Override
             public void run() throws Throwable {
                 Subtypes2 test = getSubtypes2();
 
@@ -369,6 +383,7 @@ public class Subtypes2Test extends FindBugsTestCase {
     public void testInterfaces() throws Exception {
         executeFindBugsTest(new RunnableWithExceptions() {
 
+            @Override
             public void run() throws Throwable {
                 Subtypes2 test = getSubtypes2();
                 assertEquals(typeCollection, test.getFirstCommonSuperclass(typeCollection, typeHashSet));

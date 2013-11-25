@@ -63,6 +63,7 @@ public class Profiler implements XMLWriteable {
             this.minNanoSeconds = minNanoSeconds;
         }
 
+        @Override
         public boolean accepts(Profile p) {
             long time = p.totalTime.get();
             if (time < minNanoSeconds) {
@@ -79,6 +80,7 @@ public class Profiler implements XMLWriteable {
             this.minNanoSeconds = minNanoSeconds;
         }
 
+        @Override
         public boolean accepts(Profile p) {
             int totalCalls = p.totalCalls.get();
             long time = p.totalTime.get();
@@ -96,6 +98,7 @@ public class Profiler implements XMLWriteable {
             this.minCalls = minCalls;
         }
 
+        @Override
         public boolean accepts(Profile p) {
             int totalCalls = p.totalCalls.get();
             if (totalCalls < minCalls) {
@@ -150,6 +153,7 @@ public class Profiler implements XMLWriteable {
          * @throws IOException
          */
 
+        @Override
         public void writeXML(XMLOutput xmlOutput) throws IOException {
             long time = totalTime.get();
             int callCount = totalCalls.get();
@@ -274,6 +278,7 @@ public class Profiler implements XMLWriteable {
             this.profiler = p;
         }
 
+        @Override
         public int compare(Class<?> c1, Class<?> c2) {
             try {
                 return c1.getSimpleName().compareTo(c2.getSimpleName());
@@ -427,6 +432,7 @@ public class Profiler implements XMLWriteable {
      * edu.umd.cs.findbugs.xml.XMLWriteable#writeXML(edu.umd.cs.findbugs.xml
      * .XMLOutput)
      */
+    @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         xmlOutput.startTag("FindBugsProfile");
         xmlOutput.stopTag(false);

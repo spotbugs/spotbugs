@@ -28,6 +28,7 @@ import org.apache.bcel.generic.Type;
  */
 public class AnyTypeMatcher implements TypeMatcher {
 
+    @Override
     public boolean matches(Type t) {
         return true;
     }

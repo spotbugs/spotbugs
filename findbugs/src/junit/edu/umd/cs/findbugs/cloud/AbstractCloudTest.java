@@ -341,10 +341,12 @@ public class AbstractCloudTest extends TestCase {
             super(plugin, bugs, properties);
         }
 
+        @Override
         public void storeUserAnnotation(BugInstance bugInstance) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public String getUser() {
             return "user";
         }
@@ -354,19 +356,24 @@ public class AbstractCloudTest extends TestCase {
             return SigninState.NO_SIGNIN_REQUIRED;
         }
 
+        @Override
         public void setSaveSignInInformation(boolean save) {
         }
 
+        @Override
         public boolean isSavingSignInInformationEnabled() {
             return false;
         }
 
+        @Override
         public void signIn() {
         }
 
+        @Override
         public void signOut() {
         }
 
+        @Override
         public BugDesignation getPrimaryDesignation(BugInstance b) {
             throw new UnsupportedOperationException();
         }
@@ -376,39 +383,49 @@ public class AbstractCloudTest extends TestCase {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void initiateCommunication() {
 
         }
 
+        @Override
         public void bugFiled(BugInstance b, Object bugLink) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public boolean availableForInitialization() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void waitUntilIssueDataDownloaded() {
         }
+        @Override
         public boolean waitUntilNewIssuesUploaded(long timeout, TimeUnit unit) throws InterruptedException {
             return true;
         }
 
+        @Override
         public void waitUntilNewIssuesUploaded() {
 
         }
+        @Override
         public boolean waitUntilIssueDataDownloaded(long timeout, TimeUnit unit) throws InterruptedException {
             return true;
         }
 
+        @Override
         public Collection<String> getProjects(String className) {
             return Collections.emptyList();
         }
 
+        @Override
         public boolean isInCloud(BugInstance b) {
             return true;
         }
 
+        @Override
         public boolean isOnlineCloud() {
             return false;
         }

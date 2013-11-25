@@ -41,6 +41,7 @@ public class RegexStringMatcher implements StringMatcher {
         pattern = Pattern.compile(patStr);
     }
 
+    @Override
     public boolean matches(String s) {
         Matcher m = pattern.matcher(s);
         return m.matches();

@@ -125,6 +125,7 @@ public class Naming extends PreorderVisitor implements Detector {
         this.bugReporter = bugReporter;
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         classContext.getJavaClass().accept(this);
     }
@@ -254,6 +255,7 @@ public class Naming extends PreorderVisitor implements Detector {
         return false;
     }
 
+    @Override
     public void report() {
 
         for (Map.Entry<String, TreeSet<XMethod>> e : canonicalToXMethod.entrySet()) {

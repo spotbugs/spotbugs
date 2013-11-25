@@ -39,6 +39,7 @@ public interface WarningComparator extends Comparator<BugInstance> {
      * 
      * @see java.util.Comparator#compare(T, T)
      */
+    @Override
     public abstract int compare(BugInstance lhs, BugInstance rhs);
 
 }

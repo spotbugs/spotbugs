@@ -381,6 +381,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                 return couldNotAnalyze;
             }
 
+            @Override
             public void visitBasicBlock(BasicBlock basicBlock) {
                 curBlock = basicBlock;
 
@@ -393,6 +394,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                 }
             }
 
+            @Override
             public void visitInstructionHandle(InstructionHandle handle) {
                 try {
                     Instruction ins = handle.getInstruction();
@@ -557,6 +559,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                 }
             }
 
+            @Override
             public void visitEdge(Edge edge) {
                 if (DEBUG_FP) {
                     System.out.println("visit edge " + edge);
@@ -641,6 +644,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 
                 BasicBlock curBlock;
 
+                @Override
                 public void visitBasicBlock(BasicBlock basicBlock) {
                     curBlock = basicBlock;
 
@@ -669,6 +673,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                     }
                 }
 
+                @Override
                 public void visitInstructionHandle(InstructionHandle handle) {
                     boolean isCreation = (dataflow.getAnalysis().getActionCache().addsObligation(curBlock, handle, obligation));
 
@@ -696,6 +701,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                     }
                 }
 
+                @Override
                 public void visitEdge(Edge edge) {
                     if (REPORT_PATH_DEBUG) {
                         System.out.println("Edge of type " + Edge.edgeTypeToString(edge.getType()) + " to "

@@ -105,6 +105,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
         return active;
     }
 
+    @Override
     public boolean match(BugInstance bugInstance) {
         if (!active)
             return true;
@@ -165,6 +166,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
         return value.hashCode() + filterBy.hashCode();
     }
 
+    @Override
     public int compareTo(FilterMatcher that) {
         if (this.filterBy != that.filterBy)
             return (this.filterBy.ordinal() < that.filterBy.ordinal() ? -1 : 1);
@@ -172,6 +174,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
         return this.value.compareTo(that.value);
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         throw new UnsupportedOperationException();
     }

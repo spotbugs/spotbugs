@@ -180,6 +180,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         this.classContext = classContext;
 
@@ -434,6 +435,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         }
 
         BitSet nullArgSet = frame.getArgumentSet(invokeInstruction, cpg, new DataflowValueChooser<IsNullValue>() {
+            @Override
             public boolean choose(IsNullValue value) {
                 // Only choose non-exception values.
                 // Values null on an exception path might be due to
@@ -442,6 +444,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             }
         });
         BitSet definitelyNullArgSet = frame.getArgumentSet(invokeInstruction, cpg, new DataflowValueChooser<IsNullValue>() {
+            @Override
             public boolean choose(IsNullValue value) {
                 return value.isDefinitelyNull();
             }
@@ -881,6 +884,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
     }
 
+    @Override
     public void report() {
     }
 
@@ -894,11 +898,13 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
      *             {@link #foundNullDeref(Location,ValueNumber,IsNullValue,ValueNumberFrame,boolean)}
      *             instead
      */
+    @Override
     @Deprecated
     public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame) {
         foundNullDeref(location, valueNumber, refValue, vnaFrame, true);
     }
 
+    @Override
     public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame,
             boolean isConsistent) {
         WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
@@ -1027,6 +1033,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         return false;
     }
 
+    @Override
     public void foundRedundantNullCheck(Location location, RedundantBranch redundantBranch) {
 
         boolean isChecked = redundantBranch.firstValue.isChecked();
@@ -1323,6 +1330,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
      * foundGuaranteedNullDeref(java.util.Set, java.util.Set,
      * edu.umd.cs.findbugs.ba.vna.ValueNumber, boolean)
      */
+    @Override
     public void foundGuaranteedNullDeref(@Nonnull
     Set<Location> assignedNullLocationSet, @Nonnull
     Set<Location> derefLocationSet, SortedSet<Location> doomedLocations, ValueNumberDataflow vna, ValueNumber refValue,

@@ -46,6 +46,7 @@ public class UnpackedCodeFactory extends AnalysisFactory<UnpackedCode> {
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
      */
+    @Override
     public UnpackedCode analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         Method method = getMethod(analysisCache, descriptor);
         Code code = method.getCode();

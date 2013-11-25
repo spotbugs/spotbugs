@@ -50,6 +50,7 @@ public class ObligationDataflowFactory extends AnalysisFactory<ObligationDataflo
         super("Obligation dataflow", ObligationDataflow.class);
     }
 
+    @Override
     public ObligationDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
             throws CheckedAnalysisException {
         CFG cfg = analysisCache.getMethodAnalysis(CFG.class, methodDescriptor);

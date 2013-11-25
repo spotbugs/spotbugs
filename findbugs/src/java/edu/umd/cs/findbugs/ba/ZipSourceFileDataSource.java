@@ -41,12 +41,14 @@ public class ZipSourceFileDataSource implements SourceFileDataSource {
         this.zipEntry = zipFile.getEntry(entryName);
     }
 
+    @Override
     public InputStream open() throws IOException {
         if (zipEntry == null)
             throw new FileNotFoundException("No zip entry for " + entryName);
         return zipFile.getInputStream(zipEntry);
     }
 
+    @Override
     public String getFullFileName() {
         return entryName;
     }
@@ -54,6 +56,7 @@ public class ZipSourceFileDataSource implements SourceFileDataSource {
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.ba.SourceFileDataSource#getLastModified()
      */
+    @Override
     public long getLastModified() {
         long time = zipEntry.getTime();
         if (time < 0)

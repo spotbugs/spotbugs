@@ -44,6 +44,7 @@ public class StreamEscape implements Comparable<StreamEscape> {
         this.target = target;
     }
 
+    @Override
     public int compareTo(StreamEscape other) {
         int cmp = source.compareTo(other.source);
         if (cmp != 0)

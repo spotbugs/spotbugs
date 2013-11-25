@@ -139,10 +139,12 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
         }
     }
 
+    @Override
     public BlockOrder getBlockOrder(CFG cfg1) {
         return new ReverseDFSOrder(cfg1, rdfs, dfs);
     }
 
+    @Override
     public boolean isForwards() {
         return false;
     }

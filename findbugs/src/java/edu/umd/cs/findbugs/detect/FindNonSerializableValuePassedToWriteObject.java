@@ -39,6 +39,7 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
         this.bugReporter = bugReporter;
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         Method[] methodList = classContext.getJavaClass().getMethods();
 
@@ -145,6 +146,7 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
         }
     }
 
+    @Override
     public void report() {
     }
 

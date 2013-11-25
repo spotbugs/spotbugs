@@ -63,6 +63,7 @@ public class CheckCalls implements Detector, NonReportingDetector {
      * edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba
      * .ClassContext)
      */
+    @Override
     public void visitClassContext(ClassContext classContext) {
         Method[] methodList = classContext.getJavaClass().getMethods();
         for (Method method : methodList) {
@@ -124,6 +125,7 @@ public class CheckCalls implements Detector, NonReportingDetector {
      * 
      * @see edu.umd.cs.findbugs.Detector#report()
      */
+    @Override
     public void report() {
     }
 

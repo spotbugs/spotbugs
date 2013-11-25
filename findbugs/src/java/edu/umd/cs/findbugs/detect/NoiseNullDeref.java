@@ -126,6 +126,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         this.classContext = classContext;
 
@@ -219,6 +220,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
     static class CheckCallSitesAndReturnInstructions {
     }
 
+    @Override
     public void report() {
     }
 
@@ -232,11 +234,13 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
      *             {@link #foundNullDeref(Location,ValueNumber,IsNullValue,ValueNumberFrame,boolean)}
      *             instead
      */
+    @Override
     @Deprecated
     public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame) {
         foundNullDeref(location, valueNumber, refValue, vnaFrame, true);
     }
 
+    @Override
     public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame,
             boolean isConsistent) {
         if (!refValue.isNullOnComplicatedPath23())
@@ -323,6 +327,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
         return false;
     }
 
+    @Override
     public void foundRedundantNullCheck(Location location, RedundantBranch redundantBranch) {
 
     }
@@ -334,6 +339,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
      * foundGuaranteedNullDeref(java.util.Set, java.util.Set,
      * edu.umd.cs.findbugs.ba.vna.ValueNumber, boolean)
      */
+    @Override
     public void foundGuaranteedNullDeref(@Nonnull Set<Location> assignedNullLocationSet, @Nonnull Set<Location> derefLocationSet,
             SortedSet<Location> doomedLocations, ValueNumberDataflow vna, ValueNumber refValue,
             @CheckForNull BugAnnotation variableAnnotation, NullValueUnconditionalDeref deref, boolean npeIfStatementCovered) {

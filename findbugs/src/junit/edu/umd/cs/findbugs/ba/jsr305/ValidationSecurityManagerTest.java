@@ -42,6 +42,7 @@ public class ValidationSecurityManagerTest {
     private static final SlashedClassName ANNOTATION = AnnotationTemplate.class.getAnnotation(SlashedClassName.class);
     static class BadValidator implements TypeQualifierValidator<SlashedClassName> {
 
+        @Override
         public @Nonnull
         When forConstantValue(@Nonnull
         SlashedClassName annotation, Object value) {

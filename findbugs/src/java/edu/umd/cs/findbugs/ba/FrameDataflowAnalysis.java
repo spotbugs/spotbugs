@@ -37,18 +37,22 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
         super(dfs);
     }
 
+    @Override
     public void copy(FrameType source, FrameType dest) {
         dest.copyFrom(source);
     }
 
+    @Override
     public void makeFactTop(FrameType fact) {
         fact.setTop();
     }
 
+    @Override
     public boolean isTop(FrameType fact) {
         return fact.isTop();
     }
 
+    @Override
     public boolean same(FrameType fact1, FrameType fact2) {
         return fact1.sameAs(fact2);
     }

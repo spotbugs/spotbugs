@@ -44,6 +44,7 @@ public class IdentityClassNameRewriter implements ClassNameRewriter, Serializabl
     /**
      * @see edu.umd.cs.findbugs.model.ClassNameRewriter#rewriteClassName(java.lang.String)
      */
+    @Override
     public String rewriteClassName(String className) {
         if (className.indexOf('+') >= 0)
             className = className.replace('+', '$');

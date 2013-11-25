@@ -50,10 +50,12 @@ abstract public class ClassNodeDetector extends ClassNode implements Detector2 {
         this.bugReporter = bugReporter;
     }
 
+    @Override
     public String getDetectorClassName() {
         return this.getClass().getName();
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
 
@@ -65,6 +67,7 @@ abstract public class ClassNodeDetector extends ClassNode implements Detector2 {
         cr.accept(this, 0);
     }
 
+    @Override
     public void finishPass() {
         // do nothing
     }

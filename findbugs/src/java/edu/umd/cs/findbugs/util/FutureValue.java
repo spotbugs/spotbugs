@@ -35,6 +35,7 @@ public class FutureValue<V> implements Future<V> {
 
     volatile boolean canceled;
 
+    @Override
     public synchronized boolean cancel(boolean arg0) {
         if (latch.getCount() == 0)
             return false;
@@ -48,6 +49,7 @@ public class FutureValue<V> implements Future<V> {
      * 
      * @see java.util.concurrent.Future#get()
      */
+    @Override
     public V get() throws InterruptedException {
         latch.await();
         if (canceled)
@@ -60,6 +62,7 @@ public class FutureValue<V> implements Future<V> {
      * 
      * @see java.util.concurrent.Future#get(long, java.util.concurrent.TimeUnit)
      */
+    @Override
     public V get(long arg0, TimeUnit arg1) throws InterruptedException, TimeoutException {
         if (!latch.await(arg0, arg1))
             throw new TimeoutException();
@@ -87,6 +90,7 @@ public class FutureValue<V> implements Future<V> {
      * 
      * @see java.util.concurrent.Future#isCancelled()
      */
+    @Override
     public boolean isCancelled() {
         return canceled;
     }
@@ -96,6 +100,7 @@ public class FutureValue<V> implements Future<V> {
      * 
      * @see java.util.concurrent.Future#isDone()
      */
+    @Override
     public boolean isDone() {
         return !canceled && latch.getCount() == 0;
     }

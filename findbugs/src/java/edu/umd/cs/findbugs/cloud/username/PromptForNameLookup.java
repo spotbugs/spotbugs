@@ -56,10 +56,12 @@ public class PromptForNameLookup implements NameLookup {
         return false;
     }
 
+    @Override
     public String getUsername() {
         return username;
     }
 
+    @Override
     public boolean signIn(CloudPlugin plugin, BugCollection bugCollection) {
         this.bugCollection = bugCollection;
         return true;

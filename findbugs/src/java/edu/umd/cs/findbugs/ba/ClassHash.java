@@ -148,6 +148,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
         // Sort methods
         System.arraycopy(javaClass.getMethods(), 0, methodList, 0, javaClass.getMethods().length);
         Arrays.sort(methodList, new Comparator<Method>() {
+            @Override
             public int compare(Method o1, Method o2) {
                 // sort by name, then signature
                 int cmp = o1.getName().compareTo(o2.getName());
@@ -168,6 +169,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
              * 
              * @see java.util.Comparator#compare(T, T)
              */
+            @Override
             public int compare(Field o1, Field o2) {
                 int cmp = o1.getName().compareTo(o2.getName());
                 if (cmp != 0)
@@ -219,6 +221,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
         }
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         xmlOutput.startTag(CLASS_HASH_ELEMENT_NAME);
         xmlOutput.addAttribute("class", className);
@@ -321,6 +324,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
      * 
      * @see java.lang.Comparable#compareTo(T)
      */
+    @Override
     public int compareTo(ClassHash other) {
         int cmp = MethodHash.compareHashes(this.classHash, other.classHash);
         // System.out.println(this + " <=> " + other + ": compareTo=" + cmp);

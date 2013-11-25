@@ -132,6 +132,7 @@ public class SplashFrame extends JWindow {
                 System.exit(1);
             }
             animator = new Thread(new Runnable() {
+                @Override
                 public void run() {
                     int deltaX = 1;
 

@@ -68,6 +68,7 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#copy(java.lang.Object,
      * java.lang.Object)
      */
+    @Override
     public void copy(ReturnPathType source, ReturnPathType dest) {
         dest.copyFrom(source);
     }
@@ -77,6 +78,7 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
      * 
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#createFact()
      */
+    @Override
     public ReturnPathType createFact() {
         ReturnPathType fact = new ReturnPathType();
         fact.setTop();
@@ -119,6 +121,7 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#getBlockOrder(edu.umd.cs.findbugs
      * .ba.CFG)
      */
+    @Override
     public BlockOrder getBlockOrder(CFG cfg) {
         return new ReverseDFSOrder(cfg, rdfs, dfs);
     }
@@ -160,6 +163,7 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
      * @see
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#initEntryFact(java.lang.Object)
      */
+    @Override
     public void initEntryFact(ReturnPathType result) throws DataflowAnalysisException {
         // By default, we assume that paths reaching the exit block
         // can return normally. If we traverse exception edges which
@@ -174,6 +178,7 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
      * 
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#isForwards()
      */
+    @Override
     public boolean isForwards() {
         return false;
     }
@@ -183,6 +188,7 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
      * 
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#isTop(java.lang.Object)
      */
+    @Override
     public boolean isTop(ReturnPathType fact) {
         return fact.isTop();
     }
@@ -193,6 +199,7 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
      * @see
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#makeFactTop(java.lang.Object)
      */
+    @Override
     public void makeFactTop(ReturnPathType fact) {
         fact.setTop();
     }
@@ -203,6 +210,7 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(java.lang.Object,
      * edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
      */
+    @Override
     public void meetInto(ReturnPathType fact, Edge edge, ReturnPathType result) throws DataflowAnalysisException {
         result.mergeWith(fact);
     }
@@ -213,6 +221,7 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#same(java.lang.Object,
      * java.lang.Object)
      */
+    @Override
     public boolean same(ReturnPathType fact1, ReturnPathType fact2) {
         return fact1.sameAs(fact2);
     }
@@ -247,6 +256,7 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
      * ba.BasicBlock, org.apache.bcel.generic.InstructionHandle,
      * java.lang.Object, java.lang.Object)
      */
+    @Override
     public void transfer(BasicBlock basicBlock, InstructionHandle end, ReturnPathType start, ReturnPathType result)
             throws DataflowAnalysisException {
         // just copy the start fact

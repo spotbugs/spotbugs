@@ -31,10 +31,12 @@ public abstract class AbstractField extends AbstractClassMember implements XFiel
         super(className, fieldName, fieldSig, accessFlags);
     }
 
+    @Override
     public boolean isVolatile() {
         return (getAccessFlags() & Constants.ACC_VOLATILE) != 0;
     }
 
+    @Override
     public final boolean isSynthetic() {
         return (getAccessFlags() & Constants.ACC_SYNTHETIC) != 0;
     }
@@ -44,6 +46,7 @@ public abstract class AbstractField extends AbstractClassMember implements XFiel
      * 
      * @see edu.umd.cs.findbugs.ba.XField#getFieldDescriptor()
      */
+    @Override
     public FieldDescriptor getFieldDescriptor() {
         return DescriptorFactory.instance().getFieldDescriptor(getClassDescriptor().getClassName(), getName(), getSignature(),
                 isStatic());

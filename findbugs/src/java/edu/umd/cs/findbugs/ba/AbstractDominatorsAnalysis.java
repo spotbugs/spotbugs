@@ -62,6 +62,7 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
      */
     public AbstractDominatorsAnalysis(CFG cfg, final boolean ignoreExceptionEdges) {
         this(cfg, new EdgeChooser() {
+            @Override
             public boolean choose(Edge edge) {
                 if (ignoreExceptionEdges && edge.isExceptionEdge())
                     return false;
@@ -84,34 +85,41 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
         this.edgeChooser = edgeChooser;
     }
 
+    @Override
     public BitSet createFact() {
         return new BitSet();
     }
 
+    @Override
     public void copy(BitSet source, BitSet dest) {
         dest.clear();
         dest.or(source);
     }
 
+    @Override
     public void initEntryFact(BitSet result) {
         // No blocks dominate the entry block
         result.clear();
     }
 
+    @Override
     public boolean isTop(BitSet fact) {
         // We represent TOP as a bitset with an illegal bit set
         return fact.get(cfg.getNumBasicBlocks());
     }
 
+    @Override
     public void makeFactTop(BitSet fact) {
         // We represent TOP as a bitset with an illegal bit set
         fact.set(cfg.getNumBasicBlocks());
     }
 
+    @Override
     public boolean same(BitSet fact1, BitSet fact2) {
         return fact1.equals(fact2);
     }
 
+    @Override
     public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, BitSet start, BitSet result)
             throws DataflowAnalysisException {
         // Start with intersection of dominators of predecessors
@@ -123,6 +131,7 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
         }
     }
 
+    @Override
     public void meetInto(BitSet fact, Edge edge, BitSet result) throws DataflowAnalysisException {
         if (!edgeChooser.choose(edge))
             return;

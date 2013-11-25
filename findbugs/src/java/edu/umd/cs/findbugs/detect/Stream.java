@@ -277,6 +277,7 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
         return true;
     }
 
+    @Override
     public int compareTo(Stream other) {
         int cmp;
 

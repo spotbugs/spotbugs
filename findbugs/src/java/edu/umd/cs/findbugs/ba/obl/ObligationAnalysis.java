@@ -123,6 +123,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
         return actionCache;
     }
 
+    @Override
     public StateSet createFact() {
         return new StateSet(factory);
     }
@@ -332,6 +333,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#copy(edu.umd.cs.findbugs.ba.obl
      * .StateSet, edu.umd.cs.findbugs.ba.obl.StateSet)
      */
+    @Override
     public void copy(StateSet src, StateSet dest) {
         dest.copyFrom(src);
     }
@@ -343,6 +345,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#initEntryFact(edu.umd.cs.findbugs
      * .ba.obl.StateSet)
      */
+    @Override
     public void initEntryFact(StateSet fact) throws DataflowAnalysisException {
         if (cachedEntryFact == null) {
             cachedEntryFact = new StateSet(factory);
@@ -380,10 +383,12 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#makeFactTop(edu.umd.cs.findbugs
      * .ba.obl.StateSet)
      */
+    @Override
     public void makeFactTop(StateSet fact) {
         fact.setTop();
     }
 
+    @Override
     public boolean isTop(StateSet fact) {
         return fact.isTop();
     }
@@ -395,6 +400,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#same(edu.umd.cs.findbugs.ba.obl
      * .StateSet, edu.umd.cs.findbugs.ba.obl.StateSet)
      */
+    @Override
     public boolean same(StateSet a, StateSet b) {
         return a.equals(b);
     }
@@ -407,6 +413,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
      * ba.obl.StateSet, edu.umd.cs.findbugs.ba.Edge,
      * edu.umd.cs.findbugs.ba.obl.StateSet)
      */
+    @Override
     public void meetInto(StateSet fact, Edge edge, StateSet result) throws DataflowAnalysisException {
         final StateSet inputFact = fact;
 

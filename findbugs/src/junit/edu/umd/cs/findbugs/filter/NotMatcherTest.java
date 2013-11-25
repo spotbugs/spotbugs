@@ -105,10 +105,12 @@ public class NotMatcherTest {
             this.alwaysMatches = alwaysMatches;
         }
 
+        @Override
         public boolean match(BugInstance bugInstance) {
             return alwaysMatches;
         }
 
+        @Override
         public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
             xmlOutput.openTag("TestMatch");
             xmlOutput.closeTag("TestMatch");

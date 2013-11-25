@@ -30,10 +30,12 @@ public class Methods extends PreorderVisitor implements Detector, NonReportingDe
     public Methods(BugReporter bugReporter) {
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         classContext.getJavaClass().accept(this);
     }
 
+    @Override
     public void report() {
 
     }

@@ -96,6 +96,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
      */
+    @Override
     public ICodeBaseEntry lookupResource(String resourceName) {
         // Translate resource name, in case a resource name
         // has been overridden and the resource is being accessed
@@ -115,12 +116,14 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
         }
     }
 
+    @Override
     public ICodeBaseIterator iterator() {
         final Enumeration<? extends ZipEntry> zipEntryEnumerator = zipFile.entries();
 
         return new ICodeBaseIterator() {
             ZipFileCodeBaseEntry nextEntry;
 
+            @Override
             public boolean hasNext() {
                 scanForNextEntry();
                 return nextEntry != null;
@@ -131,6 +134,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
              *
              * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
              */
+            @Override
             public ICodeBaseEntry next() throws InterruptedException {
                 scanForNextEntry();
                 if (nextEntry == null) {
@@ -165,6 +169,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
      *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
      */
+    @Override
     public String getPathName() {
         return zipFile.getName();
     }
@@ -174,6 +179,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
      *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
      */
+    @Override
     public void close() {
         try {
             zipFile.close();

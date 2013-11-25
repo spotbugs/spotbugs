@@ -80,6 +80,7 @@ public class FuzzyBugComparator implements WarningComparator {
          *
          * @see java.util.Iterator#hasNext()
          */
+        @Override
         public boolean hasNext() {
             findNext();
             return next != null;
@@ -90,6 +91,7 @@ public class FuzzyBugComparator implements WarningComparator {
          *
          * @see java.util.Iterator#next()
          */
+        @Override
         public BugAnnotation next() {
             findNext();
             if (next == null)
@@ -104,6 +106,7 @@ public class FuzzyBugComparator implements WarningComparator {
          *
          * @see java.util.Iterator#remove()
          */
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
@@ -149,10 +152,12 @@ public class FuzzyBugComparator implements WarningComparator {
      * edu.umd.cs.findbugs.WarningComparator#setClassNameRewriter(edu.umd.cs
      * .findbugs.model.MovedClassMap)
      */
+    @Override
     public void setClassNameRewriter(ClassNameRewriter classNameRewriter) {
         this.classNameRewriter = classNameRewriter;
     }
 
+    @Override
     public int compare(BugInstance lhs, BugInstance rhs) {
         int cmp;
 

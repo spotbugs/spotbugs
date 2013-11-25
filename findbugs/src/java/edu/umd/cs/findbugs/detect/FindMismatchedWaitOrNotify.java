@@ -69,6 +69,7 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
         }
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass jclass = classContext.getJavaClass();
 
@@ -163,6 +164,7 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
         bugAccumulator.reportAccumulatedBugs();
     }
 
+    @Override
     public void report() {
     }
 }

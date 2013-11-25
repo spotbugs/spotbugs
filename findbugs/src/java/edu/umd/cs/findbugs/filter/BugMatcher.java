@@ -55,6 +55,7 @@ public class BugMatcher implements Matcher {
         this.categories = new StringSetMatch(categories);
     }
 
+    @Override
     public boolean match(BugInstance bugInstance) {
         boolean result1 = codes.match(bugInstance.getAbbrev());
         boolean result2 = patterns.match(bugInstance.getType());
@@ -80,6 +81,7 @@ public class BugMatcher implements Matcher {
         return codes.equals(other.codes) && patterns.equals(other.patterns) && categories.equals(other.categories);
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         xmlOutput.startTag("Bug");
         if (disabled)

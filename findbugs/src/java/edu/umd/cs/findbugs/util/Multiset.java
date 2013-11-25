@@ -112,6 +112,7 @@ public class Multiset<K> {
 
     static class EntryComparator<E> implements Comparator<Map.Entry<E, Integer>>, Serializable {
 
+        @Override
         public int compare(Entry<E, Integer> o1, Entry<E, Integer> o2) {
             int c1 = o1.getValue();
             int c2 = o2.getValue();

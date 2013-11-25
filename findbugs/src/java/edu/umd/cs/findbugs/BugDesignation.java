@@ -197,6 +197,7 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
         timestamp = System.currentTimeMillis();
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList();
         // all three of these xml attributes are optional
@@ -266,6 +267,7 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
         return this.compareTo((BugDesignation) o) == 0;
     }
 
+    @Override
     public int compareTo(BugDesignation o) {
         if (this == o)
             return 0;

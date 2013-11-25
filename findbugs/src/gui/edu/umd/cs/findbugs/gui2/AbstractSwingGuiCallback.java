@@ -42,16 +42,19 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
         this.parent = parent;
     }
 
+    @Override
     public ExecutorService getBugUpdateExecutor() {
         return bugUpdateExecutor;
     }
 
+    @Override
     public void showMessageDialogAndWait(final String message) throws InterruptedException {
         if (SwingUtilities.isEventDispatchThread())
             JOptionPane.showMessageDialog(parent, message);
         else
             try {
                 SwingUtilities.invokeAndWait(new Runnable() {
+                    @Override
                     public void run() {
                         JOptionPane.showMessageDialog(parent, message);
                     }
@@ -61,22 +64,26 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
             }
     }
 
+    @Override
     public void showMessageDialog(final String message) {
         if (SwingUtilities.isEventDispatchThread())
             JOptionPane.showMessageDialog(parent, message);
         else
             SwingUtilities.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     JOptionPane.showMessageDialog(parent, message);
                 }
             });
     }
 
+    @Override
     public int showConfirmDialog(String message, String title, String ok, String cancel) {
         return JOptionPane.showOptionDialog(parent, message, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
                 null, new Object[] { ok, cancel }, ok);
     }
 
+    @Override
     public InputStream getProgressMonitorInputStream(InputStream in, int length, String msg) {
         ProgressMonitorInputStream pmin = new ProgressMonitorInputStream(parent, msg, in);
         ProgressMonitor pm = pmin.getProgressMonitor();
@@ -86,15 +93,18 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
         return pmin;
     }
 
+    @Override
     public void displayNonmodelMessage(String title, String message) {
         DisplayNonmodelMessage.displayNonmodelMessage(title, message, parent, true);
     }
 
+    @Override
     public String showQuestionDialog(String message, String title, String defaultValue) {
         return (String) JOptionPane.showInputDialog(parent, message, title, JOptionPane.QUESTION_MESSAGE, null, null,
                 defaultValue);
     }
 
+    @Override
     public List<String> showForm(String message, String title, List<FormItem> items) {
         int result = showFormDialog(message, title, items);
         if (result != JOptionPane.OK_OPTION)
@@ -107,14 +117,17 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
         return results;
     }
 
+    @Override
     public boolean showDocument(URL u) {
         return LaunchBrowser.showDocument(u);
     }
 
+    @Override
     public boolean isHeadless() {
         return false;
     }
 
+    @Override
     public void invokeInGUIThread(Runnable r) {
         SwingUtilities.invokeLater(r);
     }
@@ -128,7 +141,7 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
                 item.setCurrentValue(textComponent.getText());
 
             } else if (field instanceof JComboBox) {
-                JComboBox box = (JComboBox) field;
+                JComboBox<String> box = (JComboBox<String>) field;
                 String value = (String) box.getSelectedItem();
                 item.setCurrentValue(value);
             }
@@ -141,10 +154,10 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
         for (FormItem item : items) {
             JComponent field = item.getField();
             if (field instanceof JComboBox) {
-                JComboBox box = (JComboBox) field;
+                JComboBox<String> box = (JComboBox<String>) field;
                 List<String> newPossibleValues = item.getPossibleValues();
                 if (!boxModelIsSame(box, newPossibleValues)) {
-                    MutableComboBoxModel mmodel = (MutableComboBoxModel) box.getModel();
+                    MutableComboBoxModel<String> mmodel = (MutableComboBoxModel<String>) box.getModel();
                     replaceBoxModelValues(mmodel, newPossibleValues);
                     mmodel.setSelectedItem(item.getCurrentValue());
                 }
@@ -152,7 +165,7 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
         }
     }
 
-    private void replaceBoxModelValues(MutableComboBoxModel mmodel, List<String> newPossibleValues) {
+    private void replaceBoxModelValues(MutableComboBoxModel<String> mmodel, List<String> newPossibleValues) {
         try {
             while (mmodel.getSize() > 0)
                 mmodel.removeElementAt(0);
@@ -164,7 +177,7 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
         }
     }
 
-    private boolean boxModelIsSame(JComboBox box, List<String> newPossibleValues) {
+    private boolean boxModelIsSame(JComboBox<String> box, List<String> newPossibleValues) {
         boolean same = true;
         if (box.getModel().getSize() != newPossibleValues.size())
             same = false;
@@ -197,7 +210,7 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
             panel.add(new JLabel(item.getLabel()), gbc);
             String defaultValue = item.getDefaultValue();
             if (item.getPossibleValues() != null) {
-                JComboBox box = createComboBox(items, item);
+                JComboBox<?> box = createComboBox(items, item);
                 panel.add(box, gbc);
 
             } else {
@@ -217,14 +230,17 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
         }
         item.setField(field);
         field.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
             public void insertUpdate(DocumentEvent e) {
                 changed();
             }
 
+            @Override
             public void removeUpdate(DocumentEvent e) {
                 changed();
             }
 
+            @Override
             public void changedUpdate(DocumentEvent e) {
                 changed();
             }
@@ -236,9 +252,9 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
         return field;
     }
 
-    private JComboBox createComboBox(final List<FormItem> items, FormItem item) {
-        DefaultComboBoxModel model = new DefaultComboBoxModel();
-        JComboBox box = new JComboBox(model);
+    private JComboBox<String> createComboBox(final List<FormItem> items, FormItem item) {
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        JComboBox<String> box = new JComboBox<>(model);
         item.setField(box);
         for (String possibleValue : item.getPossibleValues()) {
             model.addElement(possibleValue);
@@ -249,6 +265,7 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
         else
             model.setSelectedItem(defaultValue);
         box.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 updateFormItemsFromGui(items);
             }

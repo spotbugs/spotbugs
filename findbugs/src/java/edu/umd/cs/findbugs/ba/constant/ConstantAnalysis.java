@@ -45,10 +45,12 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
         this.visitor = new ConstantFrameModelingVisitor(methodGen.getConstantPool());
     }
 
+    @Override
     public ConstantFrame createFact() {
         return new ConstantFrame(methodGen.getMaxLocals());
     }
 
+    @Override
     public void initEntryFact(ConstantFrame frame) {
         frame.setValid();
         frame.clearStack();
@@ -65,6 +67,7 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
         visitor.analyzeInstruction(handle.getInstruction());
     }
 
+    @Override
     public void meetInto(ConstantFrame fact, Edge edge, ConstantFrame result) throws DataflowAnalysisException {
 
         if (fact.isValid()) {

@@ -564,6 +564,7 @@ public class TypeQualifierApplications {
         final AnnotatedObject o2 = o;
         if (CHECK_EXCLUSIVE && tqa == null && typeQualifierValue.isExclusiveQualifier()) {
             tqa = computeExclusiveQualifier(typeQualifierValue, new ComputeEffectiveTypeQualifierAnnotation() {
+                @Override
                 public TypeQualifierAnnotation compute(TypeQualifierValue<?> tqv) {
                     return computeEffectiveTypeQualifierAnnotation(tqv, o2);
                 }
@@ -748,6 +749,7 @@ public class TypeQualifierApplications {
 
         if (CHECK_EXCLUSIVE && tqa == null && typeQualifierValue.isExclusiveQualifier()) {
             tqa = computeExclusiveQualifier(typeQualifierValue, new ComputeEffectiveTypeQualifierAnnotation() {
+                @Override
                 public TypeQualifierAnnotation compute(TypeQualifierValue<?> tqv) {
                     return computeEffectiveTypeQualifierAnnotation(tqv, xmethod, parameter);
                 }

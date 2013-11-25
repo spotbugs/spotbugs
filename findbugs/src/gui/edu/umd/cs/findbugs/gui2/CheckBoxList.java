@@ -39,7 +39,7 @@ import javax.swing.border.EmptyBorder;
  * @author Trevor Harmon
  */
 @SuppressWarnings("serial")
-public class CheckBoxList extends JList {
+public class CheckBoxList<E> extends JList<E> {
     private static Border noFocusBorder = new EmptyBorder(1, 1, 1, 1);
 
     public CheckBoxList() {
@@ -61,7 +61,7 @@ public class CheckBoxList extends JList {
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
-    public CheckBoxList(Object[] list) {
+    public CheckBoxList(E[] list) {
         this();
         setListData(list);
     }
@@ -74,8 +74,9 @@ public class CheckBoxList extends JList {
             ((JCheckBox) getModel().getElementAt(i)).setEnabled(enabled);
     }
 
-    protected class CellRenderer implements ListCellRenderer {
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+    protected class CellRenderer implements ListCellRenderer<E> {
+        @Override
+        public Component getListCellRendererComponent(JList<? extends E> list, E value, int index, boolean isSelected,
                 boolean cellHasFocus) {
             JCheckBox checkbox = (JCheckBox) value;
             checkbox.setBackground(isSelected ? getSelectionBackground() : getBackground());
@@ -87,5 +88,8 @@ public class CheckBoxList extends JList {
             checkbox.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder") : noFocusBorder);
             return checkbox;
         }
+
+     
+      
     }
 }

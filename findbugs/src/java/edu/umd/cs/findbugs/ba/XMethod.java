@@ -166,6 +166,7 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
      *
      * @return ClassDescriptors of annotations applied directly to this method
      */
+    @Override
     public Collection<ClassDescriptor> getAnnotationDescriptors();
 
     /**
@@ -176,6 +177,7 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
      * @return AnnotationValue annotating the method, or null if method is not
      *         annotated with this kind of annotation
      */
+    @Override
     public AnnotationValue getAnnotation(ClassDescriptor desc);
 
     /**
@@ -183,6 +185,7 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
      *
      * @return Collection of all AnnotationValues applied directly to the method
      */
+    @Override
     public Collection<AnnotationValue> getAnnotations();
 
     /**

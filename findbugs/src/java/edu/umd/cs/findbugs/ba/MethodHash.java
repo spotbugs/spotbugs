@@ -117,6 +117,7 @@ public class MethodHash implements Comparable<MethodHash> {
         }
 
         BytecodeScanner.Callback callback = new BytecodeScanner.Callback() {
+            @Override
             public void handleInstruction(int opcode, int index) {
                 digest.update((byte) opcode);
             }
@@ -147,6 +148,7 @@ public class MethodHash implements Comparable<MethodHash> {
      * 
      * @see java.lang.Comparable#compareTo(T)
      */
+    @Override
     public int compareTo(MethodHash other) {
         return MethodHash.compareHashes(this.hash, other.hash);
     }

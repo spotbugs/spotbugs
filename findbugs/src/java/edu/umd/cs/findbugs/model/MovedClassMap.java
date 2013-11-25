@@ -90,6 +90,7 @@ public class MovedClassMap implements ClassNameRewriter {
         return rewriteMap.isEmpty();
     }
 
+    @Override
     public String rewriteClassName(String className) {
         String rewrittenClassName = rewriteMap.get(className);
         if (rewrittenClassName != null) {

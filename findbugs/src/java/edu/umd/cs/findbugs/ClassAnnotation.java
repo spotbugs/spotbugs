@@ -86,6 +86,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
         return new ClassAnnotation(classDescriptor.toDottedClassName());
     }
 
+    @Override
     public void accept(BugAnnotationVisitor visitor) {
         visitor.visitClassAnnotation(this);
     }
@@ -129,6 +130,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 
     }
 
+    @Override
     public int compareTo(BugAnnotation o) {
         if (!(o instanceof ClassAnnotation)) // BugAnnotations must be
                                              // Comparable with any type of
@@ -175,10 +177,12 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 
     private static final String ELEMENT_NAME = "Class";
 
+    @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         writeXML(xmlOutput, false, false);
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("classname", getClassName());
         if (isPrimary)

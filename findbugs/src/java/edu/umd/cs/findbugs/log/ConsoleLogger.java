@@ -43,6 +43,7 @@ public class ConsoleLogger implements Logger {
         this.logSync = logSync;
     }
 
+    @Override
     public void logMessage(int severity, String message) {
         // If this is an error, pass it to the GUI
         if (severity == ERROR)

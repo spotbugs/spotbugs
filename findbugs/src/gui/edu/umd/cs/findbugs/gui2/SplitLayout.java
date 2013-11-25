@@ -69,10 +69,12 @@ public class SplitLayout implements FindBugsLayoutManager {
      * 
      * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#createWindowMenu()
      */
+    @Override
     public JMenu createWindowMenu() {
         return null;
     }
 
+    @Override
     public void resetCommentsInputPane() {
         if (topLeftSPane != null) {
             int position = topLeftSPane.getDividerLocation();
@@ -86,6 +88,7 @@ public class SplitLayout implements FindBugsLayoutManager {
      * 
      * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#initialize()
      */
+    @Override
     public void initialize() {
 
         Font buttonFont = viewSource.getFont();
@@ -157,6 +160,7 @@ public class SplitLayout implements FindBugsLayoutManager {
      * 
      * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#makeCommentsVisible()
      */
+    @Override
     public void makeCommentsVisible() {
 
     }
@@ -166,6 +170,7 @@ public class SplitLayout implements FindBugsLayoutManager {
      * 
      * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#makeSourceVisible()
      */
+    @Override
     public void makeSourceVisible() {
 
     }
@@ -175,6 +180,7 @@ public class SplitLayout implements FindBugsLayoutManager {
      * 
      * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#saveState()
      */
+    @Override
     public void saveState() {
         GUISaveState.getInstance().setSplitTreeComments(topLeftSPane.getDividerLocation());
         GUISaveState.getInstance().setSplitTop(topSPane.getDividerLocation());
@@ -189,6 +195,7 @@ public class SplitLayout implements FindBugsLayoutManager {
      * edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#setSourceTitle(java.lang
      * .String)
      */
+    @Override
     public void setSourceTitle(String title) {
         sourceTitle.setText(title);
 
@@ -200,6 +207,7 @@ public class SplitLayout implements FindBugsLayoutManager {
      * @see
      * edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#getSourceTitleComponent()
      */
+    @Override
     public JComponent getSourceViewComponent() {
         return viewSource;
     }

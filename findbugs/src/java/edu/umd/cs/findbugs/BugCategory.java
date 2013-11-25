@@ -130,6 +130,7 @@ public class BugCategory implements Comparable<BugCategory> {
         this.detailText = detailText;
     }
 
+    @Override
     public int compareTo(BugCategory other) {
         return category.compareTo(other.category);
     }

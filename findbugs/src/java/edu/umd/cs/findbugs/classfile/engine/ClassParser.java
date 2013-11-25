@@ -95,6 +95,7 @@ public class ClassParser implements ClassParserInterface {
      * edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd
      * .cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder)
      */
+    @Override
     public void parse(ClassNameAndSuperclassInfo.Builder builder) throws InvalidClassFileFormatException {
         try {
             int magic = in.readInt();
@@ -160,6 +161,7 @@ public class ClassParser implements ClassParserInterface {
      * edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd
      * .cs.findbugs.classfile.analysis.ClassInfo.Builder)
      */
+    @Override
     public void parse(ClassInfo.Builder builder) throws InvalidClassFileFormatException {
         throw new UnsupportedOperationException("Need to use a ClassParserUsingASM to build ClassInfo");
     }
@@ -409,6 +411,7 @@ public class ClassParser implements ClassParserInterface {
              * FieldOrMethodDescriptorCreator#create(java.lang.String,
              * java.lang.String, java.lang.String, int)
              */
+            @Override
             public FieldDescriptor create(String className, String name, String signature, int accessFlags) {
                 return DescriptorFactory.instance().getFieldDescriptor(className, name, signature,
                         (accessFlags & IClassConstants.ACC_STATIC) != 0);
@@ -433,6 +436,7 @@ public class ClassParser implements ClassParserInterface {
              * FieldOrMethodDescriptorCreator#create(java.lang.String,
              * java.lang.String, java.lang.String, int)
              */
+            @Override
             public MethodDescriptor create(String className, String name, String signature, int accessFlags) {
                 return DescriptorFactory.instance().getMethodDescriptor(className, name, signature,
                         (accessFlags & IClassConstants.ACC_STATIC) != 0);

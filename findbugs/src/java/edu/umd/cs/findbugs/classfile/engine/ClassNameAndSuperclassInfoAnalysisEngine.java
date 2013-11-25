@@ -45,6 +45,7 @@ public class ClassNameAndSuperclassInfoAnalysisEngine implements IClassAnalysisE
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
      */
+    @Override
     public ClassNameAndSuperclassInfo analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor)
             throws CheckedAnalysisException {
         // Get InputStream reading from class data
@@ -70,6 +71,7 @@ public class ClassNameAndSuperclassInfoAnalysisEngine implements IClassAnalysisE
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)
      */
+    @Override
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerClassAnalysisEngine(ClassNameAndSuperclassInfo.class, this);
     }
@@ -79,6 +81,7 @@ public class ClassNameAndSuperclassInfoAnalysisEngine implements IClassAnalysisE
      * 
      * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#canRecompute()
      */
+    @Override
     public boolean canRecompute() {
         // ClassInfo objects serve as XClass objects,
         // which we want interned. So, they are never purged from the cache.

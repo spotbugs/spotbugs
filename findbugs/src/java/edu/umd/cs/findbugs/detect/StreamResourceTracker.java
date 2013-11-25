@@ -231,6 +231,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
         return streamOpenLocationMap.get(location) != null;
     }
 
+    @Override
     public Stream isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg) {
 
         // Use precomputed map of Locations to Stream creations,
@@ -265,28 +266,34 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
         return resource.isStreamOpen(basicBlock, handle, cpg, frame);
     }
 
+    @Override
     public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Stream resource,
             ResourceValueFrame frame) {
         return resource.isStreamClose(basicBlock, handle, cpg, frame, lookupFailureCallback);
     }
 
+    @Override
     public boolean mightCloseResource(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg)
             throws DataflowAnalysisException {
         return Stream.mightCloseStream(basicBlock, handle, cpg);
     }
 
+    @Override
     public ResourceValueFrameModelingVisitor createVisitor(Stream resource, ConstantPoolGen cpg) {
         return new StreamFrameModelingVisitor(cpg, this, resource);
     }
 
+    @Override
     public boolean ignoreImplicitExceptions(Stream resource) {
         return resource.ignoreImplicitExceptions();
     }
 
+    @Override
     public boolean ignoreExceptionEdge(Edge edge, Stream resource, ConstantPoolGen cpg) {
         return false;
     }
 
+    @Override
     public boolean isParamInstance(Stream resource, int slot) {
         return resource.getInstanceParam() == slot;
     }

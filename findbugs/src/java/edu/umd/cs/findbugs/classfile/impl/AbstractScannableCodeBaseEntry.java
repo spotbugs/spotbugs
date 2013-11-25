@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
  * @author David Hovemeyer
  */
 public abstract class AbstractScannableCodeBaseEntry implements ICodeBaseEntry {
+    @Override
     public abstract AbstractScannableCodeBase getCodeBase();
 
     public abstract String getRealResourceName();
@@ -36,6 +37,7 @@ public abstract class AbstractScannableCodeBaseEntry implements ICodeBaseEntry {
      * edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java
      * .lang.String)
      */
+    @Override
     public void overrideResourceName(String resourceName) {
         getCodeBase().addResourceNameTranslation(getRealResourceName(), resourceName);
     }
@@ -45,6 +47,7 @@ public abstract class AbstractScannableCodeBaseEntry implements ICodeBaseEntry {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
      */
+    @Override
     public String getResourceName() {
         return getCodeBase().translateResourceName(getRealResourceName());
     }

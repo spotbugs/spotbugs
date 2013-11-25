@@ -157,6 +157,7 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
      * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    @Override
     public int compareTo(SourceSinkInfo o) {
         return this.location.compareTo(o.location);
     }

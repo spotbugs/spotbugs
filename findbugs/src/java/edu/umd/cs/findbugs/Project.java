@@ -833,6 +833,7 @@ public class Project implements XMLWriteable {
 
     static final String PLUGIN_STATUS_ELEMENT_NAME = "enabled";
 
+    @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         writeXML(xmlOutput, null, null);
     }

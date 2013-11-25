@@ -197,10 +197,12 @@ public class LocalVariableAnnotation implements BugAnnotation {
         }
     }
 
+    @Override
     public void accept(BugAnnotationVisitor visitor) {
         visitor.visitLocalVariableAnnotation(this);
     }
 
+    @Override
     public String format(String key, ClassAnnotation primaryClass) {
         // System.out.println("format: " + key + " reg: " + register + " name: "
         // + value);
@@ -222,10 +224,12 @@ public class LocalVariableAnnotation implements BugAnnotation {
         return "$L" + register;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description.intern();
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
@@ -242,6 +246,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
         return name.equals(((LocalVariableAnnotation) o).name);
     }
 
+    @Override
     public int compareTo(BugAnnotation o) {
         if (!(o instanceof LocalVariableAnnotation)) // BugAnnotations must be
                                                      // Comparable with any type
@@ -265,10 +270,12 @@ public class LocalVariableAnnotation implements BugAnnotation {
 
     private static final String ELEMENT_NAME = "LocalVariable";
 
+    @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         writeXML(xmlOutput, false, false);
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("name", name)
                 .addAttribute("register", String.valueOf(register)).addAttribute("pc", String.valueOf(pc));
@@ -299,6 +306,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
         return register;
     }
 
+    @Override
     public boolean isSignificant() {
         return !name.equals("?");
     }
@@ -406,6 +414,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
         return null;
     }
 
+    @Override
     public String toString(ClassAnnotation primaryClass) {
         return toString();
     }

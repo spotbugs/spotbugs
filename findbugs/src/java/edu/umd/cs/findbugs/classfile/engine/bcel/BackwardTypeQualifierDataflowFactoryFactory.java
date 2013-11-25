@@ -41,6 +41,7 @@ public class BackwardTypeQualifierDataflowFactoryFactory extends AnalysisFactory
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
      */
+    @Override
     public BackwardTypeQualifierDataflowFactory analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
             throws CheckedAnalysisException {
         return new BackwardTypeQualifierDataflowFactory(descriptor);

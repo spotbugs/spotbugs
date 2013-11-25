@@ -37,6 +37,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * 
      * @see org.objectweb.asm.MethodVisitor#visitAnnotationDefault()
      */
+    @Override
     public AnnotationVisitor visitAnnotationDefault() {
         // TODO Auto-generated method stub
         return null;
@@ -49,6 +50,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * org.objectweb.asm.MethodVisitor#visitAttribute(org.objectweb.asm.Attribute
      * )
      */
+    @Override
     public void visitAttribute(Attribute attr) {
         // TODO Auto-generated method stub
     }
@@ -58,6 +60,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * 
      * @see org.objectweb.asm.MethodVisitor#visitCode()
      */
+    @Override
     public void visitCode() {
         // TODO Auto-generated method stub
 
@@ -69,6 +72,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * @see org.objectweb.asm.MethodVisitor#visitFieldInsn(int,
      * java.lang.String, java.lang.String, java.lang.String)
      */
+    @Override
     public void visitFieldInsn(int opcode, String owner, String name, String desc) {
         visitSomeInsn();
 
@@ -80,6 +84,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * @see org.objectweb.asm.MethodVisitor#visitFrame(int, int,
      * java.lang.Object[], int, java.lang.Object[])
      */
+    @Override
     public void visitFrame(int type, int local, Object[] local2, int stack, Object[] stack2) {
         // TODO Auto-generated method stub
 
@@ -90,6 +95,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * 
      * @see org.objectweb.asm.MethodVisitor#visitIincInsn(int, int)
      */
+    @Override
     public void visitIincInsn(int var, int increment) {
         visitSomeInsn();
 
@@ -100,6 +106,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * 
      * @see org.objectweb.asm.MethodVisitor#visitInsn(int)
      */
+    @Override
     public void visitInsn(int opcode) {
         visitSomeInsn();
 
@@ -110,6 +117,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * 
      * @see org.objectweb.asm.MethodVisitor#visitIntInsn(int, int)
      */
+    @Override
     public void visitIntInsn(int opcode, int operand) {
         visitSomeInsn();
 
@@ -121,6 +129,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * @see org.objectweb.asm.MethodVisitor#visitJumpInsn(int,
      * org.objectweb.asm.Label)
      */
+    @Override
     public void visitJumpInsn(int opcode, Label label) {
         visitSomeInsn();
 
@@ -131,6 +140,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * 
      * @see org.objectweb.asm.MethodVisitor#visitLabel(org.objectweb.asm.Label)
      */
+    @Override
     public void visitLabel(Label label) {
         // TODO Auto-generated method stub
 
@@ -141,6 +151,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * 
      * @see org.objectweb.asm.MethodVisitor#visitLdcInsn(java.lang.Object)
      */
+    @Override
     public void visitLdcInsn(Object cst) {
         visitSomeInsn();
 
@@ -152,6 +163,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * @see org.objectweb.asm.MethodVisitor#visitLineNumber(int,
      * org.objectweb.asm.Label)
      */
+    @Override
     public void visitLineNumber(int line, Label start) {
         // TODO Auto-generated method stub
 
@@ -164,6 +176,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * java.lang.String, java.lang.String, org.objectweb.asm.Label,
      * org.objectweb.asm.Label, int)
      */
+    @Override
     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
         // TODO Auto-generated method stub
 
@@ -176,6 +189,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * org.objectweb.asm.MethodVisitor#visitLookupSwitchInsn(org.objectweb.asm
      * .Label, int[], org.objectweb.asm.Label[])
      */
+    @Override
     public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
         visitSomeInsn();
 
@@ -186,6 +200,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * 
      * @see org.objectweb.asm.MethodVisitor#visitMaxs(int, int)
      */
+    @Override
     public void visitMaxs(int maxStack, int maxLocals) {
         // TODO Auto-generated method stub
 
@@ -197,6 +212,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * @see org.objectweb.asm.MethodVisitor#visitMethodInsn(int,
      * java.lang.String, java.lang.String, java.lang.String)
      */
+    @Override
     public void visitMethodInsn(int opcode, String owner, String name, String desc) {
         visitSomeInsn();
 
@@ -209,6 +225,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * org.objectweb.asm.MethodVisitor#visitMultiANewArrayInsn(java.lang.String,
      * int)
      */
+    @Override
     public void visitMultiANewArrayInsn(String desc, int dims) {
         visitSomeInsn();
 
@@ -220,6 +237,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * @see org.objectweb.asm.MethodVisitor#visitTableSwitchInsn(int, int,
      * org.objectweb.asm.Label, org.objectweb.asm.Label[])
      */
+    @Override
     public void visitTableSwitchInsn(int min, int max, Label dflt, Label[] labels) {
         // TODO Auto-generated method stub
 
@@ -233,6 +251,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * Label, org.objectweb.asm.Label, org.objectweb.asm.Label,
      * java.lang.String)
      */
+    @Override
     public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
         // TODO Auto-generated method stub
 
@@ -243,6 +262,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * 
      * @see org.objectweb.asm.MethodVisitor#visitTypeInsn(int, java.lang.String)
      */
+    @Override
     public void visitTypeInsn(int opcode, String type) {
         visitSomeInsn();
 
@@ -253,6 +273,7 @@ public abstract class AbstractMethodVisitor implements MethodVisitor {
      * 
      * @see org.objectweb.asm.MethodVisitor#visitVarInsn(int, int)
      */
+    @Override
     public void visitVarInsn(int opcode, int var) {
         visitSomeInsn();
 

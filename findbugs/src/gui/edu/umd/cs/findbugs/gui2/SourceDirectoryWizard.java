@@ -73,8 +73,8 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
     // desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        foundModel = new DefaultListModel();
-        progressModel = new DefaultListModel();
+        foundModel = new DefaultListModel<String>();
+        progressModel = new DefaultListModel<String>();
         contentPanel = new javax.swing.JPanel();
         secondPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -159,6 +159,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
         firstPanel.add(browseButton);
 
         browseButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                 chooser.setMultiSelectionEnabled(true);
@@ -199,6 +200,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
 
         previousButton.setText("<< Previous");
         previousButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 previousButtonActionPerformed(evt);
             }
@@ -208,6 +210,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
 
         nextButton.setText("Next >>");
         nextButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nextButtonActionPerformed(evt);
                
@@ -218,6 +221,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
 
         finshButton.setText("Finish");
         finshButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 finshButtonActionPerformed(evt);
             }
@@ -247,6 +251,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
             @Override
             public void run() {
                 IErrorLogger errorLogger = new IErrorLogger() {
+                    @Override
                     public void reportMissingClass(ClassNotFoundException ex) {
                         String className = ClassNotFoundExceptionParser.getMissingClassName(ex);
                         if (className != null) {
@@ -256,18 +261,22 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                         }
                     }
 
+                    @Override
                     public void reportMissingClass(ClassDescriptor classDescriptor) {
                         logError("Missing class: " + classDescriptor.toDottedClassName());
                     }
 
+                    @Override
                     public void logError(String message) {
                         System.err.println("Error: " + message);
                     }
 
+                    @Override
                     public void logError(String message, Throwable e) {
                         logError(message + ": " + e.getMessage());
                     }
 
+                    @Override
                     public void reportSkippedAnalysis(MethodDescriptor method) {
                         logError("Skipped analysis of method " + method.toString());
                     }
@@ -275,33 +284,42 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
 
                 DiscoverSourceDirectories.Progress progress = new DiscoverSourceDirectories.Progress() {
 
+                    @Override
                     public void startRecursiveDirectorySearch() {
                         progressModel.addElement("Scanning directories...");
                     }
 
+                    @Override
                     public void doneRecursiveDirectorySearch() {
                     }
 
+                    @Override
                     public void startScanningArchives(int numArchivesToScan) {
                         progressModel.addElement("Scanning " + numArchivesToScan + " archives..");
                     }
 
+                    @Override
                     public void doneScanningArchives() {
                     }
 
+                    @Override
                     public void startScanningClasses(int numClassesToScan) {
                         progressModel.addElement("Scanning " + numClassesToScan + " classes...");
                     }
 
+                    @Override
                     public void finishClass() {
                     }
 
+                    @Override
                     public void doneScanningClasses() {
                     }
 
+                    @Override
                     public void finishArchive() {
                     }
 
+                    @Override
                     public void startArchive(String name) {
                     }
                 };
@@ -353,6 +371,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
      */
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 final SourceDirectoryWizard dialog = new SourceDirectoryWizard(new javax.swing.JFrame(), true, new Project(),
                         null);
@@ -367,11 +386,11 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
 
     private NewProjectWizard parentGUI;
 
-    private DefaultListModel foundModel;
+    private DefaultListModel<String> foundModel;
 
-    private DefaultListModel progressModel;
+    private DefaultListModel<String> progressModel;
 
-    private JList jList2;
+    private JList<String> jList2;
 
     public Thread discover;
 

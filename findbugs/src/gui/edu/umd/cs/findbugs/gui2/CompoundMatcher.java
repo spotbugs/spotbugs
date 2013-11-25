@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 public class CompoundMatcher extends HashSet<Matcher> implements Matcher {
     private static final long serialVersionUID = -6167545252176658833L;
 
+    @Override
     public boolean match(BugInstance bugInstance) {
         for (Matcher i : this)
             if (!i.match(bugInstance))
@@ -41,6 +42,7 @@ public class CompoundMatcher extends HashSet<Matcher> implements Matcher {
         return true;
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         throw new UnsupportedOperationException();
     }

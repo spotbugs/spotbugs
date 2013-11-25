@@ -79,8 +79,10 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
     public @CheckForNull
     String getSource();
 
+    @Override
     public Collection<ClassDescriptor> getAnnotationDescriptors();
 
+    @Override
     public AnnotationValue getAnnotation(ClassDescriptor desc);
 
     /**

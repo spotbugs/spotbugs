@@ -49,6 +49,7 @@ public class IOStreamFactory implements StreamFactory {
         this.bugType = bugType;
     }
 
+    @Override
     public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
             RepositoryLookupFailureCallback lookupFailureCallback) {
 

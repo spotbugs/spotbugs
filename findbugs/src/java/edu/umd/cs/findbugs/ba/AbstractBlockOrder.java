@@ -54,10 +54,12 @@ public abstract class AbstractBlockOrder implements BlockOrder {
             blockList.add(blocks[i]);
     }
 
+    @Override
     public Iterator<BasicBlock> blockIterator() {
         return blockList.iterator();
     }
     
+    @Override
     public int compare(BasicBlock b1, BasicBlock b2) {
         return comparator.compare(b1, b2);
     }

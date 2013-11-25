@@ -368,6 +368,7 @@ public class ClassFeatureSet implements XMLWriteable {
      * edu.umd.cs.findbugs.xml.XMLWriteable#writeXML(edu.umd.cs.findbugs.xml
      * .XMLOutput)
      */
+    @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         xmlOutput.openTag(ELEMENT_NAME, new XMLAttributeList().addAttribute("class", className));
         for (Iterator<String> i = featureIterator(); i.hasNext();) {

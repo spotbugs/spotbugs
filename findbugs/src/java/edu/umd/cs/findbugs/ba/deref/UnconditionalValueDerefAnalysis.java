@@ -673,6 +673,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#copy(java.lang.Object,
      * java.lang.Object)
      */
+    @Override
     public void copy(UnconditionalValueDerefSet source, UnconditionalValueDerefSet dest) {
         dest.makeSameAs(source);
     }
@@ -682,6 +683,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
      *
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#createFact()
      */
+    @Override
     public UnconditionalValueDerefSet createFact() {
         return new UnconditionalValueDerefSet(vnaDataflow.getAnalysis().getNumValuesAllocated());
     }
@@ -692,6 +694,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
      * @see
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#initEntryFact(java.lang.Object)
      */
+    @Override
     public void initEntryFact(UnconditionalValueDerefSet result) throws DataflowAnalysisException {
         result.clear();
     }
@@ -710,10 +713,12 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
      * @see
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#makeFactTop(java.lang.Object)
      */
+    @Override
     public void makeFactTop(UnconditionalValueDerefSet fact) {
         fact.setIsTop();
     }
 
+    @Override
     public boolean isTop(UnconditionalValueDerefSet fact) {
         return fact.isTop();
     }
@@ -724,6 +729,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(java.lang.Object,
      * edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
      */
+    @Override
     public void meetInto(UnconditionalValueDerefSet fact, Edge edge, UnconditionalValueDerefSet result)
             throws DataflowAnalysisException {
         meetInto(fact, edge, result, false);
@@ -972,6 +978,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#same(java.lang.Object,
      * java.lang.Object)
      */
+    @Override
     public boolean same(UnconditionalValueDerefSet fact1, UnconditionalValueDerefSet fact2) {
         return fact1.resultsFromBackEdge || fact1.isSameAs(fact2);
     }

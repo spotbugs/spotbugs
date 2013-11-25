@@ -97,6 +97,7 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
         this.bugType = bugType;
     }
 
+    @Override
     public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
             RepositoryLookupFailureCallback lookupFailureCallback) {
 

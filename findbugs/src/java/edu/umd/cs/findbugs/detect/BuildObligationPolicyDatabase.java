@@ -163,6 +163,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
         Global.getAnalysisCache().eagerlyPutDatabase(ObligationPolicyDatabase.class, database);
     }
 
+    @Override
     public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
 
         XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDescriptor);
@@ -253,6 +254,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 
     }
 
+    @Override
     public void finishPass() {
         //
         // If we saw any obligation-related annotations in the application
@@ -271,6 +273,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
         }
     }
 
+    @Override
     public String getDetectorClassName() {
         return this.getClass().getName();
     }

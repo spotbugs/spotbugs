@@ -28,6 +28,7 @@ public class LocalVariable implements Variable {
         this.valueNumber = valueNumber;
     }
 
+    @Override
     public boolean sameAs(Variable other) {
         if (!(other instanceof LocalVariable))
             return false;

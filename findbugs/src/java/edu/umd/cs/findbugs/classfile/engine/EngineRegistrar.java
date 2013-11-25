@@ -49,6 +49,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
      * edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar#registerWith(edu
      * .umd.cs.findbugs.classfile.IAnalysisCache)
      */
+    @Override
     public void registerAnalysisEngines(IAnalysisCache analysisCache) {
         for (IClassAnalysisEngine<?> engine : classAnalysisEngineList) {
             engine.registerWith(analysisCache);

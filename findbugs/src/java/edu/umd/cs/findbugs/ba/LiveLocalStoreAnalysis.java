@@ -53,28 +53,34 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> imp
         this.killedByStoreOffset = methodGen.getMaxLocals();
     }
 
+    @Override
     public BitSet createFact() {
         return new BitSet();
     }
 
+    @Override
     public void copy(BitSet source, BitSet dest) {
         dest.clear();
         dest.or(source);
     }
 
+    @Override
     public void initEntryFact(BitSet result) throws DataflowAnalysisException {
         result.clear();
     }
 
+    @Override
     public void makeFactTop(BitSet fact) {
         fact.clear();
         fact.set(topBit);
     }
 
+    @Override
     public boolean same(BitSet fact1, BitSet fact2) {
         return fact1.equals(fact2);
     }
 
+    @Override
     public void meetInto(BitSet fact, Edge edge, BitSet result) throws DataflowAnalysisException {
         verifyFact(fact);
         verifyFact(result);
@@ -167,6 +173,7 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> imp
     /**
      * Return whether or not given fact is the special TOP value.
      */
+    @Override
     public boolean isTop(BitSet fact) {
         return fact.get(topBit);
     }

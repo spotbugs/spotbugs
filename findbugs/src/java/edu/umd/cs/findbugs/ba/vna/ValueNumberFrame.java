@@ -596,6 +596,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     static {
         Util.runLogAtShutdown(new Runnable() {
 
+            @Override
             public void run() {
                 System.err.println("Getting updatable previously known as:");
                 System.err.println("  " + createdEmptyMap + " created empty map");

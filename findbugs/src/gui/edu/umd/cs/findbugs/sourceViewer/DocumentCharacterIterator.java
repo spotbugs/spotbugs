@@ -58,26 +58,32 @@ public class DocumentCharacterIterator implements CharacterIterator {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public char current() {
         return text.current();
     }
 
+    @Override
     public char first() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public int getBeginIndex() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public int getEndIndex() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public int getIndex() {
         return docPos;
     }
 
+    @Override
     public char last() {
         throw new UnsupportedOperationException();
     }
@@ -89,6 +95,7 @@ public class DocumentCharacterIterator implements CharacterIterator {
      * @return the character at the new position, or DONE if the new position is
      *         off the end
      */
+    @Override
     public char next() {
         ++docPos;
         if (docPos < segmentEnd || segmentEnd >= doc.getLength()) {
@@ -103,10 +110,12 @@ public class DocumentCharacterIterator implements CharacterIterator {
         return text.current();
     }
 
+    @Override
     public char previous() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public char setIndex(int position) {
         throw new UnsupportedOperationException();
     }

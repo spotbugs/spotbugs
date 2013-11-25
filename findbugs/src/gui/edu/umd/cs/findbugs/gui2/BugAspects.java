@@ -153,6 +153,7 @@ public class BugAspects implements Iterable<BugAspects.SortableValue> {
         }
     }
 
+    @Override
     public Iterator<SortableValue> iterator() {
         return lst.iterator();
     }

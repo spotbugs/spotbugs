@@ -62,6 +62,7 @@ public class TestDesktopIntegration extends JPanel {
         url = new URL(u);
 
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 createAndShowGUI();
             }
@@ -138,6 +139,7 @@ public class TestDesktopIntegration extends JPanel {
             JButton desktop = new JButton("Use java.awt.Desktop");
             desktop.addActionListener(new ActionListener() {
 
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
 
@@ -161,6 +163,7 @@ public class TestDesktopIntegration extends JPanel {
         if (LaunchBrowser.webstartFeasible()) {
             JButton jnlp = new JButton("Use jnlp");
             jnlp.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
 
@@ -183,6 +186,7 @@ public class TestDesktopIntegration extends JPanel {
         top.add(exec);
         if (LaunchBrowser.launchViaExec) {
             exec.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
                         writer.println("Launch via exec " + LaunchBrowser.execCommand);
@@ -210,6 +214,7 @@ public class TestDesktopIntegration extends JPanel {
             top.add(chooseFile);
             chooseFile.addActionListener(new ActionListener() {
 
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     final JFileChooser fc = new JFileChooser();
                     int retvel = fc.showOpenDialog(TestDesktopIntegration.this);

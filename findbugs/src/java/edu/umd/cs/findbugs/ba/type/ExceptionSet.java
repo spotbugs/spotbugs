@@ -67,12 +67,14 @@ public class ExceptionSet implements Serializable {
             findNext();
         }
 
+        @Override
         public boolean hasNext() {
             if (last == next)
                 findNext();
             return next < factory.getNumTypes();
         }
 
+        @Override
         public ObjectType next() {
             if (!hasNext())
                 throw new NoSuchElementException();
@@ -85,6 +87,7 @@ public class ExceptionSet implements Serializable {
             return explicitSet.get(last);
         }
 
+        @Override
         public void remove() {
             exceptionSet.clear(last);
             explicitSet.clear(last);

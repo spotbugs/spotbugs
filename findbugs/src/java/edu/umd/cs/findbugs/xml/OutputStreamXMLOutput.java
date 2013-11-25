@@ -97,6 +97,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
        this.newLine = true;
        this.stylesheet = stylesheet;
    }
+    @Override
     public void beginDocument() throws IOException {
         out.write(OPENING);
         out.write(getStylesheetCode(stylesheet));
@@ -104,28 +105,34 @@ public class OutputStreamXMLOutput implements XMLOutput {
         newLine = true;
     }
 
+    @Override
     public void openTag(String tagName) throws IOException {
         emitTag(tagName, false);
     }
 
+    @Override
     public void openTag(String tagName, XMLAttributeList attributeList) throws IOException {
         emitTag(tagName, attributeList.toString(), false);
     }
 
+    @Override
     public void openCloseTag(String tagName) throws IOException {
         emitTag(tagName, true);
     }
 
+    @Override
     public void openCloseTag(String tagName, XMLAttributeList attributeList) throws IOException {
         emitTag(tagName, attributeList.toString(), true);
     }
 
+    @Override
     public void startTag(String tagName) throws IOException {
         indent();
         ++nestingLevel;
         out.write("<" + tagName);
     }
 
+    @Override
     public void addAttribute(String name, String value) throws IOException {
         out.write(' ');
         out.write(name);
@@ -135,6 +142,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
         out.write('"');
     }
 
+    @Override
     public void stopTag(boolean close) throws IOException {
         if (close) {
             out.write("/>\n");
@@ -161,6 +169,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
         stopTag(close);
     }
 
+    @Override
     public void closeTag(String tagName) throws IOException {
         --nestingLevel;
         if (newLine)
@@ -169,10 +178,12 @@ public class OutputStreamXMLOutput implements XMLOutput {
         newLine = true;
     }
 
+    @Override
     public void writeText(String text) throws IOException {
         out.write(Strings.escapeXml(text));
     }
 
+    @Override
     public void writeCDATA(String cdata) throws IOException {
         // FIXME: We just trust fate that the characters being written
         // don't contain the string "]]>"
@@ -186,6 +197,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
     public void flush() throws IOException {
         out.flush();
     }
+    @Override
     @DischargesObligation
     public void finish() throws IOException {
         out.close();

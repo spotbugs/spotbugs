@@ -205,10 +205,12 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
         final MultiMap<MethodInfo, MethodInfo> multiMap = SelfMethodCalls.getSelfCalls(getClassDescriptor(), map);
         OutEdges2<MethodInfo> edges1 = new OutEdges2<MethodInfo>() {
 
+            @Override
             public Collection<MethodInfo> getOutEdges(MethodInfo method) {
                 return multiMap.get(method);
             }
 
+            @Override
             public int score(MethodInfo e) {
                 return e.getMethodCallCount();
             }
@@ -275,6 +277,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
     /**
      * @return Returns the fieldDescriptorList.
      */
+    @Override
     public List<? extends XField> getXFields() {
         return Arrays.asList(xFields);
     }
@@ -282,6 +285,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
     /**
      * @return Returns the methodDescriptorList.
      */
+    @Override
     public List<? extends XMethod> getXMethods() {
         return Arrays.asList(xMethods);
     }
@@ -299,6 +303,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
      * @see edu.umd.cs.findbugs.ba.XClass#findMethod(java.lang.String,
      * java.lang.String, boolean)
      */
+    @Override
     public XMethod findMethod(String methodName, String methodSig, boolean isStatic) {
         int hash = FieldOrMethodDescriptor.getNameSigHashCode(methodName, methodSig);
         for (MethodInfo mInfo : xMethods)
@@ -315,6 +320,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
      * edu.umd.cs.findbugs.ba.XClass#findMethod(edu.umd.cs.findbugs.classfile
      * .MethodDescriptor)
      */
+    @Override
     public XMethod findMethod(MethodDescriptor descriptor) {
         if (!descriptor.getClassDescriptor().equals(this)) {
             throw new IllegalArgumentException();
@@ -322,6 +328,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
         return findMatchingMethod(descriptor);
     }
 
+    @Override
     public XMethod findMatchingMethod(MethodDescriptor descriptor) {
         return findMethod(descriptor.getName(), descriptor.getSignature(), descriptor.isStatic());
     }
@@ -332,6 +339,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
      * @see edu.umd.cs.findbugs.ba.XClass#findField(java.lang.String,
      * java.lang.String, boolean)
      */
+    @Override
     public XField findField(String name, String signature, boolean isStatic) {
         int hash = FieldOrMethodDescriptor.getNameSigHashCode(name, signature);
         for (FieldInfo fInfo : xFields)
@@ -363,6 +371,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
     /**
      * @return Returns the immediateEnclosingClass.
      */
+    @Override
     public ClassDescriptor getImmediateEnclosingClass() {
         return immediateEnclosingClass;
     }
@@ -399,14 +408,17 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
         }
     }
 
+    @Override
     public Collection<ClassDescriptor> getAnnotationDescriptors() {
         return classAnnotations.keySet();
     }
 
+    @Override
     public Collection<AnnotationValue> getAnnotations() {
         return classAnnotations.values();
     }
 
+    @Override
     public AnnotationValue getAnnotation(ClassDescriptor desc) {
         return classAnnotations.get(desc);
     }
@@ -428,6 +440,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
         classAnnotations = Util.immutableMap(updatedMap);
     }
 
+    @Override
     public ElementType getElementType() {
         if (getClassName().endsWith("package-info"))
             return ElementType.PACKAGE;
@@ -437,6 +450,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
     }
 
+    @Override
     public @CheckForNull
     String getSource() {
         return source;
@@ -447,6 +461,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
     private boolean containingScopeCached = false;
 
+    @Override
     public @CheckForNull
     AnnotatedObject getContainingScope() {
         if (!containingScopeCached) {
@@ -477,14 +492,17 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
      *
      * @see edu.umd.cs.findbugs.ba.XClass#getSourceSignature()
      */
+    @Override
     public String getSourceSignature() {
         return classSourceSignature;
     }
 
+    @Override
     public boolean usesConcurrency() {
         return usesConcurrency;
     }
 
+    @Override
     public boolean hasStubs() {
         return hasStubs;
     }

@@ -56,6 +56,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getCodeBaseLocator()
      */
+    @Override
     public ICodeBaseLocator getCodeBaseLocator() {
         return codeBaseLocator;
     }
@@ -66,6 +67,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
      * @see
      * edu.umd.cs.findbugs.classfile.IScannableCodeBase#containsSourceFiles()
      */
+    @Override
     public boolean containsSourceFiles() {
         return false;
 
@@ -77,6 +79,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBase#setApplicationCodeBase(boolean)
      */
+    @Override
     public void setApplicationCodeBase(boolean isAppCodeBase) {
         this.isAppCodeBase = isAppCodeBase;
     }
@@ -86,6 +89,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#isApplicationCodeBase()
      */
+    @Override
     public boolean isApplicationCodeBase() {
         return isAppCodeBase;
     }
@@ -95,6 +99,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#setHowDiscovered(int)
      */
+    @Override
     public void setHowDiscovered(ICodeBase.Discovered howDiscovered) {
         this.howDiscovered = howDiscovered;
     }
@@ -104,6 +109,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getHowDiscovered()
      */
+    @Override
     public ICodeBase.Discovered getHowDiscovered() {
         return howDiscovered;
     }
@@ -113,6 +119,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#setLastModifiedTime(long)
      */
+    @Override
     public void setLastModifiedTime(long lastModifiedTime) {
         if (lastModifiedTime > 0 && FindBugs.validTimestamp(lastModifiedTime)) {
             this.lastModifiedTime = lastModifiedTime;
@@ -129,6 +136,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getLastModifiedTime()
      */
+    @Override
     public long getLastModifiedTime() {
         return lastModifiedTime;
     }

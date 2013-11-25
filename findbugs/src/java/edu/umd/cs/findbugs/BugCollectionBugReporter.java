@@ -50,11 +50,13 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
         return project;
     }
 
+    @Override
     public @Nonnull
     BugCollection getBugCollection() {
         return bugCollection;
     }
 
+    @Override
     public void observeClass(ClassDescriptor classDescriptor) {
     }
 
@@ -112,6 +114,7 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
      *
      * @see edu.umd.cs.findbugs.BugReporter#finish()
      */
+    @Override
     public void finish() {
        bugCollection.bugsPopulated();
        if (writer != null)

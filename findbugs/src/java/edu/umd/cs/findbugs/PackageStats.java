@@ -149,6 +149,7 @@ public class PackageStats extends BugCounts implements XMLWriteable {
             return sourceFile;
         }
 
+        @Override
         public void writeXML(XMLOutput xmlOutput) throws IOException {
             if (size == 0)
                 return;
@@ -277,6 +278,7 @@ public class PackageStats extends BugCounts implements XMLWriteable {
         this.numClasses = numClasses;
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         if (size == 0)
             return;

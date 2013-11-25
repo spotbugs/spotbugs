@@ -51,6 +51,7 @@ public class InconsistentAnnotations implements Detector, UseAnnotationDatabase 
         this.reporter = reporter;
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
 
         JavaClass jclass = classContext.getJavaClass();
@@ -83,6 +84,7 @@ public class InconsistentAnnotations implements Detector, UseAnnotationDatabase 
 
     }
 
+    @Override
     public void report() {
     }
 }

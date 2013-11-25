@@ -163,10 +163,12 @@ public class StronglyConnectedComponents<GraphType extends Graph<EdgeType, Verte
             m_searchTreeIterator = searchTreeIterator();
         }
 
+        @Override
         public boolean hasNext() {
             return m_searchTreeIterator.hasNext();
         }
 
+        @Override
         public Set<VertexType> next() {
             SearchTree<VertexType> tree = m_searchTreeIterator.next();
             TreeSet<VertexType> set = new TreeSet<VertexType>();
@@ -174,6 +176,7 @@ public class StronglyConnectedComponents<GraphType extends Graph<EdgeType, Verte
             return set;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }

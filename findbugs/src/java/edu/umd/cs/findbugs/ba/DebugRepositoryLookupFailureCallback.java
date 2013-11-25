@@ -39,6 +39,7 @@ public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFai
      * edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#reportMissingClass
      * (java.lang.ClassNotFoundException)
      */
+    @Override
     @SuppressFBWarnings("DM_EXIT")
     public void reportMissingClass(ClassNotFoundException ex) {
         String missing = AbstractBugReporter.getMissingClassName(ex);
@@ -57,6 +58,7 @@ public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFai
      * edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd
      * .cs.findbugs.classfile.ClassDescriptor)
      */
+    @Override
     @SuppressFBWarnings("DM_EXIT")
     public void reportMissingClass(ClassDescriptor classDescriptor) {
         System.out.println("Missing class: " + classDescriptor);
@@ -70,6 +72,7 @@ public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFai
      * edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#logError(java.
      * lang.String)
      */
+    @Override
     @SuppressFBWarnings("DM_EXIT")
     public void logError(String message) {
         System.err.println("Error: " + message);
@@ -83,6 +86,7 @@ public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFai
      * edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#logError(java.
      * lang.String, java.lang.Throwable)
      */
+    @Override
     @SuppressFBWarnings("DM_EXIT")
     public void logError(String message, Throwable e) {
         if (e instanceof MissingClassException) {
@@ -109,6 +113,7 @@ public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFai
      * 
      * @param method
      */
+    @Override
     public void reportSkippedAnalysis(MethodDescriptor method) {
         System.err.println("Skipping " + method);
     }

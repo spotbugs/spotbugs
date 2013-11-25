@@ -337,6 +337,7 @@ public class RejarClassesForAnalysis {
             if (processZipEntries(f, new ZipElementHandler() {
                 boolean checked = false;
 
+                @Override
                 public void handle(ZipFile file, ZipEntry ze) throws IOException {
                     if (commandLine.skip(ze))
                         return;
@@ -391,6 +392,7 @@ public class RejarClassesForAnalysis {
             int oldSize = copied.size();
             classFileFound = false;
             if (processZipEntries(f, new ZipElementHandler() {
+                @Override
                 public void handle(ZipFile file, ZipEntry ze) {
                     if (commandLine.skip(ze))
                         return;
@@ -468,6 +470,7 @@ public class RejarClassesForAnalysis {
             final File ff = f;
             processZipEntries(f, new ZipElementHandler() {
 
+                @Override
                 public void handle(ZipFile zipInputFile, ZipEntry ze) throws IOException {
                     if (commandLine.skip(ze))
                         return;
@@ -517,6 +520,7 @@ public class RejarClassesForAnalysis {
             System.err.println("Opening aux file " + f);
             processZipEntries(f, new ZipElementHandler() {
 
+                @Override
                 public void handle(ZipFile zipInputFile, ZipEntry ze) throws IOException {
                     if (commandLine.skip(ze))
                         return;

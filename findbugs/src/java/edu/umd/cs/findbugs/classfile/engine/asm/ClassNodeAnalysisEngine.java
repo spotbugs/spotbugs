@@ -43,6 +43,7 @@ public class ClassNodeAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
      */
+    @Override
     public ClassNode analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
         ClassReader classReader = analysisCache.getClassAnalysis(ClassReader.class, descriptor);
 
@@ -68,6 +69,7 @@ public class ClassNodeAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)
      */
+    @Override
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerClassAnalysisEngine(ClassNode.class, this);
     }

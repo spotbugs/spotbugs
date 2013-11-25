@@ -72,6 +72,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
     /**
      * @return a ClassDescriptor for the method's class
      */
+    @Override
     public ClassDescriptor getClassDescriptor() {
         return DescriptorFactory.createClassDescriptor(slashedClassName);
     }
@@ -79,6 +80,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
     /**
      * @return Returns the method name
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -86,6 +88,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
     /**
      * @return Returns the method signature
      */
+    @Override
     public String getSignature() {
         return signature;
     }
@@ -93,6 +96,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
     /**
      * @return Returns true if method is static, false if not
      */
+    @Override
     public boolean isStatic() {
         return isStatic;
     }

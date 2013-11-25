@@ -237,6 +237,7 @@ public class BugPattern implements Comparable<BugPattern> {
                         + text + "</a>";
                         
     }
+    @Override
     public int compareTo(BugPattern other) {
         return type.compareTo(other.type);
     }

@@ -107,10 +107,12 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
         return descriptor;
     }
 
+    @Override
     public void accept(BugAnnotationVisitor visitor) {
         visitor.visitTypeAnnotation(this);
     }
 
+    @Override
     public String format(String key, ClassAnnotation primaryClass) {
         String name = new SignatureConverter(descriptor).parseNext().replace("java.lang.", "");
         if (key.equals("givenClass"))
@@ -123,10 +125,12 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
         return name;
     }
 
+    @Override
     public void setDescription(String roleDescription) {
         this.roleDescription = roleDescription.intern();
     }
 
+    @Override
     public String getDescription() {
         return roleDescription;
     }
@@ -147,6 +151,7 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
         return descriptor.equals(((TypeAnnotation) o).descriptor);
     }
 
+    @Override
     public int compareTo(BugAnnotation o) {
         if (!(o instanceof TypeAnnotation)) // BugAnnotations must be Comparable
                                             // with any type of BugAnnotation
@@ -171,10 +176,12 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
 
     private static final String ELEMENT_NAME = "Type";
 
+    @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         writeXML(xmlOutput, false, false);
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("descriptor", descriptor);
 
@@ -187,6 +194,7 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
         BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
     }
 
+    @Override
     public boolean isSignificant() {
         return true;
     }

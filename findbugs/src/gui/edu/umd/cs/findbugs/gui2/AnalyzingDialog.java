@@ -68,6 +68,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
 
     public static void show(@Nonnull final Project project) {
         AnalysisCallback callback = new AnalysisCallback() {
+            @Override
             public void analysisFinished(BugCollection results) {
                 MainFrame instance = MainFrame.getInstance();
                 assert results.getProject() == project;
@@ -80,6 +81,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
                 results.reinitializeCloud();
             }
 
+            @Override
             public void analysisInterrupted() {
                 MainFrame instance = MainFrame.getInstance();
                 instance.updateProjectAndBugCollection(null);
@@ -144,6 +146,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
         progressBar.setStringPainted(true);
         cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
         cancelButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 cancel();
             }
@@ -157,6 +160,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
         });
         
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
                 add(statusLabel);
@@ -197,6 +201,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
     private void incrementCount() {
         count++;
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 progressBar.setString(count + "/" + goal);
                 progressBar.setValue(count);
@@ -208,6 +213,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
         this.count = count;
         this.goal = goal;
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 progressBar.setString(count + "/" + goal);
                 progressBar.setValue(count);
@@ -216,18 +222,22 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
         });
     }
 
+    @Override
     public void finishArchive() {
         incrementCount();
     }
 
+    @Override
     public void finishClass() {
         incrementCount();
     }
 
+    @Override
     public void finishPerClassAnalysis() {
         updateStage(edu.umd.cs.findbugs.L10N.getLocalString("progress.finishing_analysis", "Finishing analysis..."));
     }
 
+    @Override
     public void reportNumberOfArchives(int numArchives) {
         updateStage(edu.umd.cs.findbugs.L10N.getLocalString("progress.scanning_archives", "Scanning archives..."));
         updateCount(0, numArchives);
@@ -235,6 +245,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
 
     int pass = 0;
 
+    @Override
     public void startAnalysis(int numClasses) {
         pass++;
         String localString = edu.umd.cs.findbugs.L10N.getLocalString("progress.analyzing_classes", "Analyzing classes...");
@@ -290,6 +301,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
                  * 
                  * @see java.lang.Runnable#run()
                  */
+                @Override
                 public void run() {
                     AnalyzingDialog.this.setVisible(false);
                 }
@@ -303,6 +315,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
                  * 
                  * @see java.lang.Runnable#run()
                  */
+                @Override
                 public void run() {
                     JOptionPane.showMessageDialog(MainFrame.getInstance(), message, title, JOptionPane.ERROR_MESSAGE);
                 }
@@ -317,11 +330,13 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
      * 
      * @see edu.umd.cs.findbugs.FindBugsProgress#predictPassCount(int[])
      */
+    @Override
     public void predictPassCount(int[] classesPerPass) {
         this.classesPerPass = classesPerPass;
 
     }
 
+    @Override
     public void startArchive(String name) {
         // noop
     }

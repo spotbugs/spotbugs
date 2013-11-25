@@ -50,6 +50,7 @@ public class LiveLocalStoreDataflowFactory extends AnalysisFactory<LiveLocalStor
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
      */
+    @Override
     public LiveLocalStoreDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
             throws CheckedAnalysisException {
         MethodGen methodGen = getMethodGen(analysisCache, descriptor);

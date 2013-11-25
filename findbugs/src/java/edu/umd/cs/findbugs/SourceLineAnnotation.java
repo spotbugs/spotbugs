@@ -692,10 +692,12 @@ public class SourceLineAnnotation implements BugAnnotation {
         return startLine < 0 || endLine < 0;
     }
 
+    @Override
     public void accept(BugAnnotationVisitor visitor) {
         visitor.visitSourceLineAnnotation(this);
     }
 
+    @Override
     public String format(String key, ClassAnnotation primaryClass) {
         if (key.equals("hash"))
             return "";
@@ -745,10 +747,12 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description.intern();
     }
@@ -763,6 +767,7 @@ public class SourceLineAnnotation implements BugAnnotation {
         return format.format(new BugAnnotation[] { this }, null);
     }
 
+    @Override
     public int compareTo(BugAnnotation o) {
         if (!(o instanceof SourceLineAnnotation)) // All BugAnnotations must be
                                                   // comparable
@@ -815,6 +820,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     private static final String ELEMENT_NAME = "SourceLine";
 
+    @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         writeXML(xmlOutput, false, false);
     }
@@ -837,6 +843,7 @@ public class SourceLineAnnotation implements BugAnnotation {
         relativeSourceBase.remove();
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
         String classname = getClassName();
         String sourcePath = getSourcePath();
@@ -918,6 +925,7 @@ public class SourceLineAnnotation implements BugAnnotation {
         return synthetic;
     }
 
+    @Override
     public boolean isSignificant() {
         return false;
     }
@@ -991,6 +999,7 @@ public class SourceLineAnnotation implements BugAnnotation {
         return SourceLineAnnotation.createUnknown(className, sourceFileName);
     }
 
+    @Override
     public String toString(ClassAnnotation primaryClass) {
         return toString();
     }

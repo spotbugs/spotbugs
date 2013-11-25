@@ -59,6 +59,7 @@ public class TopologicalSort {
             this.base = base;
         }
 
+        @Override
         public Collection<E> getOutEdges(E e) {
             Collection<E> result = map.get(e);
             if (result == null) {
@@ -120,6 +121,7 @@ public class TopologicalSort {
 
         Set<E> consider = new HashSet<E>();
 
+        @Override
         public List<E> compute() {
             for (E e : consider)
                 visit(e);
@@ -167,6 +169,7 @@ public class TopologicalSort {
             oEdges.removeAll(e);
         }
 
+        @Override
         public List<E> compute() {
             ArrayList<E> doFirst = new ArrayList<E>(consider.size());
             ArrayList<E> doLast = new ArrayList<E>(consider.size());

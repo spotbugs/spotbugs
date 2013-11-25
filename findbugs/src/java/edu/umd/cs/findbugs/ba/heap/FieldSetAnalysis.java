@@ -56,14 +56,17 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
         return cpg;
     }
 
+    @Override
     public void makeFactTop(FieldSet fact) {
         fact.setTop();
     }
 
+    @Override
     public boolean isTop(FieldSet fact) {
         return fact.isTop();
     }
 
+    @Override
     public void initEntryFact(FieldSet result) throws DataflowAnalysisException {
         result.clear();
     }
@@ -72,14 +75,17 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
     // makeFactTop(result);
     // }
 
+    @Override
     public void meetInto(FieldSet fact, Edge edge, FieldSet result) throws DataflowAnalysisException {
         result.mergeWith(fact);
     }
 
+    @Override
     public boolean same(FieldSet fact1, FieldSet fact2) {
         return fact1.sameAs(fact2);
     }
 
+    @Override
     public FieldSet createFact() {
         return new FieldSet();
     }
@@ -89,6 +95,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
         return fact.isValid();
     }
 
+    @Override
     public void copy(FieldSet source, FieldSet dest) {
         dest.copyFrom(source);
     }

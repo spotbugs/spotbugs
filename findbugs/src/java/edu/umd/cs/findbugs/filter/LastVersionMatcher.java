@@ -43,10 +43,12 @@ public class LastVersionMatcher extends VersionMatcher implements Matcher {
         super(version, relOp);
     }
 
+    @Override
     public boolean match(BugInstance bugInstance) {
         return relOp.check(bugInstance.getLastVersion(), version);
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Long.toString(version)).addAttribute("relOp",
                 relOp.getName());

@@ -208,6 +208,7 @@ public class InnerClassAccessMap {
             this.accessCount = 0;
         }
 
+        @Override
         public void handleInstruction(int opcode, int index) {
             switch (opcode) {
             case Constants.GETFIELD:

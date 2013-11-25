@@ -119,20 +119,24 @@ public class FieldInfo extends FieldDescriptor implements XField {
         return checkFlag(Constants.ACC_SYNCHRONIZED);
     }
 
+    @Override
     public boolean isDeprecated() {
         return checkFlag(Opcodes.ACC_DEPRECATED);
     }
 
+    @Override
     public @DottedClassName
     String getClassName() {
         return getClassDescriptor().toDottedClassName();
     }
 
+    @Override
     public @DottedClassName
     String getPackageName() {
         return getClassDescriptor().getPackageName();
     }
 
+    @Override
     public String getSourceSignature() {
         return fieldSourceSignature;
     }
@@ -160,6 +164,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
      * 
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getAccessFlags()
      */
+    @Override
     public int getAccessFlags() {
         return accessFlags;
     }
@@ -169,6 +174,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
      * 
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isFinal()
      */
+    @Override
     public boolean isFinal() {
         return checkFlag(Constants.ACC_FINAL);
     }
@@ -178,6 +184,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
      * 
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPrivate()
      */
+    @Override
     public boolean isPrivate() {
         return checkFlag(Constants.ACC_PRIVATE);
     }
@@ -187,6 +194,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
      * 
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isProtected()
      */
+    @Override
     public boolean isProtected() {
         return checkFlag(Constants.ACC_PROTECTED);
     }
@@ -196,6 +204,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
      * 
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPublic()
      */
+    @Override
     public boolean isPublic() {
         return checkFlag(Constants.ACC_PUBLIC);
     }
@@ -205,6 +214,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
      * 
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isResolved()
      */
+    @Override
     public boolean isResolved() {
         return this.isResolved;
     }
@@ -214,6 +224,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
      * 
      * @see edu.umd.cs.findbugs.ba.XField#isReferenceType()
      */
+    @Override
     public boolean isReferenceType() {
         return getSignature().startsWith("L") || getSignature().startsWith("[");
     }
@@ -223,22 +234,27 @@ public class FieldInfo extends FieldDescriptor implements XField {
      * 
      * @see edu.umd.cs.findbugs.ba.XField#isVolatile()
      */
+    @Override
     public boolean isVolatile() {
         return checkFlag(Constants.ACC_VOLATILE);
     }
 
+    @Override
     public boolean isSynthetic() {
         return checkFlag(Constants.ACC_SYNTHETIC);
     }
 
+    @Override
     public Collection<ClassDescriptor> getAnnotationDescriptors() {
         return fieldAnnotations.keySet();
     }
 
+    @Override
     public AnnotationValue getAnnotation(ClassDescriptor desc) {
         return fieldAnnotations.get(desc);
     }
 
+    @Override
     public Collection<AnnotationValue> getAnnotations() {
         return fieldAnnotations.values();
     }
@@ -265,6 +281,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
      * 
      * @see edu.umd.cs.findbugs.ba.XField#getFieldDescriptor()
      */
+    @Override
     public FieldDescriptor getFieldDescriptor() {
         return this;
     }
@@ -293,10 +310,12 @@ public class FieldInfo extends FieldDescriptor implements XField {
                 isStatic ? Constants.ACC_STATIC : 0, new HashMap<ClassDescriptor, AnnotationValue>(), false);
     }
 
+    @Override
     public ElementType getElementType() {
         return ElementType.FIELD;
     }
 
+    @Override
     public @CheckForNull
     AnnotatedObject getContainingScope() {
         try {

@@ -112,12 +112,14 @@ public class TrainLongInstantfParams extends PreorderVisitor implements Detector
      * 
      * @see edu.umd.cs.findbugs.Detector#report()
      */
+    @Override
     public void report() {
         // System.out.println(database.entrySet().size() + " methods");
         AnalysisContext.currentAnalysisContext().storePropertyDatabase(database, "longInstant.db", "long instant database");
 
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         classContext.getJavaClass().accept(this);
     }

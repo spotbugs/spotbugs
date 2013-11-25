@@ -51,6 +51,7 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine<JavaClass> 
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
      */
+    @Override
     public JavaClass analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
         try {
             ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
@@ -79,6 +80,7 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine<JavaClass> 
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)
      */
+    @Override
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerClassAnalysisEngine(JavaClass.class, this);
     }
@@ -88,6 +90,7 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine<JavaClass> 
      *
      * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#canRecompute()
      */
+    @Override
     public boolean canRecompute() {
         // Currently, JavaClass objects are compared by reference equality in
         // some places,

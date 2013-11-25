@@ -67,6 +67,7 @@ public abstract class AbstractClassMember implements ClassMember {
         this.accessFlags = accessFlags;
     }
 
+    @Override
     public @DottedClassName
     String getClassName() {
         return className;
@@ -77,14 +78,17 @@ public abstract class AbstractClassMember implements ClassMember {
      * 
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getClassDescriptor()
      */
+    @Override
     public ClassDescriptor getClassDescriptor() {
         return DescriptorFactory.instance().getClassDescriptorForDottedClassName(className);
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public @DottedClassName
     String getPackageName() {
         int lastDot = className.lastIndexOf('.');
@@ -93,6 +97,7 @@ public abstract class AbstractClassMember implements ClassMember {
         return className.substring(0, lastDot);
     }
 
+    @Override
     public String getSignature() {
         return signature;
     }
@@ -101,26 +106,32 @@ public abstract class AbstractClassMember implements ClassMember {
         return signature.startsWith("L") || signature.startsWith("[");
     }
 
+    @Override
     public int getAccessFlags() {
         return accessFlags;
     }
 
+    @Override
     public boolean isStatic() {
         return (accessFlags & Constants.ACC_STATIC) != 0;
     }
 
+    @Override
     public boolean isFinal() {
         return (accessFlags & Constants.ACC_FINAL) != 0;
     }
 
+    @Override
     public boolean isPublic() {
         return (accessFlags & Constants.ACC_PUBLIC) != 0;
     }
 
+    @Override
     public boolean isProtected() {
         return (accessFlags & Constants.ACC_PROTECTED) != 0;
     }
 
+    @Override
     public boolean isPrivate() {
         return (accessFlags & Constants.ACC_PRIVATE) != 0;
     }
@@ -158,6 +169,7 @@ public abstract class AbstractClassMember implements ClassMember {
     // public int compareTo(Object other) {
     // return compareTo((FieldOrMethodName) other);
     // }
+    @Override
     public boolean isResolved() {
         return resolved;
     }

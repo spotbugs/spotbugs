@@ -43,6 +43,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
 
     private HashMap<String, String> sourceFileNameCache = new HashMap<String, String>();
 
+    @Override
     public void observeClass(ClassDescriptor classDescriptor) {
         try {
             JavaClass javaClass = AnalysisContext.currentAnalysisContext().lookupClass(classDescriptor.toDottedClassName());
@@ -114,10 +115,12 @@ public class EmacsBugReporter extends TextUIBugReporter {
         }
     }
 
+    @Override
     public void finish() {
         outputStream.close();
     }
 
+    @Override
     public @CheckForNull
     BugCollection getBugCollection() {
         return null;

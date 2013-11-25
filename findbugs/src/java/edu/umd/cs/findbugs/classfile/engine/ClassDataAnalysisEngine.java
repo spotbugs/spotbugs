@@ -41,6 +41,7 @@ import edu.umd.cs.findbugs.io.IO;
  */
 public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<ClassData> {
 
+    @Override
     public ClassData analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
 
         // Compute the resource name
@@ -81,6 +82,7 @@ public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
         return new ClassData(descriptor, codeBaseEntry, data);
     }
 
+    @Override
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerClassAnalysisEngine(ClassData.class, this);
     }
@@ -93,14 +95,17 @@ public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
             this.descriptor = descriptor;
         }
 
+        @Override
         public String getResourceName() {
             return descriptor.toResourceName();
         }
 
+        @Override
         public int getNumBytes() {
             return -1;
         }
 
+        @Override
         public InputStream openResource() throws IOException {
             InputStream stream = getClass().getClassLoader().getResourceAsStream(descriptor.toResourceName());
             if(stream == null){
@@ -109,14 +114,17 @@ public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
             return stream;
         }
 
+        @Override
         public ICodeBase getCodeBase() {
             return null;
         }
 
+        @Override
         public ClassDescriptor getClassDescriptor() {
             return descriptor;
         }
 
+        @Override
         public void overrideResourceName(String resourceName) {
             //
         }

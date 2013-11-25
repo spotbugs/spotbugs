@@ -48,6 +48,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
      * 
      * @see org.apache.bcel.util.Repository#clear()
      */
+    @Override
     public void clear() {
         throw new UnsupportedOperationException();
     }
@@ -57,6 +58,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
      * 
      * @see org.apache.bcel.util.Repository#findClass(java.lang.String)
      */
+    @Override
     public JavaClass findClass(String className) {
         @SlashedClassName
         String slashedClassName = ClassName.toSlashedClassName(className);
@@ -69,6 +71,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
      * 
      * @see org.apache.bcel.util.Repository#getClassPath()
      */
+    @Override
     public ClassPath getClassPath() {
         throw new UnsupportedOperationException();
     }
@@ -78,6 +81,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
      * 
      * @see org.apache.bcel.util.Repository#loadClass(java.lang.String)
      */
+    @Override
     public JavaClass loadClass(String className) throws ClassNotFoundException {
         if (className.length() == 0)
             throw new IllegalArgumentException("Request to load empty class");
@@ -95,6 +99,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
      * 
      * @see org.apache.bcel.util.Repository#loadClass(java.lang.Class)
      */
+    @Override
     public JavaClass loadClass(Class cls) throws ClassNotFoundException {
         return loadClass(cls.getName());
     }
@@ -106,6 +111,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
      * org.apache.bcel.util.Repository#removeClass(org.apache.bcel.classfile
      * .JavaClass)
      */
+    @Override
     public void removeClass(JavaClass arg0) {
         throw new UnsupportedOperationException();
     }
@@ -117,6 +123,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
      * org.apache.bcel.util.Repository#storeClass(org.apache.bcel.classfile.
      * JavaClass)
      */
+    @Override
     public void storeClass(JavaClass cls) {
         throw new UnsupportedOperationException();
     }

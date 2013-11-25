@@ -127,6 +127,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
      * @see
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#initEntryFact(java.lang.Object)
      */
+    @Override
     public void initEntryFact(TypeQualifierValueSet result) throws DataflowAnalysisException {
         result.makeValid();
     }
@@ -149,6 +150,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#copy(java.lang.Object,
      * java.lang.Object)
      */
+    @Override
     public void copy(TypeQualifierValueSet source, TypeQualifierValueSet dest) {
         dest.makeSameAs(source);
     }
@@ -158,6 +160,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
      *
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#createFact()
      */
+    @Override
     public TypeQualifierValueSet createFact() {
         return new TypeQualifierValueSet(typeQualifierValue);
     }
@@ -167,6 +170,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
      *
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#isTop(java.lang.Object)
      */
+    @Override
     public boolean isTop(TypeQualifierValueSet fact) {
         return fact.isTop();
     }
@@ -177,6 +181,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
      * @see
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#makeFactTop(java.lang.Object)
      */
+    @Override
     public void makeFactTop(TypeQualifierValueSet fact) {
         fact.setTop();
     }
@@ -187,6 +192,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(java.lang.Object,
      * edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
      */
+    @Override
     public void meetInto(TypeQualifierValueSet fact, Edge edge, TypeQualifierValueSet result) throws DataflowAnalysisException {
         if (fact.isTop() || result.isBottom()) {
             // result does not change
@@ -208,6 +214,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#same(java.lang.Object,
      * java.lang.Object)
      */
+    @Override
     public boolean same(TypeQualifierValueSet fact1, TypeQualifierValueSet fact2) {
         return fact1.equals(fact2);
     }

@@ -50,6 +50,7 @@ public class FieldDescriptor extends FieldOrMethodDescriptor implements Comparab
         return (isStatic() ? "static " : "") + getClassDescriptor().getDottedClassName() + "." + getName() + " " + getSignature();
     }
 
+    @Override
     public int compareTo(ComparableField o) {
         return FieldOrMethodDescriptor.compareTo(this, (FieldDescriptor)o);
     }

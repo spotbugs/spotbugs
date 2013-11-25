@@ -75,6 +75,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
      *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    @Override
     public int compareTo(ClassDescriptor o) {
         return className.compareTo(o.className);
     }

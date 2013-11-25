@@ -118,21 +118,25 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         if (DEBUG)
             this.addTreeModelListener(new TreeModelListener() {
 
+                @Override
                 public void treeNodesChanged(TreeModelEvent arg0) {
                     System.out.println("Tree nodes changed");
                     System.out.println("  " + arg0.getTreePath());
                 }
 
+                @Override
                 public void treeNodesInserted(TreeModelEvent arg0) {
                     System.out.println("Tree nodes inserted");
                     System.out.println("  " + arg0.getTreePath());
                 }
 
+                @Override
                 public void treeNodesRemoved(TreeModelEvent arg0) {
                     System.out.println("Tree nodes removed");
                     System.out.println("  " + arg0.getTreePath());
                 }
 
+                @Override
                 public void treeStructureChanged(TreeModelEvent arg0) {
                     System.out.println("Tree structure changed");
                     System.out.println("  " + arg0.getTreePath());
@@ -159,10 +163,12 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         bugSet.clearCache();
     }
 
+    @Override
     public Object getRoot() {
         return root;
     }
 
+    @Override
     public Object getChild(Object o, int index) {
         int childCount = getChildCount(o);
         if (index < 0 || index >= childCount) {
@@ -206,6 +212,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         }
     }
 
+    @Override
     public int getChildCount(Object o) {
 
         if (!(o instanceof BugAspects))
@@ -262,13 +269,16 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
 
     }
 
+    @Override
     public boolean isLeaf(Object o) {
         return (o instanceof BugLeafNode);
     }
 
+    @Override
     public void valueForPathChanged(TreePath arg0, Object arg1) {
     }
 
+    @Override
     public int getIndexOfChild(Object parent, Object child) {
         if (parent == null || child == null || isLeaf(parent))
             return -1;
@@ -282,24 +292,29 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         }
     }
 
+    @Override
     public void addTreeModelListener(TreeModelListener listener) {
         listeners.add(listener);
     }
 
+    @Override
     public void removeTreeModelListener(TreeModelListener listener) {
         listeners.remove(listener);
     }
 
+    @Override
     public void columnAdded(TableColumnModelEvent e) {
         sortsAddedOrRemoved = true;
         // rebuild();
     }
 
+    @Override
     public void columnRemoved(TableColumnModelEvent e) {
         sortsAddedOrRemoved = true;
         // rebuild();
     }
 
+    @Override
     public void columnMoved(final TableColumnModelEvent evt) {
         if (evt.getFromIndex() == evt.getToIndex())
             return;
@@ -344,6 +359,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         rebuildingThread =  edu.umd.cs.findbugs.util.Util.runInDameonThread(new Runnable() {
             BugTreeModel newModel;
 
+            @Override
             public void run() {
                 try {
                     newModel = new BugTreeModel(BugTreeModel.this);
@@ -353,6 +369,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
                 } finally {
                     rebuildingThread = null;
                     SwingUtilities.invokeLater(new Runnable() {
+                        @Override
                         public void run() {
                             if (newModel != null) {
                                 JTree newTree = new JTree(newModel);
@@ -441,6 +458,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
     FilterListener bugTreeFilterListener = new MyFilterListener();
 
     class MyFilterListener implements FilterListener {
+        @Override
         public void clearCache() {
             if (TRACE)
                 System.out.println("clearing cache in bug tree model");
@@ -546,15 +564,19 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         Debug.println("The BugTreeModel has been DELETED!  This means there are no more references to it, and its finally off all of the stupid listener lists");
     }
 
+    @Override
     public void columnMarginChanged(ChangeEvent arg0) {
     }
 
+    @Override
     public void columnSelectionChanged(ListSelectionEvent arg0) {
     }
 
+    @Override
     public void treeExpanded(TreeExpansionEvent event) {
     }
 
+    @Override
     public void treeCollapsed(TreeExpansionEvent event) {
     }
 

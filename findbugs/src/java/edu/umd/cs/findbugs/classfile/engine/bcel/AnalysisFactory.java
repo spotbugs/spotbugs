@@ -76,6 +76,7 @@ public abstract class AnalysisFactory<Analysis> implements IMethodAnalysisEngine
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)
      */
+    @Override
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerMethodAnalysisEngine(analysisClass, this);
     }

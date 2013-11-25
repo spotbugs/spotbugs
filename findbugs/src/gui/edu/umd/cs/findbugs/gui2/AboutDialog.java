@@ -145,6 +145,7 @@ public class AboutDialog extends javax.swing.JDialog {
 
         aboutEditorPane.setEditable(false);
         aboutEditorPane.addHyperlinkListener(new javax.swing.event.HyperlinkListener() {
+            @Override
             public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {
                 editorPaneHyperlinkUpdate(evt);
             }
@@ -156,6 +157,7 @@ public class AboutDialog extends javax.swing.JDialog {
 
         licenseEditorPane.setEditable(false);
         licenseEditorPane.addHyperlinkListener(new javax.swing.event.HyperlinkListener() {
+            @Override
             public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {
                 editorPaneHyperlinkUpdate(evt);
             }
@@ -167,6 +169,7 @@ public class AboutDialog extends javax.swing.JDialog {
 
         acknowldgementsEditorPane.setEditable(false);
         acknowldgementsEditorPane.addHyperlinkListener(new javax.swing.event.HyperlinkListener() {
+            @Override
             public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {
                 editorPaneHyperlinkUpdate(evt);
             }
@@ -196,6 +199,7 @@ public class AboutDialog extends javax.swing.JDialog {
         okButton.setMnemonic('O');
         okButton.setText(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "OK"));
         okButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okButtonActionPerformed(evt);
             }

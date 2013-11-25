@@ -38,6 +38,7 @@ public class ByInterfaceDetectorFactorySelector implements DetectorFactorySelect
         this.detectorInterface = detectorInterface;
     }
 
+    @Override
     public boolean selectFactory(DetectorFactory factory) {
         if (plugin != null && factory.getPlugin() != plugin)
             return false;

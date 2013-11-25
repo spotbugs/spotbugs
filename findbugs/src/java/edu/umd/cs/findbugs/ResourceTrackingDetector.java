@@ -73,6 +73,7 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
     public abstract void inspectResult(ClassContext classContext, MethodGen methodGen, CFG cfg,
             Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow, Resource resource);
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
 
         final JavaClass jclass = classContext.getJavaClass();
@@ -186,6 +187,7 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
         }
     }
 
+    @Override
     public void report() {
     }
 

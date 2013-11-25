@@ -48,6 +48,7 @@ public abstract class AbstractWarningProperty implements WarningProperty {
      * 
      * @see edu.umd.cs.findbugs.props.WarningProperty#getPriorityAdjustment()
      */
+    @Override
     public PriorityAdjustment getPriorityAdjustment() {
         return priorityAdjustment;
     }
@@ -57,6 +58,7 @@ public abstract class AbstractWarningProperty implements WarningProperty {
      * 
      * @see edu.umd.cs.findbugs.props.WarningProperty#getName()
      */
+    @Override
     public String getName() {
         return this.getClass().getName() + "." + shortName;
     }

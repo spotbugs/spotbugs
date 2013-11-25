@@ -95,7 +95,7 @@ public abstract class CloudCommentsPane extends JPanel {
     protected JComponent signInOutLink;
     private JTextArea commentBox;
     private JButton submitCommentButton;
-    private WideComboBox designationCombo;
+    private WideComboBox<String> designationCombo;
     private JPanel mainPanel;
     private JScrollPane _cloudReportScrollPane;
     protected JLabel titleLabel;
@@ -140,14 +140,17 @@ public abstract class CloudCommentsPane extends JPanel {
             }
         });
         commentBox.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
             public void insertUpdate(DocumentEvent e) {
                 changed();
             }
 
+            @Override
             public void removeUpdate(DocumentEvent e) {
                 changed();
             }
 
+            @Override
             public void changedUpdate(DocumentEvent e) {
                 changed();
             }
@@ -200,6 +203,7 @@ public abstract class CloudCommentsPane extends JPanel {
             }
         });
         designationCombo.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (!updatingHeader) {
                     int selectedIndex = designationCombo.getSelectedIndex();
@@ -211,6 +215,7 @@ public abstract class CloudCommentsPane extends JPanel {
 
 //        commentEntryPanel.setVisible(false);
         submitCommentButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(final ActionEvent e) {
                 submitComment(CloudCommentsPane.this.getSelectedBugs());
             }
@@ -224,6 +229,7 @@ public abstract class CloudCommentsPane extends JPanel {
 
         setDefaultComment(MSG_REVIEW);
         commentBox.addFocusListener(new FocusListener() {
+            @Override
             public void focusGained(FocusEvent e) {
                 commentBox.setForeground(null);
                 commentBox.setFont(plainCommentFont);
@@ -233,6 +239,7 @@ public abstract class CloudCommentsPane extends JPanel {
                 }
             }
 
+            @Override
             public void focusLost(FocusEvent e) {
                 String text = commentBox.getText();
                 if (isDefaultComment(text)) {
@@ -260,6 +267,7 @@ public abstract class CloudCommentsPane extends JPanel {
         cancelLink.setToolTipText("Cancel [Esc]");
 
         bulkReviewButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 clickedBulkReview = true;
                 refresh();
@@ -326,6 +334,7 @@ public abstract class CloudCommentsPane extends JPanel {
         final AtomicInteger shownErrorMessages = new AtomicInteger(0);
         for (final BugInstance bug : getSelectedBugs())
             executor.execute(new Runnable() {
+                @Override
                 public void run() {
                     if (shownErrorMessages.get() > 5) {
                         // 5 errors? let's just stop trying.
@@ -355,6 +364,7 @@ public abstract class CloudCommentsPane extends JPanel {
             SigninState state = cloud.getSigninState();
             if (state == SigninState.SIGNED_IN) {
                 backgroundExecutor.execute(new Runnable() {
+                    @Override
                     public void run() {
                         cloud.signOut();
                         refresh();
@@ -363,6 +373,7 @@ public abstract class CloudCommentsPane extends JPanel {
                 refresh();
             } else if (state.couldSignIn()) {
                 backgroundExecutor.execute(new Runnable() {
+                    @Override
                     public void run() {
                         try {
                             cloud.signIn();
@@ -435,6 +446,7 @@ public abstract class CloudCommentsPane extends JPanel {
 //                return;
         final AtomicBoolean stop = new AtomicBoolean(false);
         applyToBugs(new BugAction() {
+            @Override
             public void execute(BugInstance bug) {
                 if (stop.get())
                     return;
@@ -486,6 +498,7 @@ public abstract class CloudCommentsPane extends JPanel {
         }
         final String finalComment = comment;
         applyToBugs(new BugAction() {
+            @Override
             public void execute(BugInstance bug) {
                 bug.setAnnotationText(finalComment, _bugCollection);
                 refresh();
@@ -536,6 +549,7 @@ public abstract class CloudCommentsPane extends JPanel {
         final List<String> descriptions = new ArrayList<String>();
         List<CloudPlugin> clouds = new ArrayList<CloudPlugin>(DetectorFactoryCollection.instance().getRegisteredClouds().values());
         Collections.sort(clouds, new Comparator<CloudPlugin>() {
+            @Override
             public int compare(CloudPlugin o1, CloudPlugin o2) {
                 return o1.getDescription().compareToIgnoreCase(o2.getDescription());
             }
@@ -560,6 +574,7 @@ public abstract class CloudCommentsPane extends JPanel {
             _bugCollection.getProject().setCloudId(newCloudId);
             MainFrame.getInstance().setProjectChanged(true);
             backgroundExecutor.execute(new Runnable() {
+                @Override
                 public void run() {
                     _bugCollection.reinitializeCloud();
                     Cloud cloud = _bugCollection.getCloud();
@@ -910,7 +925,7 @@ public abstract class CloudCommentsPane extends JPanel {
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridBagLayout());
         cards.add(panel4, "COMMENTS");
-        designationCombo = new WideComboBox();
+        designationCombo = new WideComboBox<>();
         gbc = new GridBagConstraints();
         gbc.gridx = 4;
         gbc.gridy = 0;
@@ -983,11 +998,13 @@ public abstract class CloudCommentsPane extends JPanel {
     }
 
     private class MyCloudStatusListener implements Cloud.CloudStatusListener {
+        @Override
         public void handleIssueDataDownloadedEvent() {
             refresh();
         }
 
 
+        @Override
         public void handleStateChange(final Cloud.SigninState oldState, final Cloud.SigninState state) {
             updateHeader();
             refresh();

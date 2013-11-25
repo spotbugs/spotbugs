@@ -60,6 +60,7 @@ public abstract class OverriddenMethodsVisitor implements InheritanceGraphVisito
      * edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor#visitClass(edu.umd.
      * cs.findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass)
      */
+    @Override
     public boolean visitClass(ClassDescriptor classDescriptor, XClass xclass) {
         assert xclass != null;
         String methodSignature;
@@ -96,6 +97,7 @@ public abstract class OverriddenMethodsVisitor implements InheritanceGraphVisito
      * edu.umd.cs.findbugs.classfile.ClassDescriptor,
      * edu.umd.cs.findbugs.ba.XClass)
      */
+    @Override
     public boolean visitEdge(ClassDescriptor sourceDesc, XClass source, ClassDescriptor targetDesc, XClass target) {
         return (target != null);
     }

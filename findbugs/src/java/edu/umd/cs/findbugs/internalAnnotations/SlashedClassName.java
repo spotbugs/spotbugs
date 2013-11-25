@@ -53,6 +53,7 @@ public @interface SlashedClassName {
 
         final static Pattern pattern = Pattern.compile(slashedClassName);
 
+        @Override
         @Nonnull
         public When forConstantValue(@Nonnull SlashedClassName annotation, Object value) {
             if (!(value instanceof String))

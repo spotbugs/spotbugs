@@ -65,6 +65,7 @@ public class TestDataflowAnalysis<Fact,AnalysisType extends DataflowAnalysis<Fac
      *
      * @see edu.umd.cs.findbugs.Detector2#finishPass()
      */
+    @Override
     public void finishPass() {
     }
 
@@ -73,6 +74,7 @@ public class TestDataflowAnalysis<Fact,AnalysisType extends DataflowAnalysis<Fac
      *
      * @see edu.umd.cs.findbugs.Detector2#getDetectorClassName()
      */
+    @Override
     public String getDetectorClassName() {
         return getClass().getName();
     }
@@ -84,6 +86,7 @@ public class TestDataflowAnalysis<Fact,AnalysisType extends DataflowAnalysis<Fac
      * edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile
      * .ClassDescriptor)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
         if (dataflowClassName == null) {

@@ -53,14 +53,17 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
         this.cpg = cpg;
     }
 
+    @Override
     public StackDepth createFact() {
         return new StackDepth(TOP);
     }
 
+    @Override
     public void makeFactTop(StackDepth fact) {
         fact.setDepth(TOP);
     }
 
+    @Override
     public boolean isTop(StackDepth fact) {
         return fact.getDepth() == TOP;
     }
@@ -71,14 +74,17 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
         return depth != TOP && depth != BOTTOM;
     }
 
+    @Override
     public void copy(StackDepth source, StackDepth dest) {
         dest.setDepth(source.getDepth());
     }
 
+    @Override
     public void initEntryFact(StackDepth entryFact) {
         entryFact.setDepth(0); // stack depth == 0 at entry to CFG
     }
 
+    @Override
     public boolean same(StackDepth fact1, StackDepth fact2) {
         return fact1.getDepth() == fact2.getDepth();
     }
@@ -99,6 +105,7 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
             fact.setDepth(depth);
     }
 
+    @Override
     public void meetInto(StackDepth fact, Edge edge, StackDepth result) {
         int a = fact.getDepth();
         int b = result.getDepth();

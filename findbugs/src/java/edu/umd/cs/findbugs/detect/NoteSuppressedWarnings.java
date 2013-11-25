@@ -55,6 +55,7 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
         suppressionMatcher = AnalysisContext.currentAnalysisContext().getSuppressionMatcher();
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
         if (!BCELUtil.preTiger(javaClass)) {
@@ -136,6 +137,7 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
             suppressionMatcher.addSuppressor(new ClassWarningSuppressor(pattern, clazz));
     }
 
+    @Override
     public void report() {
 
     }

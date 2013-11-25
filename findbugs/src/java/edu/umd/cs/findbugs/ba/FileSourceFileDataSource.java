@@ -35,15 +35,18 @@ public class FileSourceFileDataSource implements SourceFileDataSource {
         this.fileName = fileName;
     }
 
+    @Override
     public InputStream open() throws IOException {
         return new BufferedInputStream(new FileInputStream(fileName));
     }
 
+    @Override
     public String getFullFileName() {
         return fileName;
     }
 
-     public long getLastModified() {
+     @Override
+    public long getLastModified() {
         return new File(fileName).lastModified();
     }
 }

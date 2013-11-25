@@ -97,25 +97,25 @@ public class NewProjectWizard extends FBDialog {
         }
     };
 
-    private final JList analyzeList = new JList();
+    private final JList<String> analyzeList = new JList<String>();
 
-    private final DefaultListModel analyzeModel = new DefaultListModel();
+    private final DefaultListModel<String> analyzeModel = new DefaultListModel<String>();
 
     private final JTextField projectName = new JTextField();
 
-    private final JList auxList = new JList();
+    private final JList<String> auxList = new JList<String>();
 
-    private final DefaultListModel auxModel = new DefaultListModel();
+    private final DefaultListModel<String> auxModel = new DefaultListModel<String>();
 
-    private final JList sourceList = new JList();
+    private final JList<String> sourceList = new JList<String>();
 
-    private final DefaultListModel sourceModel = new DefaultListModel();
+    private final DefaultListModel<String> sourceModel = new DefaultListModel<String>();
 
     private final JButton finishButton = new JButton();
 
     private final JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
 
-    private final JComboBox cloudSelector = new JComboBox();
+    private final JComboBox<CloudPlugin> cloudSelector = new JComboBox<CloudPlugin>();
 
     private final JComponent[] wizardComponents = new JComponent[4];
 
@@ -243,6 +243,7 @@ public class NewProjectWizard extends FBDialog {
 
             }
 
+            @Override
             public void actionPerformed(ActionEvent evt) {
 
                 if (displayWarnings())
@@ -257,11 +258,11 @@ public class NewProjectWizard extends FBDialog {
 
                 // Now that p is cleared, we can add in all the correct files.
                 for (int i = 0; i < analyzeModel.getSize(); i++)
-                    p.addFile((String) analyzeModel.get(i));
+                    p.addFile(analyzeModel.get(i));
                 for (int i = 0; i < auxModel.getSize(); i++)
-                    p.addAuxClasspathEntry((String) auxModel.get(i));
+                    p.addAuxClasspathEntry(auxModel.get(i));
                 for (int i = 0; i < sourceModel.getSize(); i++)
-                    p.addSourceDir((String) sourceModel.get(i));
+                    p.addSourceDir(sourceModel.get(i));
                 p.setProjectName(projectName.getText());
                 CloudPlugin cloudPlugin = (CloudPlugin) cloudSelector.getSelectedItem();
                 String newCloudId;
@@ -314,7 +315,7 @@ public class NewProjectWizard extends FBDialog {
 
             private boolean displayWarnings() {
                 for (int i = 0; i < analyzeModel.getSize(); i++) {
-                    File temp = new File((String) analyzeModel.get(i));
+                    File temp = new File(analyzeModel.get(i));
                     if (!temp.exists() && directoryOrArchive.accept(temp)) {
                         if (!displayWarningAndAskIfWeShouldContinue(
                                 temp.getName() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."),
@@ -325,7 +326,7 @@ public class NewProjectWizard extends FBDialog {
                 }
 
                 for (int i = 0; i < sourceModel.getSize(); i++) {
-                    File temp = new File((String) sourceModel.get(i));
+                    File temp = new File(sourceModel.get(i));
                     if (!temp.exists() && directoryOrArchive.accept(temp)) {
                         if (!displayWarningAndAskIfWeShouldContinue(
                                 temp.getName() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."),
@@ -334,7 +335,7 @@ public class NewProjectWizard extends FBDialog {
                     }
                 }
                 for (int i = 0; i < auxModel.getSize(); i++) {
-                    File temp = new File((String) auxModel.get(i));
+                    File temp = new File(auxModel.get(i));
                     if (!temp.exists() && directoryOrArchive.accept(temp)) {
                         if (!displayWarningAndAskIfWeShouldContinue(
                                 temp.getName() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."),
@@ -350,6 +351,7 @@ public class NewProjectWizard extends FBDialog {
         else
             finishButton.setText(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "OK"));
         cancelButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 dispose();
             }
@@ -422,7 +424,7 @@ public class NewProjectWizard extends FBDialog {
         return myPanel;
     }
 
-    private JPanel createFilePanel(final String label, final JList list, final DefaultListModel listModel,
+    private JPanel createFilePanel(final String label, final JList<String> list, final DefaultListModel<String> listModel,
                                    final int fileSelectionMode, final FileFilter filter, final String dialogTitle,
                                    boolean wizard, final String helpUrl) {
         JPanel myPanel = new JPanel(new GridBagLayout());
@@ -450,6 +452,7 @@ public class NewProjectWizard extends FBDialog {
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.setContentAreaFilled(false);
         button.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     LaunchBrowser.showDocument(new URL(helpUrl));
@@ -491,14 +494,16 @@ public class NewProjectWizard extends FBDialog {
             final NewProjectWizard thisGUI = this;
             myPanel.add(wizardButton, gbc);
             wizardButton.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent evt) {
                     final Project tempProject = new Project();
                     for (int i = 0; i < analyzeModel.getSize(); i++)
-                        tempProject.addFile((String) analyzeModel.get(i));
+                        tempProject.addFile(analyzeModel.get(i));
                     for (int i = 0; i < auxModel.getSize(); i++)
-                        tempProject.addAuxClasspathEntry((String) auxModel.get(i));
+                        tempProject.addAuxClasspathEntry(auxModel.get(i));
 
                     java.awt.EventQueue.invokeLater(new Runnable() {
+                        @Override
                         public void run() {
                             final SourceDirectoryWizard dialog = new SourceDirectoryWizard(new javax.swing.JFrame(), true,
                                     tempProject, thisGUI);
@@ -519,6 +524,7 @@ public class NewProjectWizard extends FBDialog {
         myPanel.add(Box.createGlue(), gbc);
         myPanel.setBorder(border);
         addButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 chooser.setFileSelectionMode(fileSelectionMode);
                 chooser.setMultiSelectionEnabled(true);
@@ -547,6 +553,7 @@ public class NewProjectWizard extends FBDialog {
             }
         });
         removeButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 if (list.getSelectedValues().length > 0)
                     projectChanged = true;
@@ -573,6 +580,7 @@ public class NewProjectWizard extends FBDialog {
      */
     private void loadAllPanels(final JPanel mainPanel) {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 int numPanels = wizardComponents.length;
                 for (int i = 0; i < numPanels; i++)
@@ -606,7 +614,7 @@ public class NewProjectWizard extends FBDialog {
     /**
      * @param foundModel
      */
-    public void setSourceDirecs(DefaultListModel foundModel) {
+    public void setSourceDirecs(DefaultListModel<String> foundModel) {
         for (int i = 0; i < foundModel.size(); i++) {
             this.sourceModel.addElement(foundModel.getElementAt(i));
         }

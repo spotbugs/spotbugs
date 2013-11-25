@@ -45,6 +45,7 @@ public class ReverseDepthFirstSearchFactory extends AnalysisFactory<ReverseDepth
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
      */
+    @Override
     public ReverseDepthFirstSearch analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
             throws CheckedAnalysisException {
         CFG cfg = getCFG(analysisCache, descriptor);

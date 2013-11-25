@@ -51,6 +51,7 @@ public class MethodGenFactory extends AnalysisFactory<MethodGen> {
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
      */
+    @Override
     public MethodGen analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         Method method = getMethod(analysisCache, descriptor);
 

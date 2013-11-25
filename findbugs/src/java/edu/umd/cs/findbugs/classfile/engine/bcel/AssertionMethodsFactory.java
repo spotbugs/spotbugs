@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
  */
 public class AssertionMethodsFactory extends RecomputableClassAnalysisEngine<AssertionMethods> {
 
+    @Override
     public AssertionMethods analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
         JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, descriptor);
         return new AssertionMethods(jclass);
@@ -46,6 +47,7 @@ public class AssertionMethodsFactory extends RecomputableClassAnalysisEngine<Ass
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)
      */
+    @Override
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerClassAnalysisEngine(AssertionMethods.class, this);
     }

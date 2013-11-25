@@ -165,6 +165,7 @@ public class TypeQualifierValue<A extends Annotation> {
 
                         InvocationHandler handler = new InvocationHandler() {
 
+                            @Override
                             public Object invoke(Object arg0, Method arg1, Object[] arg2) throws Throwable {
                                 if (arg1.getName() == "value")
                                     return TypeQualifierValue.this.value;

@@ -34,6 +34,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
      */
+    @Override
     public int getNumBytes() {
         return codeBase.getNumBytes();
     }
@@ -43,6 +44,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
      */
+    @Override
     public String getResourceName() {
         if (overriddenResourceName != null)
             return overriddenResourceName;
@@ -54,6 +56,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
      */
+    @Override
     public InputStream openResource() throws IOException {
         return codeBase.openFile();
     }
@@ -63,6 +66,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getCodeBase()
      */
+    @Override
     public ICodeBase getCodeBase() {
         return codeBase;
     }
@@ -72,6 +76,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
      */
+    @Override
     public ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException {
         return codeBase.getClassDescriptor();
     }
@@ -83,6 +88,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
      * edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java
      * .lang.String)
      */
+    @Override
     public void overrideResourceName(String resourceName) {
         overriddenResourceName = resourceName;
     }

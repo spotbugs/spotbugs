@@ -37,6 +37,7 @@ public class ExactStringMatcher implements StringMatcher {
         this.expected = expected;
     }
 
+    @Override
     public boolean matches(String s) {
         return this.expected.equals(s);
     }

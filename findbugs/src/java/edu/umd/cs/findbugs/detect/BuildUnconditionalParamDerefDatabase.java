@@ -57,8 +57,6 @@ import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /**
  * Build database of unconditionally dereferenced parameters.
@@ -70,15 +68,15 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg") || VERBOSE_DEBUG;
 
-    public final TypeQualifierValue nonnullTypeQualifierValue;
+    public final TypeQualifierValue<javax.annotation.Nonnull> nonnullTypeQualifierValue;
 
     abstract protected void reportBug(BugInstance bug);
 
     public BuildUnconditionalParamDerefDatabase() {
-        ClassDescriptor nonnullClassDesc = DescriptorFactory.createClassDescriptor(javax.annotation.Nonnull.class);
-        this.nonnullTypeQualifierValue = TypeQualifierValue.getValue(nonnullClassDesc, null);
+       this.nonnullTypeQualifierValue =  TypeQualifierValue.getValue(javax.annotation.Nonnull.class, null);
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         boolean fullAnalysis = AnalysisContext.currentAnalysisContext().getBoolProperty(
                 FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES);

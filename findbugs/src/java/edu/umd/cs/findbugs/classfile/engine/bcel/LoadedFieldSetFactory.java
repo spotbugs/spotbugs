@@ -75,6 +75,7 @@ public class LoadedFieldSetFactory extends AnalysisFactory<LoadedFieldSet> {
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
      */
+    @Override
     public LoadedFieldSet analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         MethodGen methodGen = getMethodGen(analysisCache, descriptor);
         if (methodGen == null)

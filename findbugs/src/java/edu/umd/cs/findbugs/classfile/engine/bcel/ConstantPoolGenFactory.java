@@ -42,6 +42,7 @@ public class ConstantPoolGenFactory extends RecomputableClassAnalysisEngine<Cons
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
      */
+    @Override
     public ConstantPoolGen analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
         ClassGen classGen = new ClassGen(analysisCache.getClassAnalysis(JavaClass.class, descriptor));
         return classGen.getConstantPool();
@@ -54,6 +55,7 @@ public class ConstantPoolGenFactory extends RecomputableClassAnalysisEngine<Cons
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)
      */
+    @Override
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerClassAnalysisEngine(ConstantPoolGen.class, this);
     }

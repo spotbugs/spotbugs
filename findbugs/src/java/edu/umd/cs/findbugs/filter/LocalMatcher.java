@@ -42,6 +42,7 @@ public class LocalMatcher implements Matcher {
         return "Local(name=" + name + ")";
     }
 
+    @Override
     public boolean match(BugInstance bugInstance) {
         LocalVariableAnnotation localAnnotation = bugInstance.getPrimaryLocalVariableAnnotation();
         if (localAnnotation == null) {
@@ -53,6 +54,7 @@ public class LocalMatcher implements Matcher {
         return true;
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec());
         if (disabled)

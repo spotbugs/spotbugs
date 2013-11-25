@@ -85,6 +85,7 @@ public class JUnitJarRunner {
 
         ClassLoader cl = AccessController.doPrivileged(new PrivilegedExceptionAction<URLClassLoader>() {
 
+            @Override
             public URLClassLoader run() throws Exception {
                 return new URLClassLoader(urlList.toArray(new URL[urlList.size()]));
 

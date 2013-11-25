@@ -98,11 +98,12 @@ public class NewFilterFrame extends FBDialog {
             }
         }
 
-        final JComboBox comboBox = new JComboBox(valuesWithoutDivider);
-        comboBox.setRenderer(new ListCellRenderer() {
+        final JComboBox<Sortables> comboBox = new JComboBox<>(valuesWithoutDivider);
+        comboBox.setRenderer(new ListCellRenderer<Sortables>() {
             final Color SELECTED_BACKGROUND = new Color(183, 184, 204);
 
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+            @Override
+            public Component getListCellRendererComponent(JList<? extends Sortables> list, Sortables value, int index, boolean isSelected,
                     boolean cellHasFocus) {
                 JLabel result = new JLabel();
                 result.setFont(result.getFont().deriveFont(Driver.getFontSize()));
@@ -114,6 +115,7 @@ public class NewFilterFrame extends FBDialog {
             }
         });
         comboBox.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 Sortables filterBy = (Sortables) comboBox.getSelectedItem();
                 String[] listData = filterBy.getAllSorted();
@@ -128,13 +130,14 @@ public class NewFilterFrame extends FBDialog {
         String[] filterModes = { edu.umd.cs.findbugs.L10N.getLocalString("mode.equal_to", "equal to"),
                 edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_after", "at or after"),
                 edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_before", "at or before") };
-        final JComboBox filterModeComboBox = new JComboBox(filterModes);
+        final JComboBox<String> filterModeComboBox = new JComboBox<>(filterModes);
         north.add(filterModeComboBox);
         north.add(new JLabel(":"));
         north.add(Box.createHorizontalGlue());
         JPanel south = new JPanel();
         JButton okButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "OK"));
         okButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 Sortables key = (Sortables) comboBox.getSelectedItem();
                 String[] values = key.getAllSorted();
@@ -158,6 +161,7 @@ public class NewFilterFrame extends FBDialog {
         });
         JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
         cancelButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 close();
             }

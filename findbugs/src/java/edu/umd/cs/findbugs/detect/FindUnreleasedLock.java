@@ -191,6 +191,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
             this.isNullDataflow = isNullDataflow;
         }
 
+        @Override
         public Lock isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg)
                 throws DataflowAnalysisException {
 
@@ -221,6 +222,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
             return null;
         }
 
+        @Override
         public boolean mightCloseResource(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg)
                 throws DataflowAnalysisException {
             InvokeInstruction inv = toInvokeInstruction(handle.getInstruction());
@@ -244,6 +246,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
             return false;
         }
 
+        @Override
         public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Lock resource,
                 ResourceValueFrame frame) throws DataflowAnalysisException {
 
@@ -254,16 +257,19 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
         }
 
+        @Override
         public ResourceValueFrameModelingVisitor createVisitor(Lock resource, ConstantPoolGen cpg) {
             return new LockFrameModelingVisitor(cpg, this, resource, vnaDataflow, isNullDataflow);
         }
 
+        @Override
         public boolean ignoreImplicitExceptions(Lock resource) {
             // JSR166 locks should be ALWAYS be released,
             // including when implicit runtime exceptions are thrown
             return false;
         }
 
+        @Override
         public boolean ignoreExceptionEdge(Edge edge, Lock resource, ConstantPoolGen cpg) {
 
             try {
@@ -313,6 +319,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
             return false;
         }
 
+        @Override
         public boolean isParamInstance(Lock resource, int slot) {
             // There is nothing special about Lock objects passed
             // into the method as parameters.

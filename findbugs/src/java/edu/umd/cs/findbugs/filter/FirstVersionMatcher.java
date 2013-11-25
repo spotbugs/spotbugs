@@ -45,10 +45,12 @@ public class FirstVersionMatcher extends VersionMatcher implements Matcher {
         return "FirstVersion(version" + relOp + version + ")";
     }
 
+    @Override
     public boolean match(BugInstance bugInstance) {
         return relOp.check(bugInstance.getFirstVersion(), version);
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Long.toString(version)).addAttribute("relOp",
                 relOp.getName());

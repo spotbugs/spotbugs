@@ -49,50 +49,62 @@ public class DelegatingBugReporter implements BugReporter {
         return this.delegate;
     }
 
+    @Override
     public void setErrorVerbosity(int level) {
         delegate.setErrorVerbosity(level);
     }
 
+    @Override
     public void setPriorityThreshold(int threshold) {
         delegate.setPriorityThreshold(threshold);
     }
 
+    @Override
     public void observeClass(ClassDescriptor classDescriptor) {
         delegate.observeClass(classDescriptor);
     }
 
+    @Override
     public void reportBug(@Nonnull BugInstance bugInstance) {
         delegate.reportBug(bugInstance);
     }
 
+    @Override
     public void logError(String message) {
         delegate.logError(message);
     }
 
+    @Override
     public void reportMissingClass(ClassNotFoundException ex) {
         delegate.reportMissingClass(ex);
     }
 
+    @Override
     public void reportMissingClass(ClassDescriptor classDescriptor) {
         delegate.reportMissingClass(classDescriptor);
     }
 
+    @Override
     public void finish() {
         delegate.finish();
     }
 
+    @Override
     public void reportQueuedErrors() {
         delegate.reportQueuedErrors();
     }
 
+    @Override
     public void addObserver(BugReporterObserver observer) {
         delegate.addObserver(observer);
     }
 
+    @Override
     public ProjectStats getProjectStats() {
         return delegate.getProjectStats();
     }
 
+    @Override
     public void logError(String message, Throwable e) {
         if (e instanceof MethodUnprofitableException)
             return;
@@ -104,10 +116,12 @@ public class DelegatingBugReporter implements BugReporter {
      *
      * @param method
      */
+    @Override
     public void reportSkippedAnalysis(MethodDescriptor method) {
         delegate.reportSkippedAnalysis(method);
     }
 
+    @Override
     public @CheckForNull
     BugCollection getBugCollection() {
         return delegate.getBugCollection();

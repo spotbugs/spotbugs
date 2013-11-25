@@ -99,6 +99,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#iterator()
      */
+    @Override
     public ICodeBaseIterator iterator() throws InterruptedException {
         return new DelegatingCodeBaseIterator(this, delegateCodeBase);
     }
@@ -109,6 +110,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
      */
+    @Override
     public ICodeBaseEntry lookupResource(String resourceName) {
         ICodeBaseEntry delegateCodeBaseEntry = delegateCodeBase.lookupResource(resourceName);
         if (delegateCodeBaseEntry == null) {
@@ -122,6 +124,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
      */
+    @Override
     public String getPathName() {
         return null;
     }
@@ -131,6 +134,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
      */
+    @Override
     public void close() {
         delegateCodeBase.close();
         if (!tempFile.delete()) {

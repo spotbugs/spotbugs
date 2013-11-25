@@ -17,6 +17,7 @@ abstract public class WarningSuppressor implements Matcher {
             System.out.println("Suppressing " + bugPattern);
     }
 
+    @Override
     public boolean match(BugInstance bugInstance) {
 
         if (DEBUG) {
@@ -34,6 +35,7 @@ abstract public class WarningSuppressor implements Matcher {
         return true;
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         // no-op; these aren't saved to XML
     }

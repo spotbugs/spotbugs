@@ -72,6 +72,7 @@ public class ClassPathImpl implements IClassPath {
      * edu.umd.cs.findbugs.classfile.IClassPath#addCodeBase(edu.umd.cs.findbugs
      * .classfile.ICodeBase)
      */
+    @Override
     public void addCodeBase(ICodeBase codeBase) {
         if (codeBase.isApplicationCodeBase()) {
             if (!(codeBase instanceof IScannableCodeBase)) {
@@ -88,6 +89,7 @@ public class ClassPathImpl implements IClassPath {
      *
      * @see edu.umd.cs.findbugs.classfile.IClassPath#appCodeBaseIterator()
      */
+    @Override
     public Iterator<? extends ICodeBase> appCodeBaseIterator() {
         return appCodeBaseList.iterator();
     }
@@ -97,6 +99,7 @@ public class ClassPathImpl implements IClassPath {
      *
      * @see edu.umd.cs.findbugs.classfile.IClassPath#auxCodeBaseIterator()
      */
+    @Override
     public Iterator<? extends ICodeBase> auxCodeBaseIterator() {
         return auxCodeBaseList.iterator();
     }
@@ -106,6 +109,7 @@ public class ClassPathImpl implements IClassPath {
      *
      * @see edu.umd.cs.findbugs.classfile.IClassPath#close()
      */
+    @Override
     public void close() {
         for (ICodeBase codeBase : appCodeBaseList) {
             codeBase.close();
@@ -118,6 +122,7 @@ public class ClassPathImpl implements IClassPath {
         codeBaseEntryMap.clear();
     }
 
+    @Override
     public Map<String, ICodeBaseEntry> getApplicationCodebaseEntries() {
         Map<String, ICodeBaseEntry> appEntries = new HashMap<String, ICodeBaseEntry>();
         Iterator<Entry<String, ICodeBaseEntry>> iterator = codeBaseEntryMap.entrySet().iterator();
@@ -137,6 +142,7 @@ public class ClassPathImpl implements IClassPath {
      * @see
      * edu.umd.cs.findbugs.classfile.IClassPath#lookupResource(java.lang.String)
      */
+    @Override
     public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
         // See if we have cached the codebase entry for this resource
         ICodeBaseEntry result = codeBaseEntryMap.get(resourceName);
@@ -193,6 +199,7 @@ public class ClassPathImpl implements IClassPath {
      * edu.umd.cs.findbugs.classfile.IClassPath#mapResourceNameToCodeBaseEntry
      * (java.lang.String, edu.umd.cs.findbugs.classfile.ICodeBaseEntry)
      */
+    @Override
     public void mapResourceNameToCodeBaseEntry(String resourceName, ICodeBaseEntry codeBaseEntry) {
         codeBaseEntryMap.put(resourceName, codeBaseEntry);
     }

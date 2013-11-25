@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 public class SuppressionMatcher extends ArrayList<BugInstance> implements Matcher {
     private static final long serialVersionUID = -689204051024507484L;
 
+    @Override
     public boolean match(BugInstance bugInstance) {
         return (!contains(bugInstance));
     }
@@ -44,6 +45,7 @@ public class SuppressionMatcher extends ArrayList<BugInstance> implements Matche
         return super.add(bugInstance);
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         throw new UnsupportedOperationException();
     }

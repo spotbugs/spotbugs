@@ -100,11 +100,13 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
             findNext();
         }
 
+        @Override
         public boolean hasNext() {
             findNext();
             return next != null;
         }
 
+        @Override
         public Location next() {
             findNext();
             if (next == null)
@@ -114,6 +116,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
             return result;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
@@ -315,6 +318,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
      */
     public Iterable<Location> locations() {
         return new Iterable<Location>() {
+            @Override
             public Iterator<Location> iterator() {
                 return locationIterator();
             }

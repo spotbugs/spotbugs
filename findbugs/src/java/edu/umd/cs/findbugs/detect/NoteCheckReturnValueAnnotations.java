@@ -35,6 +35,7 @@ public class NoteCheckReturnValueAnnotations extends BuildCheckReturnAnnotationD
     public NoteCheckReturnValueAnnotations(BugReporter bugReporter) {
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
 
         JavaClass javaClass = classContext.getJavaClass();
@@ -42,6 +43,7 @@ public class NoteCheckReturnValueAnnotations extends BuildCheckReturnAnnotationD
             javaClass.accept(this);
     }
 
+    @Override
     public void report() {
     }
 }

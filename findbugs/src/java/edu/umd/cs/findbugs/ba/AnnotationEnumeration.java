@@ -61,6 +61,7 @@ public class AnnotationEnumeration<E extends AnnotationEnumeration<E>> implement
      * 
      * @see java.lang.Comparable#compareTo(T)
      */
+    @Override
     public int compareTo(E a) {
         return index - a.getIndex();
     }

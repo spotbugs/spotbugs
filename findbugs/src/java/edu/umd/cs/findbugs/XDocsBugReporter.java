@@ -72,6 +72,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
 
     }
 
+    @Override
     public void observeClass(ClassDescriptor classDescriptor) {
     }
 
@@ -108,6 +109,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
         }
     }
 
+    @Override
     public void finish() {
 
         try {
@@ -215,6 +217,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
      * }
      */
 
+    @Override
     public @Nonnull
     BugCollection getBugCollection() {
         return bugCollection;

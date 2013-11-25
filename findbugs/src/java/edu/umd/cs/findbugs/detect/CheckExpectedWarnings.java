@@ -108,6 +108,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         }
     }
 
+    @Override
     public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
         if (reporter == null) {
             if (!warned) {
@@ -395,6 +396,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         return matching;
     }
 
+    @Override
     public void finishPass() {
         HashSet<BugPattern> claimedReported = new HashSet<BugPattern>();
         for (DetectorFactory d : DetectorFactoryCollection.instance().getFactories())
@@ -407,6 +409,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 
     }
 
+    @Override
     public String getDetectorClassName() {
         return CheckExpectedWarnings.class.getName();
     }

@@ -64,6 +64,7 @@ public class LocationWhereValueBecomesNull implements Comparable<LocationWhereVa
      * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    @Override
     public int compareTo(LocationWhereValueBecomesNull o) {
         int cmp = this.location.compareTo(o.location);
         if (cmp != 0) {

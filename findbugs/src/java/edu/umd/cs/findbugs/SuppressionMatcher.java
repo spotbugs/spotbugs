@@ -60,6 +60,7 @@ public class SuppressionMatcher implements Matcher {
         return count;
     }
 
+    @Override
     public boolean match(BugInstance b) {
         ClassAnnotation clazz = b.getPrimaryClass().getTopLevelClass();
         Collection<WarningSuppressor> c = suppressedWarnings.get(clazz);
@@ -79,6 +80,7 @@ public class SuppressionMatcher implements Matcher {
         return false;
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         // no-op; these aren't saved to XML
     }

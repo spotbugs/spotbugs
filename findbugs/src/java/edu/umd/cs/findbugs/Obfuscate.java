@@ -187,41 +187,49 @@ public class Obfuscate {
         final BugInstance result = new BugInstance(b.getType(), b.getPriority());
         BugAnnotationVisitor visitor = new BugAnnotationVisitor() {
 
+            @Override
             public void visitTypeAnnotation(TypeAnnotation typeAnnotation) {
                 result.add(obfuscate(typeAnnotation));
 
             }
 
+            @Override
             public void visitStringAnnotation(StringAnnotation stringAnnotation) {
                 result.add(obfuscate(stringAnnotation));
 
             }
 
+            @Override
             public void visitSourceLineAnnotation(SourceLineAnnotation sourceLineAnnotation) {
                 result.add(obfuscate(sourceLineAnnotation));
 
             }
 
+            @Override
             public void visitMethodAnnotation(MethodAnnotation methodAnnotation) {
                 result.add(obfuscate(methodAnnotation));
 
             }
 
+            @Override
             public void visitLocalVariableAnnotation(LocalVariableAnnotation fieldAnnotation) {
                 result.add(obfuscate(fieldAnnotation));
 
             }
 
+            @Override
             public void visitIntAnnotation(IntAnnotation fieldAnnotation) {
                 result.add(obfuscate(fieldAnnotation));
 
             }
 
+            @Override
             public void visitFieldAnnotation(FieldAnnotation fieldAnnotation) {
                 result.add(obfuscate(fieldAnnotation));
 
             }
 
+            @Override
             public void visitClassAnnotation(ClassAnnotation classAnnotation) {
                 result.add(obfuscate(classAnnotation));
 

@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 public class BytecodeScanningDetector extends DismantleBytecode implements Detector {
     private ClassContext classContext;
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         this.classContext = classContext;
         classContext.getJavaClass().accept(this);
@@ -57,6 +58,7 @@ public class BytecodeScanningDetector extends DismantleBytecode implements Detec
         return true;
     }
 
+    @Override
     public void report() {
     }
 }

@@ -37,6 +37,7 @@ public class SingleDetectorFactorySelector implements DetectorFactorySelector {
         this.className = className;
     }
 
+    @Override
     public boolean selectFactory(DetectorFactory factory) {
         return plugin == factory.getPlugin()
                 && (factory.getFullName().equals(className) || factory.getShortName().equals(className));

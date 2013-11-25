@@ -42,6 +42,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
         DefaultNullnessAnnotations.addDefaultNullnessAnnotations(this);
     }
 
+    @Override
     public boolean parameterMustBeNonNull(XMethod m, int param) {
         if (param == 0) {
             if (m.getName().equals("equals") && m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic())

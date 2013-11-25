@@ -141,10 +141,12 @@ public class ClassPathBuilder implements IClassPathBuilder {
                 return ((IScannableCodeBase) codeBase).iterator();
             } else {
                 return new ICodeBaseIterator() {
+                    @Override
                     public boolean hasNext() throws InterruptedException {
                         return false;
                     }
 
+                    @Override
                     public ICodeBaseEntry next() throws InterruptedException {
                         throw new UnsupportedOperationException();
                     }
@@ -192,6 +194,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
      * edu.umd.cs.findbugs.classfile.IClassPathBuilder#addCodeBase(edu.umd.cs
      * .findbugs.classfile.ICodeBaseLocator, boolean)
      */
+    @Override
     public void addCodeBase(ICodeBaseLocator locator, boolean isApplication) {
         addToWorkList(projectWorkList, new WorkListItem(locator, isApplication, ICodeBase.Discovered.SPECIFIED));
     }
@@ -203,6 +206,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
      * edu.umd.cs.findbugs.classfile.IClassPathBuilder#scanNestedArchives(boolean
      * )
      */
+    @Override
     public void scanNestedArchives(boolean scanNestedArchives) {
         this.scanNestedArchives = scanNestedArchives;
     }
@@ -215,6 +219,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
      * .classfile.IClassPath,
      * edu.umd.cs.findbugs.classfile.IClassPathBuilderProgress)
      */
+    @Override
     public void build(IClassPath classPath, IClassPathBuilderProgress progress) throws CheckedAnalysisException, IOException,
             InterruptedException {
         // Discover all directly and indirectly referenced codebases
@@ -522,6 +527,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
              *
              * @see java.io.FileFilter#accept(java.io.File)
              */
+            @Override
             public boolean accept(File pathname) {
                 String path = pathname.getPath();
                 boolean isArchive = Archive.isArchiveFileName(path);
@@ -808,6 +814,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
      *
      * @see edu.umd.cs.findbugs.classfile.IClassPathBuilder#getAppClassList()
      */
+    @Override
     public List<ClassDescriptor> getAppClassList() {
         return appClassList;
     }

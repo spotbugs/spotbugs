@@ -48,6 +48,7 @@ public class ReturnPathTypeDataflowFactory extends AnalysisFactory<ReturnPathTyp
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
      */
+    @Override
     public ReturnPathTypeDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor)
             throws CheckedAnalysisException {
         CFG cfg = getCFG(analysisCache, descriptor);

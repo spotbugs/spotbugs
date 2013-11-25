@@ -34,6 +34,7 @@ public abstract class AbstractFieldAnnotationVisitor implements FieldVisitor {
      * org.objectweb.asm.FieldVisitor#visitAttribute(org.objectweb.asm.Attribute
      * )
      */
+    @Override
     public void visitAttribute(Attribute attr) {
         // TODO Auto-generated method stub
 

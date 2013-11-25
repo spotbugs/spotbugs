@@ -129,6 +129,7 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
      *            the key
      * @return the formatted annotation
      */
+    @Override
     public final String format(String key, ClassAnnotation primaryClass) {
         if (key.equals("class.givenClass"))
             return shorten(primaryClass.getPackageName(), className);
@@ -143,10 +144,12 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
         return formatPackageMember(key, primaryClass);
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description.intern();
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
@@ -213,6 +216,7 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
         return format.format(new BugAnnotation[] { this }, primaryClass);
     }
 
+    @Override
     public boolean isSignificant() {
         return true;
     }

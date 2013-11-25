@@ -44,6 +44,7 @@ public class ContainsCamelCaseWordStringMatcher implements StringMatcher {
         this.expected = expected.toLowerCase(Locale.ENGLISH);
     }
 
+    @Override
     public boolean matches(String s) {
         SplitCamelCaseIdentifier splitter = new SplitCamelCaseIdentifier(s);
         Collection<String> components = splitter.split();

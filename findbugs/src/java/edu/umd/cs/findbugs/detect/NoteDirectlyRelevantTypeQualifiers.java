@@ -53,6 +53,7 @@ public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode implem
     public NoteDirectlyRelevantTypeQualifiers(BugReporter bugReporter) {
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         if (qualifiers == null) {
             qualifiers = AnalysisContext.currentAnalysisContext().getDirectlyRelevantTypeQualifiersDatabase();
@@ -127,6 +128,7 @@ public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode implem
         Analysis.addKnownTypeQualifiersForParameters(applicableApplications, m);
     }
 
+    @Override
     public void report() {
     }
 }

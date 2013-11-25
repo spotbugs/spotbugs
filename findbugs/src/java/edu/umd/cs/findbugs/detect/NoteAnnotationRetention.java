@@ -66,6 +66,7 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements Detect
 
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
         if (!BCELUtil.preTiger(javaClass))
@@ -73,6 +74,7 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements Detect
 
     }
 
+    @Override
     public void report() {
 
     }

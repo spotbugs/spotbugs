@@ -373,31 +373,39 @@ public class JAIFParser {
         }
 
         JAIFEvents callback = new JAIFEvents() {
+            @Override
             public void annotationField(String fieldName, Object constant) {
                 System.out.println("    " + fieldName + "=" + constant);
             }
 
+            @Override
             public void endAnnotation(String annotationName) {
             }
 
+            @Override
             public void endPackageDefinition(String pkgName) {
             }
 
+            @Override
             public void startAnnotation(String annotationName) {
                 System.out.println("  annotation " + annotationName);
             }
 
+            @Override
             public void startPackageDefinition(String pkgName) {
                 System.out.println("package " + pkgName);
             }
 
+            @Override
             public void startAnnotationDefinition(String annotationName, String retention) {
                 System.out.println("  annotation " + annotationName + " " + retention);
             }
 
+            @Override
             public void endAnnotationDefinition(String annotationName) {
             }
 
+            @Override
             public void annotationFieldDefinition(String type, String fieldName) {
                 System.out.println("    " + type + " " + fieldName);
             }

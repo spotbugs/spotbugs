@@ -70,6 +70,7 @@ public class CommentsArea {
         fileBug.setToolTipText("Click to file bug for this issue");
         fileBug.addActionListener(new ActionListener() {
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (frame.getCurrentSelectedBugLeaf() == null) {
                     return;
@@ -121,6 +122,7 @@ public class CommentsArea {
         if (node == null)
             return;
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 BugInstance bug = node.getBug();
                 Cloud plugin = getCloud();
@@ -145,6 +147,7 @@ public class CommentsArea {
 
     void updateCommentsFromNonLeafInformation(final BugAspects theAspects) {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 updateCommentsFromNonLeafInformationFromSwingThread(theAspects);
             }

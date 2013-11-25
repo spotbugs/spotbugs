@@ -330,6 +330,7 @@ public class FindInconsistentSync2 implements Detector {
         this.bugReporter = bugReporter;
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
         if (DEBUG)
@@ -411,6 +412,7 @@ public class FindInconsistentSync2 implements Detector {
             }
     }
 
+    @Override
     public void report() {
         if(statMap.isEmpty()){
             return;

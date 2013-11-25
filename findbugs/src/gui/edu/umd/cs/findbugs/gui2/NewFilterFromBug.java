@@ -55,6 +55,7 @@ public class NewFilterFromBug extends FBDialog {
         JButton okButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "OK"));
         
         okButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 Matcher matcherFromSelection = filterFromBugPicker.makeMatcherFromSelection();
                 applyNewFilter.fromMatcher(matcherFromSelection);
@@ -63,6 +64,7 @@ public class NewFilterFromBug extends FBDialog {
         });
         JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
         cancelButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 closeDialog();
             }

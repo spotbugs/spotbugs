@@ -69,6 +69,7 @@ public class PropertiesDialog extends FBDialog {
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(new JButton(new AbstractAction("Apply") {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 if (Integer.decode(tabTextField.getText()).intValue() != GUISaveState.getInstance().getTabSize()) {
                     GUISaveState.getInstance().setTabSize(Integer.decode(tabTextField.getText()).intValue());
@@ -90,6 +91,7 @@ public class PropertiesDialog extends FBDialog {
         }));
 
         bottomPanel.add(new JButton(new AbstractAction("Reset") {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 tabTextField.setText(Integer.toString(GUISaveState.getInstance().getTabSize()));
                 fontTextField.setText(Float.toString(GUISaveState.getInstance().getFontSize()));

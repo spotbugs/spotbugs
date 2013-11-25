@@ -96,6 +96,7 @@ public class FindBadCast2 implements Detector {
 
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
         Method[] methodList = javaClass.getMethods();
@@ -563,6 +564,7 @@ public class FindBadCast2 implements Detector {
         accumulator.reportAccumulatedBugs();
     }
 
+    @Override
     public void report() {
     }
 

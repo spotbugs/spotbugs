@@ -245,6 +245,7 @@ public class BugSet implements Iterable<BugLeafNode> {
                 return 0;
             }
 
+            @Override
             public int compare(BugLeafNode one, BugLeafNode two) {
                 if (one == two)
                     return 0;
@@ -341,6 +342,7 @@ public class BugSet implements Iterable<BugLeafNode> {
         return mainList.get(index);
     }
 
+    @Override
     public Iterator<BugLeafNode> iterator() {
         return mainList.iterator();
     }

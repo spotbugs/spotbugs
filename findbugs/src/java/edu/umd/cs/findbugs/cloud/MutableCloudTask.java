@@ -24,30 +24,37 @@ public class MutableCloudTask implements Cloud.CloudTask {
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getStatusLine() {
         return substatus;
     }
 
+    @Override
     public double getPercentCompleted() {
         return percentDone;
     }
 
+    @Override
     public void addListener(Cloud.CloudTaskListener listener) {
         listeners.addIfAbsent(listener);
     }
 
+    @Override
     public void removeListener(Cloud.CloudTaskListener listener) {
         listeners.remove(listener);
     }
 
+    @Override
     public boolean isFinished() {
         return finished;
     }
 
+    @Override
     public void setUseDefaultListener(boolean enabled) {
         this.useDefaultListener = enabled;
     }

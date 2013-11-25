@@ -68,6 +68,7 @@ public class NoteJCIPAnnotation extends AnnotationVisitor implements Detector, N
         annotationDatabase.addEntryForClassMember(member, annotationClass, value);
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
         if (!BCELUtil.preTiger(javaClass)) {
@@ -76,6 +77,7 @@ public class NoteJCIPAnnotation extends AnnotationVisitor implements Detector, N
 
     }
 
+    @Override
     public void report() {
         // noop
     }

@@ -62,6 +62,7 @@ public class FindSelfComparison2 implements Detector {
         this.bugReporter = bugReporter;
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         Method[] methodList = classContext.getJavaClass().getMethods();
 
@@ -225,6 +226,7 @@ public class FindSelfComparison2 implements Detector {
         bugReporter.reportBug(bug);
     }
 
+    @Override
     public void report() {
     }
 

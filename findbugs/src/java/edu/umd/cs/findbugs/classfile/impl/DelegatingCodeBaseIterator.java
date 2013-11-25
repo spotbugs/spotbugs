@@ -47,6 +47,7 @@ public class DelegatingCodeBaseIterator implements ICodeBaseIterator {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#hasNext()
      */
+    @Override
     public boolean hasNext() throws InterruptedException {
         return delegateCodeBaseIterator.hasNext();
     }
@@ -56,6 +57,7 @@ public class DelegatingCodeBaseIterator implements ICodeBaseIterator {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
      */
+    @Override
     public ICodeBaseEntry next() throws InterruptedException {
         ICodeBaseEntry delegateCodeBaseEntry = delegateCodeBaseIterator.next();
         return new DelegatingCodeBaseEntry(frontEndCodeBase, delegateCodeBaseEntry);

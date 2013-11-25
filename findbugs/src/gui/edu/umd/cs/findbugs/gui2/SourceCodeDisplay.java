@@ -115,6 +115,7 @@ public final class SourceCodeDisplay implements Runnable {
         }
     }
 
+    @Override
     public void run() {
         while (true) {
             DisplayMe display;
@@ -173,6 +174,7 @@ public final class SourceCodeDisplay implements Runnable {
             this.myBug = myBug;
         }
 
+        @Override
         public void run() {
             frame.getSourceCodeTextPane().setEditorKit(src.getEditorKit());
             StyledDocument document = src.getDocument();

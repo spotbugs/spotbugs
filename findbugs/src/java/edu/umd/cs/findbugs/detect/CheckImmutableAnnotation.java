@@ -52,10 +52,12 @@ public class CheckImmutableAnnotation extends PreorderVisitor implements Detecto
                     this).addVisitedField(this));
     }
 
+    @Override
     public void report() {
 
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         classContext.getJavaClass().accept(this);
 

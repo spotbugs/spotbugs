@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.util.Bag;
 public class PrintingBugReporter extends TextUIBugReporter {
     private final HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
 
+    @Override
     public void observeClass(ClassDescriptor classDescriptor) {
         // Don't need to do anything special, since we won't be
         // reporting statistics.
@@ -56,6 +57,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
         }
     }
 
+    @Override
     public void finish() {
         outputStream.close();
     }
@@ -245,6 +247,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
             throw e;
     }
 
+    @Override
     public @CheckForNull
     BugCollection getBugCollection() {
         return null;

@@ -191,10 +191,12 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
              }
          }
      }
+    @Override
     public  @CheckForNull String getGlobalOption(String key) {
         return globalOptions.get(key);
     }
 
+    @Override
     public  @CheckForNull Plugin getGlobalOptionSetter(String key) {
         return globalOptionsSetter.get(key);
     }
@@ -427,6 +429,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         }
     }
 
+    @Override
     @SuppressWarnings({"ConstantConditions"})
     public void pluginUpdateCheckComplete(List<UpdateChecker.PluginUpdate> newUpdates, boolean force) {
         this.updates = newUpdates;
@@ -452,6 +455,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
     public FutureValue<Collection<UpdateChecker.PluginUpdate>> getUpdates() {
         final FutureValue<Collection<UpdateChecker.PluginUpdate>> results = new FutureValue<Collection<UpdateChecker.PluginUpdate>>();
         addPluginUpdateListener(new PluginUpdateListener() {
+            @Override
             public void pluginUpdateCheckComplete(Collection<UpdateChecker.PluginUpdate> u, boolean force) {
                 results.set(u);
             }

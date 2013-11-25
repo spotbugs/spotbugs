@@ -65,6 +65,7 @@ public class VisitationTimeComparator<VertexType extends GraphVertex<VertexType>
             throw new IllegalArgumentException();
     }
 
+    @Override
     public int compare(VertexType v1, VertexType v2) {
         int f1 = m_visitationTimeList[v1.getLabel()];
         int f2 = m_visitationTimeList[v2.getLabel()];

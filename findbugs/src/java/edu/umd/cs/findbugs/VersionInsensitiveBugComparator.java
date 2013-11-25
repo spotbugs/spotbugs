@@ -41,6 +41,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
     public VersionInsensitiveBugComparator() {
     }
 
+    @Override
     public void setClassNameRewriter(ClassNameRewriter classNameRewriter) {
         this.classNameRewriter = classNameRewriter;
     }
@@ -63,11 +64,13 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
             this.next = null;
         }
 
+        @Override
         public boolean hasNext() {
             findNext();
             return next != null;
         }
 
+        @Override
         public BugAnnotation next() {
             findNext();
             if (next == null)
@@ -77,6 +80,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
             return result;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
@@ -124,6 +128,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 
     }
 
+    @Override
     public int compare(BugInstance lhs, BugInstance rhs) {
         // Attributes of BugInstance.
         // Compare abbreviation

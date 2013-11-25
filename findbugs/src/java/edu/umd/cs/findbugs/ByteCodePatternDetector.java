@@ -47,6 +47,7 @@ public abstract class ByteCodePatternDetector implements Detector {
 
     protected abstract BugReporter getBugReporter();
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         try {
             ByteCodePattern pattern = getPattern();
@@ -108,6 +109,7 @@ public abstract class ByteCodePatternDetector implements Detector {
         return className;
     }
 
+    @Override
     public void report() {
     }
 

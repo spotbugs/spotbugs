@@ -47,6 +47,7 @@ public class DirectoryCodeBaseEntry extends AbstractScannableCodeBaseEntry {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
      */
+    @Override
     public int getNumBytes() {
         File fullPath = codeBase.getFullPathOfResource(realResourceName);
         // this is not needed but causes slowdown on a slow file system IO
@@ -63,6 +64,7 @@ public class DirectoryCodeBaseEntry extends AbstractScannableCodeBaseEntry {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
      */
+    @Override
     public InputStream openResource() throws IOException {
         return codeBase.openFile(realResourceName);
     }
@@ -95,6 +97,7 @@ public class DirectoryCodeBaseEntry extends AbstractScannableCodeBaseEntry {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
      */
+    @Override
     public ClassDescriptor getClassDescriptor() throws InvalidClassFileFormatException {
         return DescriptorFactory.createClassDescriptorFromResourceName(getResourceName());
     }

@@ -57,16 +57,20 @@ public class BugCollectionStorageCloud extends AbstractCloud {
         }
     }
 
+    @Override
     public void waitUntilIssueDataDownloaded() {
     }
 
+    @Override
     public void initiateCommunication() {
     }
 
+    @Override
     public boolean waitUntilNewIssuesUploaded(long timeout, TimeUnit unit) throws InterruptedException {
         return true;
     }
 
+    @Override
     public boolean waitUntilIssueDataDownloaded(long timeout, TimeUnit unit) throws InterruptedException {
         return true;
     }
@@ -76,6 +80,7 @@ public class BugCollectionStorageCloud extends AbstractCloud {
         return Mode.COMMUNAL;
     }
 
+    @Override
     public String getUser() {
         return null;
     }
@@ -117,31 +122,39 @@ public class BugCollectionStorageCloud extends AbstractCloud {
 
     }
 
+    @Override
     public void setSaveSignInInformation(boolean save) {
     }
 
+    @Override
     public boolean isSavingSignInInformationEnabled() {
         return false;
     }
 
+    @Override
     public void signIn() {
     }
 
+    @Override
     public void signOut() {
     }
 
+    @Override
     public boolean availableForInitialization() {
         return true;
     }
 
+    @Override
     public void storeUserAnnotation(BugInstance bugInstance) {
 
     }
 
+    @Override
     public void bugFiled(BugInstance b, Object bugLink) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     @SuppressWarnings({"deprecation"})
     public BugDesignation getPrimaryDesignation(BugInstance b) {
         return b.getUserDesignation();
@@ -155,18 +168,22 @@ public class BugCollectionStorageCloud extends AbstractCloud {
         return Collections.singleton(designation);
     }
 
+    @Override
     public Collection<String> getProjects(String className) {
         return Collections.emptyList();
     }
 
+    @Override
     public boolean isInCloud(BugInstance b) {
         return true;
     }
 
+    @Override
     public boolean isOnlineCloud() {
         return false;
     }
 
+    @Override
     public void waitUntilNewIssuesUploaded() {
     }
 

@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 public class SortingBugReporter extends TextUIBugReporter {
     private SortedBugCollection bugCollection = new SortedBugCollection();
 
+    @Override
     public void observeClass(ClassDescriptor classDescriptor) {
         // Don't need to do anything special, since we won't be
         // reporting statistics.
@@ -43,6 +44,7 @@ public class SortingBugReporter extends TextUIBugReporter {
             notifyObservers(bugInstance);
     }
 
+    @Override
     public void finish() {
         Iterator<BugInstance> i = bugCollection.iterator();
         while (i.hasNext()) {
@@ -53,6 +55,7 @@ public class SortingBugReporter extends TextUIBugReporter {
         outputStream.close();
     }
 
+    @Override
     public @Nonnull
     BugCollection getBugCollection() {
         return bugCollection;

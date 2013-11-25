@@ -97,6 +97,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
      */
+    @Override
     public ICodeBaseEntry lookupResource(String resourceName) {
 
         // Translate resource name, in case a resource name
@@ -185,6 +186,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
          * 
          * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#hasNext()
          */
+        @Override
         public boolean hasNext() throws InterruptedException {
             if (Thread.interrupted()) {
                 throw new InterruptedException();
@@ -198,6 +200,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
          * 
          * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
          */
+        @Override
         public ICodeBaseEntry next() throws InterruptedException {
             try {
                 if (Thread.interrupted()) {
@@ -214,6 +217,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 
     }
 
+    @Override
     public ICodeBaseIterator iterator() {
         return new MyIterator();
     }
@@ -223,6 +227,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
      */
+    @Override
     public String getPathName() {
         return file.getName();
     }
@@ -232,6 +237,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
      */
+    @Override
     public void close() {
 
     }

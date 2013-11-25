@@ -35,6 +35,7 @@ class NumberedViewFactory implements ViewFactory {
         this.highlight = highlight;
     }
 
+    @Override
     public View create(Element elem) {
         String kind = elem.getName();
         // System.out.println("Kind: " + kind);

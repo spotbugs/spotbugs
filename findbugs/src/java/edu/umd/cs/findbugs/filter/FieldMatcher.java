@@ -45,6 +45,7 @@ public class FieldMatcher extends MemberMatcher implements Matcher {
         return "Method(" + super.toString() + ")";
     }
 
+    @Override
     public boolean match(BugInstance bugInstance) {
         FieldAnnotation fieldAnnotation = null;
         if (role == null || role.equals(""))
@@ -66,6 +67,7 @@ public class FieldMatcher extends MemberMatcher implements Matcher {
         return true;
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec());
         if (signature != null)

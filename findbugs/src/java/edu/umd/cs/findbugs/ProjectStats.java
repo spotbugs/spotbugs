@@ -358,6 +358,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
     /**
      * Output as XML.
      */
+    @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         writeXML(xmlOutput, true);
     }

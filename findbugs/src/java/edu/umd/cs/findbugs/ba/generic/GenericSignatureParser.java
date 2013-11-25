@@ -45,10 +45,12 @@ public class GenericSignatureParser {
     private class ParameterSignatureIterator implements Iterator<String> {
         private int index = 1;
 
+        @Override
         public boolean hasNext() {
             return index < signature.length() && signature.charAt(index) != ')' && signature.charAt(index) != '^';
         }
 
+        @Override
         public String next() {
             if (!hasNext())
                 throw new NoSuchElementException();
@@ -119,6 +121,7 @@ public class GenericSignatureParser {
             return result.toString();
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }

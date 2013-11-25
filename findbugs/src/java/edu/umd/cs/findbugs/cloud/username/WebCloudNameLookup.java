@@ -59,6 +59,7 @@ public class WebCloudNameLookup implements NameLookup {
     private String username;
     private String url;
 
+    @Override
     public boolean signIn(CloudPlugin plugin, BugCollection bugCollection) throws IOException {
         loadProperties(plugin);
 
@@ -168,6 +169,7 @@ public class WebCloudNameLookup implements NameLookup {
         return sessionId;
     }
 
+    @Override
     public String getUsername() {
         return username;
     }

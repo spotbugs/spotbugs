@@ -89,6 +89,7 @@ public class NavigableTextPane extends JTextPane {
         final Rectangle r = new Rectangle(0, y - margin, 4, 2 * margin);
 
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 scrollRectToVisible(r);
             }
@@ -189,6 +190,7 @@ public class NavigableTextPane extends JTextPane {
          * the origin. This sounds backwards, but this way closer values get a
          * higher priority in the priority queue.
          */
+        @Override
         public int compare(Integer a, Integer b) {
             return Math.abs(b - origin) - Math.abs(a - origin);
         }

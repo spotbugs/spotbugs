@@ -122,9 +122,11 @@ public abstract class AbstractCloud implements Cloud {
     }
 
     boolean abstractCloudInitialized = false;
+    @Override
     public boolean isInitialized() {
         return abstractCloudInitialized;
     }
+    @Override
     @OverridingMethodsMustInvokeSuper
     public boolean initialize() throws IOException {
         abstractCloudInitialized = true;
@@ -159,62 +161,77 @@ public abstract class AbstractCloud implements Cloud {
         return true;
     }
 
+    @Override
     public Mode getMode() {
         return mode;
     }
 
+    @Override
     public void setMode(Mode mode) {
         this.mode = mode;
     }
 
+    @Override
     public CloudPlugin getPlugin() {
         return plugin;
     }
 
+    @Override
     public BugCollection getBugCollection() {
         return bugCollection;
     }
 
+    @Override
     public boolean supportsBugLinks() {
         return false;
     }
 
+    @Override
     public void setBugLinkOnCloudAndStoreIssueDetails(BugInstance b, String viewUrl, String linkType)
             throws IOException, SignInCancelledException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void updateBugStatusCache(BugInstance b, String status) {
         throw new UnsupportedOperationException();
     }
+    @Override
     public boolean supportsClaims() {
         return false;
     }
 
+    @Override
     public boolean supportsCloudReports() {
         return true;
     }
 
+    @Override
     public String claimedBy(BugInstance b) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean claim(BugInstance b) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public URL getBugLink(BugInstance b) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public String getBugLinkType(BugInstance instance) {
         return null;
     }
 
+    @Override
     public URL fileBug(BugInstance bug) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public BugFilingStatus getBugLinkStatus(BugInstance b) {
         throw new UnsupportedOperationException();
     }
@@ -249,16 +266,19 @@ public abstract class AbstractCloud implements Cloud {
         return  "Issue not recorded in cloud";
         
     }
+    @Override
     public String getCloudReport(BugInstance b) {
         return getSelectiveCloudReport(b, Collections.<String>emptySet());
     }
 
+    @Override
     public String getCloudReportWithoutMe(BugInstance b) {
         String user = getUser();
         Set<String> usersToExclude = user == null ? Collections.<String>emptySet() :  Collections.singleton(user);
         return getSelectiveCloudReport(b, usersToExclude);
     }
 
+    @Override
     public void bugsPopulated() {
         issueDataDownloaded = false;
     }
@@ -308,16 +328,19 @@ public abstract class AbstractCloud implements Cloud {
         return false;
     }
 
+    @Override
     public String getBugStatus(BugInstance b) {
         return null;
     }
 
     protected abstract Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd);
 
+    @Override
     public Date getUserDate(BugInstance b) {
         return new Date(getUserTimestamp(b));
     }
 
+    @Override
     public void addListener(CloudListener listener) {
         if (listener == null)
             throw new NullPointerException();
@@ -325,10 +348,12 @@ public abstract class AbstractCloud implements Cloud {
             listeners.add(listener);
     }
 
+    @Override
     public void removeListener(CloudListener listener) {
         listeners.remove(listener);
     }
 
+    @Override
     public void addStatusListener(CloudStatusListener listener) {
         if (listener == null)
             throw new NullPointerException();
@@ -336,22 +361,27 @@ public abstract class AbstractCloud implements Cloud {
             statusListeners.add(listener);
     }
 
+    @Override
     public void removeStatusListener(CloudStatusListener listener) {
         statusListeners.remove(listener);
     }
 
+    @Override
     public String getStatusMsg() {
         return statusMsg;
     }
 
+    @Override
     public void shutdown() {
 
     }
 
+    @Override
     public boolean getIWillFix(BugInstance b) {
         return getUserDesignation(b) == UserDesignation.I_WILL_FIX;
     }
 
+    @Override
     public UserDesignation getConsensusDesignation(BugInstance b) {
         if (b == null)
             throw new NullPointerException("null bug instance");
@@ -417,11 +447,13 @@ public abstract class AbstractCloud implements Cloud {
 
     }
 
+    @Override
     public boolean overallClassificationIsNotAProblem(BugInstance b) {
         UserDesignation consensusDesignation = getConsensusDesignation(b);
         return consensusDesignation.notAProblem();
     }
 
+    @Override
     public double getClassificationScore(BugInstance b) {
 
         int count = 0;
@@ -437,6 +469,7 @@ public abstract class AbstractCloud implements Cloud {
 
     }
 
+    @Override
     public double getClassificationVariance(BugInstance b) {
 
         int count = 0;
@@ -455,6 +488,7 @@ public abstract class AbstractCloud implements Cloud {
 
     }
 
+    @Override
     public double getPortionObsoleteClassifications(BugInstance b) {
         int count = 0;
         double total = 0.0;
@@ -467,6 +501,7 @@ public abstract class AbstractCloud implements Cloud {
         return total / count;
     }
 
+    @Override
     public int getNumberReviewers(BugInstance b) {
         int count = 0;
         Iterable<BugDesignation> designations = getLatestDesignationFromEachUser(b);
@@ -477,6 +512,7 @@ public abstract class AbstractCloud implements Cloud {
         return count;
     }
 
+    @Override
     @SuppressWarnings("boxing")
     public void printCloudSummary(PrintWriter w, Iterable<BugInstance> bugs, String[] packagePrefixes) {
 
@@ -606,18 +642,22 @@ public abstract class AbstractCloud implements Cloud {
         }
     }
 
+    @Override
     public boolean supportsCloudSummaries() {
         return true;
     }
 
+    @Override
     public boolean canStoreUserAnnotation(BugInstance bugInstance) {
         return true;
     }
 
+    @Override
     public double getClassificationDisagreement(BugInstance b) {
         return 0;
     }
 
+    @Override
     public UserDesignation getUserDesignation(BugInstance b) {
         BugDesignation bd = getPrimaryDesignation(b);
         if (bd == null)
@@ -625,6 +665,7 @@ public abstract class AbstractCloud implements Cloud {
         return UserDesignation.valueOf(bd.getDesignationKey());
     }
 
+    @Override
     public String getUserEvaluation(BugInstance b) {
         BugDesignation bd = getPrimaryDesignation(b);
         if (bd == null)
@@ -635,6 +676,7 @@ public abstract class AbstractCloud implements Cloud {
         return result;
     }
 
+    @Override
     public long getUserTimestamp(BugInstance b) {
         BugDesignation bd = getPrimaryDesignation(b);
         if (bd == null)
@@ -643,10 +685,12 @@ public abstract class AbstractCloud implements Cloud {
 
     }
 
+    @Override
     public long getFirstSeen(BugInstance b) {
         return getLocalFirstSeen(b);
     }
 
+    @Override
     public void addDateSeen(BugInstance b, long when) {
         throw new UnsupportedOperationException();
     }
@@ -680,6 +724,7 @@ public abstract class AbstractCloud implements Cloud {
             statusListener.handleIssueDataDownloadedEvent();
     }
 
+    @Override
     public SigninState getSigninState() {
         return signinState;
     }
@@ -724,14 +769,17 @@ public abstract class AbstractCloud implements Cloud {
             listener.taskStarted(task);
         }
         task.setDefaultListener(new CloudTaskListener() {
+            @Override
             public void taskStatusUpdated(String statusLine, double percentCompleted) {
                 setStatusMsg(name + "... " + statusLine);
             }
 
+            @Override
             public void taskFinished() {
                 setStatusMsg("");
             }
 
+            @Override
             public void taskFailed(String message) {
                 setStatusMsg(name + "... FAILED - " + message);
             }
@@ -760,10 +808,12 @@ public abstract class AbstractCloud implements Cloud {
         return properties.getProperty("findbugs.cloud." + propertyName);
     }
 
+    @Override
     public boolean supportsSourceLinks() {
         return sourceFileLinkPattern != null;
     }
 
+    @Override
     @SuppressWarnings("boxing")
     public @CheckForNull URL getSourceLink(BugInstance b) {
         if (sourceFileLinkPattern == null)
@@ -792,6 +842,7 @@ public abstract class AbstractCloud implements Cloud {
 
     }
 
+    @Override
     public String getSourceLinkToolTip(BugInstance b) {
         return sourceFileLinkToolTip;
     }
@@ -803,6 +854,7 @@ public abstract class AbstractCloud implements Cloud {
      * edu.umd.cs.findbugs.cloud.Cloud#getBugIsUnassigned(edu.umd.cs.findbugs
      * .BugInstance)
      */
+    @Override
     public boolean getBugIsUnassigned(BugInstance b) {
         return true;
     }
@@ -814,10 +866,12 @@ public abstract class AbstractCloud implements Cloud {
      * edu.umd.cs.findbugs.cloud.Cloud#getWillNotBeFixed(edu.umd.cs.findbugs
      * .BugInstance)
      */
+    @Override
     public boolean getWillNotBeFixed(BugInstance b) {
         return false;
     }
 
+    @Override
     public Set<String> getReviewers(BugInstance b) {
         HashSet<String> result = new HashSet<String>();
         for (BugDesignation d : getLatestDesignationFromEachUser(b))
@@ -825,14 +879,17 @@ public abstract class AbstractCloud implements Cloud {
         return result;
     }
 
+    @Override
     public IGuiCallback getGuiCallback() {
         return getBugCollection().getProject().getGuiCallback();
     }
 
+    @Override
     public String getCloudName() {
         return getPlugin().getDescription();
     }
     
+    @Override
     public boolean communicationInitiated() {
         return !isOnlineCloud();
     }

@@ -63,10 +63,12 @@ public class RankMatcher implements Matcher {
         return rank == other.rank;
     }
 
+    @Override
     public boolean match(BugInstance bugInstance) {
         return BugRanker.findRank(bugInstance) >= rank;
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Integer.toString(rank));
         if (disabled)

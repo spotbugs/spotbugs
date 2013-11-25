@@ -94,11 +94,13 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
      *
      * @see edu.umd.cs.findbugs.Detector#report()
      */
+    @Override
     public void report() {
         // TODO Auto-generated method stub
 
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
 
         JavaClass javaClass = classContext.getJavaClass();

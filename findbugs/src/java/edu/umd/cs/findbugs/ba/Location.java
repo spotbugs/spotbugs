@@ -114,6 +114,7 @@ public class Location implements Comparable<Location> {
         return !basicBlock.isEmpty() && handle == basicBlock.getLastInstruction();
     }
 
+    @Override
     public int compareTo(Location other) {
         int pos = handle.getPosition() - other.handle.getPosition();
         return pos;

@@ -42,16 +42,19 @@ public class TextUIProgressCallback implements FindBugsProgress {
         this.out = out;
     }
 
+    @Override
     public void reportNumberOfArchives(int numArchives) {
         this.goal = numArchives;
         this.count = 0;
         scanningArchives(0);
     }
 
+    @Override
     public void finishArchive() {
         scanningArchives(++count);
     }
 
+    @Override
     public void predictPassCount(int[] classesPerPass) {
         out.println();
         printMessage(classesPerPass.length + " analysis passes to perform");
@@ -59,6 +62,7 @@ public class TextUIProgressCallback implements FindBugsProgress {
         this.pass = 0;
     }
 
+    @Override
     public void startAnalysis(int numClasses) {
         if (pass == 0) {
             out.println();
@@ -68,10 +72,12 @@ public class TextUIProgressCallback implements FindBugsProgress {
         analyzingClasses(0);
     }
 
+    @Override
     public void finishClass() {
         analyzingClasses(++count);
     }
 
+    @Override
     public void finishPerClassAnalysis() {
         out.println();
         ++pass;
@@ -97,6 +103,7 @@ public class TextUIProgressCallback implements FindBugsProgress {
         out.print("\r" + msg);
     }
 
+    @Override
     public void startArchive(String name) {
         // noop
     }

@@ -89,6 +89,7 @@ public class URLClassPathRepository implements Repository {
      * org.apache.bcel.util.Repository#storeClass(org.apache.bcel.classfile.
      * JavaClass)
      */
+    @Override
     public void storeClass(JavaClass javaClass) {
         if (DEBUG)
             System.out.println("Storing class " + javaClass.getClassName() + " in repository");
@@ -111,6 +112,7 @@ public class URLClassPathRepository implements Repository {
      * org.apache.bcel.util.Repository#removeClass(org.apache.bcel.classfile
      * .JavaClass)
      */
+    @Override
     public void removeClass(JavaClass javaClass) {
         nameToClassMap.remove(javaClass.getClassName());
         if (DEBUG) {
@@ -128,6 +130,7 @@ public class URLClassPathRepository implements Repository {
      *
      * @see org.apache.bcel.util.Repository#findClass(java.lang.String)
      */
+    @Override
     public JavaClass findClass(/*@Nonnull*/ String className) {
         // Make sure we handle class names with slashes.
         // If we don't, we can get into serious trouble: a previously
@@ -144,6 +147,7 @@ public class URLClassPathRepository implements Repository {
      *
      * @see org.apache.bcel.util.Repository#loadClass(java.lang.String)
      */
+    @Override
     public JavaClass loadClass(/*@Nonnull*/ String className) throws ClassNotFoundException {
         if (className == null)
             throw new IllegalArgumentException("className is null");
@@ -165,6 +169,7 @@ public class URLClassPathRepository implements Repository {
      *
      * @see org.apache.bcel.util.Repository#loadClass(java.lang.Class)
      */
+    @Override
     public JavaClass loadClass(Class clazz) throws ClassNotFoundException {
         return loadClass(clazz.getName());
     }
@@ -174,6 +179,7 @@ public class URLClassPathRepository implements Repository {
      *
      * @see org.apache.bcel.util.Repository#clear()
      */
+    @Override
     public void clear() {
         if (DEBUG) {
             System.out.println("Clearing Repository!");
@@ -187,6 +193,7 @@ public class URLClassPathRepository implements Repository {
      *
      * @see org.apache.bcel.util.Repository#getClassPath()
      */
+    @Override
     public ClassPath getClassPath() {
         return new ClassPath(urlClassPath.getClassPath());
     }

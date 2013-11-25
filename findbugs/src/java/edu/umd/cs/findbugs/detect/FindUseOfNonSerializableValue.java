@@ -53,6 +53,7 @@ public class FindUseOfNonSerializableValue implements Detector {
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
         boolean skip = false;
@@ -203,6 +204,7 @@ public class FindUseOfNonSerializableValue implements Detector {
         }
     }
 
+    @Override
     public void report() {
     }
 

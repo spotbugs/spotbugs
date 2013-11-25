@@ -171,6 +171,7 @@ public class FindDeadLocalStores implements Detector {
         return true;
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
 
@@ -680,6 +681,7 @@ public class FindDeadLocalStores implements Detector {
         return (ins instanceof LoadInstruction) || (ins instanceof IINC);
     }
 
+    @Override
     public void report() {
     }
 }

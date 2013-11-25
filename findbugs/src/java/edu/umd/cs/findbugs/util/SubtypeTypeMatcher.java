@@ -59,6 +59,7 @@ public class SubtypeTypeMatcher implements TypeMatcher {
         this(BCELUtil.getObjectTypeInstance(classDescriptor.toDottedClassName()));
     }
 
+    @Override
     public boolean matches(Type t) {
         if (!(t instanceof ReferenceType)) {
             return false;

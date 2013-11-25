@@ -87,10 +87,12 @@ public class IntAnnotation implements BugAnnotation {
         return value;
     }
 
+    @Override
     public void accept(BugAnnotationVisitor visitor) {
         visitor.visitIntAnnotation(this);
     }
 
+    @Override
     public String format(String key, ClassAnnotation primaryClass) {
         if (key.equals("hash")) {
             if (isSignificant())
@@ -126,10 +128,12 @@ public class IntAnnotation implements BugAnnotation {
         return used.size();
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
@@ -146,6 +150,7 @@ public class IntAnnotation implements BugAnnotation {
         return value == ((IntAnnotation) o).value;
     }
 
+    @Override
     public int compareTo(BugAnnotation o) {
         if (!(o instanceof IntAnnotation)) // BugAnnotations must be Comparable
                                            // with any type of BugAnnotation
@@ -168,10 +173,12 @@ public class IntAnnotation implements BugAnnotation {
 
     private static final String ELEMENT_NAME = "Int";
 
+    @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         writeXML(xmlOutput, false, false);
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("value", String.valueOf(value));
 
@@ -182,10 +189,12 @@ public class IntAnnotation implements BugAnnotation {
         BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
     }
 
+    @Override
     public boolean isSignificant() {
         return !description.equals(INT_SYNC_PERCENT) && !description.equals(INT_OCCURRENCES);
     }
 
+    @Override
     public String toString(ClassAnnotation primaryClass) {
         return toString();
     }

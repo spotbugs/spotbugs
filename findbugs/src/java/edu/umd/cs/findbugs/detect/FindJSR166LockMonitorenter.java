@@ -84,6 +84,7 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
         }
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass jclass = classContext.getJavaClass();
         if (jclass.getClassName().startsWith("java.util.concurrent."))
@@ -232,6 +233,7 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
         }
     }
 
+    @Override
     public void report() {
     }
 }

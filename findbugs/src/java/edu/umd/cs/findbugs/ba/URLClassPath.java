@@ -98,6 +98,7 @@ public class URLClassPath implements Serializable {
          * @see
          * edu.umd.cs.findbugs.URLClassPath.Entry#openStream(java.lang.String)
          */
+        @Override
         public InputStream openStream(String resourceName) throws IOException {
             ZipEntry zipEntry = zipFile.getEntry(resourceName);
             if (zipEntry == null)
@@ -110,10 +111,12 @@ public class URLClassPath implements Serializable {
          * 
          * @see edu.umd.cs.findbugs.URLClassPath.Entry#getURL()
          */
+        @Override
         public String getURL() {
             return zipFile.getName();
         }
 
+        @Override
         public void close() {
             try {
                 zipFile.close();
@@ -150,6 +153,7 @@ public class URLClassPath implements Serializable {
          * @see
          * edu.umd.cs.findbugs.URLClassPath.Entry#openStream(java.lang.String)
          */
+        @Override
         public InputStream openStream(String resourceName) throws IOException {
             File file = new File(dirName, resourceName);
             if (!file.exists())
@@ -162,10 +166,12 @@ public class URLClassPath implements Serializable {
          * 
          * @see edu.umd.cs.findbugs.URLClassPath.Entry#getURL()
          */
+        @Override
         public String getURL() {
             return dirName;
         }
 
+        @Override
         public void close() {
             // Nothing to do here
         }
@@ -195,6 +201,7 @@ public class URLClassPath implements Serializable {
          * @see
          * edu.umd.cs.findbugs.URLClassPath.Entry#openStream(java.lang.String)
          */
+        @Override
         public InputStream openStream(String resourceName) throws IOException {
             URL remoteFileURL = new URL("jar:" + remoteArchiveURL.toString() + "/" + resourceName);
             try {
@@ -209,10 +216,12 @@ public class URLClassPath implements Serializable {
          * 
          * @see edu.umd.cs.findbugs.URLClassPath.Entry#getURL()
          */
+        @Override
         public String getURL() {
             return remoteArchiveURL.toString();
         }
 
+        @Override
         public void close() {
             // Nothing to do
         }
@@ -241,6 +250,7 @@ public class URLClassPath implements Serializable {
          * @see
          * edu.umd.cs.findbugs.URLClassPath.Entry#openStream(java.lang.String)
          */
+        @Override
         public InputStream openStream(String resourceName) throws IOException {
             URL remoteFileURL = new URL(remoteDirURL.toString() + resourceName);
             try {
@@ -255,10 +265,12 @@ public class URLClassPath implements Serializable {
          * 
          * @see edu.umd.cs.findbugs.URLClassPath.Entry#getURL()
          */
+        @Override
         public String getURL() {
             return remoteDirURL.toString();
         }
 
+        @Override
         public void close() {
             // Nothing to do
         }

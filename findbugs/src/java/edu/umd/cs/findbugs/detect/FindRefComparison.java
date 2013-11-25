@@ -664,6 +664,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         }
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         this.classContext = classContext;
 
@@ -782,6 +783,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         final boolean likelyTestcase = TestCaseDetector.likelyTestCase(XFactory.createXMethod(jclass, method));
 
         decorateWarnings(stringComparisonList, new WarningDecorator() {
+            @Override
             public void decorate(WarningWithProperties warn) {
                 if (mightBeLaterCheckedUsingEquals(warn)) {
                     warn.propertySet.addProperty(RefComparisonWarningProperty.SAW_CALL_TO_EQUALS);
@@ -797,6 +799,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             }
         });
         decorateWarnings(refComparisonList, new WarningDecorator() {
+            @Override
             public void decorate(WarningWithProperties warn) {
                 if (likelyTestcase) {
                     warn.propertySet.addProperty(RefComparisonWarningProperty.COMPARE_IN_TEST_CASE);
@@ -1279,6 +1282,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         return allOk;
     }
 
+    @Override
     public void report() {
         // do nothing
     }

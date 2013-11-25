@@ -33,6 +33,7 @@ public class AndMatcher extends CompoundMatcher {
         return anyMatches;
     }
 
+    @Override
     public boolean match(BugInstance bugInstance) {
         Iterator<Matcher> i = childIterator();
         while (i.hasNext()) {
@@ -45,6 +46,7 @@ public class AndMatcher extends CompoundMatcher {
 
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         if (numberChildren() == 1) {
             // System.out.println("One child: " + this);

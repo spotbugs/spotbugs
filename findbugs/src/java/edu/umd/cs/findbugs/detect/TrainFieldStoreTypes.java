@@ -62,6 +62,7 @@ public class TrainFieldStoreTypes implements Detector, TrainingDetector {
         this.database = new FieldStoreTypeDatabase();
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         Method[] methodList = classContext.getJavaClass().getMethods();
         for (Method method : methodList) {
@@ -131,6 +132,7 @@ public class TrainFieldStoreTypes implements Detector, TrainingDetector {
         }
     }
 
+    @Override
     public void report() {
         database.purgeBoringEntries();
         AnalysisContext.currentAnalysisContext().storePropertyDatabase(database, FieldStoreTypeDatabase.DEFAULT_FILENAME,

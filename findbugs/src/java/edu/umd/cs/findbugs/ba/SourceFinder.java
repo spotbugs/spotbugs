@@ -108,6 +108,7 @@ public class SourceFinder {
             return "DirectorySourceRepository:" + baseDir;
         }
 
+        @Override
         public boolean contains(String fileName) {
             File file = new File(getFullFileName(fileName));
             boolean exists = file.exists();
@@ -116,10 +117,12 @@ public class SourceFinder {
             return exists;
         }
 
+        @Override
         public boolean isPlatformDependent() {
             return true;
         }
 
+        @Override
         public SourceFileDataSource getDataSource(String fileName) {
             return new FileSourceFileDataSource(getFullFileName(fileName));
         }
@@ -174,6 +177,7 @@ public class SourceFinder {
          * edu.umd.cs.findbugs.ba.SourceFinder.SourceRepository#contains(java
          * .lang.String)
          */
+        @Override
         public boolean contains(String fileName) {
             return contents.containsKey(fileName);
         }
@@ -185,17 +189,21 @@ public class SourceFinder {
          * edu.umd.cs.findbugs.ba.SourceFinder.SourceRepository#getDataSource
          * (java.lang.String)
          */
+        @Override
         public SourceFileDataSource getDataSource(final String fileName) {
             return new SourceFileDataSource() {
 
+                @Override
                 public String getFullFileName() {
                     return fileName;
                 }
 
+                @Override
                 public InputStream open() throws IOException {
                     return new GZIPInputStream(new ByteArrayInputStream(contents.get(fileName)));
                 }
 
+                @Override
                 public long getLastModified() {
                    Long when = lastModified.get(fileName);
                    if (when == null || when < 0)
@@ -212,6 +220,7 @@ public class SourceFinder {
          * edu.umd.cs.findbugs.ba.SourceFinder.SourceRepository#isPlatformDependent
          * ()
          */
+        @Override
         public boolean isPlatformDependent() {
             return false;
         }
@@ -221,6 +230,7 @@ public class SourceFinder {
         final BlockingSourceRepository r = new BlockingSourceRepository();
         Util.runInDameonThread(new Runnable() {
 
+            @Override
             public void run() {
                 InputStream in = null;
                 try {
@@ -254,6 +264,7 @@ public class SourceFinder {
         final BlockingSourceRepository r = new BlockingSourceRepository();
         Util.runInDameonThread(new Runnable() {
 
+            @Override
             public void run() {
                 InputStream in = null;
                 OutputStream out = null;
@@ -305,16 +316,19 @@ public class SourceFinder {
             }
         }
 
+        @Override
         public boolean contains(String fileName) {
             await();
             return base.contains(fileName);
         }
 
+        @Override
         public SourceFileDataSource getDataSource(String fileName) {
             await();
             return base.getDataSource(fileName);
         }
 
+        @Override
         public boolean isPlatformDependent() {
             await();
             return base.isPlatformDependent();
@@ -332,14 +346,17 @@ public class SourceFinder {
             this.zipFile = zipFile;
         }
 
+        @Override
         public boolean contains(String fileName) {
             return zipFile.getEntry(fileName) != null;
         }
 
+        @Override
         public boolean isPlatformDependent() {
             return false;
         }
 
+        @Override
         public SourceFileDataSource getDataSource(String fileName) {
             return new ZipSourceFileDataSource(zipFile, fileName);
         }

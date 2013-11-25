@@ -78,6 +78,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getCodeBaseLocator()
      */
+    @Override
     public ICodeBaseLocator getCodeBaseLocator() {
         return codeBaseLocator;
     }
@@ -88,6 +89,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
      * @see
      * edu.umd.cs.findbugs.classfile.IScannableCodeBase#containsSourceFiles()
      */
+    @Override
     public boolean containsSourceFiles() throws InterruptedException {
         return false;
     }
@@ -97,6 +99,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#iterator()
      */
+    @Override
     public ICodeBaseIterator iterator() throws InterruptedException {
         return new ICodeBaseIterator() {
             boolean done = false;
@@ -106,6 +109,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
              * 
              * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#hasNext()
              */
+            @Override
             public boolean hasNext() throws InterruptedException {
                 return !done;
             }
@@ -115,6 +119,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
              * 
              * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
              */
+            @Override
             public ICodeBaseEntry next() throws InterruptedException {
                 if (done) {
                     throw new NoSuchElementException();
@@ -131,6 +136,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
      */
+    @Override
     public ICodeBaseEntry lookupResource(String resourceName) {
         if (!resourceName.equals(getResourceName())) {
             return null;
@@ -145,6 +151,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBase#setApplicationCodeBase(boolean)
      */
+    @Override
     public void setApplicationCodeBase(boolean isAppCodeBase) {
         this.isAppCodeBase = isAppCodeBase;
     }
@@ -154,6 +161,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#isApplicationCodeBase()
      */
+    @Override
     public boolean isApplicationCodeBase() {
         return isAppCodeBase;
     }
@@ -163,6 +171,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#setHowDiscovered(int)
      */
+    @Override
     public void setHowDiscovered(ICodeBase.Discovered howDiscovered) {
         this.howDiscovered = howDiscovered;
     }
@@ -172,6 +181,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getHowDiscovered()
      */
+    @Override
     public ICodeBase.Discovered getHowDiscovered() {
         return howDiscovered;
     }
@@ -181,6 +191,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#setLastModifiedTime(long)
      */
+    @Override
     public void setLastModifiedTime(long lastModifiedTime) {
         if (lastModifiedTime > 0 && FindBugs.validTimestamp(lastModifiedTime)) {
             this.lastModifiedTime = lastModifiedTime;
@@ -192,6 +203,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getLastModifiedTime()
      */
+    @Override
     public long getLastModifiedTime() {
         return lastModifiedTime;
     }
@@ -201,6 +213,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
      */
+    @Override
     public String getPathName() {
         return fileName;
     }
@@ -214,6 +227,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
      */
+    @Override
     public void close() {
         // Nothing to do
     }

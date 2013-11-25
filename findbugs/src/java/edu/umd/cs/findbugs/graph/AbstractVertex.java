@@ -36,10 +36,12 @@ public class AbstractVertex<EdgeType extends AbstractEdge<EdgeType, ActualVertex
 
     EdgeType firstOutgoingEdge, lastOutgoingEdge;
 
+    @Override
     public int getLabel() {
         return label;
     }
 
+    @Override
     public void setLabel(int label) {
         this.label = label;
     }
@@ -58,6 +60,7 @@ public class AbstractVertex<EdgeType extends AbstractEdge<EdgeType, ActualVertex
         return other.getLabel() == this.getLabel();
     }
 
+    @Override
     public int compareTo(ActualVertexType other) {
         if (this.getLabel() < other.getLabel()) {
             return -1;

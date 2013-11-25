@@ -156,6 +156,7 @@ public class UpdateChecker {
     
     private void waitForCompletion(final CountDownLatch latch, final boolean force) {
         Util.runInDameonThread(new Runnable() {
+            @Override
             public void run() {
                 if (DEBUG)
                     System.out.println("Checking for version updates");
@@ -207,6 +208,7 @@ public class UpdateChecker {
             return;
         }
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 try {
                     actuallyCheckforUpdates(url, plugins, entryPoint);

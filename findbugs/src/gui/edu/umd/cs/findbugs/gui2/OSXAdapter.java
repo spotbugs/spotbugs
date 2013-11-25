@@ -57,6 +57,7 @@ public class OSXAdapter extends ApplicationAdapter {
             // selected, and we get a ReOpenApplication event when user
             // switches back to Findbugs.
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     mainApp.about();
                 }

@@ -68,6 +68,7 @@ public class ValueNumber implements Comparable<ValueNumber> {
     static {
         Util.runLogAtShutdown(new Runnable() {
 
+            @Override
             public void run() {
                 System.out.println("Value number statistics: " + valueNumbersCreated + " created, " + valueNumbersReused
                         + " reused");
@@ -148,6 +149,7 @@ public class ValueNumber implements Comparable<ValueNumber> {
         return false;
     }
 
+    @Override
     public int compareTo(ValueNumber other) {
         int result = number - other.number;
         if (result != 0)

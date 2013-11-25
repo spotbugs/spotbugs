@@ -50,6 +50,7 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
      */
+    @Override
     public ClassInfo analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
 
         if (descriptor instanceof ClassInfo)
@@ -89,6 +90,7 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)
      */
+    @Override
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerClassAnalysisEngine(XClass.class, this);
     }
@@ -98,6 +100,7 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
      * 
      * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#canRecompute()
      */
+    @Override
     public boolean canRecompute() {
         // ClassInfo objects serve as XClass objects,
         // which we want interned. So, they are never purged from the cache.

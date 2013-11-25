@@ -57,6 +57,7 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
      * edu.umd.cs.findbugs.classfile.ICodeBaseLocator#createRelativeCodeBaseLocator
      * (java.lang.String)
      */
+    @Override
     public ICodeBaseLocator createRelativeCodeBaseLocator(String relativePath) {
         File path = new File(pathName);
         if (!path.isDirectory()) {
@@ -71,6 +72,7 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseLocator#openCodeBase()
      */
+    @Override
     public ICodeBase openCodeBase() throws IOException {
         return ClassFactory.createFilesystemCodeBase(this);
     }

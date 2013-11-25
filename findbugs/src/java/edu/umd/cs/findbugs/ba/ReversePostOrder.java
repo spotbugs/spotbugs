@@ -43,6 +43,7 @@ public class ReversePostOrder extends AbstractBlockOrder {
             this.dfs = dfs;
         }
 
+        @Override
         public int compare(BasicBlock aa, BasicBlock bb) {
             return dfs.getFinishTime(bb) - dfs.getFinishTime(aa);
         }

@@ -320,6 +320,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         return DescriptorFactory.instance().getMethodDescriptor(this);
     }
 
+    @Override
     public void accept(BugAnnotationVisitor visitor) {
         visitor.visitMethodAnnotation(this);
     }
@@ -469,6 +470,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         return className.equals(other.className) && methodName.equals(other.methodName) && methodSig.equals(other.methodSig);
     }
 
+    @Override
     public int compareTo(BugAnnotation o) {
         if (!(o instanceof MethodAnnotation)) // BugAnnotations must be
                                               // Comparable with any type of
@@ -493,9 +495,11 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
     private static final String ELEMENT_NAME = "Method";
 
+    @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("classname", getClassName())
                 .addAttribute("name", getMethodName()).addAttribute("signature", getMethodSignature())

@@ -52,6 +52,7 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 
     private final ObligationPolicyDatabaseEntryType entryType;
     
+    @Override
     public Collection<Obligation> getAllObligations() {
         return Arrays.asList(obligations);
     }
@@ -112,10 +113,12 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
         this.entryType = entryType;
     }
 
+    @Override
     public ObligationPolicyDatabaseEntryType getEntryType() {
         return entryType;
     }
 
+    @Override
     public boolean getActions(ReferenceType receiverType, String methodName, String signature, boolean isStatic,
             Collection<ObligationPolicyDatabaseAction> actionList) {
         if (this.methodName.matches(methodName) && this.signature.matches(signature) && this.isStatic == isStatic

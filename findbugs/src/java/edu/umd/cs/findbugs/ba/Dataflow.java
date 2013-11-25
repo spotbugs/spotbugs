@@ -115,6 +115,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
     static class ForwardProgramOrder implements Comparator<BasicBlock>, Serializable {
 
+        @Override
         public int compare(BasicBlock o1, BasicBlock o2) {
             int p1 = o1.getLabel();
             int p2 = o2.getLabel();

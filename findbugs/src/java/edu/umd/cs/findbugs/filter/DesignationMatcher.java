@@ -42,6 +42,7 @@ public class DesignationMatcher implements Matcher {
         this.designations = new StringSetMatch(designations);
     }
 
+    @Override
     public boolean match(BugInstance bugInstance) {
         return designations.match(bugInstance.getUserDesignationKey());
     }
@@ -64,6 +65,7 @@ public class DesignationMatcher implements Matcher {
         return designations.equals(other.designations);
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         xmlOutput.startTag("Designation");
         if (disabled)

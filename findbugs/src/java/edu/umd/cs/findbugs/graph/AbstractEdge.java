@@ -53,18 +53,22 @@ public class AbstractEdge<ActualEdgeType extends AbstractEdge<ActualEdgeType, Ve
         this.target = target;
     }
 
+    @Override
     public VertexType getSource() {
         return source;
     }
 
+    @Override
     public VertexType getTarget() {
         return target;
     }
 
+    @Override
     public int getLabel() {
         return label;
     }
 
+    @Override
     public void setLabel(int label) {
         this.label = label;
     }
@@ -82,6 +86,7 @@ public class AbstractEdge<ActualEdgeType extends AbstractEdge<ActualEdgeType, Ve
         return source.equals(other.source) && target.equals(other.target);
     }
 
+    @Override
     public int compareTo(ActualEdgeType other) {
         int cmp = source.compareTo(other.getSource());
         if (cmp != 0)

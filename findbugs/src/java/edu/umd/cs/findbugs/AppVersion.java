@@ -132,6 +132,7 @@ public class AppVersion implements XMLWriteable, Cloneable {
      * edu.umd.cs.findbugs.xml.XMLWriteable#writeXML(edu.umd.cs.findbugs.xml
      * .XMLOutput)
      */
+    @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         xmlOutput.openCloseTag(
                 ELEMENT_NAME,

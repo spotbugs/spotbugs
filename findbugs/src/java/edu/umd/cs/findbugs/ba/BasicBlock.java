@@ -260,10 +260,12 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
             this.last = last;
         }
 
+        @Override
         public boolean hasNext() {
             return next != null;
         }
 
+        @Override
         public InstructionHandle next() {
             if (!hasNext())
                 throw new NoSuchElementException();
@@ -272,6 +274,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
             return result;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
@@ -335,10 +338,12 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
             this.first = first;
         }
 
+        @Override
         public boolean hasNext() {
             return next != null;
         }
 
+        @Override
         public InstructionHandle next() throws NoSuchElementException {
             if (!hasNext())
                 throw new NoSuchElementException();
@@ -347,6 +352,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
             return result;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }

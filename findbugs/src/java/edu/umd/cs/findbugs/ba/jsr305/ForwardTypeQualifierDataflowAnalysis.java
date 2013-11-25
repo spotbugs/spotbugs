@@ -82,10 +82,12 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
         this.dfs = dfs;
     }
 
+    @Override
     public BlockOrder getBlockOrder(CFG cfg1) {
         return new ReversePostOrder(cfg1, dfs);
     }
 
+    @Override
     public boolean isForwards() {
         return true;
     }

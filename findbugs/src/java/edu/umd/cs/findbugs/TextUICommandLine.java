@@ -452,6 +452,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
             // starting from the default set (or whatever set
             // happens to be in effect).
             choose(argument, "Detector choices", new Chooser() {
+                @Override
                 public void choose(boolean enabled, String what) {
                     DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(what);
                     if (factory == null)
@@ -466,6 +467,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         } else if (option.equals("-choosePlugins")) {
             // Selectively enable/disable plugins
             choose(argument, "Plugin choices", new Chooser() {
+                @Override
                 public void choose(boolean enabled, String what) {
                     Plugin plugin = DetectorFactoryCollection.instance().getPluginById(what);
                     if (plugin == null)

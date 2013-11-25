@@ -44,10 +44,12 @@ public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
         this.dfs = dfs;
     }
 
+    @Override
     public boolean isForwards() {
         return true;
     }
 
+    @Override
     public BlockOrder getBlockOrder(CFG cfg) {
         return new ReversePostOrder(cfg, dfs);
     }

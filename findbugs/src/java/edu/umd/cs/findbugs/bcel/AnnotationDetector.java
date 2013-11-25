@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 abstract public class AnnotationDetector extends AnnotationVisitor implements Detector, UseAnnotationDatabase {
     private ClassContext classContext;
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         this.classContext = classContext;
         classContext.getJavaClass().accept(this);
@@ -47,6 +48,7 @@ abstract public class AnnotationDetector extends AnnotationVisitor implements De
         return classContext;
     }
 
+    @Override
     public void report() {
     }
 }

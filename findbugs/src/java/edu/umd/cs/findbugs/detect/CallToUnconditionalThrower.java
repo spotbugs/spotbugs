@@ -68,6 +68,7 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
      *
      * @see edu.umd.cs.findbugs.Detector#report()
      */
+    @Override
     public void report() {
         // TODO Auto-generated method stub
 
@@ -147,6 +148,7 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
 
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         analysisContext = AnalysisContext.currentAnalysisContext();
         Method[] methodList = classContext.getJavaClass().getMethods();

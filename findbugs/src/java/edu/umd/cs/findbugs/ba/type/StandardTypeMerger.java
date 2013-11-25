@@ -63,6 +63,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
         this.exceptionSetFactory = exceptionSetFactory;
     }
 
+    @Override
     public Type mergeTypes(Type a, Type b) throws DataflowAnalysisException {
         if (a == null) return b;
         if (b == null) return a;

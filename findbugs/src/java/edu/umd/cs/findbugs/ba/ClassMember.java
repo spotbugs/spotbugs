@@ -50,11 +50,13 @@ public interface ClassMember extends Serializable, AccessibleEntity,  FieldOrMet
     /**
      * Get the name of the field/method.
      */
+    @Override
     public String getName();
 
     /**
      * Get the signature representing the field/method's type.
      */
+    @Override
     public String getSignature();
 
     /**

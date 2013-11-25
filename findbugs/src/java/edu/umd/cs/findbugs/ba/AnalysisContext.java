@@ -1024,6 +1024,7 @@ public class AnalysisContext {
          * @see
          * edu.umd.cs.findbugs.classfile.IErrorLogger#logError(java.lang.String)
          */
+        @Override
         public void logError(String message) {
             Global.getAnalysisCache().getErrorLogger().logError(message);
         }
@@ -1035,6 +1036,7 @@ public class AnalysisContext {
          * edu.umd.cs.findbugs.classfile.IErrorLogger#logError(java.lang.String,
          * java.lang.Throwable)
          */
+        @Override
         public void logError(String message, Throwable e) {
             Global.getAnalysisCache().getErrorLogger().logError(message, e);
         }
@@ -1046,6 +1048,7 @@ public class AnalysisContext {
          * edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(java
          * .lang.ClassNotFoundException)
          */
+        @Override
         public void reportMissingClass(ClassNotFoundException ex) {
             Global.getAnalysisCache().getErrorLogger().reportMissingClass(ex);
         }
@@ -1057,6 +1060,7 @@ public class AnalysisContext {
          * edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu
          * .umd.cs.findbugs.classfile.ClassDescriptor)
          */
+        @Override
         public void reportMissingClass(ClassDescriptor classDescriptor) {
             Global.getAnalysisCache().getErrorLogger().reportMissingClass(classDescriptor);
         }
@@ -1068,6 +1072,7 @@ public class AnalysisContext {
          * edu.umd.cs.findbugs.classfile.IErrorLogger#reportSkippedAnalysis(
          * edu.umd.cs.findbugs.classfile.MethodDescriptor)
          */
+        @Override
         public void reportSkippedAnalysis(MethodDescriptor method) {
             Global.getAnalysisCache().getErrorLogger().reportSkippedAnalysis(method);
         }

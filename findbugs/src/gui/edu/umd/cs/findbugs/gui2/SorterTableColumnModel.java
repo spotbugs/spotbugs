@@ -162,6 +162,7 @@ public class SorterTableColumnModel implements TableColumnModel {
 
         private TableCellRenderer defaultRenderer = new JTableHeader().getDefaultRenderer();
 
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
 
@@ -188,10 +189,12 @@ public class SorterTableColumnModel implements TableColumnModel {
         }
     }
 
+    @Override
     public void addColumn(TableColumn arg0) {
         throw new UnsupportedOperationException("Can't change sorter table columns using addColumn");
     }
 
+    @Override
     public void removeColumn(TableColumn arg0) {
         throw new UnsupportedOperationException("Can't change sorter table columns using removeColumn");
     }
@@ -237,6 +240,7 @@ public class SorterTableColumnModel implements TableColumnModel {
 
     }
 
+    @Override
     public void moveColumn(int fromIndex, int toIndex) {
 
         if (!MainFrame.getInstance().canNavigateAway())
@@ -258,18 +262,22 @@ public class SorterTableColumnModel implements TableColumnModel {
         }
     }
 
+    @Override
     public void setColumnMargin(int arg0) {
         throw new UnsupportedOperationException("NoBah");
     }
 
+    @Override
     public int getColumnCount() {
         return columnList.size();
     }
 
+    @Override
     public Enumeration<TableColumn> getColumns() {
         return Collections.<TableColumn> enumeration(columnList);
     }
 
+    @Override
     public int getColumnIndex(Object columnIdentifier) {
 
         if (columnIdentifier == null)
@@ -283,14 +291,17 @@ public class SorterTableColumnModel implements TableColumnModel {
         throw new IllegalArgumentException();
     }
 
+    @Override
     public TableColumn getColumn(int x) {
         return columnList.get(x);
     }
 
+    @Override
     public int getColumnMargin() {
         return 0;
     }
 
+    @Override
     public int getColumnIndexAtX(int XPosition) {
 
         for (TableColumn tc : columnList) {
@@ -301,6 +312,7 @@ public class SorterTableColumnModel implements TableColumnModel {
         return -1;
     }
 
+    @Override
     public int getTotalColumnWidth() {
         int total = 0;
         for (TableColumn tc : columnList) {
@@ -309,14 +321,17 @@ public class SorterTableColumnModel implements TableColumnModel {
         return total;
     }
 
+    @Override
     public void setColumnSelectionAllowed(boolean arg0) {
         throw new UnsupportedOperationException("BAH");// BAH
     }
 
+    @Override
     public boolean getColumnSelectionAllowed() {
         return true;
     }
 
+    @Override
     public int[] getSelectedColumns() {
         int index = dlsm.getMinSelectionIndex();
         if (index == -1)
@@ -324,6 +339,7 @@ public class SorterTableColumnModel implements TableColumnModel {
         return new int[] { index };
     }
 
+    @Override
     public int getSelectedColumnCount() {
 
         if (dlsm.getMinSelectionIndex() == -1)
@@ -331,18 +347,22 @@ public class SorterTableColumnModel implements TableColumnModel {
         return 1;
     }
 
+    @Override
     public void setSelectionModel(ListSelectionModel arg0) {
         throw new UnsupportedOperationException("No... NO NO NO NO");
     }
 
+    @Override
     public ListSelectionModel getSelectionModel() {
         return dlsm;
     }
 
+    @Override
     public void addColumnModelListener(TableColumnModelListener listener) {
         watchers.add(listener);
     }
 
+    @Override
     public void removeColumnModelListener(TableColumnModelListener listener) {
         watchers.remove(listener);
     }

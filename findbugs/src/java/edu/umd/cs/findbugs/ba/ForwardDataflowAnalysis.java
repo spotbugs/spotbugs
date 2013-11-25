@@ -40,10 +40,12 @@ public abstract class ForwardDataflowAnalysis<Fact> extends AbstractDataflowAnal
         return dfs;
     }
 
+    @Override
     public boolean isForwards() {
         return true;
     }
 
+    @Override
     public BlockOrder getBlockOrder(CFG cfg) {
         return new ReversePostOrder(cfg, dfs);
     }

@@ -122,10 +122,12 @@ public class FindBugsSummaryStats extends PreorderVisitor implements Detector, B
         this.stats = null;
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         classContext.getJavaClass().accept(this);
     }
 
+    @Override
     public void report() {
     }
 
@@ -137,6 +139,7 @@ public class FindBugsSummaryStats extends PreorderVisitor implements Detector, B
         out.println("fields\t" + totalFields);
     }
 
+    @Override
     public void reportBug(BugInstance bug) {
         // already added when bug was added to bug collection
     }

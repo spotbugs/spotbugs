@@ -26,12 +26,14 @@ public class CloudCommentsPaneSwing extends CloudCommentsPane {
     protected void setupLinksOrButtons() {
         signInOutLink = new JButton("Sign in");
         ((JButton)signInOutLink).addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 signInOrOutClicked();
             }
         });
         cancelLink = new JButton("Cancel");
         ((JButton) cancelLink).addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 cancelClicked();
             }
@@ -54,6 +56,7 @@ public class CloudCommentsPaneSwing extends CloudCommentsPane {
             JRadioButtonMenuItem item = new JRadioButtonMenuItem(descriptions.get(i), selected);
             item.setToolTipText(plugin.getDetails());
             item.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     changeCloud(plugin.getId());
                 }

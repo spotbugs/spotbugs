@@ -96,7 +96,7 @@ public class PreferencesFrame extends FBDialog {
 
     private static PreferencesFrame instance;
 
-    private final CheckBoxList filterCheckBoxList = new CheckBoxList();
+    private final CheckBoxList<MatchBox> filterCheckBoxList = new CheckBoxList<>();
 
     // Variables for Properties tab.
     private JTextField tabTextField;
@@ -157,6 +157,7 @@ public class PreferencesFrame extends FBDialog {
         bottom.setLayout(new BoxLayout(bottom, BoxLayout.X_AXIS));
         bottom.add(Box.createHorizontalGlue());
         bottom.add(new JButton(new AbstractAction(edu.umd.cs.findbugs.L10N.getLocalString("pref.close", "Close")) {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 handleWindowClose();
                 PreferencesFrame.this.setVisible(false);
@@ -248,6 +249,7 @@ public class PreferencesFrame extends FBDialog {
 
         south.add(addButton);
         addButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser chooser = new JFileChooser();
                 chooser.addChoosableFileFilter(new FileFilter() {
@@ -368,6 +370,7 @@ public class PreferencesFrame extends FBDialog {
                 }
             });
                 checkGlobal.addActionListener(new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         pluginEnabledStatus.get(plugin).global = checkGlobal.isSelected();
                     }
@@ -389,7 +392,7 @@ public class PreferencesFrame extends FBDialog {
             pluginPanelCenter.add(checkGlobal, gbc);
 
             if (currentProject != null && !cannotDisable) {
-                final JComboBox combo = new WideComboBox(new Object[]{"DEFAULT", "DISABLED", "ENABLED"});
+                final JComboBox<String> combo = new WideComboBox<>(new String[]{"DEFAULT", "DISABLED", "ENABLED"});
                 if (enabled.project == null) combo.setSelectedIndex(0);
                 else combo.setSelectedIndex(enabled.project ? 2 : 1);
                 combo.setRenderer(new DefaultListCellRenderer() {
@@ -408,6 +411,7 @@ public class PreferencesFrame extends FBDialog {
                     }
                 });
                 combo.addActionListener(new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         Boolean[] array = { null, false, true };
                         int i = combo.getSelectedIndex();
@@ -480,6 +484,7 @@ public class PreferencesFrame extends FBDialog {
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(new JButton(new AbstractAction("Apply") {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 changeTabSize();
                 changeFontSize();
@@ -488,6 +493,7 @@ public class PreferencesFrame extends FBDialog {
         }));
 
         bottomPanel.add(new JButton(new AbstractAction("Reset") {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 resetPropertiesPane();
             }
@@ -632,6 +638,7 @@ public class PreferencesFrame extends FBDialog {
         gbc.weighty = 0;
         filterPanel.add(addButton, gbc);
         addButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 NewFilterFrame.open();
             }
@@ -641,6 +648,7 @@ public class PreferencesFrame extends FBDialog {
         gbc.insets = new Insets(5, 0, 0, 0);
         filterPanel.add(removeButton, gbc);
         removeButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 Object[] selected = filterCheckBoxList.getSelectedValues();
                 if (selected.length == 0)
@@ -659,6 +667,7 @@ public class PreferencesFrame extends FBDialog {
         gbc.insets = new Insets(5, 0, 0, 0);
         filterPanel.add(removeAllButton, gbc);
         removeAllButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 boolean needsRebuild = false;
                 Filter suppressionFilter = MainFrame.getInstance().getProject().getSuppressionFilter();
@@ -701,6 +710,7 @@ public class PreferencesFrame extends FBDialog {
         for (final Matcher m : f.getChildren()) {
             MatchBox box = new MatchBox(m.toString(), m);
             box.addItemListener(new ItemListener() {
+                @Override
                 public void itemStateChanged(ItemEvent evt) {
                     boolean isSelected = ((JCheckBox) evt.getSource()).isSelected();
                     boolean wasSelected = f.isEnabled(m);
@@ -734,6 +744,7 @@ public class PreferencesFrame extends FBDialog {
             this.url = url;
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             int result = JOptionPane.showOptionDialog(PreferencesFrame.this,
                     "Are you sure you want to uninstall " + plugin.getShortDescription() + "?" +

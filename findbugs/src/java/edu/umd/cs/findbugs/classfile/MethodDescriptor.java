@@ -46,6 +46,7 @@ public class MethodDescriptor extends FieldOrMethodDescriptor implements Compara
         super(className, methodName, methodSignature, isStatic);
     }
 
+    @Override
     public int compareTo(ComparableMethod o) {
         return FieldOrMethodDescriptor.compareTo(this, (MethodDescriptor)o);
     }

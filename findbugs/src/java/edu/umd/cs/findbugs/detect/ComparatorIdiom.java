@@ -39,6 +39,7 @@ public class ComparatorIdiom extends PreorderVisitor implements Detector {
         this.bugReporter = bugReporter;
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         classContext.getJavaClass().accept(this);
     }
@@ -76,6 +77,7 @@ public class ComparatorIdiom extends PreorderVisitor implements Detector {
 
     }
 
+    @Override
     public void report() {
 
     }

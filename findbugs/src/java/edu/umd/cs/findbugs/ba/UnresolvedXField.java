@@ -62,6 +62,7 @@ public class UnresolvedXField extends AbstractField {
      * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    @Override
     public int compareTo(ComparableField o) {
         if (o instanceof XField) {
             return XFactory.compare((XField) this, (XField) o);
@@ -77,6 +78,7 @@ public class UnresolvedXField extends AbstractField {
      * edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getAnnotation(
      * edu.umd.cs.findbugs.classfile.ClassDescriptor)
      */
+    @Override
     public AnnotationValue getAnnotation(ClassDescriptor desc) {
         return null;
     }
@@ -87,6 +89,7 @@ public class UnresolvedXField extends AbstractField {
      * @see edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#
      * getAnnotationDescriptors()
      */
+    @Override
     public Collection<ClassDescriptor> getAnnotationDescriptors() {
         return Collections.<ClassDescriptor> emptyList();
     }
@@ -97,6 +100,7 @@ public class UnresolvedXField extends AbstractField {
      * @see
      * edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getAnnotations()
      */
+    @Override
     public Collection<AnnotationValue> getAnnotations() {
         return Collections.<AnnotationValue> emptyList();
     }
@@ -108,6 +112,7 @@ public class UnresolvedXField extends AbstractField {
      * edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getContainingScope
      * ()
      */
+    @Override
     public AnnotatedObject getContainingScope() {
         // TODO Auto-generated method stub
         return AnalysisContext.currentXFactory().getXClass(
@@ -120,6 +125,7 @@ public class UnresolvedXField extends AbstractField {
      * @see
      * edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getElementType()
      */
+    @Override
     public ElementType getElementType() {
         return ElementType.FIELD;
     }
@@ -129,11 +135,13 @@ public class UnresolvedXField extends AbstractField {
      * 
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isDeprecated()
      */
+    @Override
     public boolean isDeprecated() {
         // TODO Auto-generated method stub
         return false;
     }
 
+    @Override
     public @CheckForNull
     String getSourceSignature() {
         return null;

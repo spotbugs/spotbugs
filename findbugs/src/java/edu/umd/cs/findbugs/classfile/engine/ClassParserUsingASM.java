@@ -101,6 +101,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
      * edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd
      * .cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder)
      */
+    @Override
     public void parse(final ClassNameAndSuperclassInfo.Builder cBuilder) throws InvalidClassFileFormatException {
 
         cBuilder.setCodeBaseEntry(codeBaseEntry);
@@ -111,6 +112,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
             boolean isInnerClass = false;
 
+            @Override
             public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
                 ClassParserUsingASM.this.slashedClassName = name;
                 cBuilder.setClassfileVersion(version >>> 16, version & 0xffff);
@@ -124,6 +126,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 }
             }
 
+            @Override
             public org.objectweb.asm.AnnotationVisitor visitAnnotation(String desc, boolean isVisible) {
                 if (cBuilder instanceof ClassInfo.Builder) {
                     AnnotationValue value = new AnnotationValue(desc);
@@ -133,16 +136,19 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 return null;
             }
 
+            @Override
             public void visitAttribute(Attribute arg0) {
                 // TODO Auto-generated method stub
 
             }
 
+            @Override
             public void visitEnd() {
                 // TODO Auto-generated method stub
 
             }
 
+            @Override
             public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
                 if (name.equals("this$0"))
                     isInnerClass = true;
@@ -157,12 +163,14 @@ public class ClassParserUsingASM implements ClassParserInterface {
                     fBuilder.setSourceSignature(signature);
                     return new AbstractFieldAnnotationVisitor() {
 
+                        @Override
                         public org.objectweb.asm.AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
                             AnnotationValue value = new AnnotationValue(desc);
                             fBuilder.addAnnotation(desc, value);
                             return value.getAnnotationVisitor();
                         }
 
+                        @Override
                         public void visitEnd() {
                             cBuilder2.addFieldDescriptor(fBuilder.build());
 
@@ -174,6 +182,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 return null;
             }
 
+            @Override
             public void visitInnerClass(String name, String outerName, String innerName, int access) {
                 if (name.equals(slashedClassName) && outerName != null) {
                     if (cBuilder instanceof ClassInfo.Builder) {
@@ -186,6 +195,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
             }
 
+            @Override
             public MethodVisitor visitMethod(final int access, final String methodName, final String methodDesc,
                     String signature, String[] exceptions) {
                 if (cBuilder instanceof ClassInfo.Builder) {
@@ -353,6 +363,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                             visitSomeInsn();
                         }
 
+                        @Override
                         public org.objectweb.asm.AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
                             AnnotationValue value = new AnnotationValue(desc);
                             mBuilder.addAnnotation(desc, value);
@@ -450,6 +461,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
                         }
 
+                        @Override
                         public void visitEnd() {
                             labelsSeen.clear();
                             if (isAccessMethod && accessOwner != null) {
@@ -503,6 +515,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                                 classBuilder.setHasStubs();
                         }
 
+                        @Override
                         public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
                                 boolean visible) {
                             AnnotationValue value = new AnnotationValue(desc);
@@ -515,10 +528,12 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 return null;
             }
 
+            @Override
             public void visitOuterClass(String owner, String name, String desc) {
 
             }
 
+            @Override
             public void visitSource(String arg0, String arg1) {
                 if (cBuilder instanceof ClassInfo.Builder) {
                     ((ClassInfo.Builder) cBuilder).setSource(arg0);
@@ -583,6 +598,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         cBuilder.setReferencedClassDescriptors(referencedClassSet);
     }
 
+    @Override
     public void parse(ClassInfo.Builder builder) throws InvalidClassFileFormatException {
         parse((ClassNameAndSuperclassInfo.Builder) builder);
 

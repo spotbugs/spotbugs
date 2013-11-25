@@ -103,19 +103,23 @@ public class StringAnnotation implements BugAnnotation {
         return value;
     }
 
+    @Override
     public void accept(BugAnnotationVisitor visitor) {
         visitor.visitStringAnnotation(this);
     }
 
+    @Override
     public String format(String key, ClassAnnotation primaryClass) {
         String txt = value;
         return txt;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
@@ -132,6 +136,7 @@ public class StringAnnotation implements BugAnnotation {
         return value.equals(((StringAnnotation) o).value);
     }
 
+    @Override
     public int compareTo(BugAnnotation o) {
         if (!(o instanceof StringAnnotation)) // BugAnnotations must be
                                               // Comparable with any type of
@@ -155,10 +160,12 @@ public class StringAnnotation implements BugAnnotation {
 
     private static final String ELEMENT_NAME = "String";
 
+    @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         writeXML(xmlOutput, false, false);
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("value", value);
 
@@ -169,10 +176,12 @@ public class StringAnnotation implements BugAnnotation {
         BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
     }
 
+    @Override
     public boolean isSignificant() {
         return true;
     }
 
+    @Override
     public String toString(ClassAnnotation primaryClass) {
         return toString();
     }

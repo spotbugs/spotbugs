@@ -51,6 +51,7 @@ public class AnyMethodReturnValueStreamFactory implements StreamFactory {
         return this;
     }
 
+    @Override
     public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
             RepositoryLookupFailureCallback lookupFailureCallback) {
 

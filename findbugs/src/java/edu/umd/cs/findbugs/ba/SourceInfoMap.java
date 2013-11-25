@@ -65,6 +65,7 @@ public class SourceInfoMap {
          * 
          * @see java.lang.Comparable#compareTo(T)
          */
+        @Override
         public int compareTo(FieldDescriptor o) {
             int cmp = className.compareTo(o.className);
             if (cmp != 0)
@@ -119,6 +120,7 @@ public class SourceInfoMap {
          * 
          * @see java.lang.Comparable#compareTo(T)
          */
+        @Override
         public int compareTo(MethodDescriptor o) {
             int cmp;
             if ((cmp = className.compareTo(o.className)) != 0)

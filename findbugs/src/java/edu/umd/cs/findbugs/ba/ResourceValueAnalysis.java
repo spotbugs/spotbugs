@@ -61,12 +61,14 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
         this.ignoreImplicitExceptions = resourceTracker.ignoreImplicitExceptions(resource);
     }
 
+    @Override
     public ResourceValueFrame createFact() {
         ResourceValueFrame fact = new ResourceValueFrame(methodGen.getMaxLocals());
         fact.setTop();
         return fact;
     }
 
+    @Override
     public void initEntryFact(ResourceValueFrame result) {
         result.setValid();
         result.clearStack();
@@ -77,6 +79,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
         }
     }
 
+    @Override
     public void meetInto(ResourceValueFrame fact, Edge edge, ResourceValueFrame result) throws DataflowAnalysisException {
         BasicBlock source = edge.getSource();
         BasicBlock dest = edge.getTarget();

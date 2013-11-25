@@ -57,10 +57,12 @@ public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, Vert
             this.edge = source.getFirstOutgoingEdge();
         }
 
+        @Override
         public boolean hasNext() {
             return edge != null;
         }
 
+        @Override
         public EdgeType next() {
             if (!hasNext())
                 throw new NoSuchElementException();
@@ -69,6 +71,7 @@ public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, Vert
             return result;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
@@ -86,10 +89,12 @@ public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, Vert
             this.edge = target.getFirstIncomingEdge();
         }
 
+        @Override
         public boolean hasNext() {
             return edge != null;
         }
 
+        @Override
         public EdgeType next() {
             if (!hasNext())
                 throw new NoSuchElementException();
@@ -98,6 +103,7 @@ public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, Vert
             return result;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
@@ -131,18 +137,22 @@ public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, Vert
         this.maxEdgeLabel = 0;
     }
 
+    @Override
     public int getNumEdges() {
         return edgeList.size();
     }
 
+    @Override
     public int getNumVertices() {
         return vertexList.size();
     }
 
+    @Override
     public Iterator<EdgeType> edgeIterator() {
         return edgeList.iterator();
     }
 
+    @Override
     public Iterator<VertexType> vertexIterator() {
         return vertexList.iterator();
     }
@@ -151,11 +161,13 @@ public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, Vert
         return vertexList;
     }
 
+    @Override
     public void addVertex(VertexType v) {
         vertexList.add(v);
         v.setLabel(maxVertexLabel++);
     }
 
+    @Override
     public boolean containsVertex(VertexType v) {
         for (VertexType existingVertex : vertexList) {
             if (v == existingVertex)
@@ -164,6 +176,7 @@ public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, Vert
         return false;
     }
 
+    @Override
     public EdgeType createEdge(VertexType source, VertexType target) {
         EdgeType edge = allocateEdge(source, target);
         edgeList.add(edge);
@@ -173,6 +186,7 @@ public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, Vert
         return edge;
     }
 
+    @Override
     public EdgeType lookupEdge(VertexType source, VertexType target) {
         Iterator<EdgeType> i = outgoingEdgeIterator(source);
         while (i.hasNext()) {
@@ -183,22 +197,27 @@ public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, Vert
         return null;
     }
 
+    @Override
     public int getNumVertexLabels() {
         return maxVertexLabel;
     }
 
+    @Override
     public void setNumVertexLabels(int numLabels) {
         this.maxVertexLabel = numLabels;
     }
 
+    @Override
     public int getNumEdgeLabels() {
         return maxEdgeLabel;
     }
 
+    @Override
     public void setNumEdgeLabels(int numLabels) {
         maxEdgeLabel = numLabels;
     }
 
+    @Override
     public void removeEdge(EdgeType edge) {
         if (!edgeList.remove(edge))
             throw new IllegalArgumentException("removing nonexistent edge!");
@@ -206,6 +225,7 @@ public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, Vert
         edge.getTarget().removeIncomingEdge(edge);
     }
 
+    @Override
     public void removeVertex(VertexType v) {
         if (!vertexList.remove(v))
             throw new IllegalArgumentException("removing nonexistent vertex!");
@@ -217,14 +237,17 @@ public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, Vert
             removeEdge(i.next());
     }
 
+    @Override
     public Iterator<EdgeType> outgoingEdgeIterator(VertexType source) {
         return new OutgoingEdgeIterator<EdgeType, VertexType>(source);
     }
 
+    @Override
     public Iterator<EdgeType> incomingEdgeIterator(VertexType target) {
         return new IncomingEdgeIterator<EdgeType, VertexType>(target);
     }
 
+    @Override
     public int getNumIncomingEdges(VertexType vertex) {
         int count = 0;
         EdgeType e = vertex.firstIncomingEdge;
@@ -235,6 +258,7 @@ public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, Vert
         return count;
     }
 
+    @Override
     public int getNumOutgoingEdges(VertexType vertex) {
         int count = 0;
         EdgeType e = vertex.firstOutgoingEdge;
@@ -245,36 +269,44 @@ public abstract class AbstractGraph<EdgeType extends AbstractEdge<EdgeType, Vert
         return count;
     }
 
+    @Override
     public Iterator<VertexType> successorIterator(final VertexType source) {
         return new Iterator<VertexType>() {
             private Iterator<EdgeType> iter = outgoingEdgeIterator(source);
 
+            @Override
             public boolean hasNext() {
                 return iter.hasNext();
             }
 
+            @Override
             public VertexType next() {
                 return iter.next().getTarget();
             }
 
+            @Override
             public void remove() {
                 iter.remove();
             }
         };
     }
 
+    @Override
     public Iterator<VertexType> predecessorIterator(final VertexType target) {
         return new Iterator<VertexType>() {
             private Iterator<EdgeType> iter = incomingEdgeIterator(target);
 
+            @Override
             public boolean hasNext() {
                 return iter.hasNext();
             }
 
+            @Override
             public VertexType next() {
                 return iter.next().getSource();
             }
 
+            @Override
             public void remove() {
                 iter.remove();
             }

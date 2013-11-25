@@ -168,16 +168,19 @@ public class SortedBugCollection implements BugCollection {
         return dataSource;
     }
 
+    @Override
     public Project getProject() {
         return project;
     }
 
+    @Override
     public @CheckForNull Cloud getCloudLazily() {
         if (cloud != null && bugsPopulated)
            cloud.bugsPopulated();
         return cloud;
     }
 
+    @Override
     public @Nonnull Cloud getCloud() {
         if (shouldNotUsePlugin) {
             return CloudFactory.getPlainCloud(this);
@@ -208,18 +211,22 @@ public class SortedBugCollection implements BugCollection {
         return result;
     }
 
+    @Override
     public boolean isApplySuppressions() {
         return applySuppressions;
     }
 
+    @Override
     public void setApplySuppressions(boolean applySuppressions) {
         this.applySuppressions = applySuppressions;
     }
 
+    @Override
     public long getAnalysisTimestamp() {
         return analysisTimestamp;
     }
 
+    @Override
     public void setAnalysisTimestamp(long timestamp) {
         analysisTimestamp = timestamp;
     }
@@ -261,6 +268,7 @@ public class SortedBugCollection implements BugCollection {
      * @return true if the BugInstance was added, or false if a matching
      *         BugInstance was already in the BugCollection
      */
+    @Override
     public boolean add(BugInstance bugInstance) {
         return add(bugInstance,
                 bugInstance.getFirstVersion() == 0L && bugInstance.getLastVersion() == 0L);
@@ -272,6 +280,7 @@ public class SortedBugCollection implements BugCollection {
      * @param message
      *            the error message
      */
+    @Override
     public void addError(String message) {
         addError(message, null);
     }
@@ -279,6 +288,7 @@ public class SortedBugCollection implements BugCollection {
     /**
      * Get the current AppVersion.
      */
+    @Override
     public AppVersion getCurrentAppVersion() {
         return new AppVersion(getSequenceNumber()).setReleaseName(getReleaseName()).setTimestamp(getTimestamp())
                 .setNumClasses(getProjectStats().getNumClasses()).setCodeSize(getProjectStats().getCodeSize());
@@ -291,6 +301,7 @@ public class SortedBugCollection implements BugCollection {
      * @param fileName
      *            name of the file to read
      */
+    @Override
     public void readXML(String fileName) throws IOException, DocumentException {
         readXML(new File(fileName));
     }
@@ -349,12 +360,14 @@ public class SortedBugCollection implements BugCollection {
         }
     }
 
+    @Override
     public void readXML(@WillClose InputStream in) throws IOException, DocumentException {
         assert project != null;
         assert in != null;
         doReadXML(in, null);
     }
 
+    @Override
     public void readXML(@WillClose Reader reader) throws IOException, DocumentException {
         assert project != null;
         assert reader != null;
@@ -415,6 +428,7 @@ public class SortedBugCollection implements BugCollection {
     }
 
 
+    @Override
     public void writeXML(OutputStream out) throws IOException {
         writeXML(UTF8.writer(out));
     }
@@ -425,6 +439,7 @@ public class SortedBugCollection implements BugCollection {
      * @param fileName
      *            the file to write to
      */
+    @Override
     public void writeXML(String fileName) throws IOException {
         OutputStream out = new FileOutputStream(fileName);
         if (fileName.endsWith(".gz"))
@@ -450,6 +465,7 @@ public class SortedBugCollection implements BugCollection {
      *
      * @return the Document representing the BugCollection as a dom4j tree
      */
+    @Override
     public Document toDocument() {
         // if (project == null) throw new NullPointerException("No project");
         assert project != null;
@@ -473,6 +489,7 @@ public class SortedBugCollection implements BugCollection {
      * @param out
      *            the OutputStream to write to
      */
+    @Override
     public void writeXML(@WillClose Writer out) throws IOException {
         assert project != null;
         bugsPopulated();
@@ -497,6 +514,7 @@ public class SortedBugCollection implements BugCollection {
         writeXML(xmlOutput);
     }
 
+    @Override
     public void writePrologue(XMLOutput xmlOutput) throws IOException {
         xmlOutput.beginDocument();
         xmlOutput.openTag(
@@ -544,6 +562,7 @@ public class SortedBugCollection implements BugCollection {
      * @param xmlOutput
      *            the XMLOutput object
      */
+    @Override
     public void writeXML(@WillClose XMLOutput xmlOutput) throws IOException {
         assert project != null;
         try {
@@ -590,6 +609,7 @@ public class SortedBugCollection implements BugCollection {
         return pos;
     }
 
+    @Override
     public void writeEpilogue(XMLOutput xmlOutput) throws IOException {
         if (withMessages) {
             writeBugCategories(xmlOutput);
@@ -853,6 +873,7 @@ public class SortedBugCollection implements BugCollection {
         private BugInstanceComparator() {
         }
 
+        @Override
         public int compare(BugInstance lhs, BugInstance rhs) {
             ClassAnnotation lca = lhs.getPrimaryClass();
             ClassAnnotation rca = rhs.getPrimaryClass();
@@ -954,6 +975,7 @@ public class SortedBugCollection implements BugCollection {
         timestamp = -1L;
     }
 
+    @Override
     public boolean add(BugInstance bugInstance, boolean updateActiveTime) {
         assert !bugsPopulated;
 
@@ -982,10 +1004,12 @@ public class SortedBugCollection implements BugCollection {
         return bugSet.remove(bugInstance);
     }
 
+    @Override
     public Iterator<BugInstance> iterator() {
         return bugSet.iterator();
     }
 
+    @Override
     public Collection<BugInstance> getCollection() {
         return Collections.unmodifiableCollection(bugSet);
     }
@@ -1009,6 +1033,7 @@ public class SortedBugCollection implements BugCollection {
         errorList.add(new AnalysisError(message, exception));
     }
 
+    @Override
     public void addError(AnalysisError error) {
         errorList.add(error);
     }
@@ -1017,6 +1042,7 @@ public class SortedBugCollection implements BugCollection {
         errorList.clear();
     }
 
+    @Override
     public void addMissingClass(String className) {
         if (className == null || className.length() == 0)
             return;
@@ -1066,10 +1092,12 @@ public class SortedBugCollection implements BugCollection {
         return summaryHTML;
     }
 
+    @Override
     public ProjectStats getProjectStats() {
         return projectStats;
     }
 
+    @Override
     @Deprecated
     public BugInstance lookupFromUniqueId(String uniqueId) {
         for (BugInstance bug : bugSet)
@@ -1083,10 +1111,12 @@ public class SortedBugCollection implements BugCollection {
      *
      * @return
      */
+    @Override
     public boolean isMultiversion() {
         return sequence > 0;
     }
 
+    @Override
     public boolean hasDeadBugs() {
         if (sequence == 0)
             return false;
@@ -1096,10 +1126,12 @@ public class SortedBugCollection implements BugCollection {
         return false;
     }
 
+    @Override
     public long getSequenceNumber() {
         return sequence;
     }
 
+    @Override
     public void setSequenceNumber(long sequence) {
         this.sequence = sequence;
     }
@@ -1110,6 +1142,7 @@ public class SortedBugCollection implements BugCollection {
         return dup;
     }
 
+    @Override
     public SortedBugCollection createEmptyCollectionWithMetadata() {
         SortedBugCollection dup = new SortedBugCollection(projectStats.clone(), comparator, project);
         dup.projectStats.clearBugCounts();
@@ -1133,28 +1166,34 @@ public class SortedBugCollection implements BugCollection {
         invalidateHashes();
     }
 
+    @Override
     public void clearMissingClasses() {
         missingClassSet.clear();
     }
 
+    @Override
     public String getReleaseName() {
         if (releaseName == null)
             return "";
         return releaseName;
     }
 
+    @Override
     public void setReleaseName(String releaseName) {
         this.releaseName = releaseName;
     }
 
+    @Override
     public Iterator<AppVersion> appVersionIterator() {
         return appVersionList.iterator();
     }
 
+    @Override
     public void addAppVersion(AppVersion appVersion) {
         appVersionList.add(appVersion);
     }
 
+    @Override
     public void clearAppVersions() {
         appVersionList.clear();
         sequence = 0;
@@ -1166,10 +1205,12 @@ public class SortedBugCollection implements BugCollection {
         sequence = appVersionList.size();
     }
 
+    @Override
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
+    @Override
     public long getTimestamp() {
         return timestamp;
     }
@@ -1178,6 +1219,7 @@ public class SortedBugCollection implements BugCollection {
         return classFeatureSetMap.get(className);
     }
 
+    @Override
     public void setClassFeatureSet(ClassFeatureSet classFeatureSet) {
         classFeatureSetMap.put(classFeatureSet.getClassName(), classFeatureSet);
     }
@@ -1186,18 +1228,22 @@ public class SortedBugCollection implements BugCollection {
         return classFeatureSetMap.values().iterator();
     }
 
+    @Override
     public void clearClassFeatures() {
         classFeatureSetMap.clear();
     }
 
+    @Override
     public void setWithMessages(boolean withMessages) {
         this.withMessages = withMessages;
     }
 
+    @Override
     public boolean getWithMessages() {
         return withMessages;
     }
 
+    @Override
     public AppVersion getAppVersionFromSequenceNumber(long target) {
         for (AppVersion av : appVersionList)
             if (av.getSequenceNumber() == target)
@@ -1207,6 +1253,7 @@ public class SortedBugCollection implements BugCollection {
         return null;
     }
 
+    @Override
     public BugInstance findBug(String instanceHash, String bugType, int lineNumber) {
         for (BugInstance bug : bugSet)
             if (bug.getInstanceHash().equals(instanceHash) && bug.getBugPattern().getType().equals(bugType)
@@ -1215,6 +1262,7 @@ public class SortedBugCollection implements BugCollection {
         return null;
     }
 
+    @Override
     public void setAnalysisVersion(String version) {
         this.analysisVersion = version;
     }
@@ -1275,6 +1323,7 @@ public class SortedBugCollection implements BugCollection {
         cloud = null;
     }
 
+    @Override
     public @Nonnull Cloud reinitializeCloud() {
         Cloud oldCloud = cloud;
         IGuiCallback callback = project.getGuiCallback();
@@ -1294,14 +1343,17 @@ public class SortedBugCollection implements BugCollection {
         return cloud;
     }
 
+    @Override
     public void setXmlCloudDetails(Map<String, String> map) {
         this.xmlCloudDetails = map;
     }
 
+    @Override
     public Map<String, String> getXmlCloudDetails() {
         return xmlCloudDetails;
     }
 
+    @Override
     public void setMinimalXML(boolean minimalXML) {
         this.minimalXML = minimalXML;
     }
@@ -1310,6 +1362,7 @@ public class SortedBugCollection implements BugCollection {
         this.shouldNotUsePlugin = b;
     }
 
+    @Override
     public void bugsPopulated() {
         bugsPopulated = true;
     }

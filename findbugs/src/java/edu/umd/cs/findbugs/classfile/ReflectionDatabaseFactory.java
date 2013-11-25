@@ -47,6 +47,7 @@ public class ReflectionDatabaseFactory<E> implements IDatabaseFactory<E> {
      * 
      * @see edu.umd.cs.findbugs.classfile.IDatabaseFactory#createDatabase()
      */
+    @Override
     public E createDatabase() throws CheckedAnalysisException {
         E database;
 
@@ -126,6 +127,7 @@ public class ReflectionDatabaseFactory<E> implements IDatabaseFactory<E> {
      * edu.umd.cs.findbugs.classfile.IDatabaseFactory#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)
      */
+    @Override
     public void registerWith(IAnalysisCache analysisCache) {
         analysisCache.registerDatabaseFactory(databaseClass, this);
     }

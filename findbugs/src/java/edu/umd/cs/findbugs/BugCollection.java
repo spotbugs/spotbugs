@@ -330,6 +330,7 @@ public interface BugCollection extends Iterable<BugInstance> {
     /**
      * Return an Iterator over all the BugInstance objects in the BugCollection.
      */
+    @Override
     public Iterator<BugInstance> iterator();
 
     /**

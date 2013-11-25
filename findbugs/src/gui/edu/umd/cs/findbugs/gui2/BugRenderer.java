@@ -72,6 +72,7 @@ public class BugRenderer extends DefaultTreeCellRenderer {
             }
             if (leaf) {
                 Icon icon = new Icon() {
+                    @Override
                     public void paintIcon(Component comp, Graphics g, int x, int y) {
                         Graphics2D g2 = (Graphics2D) g;
                         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -81,10 +82,12 @@ public class BugRenderer extends DefaultTreeCellRenderer {
                         g2.drawOval(2, 2, 12, 12);
                     }
 
+                    @Override
                     public int getIconWidth() {
                         return 16;
                     }
 
+                    @Override
                     public int getIconHeight() {
                         return 16;
                     }

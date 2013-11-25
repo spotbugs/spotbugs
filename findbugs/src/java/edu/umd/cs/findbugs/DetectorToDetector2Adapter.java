@@ -50,6 +50,7 @@ public class DetectorToDetector2Adapter implements Detector2 {
      * 
      * @see edu.umd.cs.findbugs.Detector2#finishPass()
      */
+    @Override
     public void finishPass() {
         detector.report();
     }
@@ -61,6 +62,7 @@ public class DetectorToDetector2Adapter implements Detector2 {
      * edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile
      * .ClassDescriptor)
      */
+    @Override
     public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
 
         // Just get the ClassContext from the analysis cache
@@ -82,6 +84,7 @@ public class DetectorToDetector2Adapter implements Detector2 {
      * 
      * @see edu.umd.cs.findbugs.Detector2#getDetectorClassName()
      */
+    @Override
     public String getDetectorClassName() {
         return detector.getClass().getName();
     }

@@ -35,6 +35,7 @@ public class DumbMethodInvocations implements Detector {
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         Method[] methodList = classContext.getJavaClass().getMethods();
 
@@ -148,6 +149,7 @@ public class DumbMethodInvocations implements Detector {
         }
     }
 
+    @Override
     public void report() {
     }
 

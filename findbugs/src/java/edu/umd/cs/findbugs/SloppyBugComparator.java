@@ -43,6 +43,7 @@ public class SloppyBugComparator implements WarningComparator {
     public SloppyBugComparator() {
     }
 
+    @Override
     public void setClassNameRewriter(ClassNameRewriter classNameRewriter) {
         this.classNameRewriter = classNameRewriter;
     }
@@ -120,6 +121,7 @@ public class SloppyBugComparator implements WarningComparator {
      * edu.umd.cs.findbugs.WarningComparator#compare(edu.umd.cs.findbugs.BugInstance
      * , edu.umd.cs.findbugs.BugInstance)
      */
+    @Override
     public int compare(BugInstance lhs, BugInstance rhs) {
 
         int cmp;

@@ -133,6 +133,7 @@ public class PluginUpdateDialog implements Serializable {
         button.setToolTipText(update.getUrl());
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 boolean failed;
                 String url = update.getUrl();
@@ -159,6 +160,7 @@ public class PluginUpdateDialog implements Serializable {
         }
         // sort by name
         Collections.sort(sorted, new Comparator<UpdateChecker.PluginUpdate>() {
+            @Override
             public int compare(UpdateChecker.PluginUpdate o1, UpdateChecker.PluginUpdate o2) {
                 return o1.getPlugin().getShortDescription().compareTo(o2.getPlugin().getShortDescription());
             }
@@ -170,6 +172,7 @@ public class PluginUpdateDialog implements Serializable {
     }
 
     private class MyPluginUpdateListener implements PluginUpdateListener {
+        @Override
         public void pluginUpdateCheckComplete(final Collection<UpdateChecker.PluginUpdate> updates, final boolean force) {
             if (updates.isEmpty() && !force)
                 return;
@@ -179,6 +182,7 @@ public class PluginUpdateDialog implements Serializable {
             else
                 // wait 5 seconds before showing dialog
                 edu.umd.cs.findbugs.util.Util.runInDameonThread(new Runnable() {
+                    @Override
                     public void run() {
                         try {
                             Thread.sleep(SOFTWARE_UPDATE_DIALOG_DELAY_MS);
@@ -192,6 +196,7 @@ public class PluginUpdateDialog implements Serializable {
 
         private void showUpdateDialogInSwingThread(final Collection<UpdateChecker.PluginUpdate> updates, final boolean force) {
             SwingUtilities.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     showUpdateDialog(updates, force);
                 }

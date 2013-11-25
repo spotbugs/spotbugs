@@ -9,25 +9,31 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.SwingUtilities;
 
 public class AWTEventQueueExecutor extends AbstractExecutorService {
+    @Override
     public void shutdown() {
     }
 
+    @Override
     public List<Runnable> shutdownNow() {
         return Collections.emptyList();
     }
 
+    @Override
     public boolean isShutdown() {
         return true;
     }
 
+    @Override
     public boolean isTerminated() {
         return true;
     }
 
+    @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
         return true;
     }
 
+    @Override
     public void execute(Runnable command) {
         if (SwingUtilities.isEventDispatchThread()) {
             command.run();

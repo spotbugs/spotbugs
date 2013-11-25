@@ -295,6 +295,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         this.variableIsSynthetic = variableIsSynthetic;
     }
 
+    @Override
     public @CheckForNull
     String[] getThrownExceptions() {
         return exceptions;
@@ -302,22 +303,27 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
 
 
+    @Override
     public boolean isUnconditionalThrower() {
         return getUnconditionalthrowers().containsKey(this);
     }
 
+    @Override
     public boolean isIdentity() {
         return getIdentitymethods().containsKey(this);
     }
 
+    @Override
     public boolean isUnsupported() {
         return getUnsupportedmethods().containsKey(this);
     }
 
+    @Override
     public int getNumParams() {
         return new SignatureParser(getSignature()).getNumParameters();
     }
 
+    @Override
     public boolean isVariableSynthetic(int param) {
         if (param >= 64) return false;
         return (variableIsSynthetic & (1 << param)) != 0;
@@ -331,14 +337,17 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         return (accessFlags & flag) != 0;
     }
 
+    @Override
     public boolean isNative() {
         return checkFlag(Constants.ACC_NATIVE);
     }
 
+    @Override
     public boolean isAbstract() {
         return checkFlag(Constants.ACC_ABSTRACT);
     }
 
+    @Override
     public boolean isSynchronized() {
         return checkFlag(Constants.ACC_SYNCHRONIZED);
     }
@@ -348,22 +357,26 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      *
      * @see edu.umd.cs.findbugs.ba.XMethod#isReturnTypeReferenceType()
      */
+    @Override
     public boolean isReturnTypeReferenceType() {
         SignatureParser parser = new SignatureParser(getSignature());
         String returnTypeSig = parser.getReturnTypeSignature();
         return SignatureParser.isReferenceType(returnTypeSig);
     }
 
+    @Override
     public @DottedClassName
     String getClassName() {
         return getClassDescriptor().toDottedClassName();
     }
 
+    @Override
     public @DottedClassName
     String getPackageName() {
         return getClassDescriptor().getPackageName();
     }
 
+    @Override
     public String getSourceSignature() {
         return methodSourceSignature;
     }
@@ -391,6 +404,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getAccessFlags()
      */
+    @Override
     public int getAccessFlags() {
         return accessFlags;
     }
@@ -400,6 +414,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isFinal()
      */
+    @Override
     public boolean isFinal() {
         return checkFlag(Constants.ACC_FINAL);
     }
@@ -409,10 +424,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPrivate()
      */
+    @Override
     public boolean isPrivate() {
         return checkFlag(Constants.ACC_PRIVATE);
     }
 
+    @Override
     public boolean isDeprecated() {
         return checkFlag(Opcodes.ACC_DEPRECATED);
     }
@@ -422,6 +439,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isProtected()
      */
+    @Override
     public boolean isProtected() {
         return checkFlag(Constants.ACC_PROTECTED);
     }
@@ -431,10 +449,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPublic()
      */
+    @Override
     public boolean isPublic() {
         return checkFlag(Constants.ACC_PUBLIC);
     }
 
+    @Override
     public boolean isSynthetic() {
         return checkFlag(Constants.ACC_SYNTHETIC);
     }
@@ -444,10 +464,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isResolved()
      */
+    @Override
     public boolean isResolved() {
         return true;
     }
 
+    @Override
     public Collection<ClassDescriptor> getParameterAnnotationDescriptors(int param) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
         if (map == null)
@@ -455,10 +477,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         return map.keySet();
     }
 
+    @Override
     public boolean hasParameterAnnotations() {
         return !methodParameterAnnotations.isEmpty();
     }
     
+    @Override
     public @Nullable
     AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
@@ -467,6 +491,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         return map.get(desc);
     }
 
+    @Override
     public Collection<AnnotationValue> getParameterAnnotations(int param) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
         if (map == null)
@@ -474,14 +499,17 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         return map.values();
     }
 
+    @Override
     public Collection<ClassDescriptor> getAnnotationDescriptors() {
         return methodAnnotations.keySet();
     }
 
+    @Override
     public AnnotationValue getAnnotation(ClassDescriptor desc) {
         return methodAnnotations.get(desc);
     }
 
+    @Override
     public Collection<AnnotationValue> getAnnotations() {
         return methodAnnotations.values();
     }
@@ -495,6 +523,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      * @param annotationValue
      *            an AnnotationValue representing a method annotation
      */
+    @Override
     public void addAnnotation(AnnotationValue annotationValue) {
         HashMap<ClassDescriptor, AnnotationValue> updatedAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(
                 methodAnnotations);
@@ -511,6 +540,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      * @param annotationValue
      *            an AnnotationValue representing a parameter annotation
      */
+    @Override
     public void addParameterAnnotation(int param, AnnotationValue annotationValue) {
         HashMap<Integer, Map<ClassDescriptor, AnnotationValue>> updatedAnnotations = new HashMap<Integer, Map<ClassDescriptor, AnnotationValue>>(
                 methodParameterAnnotations);
@@ -530,16 +560,19 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      *
      * @see edu.umd.cs.findbugs.ba.XMethod#getMethodDescriptor()
      */
+    @Override
     public MethodDescriptor getMethodDescriptor() {
         return this;
     }
 
+    @Override
     public ElementType getElementType() {
         if (getName().equals("<init>"))
             return ElementType.CONSTRUCTOR;
         return ElementType.METHOD;
     }
 
+    @Override
     public @CheckForNull
     AnnotatedObject getContainingScope() {
         try {
@@ -554,6 +587,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      *
      * @see edu.umd.cs.findbugs.ba.XMethod#isVarArgs()
      */
+    @Override
     public boolean isVarArgs() {
         return checkFlag(Constants.ACC_VARARGS);
     }
@@ -563,6 +597,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      *
      * @see edu.umd.cs.findbugs.ba.XMethod#usesConcurrency()
      */
+    @Override
     public boolean usesConcurrency() {
         return usesConcurrency;
     }
@@ -571,14 +606,17 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     public boolean hasBackBranch() {
         return hasBackBranch;
     }
+    @Override
     public boolean isStub() {
         return isStub;
     }
 
+    @Override
     public @CheckForNull
     MethodDescriptor getAccessMethodForMethod() {
         return getAccessmethodformethod().get(this);
     }
+    @Override
     public @CheckForNull
     FieldDescriptor getAccessMethodForField() {
         return getAccessmethodforfield().get(this);
@@ -589,6 +627,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      *
      * @see edu.umd.cs.findbugs.ba.XMethod#bridgeFrom()
      */
+    @Override
     public XMethod bridgeFrom() {
         return AnalysisContext.currentAnalysisContext().getBridgeFrom(this);
     }
@@ -598,11 +637,13 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      *
      * @see edu.umd.cs.findbugs.ba.XMethod#bridgeTo()
      */
+    @Override
     public XMethod bridgeTo() {
         return AnalysisContext.currentAnalysisContext().getBridgeTo(this);
 
     }
 
+    @Override
     public XMethod resolveAccessMethodForMethod() {
         MethodDescriptor access = getAccessMethodForMethod();
         if (access != null)

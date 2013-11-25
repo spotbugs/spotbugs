@@ -236,6 +236,7 @@ public class I18N {
          * Returns a negative integer, zero, or a positive integer as the left
          * key is less than, equal to, or greater than the right key.
          */
+        @Override
         public int compare(String lKey, String rKey) {
             int lCat = categoryOf(lKey);
             int catDiff = lCat - categoryOf(rKey);

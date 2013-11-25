@@ -47,38 +47,47 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
         this.dfs = dfs;
     }
 
+    @Override
     public BlockType createFact() {
         return new BlockType();
     }
 
+    @Override
     public void copy(BlockType source, BlockType dest) {
         dest.copyFrom(source);
     }
 
+    @Override
     public void initEntryFact(BlockType result) throws DataflowAnalysisException {
         result.setNormal();
     }
 
+    @Override
     public void makeFactTop(BlockType fact) {
         fact.setTop();
     }
 
+    @Override
     public boolean isTop(BlockType fact) {
         return fact.isTop();
     }
 
+    @Override
     public boolean isForwards() {
         return true;
     }
 
+    @Override
     public BlockOrder getBlockOrder(CFG cfg) {
         return new ReversePostOrder(cfg, dfs);
     }
 
+    @Override
     public boolean same(BlockType fact1, BlockType fact2) {
         return fact1.sameAs(fact2);
     }
 
+    @Override
     public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, BlockType start, BlockType result)
             throws DataflowAnalysisException {
         result.copyFrom(start);
@@ -100,6 +109,7 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
         }
     }
 
+    @Override
     public void meetInto(BlockType fact, Edge edge, BlockType result) throws DataflowAnalysisException {
         result.mergeWith(fact);
     }

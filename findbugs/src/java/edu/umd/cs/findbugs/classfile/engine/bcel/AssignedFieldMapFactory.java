@@ -39,6 +39,7 @@ public class AssignedFieldMapFactory extends RecomputableClassAnalysisEngine<Ass
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
      */
+    @Override
     public AssignedFieldMap analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
         /*
          * JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class,
@@ -54,6 +55,7 @@ public class AssignedFieldMapFactory extends RecomputableClassAnalysisEngine<Ass
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)
      */
+    @Override
     public void registerWith(IAnalysisCache analysisCache) {
         /*
          * analysisCache.registerClassAnalysisEngine(AssignedFieldMap.class,

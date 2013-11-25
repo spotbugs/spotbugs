@@ -530,10 +530,12 @@ public class Hierarchy {
      * JavaClassAndMethodChooser which accepts any method.
      */
     public static final JavaClassAndMethodChooser ANY_METHOD = new JavaClassAndMethodChooser() {
+        @Override
         public boolean choose(JavaClassAndMethod javaClassAndMethod) {
             return true;
         }
 
+        @Override
         public boolean choose(XMethod method) {
             return true;
         }
@@ -550,12 +552,14 @@ public class Hierarchy {
      * native) methods.
      */
     public static final JavaClassAndMethodChooser CONCRETE_METHOD = new JavaClassAndMethodChooser() {
+        @Override
         public boolean choose(JavaClassAndMethod javaClassAndMethod) {
             Method method = javaClassAndMethod.getMethod();
             int accessFlags = method.getAccessFlags();
             return accessFlagsAreConcrete(accessFlags);
         }
 
+        @Override
         public boolean choose(XMethod method) {
             return accessFlagsAreConcrete(method.getAccessFlags());
         }
@@ -565,10 +569,12 @@ public class Hierarchy {
      * JavaClassAndMethodChooser which accepts only static methods.
      */
     public static final JavaClassAndMethodChooser STATIC_METHOD = new JavaClassAndMethodChooser() {
+        @Override
         public boolean choose(JavaClassAndMethod javaClassAndMethod) {
             return javaClassAndMethod.getMethod().isStatic();
         }
 
+        @Override
         public boolean choose(XMethod method) {
             return method.isStatic();
         }
@@ -578,10 +584,12 @@ public class Hierarchy {
      * JavaClassAndMethodChooser which accepts only instance methods.
      */
     public static final JavaClassAndMethodChooser INSTANCE_METHOD = new JavaClassAndMethodChooser() {
+        @Override
         public boolean choose(JavaClassAndMethod javaClassAndMethod) {
             return !javaClassAndMethod.getMethod().isStatic();
         }
 
+        @Override
         public boolean choose(XMethod method) {
             return !method.isStatic();
         }

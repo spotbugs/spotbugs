@@ -214,10 +214,12 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         return classAndMethod;
     }
 
+    @Override
     public IsNullValueFrame createFact() {
         return new IsNullValueFrame(methodGen.getMaxLocals(), trackValueNumbers);
     }
 
+    @Override
     public void initEntryFact(IsNullValueFrame result) {
         if (cachedEntryFact == null) {
 
@@ -378,6 +380,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         nullComparisonInstructionSet.set(Constants.IF_ACMPNE);
     }
 
+    @Override
     public void meetInto(IsNullValueFrame fact, Edge edge, IsNullValueFrame result) throws DataflowAnalysisException {
         meetInto(fact, edge, result, true);
     }

@@ -67,10 +67,12 @@ public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
         this.dfs = dfs;
     }
 
+    @Override
     public boolean isForwards() {
         return false;
     }
 
+    @Override
     public BlockOrder getBlockOrder(CFG cfg) {
         return new ReverseDFSOrder(cfg, rdfs, dfs);
     }

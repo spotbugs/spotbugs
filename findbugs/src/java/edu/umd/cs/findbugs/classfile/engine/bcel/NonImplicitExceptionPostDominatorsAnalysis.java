@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
 public class NonImplicitExceptionPostDominatorsAnalysis extends PostDominatorsAnalysis {
     public NonImplicitExceptionPostDominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
         super(cfg, rdfs, dfs, new EdgeChooser() {
+            @Override
             public boolean choose(Edge edge) {
                 return !edge.isExceptionEdge() || edge.isFlagSet(EdgeTypes.EXPLICIT_EXCEPTIONS_FLAG);
             }

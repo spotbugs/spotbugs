@@ -213,137 +213,170 @@ public abstract class BetterVisitor implements Visitor {
     }
 
     // Attributes
+    @Override
     public void visitCode(Code obj) {
         visit(obj);
     }
 
+    @Override
     public void visitCodeException(CodeException obj) {
         visit(obj);
     }
 
     // Constants
+    @Override
     public void visitConstantClass(ConstantClass obj) {
         visit(obj);
     }
 
+    @Override
     public void visitConstantDouble(ConstantDouble obj) {
         visit(obj);
     }
 
+    @Override
     public void visitConstantFieldref(ConstantFieldref obj) {
         visit(obj);
     }
 
+    @Override
     public void visitConstantFloat(ConstantFloat obj) {
         visit(obj);
     }
 
+    @Override
     public void visitConstantInteger(ConstantInteger obj) {
         visit(obj);
     }
 
+    @Override
     public void visitConstantInterfaceMethodref(ConstantInterfaceMethodref obj) {
         visit(obj);
     }
 
+    @Override
     public void visitConstantLong(ConstantLong obj) {
         visit(obj);
     }
 
+    @Override
     public void visitConstantMethodref(ConstantMethodref obj) {
         visit(obj);
     }
 
+    @Override
     public void visitConstantNameAndType(ConstantNameAndType obj) {
         visit(obj);
     }
 
+    @Override
     public void visitConstantPool(ConstantPool obj) {
         visit(obj);
     }
 
+    @Override
     public void visitConstantString(ConstantString obj) {
         visit(obj);
     }
 
+    @Override
     public void visitConstantUtf8(ConstantUtf8 obj) {
         visit(obj);
     }
 
+    @Override
     public void visitConstantValue(ConstantValue obj) {
         visit(obj);
     }
 
+    @Override
     public void visitDeprecated(org.apache.bcel.classfile.Deprecated obj) {
         visit(obj);
     }
 
+    @Override
     public void visitExceptionTable(ExceptionTable obj) {
         visit(obj);
     }
 
+    @Override
     public void visitField(Field obj) {
         visit(obj);
     }
 
     // Extra classes (i.e. leaves in this context)
+    @Override
     public void visitInnerClass(InnerClass obj) {
         visit(obj);
     }
 
+    @Override
     public void visitInnerClasses(InnerClasses obj) {
         visit(obj);
     }
 
     // General classes
+    @Override
     public void visitJavaClass(JavaClass obj) {
         visit(obj);
     }
 
+    @Override
     public void visitLineNumber(LineNumber obj) {
         visit(obj);
     }
 
+    @Override
     public void visitLineNumberTable(LineNumberTable obj) {
         visit(obj);
     }
 
+    @Override
     public void visitLocalVariable(LocalVariable obj) {
         visit(obj);
     }
 
+    @Override
     public void visitLocalVariableTable(LocalVariableTable obj) {
         visit(obj);
     }
 
+    @Override
     public void visitLocalVariableTypeTable(LocalVariableTypeTable obj) {
         visit(obj);
     }
 
+    @Override
     public void visitMethod(Method obj) {
         visit(obj);
     }
 
+    @Override
     public void visitSignature(Signature obj) {
         visit(obj);
     }
 
+    @Override
     public void visitSourceFile(SourceFile obj) {
         visit(obj);
     }
 
+    @Override
     public void visitSynthetic(Synthetic obj) {
         visit(obj);
     }
 
+    @Override
     public void visitUnknown(Unknown obj) {
         visit(obj);
     }
 
+    @Override
     public void visitStackMapEntry(StackMapEntry obj) {
         visit(obj);
     }
 
+    @Override
     public void visitStackMap(StackMap obj) {
         visit(obj);
     }

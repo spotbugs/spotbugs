@@ -29,6 +29,7 @@ public class LocalNameLookup implements NameLookup {
 
     String username;
 
+    @Override
     public boolean signIn(CloudPlugin plugin, BugCollection bugCollection) {
 
         try {
@@ -39,6 +40,7 @@ public class LocalNameLookup implements NameLookup {
         }
     }
 
+    @Override
     public String getUsername() {
         return username;
     }

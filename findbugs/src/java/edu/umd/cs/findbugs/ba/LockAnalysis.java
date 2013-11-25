@@ -64,14 +64,17 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
             System.out.println("Analyzing Locks in " + methodGen.getClassName() + "." + methodGen.getName());
     }
 
+    @Override
     public LockSet createFact() {
         return new LockSet();
     }
 
+    @Override
     public void copy(LockSet source, LockSet dest) {
         dest.copyFrom(source);
     }
 
+    @Override
     public void initEntryFact(LockSet result) {
         result.clear();
         result.setDefaultLockCount(0);
@@ -85,19 +88,23 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
         }
     }
 
+    @Override
     public void makeFactTop(LockSet fact) {
         fact.clear();
         fact.setDefaultLockCount(LockSet.TOP);
     }
 
+    @Override
     public boolean isTop(LockSet fact) {
         return fact.isTop();
     }
 
+    @Override
     public boolean same(LockSet fact1, LockSet fact2) {
         return fact1.sameAs(fact2);
     }
 
+    @Override
     public void meetInto(LockSet fact, Edge edge, LockSet result) throws DataflowAnalysisException {
         result.meetWith(fact);
     }

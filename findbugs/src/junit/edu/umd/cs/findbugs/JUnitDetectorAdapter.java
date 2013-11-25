@@ -70,6 +70,7 @@ public class JUnitDetectorAdapter implements Detector2 {
      * 
      * @see edu.umd.cs.findbugs.Detector2#finishPass()
      */
+    @Override
     public void finishPass() {
     }
 
@@ -78,6 +79,7 @@ public class JUnitDetectorAdapter implements Detector2 {
      * 
      * @see edu.umd.cs.findbugs.Detector2#getDetectorClassName()
      */
+    @Override
     public String getDetectorClassName() {
         return this.getClass().getName();
     }
@@ -89,6 +91,7 @@ public class JUnitDetectorAdapter implements Detector2 {
      * edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile
      * .ClassDescriptor)
      */
+    @Override
     public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
         // Only execute the test once
         if (testExecuted) {

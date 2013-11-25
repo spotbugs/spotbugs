@@ -61,6 +61,7 @@ public  class StackMapAnalyzer {
             super("Jump info for opcode stack from stack map analysis", JumpInfoFromStackMap.class);
         }
         
+        @Override
         public JumpInfoFromStackMap analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) {
             
             return getFromStackMap( analysisCache,  descriptor);
@@ -137,6 +138,7 @@ public  class StackMapAnalyzer {
         try {
         f = AccessController.doPrivileged(new PrivilegedAction<Field>() {
             
+            @Override
             public Field run() {
                 Class<StackMapTableEntry> c = StackMapTableEntry.class;
                 Field result;

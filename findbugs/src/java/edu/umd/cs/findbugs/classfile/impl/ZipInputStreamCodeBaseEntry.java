@@ -50,6 +50,7 @@ public class ZipInputStreamCodeBaseEntry extends AbstractScannableCodeBaseEntry 
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
      */
+    @Override
     public int getNumBytes() {
         return (int) zipEntry.getSize();
     }
@@ -59,6 +60,7 @@ public class ZipInputStreamCodeBaseEntry extends AbstractScannableCodeBaseEntry 
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
      */
+    @Override
     public InputStream openResource() throws IOException {
         return new ByteArrayInputStream(bytes);
     }
@@ -95,6 +97,7 @@ public class ZipInputStreamCodeBaseEntry extends AbstractScannableCodeBaseEntry 
      * 
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
      */
+    @Override
     public ClassDescriptor getClassDescriptor() {
         return DescriptorFactory.createClassDescriptorFromResourceName(getResourceName());
     }

@@ -75,11 +75,13 @@ public class DontCatchIllegalMonitorStateException extends PreorderVisitor imple
 
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         this.classContext = classContext;
         classContext.getJavaClass().accept(this);
     }
 
+    @Override
     public void report() {
     }
 }

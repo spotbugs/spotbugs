@@ -7,7 +7,7 @@
 	<classpathentry kind="src" path="src/xsl"/>
 	<classpathentry kind="src" path="src/junit"/>
 	<classpathentry kind="src" path="src/gui"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7">
 		<accessrules>
 			<accessrule kind="accessible" pattern="com/sun/management/*"/>
 			<accessrule kind="nonaccessible" pattern="com/sun/**"/>
@@ -33,7 +33,7 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry exported="true" kind="lib" path="lib/jsr305.jar" sourcepath="lib/jsr305.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxen-1.1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jFormatString.jar"/>	
+	<classpathentry exported="true" kind="lib" path="lib/jFormatString.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jdepend-2.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/asm-3.3.jar" sourcepath="lib/asm-src-3.3.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/asm-commons-3.3.jar" sourcepath="lib/asm-src-3.3.zip"/>

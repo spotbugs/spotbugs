@@ -312,10 +312,12 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
         return cachedExceptionSet.getEdgeExceptionSet(edge);
     }
 
+    @Override
     public TypeFrame createFact() {
         return new TypeFrame(methodGen.getMaxLocals());
     }
 
+    @Override
     public void initEntryFact(TypeFrame result) {
         // Make the frame valid
         result.setValid();
@@ -490,6 +492,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
         }
     }
 
+    @Override
     public void meetInto(TypeFrame fact, Edge edge, TypeFrame result) throws DataflowAnalysisException {
         BasicBlock basicBlock = edge.getTarget();
 

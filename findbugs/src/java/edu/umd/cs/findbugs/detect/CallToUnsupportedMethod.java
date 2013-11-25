@@ -59,6 +59,7 @@ public class CallToUnsupportedMethod implements Detector {
         this.bugReporter = bugReporter;
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
         Method[] methodList = javaClass.getMethods();
@@ -157,6 +158,7 @@ public class CallToUnsupportedMethod implements Detector {
      * 
      * @see edu.umd.cs.findbugs.Detector#report()
      */
+    @Override
     public void report() {
         // TODO Auto-generated method stub
 

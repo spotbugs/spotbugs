@@ -73,6 +73,7 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
      * edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd
      * .cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder)
      */
+    @Override
     public void parse(final ClassNameAndSuperclassInfo.Builder builder) throws InvalidClassFileFormatException {
 
         builder.setCodeBaseEntry(codeBaseEntry);
@@ -102,6 +103,7 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
      * edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd
      * .cs.findbugs.classfile.analysis.ClassInfo.Builder)
      */
+    @Override
     public void parse(ClassInfo.Builder builder) throws InvalidClassFileFormatException {
         parse((ClassNameAndSuperclassInfo.Builder) builder);
 

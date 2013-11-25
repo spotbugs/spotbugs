@@ -39,6 +39,7 @@ class UnresolvedXMethod extends AbstractMethod {
      *
      * @see edu.umd.cs.findbugs.ba.XMethod#isReturnTypeReferenceType()
      */
+    @Override
     public boolean isReturnTypeReferenceType() {
         SignatureParser parser = new SignatureParser(getSignature());
         String returnTypeSig = parser.getReturnTypeSignature();
@@ -50,6 +51,7 @@ class UnresolvedXMethod extends AbstractMethod {
      *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    @Override
     public int compareTo(ComparableMethod o) {
         if (o instanceof XMethod) {
             return XFactory.compare((XMethod) this, (XMethod) o);
@@ -57,12 +59,14 @@ class UnresolvedXMethod extends AbstractMethod {
         throw new ClassCastException("Don't know how to compare " + this.getClass().getName() + " to " + o.getClass().getName());
     }
 
+    @Override
     public ElementType getElementType() {
         if (getName().equals("<init>"))
             return ElementType.CONSTRUCTOR;
         return ElementType.METHOD;
     }
 
+    @Override
     public @CheckForNull
     AnnotatedObject getContainingScope() {
         try {
@@ -77,6 +81,7 @@ class UnresolvedXMethod extends AbstractMethod {
      *
      * @see edu.umd.cs.findbugs.ba.XMethod#getThrownExceptions()
      */
+    @Override
     public String[] getThrownExceptions() {
 
         return new String[0];
@@ -87,10 +92,12 @@ class UnresolvedXMethod extends AbstractMethod {
      *
      * @see edu.umd.cs.findbugs.ba.XMethod#isUnconditionalThrower()
      */
+    @Override
     public boolean isUnconditionalThrower() {
         return false;
     }
 
+    @Override
     public boolean isUnsupported() {
         return false;
     }
@@ -100,6 +107,7 @@ class UnresolvedXMethod extends AbstractMethod {
      *
      * @see edu.umd.cs.findbugs.ba.XMethod#isAbstract()
      */
+    @Override
     public boolean isAbstract() {
         return false;
     }
@@ -109,6 +117,7 @@ class UnresolvedXMethod extends AbstractMethod {
      *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isSynthetic()
      */
+    @Override
     public boolean isSynthetic() {
         return false;
     }
@@ -118,6 +127,7 @@ class UnresolvedXMethod extends AbstractMethod {
      *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isDeprecated()
      */
+    @Override
     public boolean isDeprecated() {
         return false;
     }
@@ -127,6 +137,7 @@ class UnresolvedXMethod extends AbstractMethod {
      *
      * @see edu.umd.cs.findbugs.ba.XMethod#isVarArgs()
      */
+    @Override
     public boolean isVarArgs() {
         return false;
     }
@@ -136,10 +147,12 @@ class UnresolvedXMethod extends AbstractMethod {
      *
      * @see edu.umd.cs.findbugs.ba.XMethod#usesConcurrency()
      */
+    @Override
     public boolean usesConcurrency() {
         return false;
     }
 
+    @Override
     public @CheckForNull
     String getSourceSignature() {
         return null;
@@ -150,10 +163,12 @@ class UnresolvedXMethod extends AbstractMethod {
      *
      * @see edu.umd.cs.findbugs.ba.XMethod#isStub()
      */
+    @Override
     public boolean isStub() {
         return false;
     }
 
+    @Override
     public boolean isIdentity() {
         return false;
     }
@@ -166,6 +181,7 @@ class UnresolvedXMethod extends AbstractMethod {
      * @see edu.umd.cs.findbugs.ba.XMethod#addParameterAnnotation(int,
      * edu.umd.cs.findbugs.classfile.analysis.AnnotationValue)
      */
+    @Override
     public void addParameterAnnotation(int param, AnnotationValue annotationValue) {
         HashMap<Integer, Map<ClassDescriptor, AnnotationValue>> updatedAnnotations = new HashMap<Integer, Map<ClassDescriptor, AnnotationValue>>(
                 methodParameterAnnotations);
@@ -180,6 +196,7 @@ class UnresolvedXMethod extends AbstractMethod {
 
     }
 
+    @Override
     public Collection<ClassDescriptor> getParameterAnnotationDescriptors(int param) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
         if (map == null)
@@ -187,10 +204,12 @@ class UnresolvedXMethod extends AbstractMethod {
         return map.keySet();
     }
 
+    @Override
     public boolean hasParameterAnnotations() {
         return !methodParameterAnnotations.isEmpty();
     }
     
+    @Override
     public @Nullable
     AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
@@ -199,6 +218,7 @@ class UnresolvedXMethod extends AbstractMethod {
         return map.get(desc);
     }
 
+    @Override
     public Collection<AnnotationValue> getParameterAnnotations(int param) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
         if (map == null)
@@ -215,6 +235,7 @@ class UnresolvedXMethod extends AbstractMethod {
      * edu.umd.cs.findbugs.ba.XMethod#addAnnotation(edu.umd.cs.findbugs.classfile
      * .analysis.AnnotationValue)
      */
+    @Override
     public void addAnnotation(AnnotationValue annotationValue) {
         HashMap<ClassDescriptor, AnnotationValue> updatedAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(
                 methodAnnotations);
@@ -222,14 +243,17 @@ class UnresolvedXMethod extends AbstractMethod {
         methodAnnotations = updatedAnnotations;
     }
 
+    @Override
     public Collection<ClassDescriptor> getAnnotationDescriptors() {
         return methodAnnotations.keySet();
     }
 
+    @Override
     public AnnotationValue getAnnotation(ClassDescriptor desc) {
         return methodAnnotations.get(desc);
     }
 
+    @Override
     public Collection<AnnotationValue> getAnnotations() {
         return methodAnnotations.values();
     }
@@ -239,6 +263,7 @@ class UnresolvedXMethod extends AbstractMethod {
      *
      * @see edu.umd.cs.findbugs.ba.XMethod#bridgeFrom()
      */
+    @Override
     public XMethod bridgeFrom() {
         return null;
     }
@@ -248,6 +273,7 @@ class UnresolvedXMethod extends AbstractMethod {
      *
      * @see edu.umd.cs.findbugs.ba.XMethod#bridgeTo()
      */
+    @Override
     public XMethod bridgeTo() {
         return null;
     }
@@ -255,15 +281,18 @@ class UnresolvedXMethod extends AbstractMethod {
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.ba.XMethod#getAccessMethodFor()
      */
+    @Override
     public MethodDescriptor getAccessMethodForMethod() {
         return null;
     }
+    @Override
     public FieldDescriptor getAccessMethodForField() {
         return null;
     }
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.ba.XMethod#isVariableSynthetic(int)
      */
+    @Override
     public boolean isVariableSynthetic(int param) {
         return false;
     }

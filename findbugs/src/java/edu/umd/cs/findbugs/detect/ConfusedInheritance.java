@@ -39,6 +39,7 @@ public class ConfusedInheritance extends PreorderVisitor implements Detector {
         this.bugReporter = bugReporter;
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         cls = classContext.getJavaClass();
         if (cls.isFinal()) {
@@ -54,6 +55,7 @@ public class ConfusedInheritance extends PreorderVisitor implements Detector {
         }
     }
 
+    @Override
     public void report() {
     }
 }

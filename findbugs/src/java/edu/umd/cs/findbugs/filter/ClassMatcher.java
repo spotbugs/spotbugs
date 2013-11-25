@@ -41,6 +41,7 @@ public class ClassMatcher implements Matcher {
         this.className = new NameMatch(className);
     }
 
+    @Override
     public boolean match(BugInstance bugInstance) {
         ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
         String bugClassName = primaryClassAnnotation.getClassName();
@@ -50,6 +51,7 @@ public class ClassMatcher implements Matcher {
         return result;
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", className.getSpec());
         if (disabled)

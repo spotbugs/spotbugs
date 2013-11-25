@@ -271,15 +271,18 @@ public class UpdateCheckerTest extends TestCase {
             this.latch = latch;
         }
 
+        @Override
         public void pluginUpdateCheckComplete(List<UpdateChecker.PluginUpdate> updates, boolean force) {
             updateCollector.addAll(updates);
             latch.countDown();
         }
 
+        @Override
         public String getGlobalOption(String key) {
             return globalOptions.get(key);
         }
 
+        @Override
         public Plugin getGlobalOptionSetter(String key) {
             return null;
         }

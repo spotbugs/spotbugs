@@ -53,6 +53,7 @@ public class ViewFilter {
             this.displayName = displayName;
         }
 
+        @Override
         public boolean show(MainFrame mf, BugInstance b) {
             int rank = BugRanker.findRank(b);
             return rank <= maxRank;
@@ -146,6 +147,7 @@ public class ViewFilter {
             return true;
         }
 
+        @Override
         public boolean show(MainFrame mf, BugInstance b) {
             Cloud c = mf.getBugCollection().getCloud();
             return c.isInCloud(b) && show(c, b);
@@ -283,6 +285,7 @@ public class ViewFilter {
             return true;
         }
 
+        @Override
         public boolean show(MainFrame mf, BugInstance b) {
             Cloud c = mf.getBugCollection().getCloud();
             return c.isInCloud(b) && show(c, b);
@@ -316,6 +319,7 @@ public class ViewFilter {
             this.displayName = displayName;
         }
 
+        @Override
         public boolean show(MainFrame mf, BugInstance b) {
             Cloud cloud = mf.getBugCollection().getCloud();
             if (!cloud.isInCloud(b))

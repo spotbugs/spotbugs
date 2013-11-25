@@ -831,6 +831,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
          *
          * @see java.util.Iterator#hasNext()
          */
+        @Override
         public boolean hasNext() {
             return findNext() != null;
         }
@@ -840,6 +841,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
          *
          * @see java.util.Iterator#next()
          */
+        @Override
         public BugProperty next() {
             BugProperty next = findNext();
             if (next == null)
@@ -855,6 +857,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
          *
          * @see java.util.Iterator#remove()
          */
+        @Override
         public void remove() {
             if (cur == null || removed)
                 throw new IllegalStateException();
@@ -2144,6 +2147,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * ----------------------------------------------------------------------
      */
 
+    @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         writeXML(xmlOutput, null, false);
     }
@@ -2557,6 +2561,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         return true;
     }
 
+    @Override
     public int compareTo(BugInstance other) {
         int cmp;
         cmp = type.compareTo(other.type);

@@ -26,26 +26,32 @@ public class ReturnPathAnalysis extends ForwardDataflowAnalysis<ReturnPath> impl
         super(dfs);
     }
 
+    @Override
     public ReturnPath createFact() {
         return new ReturnPath(ReturnPath.TOP);
     }
 
+    @Override
     public void copy(ReturnPath source, ReturnPath dest) {
         dest.copyFrom(source);
     }
 
+    @Override
     public void initEntryFact(ReturnPath fact) {
         fact.setKind(ReturnPath.RETURNS);
     }
 
+    @Override
     public void makeFactTop(ReturnPath fact) {
         fact.setKind(ReturnPath.TOP);
     }
 
+    @Override
     public boolean isTop(ReturnPath fact) {
         return fact.getKind() == ReturnPath.TOP;
     }
 
+    @Override
     public boolean same(ReturnPath fact1, ReturnPath fact2) {
         return fact1.sameAs(fact2);
     }
@@ -61,6 +67,7 @@ public class ReturnPathAnalysis extends ForwardDataflowAnalysis<ReturnPath> impl
         return true;
     }
 
+    @Override
     public void meetInto(ReturnPath fact, Edge edge, ReturnPath result) throws DataflowAnalysisException {
         switch (edge.getType()) {
         case UNHANDLED_EXCEPTION_EDGE:

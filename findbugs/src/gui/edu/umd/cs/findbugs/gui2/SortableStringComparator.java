@@ -32,6 +32,7 @@ public class SortableStringComparator implements Comparator<String> {
         mySortable = theSortable;
     }
 
+    @Override
     public int compare(String one, String two) {
         return mySortable.compare(one, two);
     }

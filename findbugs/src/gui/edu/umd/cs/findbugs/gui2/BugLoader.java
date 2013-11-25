@@ -347,11 +347,13 @@ public class BugLoader {
 
         volatile boolean finished;
 
+        @Override
         public void analysisFinished(BugCollection b) {
             justAnalyzed = b;
             finished = true;
         }
 
+        @Override
         public void analysisInterrupted() {
             finished = false;
         }

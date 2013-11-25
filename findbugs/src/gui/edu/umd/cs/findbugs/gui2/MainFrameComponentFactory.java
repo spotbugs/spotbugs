@@ -116,6 +116,7 @@ public class MainFrameComponentFactory implements Serializable {
         mainFrame.getSummaryHtmlArea().setContentType("text/html");
         mainFrame.getSummaryHtmlArea().setEditable(false);
         mainFrame.getSummaryHtmlArea().addHyperlinkListener(new HyperlinkListener() {
+            @Override
             public void hyperlinkUpdate(HyperlinkEvent evt) {
                 AboutDialog.editorPaneHyperlinkUpdate(evt);
             }
@@ -201,6 +202,7 @@ public class MainFrameComponentFactory implements Serializable {
         thePanel.add(mainFrame.getSourceSearchTextField());
         // add the buttons
         mainFrame.getFindButton().addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 mainFrame.searchSource(0);
             }
@@ -211,6 +213,7 @@ public class MainFrameComponentFactory implements Serializable {
         gridbag.setConstraints(mainFrame.getFindButton(), c);
         thePanel.add(mainFrame.getFindButton());
         mainFrame.getFindNextButton().addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 mainFrame.searchSource(1);
             }
@@ -221,6 +224,7 @@ public class MainFrameComponentFactory implements Serializable {
         gridbag.setConstraints(mainFrame.getFindNextButton(), c);
         thePanel.add(mainFrame.getFindNextButton());
         mainFrame.getFindPreviousButton().addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 mainFrame.searchSource(2);
             }
@@ -395,6 +399,7 @@ public class MainFrameComponentFactory implements Serializable {
             this.mainFrame = mainFrame;
         }
 
+        @Override
         public void run() {
             mainFrame.setTitle("FindBugs");
             // noinspection ConstantConditions

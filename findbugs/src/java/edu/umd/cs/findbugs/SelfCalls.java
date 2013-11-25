@@ -129,14 +129,17 @@ public class SelfCalls {
         return new Iterator<CallSite>() {
             private Iterator<CallGraphEdge> iter = callGraph.edgeIterator();
 
+            @Override
             public boolean hasNext() {
                 return iter.hasNext();
             }
 
+            @Override
             public CallSite next() {
                 return iter.next().getCallSite();
             }
 
+            @Override
             public void remove() {
                 iter.remove();
             }

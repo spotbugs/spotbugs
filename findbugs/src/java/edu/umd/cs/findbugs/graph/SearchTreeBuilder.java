@@ -36,10 +36,12 @@ public class SearchTreeBuilder<VertexType extends GraphVertex<VertexType>> imple
 
     private LinkedList<SearchTree<VertexType>> searchTreeList = new LinkedList<SearchTree<VertexType>>();
 
+    @Override
     public void startSearchTree(VertexType vertex) {
         searchTreeList.add(createSearchTree(vertex));
     }
 
+    @Override
     public void addToSearchTree(VertexType parent, VertexType child) {
         SearchTree<VertexType> parentTree = searchTreeMap.get(parent);
         if (parentTree == null)

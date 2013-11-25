@@ -60,14 +60,17 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
     /*
      * Default implementation - subclasses may override.
      */
+    @Override
     public String factToString(Fact fact) {
         return fact.toString();
     }
 
+    @Override
     public/* final */Fact getStartFact(BasicBlock block) {
         return lookupOrCreateFact(startFactMap, block);
     }
 
+    @Override
     public/* final */Fact getResultFact(BasicBlock block) {
         return lookupOrCreateFact(resultFactMap, block);
     }
@@ -87,6 +90,7 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
      * @return the dataflow value at given Location
      * @throws DataflowAnalysisException
      */
+    @Override
     public Fact getFactAtLocation(Location location) throws DataflowAnalysisException {
         return getStartFact(location.getBasicBlock());
     }
@@ -106,6 +110,7 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
      * @return the dataflow value after given Location
      * @throws DataflowAnalysisException
      */
+    @Override
     public Fact getFactAfterLocation(Location location) throws DataflowAnalysisException {
         return getResultFact(location.getBasicBlock());
     }
@@ -119,6 +124,7 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
      * @return the fact that is true after applying the edge transfer function
      * @throws DataflowAnalysisException
      */
+    @Override
     public/* final */Fact getFactOnEdge(Edge edge) throws DataflowAnalysisException {
         BasicBlock block = isForwards() ? edge.getSource() : edge.getTarget();
 
@@ -144,6 +150,7 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
      *
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#startIteration()
      */
+    @Override
     public void startIteration() {
         // Do nothing - subclass may override
     }
@@ -153,6 +160,7 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
      *
      * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#finishIteration()
      */
+    @Override
     public void finishIteration() {
         // Do nothing - subclass may override
     }
@@ -164,6 +172,7 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#edgeTransfer(edu.umd.cs.findbugs
      * .ba.Edge, java.lang.Object)
      */
+    @Override
     public void edgeTransfer(Edge edge, Fact fact) throws DataflowAnalysisException {
         // By default, edge transfer function is identity.
         // Subclasses may override.
@@ -178,10 +187,12 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
         return fact;
     }
 
+    @Override
     public int getLastUpdateTimestamp(Fact fact) {
         return 0;
     }
 
+    @Override
     public void setLastUpdateTimestamp(Fact fact, int lastUpdateTimestamp) {
 
     }

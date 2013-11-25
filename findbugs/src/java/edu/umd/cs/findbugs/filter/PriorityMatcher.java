@@ -61,10 +61,12 @@ public class PriorityMatcher implements Matcher {
         return priority == other.priority;
     }
 
+    @Override
     public boolean match(BugInstance bugInstance) {
         return bugInstance.getPriority() == priority;
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Integer.toString(priority));
         if (disabled)

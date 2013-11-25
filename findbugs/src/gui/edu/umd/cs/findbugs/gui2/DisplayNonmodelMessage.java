@@ -104,6 +104,7 @@ public class DisplayNonmodelMessage {
     }
 
     static Runnable moveToFrontLater = new Runnable() {
+        @Override
         public void run() {
             sleep(5);
             SwingUtilities.invokeLater(moveToFront);
@@ -111,6 +112,7 @@ public class DisplayNonmodelMessage {
     };
 
     static Runnable clearAlwaysOnTopLater = new Runnable() {
+        @Override
         public void run() {
             sleep(5);
             SwingUtilities.invokeLater(clearAlwaysOnTop);
@@ -118,6 +120,7 @@ public class DisplayNonmodelMessage {
     };
 
     static Runnable moveToFront = new Runnable() {
+        @Override
         public void run() {
             JFrame frame = messageFrame;
             if (frame != null)
@@ -126,6 +129,7 @@ public class DisplayNonmodelMessage {
     };
 
     static Runnable clearAlwaysOnTop = new Runnable() {
+        @Override
         public void run() {
             JFrame frame = messageFrame;
             if (frame != null)

@@ -89,6 +89,7 @@ public class SorterDialog extends FBDialog {
             super(s == Sortables.DIVIDER ? edu.umd.cs.findbugs.L10N.getLocalString("sort.divider", "[divider]") : s.toString());
             this.sortable = s;
             addChangeListener(new ChangeListener() {
+                @Override
                 public void stateChanged(ChangeEvent e) {
                     ((SorterTableColumnModel) preview.getColumnModel()).setVisible(sortable, isSelected());
                 }
@@ -122,7 +123,7 @@ public class SorterDialog extends FBDialog {
         gbc.gridx = 1;
         gbc.insets = new Insets(2,5,2,5);
         insidePanel.add(new JLabel("<html><h2>1. Choose bug properties"), gbc);
-        insidePanel.add(new CheckBoxList(checkBoxSortList.toArray(new JCheckBox[checkBoxSortList.size()])), gbc);
+        insidePanel.add(new CheckBoxList<>(checkBoxSortList.toArray(new JCheckBox[checkBoxSortList.size()])), gbc);
 
         JTable t = new JTable(new DefaultTableModel(0, sortables.length));
         t.setTableHeader(preview);
@@ -132,6 +133,7 @@ public class SorterDialog extends FBDialog {
 
         sortApply = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.apply_btn", "Apply"));
         sortApply.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 MainFrame.getInstance().getSorter().createFrom((SorterTableColumnModel) preview.getColumnModel());
                 ((BugTreeModel) MainFrame.getInstance().getTree().getModel()).checkSorter();

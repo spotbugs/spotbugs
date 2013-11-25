@@ -20,8 +20,8 @@ public final class SortedProperties extends Properties {
     @Override
     public synchronized Enumeration<Object> keys() {
         // sort elements based on detector (prop key) names
-        Set set = keySet();
-        return (Enumeration<Object>) sortKeys(set);
+        Set<?> set = keySet();
+        return (Enumeration<Object>) sortKeys((Set<String>) set);
     }
 
     /**

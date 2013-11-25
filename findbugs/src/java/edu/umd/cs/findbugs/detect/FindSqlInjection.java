@@ -156,6 +156,7 @@ public class FindSqlInjection implements Detector {
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
         Method[] methodList = javaClass.getMethods();
@@ -500,6 +501,7 @@ public class FindSqlInjection implements Detector {
         bugAccumulator.reportAccumulatedBugs();
     }
 
+    @Override
     public void report() {
     }
 }

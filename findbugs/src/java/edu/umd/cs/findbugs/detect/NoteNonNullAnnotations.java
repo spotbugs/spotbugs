@@ -51,6 +51,7 @@ public class NoteNonNullAnnotations extends BuildNonNullAnnotationDatabase imple
         return null;
         }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
 
         JavaClass javaClass = classContext.getJavaClass();
@@ -58,6 +59,7 @@ public class NoteNonNullAnnotations extends BuildNonNullAnnotationDatabase imple
             javaClass.accept(this);
     }
 
+    @Override
     public void report() {
     }
 }

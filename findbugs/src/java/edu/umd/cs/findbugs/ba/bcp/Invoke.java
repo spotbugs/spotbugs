@@ -112,6 +112,7 @@ public class Invoke extends PatternElement {
             this.value = value;
         }
 
+        @Override
         public boolean match(String s) {
             return s.equals(value);
         }
@@ -124,6 +125,7 @@ public class Invoke extends PatternElement {
             pattern = Pattern.compile(re);
         }
 
+        @Override
         public boolean match(String s) {
             return pattern.matcher(s).matches();
         }
@@ -136,6 +138,7 @@ public class Invoke extends PatternElement {
             this.className = className;
         }
 
+        @Override
         public boolean match(String s) {
             try {
                 return Hierarchy.isSubtype(s, className);

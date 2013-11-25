@@ -84,6 +84,7 @@ public class BugCode implements Comparable<BugCode> {
         return cweid;
     }
 
+    @Override
     public int compareTo(BugCode o) {
         return abbrev.compareTo(o.abbrev);
     }

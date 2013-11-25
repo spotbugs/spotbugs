@@ -68,6 +68,7 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
         }
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         javaClass = classContext.getJavaClass();
         possibleWaitBugs.clear();
@@ -158,6 +159,7 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
         }
     }
 
+    @Override
     public void report() {
     }
 }

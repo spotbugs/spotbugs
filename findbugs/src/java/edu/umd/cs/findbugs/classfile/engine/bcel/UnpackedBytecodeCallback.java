@@ -39,6 +39,7 @@ public class UnpackedBytecodeCallback implements BytecodeScanner.Callback {
      * edu.umd.cs.findbugs.ba.BytecodeScanner.Callback#handleInstruction(int,
      * int)
      */
+    @Override
     public void handleInstruction(int opcode, int index) {
         bytecodeSet.set(opcode);
         offsetToOpcodeMap[index] = (short) opcode;

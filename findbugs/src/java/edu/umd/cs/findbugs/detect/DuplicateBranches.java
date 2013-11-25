@@ -64,6 +64,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
         this.bugReporter = bugReporter;
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         this.classContext = classContext;
         classContext.getJavaClass().accept(this);
@@ -395,6 +396,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
         return lastIns;
     }
 
+    @Override
     public void report() {
     }
 }

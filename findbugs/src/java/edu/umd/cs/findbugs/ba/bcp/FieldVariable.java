@@ -93,6 +93,7 @@ public class FieldVariable implements Variable {
         return fieldSig;
     }
 
+    @Override
     public boolean sameAs(Variable other) {
         if (!(other instanceof FieldVariable))
             return false;

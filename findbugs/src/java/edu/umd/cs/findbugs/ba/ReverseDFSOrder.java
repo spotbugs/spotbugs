@@ -42,6 +42,7 @@ public class ReverseDFSOrder extends AbstractBlockOrder {
             this.dfs = dfs;
         }
 
+        @Override
         public int compare(BasicBlock a, BasicBlock b) {
             return dfs.getFinishTime(a) - dfs.getFinishTime(b);
         }

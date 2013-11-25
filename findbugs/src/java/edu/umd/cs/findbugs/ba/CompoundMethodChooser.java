@@ -30,6 +30,7 @@ public class CompoundMethodChooser implements JavaClassAndMethodChooser {
         this.conjunctList = conjunctList;
     }
 
+    @Override
     public boolean choose(JavaClassAndMethod javaClassAndMethod) {
         for (JavaClassAndMethodChooser chooser : conjunctList) {
             if (!chooser.choose(javaClassAndMethod))
@@ -45,6 +46,7 @@ public class CompoundMethodChooser implements JavaClassAndMethodChooser {
      * edu.umd.cs.findbugs.ba.JavaClassAndMethodChooser#choose(edu.umd.cs.findbugs
      * .ba.XMethod)
      */
+    @Override
     public boolean choose(XMethod method) {
         for (JavaClassAndMethodChooser chooser : conjunctList) {
             if (!chooser.choose(method))

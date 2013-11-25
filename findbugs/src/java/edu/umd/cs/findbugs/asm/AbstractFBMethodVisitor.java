@@ -33,6 +33,7 @@ public abstract class AbstractFBMethodVisitor extends MethodAdapter implements F
 
     int pc;
 
+    @Override
     public void visitOffset(int offset) {
         pc = offset;
     }

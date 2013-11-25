@@ -255,6 +255,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
             return null;
     }
 
+    @Override
     public void accept(BugAnnotationVisitor visitor) {
         visitor.visitFieldAnnotation(this);
     }
@@ -317,6 +318,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
                 && isStatic == other.isStatic;
     }
 
+    @Override
     public int compareTo(BugAnnotation o) {
         if (!(o instanceof FieldAnnotation)) // BugAnnotations must be
                                              // Comparable with any type of
@@ -366,10 +368,12 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
     private static final String ELEMENT_NAME = "Field";
 
+    @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         writeXML(xmlOutput, false, false);
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("classname", getClassName())
                 .addAttribute("name", getFieldName()).addAttribute("signature", getFieldSignature());

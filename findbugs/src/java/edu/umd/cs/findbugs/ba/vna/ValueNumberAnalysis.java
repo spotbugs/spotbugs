@@ -170,10 +170,12 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         throw new IllegalStateException();
     }
 
+    @Override
     public ValueNumberFrame createFact() {
         return new ValueNumberFrame(methodGen.getMaxLocals());
     }
 
+    @Override
     public void initEntryFact(ValueNumberFrame result) {
         // Change the frame from TOP to something valid.
         result.setValid();
@@ -202,6 +204,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         copy(fact, afterLocation);
     }
 
+    @Override
     public void meetInto(ValueNumberFrame fact, Edge edge, ValueNumberFrame result) throws DataflowAnalysisException {
         if (edge.getTarget().isExceptionHandler() && fact.isValid()) {
             // Special case: when merging predecessor facts for entry to

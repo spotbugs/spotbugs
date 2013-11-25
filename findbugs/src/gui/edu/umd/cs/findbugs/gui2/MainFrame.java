@@ -287,6 +287,7 @@ public class MainFrame extends FBFrame implements LogSync {
     /**
      * Show an error dialog.
      */
+    @Override
     public void error(String message) {
         JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
@@ -294,6 +295,7 @@ public class MainFrame extends FBFrame implements LogSync {
     /**
      * Write a message to stdout.
      */
+    @Override
     public void writeToLog(String message) {
         if (GUI2_DEBUG)
             System.out.println(message);
@@ -502,6 +504,7 @@ public class MainFrame extends FBFrame implements LogSync {
             mainFrameTree.updateBugTree();
             setProjectChanged(false);
             Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     PreferencesFrame.getInstance().updateFilterPanel();
                     mainFrameMenu.getReconfigMenuItem().setEnabled(true);
@@ -615,6 +618,7 @@ public class MainFrame extends FBFrame implements LogSync {
         acquireDisplayWait();
         edu.umd.cs.findbugs.util.Util.runInDameonThread(
         new Runnable() {
+            @Override
             public void run() {
                 try {
                     updateDesignationDisplay();
@@ -654,6 +658,7 @@ public class MainFrame extends FBFrame implements LogSync {
 
     void clearSourcePane() {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 mainFrameComponentFactory.setSourceTab("", null);
                 sourceCodeTextPane.setDocument(SourceCodeDisplay.SOURCE_NOT_RELEVANT);
@@ -793,6 +798,7 @@ public class MainFrame extends FBFrame implements LogSync {
         final BugInstance bug = node.getBug();
 
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 summaryTopPanel.removeAll();
 
@@ -814,6 +820,7 @@ public class MainFrame extends FBFrame implements LogSync {
                 summaryTopPanel.revalidate();
 
                 SwingUtilities.invokeLater(new Runnable() {
+                    @Override
                     public void run() {
                         summaryHtmlScrollPane.getVerticalScrollBar().setValue(
                                 summaryHtmlScrollPane.getVerticalScrollBar().getMinimum());
@@ -878,6 +885,7 @@ public class MainFrame extends FBFrame implements LogSync {
 
     private Iterable<BugInstance> getDisplayedBugs() {
         return new Iterable<BugInstance>() {
+            @Override
             public Iterator<BugInstance> iterator() {
                 return new ShownBugsIterator();
             }
@@ -1023,6 +1031,7 @@ public class MainFrame extends FBFrame implements LogSync {
         JMenuItem toggleItem = new JMenuItem(text);
 
         toggleItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent arg0) {
                 Cloud cloud = getBugCollection().getCloud();
                 if (cloud instanceof DoNothingCloud) {
@@ -1068,6 +1077,7 @@ public class MainFrame extends FBFrame implements LogSync {
 
         BugInstance next;
 
+        @Override
         public boolean hasNext() {
             if (!nextKnown) {
                 nextKnown = true;
@@ -1082,6 +1092,7 @@ public class MainFrame extends FBFrame implements LogSync {
             return next != null;
         }
 
+        @Override
         public BugInstance next() {
             if (!hasNext())
                 throw new NoSuchElementException();
@@ -1091,6 +1102,7 @@ public class MainFrame extends FBFrame implements LogSync {
             return result;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
@@ -1101,6 +1113,7 @@ public class MainFrame extends FBFrame implements LogSync {
             super(MainFrame.this);
         }
 
+        @Override
         public void registerCloud(Project project, BugCollection collection, Cloud plugin) {
 //            assert collection.getCloud() == plugin
 //                    : collection.getCloud().getCloudName() + " vs " + plugin.getCloudName();
@@ -1110,6 +1123,7 @@ public class MainFrame extends FBFrame implements LogSync {
             }
         }
 
+        @Override
         public void unregisterCloud(Project project, BugCollection collection, Cloud plugin) {
             assert collection.getCloud() == plugin;
             if (MainFrame.this.bugCollection == collection) {
@@ -1118,9 +1132,11 @@ public class MainFrame extends FBFrame implements LogSync {
             }
         }
 
+        @Override
         public void setErrorMessage(String errorMsg) {
             MainFrame.this.errorMsg = errorMsg;
             SwingUtilities.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     updateStatusBar();
                 }
@@ -1129,24 +1145,29 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     private class MyCloudListener implements CloudListener {
+        @Override
         public void issueUpdated(BugInstance bug) {
             if (mainFrameTree.getCurrentSelectedBugLeaf() != null && mainFrameTree.getCurrentSelectedBugLeaf().getBug() == bug)
                 comments.updateCommentsFromLeafInformation(mainFrameTree.getCurrentSelectedBugLeaf());
         }
 
+        @Override
         public void statusUpdated() {
             SwingUtilities.invokeLater(updateStatusBarRunner);
         }
 
+        @Override
         public void taskStarted(Cloud.CloudTask task) {
         }
     }
 
     private class MyCloudStatusListener implements Cloud.CloudStatusListener {
+        @Override
         public void handleIssueDataDownloadedEvent() {
             mainFrameTree.rebuildBugTreeIfSortablesDependOnCloud();
         }
 
+        @Override
         public void handleStateChange(SigninState oldState, SigninState state) {
             Cloud cloud = MainFrame.this.bugCollection.getCloudLazily();
             if (cloud != null && cloud.isInitialized())
@@ -1155,6 +1176,7 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     private class StatusBarUpdater implements Runnable {
+        @Override
         public void run() {
             updateStatusBar();
         }

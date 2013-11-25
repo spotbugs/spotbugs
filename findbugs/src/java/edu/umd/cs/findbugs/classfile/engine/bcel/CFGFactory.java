@@ -79,6 +79,7 @@ public class CFGFactory extends AnalysisFactory<CFG> {
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
      */
+    @Override
     public CFG analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         // Construct the CFG in its raw form
         MethodGen methodGen = analysisCache.getMethodAnalysis(MethodGen.class, descriptor);

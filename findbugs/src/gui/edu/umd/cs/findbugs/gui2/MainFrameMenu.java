@@ -75,6 +75,7 @@ public class MainFrameMenu implements Serializable {
 
         final JMenuItem item = new JMenuItem(name);
         item.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     mainFrame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
@@ -174,6 +175,7 @@ public class MainFrameMenu implements Serializable {
         if (!MainFrame.MAC_OS_X) {
             exitMenuItem = newJMenuItem("menu.exit", "Exit", KeyEvent.VK_X);
             exitMenuItem.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent evt) {
                     mainFrame.callOnClose();
                 }
@@ -188,6 +190,7 @@ public class MainFrameMenu implements Serializable {
             attachAcceleratorKey(newProjectMenuItem, KeyEvent.VK_N);
 
             newProjectMenuItem.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent evt) {
                     mainFrame.createNewProjectFromMenuItem();
                 }
@@ -197,6 +200,7 @@ public class MainFrameMenu implements Serializable {
         reconfigMenuItem.setEnabled(false);
         attachAcceleratorKey(reconfigMenuItem, KeyEvent.VK_F);
         reconfigMenuItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 if (!mainFrame.canNavigateAway())
                     return;
@@ -208,6 +212,7 @@ public class MainFrameMenu implements Serializable {
 
         mergeMenuItem.setEnabled(true);
         mergeMenuItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 mainFrame.getMainFrameLoadSaveHelper().mergeAnalysis();
             }
@@ -219,6 +224,7 @@ public class MainFrameMenu implements Serializable {
             redoAnalysis.setEnabled(false);
             attachAcceleratorKey(redoAnalysis, KeyEvent.VK_R);
             redoAnalysis.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent evt) {
                     mainFrame.redoAnalysis();
                 }
@@ -226,6 +232,7 @@ public class MainFrameMenu implements Serializable {
         }
         closeProjectItem = newJMenuItem("menu.closeProject", "Close Project");
         closeProjectItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 mainFrame.getMainFrameLoadSaveHelper().closeProject();
                 mainFrame.clearBugCollection();
@@ -237,22 +244,26 @@ public class MainFrameMenu implements Serializable {
         openMenuItem.setEnabled(true);
         attachAcceleratorKey(openMenuItem, KeyEvent.VK_O);
         openMenuItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 mainFrame.getMainFrameLoadSaveHelper().open();
             }
         });
 
         saveAsMenuItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 mainFrame.getMainFrameLoadSaveHelper().saveAs();
             }
         });
         exportFilter.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 mainFrame.getMainFrameLoadSaveHelper().exportFilter();
             }
         });
         importFilter.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 mainFrame.getMainFrameLoadSaveHelper().importFilter();
             }
@@ -260,6 +271,7 @@ public class MainFrameMenu implements Serializable {
         saveMenuItem.setEnabled(false);
         attachAcceleratorKey(saveMenuItem, KeyEvent.VK_S);
         saveMenuItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 mainFrame.getMainFrameLoadSaveHelper().save();
             }
@@ -306,12 +318,14 @@ public class MainFrameMenu implements Serializable {
         attachAcceleratorKey(pasteMenuItem, KeyEvent.VK_V);
 
         preferencesMenuItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 mainFrame.preferences();
             }
         });
 
         groupByMenuItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 if (!mainFrame.canNavigateAway())
                     return;
@@ -322,6 +336,7 @@ public class MainFrameMenu implements Serializable {
 
         attachAcceleratorKey(goToLineMenuItem, KeyEvent.VK_L);
         goToLineMenuItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 mainFrame.getGuiLayout().makeSourceVisible();
                 try {
@@ -384,6 +399,7 @@ public class MainFrameMenu implements Serializable {
             helpMenu.add(aboutItem);
 
             aboutItem.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent evt) {
                     mainFrame.about();
                 }
@@ -399,6 +415,7 @@ public class MainFrameMenu implements Serializable {
             helpMenu.add(updateItem);
 
             updateItem.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent evt) {
                     DetectorFactoryCollection.instance().checkForUpdates(true);
                 }
@@ -417,6 +434,7 @@ public class MainFrameMenu implements Serializable {
         if (cloud != null && cloud.supportsCloudSummaries()) {
             JMenuItem cloudReport = new JMenuItem("Cloud summary");
             cloudReport.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     mainFrame.displayCloudReport();
 
@@ -427,6 +445,7 @@ public class MainFrameMenu implements Serializable {
         if (mainFrame.getProjectPackagePrefixes().size() > 0 && mainFrame.getBugCollection() != null) {
             JMenuItem selectPackagePrefixMenu = new JMenuItem("Select class search strings by project...");
             selectPackagePrefixMenu.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     mainFrame.selectPackagePrefixByProject();
 
@@ -446,6 +465,7 @@ public class MainFrameMenu implements Serializable {
                 rbMenuItem.setSelected(true);
             rbMenuItem.addActionListener(new ActionListener() {
 
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     mainFrame.getViewFilter().setRank(r);
                     mainFrame.resetViewCache();
@@ -467,6 +487,7 @@ public class MainFrameMenu implements Serializable {
                     rbMenuItem.setSelected(true);
                 rbMenuItem.addActionListener(new ActionListener() {
 
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         mainFrame.getViewFilter().setClassification(r);
                         mainFrame.resetViewCache();
@@ -487,6 +508,7 @@ public class MainFrameMenu implements Serializable {
                 rbMenuItem.setSelected(true);
             rbMenuItem.addActionListener(new ActionListener() {
 
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     mainFrame.getViewFilter().setEvaluation(r);
                     mainFrame.resetViewCache();
@@ -503,6 +525,7 @@ public class MainFrameMenu implements Serializable {
                 rbMenuItem.setSelected(true);
             rbMenuItem.addActionListener(new ActionListener() {
 
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     mainFrame.getViewFilter().setFirstSeen(r);
                     mainFrame.resetViewCache();
@@ -517,6 +540,7 @@ public class MainFrameMenu implements Serializable {
         
         filterMenu.addActionListener(new ActionListener() {
             
+            @Override
             public void actionPerformed(ActionEvent e) {
                 PreferencesFrame preferenceFrame = PreferencesFrame.getInstance();
                 preferenceFrame.showFilterPane();
@@ -532,6 +556,7 @@ public class MainFrameMenu implements Serializable {
             viewMenu.add(f);
             f.addItemListener(new ItemListener() {
                 
+                @Override
                 public void itemStateChanged(ItemEvent e) {
                     boolean enabled = e.getStateChange() == ItemEvent.SELECTED;
                     suppressionFilter.setEnabled(m, enabled);
@@ -635,6 +660,7 @@ public class MainFrameMenu implements Serializable {
             super(L10N.getLocalString("txt.cut", "Cut"));
         }
 
+        @Override
         public void actionPerformed(ActionEvent evt) {
             JTextComponent text = getTextComponent(evt);
 
@@ -663,6 +689,7 @@ public class MainFrameMenu implements Serializable {
             super(L10N.getLocalString("txt.copy", "Copy"));
         }
 
+        @Override
         public void actionPerformed(ActionEvent evt) {
             JTextComponent text = getTextComponent(evt);
 
@@ -679,6 +706,7 @@ public class MainFrameMenu implements Serializable {
             super(L10N.getLocalString("txt.paste", "Paste"));
         }
 
+        @Override
         public void actionPerformed(ActionEvent evt) {
             JTextComponent text = getTextComponent(evt);
 

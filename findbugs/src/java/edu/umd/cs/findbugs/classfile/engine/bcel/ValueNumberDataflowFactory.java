@@ -58,6 +58,7 @@ public class ValueNumberDataflowFactory extends AnalysisFactory<ValueNumberDataf
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
      */
+    @Override
     public ValueNumberDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         MethodGen methodGen = getMethodGen(analysisCache, descriptor);
         if (methodGen == null) {

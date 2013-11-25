@@ -45,14 +45,17 @@ public class CommandLineUiCallback implements IGuiCallback {
     }
     BufferedReader br = UserTextFile.bufferedReader(System.in);
 
+    @Override
     public void showMessageDialogAndWait(String message) throws InterruptedException {
         System.out.println(message);
     }
 
+    @Override
     public void showMessageDialog(String message) {
         System.out.println(message);
     }
 
+    @Override
     public int showConfirmDialog(String message, String title, String ok, String cancel) {
         String confirmStr = "Yes (Y) or No (N)?";
 
@@ -95,14 +98,17 @@ public class CommandLineUiCallback implements IGuiCallback {
         }
     }
 
+    @Override
     public InputStream getProgressMonitorInputStream(InputStream in, int length, String msg) {
         return in;
     }
 
+    @Override
     public void setErrorMessage(String errorMsg) {
         System.err.println(errorMsg);
     }
 
+    @Override
     public void displayNonmodelMessage(String title, String message) {
         System.out.println(String.format("Message: %s%n%s", title, message));
     }
@@ -114,10 +120,12 @@ public class CommandLineUiCallback implements IGuiCallback {
      * edu.umd.cs.findbugs.IGuiCallback#showQuestionDialog(java.lang.String,
      * java.lang.String, java.lang.String)
      */
+    @Override
     public String showQuestionDialog(String message, String title, String defaultValue) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public List<String> showForm(String message, String title, List<FormItem> labels) {
         throw new UnsupportedOperationException();
     }
@@ -127,37 +135,46 @@ public class CommandLineUiCallback implements IGuiCallback {
      *
      * @see edu.umd.cs.findbugs.IGuiCallback#showDocument(java.net.URL)
      */
+    @Override
     public boolean showDocument(URL u) {
         return false;
     }
 
+    @Override
     public void registerCloud(Project project, BugCollection collection, Cloud cloud) {
     }
 
+    @Override
     public ExecutorService getBugUpdateExecutor() {
         return bugUpdateExecutor;
     }
 
     private static class CurrentThreadExecutorService extends AbstractExecutorService {
+        @Override
         public void shutdown() {
         }
 
+        @Override
         public List<Runnable> shutdownNow() {
             return null;
         }
 
+        @Override
         public boolean isShutdown() {
             return false;
         }
 
+        @Override
         public boolean isTerminated() {
             return false;
         }
 
+        @Override
         public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
             return false;
         }
 
+        @Override
         public void execute(Runnable command) {
             command.run();
         }
@@ -168,6 +185,7 @@ public class CommandLineUiCallback implements IGuiCallback {
      *
      * @see edu.umd.cs.findbugs.IGuiCallback#isHeadless()
      */
+    @Override
     public boolean isHeadless() {
         return true;
     }
@@ -180,6 +198,7 @@ public class CommandLineUiCallback implements IGuiCallback {
      * Project, edu.umd.cs.findbugs.BugCollection,
      * edu.umd.cs.findbugs.cloud.Cloud)
      */
+    @Override
     public void unregisterCloud(Project project, BugCollection collection, Cloud cloud) {
 
     }
@@ -190,6 +209,7 @@ public class CommandLineUiCallback implements IGuiCallback {
      * @see
      * edu.umd.cs.findbugs.IGuiCallback#invokeInGUIThread(java.lang.Runnable)
      */
+    @Override
     public void invokeInGUIThread(Runnable r) {
         throw new UnsupportedOperationException();
 

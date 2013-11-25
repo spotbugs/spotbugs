@@ -45,6 +45,7 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
         super(name, SignatureUtil.createMethodSignature(params, returns), role);
     }
 
+    @Override
     public boolean match(BugInstance bugInstance) {
 
         MethodAnnotation methodAnnotation = null;
@@ -70,6 +71,7 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
         return "Method(" + super.toString() + ")";
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec());
         if (signature != null)

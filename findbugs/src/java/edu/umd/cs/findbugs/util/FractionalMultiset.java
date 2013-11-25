@@ -109,12 +109,14 @@ public class FractionalMultiset<K> {
     }
 
     static class DecreasingOrderEntryComparator<E> implements Comparator<Map.Entry<E, Double>>, Serializable {
+        @Override
         public int compare(Entry<E, Double> o1, Entry<E, Double> o2) {
             return compareValues(o1, o2);
         }
     }
 
     static class IncreasingOrderEntryComparator<E> implements Comparator<Map.Entry<E, Double>>, Serializable {
+        @Override
         public int compare(Entry<E, Double> o1, Entry<E, Double> o2) {
             return -compareValues(o1, o2);
         }

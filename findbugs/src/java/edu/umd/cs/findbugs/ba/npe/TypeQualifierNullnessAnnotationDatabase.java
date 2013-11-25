@@ -77,6 +77,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
      * edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#getResolvedAnnotation
      * (java.lang.Object, boolean)
      */
+    @Override
     public NullnessAnnotation getResolvedAnnotation(Object o, boolean getMinimal) {
         Profiler profiler = Global.getAnalysisCache().getProfiler();
         profiler.start(this.getClass());
@@ -187,6 +188,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
      * edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#parameterMustBeNonNull
      * (edu.umd.cs.findbugs.ba.XMethod, int)
      */
+    @Override
     public boolean parameterMustBeNonNull(XMethod m, int param) {
         if (DEBUG) {
             System.out.print("Checking " + m + " param " + param + " for @Nonnull...");
@@ -256,6 +258,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
      * (java.lang.String, java.lang.String,
      * edu.umd.cs.findbugs.ba.NullnessAnnotation)
      */
+    @Override
     public void addDefaultAnnotation(Target target, String c, NullnessAnnotation n) {
         if (DEBUG) {
             System.out.println("addDefaultAnnotation: target=" + target + ", c=" + c + ", n=" + n);
@@ -330,6 +333,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
      * (java.lang.String, java.lang.String, java.lang.String, boolean,
      * edu.umd.cs.findbugs.ba.NullnessAnnotation)
      */
+    @Override
     public void addFieldAnnotation(String cName, String mName, String mSig, boolean isStatic, NullnessAnnotation annotation) {
         if (DEBUG) {
             System.out.println("addFieldAnnotation: annotate " + cName + "." + mName + " with " + annotation);
@@ -391,6 +395,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
      * (java.lang.String, java.lang.String, java.lang.String, boolean,
      * edu.umd.cs.findbugs.ba.NullnessAnnotation)
      */
+    @Override
     public void addMethodAnnotation(String cName, String mName, String sig, boolean isStatic, NullnessAnnotation annotation) {
         if (DEBUG) {
             System.out.println("addMethodAnnotation: annotate " + cName + "." + mName + " with " + annotation);
@@ -416,6 +421,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
      * java.lang.String, boolean, int,
      * edu.umd.cs.findbugs.ba.NullnessAnnotation)
      */
+    @Override
     public void addMethodParameterAnnotation(@DottedClassName String cName, String mName, String sig, boolean isStatic,
             int param, NullnessAnnotation annotation) {
         if (DEBUG) {
@@ -456,6 +462,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
      * edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#loadAuxiliaryAnnotations
      * ()
      */
+    @Override
     public void loadAuxiliaryAnnotations() {
         DefaultNullnessAnnotations.addDefaultNullnessAnnotations(this);
     }

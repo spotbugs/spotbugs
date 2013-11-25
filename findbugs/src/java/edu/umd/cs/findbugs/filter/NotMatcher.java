@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class NotMatcher extends CompoundMatcher {
 
+    @Override
     public boolean match(BugInstance bugInstance) {
         if(!childIterator().hasNext() ) {
             return false;
@@ -38,6 +39,7 @@ public class NotMatcher extends CompoundMatcher {
         return ! invertedMatcher.match(bugInstance);
     }
 
+    @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled)  throws IOException {
         if(childIterator().hasNext()) {
             xmlOutput.startTag("Not");

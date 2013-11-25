@@ -60,6 +60,7 @@ public class StaticFieldLoadStreamFactory implements StreamFactory {
         this.fieldSig = fieldSig;
     }
 
+    @Override
     public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
             RepositoryLookupFailureCallback lookupFailureCallback) {
 

@@ -85,6 +85,7 @@ public class MainFrameTree implements Serializable {
 
     public void newTree(final JTree newTree, final BugTreeModel newModel) {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 tree = newTree;
                 tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -192,6 +193,7 @@ public class MainFrameTree implements Serializable {
         JMenuItem filterMenuItem = MainFrameHelper.newJMenuItem("menu.filterBugsLikeThis", "Filter bugs like this");
 
         filterMenuItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 if (!mainFrame.canNavigateAway()) { return; }
                 
@@ -235,6 +237,7 @@ public class MainFrameTree implements Serializable {
         JMenuItem filterMenuItem = MainFrameHelper.newJMenuItem("menu.filterTheseBugs", "Filter these bugs");
 
         filterMenuItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 // TODO This code does a smarter version of filtering that is
                 // only possible for branches, and does so correctly
@@ -329,6 +332,7 @@ public class MainFrameTree implements Serializable {
     ActionListener treeActionAdapter(ActionMap map, String actionName) {
         final Action selectPrevious = map.get(actionName);
         return new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 e.setSource(tree);
                 selectPrevious.actionPerformed(e);
@@ -451,6 +455,7 @@ public class MainFrameTree implements Serializable {
         textFieldForPackagesToDisplay = new JTextField();
         ActionListener filterAction = new ActionListener() {
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     String text = textFieldForPackagesToDisplay.getText();
@@ -532,6 +537,7 @@ public class MainFrameTree implements Serializable {
 
     void showCard(final MainFrame.BugCard card, final Cursor cursor, final Window window) {
         Runnable doRun = new Runnable() {
+            @Override
             public void run() {
                 mainFrame.enableRecentMenu(card == MainFrame.BugCard.TREECARD);
                 getTableheader().setReorderingAllowed(card == MainFrame.BugCard.TREECARD);
@@ -596,6 +602,7 @@ public class MainFrameTree implements Serializable {
     }
 
     private class TreeMouseListener implements MouseListener {
+        @Override
         public void mouseClicked(MouseEvent e) {
             TreePath path = tree.getPathForLocation(e.getX(), e.getY());
 
@@ -619,21 +626,26 @@ public class MainFrameTree implements Serializable {
             }
         }
 
+        @Override
         public void mousePressed(MouseEvent arg0) {
         }
 
+        @Override
         public void mouseReleased(MouseEvent arg0) {
         }
 
+        @Override
         public void mouseEntered(MouseEvent arg0) {
         }
 
+        @Override
         public void mouseExited(MouseEvent arg0) {
         }
     }
 
     private class MyTreeSelectionListener implements TreeSelectionListener {
         private volatile boolean ignoreSelection = false;
+        @Override
         public void valueChanged(TreeSelectionEvent selectionEvent) {
             if (ignoreSelection)
                 return;
@@ -672,6 +684,7 @@ public class MainFrameTree implements Serializable {
 
     private class MyTreeExpansionListener implements TreeExpansionListener {
 
+        @Override
         public void treeExpanded(TreeExpansionEvent event) {
             System.out.println("Tree expanded");
             TreePath path = event.getPath();
@@ -683,6 +696,7 @@ public class MainFrameTree implements Serializable {
                     final TreePath p = path.pathByAddingChild(o);
                     SwingUtilities.invokeLater(new Runnable() {
 
+                        @Override
                         public void run() {
                             try {
                                 System.out.println("auto expanding " + p);
@@ -698,6 +712,7 @@ public class MainFrameTree implements Serializable {
             }
         }
 
+        @Override
         public void treeCollapsed(TreeExpansionEvent event) {
             // do nothing
         }

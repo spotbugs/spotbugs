@@ -150,6 +150,7 @@ public class ClassScreener implements IClassScreener {
      * 
      * @see edu.umd.cs.findbugs.IClassScreener#matches(java.lang.String)
      */
+    @Override
     public boolean matches(String fileName) {
         // Special case: if no classes or packages have been defined,
         // then the screener matches all class files.
@@ -180,6 +181,7 @@ public class ClassScreener implements IClassScreener {
      * 
      * @see edu.umd.cs.findbugs.IClassScreener#vacuous()
      */
+    @Override
     public boolean vacuous() {
         return patternList.isEmpty();
     }

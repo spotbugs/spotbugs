@@ -79,10 +79,12 @@ public class SignatureParser {
     private class ParameterSignatureIterator implements Iterator<String> {
         private int index = 1;
 
+        @Override
         public boolean hasNext() {
             return index < signature.length() && signature.charAt(index) != ')';
         }
 
+        @Override
         public String next() {
             if (!hasNext())
                 throw new NoSuchElementException();
@@ -127,6 +129,7 @@ public class SignatureParser {
             return result.toString();
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
@@ -172,6 +175,7 @@ public class SignatureParser {
    public Iterable<String> parameterSignatures() {
        return new Iterable<String>() {
 
+        @Override
         public Iterator<String> iterator() {
             return new ParameterSignatureIterator();
         }};

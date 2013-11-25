@@ -56,6 +56,7 @@ public class FindSleepWithLockHeld implements Detector {
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
 
@@ -130,6 +131,7 @@ public class FindSleepWithLockHeld implements Detector {
         return methodName.equals("sleep") && (signature.equals("(J)V") || signature.equals("(JI)V"));
     }
 
+    @Override
     public void report() {
     }
 

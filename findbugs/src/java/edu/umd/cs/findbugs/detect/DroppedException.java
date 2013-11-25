@@ -71,6 +71,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
             System.out.println("Dropped Exception debugging turned on");
     }
 
+    @Override
     public void visitClassContext(ClassContext classContext) {
         this.classContext = classContext;
         classContext.getJavaClass().accept(this);
@@ -78,6 +79,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
      
     }
 
+    @Override
     public void report() {
     }
 

@@ -6,25 +6,26 @@ import java.util.Vector;
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 
-public class WideComboBox extends JComboBox {
+public class WideComboBox<E> extends JComboBox<E> {
 
     public WideComboBox() {
     }
 
-    public WideComboBox(final Object items[]) {
+    public WideComboBox(final E items[]) {
         super(items);
     }
 
-    public WideComboBox(Vector items) {
+    public WideComboBox(Vector<E> items) {
         super(items);
     }
 
-    public WideComboBox(ComboBoxModel aModel) {
+    public WideComboBox(ComboBoxModel<E> aModel) {
         super(aModel);
     }
 
     private boolean layingOut = false;
 
+    @Override
     public void doLayout() {
         try {
             layingOut = true;
@@ -34,6 +35,7 @@ public class WideComboBox extends JComboBox {
         }
     }
 
+    @Override
     public Dimension getSize() {
         Dimension dim = super.getSize();
         if (!layingOut) {

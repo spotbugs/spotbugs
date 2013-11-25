@@ -29,6 +29,7 @@ public class LongOrDoubleLocalVariable implements Variable {
         this.nextValue = nextValue;
     }
 
+    @Override
     public boolean sameAs(Variable other) {
         if (!(other instanceof LongOrDoubleLocalVariable))
             return false;

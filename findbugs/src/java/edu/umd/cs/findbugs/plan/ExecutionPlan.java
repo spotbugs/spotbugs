@@ -72,10 +72,12 @@ public class ExecutionPlan {
     public ExecutionPlan() {
         this.pluginList = new LinkedList<Plugin>();
         this.factoryChooser = new DetectorFactoryChooser() {
+            @Override
             public boolean choose(DetectorFactory factory) {
                 return true;
             }
 
+            @Override
             public void enable(DetectorFactory factory) {
                 // OK...
             }
@@ -487,6 +489,7 @@ public class ExecutionPlan {
              {
         DetectorFactory[] unassignedList = detectorSet.toArray(new DetectorFactory[detectorSet.size()]);
         Arrays.sort(unassignedList, new Comparator<DetectorFactory>() {
+            @Override
             public int compare(DetectorFactory a, DetectorFactory b) {
                 // Sort first by plugin id...
                 int cmp = a.getPlugin().getPluginId().compareTo(b.getPlugin().getPluginId());

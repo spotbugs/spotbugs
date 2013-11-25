@@ -110,6 +110,7 @@ public class AnnotationValue {
      */
     public AnnotationVisitor getAnnotationVisitor() {
         return new AnnotationVisitor() {
+            @Override
             public void visit(String name, Object value) {
                 name = canonicalString(name);
                 valueMap.put(name, value);
@@ -122,6 +123,7 @@ public class AnnotationValue {
              * org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang
              * .String, java.lang.String)
              */
+            @Override
             public AnnotationVisitor visitAnnotation(String name, String desc) {
                 name = canonicalString(name);
                 AnnotationValue newValue = new AnnotationValue(desc);
@@ -136,6 +138,7 @@ public class AnnotationValue {
              * @see
              * org.objectweb.asm.AnnotationVisitor#visitArray(java.lang.String)
              */
+            @Override
             public AnnotationVisitor visitArray(String name) {
                 name = canonicalString(name);
                 return new AnnotationArrayVisitor(name);
@@ -146,6 +149,7 @@ public class AnnotationValue {
              * 
              * @see org.objectweb.asm.AnnotationVisitor#visitEnd()
              */
+            @Override
             public void visitEnd() {
 
             }
@@ -157,6 +161,7 @@ public class AnnotationValue {
              * org.objectweb.asm.AnnotationVisitor#visitEnum(java.lang.String,
              * java.lang.String, java.lang.String)
              */
+            @Override
             public void visitEnum(String name, String desc, String value) {
                 name = canonicalString(name);
                 valueMap.put(name, new EnumValue(desc, value));
@@ -194,20 +199,24 @@ public class AnnotationValue {
             this.outerList = outerList;
         }
 
+        @Override
         public void visit(String name, Object value) {
             result.add(value);
         }
 
+        @Override
         public AnnotationVisitor visitAnnotation(String name, String desc) {
             AnnotationValue newValue = new AnnotationValue(desc);
             result.add(newValue);
             return newValue.getAnnotationVisitor();
         }
 
+        @Override
         public AnnotationVisitor visitArray(String name) {
             return new AnnotationArrayVisitor(result);
         }
 
+        @Override
         public void visitEnd() {
             if (name != null)
                 valueMap.put(name, result.toArray());
@@ -215,6 +224,7 @@ public class AnnotationValue {
                 outerList.add(result.toArray());
         }
 
+        @Override
         public void visitEnum(String name, String desc, String value) {
             result.add(new EnumValue(desc, value));
 
