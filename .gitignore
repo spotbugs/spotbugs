@@ -46,6 +46,13 @@ plugins/webCloudClient/lib/
 sandbox/localCloud/build/
 sandbox/localCloud/classes/
 server/appengine/war/WEB-INF/classes/
+server/appengineUpdate/war/WEB-INF/lib/
+server/appengineUpdate/war/WEB-INF/classes/
 server/common/build/
 server/common/classes/
+server/common/classesEclipse/
+server/webCommon/classesEclipse/
+server/webCommon/build/
+server/webUpdateCheck/classesEclipse/
+server/webUpdateCheck/build/
 webCloudProtocol/build/
