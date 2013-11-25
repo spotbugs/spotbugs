@@ -75,6 +75,7 @@ public class AppEngineUsagePersistenceHelper extends UsagePersistenceHelper {
         return deleted;
     }
 
+    @Override
     public int count(String kind) {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pquery = ds.prepare(new Query(kind).setKeysOnly());
