@@ -21,6 +21,17 @@ package edu.umd.cs.findbugs.asm;
 
 import org.objectweb.asm.MethodVisitor;
 
-public interface FBMethodVisitor extends MethodVisitor {
-    void visitOffset(int offset);
+import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
+
+public abstract class FBMethodVisitor extends MethodVisitor {
+
+    public FBMethodVisitor() {
+        super(FindBugsASM.ASM_VERSION);
+    }
+    
+    public FBMethodVisitor(MethodVisitor mv) {
+        super(FindBugsASM.ASM_VERSION, mv);
+    }
+
+    public abstract void visitOffset(int offset);
 }

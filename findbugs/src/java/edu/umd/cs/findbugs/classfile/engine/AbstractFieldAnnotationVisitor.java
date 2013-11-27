@@ -22,10 +22,19 @@ package edu.umd.cs.findbugs.classfile.engine;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.FieldVisitor;
 
+import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
+
 /**
  * @author pwilliam
  */
-public abstract class AbstractFieldAnnotationVisitor implements FieldVisitor {
+public abstract class AbstractFieldAnnotationVisitor extends FieldVisitor {
+
+    /**
+     * @param api
+     */
+    public AbstractFieldAnnotationVisitor() {
+        super(FindBugsASM.ASM_VERSION);
+    }
 
     /*
      * (non-Javadoc)

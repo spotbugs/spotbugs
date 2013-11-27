@@ -28,6 +28,7 @@ import org.objectweb.asm.AnnotationVisitor;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 
 /**
  * The "raw" version of an annotation appearing in a class file.
@@ -109,7 +110,7 @@ public class AnnotationValue {
      * Get an AnnotationVisitor which can populate this AnnotationValue object.
      */
     public AnnotationVisitor getAnnotationVisitor() {
-        return new AnnotationVisitor() {
+        return new AnnotationVisitor(FindBugsASM.ASM_VERSION) {
             @Override
             public void visit(String name, Object value) {
                 name = canonicalString(name);
@@ -171,7 +172,7 @@ public class AnnotationValue {
         };
     }
 
-    private final class AnnotationArrayVisitor implements AnnotationVisitor {
+    private final class AnnotationArrayVisitor extends AnnotationVisitor {
         /**
          *
          */
@@ -189,12 +190,14 @@ public class AnnotationValue {
          * @param result
          */
         private AnnotationArrayVisitor(String name) {
+            super(FindBugsASM.ASM_VERSION);
             name = canonicalString(name);
             this.name = name;
             this.outerList = null;
         }
 
         private AnnotationArrayVisitor(List<Object> outerList) {
+            super(FindBugsASM.ASM_VERSION);
             this.name = null;
             this.outerList = outerList;
         }

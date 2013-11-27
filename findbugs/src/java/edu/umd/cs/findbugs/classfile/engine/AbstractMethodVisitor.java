@@ -24,10 +24,17 @@ import org.objectweb.asm.Attribute;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
+import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
+
 /**
  * @author pwilliam
  */
-public abstract class AbstractMethodVisitor implements MethodVisitor {
+public abstract class AbstractMethodVisitor extends MethodVisitor {
+
+
+    public AbstractMethodVisitor() {
+        super(FindBugsASM.ASM_VERSION);
+    }
 
     public void visitSomeInsn() {
     }

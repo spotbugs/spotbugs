@@ -58,6 +58,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
+import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -126,7 +127,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
         private boolean checkForNullReturn;
 
         DetectorNode(int access, String name, String desc, String signature, String[] exceptions, XMethod xmethod) {
-            super(access, name, desc, signature, exceptions);
+            super(FindBugsASM.ASM_VERSION, access, name, desc, signature, exceptions);
             this.xmethod = xmethod;
         }
 
@@ -203,7 +204,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
                             bug.addClassAndMethod(xmethod);
                         LocalVariableAnnotation lva = null;
                         if (localVariables != null) {
-                            for(LocalVariableNode lvn : (List<LocalVariableNode>)localVariables) {
+                            for(LocalVariableNode lvn : localVariables) {
                                 if (lvn.index == i+1) {
                                     lva = new LocalVariableAnnotation(lvn.name, i+1, 0);
                                     lva.setDescription(LocalVariableAnnotation.PARAMETER_NAMED_ROLE);

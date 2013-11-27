@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 
 /**
  * Abstract base class to to reduce boilerplate needed for writing ASM-based
@@ -47,6 +48,7 @@ abstract public class ClassNodeDetector extends ClassNode implements Detector2 {
      *            the BugReporter that bug should be reporter to.
      */
     public ClassNodeDetector(BugReporter bugReporter) {
+        super(FindBugsASM.ASM_VERSION);
         this.bugReporter = bugReporter;
     }
 
@@ -60,10 +62,10 @@ abstract public class ClassNodeDetector extends ClassNode implements Detector2 {
     public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
 
         FBClassReader cr = Global.getAnalysisCache().getClassAnalysis(FBClassReader.class, classDescriptor);
-        this.interfaces = new ArrayList();
-        this.innerClasses = new ArrayList();
-        this.fields = new ArrayList();
-        this.methods = new ArrayList();
+        this.interfaces = new ArrayList<>();
+        this.innerClasses = new ArrayList<>();
+        this.fields = new ArrayList<>();
+        this.methods = new ArrayList<>();
         cr.accept(this, 0);
     }
 

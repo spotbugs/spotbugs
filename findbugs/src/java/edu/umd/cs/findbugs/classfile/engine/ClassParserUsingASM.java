@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo.Builder;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
 import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
+import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -77,6 +78,381 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
 
 
+    /**
+     * @author pugh
+     */
+    private final class ClassParserMethodVisitor extends AbstractMethodVisitor {
+        /**
+         * 
+         */
+        private final TreeSet<ClassDescriptor> calledClassSet;
+
+        /**
+         * 
+         */
+        private final edu.umd.cs.findbugs.classfile.analysis.MethodInfo.Builder mBuilder;
+
+        /**
+         * 
+         */
+        private final String methodName;
+
+        /**
+         * 
+         */
+        private final int access;
+
+        /**
+         * 
+         */
+        private final String methodDesc;
+
+        /**
+         * 
+         */
+        private final edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder cBuilder;
+
+        boolean sawReturn;
+
+        boolean sawNormalThrow = false;
+
+        boolean sawUnsupportedThrow = false;
+
+        boolean sawSystemExit = false;
+
+        boolean sawBranch = false;
+
+        boolean sawBackBranch = false;
+
+        int methodCallCount = 0;
+
+        int fieldInstructionCount = 0;
+
+        boolean sawStubThrow = false;
+
+        boolean justSawInitializationOfUnsupportedOperationException;
+
+        boolean isBridge;
+
+        String bridgedMethodSignature;
+
+        IdentityMethodState identityState =
+                IdentityMethodState.INITIAL;
+
+        ParameterLoadState parameterLoadState = ParameterLoadState.OTHER;
+
+        int parameterForLoadState;
+
+        StubState stubState = StubState.INITIAL;
+
+        boolean isAccessMethod;
+
+        String accessOwner, accessName, accessDesc;
+
+        boolean accessForField;
+
+        boolean accessIsStatic;
+
+        HashSet<Label> labelsSeen = new HashSet<Label>();
+
+        /**
+         * @param calledClassSet
+         * @param mBuilder
+         * @param methodName
+         * @param access
+         * @param methodDesc
+         * @param cBuilder
+         */
+        private ClassParserMethodVisitor(TreeSet<ClassDescriptor> calledClassSet,
+                edu.umd.cs.findbugs.classfile.analysis.MethodInfo.Builder mBuilder, String methodName, int access,
+                String methodDesc, edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder cBuilder) {
+            this.calledClassSet = calledClassSet;
+            this.mBuilder = mBuilder;
+            this.methodName = methodName;
+            this.access = access;
+            this.methodDesc = methodDesc;
+            this.cBuilder = cBuilder;
+            sawReturn = (access & Opcodes.ACC_NATIVE) != 0;
+            isBridge = (access & Opcodes.ACC_SYNTHETIC) != 0 && (access & Opcodes.ACC_BRIDGE) != 0;
+            isAccessMethod = methodName.startsWith("access$");
+        }
+
+        boolean isStatic() {
+            return (access & Opcodes.ACC_STATIC) != 0;
+        }
+
+        @Override
+        public
+        void visitLocalVariable(String name,
+                String desc,
+                String signature,
+                Label start,
+                Label end,
+                int index) {
+            mBuilder.setVariableHasName(index);
+
+        }
+
+        @Override
+        public void visitLdcInsn(Object cst) {
+            if (cst.equals("Stub!"))
+                stubState = StubState.LOADED_STUB;
+            else
+                stubState = StubState.INITIAL;
+            identityState = IdentityMethodState.NOT;
+        }
+
+        @Override
+        public void visitInsn(int opcode) {
+            switch (opcode) {
+            case Constants.MONITORENTER:
+                mBuilder.setUsesConcurrency();
+                break;
+            case Constants.ARETURN:
+            case Constants.IRETURN:
+            case Constants.LRETURN:
+            case Constants.DRETURN:
+            case Constants.FRETURN:
+                if (identityState == IdentityMethodState.LOADED_PARAMETER)
+                    mBuilder.setIsIdentity();
+                sawReturn = true;
+                break;
+            case Constants.RETURN:
+                sawReturn = true;
+                break;
+            case Constants.ATHROW:
+                if (stubState == StubState.INITIALIZE_RUNTIME)
+                    sawStubThrow = true;
+                else if (justSawInitializationOfUnsupportedOperationException)
+                    sawUnsupportedThrow = true;
+                else
+                    sawNormalThrow = true;
+                break;
+            }
+
+            resetState();
+        }
+
+        public void resetState() {
+            stubState = StubState.INITIAL;
+        }
+
+        @Override
+        public void visitSomeInsn() {
+            identityState = IdentityMethodState.NOT;
+            parameterLoadState = ParameterLoadState.OTHER;
+            resetState();
+        }
+
+        @Override
+        public void visitVarInsn(int opcode, int var) {
+
+            boolean match = false;
+            if (parameterLoadState == ParameterLoadState.OTHER && !isStatic() && var == 0) {
+                    parameterLoadState = ParameterLoadState.LOADED_THIS;
+
+                    match = true;
+            }
+            else if (parameterLoadState == ParameterLoadState.LOADED_THIS  && var > 0){
+                parameterLoadState = ParameterLoadState.LOADED_THIS_AND_PARAMETER;
+                parameterForLoadState = var;
+                match = true;
+            }
+
+            if (identityState == IdentityMethodState.INITIAL) {
+                match = true;
+                if (var > 0 || isStatic())
+                    identityState = IdentityMethodState.LOADED_PARAMETER;
+                else
+                    identityState = IdentityMethodState.NOT;
+
+            }
+            if (!match)
+                visitSomeInsn();
+        }
+
+        @Override
+        public void visitFieldInsn(int opcode,
+                            String owner,
+                            String name,
+                            String desc) {
+            if (opcode == Opcodes.PUTFIELD && parameterLoadState == ParameterLoadState.LOADED_THIS_AND_PARAMETER
+                    && owner.equals(slashedClassName) && name.startsWith("this$")) {
+                mBuilder.setVariableIsSynthetic(parameterForLoadState);
+            }
+            fieldInstructionCount++;
+
+            if (isAccessMethod && this.accessOwner == null) {
+                this.accessOwner = owner;
+                this.accessName = name;
+                this.accessDesc = desc;
+                this.accessIsStatic = opcode == Opcodes.GETSTATIC || opcode == Opcodes.PUTSTATIC;
+                this.accessForField = true;
+            }
+            visitSomeInsn();
+        }
+
+        @Override
+        public org.objectweb.asm.AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
+            AnnotationValue value = new AnnotationValue(desc);
+            mBuilder.addAnnotation(desc, value);
+            return value.getAnnotationVisitor();
+        }
+
+        @Override
+        public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+            identityState = IdentityMethodState.NOT;
+            methodCallCount++;
+            if (isAccessMethod && this.accessOwner == null) {
+                this.accessOwner = owner;
+                this.accessName = name;
+                this.accessDesc = desc;
+                this.accessIsStatic = opcode == Opcodes.INVOKESTATIC;
+                this.accessForField = false;
+            }
+            if (stubState == StubState.LOADED_STUB && opcode == Opcodes.INVOKESPECIAL
+                    && owner.equals("java/lang/RuntimeException") && name.equals("<init>"))
+                stubState = StubState.INITIALIZE_RUNTIME;
+            else
+                stubState = StubState.INITIAL;
+            if (owner.startsWith("java/util/concurrent"))
+                mBuilder.setUsesConcurrency();
+            if (opcode == Opcodes.INVOKEINTERFACE)
+                return;
+
+            if (owner.charAt(0) == '[' && owner.charAt(owner.length() - 1) != ';') {
+                // primitive array
+                return;
+            }
+            if (opcode == Opcodes.INVOKESTATIC && owner.equals("java/lang/System") && name.equals("exit")
+                    && !sawReturn)
+                sawSystemExit = true;
+            justSawInitializationOfUnsupportedOperationException = opcode == Opcodes.INVOKESPECIAL
+                    && owner.equals("java/lang/UnsupportedOperationException") && name.equals("<init>");
+
+            if (isBridge && bridgedMethodSignature == null)
+                switch (opcode) {
+                case Opcodes.INVOKEVIRTUAL:
+                case Opcodes.INVOKESPECIAL:
+                case Opcodes.INVOKESTATIC:
+                case Opcodes.INVOKEINTERFACE:
+                    if (desc != null && name.equals(methodName))
+                        bridgedMethodSignature = desc;
+                }
+
+            // System.out.println("Call from " +
+            // ClassParserUsingASM.this.slashedClassName +
+            // " to " + owner + " : " + desc);
+            if (desc == null || desc.indexOf('[') == -1 && desc.indexOf('L') == -1)
+                return;
+            if (ClassParserUsingASM.this.slashedClassName.equals(owner))
+                return;
+            ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(owner);
+            calledClassSet.add(classDescriptor);
+
+        }
+
+        private void sawBranchTo(Label label) {
+            sawBranch = true;
+            if (labelsSeen.contains(label))
+                sawBackBranch = true;
+        }
+
+        @Override
+        public void visitJumpInsn(int opcode, Label label) {
+            sawBranchTo(label);
+            identityState = IdentityMethodState.NOT;
+            super.visitJumpInsn(opcode, label);
+        }
+
+        @Override
+        public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
+            sawBranchTo(dflt);
+            for (Label lbl : labels)
+                sawBranchTo(lbl);
+            identityState = IdentityMethodState.NOT;
+            super.visitLookupSwitchInsn(dflt, keys, labels);
+        }
+
+        @Override
+        public void visitTableSwitchInsn(int min, int max, Label dflt, Label[] labels) {
+            sawBranchTo(dflt);
+            for (Label lbl : labels)
+                sawBranchTo(lbl);
+            identityState = IdentityMethodState.NOT;
+            super.visitTableSwitchInsn(min, max, dflt, labels);
+        }
+
+        @Override
+        public void visitLabel(Label label) {
+            labelsSeen.add(label);
+            super.visitLabel(label);
+
+        }
+
+        @Override
+        public void visitEnd() {
+            labelsSeen.clear();
+            if (isAccessMethod && accessOwner != null) {
+                if (!accessForField && methodCallCount == 1) {
+                    mBuilder.setAccessMethodForMethod(accessOwner, accessName, accessDesc, accessIsStatic);
+                } else if(accessForField && fieldInstructionCount == 1) {
+                    boolean isSetter = methodDesc.endsWith(")V");
+                    int numArg = new SignatureParser(methodDesc).getNumParameters();
+                    int expected = 0;
+                    if (!accessIsStatic) expected++;
+                    if (isSetter) expected++;
+                    boolean OK;
+                    if (isSetter)
+                        OK = methodDesc.substring(1).startsWith(ClassName.toSignature(accessOwner) + accessDesc);
+                    else
+                        OK = methodDesc.substring(1).startsWith(ClassName.toSignature(accessOwner));
+                    if (numArg == expected && OK)
+                        mBuilder.setAccessMethodForField(accessOwner, accessName, accessDesc, accessIsStatic);
+                }
+            }
+            if (sawBackBranch)
+                mBuilder.setHasBackBranch();
+            boolean sawThrow = sawNormalThrow | sawUnsupportedThrow | sawStubThrow;
+            if (sawThrow && !sawReturn || sawSystemExit && !sawBranch) {
+
+                mBuilder.setIsUnconditionalThrower();
+                if (!sawReturn && !sawNormalThrow) {
+                    if (sawUnsupportedThrow)
+                        mBuilder.setUnsupported();
+                    if (sawStubThrow) {
+                        mBuilder.addAccessFlags(Constants.ACC_SYNTHETIC);
+                        mBuilder.setIsStub();
+
+                    }
+                }
+                // else
+                // System.out.println(slashedClassName+"."+methodName+methodDesc
+                // + " is thrower");
+            }
+            mBuilder.setNumberMethodCalls(methodCallCount);
+            MethodInfo methodInfo = mBuilder.build();
+            Builder classBuilder = (ClassInfo.Builder) cBuilder;
+            if (isBridge && bridgedMethodSignature != null && !bridgedMethodSignature.equals(methodDesc))
+                classBuilder.addBridgeMethodDescriptor(methodInfo, bridgedMethodSignature);
+            else
+                classBuilder.addMethodDescriptor(methodInfo);
+
+            if (methodInfo.usesConcurrency())
+                classBuilder.setUsesConcurrency();
+            if (methodInfo.isStub())
+                classBuilder.setHasStubs();
+        }
+
+        @Override
+        public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
+                boolean visible) {
+            AnnotationValue value = new AnnotationValue(desc);
+            mBuilder.addParameterAnnotation(parameter, desc, value);
+            return value.getAnnotationVisitor();
+        }
+    }
+
     enum StubState {
         INITIAL, LOADED_STUB, INITIALIZE_RUNTIME
     }
@@ -108,7 +484,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
         final TreeSet<ClassDescriptor> calledClassSet = new TreeSet<ClassDescriptor>();
 
-        classReader.accept(new ClassVisitor() {
+        classReader.accept(new ClassVisitor(FindBugsASM.ASM_VERSION) {
 
             boolean isInnerClass = false;
 
@@ -205,324 +581,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                     if ((access & Opcodes.ACC_SYNCHRONIZED) != 0)
                         mBuilder.setUsesConcurrency();
 
-                    return new AbstractMethodVisitor() {
-
-                        boolean sawReturn = (access & Opcodes.ACC_NATIVE) != 0;
-
-                        boolean sawNormalThrow = false;
-
-                        boolean sawUnsupportedThrow = false;
-
-                        boolean sawSystemExit = false;
-
-                        boolean sawBranch = false;
-
-                        boolean sawBackBranch = false;
-
-                        int methodCallCount = 0;
-                        int fieldInstructionCount = 0;
-
-                        boolean sawStubThrow = false;
-
-                        boolean justSawInitializationOfUnsupportedOperationException;
-
-                        boolean isBridge = (access & Opcodes.ACC_SYNTHETIC) != 0 && (access & Opcodes.ACC_BRIDGE) != 0;
-
-                        String bridgedMethodSignature;
-
-                        IdentityMethodState identityState =
-                                IdentityMethodState.INITIAL;
-
-                        ParameterLoadState parameterLoadState = ParameterLoadState.OTHER;
-
-                        int parameterForLoadState;
-
-                        StubState stubState = StubState.INITIAL;
-
-                        boolean isAccessMethod = methodName.startsWith("access$");
-
-                        String accessOwner, accessName, accessDesc;
-
-                        boolean accessForField;
-                        boolean accessIsStatic;
-
-                        HashSet<Label> labelsSeen = new HashSet<Label>();
-
-                        boolean isStatic() {
-                            return (access & Opcodes.ACC_STATIC) != 0;
-                        }
-
-                        @Override
-                        public
-                        void visitLocalVariable(String name,
-                                String desc,
-                                String signature,
-                                Label start,
-                                Label end,
-                                int index) {
-                            mBuilder.setVariableHasName(index);
-
-                        }
-
-                        @Override
-                        public void visitLdcInsn(Object cst) {
-                            if (cst.equals("Stub!"))
-                                stubState = StubState.LOADED_STUB;
-                            else
-                                stubState = StubState.INITIAL;
-                            identityState = IdentityMethodState.NOT;
-                        }
-
-                        @Override
-                        public void visitInsn(int opcode) {
-                            switch (opcode) {
-                            case Constants.MONITORENTER:
-                                mBuilder.setUsesConcurrency();
-                                break;
-                            case Constants.ARETURN:
-                            case Constants.IRETURN:
-                            case Constants.LRETURN:
-                            case Constants.DRETURN:
-                            case Constants.FRETURN:
-                                if (identityState == IdentityMethodState.LOADED_PARAMETER)
-                                    mBuilder.setIsIdentity();
-                                sawReturn = true;
-                                break;
-                            case Constants.RETURN:
-                                sawReturn = true;
-                                break;
-                            case Constants.ATHROW:
-                                if (stubState == StubState.INITIALIZE_RUNTIME)
-                                    sawStubThrow = true;
-                                else if (justSawInitializationOfUnsupportedOperationException)
-                                    sawUnsupportedThrow = true;
-                                else
-                                    sawNormalThrow = true;
-                                break;
-                            }
-
-                            resetState();
-                        }
-
-                        public void resetState() {
-                            stubState = StubState.INITIAL;
-                        }
-
-                        @Override
-                        public void visitSomeInsn() {
-                            identityState = IdentityMethodState.NOT;
-                            parameterLoadState = ParameterLoadState.OTHER;
-                            resetState();
-                        }
-
-                        @Override
-                        public void visitVarInsn(int opcode, int var) {
-
-                            boolean match = false;
-                            if (parameterLoadState == ParameterLoadState.OTHER && !isStatic() && var == 0) {
-                                    parameterLoadState = ParameterLoadState.LOADED_THIS;
-
-                                    match = true;
-                            }
-                            else if (parameterLoadState == ParameterLoadState.LOADED_THIS  && var > 0){
-                                parameterLoadState = ParameterLoadState.LOADED_THIS_AND_PARAMETER;
-                                parameterForLoadState = var;
-                                match = true;
-                            }
-
-                            if (identityState == IdentityMethodState.INITIAL) {
-                                match = true;
-                                if (var > 0 || isStatic())
-                                    identityState = IdentityMethodState.LOADED_PARAMETER;
-                                else
-                                    identityState = IdentityMethodState.NOT;
-
-                            }
-                            if (!match)
-                                visitSomeInsn();
-                        }
-
-                        @Override
-                        public void visitFieldInsn(int opcode,
-                                            String owner,
-                                            String name,
-                                            String desc) {
-                            if (opcode == Opcodes.PUTFIELD && parameterLoadState == ParameterLoadState.LOADED_THIS_AND_PARAMETER
-                                    && owner.equals(slashedClassName) && name.startsWith("this$")) {
-                                mBuilder.setVariableIsSynthetic(parameterForLoadState);
-                            }
-                            fieldInstructionCount++;
-
-                            if (isAccessMethod && this.accessOwner == null) {
-                                this.accessOwner = owner;
-                                this.accessName = name;
-                                this.accessDesc = desc;
-                                this.accessIsStatic = opcode == Opcodes.GETSTATIC || opcode == Opcodes.PUTSTATIC;
-                                this.accessForField = true;
-                            }
-                            visitSomeInsn();
-                        }
-
-                        @Override
-                        public org.objectweb.asm.AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
-                            AnnotationValue value = new AnnotationValue(desc);
-                            mBuilder.addAnnotation(desc, value);
-                            return value.getAnnotationVisitor();
-                        }
-
-                        @Override
-                        public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-                            identityState = IdentityMethodState.NOT;
-                            methodCallCount++;
-                            if (isAccessMethod && this.accessOwner == null) {
-                                this.accessOwner = owner;
-                                this.accessName = name;
-                                this.accessDesc = desc;
-                                this.accessIsStatic = opcode == Opcodes.INVOKESTATIC;
-                                this.accessForField = false;
-                            }
-                            if (stubState == StubState.LOADED_STUB && opcode == Opcodes.INVOKESPECIAL
-                                    && owner.equals("java/lang/RuntimeException") && name.equals("<init>"))
-                                stubState = StubState.INITIALIZE_RUNTIME;
-                            else
-                                stubState = StubState.INITIAL;
-                            if (owner.startsWith("java/util/concurrent"))
-                                mBuilder.setUsesConcurrency();
-                            if (opcode == Opcodes.INVOKEINTERFACE)
-                                return;
-
-                            if (owner.charAt(0) == '[' && owner.charAt(owner.length() - 1) != ';') {
-                                // primitive array
-                                return;
-                            }
-                            if (opcode == Opcodes.INVOKESTATIC && owner.equals("java/lang/System") && name.equals("exit")
-                                    && !sawReturn)
-                                sawSystemExit = true;
-                            justSawInitializationOfUnsupportedOperationException = opcode == Opcodes.INVOKESPECIAL
-                                    && owner.equals("java/lang/UnsupportedOperationException") && name.equals("<init>");
-
-                            if (isBridge && bridgedMethodSignature == null)
-                                switch (opcode) {
-                                case Opcodes.INVOKEVIRTUAL:
-                                case Opcodes.INVOKESPECIAL:
-                                case Opcodes.INVOKESTATIC:
-                                case Opcodes.INVOKEINTERFACE:
-                                    if (desc != null && name.equals(methodName))
-                                        bridgedMethodSignature = desc;
-                                }
-
-                            // System.out.println("Call from " +
-                            // ClassParserUsingASM.this.slashedClassName +
-                            // " to " + owner + " : " + desc);
-                            if (desc == null || desc.indexOf('[') == -1 && desc.indexOf('L') == -1)
-                                return;
-                            if (ClassParserUsingASM.this.slashedClassName.equals(owner))
-                                return;
-                            ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(owner);
-                            calledClassSet.add(classDescriptor);
-
-                        }
-
-                        private void sawBranchTo(Label label) {
-                            sawBranch = true;
-                            if (labelsSeen.contains(label))
-                                sawBackBranch = true;
-                        }
-
-                        @Override
-                        public void visitJumpInsn(int opcode, Label label) {
-                            sawBranchTo(label);
-                            identityState = IdentityMethodState.NOT;
-                            super.visitJumpInsn(opcode, label);
-                        }
-
-                        @Override
-                        public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
-                            sawBranchTo(dflt);
-                            for (Label lbl : labels)
-                                sawBranchTo(lbl);
-                            identityState = IdentityMethodState.NOT;
-                            super.visitLookupSwitchInsn(dflt, keys, labels);
-                        }
-
-                        @Override
-                        public void visitTableSwitchInsn(int min, int max, Label dflt, Label[] labels) {
-                            sawBranchTo(dflt);
-                            for (Label lbl : labels)
-                                sawBranchTo(lbl);
-                            identityState = IdentityMethodState.NOT;
-                            super.visitTableSwitchInsn(min, max, dflt, labels);
-                        }
-                        
-                        @Override
-                        public void visitLabel(Label label) {
-                            labelsSeen.add(label);
-                            super.visitLabel(label);
-
-                        }
-
-                        @Override
-                        public void visitEnd() {
-                            labelsSeen.clear();
-                            if (isAccessMethod && accessOwner != null) {
-                                if (!accessForField && methodCallCount == 1) {
-                                    mBuilder.setAccessMethodForMethod(accessOwner, accessName, accessDesc, accessIsStatic);
-                                } else if(accessForField && fieldInstructionCount == 1) {
-                                    boolean isSetter = methodDesc.endsWith(")V");
-                                    int numArg = new SignatureParser(methodDesc).getNumParameters();
-                                    int expected = 0;
-                                    if (!accessIsStatic) expected++;
-                                    if (isSetter) expected++;
-                                    boolean OK;
-                                    if (isSetter)
-                                        OK = methodDesc.substring(1).startsWith(ClassName.toSignature(accessOwner) + accessDesc);
-                                    else
-                                        OK = methodDesc.substring(1).startsWith(ClassName.toSignature(accessOwner));
-                                    if (numArg == expected && OK)
-                                        mBuilder.setAccessMethodForField(accessOwner, accessName, accessDesc, accessIsStatic);
-                                }
-                            }
-                            if (sawBackBranch)
-                                mBuilder.setHasBackBranch();
-                            boolean sawThrow = sawNormalThrow | sawUnsupportedThrow | sawStubThrow;
-                            if (sawThrow && !sawReturn || sawSystemExit && !sawBranch) {
-
-                                mBuilder.setIsUnconditionalThrower();
-                                if (!sawReturn && !sawNormalThrow) {
-                                    if (sawUnsupportedThrow)
-                                        mBuilder.setUnsupported();
-                                    if (sawStubThrow) {
-                                        mBuilder.addAccessFlags(Constants.ACC_SYNTHETIC);
-                                        mBuilder.setIsStub();
-
-                                    }
-                                }
-                                // else
-                                // System.out.println(slashedClassName+"."+methodName+methodDesc
-                                // + " is thrower");
-                            }
-                            mBuilder.setNumberMethodCalls(methodCallCount);
-                            MethodInfo methodInfo = mBuilder.build();
-                            Builder classBuilder = (ClassInfo.Builder) cBuilder;
-                            if (isBridge && bridgedMethodSignature != null && !bridgedMethodSignature.equals(methodDesc))
-                                classBuilder.addBridgeMethodDescriptor(methodInfo, bridgedMethodSignature);
-                            else
-                                classBuilder.addMethodDescriptor(methodInfo);
-
-                            if (methodInfo.usesConcurrency())
-                                classBuilder.setUsesConcurrency();
-                            if (methodInfo.isStub())
-                                classBuilder.setHasStubs();
-                        }
-
-                        @Override
-                        public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
-                                boolean visible) {
-                            AnnotationValue value = new AnnotationValue(desc);
-                            mBuilder.addParameterAnnotation(parameter, desc, value);
-                            return value.getAnnotationVisitor();
-                        }
-                    };
+                    return new ClassParserMethodVisitor(calledClassSet, mBuilder, methodName, access, methodDesc, cBuilder);
 
                 }
                 return null;

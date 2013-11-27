@@ -20,12 +20,12 @@
 package edu.umd.cs.findbugs.asm;
 
 import org.objectweb.asm.Attribute;
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
+
+import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 
 public class FBClassReader extends ClassReader {
 
@@ -56,10 +56,10 @@ public class FBClassReader extends ClassReader {
         return labels[offset];
     }
 
-    private static class MyClassAdapter extends ClassAdapter {
+    private static class MyClassAdapter extends ClassVisitor {
 
         public MyClassAdapter(ClassVisitor cv) {
-            super(cv);
+            super(FindBugsASM.ASM_VERSION, cv);
         }
 
         @Override
@@ -73,10 +73,10 @@ public class FBClassReader extends ClassReader {
         }
     }
 
-    private static class MyMethodAdapter extends MethodAdapter {
+    private static class MyMethodAdapter extends MethodVisitor {
 
         public MyMethodAdapter(FBMethodVisitor mv) {
-            super(mv);
+            super(FindBugsASM.ASM_VERSION, mv);
         }
 
         @Override

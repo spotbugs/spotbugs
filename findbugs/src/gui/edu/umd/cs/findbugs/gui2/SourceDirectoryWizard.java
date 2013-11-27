@@ -79,8 +79,8 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
         secondPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
-        jList2 = new javax.swing.JList();
+        jList1 = new javax.swing.JList<>();
+        jList2 = new javax.swing.JList<>();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -419,7 +419,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
 
     private javax.swing.JLabel jLabel3;
 
-    private javax.swing.JList jList1;
+    private javax.swing.JList<String> jList1;
 
     private javax.swing.JScrollPane jScrollPane1;
 

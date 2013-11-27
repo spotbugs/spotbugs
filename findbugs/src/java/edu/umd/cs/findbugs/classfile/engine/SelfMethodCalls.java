@@ -23,15 +23,16 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.commons.EmptyVisitor;
 
 import edu.umd.cs.findbugs.asm.FBClassReader;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 import edu.umd.cs.findbugs.util.MultiMap;
 
 /**
@@ -53,12 +54,12 @@ public class SelfMethodCalls {
             AnalysisContext.logError("Error finding self method calls for " + classDescriptor, e);
             return map;
         }
-        reader.accept(new EmptyVisitor() {
+        reader.accept(new ClassVisitor(FindBugsASM.ASM_VERSION) {
 
             @Override
             public MethodVisitor visitMethod(final int access, final String name, final String desc, String signature,
                     String[] exceptions) {
-                return new EmptyVisitor() {
+                return new MethodVisitor(FindBugsASM.ASM_VERSION) {
                     @Override
                     public void visitMethodInsn(int opcode, String owner, String name2, String desc2) {
                         if (owner.equals(classDescriptor.getClassName()) && interestingSignature(desc2)) {

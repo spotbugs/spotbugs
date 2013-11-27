@@ -60,18 +60,7 @@
     <property name="version.props.file" value="${build.dir}/classes/edu/umd/cs/findbugs/version.properties"/>
 
     <path id="findbugs.classpath">
-        <pathelement location="${jar.dir}/bcel.jar"/>
-        <pathelement location="${jar.dir}/dom4j-1.6.1.jar"/>
-        <pathelement location="${jar.dir}/AppleJavaExtensions.jar"/>
-        <pathelement location="${jar.dir}/junit.jar"/>
-        <pathelement location="${jar.dir}/asm-3.3.jar"/>
-        <pathelement location="${jar.dir}/asm-commons-3.3.jar"/>
-        <pathelement location="${jar.dir}/asm-tree-3.3.jar"/>
-        <pathelement location="${jar.dir}/jaxen-1.1.6.jar"/>
-        <pathelement location="${jar.dir}/jsr305.jar"/>
-        <pathelement location="${jar.dir}/jFormatString.jar"/>
-        <pathelement location="${jar.dir}/commons-lang-2.6.jar"/>
-        <pathelement location="${jar.dir}/jcip-annotations.jar"/>
+        <fileset dir="${jar.dir}" includes="*.jar"/>
     </path>
 
     <path id="tools.classpath">
