@@ -5,14 +5,9 @@
     <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
     <classpathentry kind="lib" path="lib/annotations.jar"/>
     <classpathentry kind="lib" path="lib/jFormatString.jar"/>
-    <classpathentry kind="lib" path="lib/bcel.jar"/>
+    <classpathentry kind="lib" path="lib/bcel-6.0-SNAPSHOT.jar"/>
     <classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
-    <classpathentry kind="lib" path="lib/asm-3.3.jar" sourcepath="/findbugs/lib/asm-src-3.3.zip"/>
-    <classpathentry kind="lib" path="lib/asm-analysis-3.3.jar"/>
-    <classpathentry exported="true" kind="lib" path="lib/asm-xml-3.3.jar"/>
-    <classpathentry kind="lib" path="lib/asm-commons-3.3.jar" sourcepath="/findbugs/lib/asm-src-3.3.zip"/>
-    <classpathentry kind="lib" path="lib/asm-tree-3.3.jar" sourcepath="/findbugs/lib/asm-src-3.3.zip"/>
-    <classpathentry kind="lib" path="lib/asm-util-3.3.jar"/>
+    <classpathentry kind="lib" path="lib/asm-debug-all-5.0_BETA.jar"/>
     <classpathentry kind="lib" path="/findbugs/classesEclipse" sourcepath="/findbugs/src"/>
     <classpathentry kind="output" path="bin_eclipse"/>
 </classpath>
