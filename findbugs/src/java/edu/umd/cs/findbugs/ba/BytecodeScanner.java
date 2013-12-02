@@ -335,6 +335,7 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
 
             // Five byte instructions.
             case INVOKEINTERFACE:
+            case INVOKEDYNAMIC:
             case GOTO_W:
             case JSR_W:
                 index += 5;

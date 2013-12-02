@@ -594,13 +594,18 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                             i += 2;
                             break;
                         default:
-                            throw new IllegalStateException("bad wide bytecode: " + OPCODE_NAMES[opcode]);
+                            throw new IllegalStateException(String.format("bad wide bytecode %d: %s" , opcode, OPCODE_NAMES[opcode]));
                         }
                     } else
-                        throw new IllegalStateException("bad unpredicatable bytecode: " + OPCODE_NAMES[opcode]);
+                        throw new IllegalStateException(String.format("bad unpredicatable bytecode %d: %s" , opcode, OPCODE_NAMES[opcode]));
+                } else if (opcode == INVOKEDYNAMIC) {
+                    byteStream.readUnsignedShort();
+                    i+= 2;
+                    byteStream.readUnsignedShort();
+                    i+= 2;
                 } else {
                     if (byteStreamArgCount < 0)
-                        throw new IllegalStateException("bad length for bytecode: " + OPCODE_NAMES[opcode]);
+                        throw new IllegalStateException(String.format("bad length for bytecode %d: %s" , opcode, OPCODE_NAMES[opcode]));
                     for (int k = 0; k < TYPE_OF_OPERANDS[opcode].length; k++) {
 
                         int v;

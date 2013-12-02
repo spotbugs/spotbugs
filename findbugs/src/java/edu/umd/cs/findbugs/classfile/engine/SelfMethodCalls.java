@@ -61,7 +61,7 @@ public class SelfMethodCalls {
                     String[] exceptions) {
                 return new MethodVisitor(FindBugsASM.ASM_VERSION) {
                     @Override
-                    public void visitMethodInsn(int opcode, String owner, String name2, String desc2) {
+                    public void visitMethodInsn(int opcode, String owner, String name2, String desc2, boolean itf) {
                         if (owner.equals(classDescriptor.getClassName()) && interestingSignature(desc2)) {
                             T from = methods.get(name + desc + ((access & Opcodes.ACC_STATIC) != 0));
                             T to = methods.get(name2 + desc2 + (opcode == Opcodes.INVOKESTATIC));

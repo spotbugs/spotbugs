@@ -220,7 +220,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
      * java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+    public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
         visitSomeInsn();
 
     }

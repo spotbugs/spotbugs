@@ -300,7 +300,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         }
 
         @Override
-        public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+        public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
             identityState = IdentityMethodState.NOT;
             methodCallCount++;
             if (isAccessMethod && this.accessOwner == null) {
@@ -619,6 +619,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
             case Constants.CONSTANT_Integer:
             case Constants.CONSTANT_Float:
             case Constants.CONSTANT_NameAndType:
+            case Constants.CONSTANT_InvokeDynamic:
                 size = 5;
                 break;
             case Constants.CONSTANT_Long:
@@ -640,10 +641,12 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 }
                 size = 3;
                 break;
-            // case ClassWriter.CLASS:
-            // case ClassWriter.STR:
             case Constants.CONSTANT_String:
+            case Constants.CONSTANT_MethodType:
                 size = 3;
+                break;
+            case Constants.CONSTANT_MethodHandle:
+                size = 4;
                 break;
             default:
                 throw new IllegalStateException("Unexpected tag of " + tag + " at offset " + offset + " while parsing "

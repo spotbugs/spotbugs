@@ -64,7 +64,7 @@ public class TestASM extends ClassNodeDetector {
             }
 
             @Override
-            public void visitMethodInsn(int opcode, String owner, String invokedName, String invokedDesc) {
+            public void visitMethodInsn(int opcode, String owner, String invokedName, String invokedDesc, boolean itf) {
                 if (prevPC + 1 == getPC() && prevOpcode == I2D && opcode == INVOKESTATIC && owner.equals("java/lang/Math")
                         && invokedName.equals("ceil") && invokedDesc.equals("(D)D")) {
                     BugInstance bug0 = new BugInstance(TestASM.this, "ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", NORMAL_PRIORITY);
