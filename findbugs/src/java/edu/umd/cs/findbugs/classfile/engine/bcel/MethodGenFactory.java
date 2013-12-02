@@ -26,6 +26,8 @@ import org.apache.bcel.generic.MethodGen;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -57,6 +59,12 @@ public class MethodGenFactory extends AnalysisFactory<MethodGen> {
 
         if (method.getCode() == null)
             return null;
+        XMethod xmethod =  XFactory.createXMethod(descriptor);
+        if (xmethod.usesInvokeDynamic()) {
+            AnalysisContext.currentAnalysisContext().analysisSkippedDueToInvokeDynamic(xmethod);
+            return null;
+        }
+            
         try {
             AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
             JavaClass jclass = getJavaClass(analysisCache, descriptor.getClassDescriptor());

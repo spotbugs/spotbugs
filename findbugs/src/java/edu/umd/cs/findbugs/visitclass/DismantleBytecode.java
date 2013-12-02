@@ -494,6 +494,10 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
     @Override
     public void visit(Code obj) {
+        if (getXMethod().usesInvokeDynamic()) {
+            AnalysisContext.currentAnalysisContext().analysisSkippedDueToInvokeDynamic(getXMethod());
+            return;
+        }
         sizePrevOpcodeBuffer = 0;
         currentPosInPrevOpcodeBuffer = prevOpcode.length - 1;
 

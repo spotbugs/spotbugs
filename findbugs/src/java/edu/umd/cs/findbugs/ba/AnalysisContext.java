@@ -348,11 +348,24 @@ public class AnalysisContext {
         AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
         if (currentAnalysisContext2 == null)
             return;
-        RepositoryLookupFailureCallback lookupFailureCallback = currentAnalysisContext2.getLookupFailureCallback();
+        currentAnalysisContext2.logAnError(msg);
+    }
+
+    public void logAnError(String msg) {
+        RepositoryLookupFailureCallback lookupFailureCallback = getLookupFailureCallback();
         if (lookupFailureCallback != null)
             lookupFailureCallback.logError(msg);
     }
 
+    public void analysisSkippedDueToInvokeDynamic(XMethod m) {
+        if (!m.usesInvokeDynamic())
+            throw new IllegalArgumentException();
+        if (skippedDueToInvokeDynamic.add(m.getMethodDescriptor()))
+            logAnError(m + " skipped due to invoke_dynamic");
+
+    }
+    HashSet<MethodDescriptor> skippedDueToInvokeDynamic = new HashSet<MethodDescriptor>();
+    
     boolean missingClassWarningsSuppressed = false;
 
     protected Project project;

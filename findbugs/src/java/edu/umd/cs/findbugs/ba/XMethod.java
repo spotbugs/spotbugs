@@ -211,6 +211,11 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
      */
     public void addAnnotation(AnnotationValue annotationValue);
 
+    /**
+     * @return
+     */
+    boolean usesInvokeDynamic();
+
 
 
 }

@@ -1970,11 +1970,14 @@ public class OpcodeStack implements Constants2 {
             case INVOKEVIRTUAL:
                 processMethodCall(dbc, seen);
                 break;
-            case INVOKEDYNAMIC: //  INVOKEDYNAMIC
+            case INVOKEDYNAMIC:
                 String msg = "InvokeDynamic not supported yet @ " + dbc.getPC() + " in "
                         + dbc.getFullyQualifiedMethodName();
+                XMethod xMethod = dbc.getXMethod();
+                System.out.println(xMethod.usesInvokeDynamic());
                 AnalysisContext.logError(msg);
                 clear();
+                setTop(true);
                 break;
             default:
                 throw new UnsupportedOperationException("OpCode " + seen + ":" + OPCODE_NAMES[seen] + " not supported ");
@@ -1995,6 +1998,7 @@ public class OpcodeStack implements Constants2 {
             if (DEBUG)
                 e.printStackTrace();
             clear();
+            setTop(true);
         } finally {
             if (DEBUG) {
                 System.out.printf("%4d: %14s %s%n", dbc.getPC(), OPCODE_NAMES[seen] ,  this);

@@ -30,6 +30,7 @@ import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -300,9 +301,14 @@ public class ClassParserUsingASM implements ClassParserInterface {
         }
 
         @Override
+        public void visitInvokeDynamicInsn(String name, String desc, Handle bsm,
+                Object... bsmArgs) {
+            mBuilder.setUsesInvokeDynamic();
+        }
+
+        @Override
         public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
             identityState = IdentityMethodState.NOT;
-            methodCallCount++;
             if (isAccessMethod && this.accessOwner == null) {
                 this.accessOwner = owner;
                 this.accessName = name;

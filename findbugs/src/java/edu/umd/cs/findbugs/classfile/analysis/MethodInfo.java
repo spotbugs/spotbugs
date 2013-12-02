@@ -89,6 +89,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         boolean hasBackBranch;
 
         boolean isIdentity;
+        
+        boolean usesInvokeDynamic;
 
         int methodCallCount;
 
@@ -181,8 +183,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
                 variableIsSynthetic |= (~variableHasName);
             return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags,
                     isUnconditionalThrower, isUnsupported, usesConcurrency, hasBackBranch, isStub, isIdentity,
-                    methodCallCount, exceptions, accessMethodForMethod, accessMethodForField,
-                    methodAnnotations, methodParameterAnnotations, variableIsSynthetic);
+                    usesInvokeDynamic, methodCallCount, exceptions, accessMethodForMethod,
+                    accessMethodForField, methodAnnotations, methodParameterAnnotations, variableIsSynthetic);
         }
 
         public void setIsUnconditionalThrower() {
@@ -202,6 +204,13 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
             this.methodCallCount = methodCallCount;
 
         }
+
+        /**
+         * 
+         */
+        public void setUsesInvokeDynamic() {
+            usesInvokeDynamic = true;
+        }
     }
 
     final int accessFlags;
@@ -217,7 +226,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     final boolean isStub;
 
     final String methodSourceSignature;
-
+    
     final @CheckForNull
     String[] exceptions;
 
@@ -231,6 +240,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
          final IdentityHashMap<MethodInfo, MethodDescriptor> accessMethodForMethod = new IdentityHashMap<MethodInfo, MethodDescriptor>();
          final IdentityHashMap<MethodInfo, FieldDescriptor> accessMethodForField = new IdentityHashMap<MethodInfo, FieldDescriptor>();
          final IdentityHashMap<MethodInfo, Void> identityMethods = new IdentityHashMap<MethodInfo, Void>();
+         final IdentityHashMap<MethodInfo, Void> invokeDynamicMethods = new IdentityHashMap<MethodInfo, Void>();
 
     }
 
@@ -259,14 +269,17 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     static IdentityHashMap<MethodInfo, Void> getIdentitymethods() {
         return getDatabase().identityMethods;
     }
+    static public IdentityHashMap<MethodInfo, Void> getInvokeDynamicMethods() {
+        return getDatabase().invokeDynamicMethods;
+    }
 
     MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature,
             int accessFlags, boolean isUnconditionalThrower, boolean isUnsupported, boolean usesConcurrency,
             boolean hasBackBranch, boolean isStub, boolean isIdentity,
-            int methodCallCount, @CheckForNull String[] exceptions, @CheckForNull MethodDescriptor accessMethodForMethod,
+            boolean usesInvokeDynamic, int methodCallCount, @CheckForNull String[] exceptions,
+            @CheckForNull MethodDescriptor accessMethodForMethod,
             @CheckForNull FieldDescriptor accessMethodForField,
-            Map<ClassDescriptor, AnnotationValue> methodAnnotations,
-            Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations, long variableIsSynthetic) {
+            Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations, long variableIsSynthetic) {
         super(className, methodName, methodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
         this.accessFlags = accessFlags;
         this.exceptions = exceptions;
@@ -286,6 +299,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
             getAccessmethodforfield().put(this, accessMethodForField);
         if (isIdentity) {
             getIdentitymethods().put(this, null);
+        }
+        if (usesInvokeDynamic) {
+            getInvokeDynamicMethods().put(this, null);
         }
 
         this.usesConcurrency = usesConcurrency;
@@ -312,6 +328,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     public boolean isIdentity() {
         return getIdentitymethods().containsKey(this);
     }
+    
+    @Override
+    public boolean usesInvokeDynamic() {
+        return getInvokeDynamicMethods().containsKey(this);
+    }
+
 
     @Override
     public boolean isUnsupported() {

@@ -297,5 +297,10 @@ class UnresolvedXMethod extends AbstractMethod {
         return false;
     }
 
+    @Override
+    public boolean usesInvokeDynamic() {
+        return false;
+    }
+
 
 }
