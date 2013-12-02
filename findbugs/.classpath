@@ -16,11 +16,6 @@
 		</accessrules>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/AppleJavaExtensions.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/bcel.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="http://jakarta.apache.org/bcel/apidocs/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/dom4j-1.6.1.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="http://dom4j.org/apidocs/"/>
@@ -37,5 +32,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jdepend-2.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ant.jar"/>
 	<classpathentry kind="lib" path="lib/asm-debug-all-5.0_BETA.jar" sourcepath="/Users/pugh/tools/asm/trunk/asm/src"/>
+	<classpathentry kind="lib" path="lib/bcel-6.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="classesEclipse"/>
 </classpath>
