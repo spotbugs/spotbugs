@@ -64,16 +64,11 @@
 
     <!-- list of required libraries, copied from FB core project -->
     <property name="jars.required" value="jsr305.jar,
-        bcel.jar,
+        bcel-6.0-SNAPSHOT.jar,
         annotations.jar,
         jFormatString.jar,
         commons-lang-2.6.jar,
-        asm-3.3.jar,
-        asm-tree-3.3.jar,
-        asm-commons-3.3.jar,
-        asm-analysis-3.3.jar,
-        asm-util-3.3.jar,
-        asm-xml-3.3.jar,
+        asm-debug-all-5.0_BETA.jar,
         dom4j-1.6.1.jar,
         jaxen-1.1.6.jar" />
 
