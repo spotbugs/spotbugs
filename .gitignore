@@ -2,6 +2,8 @@
 JSR305-testCases/build/
 NullPointerBenchmark/build/
 bluej/bin/
+bluej/lib/
+bluej/dist/
 eclipsePlugin-test/bin_eclipse/
 eclipsePlugin/bin_build/
 eclipsePlugin/bin_eclipse/
