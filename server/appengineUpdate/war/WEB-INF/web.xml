@@ -86,7 +86,12 @@
             <url-pattern>/upload</url-pattern>
             <url-pattern>/upload.html</url-pattern>
         </web-resource-collection>
-        <auth-constraint>
+        <web-resource-collection>
+            <web-resource-name>Debugging pages</web-resource-name>
+            <url-pattern>/time</url-pattern>
+            <url-pattern>/count</url-pattern>
+        </web-resource-collection>
+       <auth-constraint>
             <role-name>admin</role-name>
         </auth-constraint>
     </security-constraint>
