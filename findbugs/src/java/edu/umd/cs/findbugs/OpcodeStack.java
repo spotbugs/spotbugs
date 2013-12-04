@@ -1971,13 +1971,7 @@ public class OpcodeStack implements Constants2 {
                 processMethodCall(dbc, seen);
                 break;
             case INVOKEDYNAMIC:
-                String msg = "InvokeDynamic not supported yet @ " + dbc.getPC() + " in "
-                        + dbc.getFullyQualifiedMethodName();
-                XMethod xMethod = dbc.getXMethod();
-                System.out.println(xMethod.usesInvokeDynamic());
-                AnalysisContext.logError(msg);
-                clear();
-                setTop(true);
+                processInvokeDynamic(dbc);
                 break;
             default:
                 throw new UnsupportedOperationException("OpCode " + seen + ":" + OPCODE_NAMES[seen] + " not supported ");
@@ -2559,8 +2553,17 @@ public class OpcodeStack implements Constants2 {
 
     }
 
-    boolean foobar = false;
-    private boolean mergeLists(List<Item> mergeInto, List<Item> mergeFrom, boolean errorIfSizesDoNotMatch) {
+    private void processInvokeDynamic(DismantleBytecode dbc) {
+        String methodName = dbc.getNameConstantOperand();
+        String signature = dbc.getSigConstantOperand();
+
+        int numberArguments = PreorderVisitor.getNumberArguments(signature);
+
+        pop(numberArguments);
+        pushBySignature(Type.getReturnType(signature).getSignature(), dbc);
+    }
+
+   private boolean mergeLists(List<Item> mergeInto, List<Item> mergeFrom, boolean errorIfSizesDoNotMatch) {
         // merge stacks
         int intoSize = mergeInto.size();
         int fromSize = mergeFrom.size();
@@ -2590,16 +2593,12 @@ public class OpcodeStack implements Constants2 {
                 Item newValue = mergeFrom.get(i);
                 Item merged = Item.merge(oldValue, newValue);
                 if (merged != null && !merged.equals(oldValue)) {
-                    if (foobar)
-                        System.out.println("foobar");
                     mergeInto.set(i, merged);
                     changed = true;
                 }
             }
             if (false) for (int i = common; i < fromSize; i++) {
                 Item newValue = mergeFrom.get(i);
-                if (foobar)
-                    System.out.println("foobar");
                 mergeInto.add(newValue);
                 changed = true;
 

@@ -102,6 +102,10 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         final Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations = new HashMap<Integer, Map<ClassDescriptor, AnnotationValue>>(
                 4);
 
+        @Override
+        public String toString() {
+            return "builder for " + className + "." + methodName + methodSignature;
+        }
         public Builder(@SlashedClassName String className, String methodName, String methodSignature, int accessFlags) {
             this.className = className;
             this.methodName = methodName;

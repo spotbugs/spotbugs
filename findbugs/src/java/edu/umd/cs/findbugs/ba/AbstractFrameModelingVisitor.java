@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.bcel.generic.NULL2Z;
  * @see Frame
  * @see DataflowAnalysis
  */
-public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Frame<Value>> implements Visitor {
+public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Frame<Value>> implements VisitorSupportsInvokeDynamic {
     private FrameType frame;
 
     private Location location;
@@ -1082,6 +1082,10 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
 
     @Override
     public void visitIXOR(IXOR obj) {
+        handleNormalInstruction(obj);
+    }
+    @Override
+    public void visitINVOKEDYNAMIC(INVOKEDYNAMIC obj) {
         handleNormalInstruction(obj);
     }
 

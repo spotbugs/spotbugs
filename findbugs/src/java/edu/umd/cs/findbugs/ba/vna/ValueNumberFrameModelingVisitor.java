@@ -32,6 +32,7 @@ import org.apache.bcel.generic.ConstantPushInstruction;
 import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.IINC;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKESTATIC;
@@ -42,6 +43,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.MONITORENTER;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.PUTSTATIC;
 
@@ -392,6 +394,19 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
         handleNormalInstruction(obj);
     }
 
+    private void killLoadsOfObjectsPassed(INVOKEDYNAMIC ins) {
+        try {
+
+            int passed = getNumWordsConsumed(ins);
+            ValueNumber[] arguments = allocateValueNumberArray(passed);
+            getFrame().getTopStackWords(arguments);
+            for (ValueNumber v : arguments)
+                getFrame().killAllLoadsOf(v);
+
+        } catch (DataflowAnalysisException e) {
+            AnalysisContext.logError("Error in killLoadsOfObjectsPassed", e);
+        }
+    }
     private void killLoadsOfObjectsPassed(InvokeInstruction ins) {
         try {
 
@@ -430,13 +445,19 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
     }
 
     @Override
+    public void visitINVOKEDYNAMIC(INVOKEDYNAMIC obj) {
+        // Don't know what this method invocation is doing.
+        // Kill all loads.
+        killLoadsOfObjectsPassed(obj);
+        handleNormalInstruction(obj);
+    }
+    @Override
     public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
         // Don't know what this method invocation is doing.
         // Kill all loads.
         killLoadsOfObjectsPassed(obj);
         handleNormalInstruction(obj);
     }
-
     @Override
     public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
         // Don't know what this method invocation is doing.
@@ -497,6 +518,10 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
         if (constantValue instanceof ConstantClass) {
             ConstantClass constantClass = (ConstantClass) constantValue;
             String className = constantClass.getBytes(cpg.getConstantPool());
+            value = factory.getClassObjectValue(className);
+        } else if (constantValue instanceof ObjectType) {
+            ObjectType objectType = (ObjectType) constantValue;
+            String className = objectType.getClassName();
             value = factory.getClassObjectValue(className);
         } else {
             value = constantValueMap.get(constantValue);

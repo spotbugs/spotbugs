@@ -56,6 +56,7 @@ import org.apache.bcel.generic.LoadInstruction;
 import org.apache.bcel.generic.MULTIANEWARRAY;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NEWARRAY;
+import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.StoreInstruction;
 import org.apache.bcel.generic.Type;
 
@@ -69,6 +70,7 @@ import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -375,9 +377,19 @@ public class FindDeadLocalStores implements Detector {
                         LDC ldc = (LDC) prevIns;
                         Type t = ldc.getType(methodGen.getConstantPool());
                         if (t.getSignature().equals("Ljava/lang/Class;")) {
-                            ConstantClass v = (ConstantClass) ldc.getValue(methodGen.getConstantPool());
-                            initializationOf = ClassName.toSignature(v.getBytes(javaClass.getConstantPool()));
-                            foundDeadClassInitialization = true;
+                            Object value = ldc.getValue(methodGen.getConstantPool());
+                            if (value instanceof ConstantClass) {
+                                ConstantClass v = (ConstantClass) value;
+                                initializationOf = ClassName.toSignature(v.getBytes(javaClass.getConstantPool()));
+                                foundDeadClassInitialization = true;
+                            } else if (value instanceof ObjectType) {
+                                ObjectType v = (ObjectType) value;
+                                initializationOf = ClassName.toSignature(v.getClassName());
+                                foundDeadClassInitialization = true;
+                            } else {
+                                AnalysisContext.logError("LDC loaded " + value + "at " + location.getHandle().getPosition() + " in " + classContext.getFullyQualifiedMethodName(method));
+                            }
+                            
                         } else
                             continue; // not an interesting DLS
 

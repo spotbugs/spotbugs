@@ -36,6 +36,7 @@ import org.apache.bcel.classfile.ConstantFieldref;
 import org.apache.bcel.classfile.ConstantFloat;
 import org.apache.bcel.classfile.ConstantInteger;
 import org.apache.bcel.classfile.ConstantInterfaceMethodref;
+import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantLong;
 import org.apache.bcel.classfile.ConstantMethodref;
 import org.apache.bcel.classfile.ConstantNameAndType;
@@ -172,7 +173,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
             { M_R },
             // 170 1 2 3 4 5 6 7 8 9
             {}, {}, {}, {}, {}, {}, {}, {}, { M_CP }, { M_CP }, { M_CP }, { M_CP }, { M_CP }, { M_CP }, { M_CP },
-            { M_CP, M_PAD, M_PAD }, {}, { M_CP }, { M_UINT },
+            { M_CP, M_PAD, M_PAD },  { M_CP, M_PAD, M_PAD }, { M_CP }, { M_UINT },
             { M_CP },
             // 190 1 2 3 4 5 6 7 8 9
             {}, {}, { M_CP }, { M_CP }, {}, {}, { M_PAD }, { M_CP, M_UINT }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, {}, {}, {},
@@ -199,7 +200,6 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     public boolean isMethodCall() {
         switch(opcode) {
         default: return false;
-        case INVOKEDYNAMIC:
         case INVOKEINTERFACE:
         case INVOKESPECIAL:
         case INVOKEVIRTUAL:
@@ -209,7 +209,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         }
     }
     public MethodDescriptor getMethodDescriptorOperand() {
-        if (nameConstantOperand == NOT_AVAILABLE)
+        if (nameConstantOperand == NOT_AVAILABLE || classConstantOperand == NOT_AVAILABLE)
             throw new IllegalStateException("getMethodDescriptorOperand called but value not available");
 
         if (referencedMethod == null) {
@@ -221,6 +221,9 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
     public @CheckForNull
     XMethod getXMethodOperand() {
+        if (nameConstantOperand == NOT_AVAILABLE || classConstantOperand == NOT_AVAILABLE)
+            throw new IllegalStateException("getXMethodOperand called but value not available");
+
         if (getReferencedXClass() != null && referencedXMethod == null) {
             referencedXMethod = Hierarchy2.findInvocationLeastUpperBound(getReferencedXClass(), nameConstantOperand,
                     sigConstantOperand, opcode == INVOKESTATIC, opcode == INVOKEINTERFACE);
@@ -494,10 +497,10 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
     @Override
     public void visit(Code obj) {
-        if (getXMethod().usesInvokeDynamic()) {
-            AnalysisContext.currentAnalysisContext().analysisSkippedDueToInvokeDynamic(getXMethod());
-            return;
-        }
+//        if (getXMethod().usesInvokeDynamic()) {
+//            AnalysisContext.currentAnalysisContext().analysisSkippedDueToInvokeDynamic(getXMethod());
+//            return;
+//        }
         sizePrevOpcodeBuffer = 0;
         currentPosInPrevOpcodeBuffer = prevOpcode.length - 1;
 
@@ -602,11 +605,6 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                         }
                     } else
                         throw new IllegalStateException(String.format("bad unpredicatable bytecode %d: %s" , opcode, OPCODE_NAMES[opcode]));
-                } else if (opcode == INVOKEDYNAMIC) {
-                    byteStream.readUnsignedShort();
-                    i+= 2;
-                    byteStream.readUnsignedShort();
-                    i+= 2;
                 } else {
                     if (byteStreamArgCount < 0)
                         throw new IllegalStateException(String.format("bad length for bytecode %d: %s" , opcode, OPCODE_NAMES[opcode]));
@@ -678,6 +676,14 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                                 nameConstantOperand = getStringFromIndex(sig.getNameIndex());
                                 sigConstantOperand = getStringFromIndex(sig.getSignatureIndex());
                                 refConstantOperand = null;
+                            } else if (constantRefOperand instanceof ConstantInvokeDynamic) {
+                                ConstantInvokeDynamic id = (ConstantInvokeDynamic) constantRefOperand;
+                                ConstantNameAndType sig = (ConstantNameAndType) getConstantPool().getConstant(
+                                        id.getNameAndTypeIndex());
+                                nameConstantOperand = getStringFromIndex(sig.getNameIndex());
+                                sigConstantOperand = getStringFromIndex(sig.getSignatureIndex());
+                                
+                                
                             }
                             break;
                         case M_R:

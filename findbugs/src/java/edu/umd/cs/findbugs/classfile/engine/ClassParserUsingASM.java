@@ -309,6 +309,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         @Override
         public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
             identityState = IdentityMethodState.NOT;
+            methodCallCount++;
             if (isAccessMethod && this.accessOwner == null) {
                 this.accessOwner = owner;
                 this.accessName = name;
