@@ -52,7 +52,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 @SuppressWarnings("serial")
 public class NewFilterFrame extends FBDialog {
 
-    private JList list = new JList();
+    private JList<String> list = new JList<>();
 
     private static NewFilterFrame instance = null;
 
