@@ -4,6 +4,7 @@
     <groupId>org.sonatype.oss</groupId>
     <artifactId>oss-parent</artifactId>
     <version>7</version>
+    <relativePath></relativePath>
   </parent>
 
   <groupId>com.google.code.findbugs</groupId>
