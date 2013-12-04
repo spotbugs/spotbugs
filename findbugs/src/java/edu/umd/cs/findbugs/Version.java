@@ -68,7 +68,8 @@ public class Version {
     public static final int RELEASE_CANDIDATE = 0;
 
 
-    public static final String SVN_REVISION = System.getProperty("svn.revision", "Unknown");
+    public static final String GIT_REVISION  = System.getProperty("git.revision", "UNKNOWN");
+    
     /**
      * Release date.
      */
@@ -90,7 +91,6 @@ public class Version {
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss z, dd MMMM, yyyy", Locale.ENGLISH);
         SimpleDateFormat eclipseDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
         SimpleDateFormat releaseDateFormat = new SimpleDateFormat(UpdateChecker.PLUGIN_RELEASE_DATE_FMT, Locale.ENGLISH);
-
         Date now = new Date();
         COMPUTED_DATE = dateFormat.format(now);
         COMPUTED_ECLIPSE_DATE = eclipseDateFormat.format(now);
@@ -113,8 +113,8 @@ public class Version {
             suffix = "preview" + PREVIEW;
         else {
             suffix = "dev-" + COMPUTED_ECLIPSE_DATE;
-            if (!SVN_REVISION.equals("Unknown"))
-                suffix += "-r" + SVN_REVISION;
+            if (!GIT_REVISION.equals("Unknown"))
+                suffix += "-" + GIT_REVISION;
         }
         RELEASE_SUFFIX_WORD = suffix;
     }
@@ -235,7 +235,7 @@ public class Version {
             System.out.println("eclipse.ui.version=" + COMPUTED_ECLIPSE_UI_VERSION);
             System.out.println("findbugs.website=" + WEBSITE);
             System.out.println("findbugs.downloads.website=" + DOWNLOADS_WEBSITE);
-            System.out.println("findbugs.svn.revision=" + SVN_REVISION);
+            System.out.println("findbugs.git.revision=" + GIT_REVISION);
         } else if (arg.equals("-plugins")) {
             DetectorFactoryCollection.instance();
             for(Plugin p : Plugin.getAllPlugins()) {
