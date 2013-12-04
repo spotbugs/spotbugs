@@ -245,7 +245,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
      * org.objectweb.asm.Label, org.objectweb.asm.Label[])
      */
     @Override
-    public void visitTableSwitchInsn(int min, int max, Label dflt, Label[] labels) {
+    public void visitTableSwitchInsn(int min, int max, Label dflt, Label... labels) {
         // TODO Auto-generated method stub
 
     }

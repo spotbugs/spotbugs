@@ -382,7 +382,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         }
 
         @Override
-        public void visitTableSwitchInsn(int min, int max, Label dflt, Label[] labels) {
+        public void visitTableSwitchInsn(int min, int max, Label dflt, Label... labels) {
             sawBranchTo(dflt);
             for (Label lbl : labels)
                 sawBranchTo(lbl);
