@@ -102,24 +102,6 @@
     <!-- Rebuild from scratch. -->
     <target name="rebuild" depends="clean,build"/>
 
-    <target name="mondo" depends="jars">
-    <jar destfile="build/mondo.jar"
-        manifest="etc/MANIFEST-findbugs-mondo.MF">
-        <zipfileset src="${jar.dir}/bcel.jar"/>
-        <zipfileset src="${jar.dir}/dom4j-1.6.1.jar"/>
-        <zipfileset src="${jar.dir}/AppleJavaExtensions.jar"/>
-        <zipfileset src="${jar.dir}/junit.jar"/>
-        <zipfileset src="${jar.dir}/asm-3.3.jar"/>
-        <zipfileset src="${jar.dir}/asm-commons-3.3.jar"/>
-        <zipfileset src="${jar.dir}/asm-tree-3.3.jar"/>
-        <zipfileset src="${jar.dir}/jaxen-1.1.6.jar"/>
-        <zipfileset src="${jar.dir}/jsr305.jar"/>
-        <zipfileset src="${jar.dir}/jFormatString.jar"/>
-        <zipfileset src="${jar.dir}/commons-lang-2.6.jar"/>
-        <zipfileset src="${jar.dir}/findbugs.jar"/>
-    </jar>
-    </target>
-
     <!-- Compile Java source files, and copy other files (properties,
         images, html, XSL stylesheets) that need to be part of the codebase. -->
     <target name="errorprone" depends="clean,init">
@@ -315,50 +297,6 @@
         </jar>
     </target>
 
-    <!--
-        Create one giant executable Jar file containing
-        Findbugs, textui and gui, detectors, and all required
-        libraries.
-    -->
-    <target name="fulljar" depends="classes,validate,version">
-        <property name="fullJarName" value="findbugs-full-${release.number}.jar"/>
-        <jar destfile="${jar.dir}/${fullJarName}" manifest="etc/MANIFEST-findbugs-full.MF">
-            <fileset dir="${classes.dir}">
-                <exclude name="${pkg.base}/tools/**"/>
-                <exclude name="${pkg.base}/antTask/**"/>
-                <include name="**/*.class"/>
-                <include name="**/*.properties"/>
-                <include name="**/*.db"/>
-                <include name="**/*.xsl"/>
-                <include name="${pkg.base}/sourceViewer/**/*.class"/>
-                <include name="${pkg.base}/gui/**/*.png"/>
-                <include name="${pkg.base}/gui/**/*.html"/>
-                <include name="${pkg.base}/gui2/**/*.png"/>
-                <include name="${pkg.base}/gui2/**/*.html"/>
-            </fileset>
-            <fileset dir="${etc.dir}">
-                <include name="bugrank.txt"/>
-                <include name="findbugs.xml"/>
-                <include name="bugrank.txt"/>
-                <include name="messages*.xml"/>
-            </fileset>
-
-            <zipfileset src="${jar.dir}/bcel.jar" excludes="META-INF/**"/>
-
-            <zipfileset src="${jar.dir}/asm-3.3.jar" excludes="META-INF/**"/>
-            <zipfileset src="${jar.dir}/asm-analysis-3.3.jar" excludes="META-INF/**"/>
-            <zipfileset src="${jar.dir}/asm-commons-3.3.jar" excludes="META-INF/**"/>
-            <zipfileset src="${jar.dir}/asm-tree-3.3.jar" excludes="META-INF/**"/>
-            <zipfileset src="${jar.dir}/asm-util-3.3.jar" excludes="META-INF/**"/>
-            <zipfileset src="${jar.dir}/asm-xml-3.3.jar" excludes="META-INF/**"/>
-
-            <zipfileset src="${jar.dir}/dom4j-1.6.1.jar" excludes="META-INF/**"/>
-            <zipfileset src="${jar.dir}/jaxen-1.1.6.jar" excludes="META-INF/**"/>
-            <zipfileset src="${jar.dir}/jsr305.jar" excludes="META-INF/**"/>
-            <zipfileset src="${jar.dir}/jFormatString.jar" excludes="META-INF/**"/>
-            <zipfileset src="${jar.dir}/commons-lang-2.6.jar" excludes="META-INF/**"/>
-        </jar>
-    </target>
 
 
     <!-- Generate front-end scripts. -->
@@ -492,7 +430,7 @@
               projectName="Byte code Engineering Library (BCEL)"
               outputFile="${sampleoutput.dir}/bcel.xml"
             >
-      <class location="${jar.dir}/bcel.jar" />
+      <class location="${jar.dir}/bcel-6.0-SNAPSHOT.jar" />
     </findbugs>
     <findbugs home="."
               output="xml:withMessages"
@@ -500,36 +438,8 @@
               jvmargs="-ea -Xmx1200m"
               projectName="Byte code Engineering Library (BCEL)"
               outputFile="${sampleoutput.dir}/bcel-cloud-appengine.xml" >
-      <class location="${jar.dir}/bcel.jar" />
+      <class location="${jar.dir}/bcel-6.0-SNAPSHOT.jar" />
     </findbugs>
-<!--
-    <findbugs home="."
-              output="xml:withMessages"
-        cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
-              jvmargs="-ea -Xmx1200m"
-              projectName="Byte code Engineering Library (BCEL)"
-              outputFile="${sampleoutput.dir}/bcel-cloud.xml" >
-      <class location="${jar.dir}/bcel.jar" />
-    </findbugs>
--->
-
-<!--
-<findbugs home="${findbugs.home}"
-              output="xml"
-              jvmargs="-ea -Xmx940m"
-              outputFile="${sampleoutput.dir}/bcel-3.xml"
-              projectFile="${sampleoutput.dir}/bcel.fbp"
-        applySuppression="true"
-     />
-
-<convertXmlToText
-     home="${findbugs.home}"
-              jvmargs="-ea -Xmx940m"
-              input="${sampleoutput.dir}/bcel-3.xml"
-              output="${sampleoutput.dir}/bcel-3.txt"
-              applySuppression="true"
-        />
--->
 
 
 <setBugDatabaseInfo home="."
@@ -1210,7 +1120,7 @@
 	<exec executable="git" spawn="true">
     		<arg value="archive"/>
     		<arg value="-o"/>
-    		<arg value="${build.dir}/src/findbugs-${release.number}.zip"/>
+    		<arg value="${build.dir}/src/findbugs-${release.number}-source.zip"/>
     		<arg value="--prefix"/>
     		<arg value="findbugs-${release.number}/"/>
     		<arg value="HEAD"/>
