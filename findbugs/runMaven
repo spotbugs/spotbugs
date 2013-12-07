@@ -1,0 +1,6 @@
+#! /bin/sh
+mvn install:install-file -Dfile=lib/bcel-6.0-SNAPSHOT.jar -DgroupId=com.google.code.findbugs -DartifactId=bcel -Dversion=6.0-SNAPSHOT -Dpackaging=jar
+mvn install:install-file -Dfile=lib/asm-debug-all-5.0_BETA.jar -DgroupId=org.ow2.asm -DartifactId=asm-debug-all -Dversion=5.0_BETA -Dpackaging=jar
+mvn install:install-file -Dfile=lib/jaxen-1.1.6.jar -DgroupId=jaxen -DartifactId=jaxen -Dversion=1.1.6 -Dpackaging=jar
+mvn clean
+mvn package
