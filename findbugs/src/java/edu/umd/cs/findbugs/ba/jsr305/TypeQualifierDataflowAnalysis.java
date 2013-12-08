@@ -90,7 +90,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 
     protected final ValueNumberDataflow vnaDataflow;
 
-    protected final TypeQualifierValue typeQualifierValue;
+    protected final TypeQualifierValue<?> typeQualifierValue;
 
     protected final ConstantPoolGen cpg;
 
@@ -112,7 +112,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
      *            the TypeQualifierValue we want the dataflow analysis to check
      */
     public TypeQualifierDataflowAnalysis(XMethod xmethod, CFG cfg, ValueNumberDataflow vnaDataflow, ConstantPoolGen cpg,
-            TypeQualifierValue typeQualifierValue) {
+            TypeQualifierValue<?> typeQualifierValue) {
         this.xmethod = xmethod;
         this.cfg = cfg;
         this.vnaDataflow = vnaDataflow;
