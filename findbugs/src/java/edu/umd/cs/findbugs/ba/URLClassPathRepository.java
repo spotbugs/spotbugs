@@ -170,7 +170,7 @@ public class URLClassPathRepository implements Repository {
      * @see org.apache.bcel.util.Repository#loadClass(java.lang.Class)
      */
     @Override
-    public JavaClass loadClass(Class clazz) throws ClassNotFoundException {
+    public JavaClass loadClass(Class<?> clazz) throws ClassNotFoundException {
         return loadClass(clazz.getName());
     }
 

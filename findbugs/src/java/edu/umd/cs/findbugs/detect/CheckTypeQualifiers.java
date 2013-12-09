@@ -173,7 +173,7 @@ public class CheckTypeQualifiers extends CFGDetector {
                 BackwardTypeQualifierDataflowFactory.class, methodDescriptor);
         ValueNumberDataflow vnaDataflow = analysisCache.getMethodAnalysis(ValueNumberDataflow.class, methodDescriptor);
 
-        for (TypeQualifierValue typeQualifierValue : relevantQualifiers) {
+        for (TypeQualifierValue<?> typeQualifierValue : relevantQualifiers) {
 
             try {
                 checkQualifier(xMethod, cfg, typeQualifierValue, forwardDataflowFactory, backwardDataflowFactory,
@@ -207,7 +207,7 @@ public class CheckTypeQualifiers extends CFGDetector {
      * @param vnaDataflow
      *            ValueNumberDataflow for the method
      */
-    private void checkQualifier(XMethod xmethod, CFG cfg, TypeQualifierValue typeQualifierValue,
+    private void checkQualifier(XMethod xmethod, CFG cfg, TypeQualifierValue<?> typeQualifierValue,
             ForwardTypeQualifierDataflowFactory forwardDataflowFactory,
             BackwardTypeQualifierDataflowFactory backwardDataflowFactory, ValueNumberDataflow vnaDataflow)
             throws CheckedAnalysisException {
@@ -250,7 +250,7 @@ public class CheckTypeQualifiers extends CFGDetector {
         checkValueSources(xmethod, cfg, typeQualifierValue, vnaDataflow, forwardDataflow, backwardDataflow);
     }
 
-    private void checkDataflow(XMethod xmethod, CFG cfg, TypeQualifierValue typeQualifierValue,
+    private void checkDataflow(XMethod xmethod, CFG cfg, TypeQualifierValue<?> typeQualifierValue,
             ValueNumberDataflow vnaDataflow, ForwardTypeQualifierDataflow forwardDataflow,
             BackwardTypeQualifierDataflow backwardDataflow) throws DataflowAnalysisException, CheckedAnalysisException {
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
@@ -311,7 +311,7 @@ public class CheckTypeQualifiers extends CFGDetector {
     }
 
 
-    private void checkForEqualityTest(XMethod  xmethod, CFG cfg, TypeQualifierValue typeQualifierValue,
+    private void checkForEqualityTest(XMethod  xmethod, CFG cfg, TypeQualifierValue<?> typeQualifierValue,
             TypeQualifierValueSet forwardsFact, Location loc, ValueNumberFrame factAtLocation) throws DataflowAnalysisException {
         InstructionHandle handle = loc.getHandle();
         Instruction ins = handle.getInstruction();
@@ -358,7 +358,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 
     }
 
-    private void checkValueSources(XMethod xMethod, CFG cfg, TypeQualifierValue typeQualifierValue,
+    private void checkValueSources(XMethod xMethod, CFG cfg, TypeQualifierValue<?> typeQualifierValue,
             ValueNumberDataflow vnaDataflow, ForwardTypeQualifierDataflow forwardDataflow,
             BackwardTypeQualifierDataflow backwardDataflow) throws DataflowAnalysisException, CheckedAnalysisException {
 
@@ -457,7 +457,7 @@ public class CheckTypeQualifiers extends CFGDetector {
     }
 
     private void checkForConflictingValues(XMethod xMethod, CFG cfg,
-            TypeQualifierValue typeQualifierValue, TypeQualifierValueSet forwardsFact, TypeQualifierValueSet backwardsFact,
+            TypeQualifierValue<?> typeQualifierValue, TypeQualifierValueSet forwardsFact, TypeQualifierValueSet backwardsFact,
             Location locationToReport, Location locationWhereDoomedValueIsObserved, ValueNumberFrame vnaFrame) throws CheckedAnalysisException {
         Set<ValueNumber> valueNumberSet = new HashSet<ValueNumber>();
         valueNumberSet.addAll(forwardsFact.getValueNumbers());
@@ -481,7 +481,7 @@ public class CheckTypeQualifiers extends CFGDetector {
         }
     }
 
-    private void emitDataflowWarning(XMethod xMethod, TypeQualifierValue typeQualifierValue,
+    private void emitDataflowWarning(XMethod xMethod, TypeQualifierValue<?> typeQualifierValue,
             TypeQualifierValueSet forwardsFact, TypeQualifierValueSet backwardsFact, ValueNumber vn, FlowValue forward,
             FlowValue backward, Location locationToReport, @CheckForNull Location locationWhereDoomedValueIsObserved, ValueNumberFrame vnaFrame)
             throws CheckedAnalysisException {
@@ -547,7 +547,7 @@ public class CheckTypeQualifiers extends CFGDetector {
         bugReporter.reportBug(warning);
     }
 
-    private void emitSourceWarning(String bugType, XMethod xMethod, TypeQualifierValue typeQualifierValue,
+    private void emitSourceWarning(String bugType, XMethod xMethod, TypeQualifierValue<?> typeQualifierValue,
             FlowValue backwardsFlowValue, TypeQualifierValueSet backwardsFact, SourceSinkInfo source, ValueNumber vn,
             Location location) {
 
@@ -565,7 +565,7 @@ public class CheckTypeQualifiers extends CFGDetector {
         bugReporter.reportBug(warning);
     }
 
-    private void annotateWarningWithTypeQualifier(BugInstance warning, TypeQualifierValue typeQualifierValue) {
+    private void annotateWarningWithTypeQualifier(BugInstance warning, TypeQualifierValue<?> typeQualifierValue) {
          if (TypeQualifierValue.hasMultipleVariants(typeQualifierValue)) {
              StringBuilder buf = new StringBuilder();
              buf.append("@");

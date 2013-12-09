@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import javax.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.Repository;
@@ -271,6 +272,7 @@ public class OpcodeStack implements Constants2 {
 
         private int registerNumber = -1;
 
+        @Nullable
         private Object userValue = null;
 
         private HttpParameterInjection injection = null;
@@ -789,12 +791,14 @@ public class OpcodeStack implements Constants2 {
         }
 
         /**
-         * attaches a detector specified value to this item
+         * <p>attaches a detector specified value to this item</p>
+         * <p>to use this method, detector should be annotated with {@code CustomUserValue}.</p>
          *
          * @param value
          *            the custom value to set
+         * @see OpcodeStack.CustomUserValue
          */
-        public void setUserValue(Object value) {
+        public void setUserValue(@Nullable Object value) {
             userValue = value;
         }
 
@@ -824,6 +828,7 @@ public class OpcodeStack implements Constants2 {
          *
          * @return the custom value
          */
+        @Nullable
         public Object getUserValue() {
             return userValue;
         }

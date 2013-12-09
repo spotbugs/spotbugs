@@ -69,11 +69,22 @@ abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
         return !stack.isTop();
     }
 
+    /**
+     * <p>Note that stack might be TOP when this method is called.</p>
+     * @see #sawOpcode(int)
+     */
     @Override
     public void afterOpcode(int seen) {
         stack.sawOpcode(this, seen);
     }
 
+    /**
+     * <p>By default, this method will not be called when
+     * stack is TOP. To change this behavior, override {@code #beforeOpcode(int)}
+     * and change to return true even if stack is TOP.</p>
+     * <p>see <a href="http://findbugs-tutorials.googlecode.com/files/uffr-talk.pdf">Using FindBugs for Research</a> to learn lattice and what TOP means.</p>
+     * @see #beforeOpcode(int)
+     */
     @Override
     abstract public void sawOpcode(int seen);
 
