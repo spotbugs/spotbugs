@@ -90,25 +90,23 @@ public class SuppressionDecorator extends BugReporterDecorator {
      * @throws IOException
      */
     private void processPackageList(@WillClose Reader rawIn) throws IOException {
-        try {
-        BufferedReader in = new BufferedReader(rawIn);
-        while (true) {
-            String s = in.readLine();
-            if (s == null)
-                break;
-            s = s.trim();
-            if (s.length() == 0)
-                continue;
-            String packageName = s.substring(1).trim();
-            if (s.charAt(0) == '+') {
-                check.add(packageName);
-                dontCheck.remove(packageName);
-            } else if (s.charAt(0) == '-') {
-                dontCheck.add(packageName);
-                check.remove(packageName);
-            } else
-                throw new IllegalArgumentException("Can't parse " + category + " filter line: " + s);
-        }
+        try (BufferedReader in = new BufferedReader(rawIn)) {
+            String s;
+            while ((s = in.readLine()) != null) {
+                s = s.trim();
+                if (s.length() == 0)
+                    continue;
+                String packageName = s.substring(1).trim();
+                if (s.charAt(0) == '+') {
+                    check.add(packageName);
+                    dontCheck.remove(packageName);
+                } else if (s.charAt(0) == '-') {
+                    dontCheck.add(packageName);
+                    check.remove(packageName);
+                } else {
+                    throw new IllegalArgumentException("Can't parse " + category + " filter line: " + s);
+                }
+            }
         } finally {
             rawIn.close();
         }

@@ -138,24 +138,17 @@ public class UnionBugs extends Task {
     /**
      * Copy a File
      * 
-     * @param File
+     * @param in
      *            to Copy From
-     * @param File
+     * @param out
      *            to Copy To
      * @throws IOException
      */
     private static void copyFile(File in, File out) throws IOException {
-        FileChannel inChannel = new FileInputStream(in).getChannel();
-        FileChannel outChannel = new FileOutputStream(out).getChannel();
-        try {
-            inChannel.transferTo(0, inChannel.size(), outChannel);
-        } catch (IOException e) {
-            throw e;
-        } finally {
-            if (inChannel != null)
-                inChannel.close();
-            if (outChannel != null)
-                outChannel.close();
+        try (FileInputStream inStream = new FileInputStream(in);
+                FileOutputStream outStream = new FileOutputStream(out);) {
+            FileChannel inChannel = inStream.getChannel();
+            inChannel.transferTo(0, inChannel.size(), outStream.getChannel());
         }
     }
 
