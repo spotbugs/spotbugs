@@ -100,7 +100,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
      * @see org.apache.bcel.util.Repository#loadClass(java.lang.Class)
      */
     @Override
-    public JavaClass loadClass(Class cls) throws ClassNotFoundException {
+    public JavaClass loadClass(Class<?> cls) throws ClassNotFoundException {
         return loadClass(cls.getName());
     }
 

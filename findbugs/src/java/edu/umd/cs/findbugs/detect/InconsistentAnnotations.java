@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 public class InconsistentAnnotations implements Detector, UseAnnotationDatabase {
 
-    public final TypeQualifierValue nonnullTypeQualifierValue;
+    public final TypeQualifierValue<?> nonnullTypeQualifierValue;
 
     final BugReporter reporter;
 

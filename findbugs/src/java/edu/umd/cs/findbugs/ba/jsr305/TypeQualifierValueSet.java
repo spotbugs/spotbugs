@@ -51,7 +51,7 @@ public class TypeQualifierValueSet {
 
     final boolean  isStrict;
 
-    public TypeQualifierValueSet(TypeQualifierValue typeQualifierValue) {
+    public TypeQualifierValueSet(TypeQualifierValue<?> typeQualifierValue) {
         this.valueMap = new HashMap<ValueNumber, FlowValue>(3);
         this.whereAlways = new HashMap<ValueNumber, Set<SourceSinkInfo>>(3);
         this.whereNever = new HashMap<ValueNumber, Set<SourceSinkInfo>>(3);

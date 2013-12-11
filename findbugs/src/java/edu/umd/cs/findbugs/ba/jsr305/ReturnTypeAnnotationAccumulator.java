@@ -41,7 +41,7 @@ class ReturnTypeAnnotationAccumulator extends AbstractMethodAnnotationAccumulato
      * @param xmethod
      *            method whose effective return type annotation we want
      */
-    public ReturnTypeAnnotationAccumulator(TypeQualifierValue typeQualifierValue, XMethod xmethod) {
+    public ReturnTypeAnnotationAccumulator(TypeQualifierValue<?> typeQualifierValue, XMethod xmethod) {
         super(typeQualifierValue, xmethod);
         this.result = new ReturnTypeAnnotationLookupResult();
     }

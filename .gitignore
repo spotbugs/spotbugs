@@ -1,4 +1,5 @@
 *.class
+.DS_Store
 JSR305-testCases/build/
 NullPointerBenchmark/build/
 bluej/bin/
@@ -59,3 +60,4 @@ server/webUpdateCheck/classesEclipse/
 server/webUpdateCheck/build/
 target
 webCloudProtocol/build/
+
