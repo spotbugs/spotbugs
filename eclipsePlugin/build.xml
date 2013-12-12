@@ -86,14 +86,6 @@
         </fileset>
     </path>
 
-    <!-- Need these jars for ant target 'srcdist', which uses subversion.  Grab them at:
-         http://subclipse.tigris.org/files/documents/906/43359/svnant-1.2.1.zip -->
-    <path id="svn.classpath">
-     <fileset dir="${svnant.home}/lib">
-          <include name="*.jar"/>
-         </fileset>
-    </path>
-
     <target name="init">
         <!-- true to recompile FB core (if findbugs.jar is not there) -->
         <condition property="fb.recompile" >
@@ -157,10 +149,10 @@
           <filterchain><linecontains><contains value="release.base"/></linecontains></filterchain>
         </loadproperties>
         <loadproperties srcFile="${bin.dir}/version.properties" >
-          <filterchain><linecontains><contains value="findbugs.svn.revision"/></linecontains></filterchain>
+          <filterchain><linecontains><contains value="findbugs.git.revision"/></linecontains></filterchain>
         </loadproperties>
 
-        <echo>svnversion ${findbugs.svn.revision}</echo>
+        <echo>gitversion ${findbugs.git.revision}</echo>
 
         <!-- 2) read plugin base version from META-INF/MANIFEST.MF to ${eclipse.release.base} -->
         <loadfile srcFile="META-INF/MANIFEST.MF" property="eclipse.release.base">
@@ -181,7 +173,7 @@
         </fail>
 
         <!-- 4) set the values for plugin.version -->
-        <property name="plugin.qualifier" value="${plugin.date}-${findbugs.svn.revision}" />
+        <property name="plugin.qualifier" value="${plugin.date}-${findbugs.git.revision}" />
         <property name="plugin.version" value="${release.base}.${plugin.qualifier}" />
 
         <echo>plugin qualifier  ${plugin.qualifier}</echo>
@@ -242,34 +234,24 @@
         </zip>
     </target>
 
-    <!-- Build source distribution.  Must have 'svnant.home' set properly. -->
+    <!-- Build source distribution. -->
     <target name="srcdist" depends="clean,classes,version,dist" unless="doNotExportSrc">
         <echo message="Creating FindBugs Eclipse plugin source distribution"/>
-        <fail unless="svnant.home"
-            message="Please specify path to the svnant-1.2.1 root folder in local.properties file, like svnant.home=F:\\java\\libs\\svnant-1.2.1"/>
 
         <property file="${bin.dir}/plugininfo.properties"/>
 
         <mkdir dir="${dist.dir}/src"/>
         <delete dir="${dist.dir}/src/eclipsePlugin-${plugin.version}"/>
-        <!-- requires svnant-1.2.1 -->
-        <taskdef resource="org/tigris/subversion/svnant/svnantlib.xml"
-            format="xml" classpathref="svn.classpath"/>
 
-    <svnSetting username="guest" password="" id="svn.settings" />
-    <svn refid="svn.settings" >
-            <!-- Use 'export' rather than 'checkout' to exclude the .svn stuff -->
-            <export srcUrl="http://findbugs.googlecode.com/svn/trunk/eclipsePlugin"
-                    revision="HEAD"
-                    destPath="${dist.dir}/src/eclipsePlugin-${plugin.version}"/>
-        </svn>
-
-        <zip destfile="${zip.dir}/eclipsePlugin-${plugin.version}-source.zip" compress="true">
-            <zipfileset dir="${dist.dir}/src" includes="eclipsePlugin-${plugin.version}/**"/>
-        </zip>
+        <exec executable="git" spawn="false" dir="${basedir}"  failonerror="true">
+                <arg value="archive"/>
+                <arg value="-o"/>
+                <arg value="${zip.dir}/edu.umd.cs.findbugs.plugin.eclipse_${plugin.version}-source.zip"/>
+                <arg value="HEAD"/>
+        </exec>
     </target>
 
-    <target name="site" depends="dist,srcdist" description="create files for eclipse auto-update site">
+    <target name="site" depends="srcdist" description="create files for eclipse auto-update site">
         <echo message="Creating FindBugs Eclipse plugin update sites"/>
 
         <filterset id="sitevars">
