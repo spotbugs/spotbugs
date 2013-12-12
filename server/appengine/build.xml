@@ -1,9 +1,0 @@
-<project name="appengine web cloud"  default="build">
-
-	<target name="build">
-		<ant dir="../common" target="fulljar" inheritall="false" />
-		<copy file="../common/build/webCloudServerCommon.jar" todir="war/WEB-INF/lib" />
-	</target>
-
-</project>
-

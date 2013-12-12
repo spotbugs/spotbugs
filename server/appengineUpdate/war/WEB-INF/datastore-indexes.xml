@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<datastore-indexes autoGenerate="true">
-    <datastore-index kind="AppEngineDbPluginUpdateXml" ancestor="false" source="manual">
-        <property name="pluginId" direction="asc"/>
-        <property name="releaseDate" direction="desc"/>
-    </datastore-index>
-</datastore-indexes>

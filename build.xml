@@ -52,7 +52,6 @@
         <ant dir="plugins/jdbcCloudClient" target="clean"/>
         <ant dir="plugins/jira" target="clean"/>
         <ant dir="plugins/findbugsCommunalCloud"  target="clean"/>
-        <ant dir="server/common" target="clean"/>
         <ant dir="eclipsePlugin" target="clean"/>
         <ant dir="findbugsTestCases" target="clean"/>
         <ant dir="webCloudProtocol"  target="clean" />
