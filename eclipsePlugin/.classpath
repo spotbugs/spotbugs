@@ -8,6 +8,9 @@
     <classpathentry kind="lib" path="lib/bcel-6.0-SNAPSHOT.jar"/>
     <classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
     <classpathentry kind="lib" path="lib/asm-debug-all-5.0_BETA.jar"/>
+    <classpathentry kind="lib" path="lib/jaxen-1.1.4.jar"/>
+    <classpathentry kind="lib" path="lib/commons-lang-2.6.jar"/>
+    <classpathentry kind="lib" path="lib/jsr305.jar"/>
     <classpathentry kind="lib" path="/findbugs/classesEclipse" sourcepath="/findbugs/src"/>
     <classpathentry kind="output" path="bin_eclipse"/>
 </classpath>

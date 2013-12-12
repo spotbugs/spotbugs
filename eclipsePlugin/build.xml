@@ -70,7 +70,7 @@
         commons-lang-2.6.jar,
         asm-debug-all-5.0_BETA.jar,
         dom4j-1.6.1.jar,
-        jaxen-1.1.6.jar" />
+        jaxen-1.1.4.jar" />
 
     <!-- list of all libraries, copied from FB core project, plus old libraries not more used -->
     <property name="jars.cleanup" value="${jars.required},
