@@ -376,8 +376,8 @@ public class UpdateChecker {
             return null;
         try {
             return format.parse(dateStr);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Error parsing " + dateStr, e);
+        } catch (java.text.ParseException e) {
+            throw new IllegalArgumentException("Error parsing " + dateStr + " using " + PLUGIN_RELEASE_DATE_FMT, e);
         }
     }
 
