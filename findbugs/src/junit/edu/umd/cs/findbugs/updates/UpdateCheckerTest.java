@@ -82,8 +82,10 @@ public class UpdateCheckerTest extends TestCase {
                 System.err.println(msg);
             }
         };
+        org.junit.Assume.assumeTrue(!checker.updateChecksGloballyDisabled());
     }
 
+    
     public void testSimplePluginUpdate() throws Exception {
         // setup
         setResponseXml("my.id", "09/01/2011 02:00 PM EST", "2.1");
@@ -113,7 +115,7 @@ public class UpdateCheckerTest extends TestCase {
 
     public void testPluginSameVersionSameDate() throws Exception {
         // setup
-        setResponseXml("my.id", "2011-03-20 02:00:00 EST", "2.0");
+        setResponseXml("my.id", "03/20/2011 03:00 AM EDT", "2.0");
 
         // execute
         checkForUpdates(createPlugin("my.id", KEITHS_BIRTHDAY_2011, "2.0"));
@@ -224,6 +226,7 @@ public class UpdateCheckerTest extends TestCase {
     // ================ end of tests =============
 
     private void checkForUpdates(Plugin plugin) throws  InterruptedException {
+
         checker.checkForUpdates(Arrays.asList(plugin), true);
         latch.await();
     }
