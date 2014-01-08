@@ -27,7 +27,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/yjp-controller-api-redist.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry exported="true" kind="lib" path="lib/jsr305.jar" sourcepath="lib/jsr305.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jaxen-1.1.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jaxen-1.1.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jFormatString.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jdepend-2.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ant.jar"/>
