@@ -20,6 +20,9 @@ import java.io.IOException;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
+// Now bug #676 OBL false positive
+// https://sourceforge.net/p/findbugs/bugs/676/
+
 public class Bug2353694 {
 
     /* ********************
@@ -31,7 +34,7 @@ public class Bug2353694 {
      * *no* OS warning thrown for in3 -- maybe false negative?
      * ********************
      */
-    @ExpectWarning("OS")
+    @ExpectWarning(value="OS", num=2)
     public void fp_warning_OS() throws IOException {
         FileInputStream in2 = new FileInputStream("test");
         in2.read();
@@ -52,7 +55,7 @@ public class Bug2353694 {
      * oM B OS_OPEN_STREAM OS: Bug2353694.correct_warning_OS() may fail to \
      * close stream At Bug2353694.java:[line 50] ********************
      */
-    @ExpectWarning("OS")
+    @ExpectWarning(value="OS", num=1)
     public void correct_warning_OS() throws IOException {
         FileInputStream in = new FileInputStream("test");
         try {

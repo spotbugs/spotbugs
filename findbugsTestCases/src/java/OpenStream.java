@@ -9,11 +9,13 @@ import java.io.PrintStream;
 import java.nio.channels.FileChannel;
 
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class OpenStream {
     public OutputStream os;
 
+    @ExpectWarning("OBL_UNSATISFIED_OBLIGATION,OS_OPEN_STREAM")
     int simpleObviousBug(String f) throws IOException {
         FileInputStream in = new FileInputStream(f);
         return in.read();
@@ -78,7 +80,7 @@ public class OpenStream {
     }
 
     @NoWarning("OBL_UNSATISFIED_OBLIGATION")
-    @DesireNoWarning("OpenStream.OS_OPEN_STREAM")
+    @DesireNoWarning("OS_OPEN_STREAM")
     public void wrappedStreamClosedDoNotReport() throws IOException {
         FileOutputStream f = null;
         try {
