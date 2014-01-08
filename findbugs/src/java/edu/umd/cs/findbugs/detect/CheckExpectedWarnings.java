@@ -326,12 +326,15 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
             }
             reporter.reportBug(bug);
         } else if (bugs.size() > num) {
+            // More bugs than expected
             BugInstance bug = makeWarning("FB_UNEXPECTED_WARNING", methodDescriptor, priority, cd).addString(bugCodeMessage);
             if (!expectWarnings) {
+                // Wanted no more than this many warnings
                 for (SourceLineAnnotation s : bugs) {
                     reporter.reportBug(bug.add(s));
                 }
             } else if(num > 1){
+                // For example, we told it that we expected 3 warnings, and saw 4 warnings
                 // num == 1 is default value. So if we set a non default value, and see more warnings
                 // as expected, it's a problem
                 bug.addString(String.format("Expected %d bugs, saw %d", num, bugs.size()));
@@ -380,6 +383,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                     continue;
                 if (bugCode == null) {
                     matching.add(warning.getPrimarySourceLineAnnotation());
+                    matching.addAll(warning.getAnotherInstanceSourceLineAnnotations());
                     continue;
                 }
                 BugPattern pattern = warning.getBugPattern();
@@ -390,6 +394,8 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                     match = pattern.getAbbrev();
                 if (match.equals(bugCode)) {
                     matching.add(warning.getPrimarySourceLineAnnotation());
+                    matching.addAll(warning.getAnotherInstanceSourceLineAnnotations());
+                    
                 }
             }
         }
