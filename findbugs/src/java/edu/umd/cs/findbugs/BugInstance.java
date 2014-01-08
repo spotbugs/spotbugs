@@ -529,6 +529,20 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         throw new IllegalStateException("BugInstance for " + getType()
                 + " must contain at least one class, method, or field annotation");
     }
+    public Collection<? extends SourceLineAnnotation> getAnotherInstanceSourceLineAnnotations() {
+        // Highest priority: return the first top level source line annotation
+        Collection<SourceLineAnnotation> result = new ArrayList<SourceLineAnnotation>();
+        for (BugAnnotation annotation : annotationList) {
+            if (annotation instanceof SourceLineAnnotation
+                    && annotation.getDescription().equals(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE)
+                    && !((SourceLineAnnotation) annotation).isUnknown())
+
+                result.add((SourceLineAnnotation) annotation);
+        }
+
+       return result;
+    }
+
 
     public String getInstanceKey() {
         String newValue = getInstanceKeyNew();
