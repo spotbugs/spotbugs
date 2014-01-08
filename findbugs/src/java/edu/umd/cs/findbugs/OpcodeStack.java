@@ -2559,7 +2559,6 @@ public class OpcodeStack implements Constants2 {
     }
 
     private void processInvokeDynamic(DismantleBytecode dbc) {
-        String methodName = dbc.getNameConstantOperand();
         String signature = dbc.getSigConstantOperand();
 
         int numberArguments = PreorderVisitor.getNumberArguments(signature);
