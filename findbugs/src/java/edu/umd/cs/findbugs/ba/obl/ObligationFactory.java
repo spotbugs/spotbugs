@@ -61,6 +61,7 @@ public class ObligationFactory {
     }
 
     public boolean signatureInvolvesObligations(String sig) {
+        sig = sig.replaceAll("java/io/File", "java/io/");
         for (String c : slashedClassNames)
             if (sig.indexOf(c) >= 0)
                 return true;
