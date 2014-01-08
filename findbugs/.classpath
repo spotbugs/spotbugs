@@ -31,7 +31,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/jFormatString.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jdepend-2.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ant.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/asm-debug-all-5.0_BETA.jar" sourcepath="/Users/pugh/tools/asm/trunk/asm/src"/>
+	<classpathentry exported="true" kind="lib" path="lib/asm-debug-all-5.0_BETA.jar" sourcepath="/asm3"/>
 	<classpathentry exported="true" kind="lib" path="lib/bcel-6.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="classesEclipse"/>
 </classpath>
