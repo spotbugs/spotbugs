@@ -4,11 +4,25 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public abstract class Bug1238 {
+
+    @NoWarning("OS_OPEN_STREAM,OBL")
+    public int fromSubmission(File f) {
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(f);
+            return stream.read();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            close(stream); // IOUtil comes from codehaus plexus
+        }
+    }
 
     @ExpectWarning("OS_OPEN_STREAM,OBL")
     public int simpleObviousBug(String f) throws IOException {
@@ -49,5 +63,7 @@ public abstract class Bug1238 {
     protected abstract void foo(FileOutputStream fos);
 
     protected abstract void close(FileOutputStream fos);
+
+    protected abstract void close(InputStream fos);
 
 }
