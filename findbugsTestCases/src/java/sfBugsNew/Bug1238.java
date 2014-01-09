@@ -11,6 +11,16 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public abstract class Bug1238 {
 
+    static class IOUtil {
+        static void close(InputStream in) {
+            try {
+                in.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     @NoWarning("OS_OPEN_STREAM,OBL")
     public int fromSubmission(File f) {
         InputStream stream = null;
@@ -20,7 +30,7 @@ public abstract class Bug1238 {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         } finally {
-            close(stream); // IOUtil comes from codehaus plexus
+            IOUtil.close(stream); // IOUtil comes from codehaus plexus
         }
     }
 
