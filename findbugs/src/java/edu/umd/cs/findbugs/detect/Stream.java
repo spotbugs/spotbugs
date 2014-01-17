@@ -235,7 +235,13 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
             // even though it's the same instance.)
             try {
                 String classClosed = inv.getClassName(cpg);
-                return Hierarchy.isSubtype(classClosed, streamBase) || Hierarchy.isSubtype(streamBase, classClosed) ;
+                
+                if (relatedType(classClosed) ) return true;
+                if (classClosed.equals("java.io.ObjectOutput"))
+                    return relatedType("java.io.ObjectOutputStream");
+                else if (classClosed.equals("java.io.ObjectInput"))
+                    return relatedType("java.io.ObjectInputStream");
+                return false;
             } catch (ClassNotFoundException e) {
                 lookupFailureCallback.reportMissingClass(e);
                 return false;
@@ -243,6 +249,15 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
         }
 
         return false;
+    }
+
+    /**
+     * @param classClosed
+     * @return
+     * @throws ClassNotFoundException
+     */
+    private boolean relatedType(String classClosed) throws ClassNotFoundException {
+        return Hierarchy.isSubtype(classClosed, streamBase) || Hierarchy.isSubtype(streamBase, classClosed);
     }
 
     private ResourceValue getInstanceValue(ResourceValueFrame frame, InvokeInstruction inv, ConstantPoolGen cpg) {

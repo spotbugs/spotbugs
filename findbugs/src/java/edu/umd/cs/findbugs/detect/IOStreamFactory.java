@@ -40,6 +40,10 @@ public class IOStreamFactory implements StreamFactory {
 
     private String bugType;
 
+    @Override
+    public String toString() {
+        return "IOStreamFactory("+baseClassType+")";
+    }
     public IOStreamFactory(String baseClass, String[] uninterestingSubclassList, String bugType) {
         this.baseClassType = ObjectTypeFactory.getInstance(baseClass);
         this.uninterestingSubclassTypeList = new ObjectType[uninterestingSubclassList.length];

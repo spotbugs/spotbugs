@@ -219,6 +219,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         int numWordsConsumed = ins.consumeStack(cpg);
         if (numWordsConsumed == Constants.UNPREDICTABLE)
             throw new InvalidBytecodeException("Unpredictable stack consumption for " + ins);
+        if (numWordsConsumed > frame.getStackDepth()) {
+            throw new InvalidBytecodeException("Stack underflow for " + ins + ", " + numWordsConsumed + " needed, " + frame.getStackDepth() + " avail, frame is " + frame);
+        }
         try {
             while (numWordsConsumed-- > 0) {
                 frame.popValue();
