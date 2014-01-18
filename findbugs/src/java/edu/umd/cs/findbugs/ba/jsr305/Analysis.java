@@ -37,8 +37,8 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor;
 import edu.umd.cs.findbugs.ba.ch.OverriddenMethodsVisitor;
+import edu.umd.cs.findbugs.ba.ch.SupertypeTraversalVisitor;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -122,7 +122,7 @@ public class Analysis {
                 // Instance method - must consider type qualifiers inherited
                 // from superclasses
 
-                InheritanceGraphVisitor visitor = new OverriddenMethodsVisitor(xmethod) {
+                SupertypeTraversalVisitor visitor = new OverriddenMethodsVisitor(xmethod) {
                     /*
                      * (non-Javadoc)
                      *
@@ -139,7 +139,7 @@ public class Analysis {
 
                 try {
                     AnalysisContext.currentAnalysisContext().getSubtypes2()
-                            .traverseSupertypes(xmethod.getClassDescriptor(), visitor);
+                            .traverseSupertypesDepthFirst(xmethod.getClassDescriptor(), visitor);
                 } catch (ClassNotFoundException e) {
                     AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
                     return Collections.<TypeQualifierValue<?>> emptySet();

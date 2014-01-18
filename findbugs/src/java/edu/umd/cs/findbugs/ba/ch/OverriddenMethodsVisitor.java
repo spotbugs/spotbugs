@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
  * 
  * @author David Hovemeyer
  */
-public abstract class OverriddenMethodsVisitor implements InheritanceGraphVisitor {
+public abstract class OverriddenMethodsVisitor implements SupertypeTraversalVisitor {
     private XMethod xmethod;
 
     /**
@@ -86,20 +86,6 @@ public abstract class OverriddenMethodsVisitor implements InheritanceGraphVisito
             // looking for, a superclass might, so we need to keep going.
             return true;
         }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor#visitEdge(edu.umd.cs
-     * .findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass,
-     * edu.umd.cs.findbugs.classfile.ClassDescriptor,
-     * edu.umd.cs.findbugs.ba.XClass)
-     */
-    @Override
-    public boolean visitEdge(ClassDescriptor sourceDesc, XClass source, ClassDescriptor targetDesc, XClass target) {
-        return (target != null);
     }
 
     /**
