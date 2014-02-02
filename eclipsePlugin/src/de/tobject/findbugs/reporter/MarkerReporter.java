@@ -22,8 +22,10 @@ package de.tobject.findbugs.reporter;
 import static de.tobject.findbugs.marker.FindBugsMarker.*;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -40,7 +42,9 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker.MarkerConfidence;
 import edu.umd.cs.findbugs.AppVersion;
+import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -62,6 +66,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
         this.project = project;
     }
 
+    @Override
     public void run(IProgressMonitor monitor) throws CoreException {
         UserPreferences userPrefs = FindbugsPlugin.getUserPreferences(project);
         ProjectFilterSettings filterSettings = userPrefs.getFilterSettings();
@@ -189,11 +194,27 @@ public class MarkerReporter implements IWorkspaceRunnable {
             String pluginId = detectorFactory.getPlugin().getPluginId();
             if (pluginId != null) {
                 attributes.put(DETECTOR_PLUGIN_ID, pluginId);
-            } else {
-                attributes.clear();
-                return attributes;
             }
         } else {
+            // Fix for loading bugs from XML: they do not have detector factory set, so we guess one
+            BugPattern pattern = mp.bug.getBugPattern();
+            Iterator<DetectorFactory> fit = DetectorFactoryCollection.instance().factoryIterator();
+            while (fit.hasNext()) {
+                DetectorFactory df2 = fit.next();
+                if(!df2.isReportingDetector()) {
+                    continue;
+                }
+                Set<BugPattern> patterns = df2.getReportedBugPatterns();
+                if(patterns.contains(pattern)){
+                    String pluginId = df2.getPlugin().getPluginId();
+                    if (pluginId != null) {
+                        attributes.put(DETECTOR_PLUGIN_ID, pluginId);
+                        break;
+                    }
+                }
+            }
+        }
+        if(attributes.get(DETECTOR_PLUGIN_ID) == null){
             attributes.clear();
             return attributes;
         }
