@@ -28,7 +28,9 @@ public @interface DesireWarning {
     /** Want a warning at this priority or higher */
     public Confidence confidence() default Confidence.LOW;
 
-    /** Expect a warning at least this scary */
+    /** Desire a warning at least this scary */
     public int rank() default BugRanker.VISIBLE_RANK_MAX;
 
+    /** Desire at least this many warnings */
+    public int num() default 1;
 }
