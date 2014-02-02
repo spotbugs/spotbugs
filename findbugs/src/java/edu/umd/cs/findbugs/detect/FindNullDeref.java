@@ -1168,7 +1168,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
         
         if (DEBUG) {
-            System.out.println("RCN" + priority + " " + redundantBranch.firstValue + " =? " + redundantBranch.secondValue + " : "
+            System.out.println("RCN " + priority + " " + redundantBranch.firstValue + " =? " + redundantBranch.secondValue + " : "
                     + warning);
 
             if (isChecked)
