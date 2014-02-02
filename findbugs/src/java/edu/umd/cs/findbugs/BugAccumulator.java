@@ -128,12 +128,17 @@ public class BugAccumulator {
             map.put(bug, d);
             hashes.put(hash, bug);
         } else if (d.priority > priority) {
-            if (d.priority >= Priorities.LOW_PRIORITY)
+            if (d.priority >= Priorities.LOW_PRIORITY) {
+                reportBug(bug, d);
                 d.allSource.clear();
+            }
             d.priority = priority;
             d.primarySource = sourceLine;
-        } else if (priority >= Priorities.LOW_PRIORITY && priority > d.priority)
+        } else if (priority >= Priorities.LOW_PRIORITY && priority > d.priority) {
+            bug.setPriority(priority);
+            reporter.reportBug(bug);
             return;
+        }
         d.allSource.add(sourceLine);
     }
 
@@ -168,20 +173,28 @@ public class BugAccumulator {
         for (Map.Entry<BugInstance, Data> e : map.entrySet()) {
             BugInstance bug = e.getKey();
             Data d = e.getValue();
-            bug.setPriority(d.priority);
-            bug.addSourceLine(d.primarySource);
-            HashSet<Integer> lines = new HashSet<Integer>();
-            lines.add(d.primarySource.getStartLine());
-            d.allSource.remove(d.primarySource);
-            for (SourceLineAnnotation source : d.allSource)  if (lines.add(source.getStartLine())) {
-                bug.addSourceLine(source);
-                bug.describe(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE);
-            } else if (false && SystemProperties.ASSERTIONS_ENABLED) {
-                AnalysisContext.logError("Skipping duplicated source warning for " + bug.getInstanceHash() + " " + bug.getMessage());
-            }
-            reporter.reportBug(bug);
+            reportBug(bug, d);
         }
         clearBugs();
+    }
+
+    /**
+     * @param bug
+     * @param d
+     */
+    public void reportBug(BugInstance bug, Data d) {
+        bug.setPriority(d.priority);
+        bug.addSourceLine(d.primarySource);
+        HashSet<Integer> lines = new HashSet<Integer>();
+        lines.add(d.primarySource.getStartLine());
+        d.allSource.remove(d.primarySource);
+        for (SourceLineAnnotation source : d.allSource)  if (lines.add(source.getStartLine())) {
+            bug.addSourceLine(source);
+            bug.describe(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE);
+        } else if (false && SystemProperties.ASSERTIONS_ENABLED) {
+            AnalysisContext.logError("Skipping duplicated source warning for " + bug.getInstanceHash() + " " + bug.getMessage());
+        }
+        reporter.reportBug(bug);
     }
 
     /**
