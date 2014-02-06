@@ -159,7 +159,8 @@ public  class StackMapAnalyzer {
             AnalysisContext.logError("Unable to create frame_type accessor",e );
             f = null;
         }
-      System.out.println("Frame type field is null:" + (f == null));
+      if (DEBUG)
+          System.out.println("Frame type field is null:" + (f == null));
       frame_type_field = f;
     }
     
