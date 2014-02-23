@@ -436,9 +436,6 @@ public interface Cloud {
             }
         }
 
-        /**
-         * @return
-         */
         public boolean nonVoting() {
             return this == UserDesignation.OBSOLETE_CODE || this == UserDesignation.NEEDS_STUDY
                     || this == UserDesignation.UNCLASSIFIED;

@@ -590,8 +590,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     /** Get the first bug annotation with the specified class and role; return null if no
      * such annotation exists;
-     * @param role
-     * @return
      */
     public @CheckForNull <A extends BugAnnotation> A getAnnotationWithRole(Class<A> c, String role) {
         for(BugAnnotation a : annotationList) {
@@ -1714,8 +1712,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Add a MethodAnnotation from an MethodDescriptor.
      *
-     * @param xmethod
-     *            the XMethod
+     * @param method
+     *            the method
      * @return this object
      */
     @Nonnull
@@ -2328,11 +2326,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         xmlOutput.closeTag(ELEMENT_NAME);
     }
 
-    /**
-     * @param bugCollection
-     * @param firstSeen
-     * @return
-     */
     private int ageInDays(BugCollection bugCollection, long firstSeen) {
         long age = bugCollection.getAnalysisTimestamp() - firstSeen;
         if (age < 0)

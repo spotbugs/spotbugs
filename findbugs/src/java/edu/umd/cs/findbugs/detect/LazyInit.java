@@ -351,10 +351,6 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
        
     }
 
-    /**
-     * @param nextHandle
-     * @return
-     */
     private boolean potentialInitialization(InstructionHandle nextHandle) {
         if (nextHandle == null)
             return true;

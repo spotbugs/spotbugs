@@ -91,10 +91,6 @@ public class UpdateChecker {
         waitForCompletion(latch, force);
     }
 
-    /**
-     * @param force
-     * @return
-     */
     public @CheckForNull URI getRedirectURL(final boolean force) {
         String redirect = dfc.getGlobalOption(KEY_REDIRECT_ALL_UPDATE_CHECKS);
         String sysprop = System.getProperty("findbugs.redirectUpdateChecks");

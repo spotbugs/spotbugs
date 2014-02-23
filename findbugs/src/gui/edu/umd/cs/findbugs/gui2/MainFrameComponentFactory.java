@@ -363,8 +363,6 @@ public class MainFrameComponentFactory implements Serializable {
      * return a JLabel with the annotation's toString(). If that annotation is a
      * SourceLineAnnotation or has a SourceLineAnnotation connected to it and
      * the source file is available will attach a listener to the label.
-     *
-     * @return
      */
     public Component bugSummaryComponent(String str, BugInstance bug) {
         JLabel label = new JLabel();

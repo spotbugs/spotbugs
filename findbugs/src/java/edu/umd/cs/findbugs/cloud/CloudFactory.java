@@ -82,10 +82,6 @@ public class CloudFactory {
 
     }
 
-    /**
-     * @param bc
-     * @return
-     */
     public static CloudPlugin getCloudPlugin(BugCollection bc) {
         CloudPlugin plugin = null;
         Project project = bc.getProject();

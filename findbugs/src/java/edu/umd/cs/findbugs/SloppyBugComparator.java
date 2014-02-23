@@ -172,10 +172,6 @@ public class SloppyBugComparator implements WarningComparator {
         return 0;
     }
 
-    /**
-     * @param type
-     * @return
-     */
     private static String getAbbrevFromBugType(String type) {
         int bar = type.indexOf('_');
         return (bar >= 0) ? type.substring(0, bar) : "";

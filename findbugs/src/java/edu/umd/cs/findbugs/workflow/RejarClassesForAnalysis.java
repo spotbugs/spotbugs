@@ -555,11 +555,6 @@ public class RejarClassesForAnalysis {
         System.out.println("All done");
     }
 
-    /**
-     * @param fileName
-     * @return
-     * @throws FileNotFoundException
-     */
     private ZipOutputStream createZipFile(String fileName) throws FileNotFoundException {
         File newFile = new File(commandLine.outputDir, fileName);
         return new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(newFile)));
@@ -646,10 +641,6 @@ public class RejarClassesForAnalysis {
     }
 
 
-    /**
-     * @param ze
-     * @return
-     */
     public ZipEntry newZipEntry(ZipEntry ze) {
         ZipEntry ze2 = new ZipEntry(ze.getName());
         ze2.setComment(ze.getComment());

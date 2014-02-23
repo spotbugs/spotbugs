@@ -209,9 +209,6 @@ public class BugSet implements Iterable<BugLeafNode> {
      * with all the Mutable Static bugs in the current set Note also: This query
      * will only be performed once, and then stored and reused if the same query
      * is used again.
-     *
-     * @param keyValuePair
-     * @return
      */
     BugSet query(SortableValue keyValuePair) {
         if (doneMap.containsKey(keyValuePair))

@@ -186,12 +186,6 @@ public class XFactory {
         }
     }
 
-    /**
-     * @param superclassDescriptor
-     * @param m
-     * @return
-     * @throws CheckedAnalysisException
-     */
     private boolean isCalledDirectlyOrIndirectly(@CheckForNull ClassDescriptor clazzDescriptor, XMethod m)
             throws CheckedAnalysisException {
         if (clazzDescriptor == null)
@@ -215,10 +209,6 @@ public class XFactory {
         return calledMethodSignatures.contains(getDetailedSignature(m));
     }
 
-    /**
-     * @param m2
-     * @return
-     */
     private static String getDetailedSignature(XMethod m2) {
         return m2.getName() + m2.getSignature() + m2.isStatic();
     }

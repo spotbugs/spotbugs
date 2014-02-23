@@ -98,8 +98,6 @@ public interface BugReporter extends RepositoryLookupFailureCallback, IClassObse
 
     /**
      * Get the bug collection (if any) associated with this bug reporter
-     * 
-     * @return
      */
     public @CheckForNull
     BugCollection getBugCollection();

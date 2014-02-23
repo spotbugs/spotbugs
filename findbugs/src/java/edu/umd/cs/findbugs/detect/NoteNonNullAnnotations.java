@@ -44,9 +44,6 @@ public class NoteNonNullAnnotations extends BuildNonNullAnnotationDatabase imple
         super(getDatabase());
     }
 
-    /**
-     * @return
-     */
     private static NullnessAnnotationDatabase getDatabase() {
         return null;
         }

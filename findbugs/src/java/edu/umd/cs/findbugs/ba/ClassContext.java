@@ -451,9 +451,6 @@ public class ClassContext {
         return result;
     }
 
-    /**
-     * @return
-     */
     private static MapCache<XMethod, BitSet> cachedBitsets() {
         return cachedBitsets_AL.get();
     }
@@ -490,9 +487,6 @@ public class ClassContext {
         return result;
     }
 
-    /**
-     * @return
-     */
     private static MapCache<XMethod, Set<Integer>> cachedLoopExits() {
         return cachedLoopExits_AL.get();
     }
@@ -944,12 +938,6 @@ public class ClassContext {
         System.out.println("}\n\n");
     }
 
-    /**
-     * @param method
-     * @param cfg
-     * @param typeDataflow
-     * @throws DataflowAnalysisException
-     */
     public static void dumpLiveLocalStoreDataflow(MethodDescriptor method, CFG cfg, LiveLocalStoreDataflow dataflow)
             throws DataflowAnalysisException {
         System.out.println("\n\n{ LiveLocalStore analysis for " + method);

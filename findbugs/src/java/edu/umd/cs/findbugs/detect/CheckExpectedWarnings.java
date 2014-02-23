@@ -343,12 +343,6 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         }
     }
 
-    /**
-     * @param bugPattern
-     * @param methodDescriptor
-     * @param priority
-     * @return
-     */
     public BugInstance makeWarning(String bugPattern, Object descriptor, int priority, ClassDescriptor cd) {
         BugInstance bug = new BugInstance(this, bugPattern, priority).addClass(cd);
         if (descriptor instanceof FieldDescriptor)

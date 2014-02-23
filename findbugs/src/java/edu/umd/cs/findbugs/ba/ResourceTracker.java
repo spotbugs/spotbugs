@@ -77,11 +77,6 @@ public interface ResourceTracker<Resource> {
      *            the instruction
      * @param cpg
      *            the ConstantPoolGen for the method
-     * @param resource
-     *            the resource, as returned by isResourceCreation()
-     * @param frame
-     *            the ResourceValueFrame representing the stack prior to
-     *            executing the instruction
      * @return true if the resource is closed here, false otherwise
      */
     public boolean mightCloseResource(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg)

@@ -1185,10 +1185,6 @@ public class Subtypes2 {
         return typeVertex;
     }
 
-    /**
-     * @param classDescriptor
-     * @return
-     */
     private ClassVertex optionallyResolveClassVertex(ClassDescriptor classDescriptor) {
         ClassVertex typeVertex = classDescriptorToVertexMap.get(classDescriptor);
         if (typeVertex == null) {

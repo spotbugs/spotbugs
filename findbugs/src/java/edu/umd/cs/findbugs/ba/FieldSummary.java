@@ -228,10 +228,6 @@ public class FieldSummary {
         return complete;
     }
 
-    /**
-     * @param method
-     * @param methodOperand
-     */
     public void sawSuperCall(XMethod from, XMethod constructorInSuperClass) {
         if (constructorInSuperClass == null || from == null)
             return;

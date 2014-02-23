@@ -143,10 +143,6 @@ public class VolatileUsage extends BytecodeScanningDetector {
             }
     }
 
-    /**
-     * @param f
-     * @return
-     */
     private boolean isVolatile(XField f) {
         return f != null && f.isVolatile();
     }

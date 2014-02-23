@@ -275,10 +275,6 @@ public class UnreadFields extends OpcodeStackDetector {
             data.containerFields.add(f);
     }
 
-    /**
-     * @param signature
-     * @return
-     */
     public static boolean isSeleniumWebElement(String signature) {
         return signature.equals("Lorg/openqa/selenium/RenderedWebElement;")
                 || signature.equals("Lorg/openqa/selenium/WebElement;");
@@ -1087,10 +1083,6 @@ public class UnreadFields extends OpcodeStackDetector {
         bugAccumulator.reportAccumulatedBugs();
     }
 
-    /**
-     * @param instance
-     * @return
-     */
     private BugInstance addClassFieldAndAccess(BugInstance instance, XField f) {
         if (data.writtenNonNullFields.contains(f) && data.readFields.contains(f))
             throw new IllegalArgumentException("No information for fields that are both read and written nonnull");

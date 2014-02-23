@@ -76,10 +76,6 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
         }
     }
 
-    /**
-     * @param f
-     * @return
-     */
     public boolean checkForInitialization(XField f) {
         if (!f.isReferenceType() || f.isFinal())
             return false;

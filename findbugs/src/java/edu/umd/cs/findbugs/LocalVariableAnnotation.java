@@ -311,12 +311,6 @@ public class LocalVariableAnnotation implements BugAnnotation {
         return !name.equals("?");
     }
 
-    /**
-     * @param method
-     * @param item
-     * @param pc2
-     * @return
-     */
     public static @CheckForNull
     LocalVariableAnnotation getLocalVariableAnnotation(Method method, Item item, int pc) {
         int reg = item.getRegisterNumber();

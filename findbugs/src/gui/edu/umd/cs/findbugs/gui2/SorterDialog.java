@@ -101,8 +101,6 @@ public class SorterDialog extends FBDialog {
     /**
      * Creates JPanel with checkboxes of different things to sort by. List is:
      * priority, class, package, category, bugcode, status, and type.
-     * 
-     * @return
      */
     private JPanel createSorterPane() {
         JPanel insidePanel = new JPanel();

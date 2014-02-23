@@ -100,8 +100,6 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
      *            examining
      * @param typeMerger
      *            TODO
-     * @param typesComputerFromGenerics
-     *            TODO
      */
     public TypeFrameModelingVisitor(ConstantPoolGen cpg, TypeMerger typeMerger) {
         super(cpg);
@@ -360,10 +358,6 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         pushValue(loadType);
     }
 
-    /**
-     * @param xfield
-     * @return
-     */
     public static Type getType(XField xfield) {
         Type t = Type.getType(xfield.getSignature());
         if (!(t instanceof ReferenceType))

@@ -256,10 +256,6 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
             removeAllKeys(getUpdateableAvailableLoadMap(), killMe);
     }
 
-    /**
-     * @param className
-     * @return
-     */
     private String extractPackageName(String className) {
         return className.substring(className.lastIndexOf('.') + 1);
     }

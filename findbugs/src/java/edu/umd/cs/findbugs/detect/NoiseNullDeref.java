@@ -380,10 +380,6 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
         addPropertiesForMethodContainingWarning(propertySet);
     }
 
-    /**
-     * @param derefLocationSet
-     * @return
-     */
     private boolean uniqueLocations(Collection<Location> derefLocationSet) {
         boolean uniqueDereferenceLocations = false;
         LineNumberTable table = method.getLineNumberTable();

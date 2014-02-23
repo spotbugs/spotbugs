@@ -569,16 +569,10 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         return profiler;
     }
 
-    /**
-     * @param parseInt
-     */
     public void setTotalClasses(int totalClasses) {
         this.totalClasses = totalClasses;
     }
 
-    /**
-     * @param parseInt
-     */
     public void setTotalSize(int totalSize) {
         this.totalSize = totalSize;
     }

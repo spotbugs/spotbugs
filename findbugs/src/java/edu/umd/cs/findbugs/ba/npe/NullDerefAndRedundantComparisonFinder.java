@@ -264,10 +264,6 @@ public class NullDerefAndRedundantComparisonFinder {
         reportBugs(nullValueGuaranteedDerefMap, npeIfStatementCovered, bugLocationMap, nullValueAssignmentMap);
     }
 
-    /**
-     * @param locationWhereValueBecomesNullSet
-     * @return
-     */
     public Map<ValueNumber, Set<Location>> findNullAssignments(Set<LocationWhereValueBecomesNull> locationWhereValueBecomesNullSet) {
         Map<ValueNumber, Set<Location>> nullValueAssignmentMap = new HashMap<ValueNumber, Set<Location>>();
         for (LocationWhereValueBecomesNull lwvbn : locationWhereValueBecomesNullSet) {

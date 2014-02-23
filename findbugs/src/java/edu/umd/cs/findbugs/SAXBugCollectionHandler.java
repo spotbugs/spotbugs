@@ -76,11 +76,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
     private static final Logger LOGGER = Logger.getLogger(SAXBugCollectionHandler.class.getName());
 
-    /**
-     * @param attributes
-     * @param qName
-     * @return
-     */
     public String getOptionalAttribute(Attributes attributes, String qName) {
         return memoized(attributes.getValue(qName));
     }

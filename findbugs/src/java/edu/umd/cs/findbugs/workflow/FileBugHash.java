@@ -140,10 +140,6 @@ public class FileBugHash {
 
     }
 
-    /**
-     * @param origCollection
-     * @return
-     */
     public static FileBugHash compute(BugCollection origCollection) {
         return new FileBugHash(origCollection);
     }

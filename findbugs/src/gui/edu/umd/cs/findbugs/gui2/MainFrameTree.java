@@ -132,8 +132,6 @@ public class MainFrameTree implements Serializable {
 
     /**
      * Returns the SorterTableColumnModel of the MainFrame.
-     * 
-     * @return
      */
     SorterTableColumnModel getSorter() {
         return sorter;
@@ -184,8 +182,6 @@ public class MainFrameTree implements Serializable {
 
     /**
      * Creates popup menu for bugs on tree.
-     * 
-     * @return
      */
     JPopupMenu createBugPopupMenu() {
         JPopupMenu popupMenu = new JPopupMenu();
@@ -228,8 +224,6 @@ public class MainFrameTree implements Serializable {
     /**
      * Creates the branch pop up menu that ask if the user wants to hide all the
      * bugs in that branch.
-     * 
-     * @return
      */
     JPopupMenu createBranchPopUpMenu() {
         JPopupMenu popupMenu = new JPopupMenu();

@@ -1108,8 +1108,6 @@ public class SortedBugCollection implements BugCollection {
 
     /** Returns whether this bug collection contains results from multiple analysis runs,
      * either of different version of the software or from different versions of FindBugs.
-     *
-     * @return
      */
     @Override
     public boolean isMultiversion() {

@@ -228,9 +228,6 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
         state = 0;
     }
 
-    /**
-     * @return
-     */
     static long getFlagBits(boolean isLong, long arg0) {
         long bits = arg0;
         if (isLong) {

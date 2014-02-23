@@ -554,10 +554,6 @@ public abstract class FindBugs {
     /** Date of release of Java 1.0 */
     public final static long MINIMUM_TIMESTAMP = new GregorianCalendar(1996, 0, 23).getTime().getTime();
 
-    /**
-     * @param timestamp
-     * @return
-     */
     public static boolean validTimestamp(long timestamp) {
         return timestamp > MINIMUM_TIMESTAMP;
     }

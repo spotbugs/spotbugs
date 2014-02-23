@@ -930,12 +930,6 @@ public class SourceLineAnnotation implements BugAnnotation {
         return false;
     }
 
-    /**
-     * @param className
-     * @param methodName
-     * @param methodSig
-     * @return
-     */
     static SourceLineAnnotation getSourceAnnotationForMethod(String className, String methodName, String methodSig) {
         JavaClassAndMethod targetMethod = null;
         Code code = null;
@@ -969,10 +963,6 @@ public class SourceLineAnnotation implements BugAnnotation {
         return createUnknown(className);
     }
 
-    /**
-     * @param className
-     * @return
-     */
     static SourceLineAnnotation getSourceAnnotationForClass(String className, String sourceFileName) {
 
         int lastLine = -1;

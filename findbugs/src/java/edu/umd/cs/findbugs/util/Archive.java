@@ -59,10 +59,6 @@ public class Archive {
         return ARCHIVE_EXTENSION_SET.contains(extension);
     }
 
-    /**
-     * @param fileName
-     * @return
-     */
     private static String getExtension(String fileName) {
         int lastDot = fileName.lastIndexOf('.');
         if (lastDot < 0) {

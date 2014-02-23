@@ -603,8 +603,6 @@ public class OpcodeStack implements Constants2 {
          * If Integer.MAX value, the value was loaded from a static field
          * If -1, we don't know or don't have the register containing the object that
          * the field was loaded from.
-         * @return
-         *
          */
         public int getFieldLoadedFromRegister() {
             return fieldLoadedFromRegister;
@@ -929,9 +927,6 @@ public class OpcodeStack implements Constants2 {
                     || isZero();
         }
 
-        /**
-         * @return
-         */
         private boolean isZero() {
             return constValue != null && constValue.equals(0);
         }
@@ -973,10 +968,6 @@ public class OpcodeStack implements Constants2 {
             return specialKind == NEWLY_ALLOCATED;
         }
 
-        /**
-         * @param i
-         * @return
-         */
         public boolean hasConstantValue(int value) {
             if (constValue instanceof Number)
                 return ((Number) constValue).intValue() == value;
@@ -2037,10 +2028,6 @@ public class OpcodeStack implements Constants2 {
         mergeJumps(dbc);
     }
 
-    /**
-     * @param it
-     * @return
-     */
     private int constantToInt(Item it) {
         Object constant = it.getConstant();
         if (constant instanceof Number) {
@@ -2052,26 +2039,14 @@ public class OpcodeStack implements Constants2 {
         throw new IllegalArgumentException(String.valueOf(constant));
     }
 
-    /**
-     * @param it
-     * @return
-     */
     private float constantToFloat(Item it) {
         return ((Number) it.getConstant()).floatValue();
     }
 
-    /**
-     * @param it
-     * @return
-     */
     private double constantToDouble(Item it) {
         return ((Number) it.getConstant()).doubleValue();
     }
 
-    /**
-     * @param it
-     * @return
-     */
     private long constantToLong(Item it) {
         return ((Number) it.getConstant()).longValue();
     }
@@ -2723,13 +2698,6 @@ public class OpcodeStack implements Constants2 {
            }
        }
 
-        /**
-         * @param jclass
-         * @param method
-         * @param stack
-         * @param branchAnalysis
-         * @return
-         */
         public static @CheckForNull JumpInfo computeJumpInfo(JavaClass jclass, Method method,
                 JumpStackComputation branchAnalysis) {
             branchAnalysis.setupVisitorForClass(jclass);

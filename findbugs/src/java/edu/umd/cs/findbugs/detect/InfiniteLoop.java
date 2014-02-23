@@ -262,11 +262,6 @@ public class InfiniteLoop extends OpcodeStackDetector {
        
     }
 
-    /**
-     * @param item0
-     * @param invariantRegisters
-     * @return
-     */
     private boolean isConstant(Item item0, BackwardsBranch bb) {
 
         int reg = item0.getRegisterNumber();
@@ -431,11 +426,6 @@ public class InfiniteLoop extends OpcodeStackDetector {
         return target;
     }
 
-    /**
-     * @param item1
-     * @param branchTarget
-     * @return
-     */
     private boolean constantSince(Item item1, int branchTarget) {
         int reg = item1.getRegisterNumber();
         if (reg >= 0)

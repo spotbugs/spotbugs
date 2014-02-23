@@ -62,8 +62,6 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
      * Note "before" is meant in the logical sense, so for backward analyses,
      * before means after the location in the control flow sense.
      * 
-     * @param location
-     *            the location
      * @return the fact at the point just before the location
      */
 
@@ -86,8 +84,6 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
      * Note "before" is meant in the logical sense, so for backward analyses,
      * before means after the location in the control flow sense.
      * 
-     * @param location
-     *            the location
      * @return the fact at the point just before the location
      */
 

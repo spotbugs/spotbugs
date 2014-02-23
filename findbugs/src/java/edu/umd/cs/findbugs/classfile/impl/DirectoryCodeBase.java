@@ -172,9 +172,6 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
 
     /**
      * Get the full path of given resource.
-     * 
-     * @param resourceName
-     * @return
      */
     File getFullPathOfResource(String resourceName) {
         return new File(directory, resourceName);

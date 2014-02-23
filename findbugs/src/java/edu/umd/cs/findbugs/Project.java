@@ -1170,9 +1170,6 @@ public class Project implements XMLWriteable {
         return guiCallback;
     }
 
-    /**
-     * @return
-     */
     public Iterable<String> getResolvedSourcePaths() {
         List<String> result = new ArrayList<String>();
         for (String s : srcDirList) {

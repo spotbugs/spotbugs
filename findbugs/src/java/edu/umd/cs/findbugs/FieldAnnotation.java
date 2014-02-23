@@ -287,10 +287,6 @@ public class FieldAnnotation extends PackageMemberAnnotation {
             throw new IllegalArgumentException("unknown key " + key);
     }
 
-    /**
-     * @param primaryClass
-     * @return
-     */
     private String getNameInClass(ClassAnnotation primaryClass) {
         if (primaryClass == null)
             return className + "." + fieldName;

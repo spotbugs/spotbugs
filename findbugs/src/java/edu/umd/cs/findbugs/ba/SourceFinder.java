@@ -504,11 +504,6 @@ public class SourceFinder {
         throw new FileNotFoundException("Can't find source file " + fileName);
     }
 
-    /**
-     * @param packageName
-     * @param fileName
-     * @return
-     */
     public static String getPlatformName(String packageName, String fileName) {
         String platformName = packageName.replace('.', File.separatorChar) + (packageName.length() > 0 ? File.separator : "")
                 + fileName;
@@ -522,11 +517,6 @@ public class SourceFinder {
     public static String getCanonicalName(SourceLineAnnotation source) {
         return getCanonicalName(source.getPackageName(), getOrGuessSourceFile(source));
     }
-    /**
-     * @param packageName
-     * @param fileName
-     * @return
-     */
     public static String getCanonicalName(String packageName, String fileName) {
         String canonicalName = packageName.replace('.', '/') + (packageName.length() > 0 ? "/" : "") + fileName;
         return canonicalName;

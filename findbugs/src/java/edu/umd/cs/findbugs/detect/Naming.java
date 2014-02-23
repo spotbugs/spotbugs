@@ -217,10 +217,6 @@ public class Naming extends PreorderVisitor implements Detector {
         return false;
     }
 
-    /**
-     * @param overrides
-     * @return
-     */
     private boolean allAbstract(Set<XMethod> overrides) {
         boolean allAbstract = true;
         for (XMethod m4 : overrides) {
@@ -420,10 +416,6 @@ public class Naming extends PreorderVisitor implements Detector {
         }
     }
 
-    /**
-     * @param obj
-     * @return
-     */
     private boolean badFieldName(Field obj) {
         String fieldName = obj.getName();
         return !obj.isFinal() && Character.isLetter(fieldName.charAt(0)) && !Character.isLowerCase(fieldName.charAt(0))
@@ -560,10 +552,6 @@ public class Naming extends PreorderVisitor implements Detector {
         return m.getName().equals("<init>") && m.getSignature().equals("(" + outerClassSignature + ")V");
     }
 
-    /**
-     * @param mName
-     * @return
-     */
     private boolean badMethodName(String mName) {
         return mName.length() >= 2 && Character.isLetter(mName.charAt(0)) && !Character.isLowerCase(mName.charAt(0))
                 && Character.isLetter(mName.charAt(1)) && Character.isLowerCase(mName.charAt(1)) && mName.indexOf("_") == -1;

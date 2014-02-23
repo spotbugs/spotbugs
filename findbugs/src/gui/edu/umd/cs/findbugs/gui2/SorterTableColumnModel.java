@@ -107,11 +107,6 @@ public class SorterTableColumnModel implements TableColumnModel {
         check();
     }
 
-    /**
-     * @param x
-     * @param c
-     * @return
-     */
     private TableColumn makeTableColumn(int x, Sortables c) {
         TableColumn tc = new TableColumn(x);
         FBTableCellRenderer temp = new FBTableCellRenderer();

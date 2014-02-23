@@ -338,9 +338,6 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
         }
     }
 
-    /**
-     * @return
-     */
     private boolean isLocked() {
         try {
             if (currentMethod != null && currentLockDataFlow != null && currentCFG != null) {

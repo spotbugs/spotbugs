@@ -279,10 +279,6 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 
     }
 
-    /**
-     * @param o
-     * @return
-     */
     public AnnotationEnum getDirectAnnotation(final Object o) {
         return directAnnotations.get(o);
     }

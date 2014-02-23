@@ -421,11 +421,6 @@ public class ClassParser implements ClassParserInterface {
 
     /**
      * Read method_info, read method descriptor.
-     *
-     * @param thisClassDescriptor
-     * @return
-     * @throws IOException
-     * @throws InvalidClassFileFormatException
      */
     private MethodDescriptor readMethod(ClassDescriptor thisClassDescriptor) throws InvalidClassFileFormatException, IOException {
         return readFieldOrMethod(thisClassDescriptor, new FieldOrMethodDescriptorCreator<MethodDescriptor>() {

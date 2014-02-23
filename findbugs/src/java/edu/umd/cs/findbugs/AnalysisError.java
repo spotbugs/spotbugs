@@ -98,10 +98,6 @@ public class AnalysisError {
         }
     }
 
-    /**
-     * @param exception
-     * @return
-     */
     private String[] getStackTraceAsStringArray(Throwable exception) {
         StackTraceElement[] exceptionStackTrace = exception.getStackTrace();
         ArrayList<String> arr = new ArrayList<String>();

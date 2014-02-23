@@ -93,10 +93,6 @@ public class Util {
     }
     /**
      * return sign of x - y
-     *
-     * @param x
-     * @param y
-     * @return
      */
     public static int compare(int x, int y) {
         if (x > y)
@@ -108,10 +104,6 @@ public class Util {
 
     /**
      * return sign of x - y
-     *
-     * @param x
-     * @param y
-     * @return
      */
     public static int compare(long x, long y) {
         if (x > y)

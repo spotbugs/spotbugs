@@ -64,8 +64,8 @@ public class OutputStreamXMLOutput implements XMLOutput {
     /**
      * Constructor.
      *
-     * @param os
-     *            OutputStream to write XML output to
+     * @param writer
+     *            Writer to write XML output to
      */
     public OutputStreamXMLOutput(@WillCloseWhenClosed Writer writer) {
         this(writer, null);

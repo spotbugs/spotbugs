@@ -208,8 +208,6 @@ public interface IAnalysisCache {
 
     /**
      * Get the analysis profiler instance, never null
-     * 
-     * @return
      */
     public Profiler getProfiler();
 }

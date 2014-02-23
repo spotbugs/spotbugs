@@ -217,10 +217,6 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
         }
     }
 
-    /**
-     * @param xMethod
-     * @return
-     */
     private boolean isUnconditionalThrower(XMethod xMethod) {
         return xMethod.isUnconditionalThrower() && !xMethod.isUnsupported() && !xMethod.isSynthetic();
     }

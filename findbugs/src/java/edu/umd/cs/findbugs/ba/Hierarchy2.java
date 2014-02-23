@@ -389,16 +389,6 @@ public class Hierarchy2 {
 
     }
 
-    /**
-     * @param receiverClassName
-     * @param methodName
-     * @param methodSig
-     * @param receiverTypeIsExact
-     * @param invokeSpecial
-     *            TODO
-     * @return
-     * @throws ClassNotFoundException
-     */
     public static Set<XMethod> resolveVirtualMethodCallTargets(String receiverClassName, String methodName, String methodSig,
             boolean receiverTypeIsExact, boolean invokeSpecial) throws ClassNotFoundException {
         ClassDescriptor receiverDesc = DescriptorFactory.createClassDescriptorFromDottedClassName(receiverClassName);

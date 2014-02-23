@@ -86,7 +86,6 @@ public enum FlowValue {
 
     /**
      * Determine whether given flow values conflict.
-     * @param typeQualifierValue TODO
      * @param forward
      *            a forwards flow value
      * @param backward

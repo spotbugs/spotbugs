@@ -71,8 +71,6 @@ public class BugCategory implements Comparable<BugCategory> {
      * 
      * @param category
      *            the category
-     * @param shortDescription
-     *            short (a word or three) description of the bug species
      */
     public BugCategory(String category) {
         this(category, null, null, null);

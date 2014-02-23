@@ -82,9 +82,6 @@ class BugCounts {
      * @param xmlOutput
      *            an output stream for which startTag has been called but
      *            stopTag has not.
-     * @param bugs
-     *            an array for which the element at offset n is the number of
-     *            bugs for priority n.
      */
     public  void writeBugPriorities(XMLOutput xmlOutput) throws IOException {
         if (nBugs == null)

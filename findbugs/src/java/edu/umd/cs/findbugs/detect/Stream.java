@@ -251,11 +251,6 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
         return false;
     }
 
-    /**
-     * @param classClosed
-     * @return
-     * @throws ClassNotFoundException
-     */
     private boolean relatedType(String classClosed) throws ClassNotFoundException {
         return Hierarchy.isSubtype(classClosed, streamBase) || Hierarchy.isSubtype(streamBase, classClosed);
     }

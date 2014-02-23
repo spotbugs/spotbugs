@@ -49,10 +49,6 @@ public class TreemapVisualization {
         }
     }
 
-    /**
-     * @param packageName
-     * @return
-     */
     private static String superpackage(String packageName) {
         int i = packageName.lastIndexOf('.');
         if (i == -1)

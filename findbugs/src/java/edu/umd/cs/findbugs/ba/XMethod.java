@@ -86,8 +86,6 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
      * method in a superclass. This method simply forwards the call to the
      * method it bridges to, which is a method with an identical name but possibly co-variant arguments and
      * return values.
-     *
-     * @return
      */
     public @CheckForNull
     XMethod bridgeTo();
@@ -211,9 +209,6 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
      */
     public void addAnnotation(AnnotationValue annotationValue);
 
-    /**
-     * @return
-     */
     boolean usesInvokeDynamic();
 
 

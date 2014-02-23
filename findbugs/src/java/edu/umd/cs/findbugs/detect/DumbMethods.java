@@ -1089,9 +1089,6 @@ public class DumbMethods extends OpcodeStackDetector {
      * Return index of stack entry that must be nonnegative.
      *
      * Return -1 if no stack entry is required to be nonnegative.
-     *
-     * @param seen
-     * @return
      */
     private int stackEntryThatMustBeNonnegative(int seen) {
         switch (seen) {

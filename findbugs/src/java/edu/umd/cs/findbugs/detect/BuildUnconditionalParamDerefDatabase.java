@@ -209,13 +209,6 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
         }
     }
 
-    /**
-     * @param classContext
-     * @param method
-     * @param entryFact
-     * @param paramVN
-     * @return
-     */
     public boolean isCaught(ClassContext classContext, Method method, UnconditionalValueDerefSet entryFact, ValueNumber paramVN) {
         boolean caught = true;
 

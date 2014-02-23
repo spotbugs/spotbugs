@@ -969,12 +969,6 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         }
     }
 
-    /**
-     * @param propertySet
-     * @param pc
-     * @param isConsistent
-     * @return
-     */
     public boolean isDuplicated(WarningPropertySet<WarningProperty> propertySet, int pc, boolean isConsistent) {
         boolean duplicated = false;
         if (!isConsistent) {
@@ -1598,10 +1592,6 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         addPropertiesForMethodContainingWarning(propertySet);
     }
 
-    /**
-     * @param derefLocationSet
-     * @return
-     */
     private boolean uniqueLocations(Collection<Location> derefLocationSet) {
         boolean uniqueDereferenceLocations = false;
         CodeException[] exceptionTable = method.getCode().getExceptionTable();

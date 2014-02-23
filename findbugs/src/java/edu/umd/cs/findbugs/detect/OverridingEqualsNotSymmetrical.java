@@ -309,10 +309,6 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
     }
 
-    /**
-     * @param seen
-     * @return
-     */
     private boolean callToInvoke(int seen) {
         if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE || seen == INVOKESPECIAL)
             return invokesMethodWithEqualLikeName() && getSigConstantOperand().equals(EQUALS_SIGNATURE);
