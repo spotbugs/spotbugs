@@ -221,7 +221,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         if (DEBUG || DEBUG_NULLARG)
             System.out.println("Pre FND ");
 
-        if ((method.getAccessFlags() & Constants.ACC_VOLATILE) != 0)
+        if ((method.getAccessFlags() & Constants.ACC_BRIDGE) != 0)
             return;
 
         MethodGen methodGen = classContext.getMethodGen(method);
@@ -1160,7 +1160,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             priority += 1;
         }
 
-        
+
         if (DEBUG) {
             System.out.println("RCN " + priority + " " + redundantBranch.firstValue + " =? " + redundantBranch.secondValue + " : "
                     + warning);
