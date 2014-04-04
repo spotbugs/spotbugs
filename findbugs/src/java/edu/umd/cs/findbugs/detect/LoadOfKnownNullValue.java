@@ -10,6 +10,8 @@ import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ARETURN;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.GOTO;
+import org.apache.bcel.generic.IFNULL;
+import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
@@ -34,6 +36,7 @@ import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
+import edu.umd.cs.findbugs.visitclass.Util;
 
 public class LoadOfKnownNullValue implements Detector {
 
@@ -158,7 +161,13 @@ public class LoadOfKnownNullValue implements Detector {
             int index = load.getIndex();
             IsNullValue v = frame.getValue(index);
             if (v.isDefinitelyNull()) {
-                Instruction next = handle.getNext().getInstruction();
+                InstructionHandle nextHandle = handle.getNext();
+                Instruction next = nextHandle.getInstruction();
+                int position = location
+                        .getHandle().getPosition();
+                int catchSizeANY = Util.getSizeOfSurroundingTryBlock(method, "", position);
+                if (catchSizeANY < Integer.MAX_VALUE && isNullTestedClose( classContext, load, nextHandle, next))
+                    continue;
                 InstructionHandle prevHandle = handle.getPrev();
                 SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
                         sourceFile, handle);
@@ -232,6 +241,47 @@ public class LoadOfKnownNullValue implements Detector {
             }
 
         }
+    }
+
+    /**
+     * @param classContext
+     * @param nextHandle
+     * @param next
+     */
+    private boolean isNullTestedClose(ClassContext classContext, ALOAD load, InstructionHandle nextHandle, Instruction next) {
+        if (!(next instanceof IFNULL))
+            return false;
+
+        IFNULL ifNull = (IFNULL) next;
+        InstructionHandle nextNextHandle = nextHandle.getNext(); // aload
+        if (nextNextHandle == null)
+            return false;
+        Instruction nextInstruction = nextNextHandle.getInstruction();
+
+        if (!(nextInstruction instanceof ALOAD))
+            return false;
+        ALOAD nextLoad = (ALOAD) nextInstruction;
+        if (load.getIndex() != nextLoad.getIndex())
+            return false;
+        InstructionHandle nextNextNextHandle = nextNextHandle.getNext(); // invoke
+        if (nextNextNextHandle == null)
+            return false;
+        Instruction nextNextNextInstruction = nextNextNextHandle.getInstruction();
+        if (!(nextNextNextInstruction instanceof INVOKEVIRTUAL))
+            return false;
+        INVOKEVIRTUAL invokeVirtual = (INVOKEVIRTUAL) nextNextNextInstruction;
+        String methodName = invokeVirtual.getMethodName(classContext.getConstantPoolGen());
+        String methodSig = invokeVirtual.getSignature(classContext.getConstantPoolGen());
+        if (!methodName.equals("close"))
+            return false;
+        if (!methodSig.equals("()V"))
+            return false;
+        InstructionHandle nextNextNextNextHandle = nextNextNextHandle.getNext(); // after
+        if (ifNull.getTarget() != nextNextNextNextHandle)
+            return false;
+
+        return true;
+
     }
 
     @Override

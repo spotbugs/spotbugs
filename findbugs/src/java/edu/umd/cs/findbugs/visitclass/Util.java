@@ -74,7 +74,7 @@ public class Util {
 
         return getSizeOfSurroundingTryBlock(method, ClassName.toSlashedClassName(exceptionClass), pc);
     }
-    public static int getSizeOfSurroundingTryBlock(@CheckForNull Method method, String vmNameOfExceptionClass, int pc) {
+    public static int getSizeOfSurroundingTryBlock(@CheckForNull Method method, @CheckForNull String vmNameOfExceptionClass, int pc) {
         if (method == null)
             return Integer.MAX_VALUE;
         return getSizeOfSurroundingTryBlock(method.getConstantPool(), method.getCode(), vmNameOfExceptionClass, pc);
@@ -89,7 +89,7 @@ public class Util {
         for (CodeException catchBlock : code.getExceptionTable()) {
             if (vmNameOfExceptionClass != null) {
                 Constant catchType = constantPool.getConstant(catchBlock.getCatchType());
-                if (catchType == null || catchType instanceof ConstantClass
+                if (catchType == null && !vmNameOfExceptionClass.isEmpty() ||  catchType instanceof ConstantClass
                         && !((ConstantClass) catchType).getBytes(constantPool).equals(vmNameOfExceptionClass))
                     continue;
             }
@@ -116,12 +116,9 @@ public class Util {
         for (CodeException catchBlock : code.getExceptionTable()) {
             if (vmNameOfExceptionClass != null) {
                 Constant catchType = constantPool.getConstant(catchBlock.getCatchType());
-                if (catchType == null) continue;
-                if (catchType instanceof ConstantClass) {
-                    String name = ((ConstantClass) catchType).getBytes(constantPool);
-                       if (!name.equals(vmNameOfExceptionClass))
-                           continue;
-                }
+                if (catchType == null && !vmNameOfExceptionClass.isEmpty() ||  catchType instanceof ConstantClass
+                        && !((ConstantClass) catchType).getBytes(constantPool).equals(vmNameOfExceptionClass))
+                    continue;
             }
             int startPC = catchBlock.getStartPC();
             int endPC = catchBlock.getEndPC();
