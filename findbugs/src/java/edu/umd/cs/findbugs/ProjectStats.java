@@ -89,6 +89,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 
     private Footprint baseFootprint;
 
+    private String java_version = SystemProperties.getProperty("java.version");
     private String java_vm_version = SystemProperties.getProperty("java.vm.version");
 
     private final Profiler profiler;
@@ -377,6 +378,8 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         xmlOutput.addAttribute("total_size", String.valueOf(getCodeSize()));
         xmlOutput.addAttribute("num_packages", String.valueOf(packageStatsMap.size()));
 
+        if (java_version != null)
+            xmlOutput.addAttribute("java_version", java_version);
         if (java_vm_version != null)
             xmlOutput.addAttribute("vm_version", java_vm_version);
         Footprint delta = new Footprint(baseFootprint);
