@@ -205,14 +205,14 @@ public class DumbMethods extends OpcodeStackDetector {
     boolean freshRandomOnTos = false;
 
     boolean freshRandomOneBelowTos = false;
-    
+
     boolean sawLoadOfMinValue = false;
 
     MethodDescriptor previousMethodCall = null;
 
     @Override
     public void sawOpcode(int seen) {
-        
+
         if (isMethodCall()) {
             MethodDescriptor called = getMethodDescriptorOperand();
 
@@ -259,7 +259,7 @@ public class DumbMethods extends OpcodeStackDetector {
             previousMethodCall = called;
         } else
             previousMethodCall = null;
-        
+
 
         if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
             Constant c = getConstantRefOperand();
@@ -357,7 +357,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 && getPrevOpcode(1) == ANEWARRAY && getPrevOpcode(2) == ICONST_0)
             accumulator.accumulateBug(new BugInstance(this, "DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD", NORMAL_PRIORITY)
                     .addClassAndMethod(this).addCalledMethod(this), this);
-        
+
         if (seen == INVOKESTATIC && (getClassConstantOperand().equals("com/google/common/base/Preconditions")
              && getNameConstantOperand().equals("checkNotNull")
              || getClassConstantOperand().equals("com/google/common/base/Strings")
@@ -1027,7 +1027,7 @@ public class DumbMethods extends OpcodeStackDetector {
                     && getNameConstantOperand().equals("<init>") && getSigConstantOperand().equals("(D)V")) {
                 OpcodeStack.Item top = stack.getStackItem(0);
                 Object value = top.getConstant();
-                if (value instanceof Double) {
+                if (value instanceof Double && !((Double)value).isInfinite() && !((Double)value).isNaN()) {
                     double arg = ((Double) value).doubleValue();
                     String dblString = Double.toString(arg);
                     String bigDecimalString = new BigDecimal(arg).toString();
@@ -1188,7 +1188,7 @@ public class DumbMethods extends OpcodeStackDetector {
      * Flush out cached state at the end of a method.
      */
     private void flush() {
-        
+
         if (pendingAbsoluteValueBug != null) {
             absoluteValueAccumulator.accumulateBug(pendingAbsoluteValueBug, pendingAbsoluteValueBugSourceLine);
             pendingAbsoluteValueBug = null;
