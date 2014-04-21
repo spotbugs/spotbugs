@@ -21,18 +21,25 @@ package edu.umd.cs.findbugs.log;
 
 import java.lang.reflect.Method;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * @author pugh
  */
 public class YourKitController {
 
+    private static final boolean ENABLED = SystemProperties.getBoolean("findbugs.yourkit.enabled");
+
     Object controller;
 
     Method advanceGeneration, captureMemorySnapshot, getStatus;
-    
-     public static final long ALLOCATION_RECORDING = 2L;
+
+    public static final long ALLOCATION_RECORDING = 2L;
 
     public YourKitController() {
+        if(!ENABLED){
+            return;
+        }
         try {
             Class<?> c = Class.forName("com.yourkit.api.Controller");
             controller = c.newInstance();
@@ -57,7 +64,7 @@ public class YourKitController {
             assert true;
         }
     }
-    
+
     public long getStatus() {
         if (getStatus == null)
             return 0;
