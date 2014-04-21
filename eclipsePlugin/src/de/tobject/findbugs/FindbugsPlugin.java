@@ -430,6 +430,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         // need to call from UI thread
         final IWorkbenchWindow[] window = new IWorkbenchWindow[1];
         Display.getDefault().syncExec(new Runnable() {
+            @Override
             public void run() {
                 window[0] = getDefault().getWorkbench().getActiveWorkbenchWindow();
             }
@@ -798,10 +799,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         // see the javadoc for org.eclipse.core.runtime.Plugin
         File bugCollectionFile = bugCollectionPath.toFile();
         FileOutput fileOutput = new FileOutput() {
+            @Override
             public void writeFile(OutputStream os) throws IOException {
                 bugCollection.writeXML(os);
             }
 
+            @Override
             public String getTaskDescription() {
                 return "creating XML FindBugs data file";
             }
@@ -976,10 +979,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     public static void saveUserPreferences(IProject project, final UserPreferences userPrefs) throws CoreException {
 
         FileOutput userPrefsOutput = new FileOutput() {
+            @Override
             public void writeFile(OutputStream os) throws IOException {
                 userPrefs.write(os);
             }
 
+            @Override
             public String getTaskDescription() {
                 return "writing user preferences";
             }
@@ -1014,18 +1019,11 @@ public class FindbugsPlugin extends AbstractUIPlugin {
                 return;
             }
             IPreferenceStore store = getDefault().getPreferenceStore();
-            // Reset any existing custom plugins entries
-            int start = 0;
-            // 99 is paranoia.
-            while(start < 99){
-                String name = UserPreferences.KEY_PLUGIN + start;
-                if(store.contains(name)){
-                    store.setToDefault(name);
-                } else {
-                    break;
-                }
-                start ++;
-            }
+            // Reset any existing custom group entries
+            resetStore(store, UserPreferences.KEY_PLUGIN);
+            resetStore(store, UserPreferences.KEY_EXCLUDE_BUGS);
+            resetStore(store, UserPreferences.KEY_EXCLUDE_FILTER);
+            resetStore(store, UserPreferences.KEY_INCLUDE_FILTER);
             for (Entry<Object, Object> entry : props.entrySet()) {
                 store.putValue((String) entry.getKey(), (String) entry.getValue());
             }
@@ -1037,6 +1035,23 @@ public class FindbugsPlugin extends AbstractUIPlugin {
                     getDefault().logException(e, "Failed to save user preferences");
                 }
             }
+        }
+    }
+
+    /**
+     * Removes all consequent enumerated keys from given store staring with given prefix
+     */
+    private static void resetStore(IPreferenceStore store, String prefix) {
+        int start = 0;
+        // 99 is paranoia.
+        while(start < 99){
+            String name = prefix + start;
+            if(store.contains(name)){
+                store.setToDefault(name);
+            } else {
+                break;
+            }
+            start ++;
         }
     }
 

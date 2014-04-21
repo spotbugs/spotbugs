@@ -99,11 +99,20 @@ public class UserPreferences implements Cloneable {
 
     private static final String EFFORT_KEY = "effort";
 
-    private static final String KEY_INCLUDE_FILTER = "includefilter";
+    /**
+     * Key prefix for custom filters, full key consists of a prefix + filter index starting with 0
+     */
+    public static final String KEY_INCLUDE_FILTER = "includefilter";
 
-    private static final String KEY_EXCLUDE_FILTER = "excludefilter";
+    /**
+     * Key prefix for custom filters, full key consists of a prefix + filter index starting with 0
+     */
+    public static final String KEY_EXCLUDE_FILTER = "excludefilter";
 
-    private static final String KEY_EXCLUDE_BUGS = "excludebugs";
+    /**
+     * Key prefix for custom filters, full key consists of a prefix + filter index starting with 0
+     */
+    public static final String KEY_EXCLUDE_BUGS = "excludebugs";
 
     // Fields
 
