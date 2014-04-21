@@ -162,7 +162,7 @@
   </contributors>
 
   <properties>
-    <asmVersion>5.0</asmVersion>
+    <asmVersion>5.0.2</asmVersion>
     <junitVersion>4.11</junitVersion>
   </properties>
 
