@@ -28,17 +28,18 @@ import static org.eclipse.jdt.core.dom.InfixExpression.Operator.NOT_EQUALS;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.InfixExpression;
+import org.eclipse.jdt.core.dom.InfixExpression.Operator;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.PrefixExpression;
-import org.eclipse.jdt.core.dom.InfixExpression.Operator;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 
@@ -66,9 +67,9 @@ public class UseEqualsResolution extends BugResolution {
 
     @Override
     protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
-        assert rewrite != null;
-        assert workingUnit != null;
-        assert bug != null;
+        Assert.isNotNull(rewrite);
+        Assert.isNotNull(workingUnit);
+        Assert.isNotNull(bug);
 
         InfixExpression[] stringEqualityChecks = findStringEqualityChecks(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
         for (InfixExpression stringEqualityCheck : stringEqualityChecks) {
@@ -96,8 +97,8 @@ public class UseEqualsResolution extends BugResolution {
     }
 
     protected Expression createEqualsExpression(ASTRewrite rewrite, InfixExpression stringEqualityCheck) {
-        assert rewrite != null;
-        assert stringEqualityCheck != null;
+        Assert.isNotNull(rewrite);
+        Assert.isNotNull(stringEqualityCheck);
 
         final AST ast = rewrite.getAST();
         MethodInvocation equalsInvocation = ast.newMethodInvocation();
@@ -148,7 +149,7 @@ public class UseEqualsResolution extends BugResolution {
 
     static class StringEqualityCheckFinder extends ASTVisitor {
 
-        private Set<InfixExpression> objectEqualityChecks = new HashSet<InfixExpression>();
+        private final Set<InfixExpression> objectEqualityChecks = new HashSet<InfixExpression>();
 
         @Override
         public boolean visit(InfixExpression node) {
