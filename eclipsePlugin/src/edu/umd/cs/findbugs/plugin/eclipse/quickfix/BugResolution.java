@@ -19,12 +19,16 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
+import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.text.edits.TextEdit;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMarkerResolution;
+import org.eclipse.ui.texteditor.ITextEditor;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
@@ -52,6 +56,7 @@ public abstract class BugResolution implements IMarkerResolution {
 
     private IProgressMonitor monitor = null;
 
+    @Override
     @CheckForNull
     public String getLabel() {
         return label;
@@ -80,6 +85,7 @@ public abstract class BugResolution implements IMarkerResolution {
      * @param marker
      *            non null The <CODE>IMarker</CODE> that specifies the bug.
      */
+    @Override
     public void run(IMarker marker) {
         checkForNull(marker, "marker");
         try {
@@ -124,11 +130,14 @@ public abstract class BugResolution implements IMarkerResolution {
 
         try {
             repairBug(rewrite, workingUnit, bug);
-            rewriteCompilationUnit(rewrite, doc, originalUnit);
-
+            IRegion region = rewriteCompilationUnit(rewrite, doc, originalUnit);
             FindbugsPlugin.getBugCollection(project, monitor).remove(bug);
-
             marker.delete();
+
+            IEditorPart part = EditorUtility.isOpenInEditor(originalUnit);
+            if (part instanceof ITextEditor) {
+                ((ITextEditor) part).selectAndReveal(region.getOffset(), region.getLength());
+            }
         } finally {
             originalUnit.discardWorkingCopy();
         }
@@ -181,13 +190,14 @@ public abstract class BugResolution implements IMarkerResolution {
         return (CompilationUnit) parser.createAST(monitor);
     }
 
-    private void rewriteCompilationUnit(ASTRewrite rewrite, IDocument doc, ICompilationUnit originalUnit)
+    private IRegion rewriteCompilationUnit(ASTRewrite rewrite, IDocument doc, ICompilationUnit originalUnit)
             throws JavaModelException, BadLocationException {
         TextEdit edits = rewrite.rewriteAST(doc, originalUnit.getJavaProject().getOptions(true));
         edits.apply(doc);
 
         originalUnit.getBuffer().setContents(doc.get());
         originalUnit.commitWorkingCopy(false, monitor);
+        return edits.getRegion();
     }
 
 }
