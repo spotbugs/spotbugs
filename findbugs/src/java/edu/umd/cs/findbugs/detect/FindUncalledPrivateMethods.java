@@ -49,17 +49,21 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 
     @Override
     public void visitMethod(Method obj) {
+        if (!obj.isPrivate() || obj.isSynthetic()) {
+            return;
+        }
         super.visitMethod(obj);
-        if (obj.isPrivate() && !getMethodName().equals("writeReplace") && !getMethodName().equals("readResolve")
-                && !getMethodName().equals("readObject") && !getMethodName().equals("readObjectNoData")
-                && !getMethodName().equals("writeObject") && getMethodName().indexOf("debug") == -1
-                && getMethodName().indexOf("Debug") == -1 && getMethodName().indexOf("trace") == -1
-                && getMethodName().indexOf("Trace") == -1 && !getMethodName().equals("<init>")
-                && !getMethodName().equals("<clinit>")) {
+        String methodName = getMethodName();
+        if (!methodName.equals("writeReplace") && !methodName.equals("readResolve")
+                && !methodName.equals("readObject") && !methodName.equals("readObjectNoData")
+                && !methodName.equals("writeObject")
+                && methodName.indexOf("debug") == -1 && methodName.indexOf("Debug") == -1
+                && methodName.indexOf("trace") == -1 && methodName.indexOf("Trace") == -1
+                && !methodName.equals("<init>") && !methodName.equals("<clinit>")) {
             for(AnnotationEntry a : obj.getAnnotationEntries()) {
                 String typeName =  a.getAnnotationType();
                 if (typeName.equals("Ljavax/annotation/PostConstruct;")
-                    || typeName.equals("Ljavax/annotation/PreDestroy;"))
+                        || typeName.equals("Ljavax/annotation/PreDestroy;"))
                     return;
             }
             definedPrivateMethods.add(MethodAnnotation.fromVisitedMethod(this));
