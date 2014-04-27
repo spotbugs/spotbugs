@@ -271,6 +271,8 @@
                     reports="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" hidden="false"/>
           <Detector class="edu.umd.cs.findbugs.detect.BooleanReturnNull"
                     reports="NP_BOOLEAN_RETURN_NULL" hidden="false"/>
+          <Detector class="edu.umd.cs.findbugs.detect.OptionalReturnNull"
+                    reports="NP_OPTIONAL_RETURN_NULL" hidden="false"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation" speed="fast" reports=""
                     hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.Methods" speed="fast" reports=""
@@ -634,7 +636,8 @@
           <BugPattern abbrev="NP" type="NP_SYNC_AND_NULL_CHECK_FIELD" category="MT_CORRECTNESS"
                     cweid="585"/>
           <BugPattern abbrev="NP" type="NP_BOOLEAN_RETURN_NULL" category="BAD_PRACTICE"/>
-      <BugPattern abbrev="NP" type="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_OPTIONAL_RETURN_NULL" category="CORRECTNESS"/>
+          <BugPattern abbrev="NP" type="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" category="CORRECTNESS"/>
           <BugPattern abbrev="VR" type="VR_UNRESOLVABLE_REFERENCE" category="CORRECTNESS"
                     experimental="true"/>
           <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD"

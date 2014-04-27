@@ -16,30 +16,33 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 
 /**
- * @author alison
+ * Methods with "Optional" return type should never return null.
+ *
+ * @author Andrey Loskutov
  */
-public class BooleanReturnNull extends TypeReturnNull {
+public class OptionalReturnNull extends TypeReturnNull {
 
-    public BooleanReturnNull(BugReporter bugReporter) {
+    public OptionalReturnNull(BugReporter bugReporter) {
         super(bugReporter);
     }
 
     @Override
     protected boolean matchesReturnSignature(String returnSignature) {
-        return "Ljava/lang/Boolean;".equals(returnSignature);
+        return "Ljava/util/Optional;".equals(returnSignature)
+            || "Lcom/google/common/base/Optional;".equals(returnSignature);
     }
 
     @Override
     protected void accumulateBug() {
-        bugAccumulator.accumulateBug(new BugInstance(this, "NP_BOOLEAN_RETURN_NULL",
-                getMethodName().startsWith("is") ? HIGH_PRIORITY : NORMAL_PRIORITY).addClassAndMethod(this), this);
+        bugAccumulator.accumulateBug(new BugInstance(this, "NP_OPTIONAL_RETURN_NULL",
+                HIGH_PRIORITY).addClassAndMethod(this), this);
     }
+
 
 }

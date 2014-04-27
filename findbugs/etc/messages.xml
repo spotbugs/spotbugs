@@ -394,6 +394,14 @@ literals.
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.OptionalReturnNull">
+    <Details>
+<![CDATA[
+<p> Looks for methods with Optional return type that return explicit null values.</p>
+
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue">
     <Details>
 <![CDATA[
@@ -1941,6 +1949,18 @@ another package.</p>
     This method can be invoked as though it returned a value of type boolean, and
     the compiler will insert automatic unboxing of the Boolean value. If a null value is returned,
     this will result in a NullPointerException.
+       </p>
+       ]]>
+       </Details>
+  </BugPattern>
+  <BugPattern type="NP_OPTIONAL_RETURN_NULL">
+    <ShortDescription>Method with Optional return type returns explicit null</ShortDescription>
+    <LongDescription>{1} has Optional return type and returns explicit null</LongDescription>
+    <Details>
+       <![CDATA[
+       <p>
+    The usage of Optional return type always mean that explicit null returns were not desired by design.
+    Returning a null value in such case is a contract violation and will most likely break clients code.
        </p>
        ]]>
        </Details>
@@ -3766,12 +3786,12 @@ could be changed by malicious code or
     <LongDescription>Potentially ambiguous invocation of either an outer or inherited method {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> 
-An inner class is invoking a method that could be resolved to either a inherited method or a method defined in an outer class. 
+  <p>
+An inner class is invoking a method that could be resolved to either a inherited method or a method defined in an outer class.
 For example, you invoke <code>foo(17)</code>, which is defined in both a superclass and in an outer method.
 By the Java semantics,
 it will be resolved to invoke the inherited method, but this may not be want
-you intend. 
+you intend.
 </p>
 <p>If you really intend to invoke the inherited method,
 invoke it by invoking the method on super (e.g., invoke super.foo(17)), and
@@ -3779,7 +3799,7 @@ thus it will be clear to other readers of your code and to FindBugs
 that you want to invoke the inherited method, not the method in the outer class.
 </p>
 <p>If you call <code>this.foo(17)</code>, then the inherited method will be invoked. However, since FindBugs only looks at
-classfiles, it 
+classfiles, it
 can't tell the difference between an invocation of <code>this.foo(17)</code> and <code>foo(17)</code>, it will still
 complain about a potential ambiguous invocation.
 </p>
@@ -6278,9 +6298,9 @@ has effect. Please verify that this statement does the right thing.
     <LongDescription>Useless increment in return from {1}</LongDescription>
     <Details>
       <![CDATA[
-<p>This statement has a return such as <code>return x++;</code>. 
+<p>This statement has a return such as <code>return x++;</code>.
 A postfix increment/decrement does not impact the value of the expression,
-so this increment/decrement has no effect. 
+so this increment/decrement has no effect.
 Please verify that this statement does the right thing.
 </p>
 ]]>
@@ -8068,8 +8088,8 @@ after the call to initLogging, the logger configuration is lost
     <Details>
         <![CDATA[<p>
         A method should always implement the contract of a method it overrides. Thus, if a method takes a parameter
-	that is marked as @Nullable, you shouldn't override that method in a subclass with a method where that parameter is @Nonnull.
-	Doing so violates the contract that the method should handle a null parameter.
+    that is marked as @Nullable, you shouldn't override that method in a subclass with a method where that parameter is @Nonnull.
+    Doing so violates the contract that the method should handle a null parameter.
         </p>]]>
     </Details>
   </BugPattern>
@@ -8079,8 +8099,8 @@ after the call to initLogging, the logger configuration is lost
     <Details>
         <![CDATA[<p>
         A method should always implement the contract of a method it overrides. Thus, if a method takes a parameter
-	that is marked as @Nullable, you shouldn't override that method in a subclass with a method where that parameter is @Nonnull.
-	Doing so violates the contract that the method should handle a null parameter.
+    that is marked as @Nullable, you shouldn't override that method in a subclass with a method where that parameter is @Nonnull.
+    Doing so violates the contract that the method should handle a null parameter.
         </p>]]>
       </Details>
   </BugPattern>
@@ -8091,9 +8111,9 @@ after the call to initLogging, the logger configuration is lost
     <Details>
         <![CDATA[<p>
         A method should always implement the contract of a method it overrides. Thus, if a method takes is annotated
-	as returning a @Nonnull value, 
-	you shouldn't override that method in a subclass with a method annotated as returning a @Nullable or @CheckForNull value.
-	Doing so violates the contract that the method shouldn't return null.
+    as returning a @Nonnull value,
+    you shouldn't override that method in a subclass with a method annotated as returning a @Nullable or @CheckForNull value.
+    Doing so violates the contract that the method shouldn't return null.
         </p>]]>
       </Details>
   </BugPattern>
