@@ -50,6 +50,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
@@ -198,7 +199,9 @@ public class NewProjectWizard extends FBDialog {
         cloudPanel.add(cloudSelector, BorderLayout.CENTER);
 
         wizardComponents[3] = cloudPanel;
-        cloudSelector.setRenderer(new CloudComboBoxRenderer());
+        @SuppressWarnings("unchecked")
+        ListCellRenderer<CloudPlugin>  aRenderer = new CloudComboBoxRenderer();
+        cloudSelector.setRenderer(aRenderer);
         cloudSelector.addItem(null);
         String cloudId = project.getCloudId();
 
