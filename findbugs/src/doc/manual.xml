@@ -2646,7 +2646,7 @@ acceptable and whether it is neccessary to check for a null value.  FindBugs wil
 treat the annotated items as though they had no annotation.
       </para>
       <para>
-In pratice this annotation is useful only for overriding an overarching NonNull
+In practice this annotation is useful only for overriding an overarching NonNull
 annotation.
       </para>
     </listitem>

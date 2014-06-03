@@ -1651,7 +1651,7 @@ This is same as the DefaultAnnotation except it only applys to method parameters
     <listitem>
       <para>アノテーションをつけた要素は、 null であってはいけません。In general, this means developers will have to read the documentation to determine when a null value is acceptable and whether it is neccessary to check for a null value. FindBugs will treat the annotated items as though they had no annotation.</para>
       <para>
-In pratice this annotation is useful only for overriding an overarching NonNull
+In practice this annotation is useful only for overriding an overarching NonNull
 annotation.
       </para>
     </listitem>
