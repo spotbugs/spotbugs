@@ -35,6 +35,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import de.tobject.findbugs.FindBugsJob;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.preferences.FindBugsConstants;
+import de.tobject.findbugs.reporter.MarkerUtil;
 import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
 
 /**
@@ -98,6 +99,11 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
         }
         }
         return null;
+    }
+
+    @Override
+    protected void clean(IProgressMonitor monitor) throws CoreException {
+        MarkerUtil.removeMarkers(getProject());
     }
 
     /**
