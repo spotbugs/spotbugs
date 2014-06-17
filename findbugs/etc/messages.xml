@@ -1074,7 +1074,7 @@ on JSR166 locks.  It is a moderately fast detector.</p>
   <Detector class="edu.umd.cs.findbugs.detect.InefficientIndexOf">
     <Details>
 <![CDATA[
-<p> This detector looks for code that uses String.indexOf() or String.lastIndexOf(),
+<p> This detector looks for code that uses String.indexOf(String) or String.lastIndexOf(String),
 passing a constant string of length 1. It is recommended to use the more efficient integer implementations.
 A fast detector.
 </p>
@@ -6027,7 +6027,7 @@ a StringBuffer (or StringBuilder in Java 1.5) explicitly.</p>
     </Details>
   </BugPattern>
   <BugPattern type="IIO_INEFFICIENT_INDEX_OF">
-    <ShortDescription>Inefficient use of String.indexOf()</ShortDescription>
+    <ShortDescription>Inefficient use of String.indexOf(String)</ShortDescription>
     <LongDescription>{1} uses String.indexOf(String) instead of String.indexOf(int)</LongDescription>
     <Details>
 <![CDATA[
@@ -6038,7 +6038,7 @@ f. e. call <code>myString.indexOf('.')</code> instead of <code>myString.indexOf(
     </Details>
   </BugPattern>
   <BugPattern type="IIO_INEFFICIENT_LAST_INDEX_OF">
-    <ShortDescription>Inefficient use of String.lastIndexOf()</ShortDescription>
+    <ShortDescription>Inefficient use of String.lastIndexOf(String)</ShortDescription>
     <LongDescription>{1} uses String.lastIndexOf(String) instead of String.lastIndexOf(int)</LongDescription>
     <Details>
 <![CDATA[
@@ -8233,7 +8233,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="NS">Suspicious use of non-short-circuit boolean operator</BugCode>
   <BugCode abbrev="ODR">Database resource not closed on all paths</BugCode>
   <BugCode abbrev="SBSC">String concatenation in loop using + operator</BugCode>
-  <BugCode abbrev="IIO">Inefficient use of String.indexOf() or String.lastIndexOf()</BugCode>
+  <BugCode abbrev="IIO">Inefficient use of String.indexOf(String) or String.lastIndexOf(String)</BugCode>
   <BugCode abbrev="ITA">Inefficient use of collection.toArray(new Foo[0])</BugCode>
   <BugCode abbrev="SW">Swing coding rules</BugCode>
   <BugCode abbrev="IJU">Improperly implemented JUnit TestCase</BugCode>
