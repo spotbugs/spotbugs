@@ -1,5 +1,6 @@
 package sfBugsNew;
 
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
@@ -40,5 +41,21 @@ public class Bug1282 {
         private Method setter;
 
         private Type type;
+    }
+
+    // Bug #1282: No warning should be generated if only static methods are synthetic
+    @NoWarning("ISC_INSTANTIATE_STATIC_CLASS")
+    public void test3() {
+        final Property3 p = new Property3();
+       // compiler generates: static synthetic access$0(Bug1282$Property3, String) : void
+        p.name = "test";
+
+        final PrintStream out = System.out;
+        // compiler generates: static synthetic access$1(Bug1282$Property3) : String
+        out.println(p.name);
+    }
+
+    static class Property3 {
+        private String name;
     }
 }
