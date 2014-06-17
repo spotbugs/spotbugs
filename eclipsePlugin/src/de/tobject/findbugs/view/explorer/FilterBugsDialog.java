@@ -79,6 +79,7 @@ import edu.umd.cs.findbugs.Plugin;
 public class FilterBugsDialog extends SelectionDialog {
 
     private final class TreeSelectionChangedListener implements ISelectionChangedListener {
+        @Override
         public void selectionChanged(SelectionChangedEvent event) {
             IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 
@@ -87,6 +88,7 @@ public class FilterBugsDialog extends SelectionDialog {
     }
 
     private final class TreeCheckStateListener implements ICheckStateListener {
+        @Override
         public void checkStateChanged(CheckStateChangedEvent event) {
             Object element = event.getElement();
             boolean checked = event.getChecked();
@@ -97,10 +99,12 @@ public class FilterBugsDialog extends SelectionDialog {
     }
 
     private final class TreeContentProvider implements ITreeContentProvider {
+        @Override
         public Object[] getElements(Object inputElement) {
             return ((Collection<?>) inputElement).toArray();
         }
 
+        @Override
         public Object[] getChildren(Object element) {
             if (element instanceof BugCode) {
                 Set<BugPattern> children = getPatterns((BugCode) element);
@@ -111,6 +115,7 @@ public class FilterBugsDialog extends SelectionDialog {
             return new Object[0];
         }
 
+        @Override
         public Object getParent(Object element) {
             if (element instanceof BugPattern) {
                 BugPattern pattern = (BugPattern) element;
@@ -119,24 +124,29 @@ public class FilterBugsDialog extends SelectionDialog {
             return null;
         }
 
+        @Override
         public boolean hasChildren(Object element) {
             return element instanceof BugCode;
         }
 
+        @Override
         public void inputChanged(Viewer viewer1, Object oldInput, Object newInput) {
             // noop
         }
 
+        @Override
         public void dispose() {
             // noop
         }
     }
 
     private final static class TreeLabelProvider implements ILabelProvider {
+        @Override
         public Image getImage(Object element) {
             return null;
         }
 
+        @Override
         public String getText(Object element) {
             if (element instanceof BugPattern) {
                 BugPattern pattern = (BugPattern) element;
@@ -150,18 +160,22 @@ public class FilterBugsDialog extends SelectionDialog {
 
         }
 
+        @Override
         public void addListener(ILabelProviderListener listener) {
             // noop
         }
 
+        @Override
         public void dispose() {
             // noop
         }
 
+        @Override
         public boolean isLabelProperty(Object element, String property) {
             return false;
         }
 
+        @Override
         public void removeListener(ILabelProviderListener listener) {
             // noop
         }
@@ -294,6 +308,7 @@ public class FilterBugsDialog extends SelectionDialog {
                 Set<DetectorFactory> set = patternToFactory.get(pattern);
                 if (set == null) {
                     set = new TreeSet<DetectorFactory>(new Comparator<DetectorFactory>() {
+                        @Override
                         public int compare(DetectorFactory f1, DetectorFactory f2) {
                             return f1.getFullName().compareTo(f2.getFullName());
                         }
@@ -305,6 +320,7 @@ public class FilterBugsDialog extends SelectionDialog {
                 Set<Plugin> pset = patternToPlugin.get(pattern);
                 if (pset == null) {
                     pset = new TreeSet<Plugin>(new Comparator<Plugin>() {
+                        @Override
                         public int compare(Plugin f1, Plugin f2) {
                             return f1.getPluginId().compareTo(f2.getPluginId());
                         }
@@ -589,6 +605,7 @@ public class FilterBugsDialog extends SelectionDialog {
 
     private void sortCheckedElements() {
         Arrays.sort(checkedElements, new Comparator<Object>() {
+            @Override
             public int compare(Object o1, Object o2) {
                 String text1 = labelProvider.getText(o1);
                 String text2 = labelProvider.getText(o2);
@@ -605,7 +622,8 @@ public class FilterBugsDialog extends SelectionDialog {
 
     private void updateDescription(IStructuredSelection selection) {
         Object element = selection.getFirstElement();
-        String txt = "";
+        // HTMLTextPresenter uses LineBreakingReader/BufferedReader in Eclipse 4.4 which expects non-empty strings (while parsing html line breaks).
+        String txt = " ";
         if (element instanceof BugPattern) {
             BugPattern pattern = (BugPattern) element;
             txt = getPatternDescription(pattern);
@@ -646,6 +664,7 @@ public class FilterBugsDialog extends SelectionDialog {
         }
         // add reported by...
         Set<DetectorFactory> allFactories = new TreeSet<DetectorFactory>(new Comparator<DetectorFactory>() {
+            @Override
             public int compare(DetectorFactory f1, DetectorFactory f2) {
                 return f1.getFullName().compareTo(f2.getFullName());
             }
