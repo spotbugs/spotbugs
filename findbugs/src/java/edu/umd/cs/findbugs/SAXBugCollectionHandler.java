@@ -57,6 +57,7 @@ import edu.umd.cs.findbugs.filter.NotMatcher;
 import edu.umd.cs.findbugs.filter.OrMatcher;
 import edu.umd.cs.findbugs.filter.PriorityMatcher;
 import edu.umd.cs.findbugs.filter.RankMatcher;
+import edu.umd.cs.findbugs.filter.SourceMatcher;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.util.MapCache;
 import edu.umd.cs.findbugs.util.Strings;
@@ -523,6 +524,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         } else if(qName.equals("Not")) {
             NotMatcher matcher = new NotMatcher();
             pushCompoundMatcherAsChild(matcher);
+        } else if (qName.equals("Source")) {
+            addMatcher(new SourceMatcher(getRequiredAttribute(attributes, "name", qName)));
         }
         nextMatchedIsDisabled = false;
     }
