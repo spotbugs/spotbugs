@@ -1952,6 +1952,17 @@ In other words, each of the children must be true for the predicate to be true.
  </varlistentry>
 
  <varlistentry>
+   <term><literal>&lt;Source&gt;</literal></term>
+    <listitem>
+        <para>
+            This element matches warnings associated with a particular source file. The
+            <literal>name</literal> attribute is used to specify the exact or regex match pattern
+            for the source file name.
+        </para>
+    </listitem>
+ </varlistentry>
+
+ <varlistentry>
    <term><literal>&lt;Method&gt;</literal></term>
 
    <listitem><para>This element specifies a method.  The <literal>name</literal> is used to specify
@@ -2016,8 +2027,9 @@ In other words, each of the children must be true for the predicate to be true.
 <title>Java element name matching</title>
 
 <para>
-If the <literal>name</literal> attribute of <literal>Class</literal>, <literal>Method</literal> or
-<literal>Field</literal> starts with the ~ character the rest of attribute content is interpreted as
+If the <literal>name</literal> attribute of <literal>Class</literal>, <literal>Source</literal>,
+<literal>Method</literal> or <literal>Field</literal> starts with the ~ character
+the rest of attribute content is interpreted as
 a Java regular expression that is matched against the names of the Java element in question.
 </para>
 
@@ -2255,6 +2267,21 @@ as expected.
       <Bug code="IJU" /> <!-- 'IJU' is the code for bugs related to JUnit test code -->
   </Not>
 </Match>
+]]>
+</programlisting>
+</para>
+
+<para>
+  12. Full exclusion filter file to match all classes generated from Groovy source files.
+
+<programlisting>
+<![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+<Match>
+    <Source name="~.*\.groovy" />
+</Match>
+</FindBugsFilter>
 ]]>
 </programlisting>
 </para>
