@@ -60,7 +60,7 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
                     bugReporter.reportBug(new BugInstance(this, "ISC_INSTANTIATE_STATIC_CLASS", LOW_PRIORITY).addClassAndMethod(
                             this).addSourceLine(this));
             }
-     
+
     }
 
     private boolean isStaticOnlyClass(XClass xClass)  {
@@ -77,7 +77,8 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 
         List<? extends XMethod> methods = xClass.getXMethods();
         for (XMethod m : methods) {
-            if (m.isStatic()) {
+            // !m.isSynthetic(): bug #1282: No warning should be generated if only static methods are synthetic
+            if (m.isStatic() && !m.isSynthetic()) {
                 staticCount++;
             } else if (!m.getName().equals("<init>") || !m.getSignature().equals("()V"))
                 return false;

@@ -1,4 +1,8 @@
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class CreateStaticObject {
+
+    @ExpectWarning("ISC_INSTANTIATE_STATIC_CLASS")
     public void test() {
         Utils u = new Utils();
 

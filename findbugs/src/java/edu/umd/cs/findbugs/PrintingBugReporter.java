@@ -73,6 +73,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
         private final Project project;
 
+        private boolean setExitCode;
+
         public PrintingCommandLine() {
             project = new Project();
             addSwitch("-longBugCodes", "use long bug codes when generating text");
@@ -85,6 +87,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
             addSwitch("-annotationUpload", "generate annotations in upload format");
             addSwitchWithOptionalExtraPart("-html", "stylesheet", "Generate HTML output (default stylesheet is default.xsl)");
             addOption("-pluginList", "jar1[" + File.pathSeparator + "jar2...]", "specify list of plugin Jar files to load");
+            addSwitch("-exitcode", "set exit code of process");
         }
 
         public @Nonnull
@@ -94,26 +97,29 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
-            if (option.equals("-longBugCodes"))
+            if (option.equals("-longBugCodes")) {
                 setUseLongBugCodes(true);
-            else if (option.equals("-rank"))
+            } else if (option.equals("-rank")) {
                 setShowRank(true);
-            else if (option.equals("-designations"))
+            } else if (option.equals("-designations")) {
                 setReportUserDesignations(true);
-            else if (option.equals("-applySuppression"))
+            } else if (option.equals("-applySuppression")) {
                 setApplySuppressions(true);
-            else if (option.equals("-history"))
+            } else if (option.equals("-history")) {
                 setReportHistory(true);
-            else if (option.equals("-annotationUpload"))
+            } else if (option.equals("-annotationUpload")) {
                 annotationUploadFormat = true;
-            else if (option.equals("-html")) {
+            } else if (option.equals("-html")) {
                 if (!optionExtraPart.equals("")) {
                     stylesheet = optionExtraPart;
                 } else {
                     stylesheet = "default.xsl";
                 }
-            } else
+            } else if (option.equals("-exitcode")) {
+                setExitCode = true;
+            } else {
                 throw new IllegalArgumentException("Unknown option '" + option + "'");
+            }
         }
 
         @Override
@@ -163,13 +169,16 @@ public class PrintingBugReporter extends TextUIBugReporter {
         }
 
         SortedBugCollection bugCollection = new SortedBugCollection(commandLine.getProject());
-        if (argCount < args.length)
+        if (argCount < args.length) {
             bugCollection.readXML(args[argCount++]);
-        else
+        } else {
             bugCollection.readXML(System.in);
+        }
 
-        if (argCount < args.length)
+        if (argCount < args.length) {
             reporter.setOutputStream(UTF8.printStream(new FileOutputStream(args[argCount++]), true));
+        }
+        boolean bugsReported = false;
         RuntimeException storedException = null;
         if (commandLine.annotationUploadFormat) {
             bugCollection.computeBugHashes();
@@ -181,12 +190,13 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
                     System.out.print("#" + fHash);
                     String key = warning.getUserDesignationKey();
-                    if (key.equals(BugDesignation.UNCLASSIFIED) || key.equals("NEEDS_FURTHER_STUDY"))
+                    if (key.equals(BugDesignation.UNCLASSIFIED) || key.equals("NEEDS_FURTHER_STUDY")) {
                         System.out.print("#-1#" + key);
-                    else if (key.equals("MUST_FIX") || key.equals("SHOULD_FIX") || key.equals("I_WILL_FIX"))
+                    } else if (key.equals("MUST_FIX") || key.equals("SHOULD_FIX") || key.equals("I_WILL_FIX")) {
                         System.out.print("#7#" + key);
-                    else
+                    } else {
                         System.out.print("#0#" + key);
+                    }
                     SourceLineAnnotation sourceLine = warning.getPrimarySourceLineAnnotation();
                     System.out.println("#" + sourceLine.getSourceFile() + "#" + sourceLine.getStartLine());
                     System.out.println(warning.getAnnotationText());
@@ -203,6 +213,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
                     int rank = warning.getBugRank();
                     BugPattern pattern = warning.getBugPattern();
                     if (rank <= commandLine.maxRank) {
+                        bugsReported = true;
                         try {
                             reporter.printBug(warning);
                         } catch (RuntimeException e) {
@@ -210,6 +221,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
                                 storedException = e;
                         }
                     } else if (rank <= commandLine.summarizeMaxRank) {
+                        bugsReported = true;
                         lowRank.add(pattern.getCategory());
                     }
 
@@ -222,8 +234,24 @@ public class PrintingBugReporter extends TextUIBugReporter {
             }
 
         }
-        if (storedException != null)
+        if(commandLine.setExitCode){
+            int exitCode = 0;
+            System.err.println("Calculating exit code...");
+            if (storedException != null) {
+                exitCode |= ExitCodes.ERROR_FLAG;
+                System.err.println("Setting 'errors encountered' flag (" + ExitCodes.ERROR_FLAG + ")");
+                storedException.printStackTrace(System.err);
+            }
+            if (bugsReported) {
+                exitCode |= ExitCodes.BUGS_FOUND_FLAG;
+                System.err.println("Setting 'bugs found' flag (" + ExitCodes.BUGS_FOUND_FLAG + ")");
+            }
+            System.err.println("Exit code set to: " + exitCode);
+            System.exit(exitCode);
+        } else
+        if (storedException != null) {
             throw storedException;
+        }
 
     }
 
@@ -235,16 +263,19 @@ public class PrintingBugReporter extends TextUIBugReporter {
         bugCollection.setApplySuppressions(applySuppression);
         if (argCount < args.length) {
             bugCollection.readXML(args[argCount++]);
-        } else
+        } else {
             bugCollection.readXML(System.in);
+        }
 
-        if (argCount < args.length)
+        if (argCount < args.length) {
             reporter.setOutputStream(UTF8.printStream(new FileOutputStream(args[argCount++]), true));
+        }
 
         reporter.finish();
         Exception e = reporter.getFatalException();
-        if (e != null)
+        if (e != null) {
             throw e;
+        }
     }
 
     @Override

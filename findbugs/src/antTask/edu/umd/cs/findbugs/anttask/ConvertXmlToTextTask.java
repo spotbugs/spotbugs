@@ -20,11 +20,14 @@
 package edu.umd.cs.findbugs.anttask;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+
+import edu.umd.cs.findbugs.ExitCodes;
 
 /**
  * Ant task to generate HTML or plain text from a saved XML analysis results
  * file.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ConvertXmlToTextTask extends AbstractFindBugsTask {
@@ -32,6 +35,8 @@ public class ConvertXmlToTextTask extends AbstractFindBugsTask {
     private boolean longBugCodes;
 
     private boolean applySuppression;
+
+    private boolean failIfBugFound;
 
     private String input;
 
@@ -101,11 +106,13 @@ public class ConvertXmlToTextTask extends AbstractFindBugsTask {
         this.format = format;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#checkParameters()
+    /**
+     * @param failIfBugFound true to 'fail' at the end if at least one bug is reported
      */
+    public void setFailIfBugFound(boolean failIfBugFound) {
+        this.failIfBugFound = failIfBugFound;
+    }
+
     @Override
     protected void checkParameters() {
         if (input == null) {
@@ -117,15 +124,9 @@ public class ConvertXmlToTextTask extends AbstractFindBugsTask {
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#configureFindbugsEngine
-     * ()
-     */
     @Override
     protected void configureFindbugsEngine() {
+        addArg("-exitcode");
         if (format.startsWith("html")) {
             addArg("-" + format);
         }
@@ -136,17 +137,11 @@ public class ConvertXmlToTextTask extends AbstractFindBugsTask {
             addArg("-applySuppression");
         }
         addArg(input);
-        if (output != null)
+        if (output != null) {
             addArg(output);
+        }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#beforeExecuteJavaProcess
-     * ()
-     */
     @Override
     protected void beforeExecuteJavaProcess() {
         if (output != null)
@@ -155,17 +150,30 @@ public class ConvertXmlToTextTask extends AbstractFindBugsTask {
             log("Converting " + input + " using format " + format);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#afterExecuteJavaProcess
-     * (int)
-     */
     @Override
     protected void afterExecuteJavaProcess(int rc) {
         if (rc == 0) {
             log("Success");
+        } else {
+            if (errorProperty != null) {
+                getProject().setProperty(errorProperty, "true");
+            }
+            if ((rc & ExitCodes.ERROR_FLAG) != 0) {
+                String message = "At least one error occured!";
+                if (failIfBugFound) {
+                    throw new BuildException(message);
+                } else {
+                    log(message, Project.MSG_ERR);
+                }
+            }
+            if ((rc & ExitCodes.BUGS_FOUND_FLAG) != 0) {
+                String message = "At least one unexpected bug is reported!";
+                if (failIfBugFound) {
+                    throw new BuildException(message);
+                } else {
+                    log(message, Project.MSG_ERR);
+                }
+            }
         }
     }
 

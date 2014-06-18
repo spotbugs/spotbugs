@@ -19,10 +19,10 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.IdentityHashMap;
@@ -30,11 +30,6 @@ import java.util.Iterator;
 
 import javax.annotation.WillClose;
 
-import org.dom4j.Attribute;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -46,12 +41,11 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
-import edu.umd.cs.findbugs.xml.XMLUtil;
 
 /**
  * Filter to match a subset of BugInstances. The filter criteria are read from
  * an XML file.
- * 
+ *
  * @author David Hovemeyer
  */
 
@@ -62,7 +56,7 @@ public class Filter extends OrMatcher {
 
     /**
      * Constructor for empty filter
-     * 
+     *
      */
     public Filter() {
 
@@ -122,7 +116,7 @@ public class Filter extends OrMatcher {
 
     /**
      * Constructor.
-     * 
+     *
      * @param fileName
      *            name of the filter file
      * @throws IOException
@@ -130,8 +124,21 @@ public class Filter extends OrMatcher {
     public Filter(String fileName) throws IOException {
         try {
             parse(fileName);
-            if (false)
-                System.out.println("Parsed: " + this);
+        } catch (SAXException e) {
+            throw new IOException(e.getMessage());
+        }
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param stream
+     *            content of the filter file
+     * @throws IOException
+     */
+    public Filter(InputStream stream) throws IOException {
+        try {
+            parse("", stream);
         } catch (SAXException e) {
             throw new IOException(e.getMessage());
         }
@@ -143,7 +150,7 @@ public class Filter extends OrMatcher {
 
     /**
      * Add if not present, but do not enable if already present and disabled
-     * 
+     *
      * @param child
      */
     public void softAdd(Matcher child) {
@@ -181,7 +188,7 @@ public class Filter extends OrMatcher {
 
     /**
      * Parse and load the given filter file.
-     * 
+     *
      * @param fileName
      *            name of the filter file
      * @throws IOException
@@ -189,169 +196,30 @@ public class Filter extends OrMatcher {
      * @throws FilterException
      */
     private void parse(String fileName) throws IOException, SAXException {
-
-        if (true) {
-            File file = new File(fileName);
-            SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, file);
-            XMLReader xr = XMLReaderFactory.createXMLReader();
-            xr.setContentHandler(handler);
-            xr.setErrorHandler(handler);
-            FileInputStream fileInputStream = new FileInputStream(file);
-            try {
-                Reader reader = Util.getReader(fileInputStream);
-                xr.parse(new InputSource(reader));
-            } finally {
-                Util.closeSilently(fileInputStream);
-            }
-            return;
-
-        }
-        Document filterDoc = null;
-
-        FileInputStream fileInputStream = new FileInputStream(fileName);
-
-        try {
-            SAXReader reader = new SAXReader();
-            filterDoc = reader.read(new BufferedInputStream(fileInputStream));
-        } catch (DocumentException e) {
-            throw new FilterException("Couldn't parse filter file " + fileName, e);
-        }
-
-        int count = 1;
-        // Iterate over Match elements
-        for (Object matchObj : XMLUtil.selectNodes(filterDoc, "/FindBugsFilter/Match")) {
-            Element matchNode = (Element) matchObj;
-            AndMatcher matchMatcher = new AndMatcher();
-
-            // Each match node may have either "class" or "classregex"
-            // attributes
-            Matcher classMatcher = null;
-            String classAttr = matchNode.valueOf("@class");
-            if (!classAttr.equals("")) {
-                classMatcher = new ClassMatcher(classAttr);
-            } else {
-                String classRegex = matchNode.valueOf("@classregex");
-                if (!classRegex.equals(""))
-                    classMatcher = new ClassMatcher("~" + classRegex);
-            }
-            if (classMatcher != null)
-                matchMatcher.addChild(classMatcher);
-
-            if (DEBUG)
-                System.out.println("Match node");
-
-            // Iterate over child elements of Match node.
-            Iterator<?> j = matchNode.elementIterator();
-            while (j.hasNext()) {
-                Element child = (Element) j.next();
-                Matcher matcher = getMatcher(child);
-                matchMatcher.addChild(matcher);
-            }
-            if (matchMatcher.numberChildren() == 0)
-                throw new FilterException("Match element #" + count + " (starting at 1) is invalid in filter file " + fileName);
-            // Add the Match matcher to the overall Filter
-            this.addChild(matchMatcher);
-            count++;
-        }
-        if (this.numberChildren() == 0)
-            throw new FilterException("Could not find any /FindBugsFilter/Match nodes in filter file " + fileName);
-
+        FileInputStream fileInputStream = new FileInputStream(new File(fileName));
+        parse(fileName, fileInputStream);
     }
 
     /**
-     * Get a Matcher for given Element.
-     * 
-     * @param element
-     *            the Element
-     * @return a Matcher representing that element
+     * Parse and load the given filter file.
+     *
+     * @param fileName
+     *            name of the filter file
+     * @throws IOException
+     * @throws SAXException
      * @throws FilterException
      */
-    private static Matcher getMatcher(Element element) throws FilterException {
-        // These will be either BugCode, Priority, Class, Method, Field, or Or
-        // elements.
-        String name = element.getName();
-        if (name.equals("BugCode")) {
-            return new BugMatcher(element.valueOf("@name"), "", "");
-        } else if (name.equals("Local")) {
-            return new LocalMatcher(element.valueOf("@name"));
-        } else if (name.equals("BugPattern")) {
-            return new BugMatcher("", element.valueOf("@name"), "");
-        } else if (name.equals("Bug")) {
-            return new BugMatcher(element.valueOf("@code"), element.valueOf("@pattern"), element.valueOf("@category"));
-        } else if (name.equals("Priority") || name.equals("Confidence")) {
-            return new PriorityMatcher(element.valueOf("@value"));
-        } else if (name.equals("Rank")) {
-            return new RankMatcher(element.valueOf("@value"));
-        } else if (name.equals("Class")) {
-            Attribute nameAttr = element.attribute("name");
-
-            if (nameAttr == null)
-                throw new FilterException("Missing name attribute in Class element");
-
-            return new ClassMatcher(nameAttr.getValue());
-        } else if (name.equals("Package")) {
-            Attribute nameAttr = element.attribute("name");
-
-            if (nameAttr == null)
-                throw new FilterException("Missing name attribute in Package element");
-
-            String pName = nameAttr.getValue();
-            pName = pName.startsWith("~") ? pName : "~" + pName.replace(".", "\\.");
-            return new ClassMatcher(pName + "\\.[^.]+");
-        } else if (name.equals("Method")) {
-            Attribute nameAttr = element.attribute("name");
-            String nameValue;
-            Attribute paramsAttr = element.attribute("params");
-            Attribute returnsAttr = element.attribute("returns");
-            Attribute roleAttr = element.attribute("role");
-
-            if (nameAttr == null)
-                if (paramsAttr == null || returnsAttr == null)
-                    throw new FilterException("Method element must have eiter name or params and returnss attributes");
-                else
-                    nameValue = "~.*"; // any name
-            else
-                nameValue = nameAttr.getValue();
-
-            if ((paramsAttr != null || returnsAttr != null) && (paramsAttr == null || returnsAttr == null))
-                throw new FilterException("Method element must have both params and returns attributes if either is used");
-
-            if (paramsAttr == null)
-                if (roleAttr == null)
-                    return new MethodMatcher(nameValue);
-                else
-                    return new MethodMatcher(nameValue, roleAttr.getValue());
-            else if (roleAttr == null)
-                return new MethodMatcher(nameValue, paramsAttr.getValue(), returnsAttr.getValue());
-            else
-                return new MethodMatcher(nameValue, paramsAttr.getValue(), returnsAttr.getValue(), roleAttr.getValue());
-
-        } else if (name.equals("Field")) {
-            Attribute nameAttr = element.attribute("name");
-            String nameValue;
-            Attribute typeAttr = element.attribute("type");
-
-            if (nameAttr == null)
-                if (typeAttr == null)
-                    throw new FilterException("Field element must have either name or type attribute");
-                else
-                    nameValue = "~.*"; // any name
-            else
-                nameValue = nameAttr.getValue();
-
-            if (typeAttr == null)
-                return new FieldMatcher(nameValue);
-            else
-                return new FieldMatcher(nameValue, typeAttr.getValue());
-        } else if (name.equals("Or")) {
-            OrMatcher orMatcher = new OrMatcher();
-            Iterator<?> i = element.elementIterator();
-            while (i.hasNext()) {
-                orMatcher.addChild(getMatcher((Element) i.next()));
-            }
-            return orMatcher;
-        } else
-            throw new FilterException("Unknown element: " + name);
+    private void parse(String fileName, @WillClose InputStream stream) throws IOException, SAXException {
+        try {
+            SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, new File(fileName));
+            XMLReader xr = XMLReaderFactory.createXMLReader();
+            xr.setContentHandler(handler);
+            xr.setErrorHandler(handler);
+            Reader reader = Util.getReader(stream);
+            xr.parse(new InputSource(reader));
+        } finally {
+            Util.closeSilently(stream);
+        }
     }
 
     public static void main(String[] argv) {
@@ -412,4 +280,3 @@ public class Filter extends OrMatcher {
 
 }
 
-// vim:ts=4

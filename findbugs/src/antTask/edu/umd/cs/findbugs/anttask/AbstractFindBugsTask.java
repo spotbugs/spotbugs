@@ -33,7 +33,7 @@ import org.apache.tools.ant.types.Reference;
 /**
  * Abstract base class for Ant tasks that run programs (main() methods) in
  * findbugs.jar or findbugsGUI.jar.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class AbstractFindBugsTask extends Task {
@@ -83,7 +83,7 @@ public abstract class AbstractFindBugsTask extends Task {
 
     private boolean failOnError = false;
 
-    private String errorProperty = null;
+    protected String errorProperty = null;
 
     private List<SystemProperty> systemPropertyList = new ArrayList<SystemProperty>();
 
@@ -140,7 +140,7 @@ public abstract class AbstractFindBugsTask extends Task {
 
     /**
      * Set timeout in milliseconds.
-     * 
+     *
      * @param timeout
      *            the timeout
      */
@@ -338,7 +338,7 @@ public abstract class AbstractFindBugsTask extends Task {
 
     /**
      * Add an argument to the JVM used to execute FindBugs.
-     * 
+     *
      * @param arg
      *            the argument
      */
@@ -356,7 +356,7 @@ public abstract class AbstractFindBugsTask extends Task {
 
     /**
      * Create a new JVM to do the work.
-     * 
+     *
      * @since Ant 1.5
      */
     private void execFindbugs() throws BuildException {

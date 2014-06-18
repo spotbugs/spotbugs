@@ -35,6 +35,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import de.tobject.findbugs.FindBugsJob;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.preferences.FindBugsConstants;
+import de.tobject.findbugs.reporter.MarkerUtil;
 import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
 
 /**
@@ -100,6 +101,11 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
         return null;
     }
 
+    @Override
+    protected void clean(IProgressMonitor monitor) throws CoreException {
+        MarkerUtil.removeMarkers(getProject());
+    }
+
     /**
      * Performs the build process. This method gets all files in the current
      * project and has a <code>FindBugsVisitor</code> run on them.
@@ -115,43 +121,20 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
      * @throws CoreException
      */
     private void doBuild(final Map<?, ?> args, final IProgressMonitor monitor, int kind) throws CoreException {
-        boolean incremental = (kind != IncrementalProjectBuilder.FULL_BUILD);
+        boolean incremental = (kind == IncrementalProjectBuilder.INCREMENTAL_BUILD
+                || kind == IncrementalProjectBuilder.AUTO_BUILD);
         IProject project = getProject();
         IResource resource = project;
         List<WorkItem> files;
         if (incremental) {
             IResourceDelta resourceDelta = getDelta(project);
             boolean configChanged = !isConfigUnchanged(resourceDelta);
-            boolean fullBuildEnabled = FindbugsPlugin.getCorePreferences(getProject(), configChanged).isRunAtFullBuild();
-            if (configChanged && fullBuildEnabled) {
+            if (configChanged) {
                 files = new ArrayList<WorkItem>();
                 files.add(new WorkItem(project));
             } else {
                 files = ResourceUtils.collectIncremental(resourceDelta);
-                /*
-                 * Here we expect to have only ONE file as a result of a
-                 * post-save trigger. In this case incremental builder should
-                 * run and analyse 1 file again. For some reason, JDT uses
-                 * "AUTO" kind for such incremental compile. Unfortunately,
-                 * Eclipse also triggers "AUTO" build on startup, if it detects
-                 * that some project files are changed (I think also on team
-                 * update operations). This causes sometimes a real startup
-                 * slowdown for workspaces with many projects. Because we cannot
-                 * distinguish between first and second build, and if
-                 * "fullBuildEnabled" id OFF, we will analyse incrementally ONLY
-                 * ONE SINGLE FILE. This is not nice, but there is no other ways
-                 * today... May be we can use preferences to define "how many"
-                 * is "incremental"...
-                 */
-                if (files.size() > 1) {
-                    if (DEBUG) {
-                        FindbugsPlugin.getDefault()
-                                .logInfo(
-                                        "Incremental builder: too many resources to analyse for project " + project + ", files: "
-                                                + files);
-                    }
-                    return;
-                } else if(files.size() == 1){
+                if(files.size() == 1){
                     IResource corespondingResource = files.get(0).getCorespondingResource();
                     if(corespondingResource != null) {
                         resource = corespondingResource;
