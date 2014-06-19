@@ -1569,6 +1569,17 @@ using the &FindBugs; task.
       </listitem>
   </varlistentry>
 
+  <varlistentry>
+      <term><literal>nested</literal></term>
+      <listitem>
+          <para>
+              Optional attribute which enables or disables scanning of nested jar and zip files found in
+                the list of files and directories to be analyzed.
+                By default, scanning of nested jar/zip files is enabled.
+          </para>
+      </listitem>
+  </varlistentry>
+
 </variablelist>
 
 
