@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <FindBugsFilter>
+
   <Match>
     <Bug pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED,NM_CLASS_NOT_EXCEPTION,EI_EXPOSE_REP,EI_EXPOSE_REP2,MS_PKGPROTECT,MS_MUTABLE_ARRAY"/>
   </Match>
@@ -33,6 +34,7 @@
     <BugCode name="Se"/>
     <Class name="~edu.umd.cs.findbugs.gui2.*"/>
   </Match>
+
       <Match>
         <Class name="edu.umd.cs.findbugs.ba.DFSEdgeTypes"/>
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_INTERFACE"/>
@@ -45,6 +47,7 @@
         <Class name="edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch"/>
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
       </Match>
+ <!--
       <Match>
         <Class name="edu.umd.cs.findbugs.detect.IncompatMask"/>
         <Bug pattern="SF_SWITCH_FALLTHROUGH"/>
@@ -101,4 +104,5 @@
     <Bug pattern="URF_UNREAD_FIELD"/>
     <Class name="edu.umd.cs.findbugs.userAnnotations.SimpleWebPlugin"/>
   </Match>
+  -->
 </FindBugsFilter>
