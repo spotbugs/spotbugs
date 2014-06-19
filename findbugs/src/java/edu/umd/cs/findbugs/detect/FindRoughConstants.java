@@ -30,14 +30,21 @@ import org.apache.bcel.classfile.ConstantFloat;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class FindRoughConstants extends OpcodeStackDetector {
+
     static class BadConstant {
+
         double base;
+
         double factor;
+
         String replacement;
+
         double value;
+
         Set<Number> approxSet = new HashSet<Number>();
 
         BadConstant(double base, double factor, String replacement) {
@@ -48,8 +55,7 @@ public class FindRoughConstants extends OpcodeStackDetector {
             BigDecimal valueBig = BigDecimal.valueOf(value);
             BigDecimal baseBig = BigDecimal.valueOf(base);
             BigDecimal factorBig = BigDecimal.valueOf(factor);
-            for(int prec=0; prec<14; prec++)
-            {
+            for (int prec = 0; prec < 14; prec++) {
                 addApprox(baseBig.round(new MathContext(prec, RoundingMode.FLOOR)).multiply(factorBig));
                 addApprox(baseBig.round(new MathContext(prec, RoundingMode.CEILING)).multiply(factorBig));
                 addApprox(valueBig.round(new MathContext(prec, RoundingMode.FLOOR)));
@@ -57,29 +63,32 @@ public class FindRoughConstants extends OpcodeStackDetector {
             }
         }
 
+        @SuppressFBWarnings("FE_FLOATING_POINT_EQUALITY")
         public boolean exact(Number candidate) {
-            if(candidate instanceof Double)
+            if (candidate instanceof Double) {
                 return candidate.doubleValue() == value;
-            return candidate.floatValue() == (float)value;
+            }
+            return candidate.floatValue() == (float) value;
         }
 
         public double diff(double candidate) {
-            return Math.abs(value-candidate)/value;
+            return Math.abs(value - candidate) / value;
         }
 
         public boolean equalPrefix(Number candidate) {
             return approxSet.contains(candidate);
         }
 
+        @SuppressFBWarnings("FE_FLOATING_POINT_EQUALITY")
         private void addApprox(BigDecimal roundFloor) {
             double approxDouble = roundFloor.doubleValue();
-            if(approxDouble != value && Math.abs(approxDouble-value)/value < 0.0001)
+            if (approxDouble != value && Math.abs(approxDouble - value) / value < 0.0001) {
                 approxSet.add(approxDouble);
+            }
             float approxFloat = roundFloor.floatValue();
-            if(Math.abs(approxFloat-value)/value < 0.0001)
-            {
+            if (Math.abs(approxFloat - value) / value < 0.0001) {
                 approxSet.add(approxFloat);
-                approxSet.add((double)approxFloat);
+                approxSet.add((double) approxFloat);
             }
         }
     }
@@ -93,7 +102,7 @@ public class FindRoughConstants extends OpcodeStackDetector {
         new BadConstant(Math.E, 1, "Math.E")
     };
 
-    BugReporter bugReporter;
+    private BugReporter bugReporter;
 
     public FindRoughConstants(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -103,25 +112,28 @@ public class FindRoughConstants extends OpcodeStackDetector {
     public void sawOpcode(int seen) {
         if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
             Constant c = getConstantRefOperand();
-            if(c instanceof ConstantFloat) {
-                checkConst(((ConstantFloat)c).getBytes());
-            } else if(c instanceof ConstantDouble) {
-                checkConst(((ConstantDouble)c).getBytes());
+            if (c instanceof ConstantFloat) {
+                checkConst(((ConstantFloat) c).getBytes());
+            } else if (c instanceof ConstantDouble) {
+                checkConst(((ConstantDouble) c).getBytes());
             }
         }
     }
 
     private void checkConst(Number constValue) {
         double candidate = constValue.doubleValue();
-        if(Double.isNaN(candidate) || Double.isInfinite(candidate))
+        if (Double.isNaN(candidate) || Double.isInfinite(candidate)) {
             return;
-        for(BadConstant badConstant : badConstants) {
-            if (badConstant.exact(constValue))
+        }
+        for (BadConstant badConstant : badConstants) {
+            if (badConstant.exact(constValue)) {
                 continue;
+            }
             double diff = badConstant.diff(candidate);
-            if (diff > 0.0001)
+            if (diff > 0.0001) {
                 continue;
-            if(badConstant.equalPrefix(constValue)) {
+            }
+            if (badConstant.equalPrefix(constValue)) {
                 bugReporter.reportBug(new BugInstance(this,
                         "CNT_ROUGH_CONSTANT_VALUE", NORMAL_PRIORITY)
                         .addClassAndMethod(this).addSourceLine(this)
@@ -129,8 +141,9 @@ public class FindRoughConstants extends OpcodeStackDetector {
                         .addString(badConstant.replacement));
                 return;
             }
-            if(diff > 0.0000001)
+            if (diff > 0.0000001) {
                 continue;
+            }
             bugReporter.reportBug(new BugInstance(this,
                     "CNT_ROUGH_CONSTANT_VALUE", LOW_PRIORITY)
                     .addClassAndMethod(this).addSourceLine(this)
