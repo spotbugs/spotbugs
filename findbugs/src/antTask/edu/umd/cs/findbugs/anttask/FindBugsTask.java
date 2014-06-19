@@ -62,6 +62,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * of classes and packages - See the textui argument description for details)
  * <li>output (enum text|xml|xml:withMessages|html - default xml)
  * <li>outputFile (name of output file to create)
+ * <li>nested (boolean default true)
  * <li>noClassOk (boolean default false)
  * <li>pluginList (list of plugin Jar files to load)
  * <li>projectFile (project filename)
@@ -162,6 +163,8 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     private boolean noClassOk;
 
+    private boolean nested = true;
+
     private final List<FileSet> filesets = new ArrayList<FileSet>();
 
     public FindBugsTask() {
@@ -195,6 +198,19 @@ public class FindBugsTask extends AbstractFindBugsTask {
      */
     public void setWorkHard(boolean workHard) {
         this.workHard = workHard;
+    }
+
+    /**
+     * Set the nested flag.
+     *
+     * @param nested
+     *            This option enables or disables scanning of
+     *            nested jar and zip files found in the list of files
+     *            and directories to be analyzed. By default, scanning
+     *            of nested jar/zip files is enabled
+     */
+    public void setNested(boolean nested) {
+        this.nested = nested;
     }
 
     /**
@@ -738,9 +754,13 @@ public class FindBugsTask extends AbstractFindBugsTask {
         if (relaxed) {
             addArg("-relaxed");
         }
+        if (!nested) {
+            addArg("-nested:false");
+        }
         if (noClassOk) {
             addArg("-noClassOk");
         }
+
         if (onlyAnalyze != null) {
             addArg("-onlyAnalyze");
             addArg(onlyAnalyze);
