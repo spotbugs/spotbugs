@@ -1127,7 +1127,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     public BugInstance addClassAndMethod(JavaClass javaClass, Method method) {
         addClass(javaClass.getClassName());
         addMethod(javaClass, method);
-        
+
         if (BCELUtil.isSynthetic(method))
             foundInSyntheticMethod();
         return this;
@@ -2177,6 +2177,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("type", type).addAttribute("priority",
                 String.valueOf(priority));
 
+        // Always add the rank attribute.
+        attributeList.addAttribute("rank", Integer.toString(getBugRank()));
+
         BugPattern pattern = getBugPattern();
 
         // The bug abbreviation and pattern category are
@@ -2193,8 +2196,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             attributeList.addAttribute("instanceHash", getInstanceHash());
             attributeList.addAttribute("instanceOccurrenceNum", Integer.toString(getInstanceOccurrenceNum()));
             attributeList.addAttribute("instanceOccurrenceMax", Integer.toString(getInstanceOccurrenceMax()));
-            attributeList.addAttribute("rank", Integer.toString(getBugRank()));
-            
+
             int cweid = getCWEid();
             if (cweid != 0)
                 attributeList.addAttribute("cweid", Integer.toString(cweid));
@@ -2476,7 +2478,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
                 add(a);
         return this;
     }
-    
+
     public boolean tryAddingOptionalUniqueAnnotations(BugAnnotation... annotations) {
         HashSet<BugAnnotation> added = new HashSet<BugAnnotation>();
         for (BugAnnotation a : annotations)
