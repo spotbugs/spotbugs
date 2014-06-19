@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.CodeExceptionGen;
@@ -34,7 +35,7 @@ import edu.umd.cs.findbugs.graph.AbstractVertex;
 
 /**
  * Simple basic block abstraction for BCEL.
- * 
+ *
  * @author David Hovemeyer
  * @see CFG
  */
@@ -77,7 +78,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
         nullCheckInstructionSet.set(Constants.ARRAYLENGTH);
         // nullCheckInstructionSet.set(Constants.MONITOREXIT);
         nullCheckInstructionSet.set(Constants.ATHROW);
-        
+
         // Any others?
     }
 
@@ -129,7 +130,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 
     /**
      * Get the basic block's integer label.
-     * 
+     *
      * @deprecated call getLabel() instead
      * @return the BasicBlock's integer label
      */
@@ -145,7 +146,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 
     /**
      * Set the instruction for which this block is the ETB.
-     * 
+     *
      * @param exceptionThrower
      *            the instruction
      */
@@ -162,7 +163,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 
     /**
      * Get the instruction for which this block is an exception thrower.
-     * 
+     *
      * @return the instruction, or null if this block is not an exception
      *         thrower
      */
@@ -199,7 +200,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 
     /**
      * Get the successor of given instruction within the basic block.
-     * 
+     *
      * @param handle
      *            the instruction
      * @return the instruction's successor, or null if the instruction is the
@@ -216,7 +217,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 
     /**
      * Get the predecessor of given instruction within the basic block.
-     * 
+     *
      * @param handle
      *            the instruction
      * @return the instruction's predecessor, or null if the instruction is the
@@ -232,7 +233,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 
     /**
      * Add an InstructionHandle to the basic block.
-     * 
+     *
      * @param handle
      *            the InstructionHandle
      */
@@ -390,7 +391,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     /**
      * Get CodeExceptionGen object; returns null if this basic block is not the
      * entry point of an exception handler.
-     * 
+     *
      * @return the CodeExceptionGen object, or null
      */
     public CodeExceptionGen getExceptionGen() {
@@ -400,21 +401,21 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     /**
      * Set the CodeExceptionGen object. Marks this basic block as the entry
      * point of an exception handler.
-     * 
+     *
      * @param exceptionGen
      *            the CodeExceptionGen object for the block
      */
-    public void setExceptionGen(TypeMerger m, CodeExceptionGen exceptionGen) {
+    public void setExceptionGen(@Nullable TypeMerger m, CodeExceptionGen exceptionGen) {
         if (this.exceptionGen != null) {
             AnalysisContext.logError("Multiple exception handlers");
         }
-       
+
        this.exceptionGen = exceptionGen;
     }
 
       /**
      * Return whether or not the basic block contains the given instruction.
-     * 
+     *
      * @param handle
      *            the instruction
      * @return true if the block contains the instruction, false otherwise
@@ -431,7 +432,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     /**
      * Return whether or not the basic block contains the instruction with the
      * given bytecode offset.
-     * 
+     *
      * @param offset
      *            the bytecode offset
      * @return true if the block contains an instruction with the given offset,
