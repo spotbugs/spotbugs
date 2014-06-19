@@ -253,6 +253,9 @@
                               <Later class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings"/>
                     </SplitPass>
           </OrderingConstraints>
+          <Detector class="edu.umd.cs.findbugs.detect.FindRoughConstants"
+                    reports="CNT_ROUGH_CONSTANT_VALUE" speed="fast" hidden="false"/>
+
           <Detector class="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" speed="fast"
                     reports="" hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" speed="fast"
@@ -617,6 +620,8 @@
           <BugCode abbrev="FB"/>
           <BugCode abbrev="AT"/>
           <!-- Bug patterns -->
+          <BugPattern abbrev="CNT" type="CNT_ROUGH_CONSTANT_VALUE" category="BAD_PRACTICE"/>
+
           <BugPattern abbrev="AT" type="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION"
                     category="MT_CORRECTNESS"/>
           <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SEND_ERROR" category="SECURITY" cweid="81"/>

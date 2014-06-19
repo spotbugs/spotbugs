@@ -165,6 +165,14 @@ This plugin contains all of the standard FindBugs detectors.
   Detectors
   **********************************************************************
    -->
+  <Detector class="edu.umd.cs.findbugs.detect.FindRoughConstants">
+    <Details>
+<![CDATA[
+<p> Finds constants which roughly (but not precicely) equal to known values like Math.PI.
+</p>
+]]>
+     </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.InitializeNonnullFieldsInConstructor">
     <Details>
 <![CDATA[
@@ -1589,6 +1597,15 @@ factory pattern to create these objects.</p>
   BugPatterns
   **********************************************************************
    -->
+  <BugPattern type="CNT_ROUGH_CONSTANT_VALUE">
+    <ShortDescription>Rough value of known constant found</ShortDescription>
+    <LongDescription>Rough value of {4} found: {3}</LongDescription>
+    <Details>
+      <![CDATA[
+    <p>It's recommended to use the predefined library constant for code clarity and better precision.</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="SKIPPED_CLASS_TOO_BIG">
     <ShortDescription>Class too big for analysis</ShortDescription>
     <LongDescription>{0} is too big for analysis</LongDescription>
@@ -8251,6 +8268,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="REC">RuntimeException capture</BugCode>
   <BugCode abbrev="FE">Test for floating point equality</BugCode>
   <BugCode abbrev="UM">Unnecessary Math on constants</BugCode>
+  <BugCode abbrev="CNT">Rough value of known constant</BugCode>
   <BugCode abbrev="CD">Circular Dependencies</BugCode>
   <BugCode abbrev="RI">Redundant Interfaces</BugCode>
   <BugCode abbrev="MTIA">Multithreaded Instance Access</BugCode>
