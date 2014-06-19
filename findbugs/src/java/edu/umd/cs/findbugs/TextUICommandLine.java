@@ -205,10 +205,12 @@ public class TextUICommandLine extends FindBugsCommandLine {
         startOptionGroup("Project configuration options:");
         addOption("-auxclasspath", "classpath", "set aux classpath for analysis");
         addSwitch("-auxclasspathFromInput", "read aux classpath from standard input");
+        addOption("-auxclasspathFromFile", "filepath", "read aux classpaths from a designated file");
         addOption("-sourcepath", "source path", "set source path for analyzed classes");
         addSwitch("-exitcode", "set exit code of process");
         addSwitch("-noClassOk", "output empty warning file if no classes are specified");
         addSwitch("-xargs", "get list of classfiles/jarfiles from standard input rather than command line");
+        addOption("-analyzeFromFile", "filepath", "get the list of class/jar files from a designated file");
         addOption("-cloud", "id", "set cloud id");
         addOption("-cloudProperty", "key=value", "set cloud property");
         addOption("-bugReporters", "name,name2,-name3", "bug reporter decorators to explicitly enable/disable");
@@ -534,6 +536,10 @@ public class TextUICommandLine extends FindBugsCommandLine {
             project.getConfiguration().getExcludeBugsFiles().put(argument, true);
         } else if (option.equals("-include")) {
             project.getConfiguration().getIncludeFilterFiles().put(argument, true);
+        } else if (option.equals("-auxclasspathFromFile")) {
+            handleAuxClassPathFromFile(argument);
+        } else if (option.equals("-analyzeFromFile")) {
+            handleAnalyzeFromFile(argument);
         } else if (option.equals("-auxclasspath")) {
             addAuxClassPathEntries(argument);
         } else if (option.equals("-sourcepath")) {
@@ -697,15 +703,58 @@ public class TextUICommandLine extends FindBugsCommandLine {
         if (getXargs()) {
             BufferedReader in = UTF8.bufferedReader(System.in);
             try {
+                while (true) {
+                    String s = in.readLine();
+                    if (s == null) {
+                        break;
+                    }
+                    project.addFile(s);
+                }
+            } finally {
+                Util.closeSilently(in);
+            }
+        }
+    }
+
+    /**
+     * Handle -readAuxFromFile command line option by reading classpath entries
+     * from a file and adding them to the project.
+     *
+     * @throws IOException
+     */
+    private void handleAuxClassPathFromFile(String filePath) throws IOException {
+        BufferedReader in = new BufferedReader(UTF8.fileReader(filePath));
+        try {
             while (true) {
                 String s = in.readLine();
-                if (s == null)
+                if (s == null) {
                     break;
+                }
+                project.addAuxClasspathEntry(s);
+            }
+        } finally {
+            Util.closeSilently(in);
+        }
+    }
+
+    /**
+     * Handle -analyzeFromFile command line option by reading jar file names
+     * from a file and adding them to the project.
+     *
+     * @throws IOException
+     */
+    private void handleAnalyzeFromFile(String filePath) throws IOException {
+        BufferedReader in = new BufferedReader(UTF8.fileReader(filePath));
+        try {
+            while (true) {
+                String s = in.readLine();
+                if (s == null) {
+                    break;
+                }
                 project.addFile(s);
             }
-            } finally {
-             Util.closeSilently(in);
-            }
+        } finally {
+            Util.closeSilently(in);
         }
     }
 
