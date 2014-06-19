@@ -18,7 +18,10 @@
 
                 <h1>FindBugs Change Log, Version @VERSION@</h1>
                 <ul>
-                    <li>Support for Java 8 bytecode.
+                    <li>FindBugs supports Java 8 now (both as runtime and target platform).
+                    <li>FindBugs requires minimum Java 7 as runtime environment!
+                    <li>FindBugs uses ASM 5 now which means that some 3rd party detectors based on FindBugs 2.x/ASM 3 has to be upgraded.
+                    See details in <a href="http://download.forge.objectweb.org/asm/asm4-guide.pdf#chapter.5">ASM documentation</a>.
                     <li>New Bug patterns:
                         <a
                         href="http://findbugs.sourceforge.net/bugDescriptions.html#NP_OPTIONAL_RETURN_NULL">NP_OPTIONAL_RETURN_NULL</a>,
