@@ -939,6 +939,36 @@ These options are only accepted by the Text User Interface.
   </varlistentry>
 
   <varlistentry>
+  <term><command>-auxclasspathFromInput</command> </term>
+  <listitem>
+    <para>
+    Read the auxiliary classpath for analysis from standard input, each line adds new
+    entry to the auxiliary classpath for analysis.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-auxclasspathFromFile</command> <replaceable>filepath</replaceable></term>
+  <listitem>
+    <para>
+    Read the auxiliary classpath for analysis from file, each line adds new
+    entry to the auxiliary classpath for analysis.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-analyzeFromFile</command> <replaceable>filepath</replaceable></term>
+  <listitem>
+    <para>
+    Read the files to analyze from file, each line adds new
+    entry to the classpath for analysis.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
   <term><command>-userPrefs</command> <replaceable>edu.umd.cs.findbugs.core.prefs</replaceable></term>
   <listitem>
     <para>
