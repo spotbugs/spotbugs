@@ -28,6 +28,7 @@ import java.util.Set;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.ExceptionSet;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
@@ -36,7 +37,7 @@ import edu.umd.cs.findbugs.ba.type.TypeDataflow;
  * Prune a CFG to remove infeasible exception edges. In order to determine what
  * kinds of exceptions can be thrown by explicit ATHROW instructions, type
  * analysis must first be performed on the unpruned CFG.
- * 
+ *
  * @author David Hovemeyer
  * @see CFG
  * @see edu.umd.cs.findbugs.ba.type.TypeAnalysis
@@ -92,7 +93,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 
     /**
      * Constructor.
-     * 
+     *
      * @param cfg
      *            the CFG to prune
      * @param methodGen
@@ -116,6 +117,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
      * runtime exception is thrown, then the CFG may be partially modified and
      * should be considered invalid.
      */
+    @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     public void execute() throws ClassNotFoundException {
         Set<Edge> deletedEdgeSet = new HashSet<Edge>();
         List<MarkedEdge> markedEdgeList = new LinkedList<MarkedEdge>();

@@ -60,30 +60,31 @@ import javax.annotation.WillCloseWhenClosed;
 import javax.annotation.WillNotClose;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.charsets.UTF8;
 
 /**
  * @author William Pugh
  */
 public class Util {
-    
+
     public static Thread startDameonThread(Thread t) {
         t.setDaemon(true);
         t.start();
         return t;
     }
-    
+
     public static Thread runInDameonThread(Runnable r, String name) {
         Thread t = new Thread(r, name);
         return startDameonThread(t);
-        
+
     }
     public static Thread runInDameonThread(Runnable r) {
         Thread t = new Thread(r);
         return startDameonThread(t);
-        
+
     }
-    
+
     public static int sign(int x) {
         if (x < 0)
             return -1;
@@ -308,7 +309,7 @@ public class Util {
             assert true;
         }
     }
-    
+
     public static void closeSilently(@WillClose ZipFile zip) {
         try {
             if (zip != null)
@@ -320,6 +321,7 @@ public class Util {
 
     static final Pattern tag = Pattern.compile("^\\s*<(\\w+)");
 
+    @SuppressFBWarnings("OS_OPEN_STREAM")
     public static String getXMLType(@WillNotClose InputStream in) throws IOException {
         if (!in.markSupported())
             throw new IllegalArgumentException("Input stream does not support mark");

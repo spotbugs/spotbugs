@@ -46,12 +46,14 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.tree.TreeModel;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Handles the sorting order and informs the treeModel when changes are
  * necessary
- * 
+ *
  * @author Dan
- * 
+ *
  */
 public class SorterTableColumnModel implements TableColumnModel {
 
@@ -70,14 +72,15 @@ public class SorterTableColumnModel implements TableColumnModel {
     public boolean isShown(Sortables s) {
         return shown.contains(s);
     }
-    
+
     @Override
     public String toString() {
         return order.toString();
     }
 
-    static boolean shownError = false;
+    static boolean shownError;
 
+    @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     public void check() {
         if (order.size() == shown.size() && order.containsAll(shown))
             return;

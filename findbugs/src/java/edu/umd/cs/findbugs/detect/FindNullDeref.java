@@ -573,14 +573,6 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     public static final Set<String> catchTypesForNull = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
             "java/lang/NullPointerException", "java/lang/RuntimeException", "java/lang/Exception")));
 
-    private boolean catchesNull(Location location) {
-
-        ConstantPool constantPool = classContext.getJavaClass().getConstantPool();
-        Code code = method.getCode();
-
-        return catchesNull(constantPool, code, location);
-    }
-
     public static boolean catchesNull(ConstantPool constantPool, Code code, Location location) {
         int position = location.getHandle().getPosition();
 

@@ -27,6 +27,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * @author pwilliam
  */
@@ -101,11 +103,12 @@ public class Multiset<K> {
         return map.keySet();
     }
 
+    @SuppressFBWarnings("DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS")
     public Iterable<Map.Entry<K, Integer>> entriesInDecreasingFrequency() {
         TreeSet<Map.Entry<K, Integer>> result = new TreeSet<Map.Entry<K, Integer>>(new EntryComparator<K>());
         result.addAll(map.entrySet());
         if (result.size() != map.size())
-            throw new IllegalStateException("Map " + map.getClass().getSimpleName() 
+            throw new IllegalStateException("Map " + map.getClass().getSimpleName()
                     + " reuses Map.Entry objects; entrySet can't be passed to addAll");
         return result;
     }

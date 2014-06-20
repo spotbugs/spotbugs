@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 /**
  * Find comparisons involving values computed with bitwise operations whose
  * outcomes are fixed at compile time.
- * 
+ *
  * @author Tom Truscott <trt@unx.sas.com>
  */
 public class IncompatMask extends BytecodeScanningDetector implements StatelessDetector {
@@ -183,8 +183,7 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
                 state = 3;
             }
 
-            /* fallthrough */
-
+            //$FALL-THROUGH$
         case IF_ICMPEQ:
         case IF_ICMPNE:
             checkState(3);

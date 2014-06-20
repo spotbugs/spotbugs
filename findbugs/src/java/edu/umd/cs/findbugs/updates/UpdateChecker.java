@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Version;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
@@ -87,7 +88,7 @@ public class UpdateChecker {
                 startUpdateCheckThread(uri, pluginsByUrl.get(uri), latch);
             }
         }
-        
+
         waitForCompletion(latch, force);
     }
 
@@ -103,7 +104,7 @@ public class UpdateChecker {
             try {
                 redirectUri = new URI(redirect);
                 logError(Level.INFO, "Redirecting all plugin update checks to " + redirectUri + " (" + pluginName + ")");
-                
+
             } catch (URISyntaxException e) {
                 String error = "Invalid update check redirect URI in " + pluginName + ": " + redirect;
                 logError(Level.SEVERE, error);
@@ -116,7 +117,7 @@ public class UpdateChecker {
 
     private long dontWarnAgainUntil() {
         Preferences prefs = Preferences.userNodeForPackage(UpdateChecker.class);
-        
+
         String oldSeen = prefs.get("last-plugin-update-seen", "");
         if (oldSeen == null || oldSeen.equals(""))
             return 0;
@@ -131,7 +132,7 @@ public class UpdateChecker {
         long now = System.currentTimeMillis();
         Preferences prefs = Preferences.userNodeForPackage(UpdateChecker.class);
         String oldHash = prefs.get("last-plugin-update-hash", "");
-        
+
         String newHash = Integer.toString(buildPluginUpdateHash(updates));
         if (oldHash.equals(newHash) && dontWarnAgainUntil() > now) {
             LOGGER.fine("Skipping update dialog because these updates have been seen before");
@@ -149,7 +150,7 @@ public class UpdateChecker {
         }
         return builder.hashCode();
     }
-    
+
     private void waitForCompletion(final CountDownLatch latch, final boolean force) {
         Util.runInDameonThread(new Runnable() {
             @Override
@@ -253,6 +254,7 @@ public class UpdateChecker {
     }
 
     /** protected for testing */
+    @SuppressFBWarnings("OBL_UNSATISFIED_OBLIGATION")
     protected final void writeXml(OutputStream out, Collection<Plugin> plugins, String entryPoint,
             boolean finish) throws IOException {
         OutputStreamXMLOutput xmlOutput = new OutputStreamXMLOutput(out);
@@ -397,7 +399,7 @@ public class UpdateChecker {
         }
         return lastFbClass;
     }
-    
+
     /** Should only be used once */
     private static Random random = new Random();
 
@@ -458,7 +460,7 @@ public class UpdateChecker {
         public @Nonnull String getMessage() {
             return message;
         }
-        
+
         @Override
         public String toString() {
             SimpleDateFormat format = new SimpleDateFormat(PLUGIN_RELEASE_DATE_FMT);
@@ -481,7 +483,7 @@ public class UpdateChecker {
             return buf.toString();
         }
     }
-    
+
     public static void main(String args[]) throws Exception {
         FindBugs.setNoAnalysis();
         DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
@@ -492,7 +494,7 @@ public class UpdateChecker {
         if (redirect != null)
             System.out.println("All update checks redirected to " + redirect);
         checker.writeXml(System.out, dfc.plugins(), "UpdateChecker", true);
-        
-        
+
+
     }
 }

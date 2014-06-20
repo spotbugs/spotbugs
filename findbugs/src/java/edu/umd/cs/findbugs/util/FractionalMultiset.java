@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * @author pwilliam
  */
@@ -78,26 +80,27 @@ public class FractionalMultiset<K> {
         return map.entrySet();
     }
 
+    @SuppressFBWarnings("DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS")
     public Iterable<Map.Entry<K, Double>> entriesInDecreasingOrder() {
         TreeSet<Map.Entry<K, Double>> result = new TreeSet<Map.Entry<K, Double>>(new DecreasingOrderEntryComparator<K>());
         result.addAll(map.entrySet());
         if (result.size() != map.size())
-            throw new IllegalStateException("Map " + map.getClass().getSimpleName() 
-                    + " reuses Map.Entry objects; entrySet can't be passed to addAll");
-        return result;
-    }
-    
-    
-    public Iterable<Map.Entry<K, Double>> entriesInIncreasingOrder() {
-        TreeSet<Map.Entry<K, Double>> result = new TreeSet<Map.Entry<K, Double>>(new DecreasingOrderEntryComparator<K>());
-        result.addAll(map.entrySet());
-        if (result.size() != map.size())
-            throw new IllegalStateException("Map " + map.getClass().getSimpleName() 
+            throw new IllegalStateException("Map " + map.getClass().getSimpleName()
                     + " reuses Map.Entry objects; entrySet can't be passed to addAll");
         return result;
     }
 
-    
+    @SuppressFBWarnings("DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS")
+    public Iterable<Map.Entry<K, Double>> entriesInIncreasingOrder() {
+        TreeSet<Map.Entry<K, Double>> result = new TreeSet<Map.Entry<K, Double>>(new DecreasingOrderEntryComparator<K>());
+        result.addAll(map.entrySet());
+        if (result.size() != map.size())
+            throw new IllegalStateException("Map " + map.getClass().getSimpleName()
+                    + " reuses Map.Entry objects; entrySet can't be passed to addAll");
+        return result;
+    }
+
+
     private static <E> int compareValues(Entry<E, Double> o1, Entry<E, Double> o2) {
         double c1 = o1.getValue();
         double c2 = o2.getValue();

@@ -70,7 +70,7 @@ public class ClassParser implements ClassParserInterface {
 
     private Constant[] constantPool;
 
-    private ClassDescriptor immediateEnclosingClass;
+//    private ClassDescriptor immediateEnclosingClass;
 
     /**
      * Constructor.
@@ -513,10 +513,10 @@ public class ClassParser implements ClassParserInterface {
             int inner_name_index = in.readUnsignedShort();
             int inner_class_access_flags = in.readUnsignedShort();
 
-            if (outer_class_info_index != 0) {
-                // Record which class this class is a member of.
-                this.immediateEnclosingClass = getClassDescriptor(outer_class_info_index);
-            }
+//            if (outer_class_info_index != 0) {
+//                // Record which class this class is a member of.
+//                this.immediateEnclosingClass = getClassDescriptor(outer_class_info_index);
+//            }
         }
     }
 

@@ -28,6 +28,7 @@ import java.nio.charset.Charset;
 import javax.annotation.WillCloseWhenClosed;
 
 import edu.umd.cs.findbugs.annotations.DischargesObligation;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.util.Strings;
 
 /**
@@ -58,6 +59,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
      * @param os
      *            OutputStream to write XML output to
      */
+    @SuppressFBWarnings("OBL_UNSATISFIED_OBLIGATION")
     public OutputStreamXMLOutput(@WillCloseWhenClosed OutputStream os) {
         this(os, null);
     }
@@ -67,6 +69,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
      * @param writer
      *            Writer to write XML output to
      */
+    @SuppressFBWarnings("OBL_UNSATISFIED_OBLIGATION")
     public OutputStreamXMLOutput(@WillCloseWhenClosed Writer writer) {
         this(writer, null);
     }

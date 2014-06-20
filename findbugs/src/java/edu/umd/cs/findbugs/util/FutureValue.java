@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2003-2008 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -44,26 +44,16 @@ public class FutureValue<V> implements Future<V> {
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.util.concurrent.Future#get()
-     */
     @Override
-    public V get() throws InterruptedException {
+    public synchronized V get() throws InterruptedException {
         latch.await();
         if (canceled)
             throw new RuntimeException("Canceled");
         return value;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.util.concurrent.Future#get(long, java.util.concurrent.TimeUnit)
-     */
     @Override
-    public V get(long arg0, TimeUnit arg1) throws InterruptedException, TimeoutException {
+    public synchronized V get(long arg0, TimeUnit arg1) throws InterruptedException, TimeoutException {
         if (!latch.await(arg0, arg1))
             throw new TimeoutException();
         if (canceled)
@@ -71,35 +61,20 @@ public class FutureValue<V> implements Future<V> {
         return value;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.util.concurrent.Future#get(long, java.util.concurrent.TimeUnit)
-     */
-    public V get(long arg0, TimeUnit arg1, V valueOnTimeout) throws InterruptedException {
+    public synchronized V get(long arg0, TimeUnit arg1, V valueOnTimeout) throws InterruptedException {
         if (!latch.await(arg0, arg1))
             return valueOnTimeout;
-       
+
         if (canceled)
             throw new RuntimeException("Canceled");
         return value;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.util.concurrent.Future#isCancelled()
-     */
     @Override
     public boolean isCancelled() {
         return canceled;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.util.concurrent.Future#isDone()
-     */
     @Override
     public boolean isDone() {
         return !canceled && latch.getCount() == 0;

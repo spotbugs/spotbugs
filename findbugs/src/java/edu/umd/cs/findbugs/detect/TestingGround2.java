@@ -22,12 +22,14 @@ package edu.umd.cs.findbugs.detect;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class TestingGround2 extends OpcodeStackDetector {
 
     BugReporter bugReporter;
 
+    @SuppressFBWarnings("URF_UNREAD_FIELD")
     public TestingGround2(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
@@ -43,7 +45,7 @@ public class TestingGround2 extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-     
+
     }
 
 }

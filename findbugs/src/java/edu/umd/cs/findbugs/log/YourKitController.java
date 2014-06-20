@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.log;
 import java.lang.reflect.Method;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * @author pugh
@@ -77,6 +78,7 @@ public class YourKitController {
         }
     }
 
+    @SuppressFBWarnings("DM_GC")
     public void captureMemorySnapshot() {
         if (controller == null)
             return;

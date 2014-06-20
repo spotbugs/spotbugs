@@ -84,32 +84,32 @@ public class ClassParserUsingASM implements ClassParserInterface {
      */
     private final class ClassParserMethodVisitor extends AbstractMethodVisitor {
         /**
-         * 
+         *
          */
         private final TreeSet<ClassDescriptor> calledClassSet;
 
         /**
-         * 
+         *
          */
         private final edu.umd.cs.findbugs.classfile.analysis.MethodInfo.Builder mBuilder;
 
         /**
-         * 
+         *
          */
         private final String methodName;
 
         /**
-         * 
+         *
          */
         private final int access;
 
         /**
-         * 
+         *
          */
         private final String methodDesc;
 
         /**
-         * 
+         *
          */
         private final edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder cBuilder;
 
@@ -493,7 +493,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
         classReader.accept(new ClassVisitor(FindBugsASM.ASM_VERSION) {
 
-            boolean isInnerClass = false;
+//            boolean isInnerClass = false;
 
             @Override
             public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
@@ -533,8 +533,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
             @Override
             public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-                if (name.equals("this$0"))
-                    isInnerClass = true;
+//                if (name.equals("this$0"))
+//                    isInnerClass = true;
 
                 if (desc == null)
                     throw new NullPointerException("Description cannot be null");

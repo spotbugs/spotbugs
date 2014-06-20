@@ -38,13 +38,14 @@ import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 
 /**
  * Java main application to compute update a historical bug collection with
  * results from another build/analysis.
- * 
+ *
  * @author William Pugh
  */
 
@@ -70,7 +71,7 @@ public class CopyBuggySource {
      */
     private static final String USAGE = "Usage: <cmd> " + "  <bugs.xml> <destinationSrc>";
 
- 
+
     public static void main(String[] args) throws Exception {
         FindBugs.setNoAnalysis();
         DetectorFactoryCollection.instance();
@@ -117,6 +118,7 @@ public class CopyBuggySource {
 
     }
 
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     private void copySourceFile(String fullName, SourceFile sourceFile) {
         InputStream in = null;
         OutputStream out = null;
@@ -219,7 +221,7 @@ public class CopyBuggySource {
         }
 
     }
-    
+
     public static void close(InputStream in) {
         try {
             if (in != null)
