@@ -1446,8 +1446,19 @@ using the &FindBugs; task.
     <term><literal>omitVisitors</literal></term>
     <listitem>
        <para>
-       Optional attribute.  It is like the <literal>visitors</literal> attribute,
+       Optional attribute. It specifies a comma-separated list of bug detectors.
+       It is like the <literal>visitors</literal> attribute,
        except it specifies detectors which will <emphasis>not</emphasis> be run.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>chooseVisitors</literal></term>
+    <listitem>
+       <para>
+       Optional attribute. It specifies a comma-separated list of bug detectors
+       prefixed with "+" or "-" to selectively enable/disable them.
        </para>
     </listitem>
   </varlistentry>
