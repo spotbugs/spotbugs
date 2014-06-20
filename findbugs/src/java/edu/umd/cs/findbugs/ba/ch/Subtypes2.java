@@ -957,6 +957,55 @@ public class Subtypes2 {
         }
     }
 
+    /**
+     * Starting at the class or interface named by the given ClassDescriptor,
+     * traverse the inheritance graph depth first, visiting each class only
+     * once. This is much faster than traversing all paths in certain circumstances.
+     *
+     * @param start
+     *            ClassDescriptor naming the class where the traversal should
+     *            start
+     * @param visitor
+     *            an InheritanceGraphVisitor
+     * @throws ClassNotFoundException
+     *             if the start vertex cannot be resolved
+     */
+    public void traverseSupertypesDepthFirst(ClassDescriptor start, SupertypeTraversalVisitor visitor) throws ClassNotFoundException {
+        this.traverseSupertypesDepthFirstHelper(start, visitor, new HashSet<ClassDescriptor>());
+    }
+    
+    private void traverseSupertypesDepthFirstHelper(ClassDescriptor cur, SupertypeTraversalVisitor visitor,
+            Set<ClassDescriptor> seen) throws ClassNotFoundException {
+        
+        if (seen.contains(cur)) {
+            return;
+        }
+        seen.add(cur);
+
+        ClassVertex vertex = resolveClassVertex(cur);
+
+        if (!vertex.isResolved()) {
+            // Unknown class - so, we don't know its immediate supertypes
+            return;
+        }
+
+        if (!visitor.visitClass(vertex.getClassDescriptor(), vertex.getXClass())) {
+            // Visitor doesn't want to continue on this path
+            return;
+        }
+
+        // Advance to direct superclass
+        ClassDescriptor superclassDescriptor = vertex.getXClass().getSuperclassDescriptor();
+        if (superclassDescriptor != null) {
+            traverseSupertypesDepthFirstHelper(superclassDescriptor, visitor, seen);
+        }
+
+        // Advance to directly-implemented interfaces
+        for (ClassDescriptor ifaceDesc : vertex.getXClass().getInterfaceDescriptorList()) {
+            traverseSupertypesDepthFirstHelper(ifaceDesc, visitor, seen);
+        }
+    }
+
     private void addToWorkList(LinkedList<SupertypeTraversalPath> workList, SupertypeTraversalPath curPath,
             ClassDescriptor supertypeDescriptor) {
         ClassVertex vertex = classDescriptorToVertexMap.get(supertypeDescriptor);

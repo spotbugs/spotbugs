@@ -672,7 +672,7 @@ public class TypeQualifierApplications {
 
         ReturnTypeAnnotationAccumulator accumulator = new ReturnTypeAnnotationAccumulator(typeQualifierValue, o);
         try {
-            AnalysisContext.currentAnalysisContext().getSubtypes2().traverseSupertypes(o.getClassDescriptor(), accumulator);
+            AnalysisContext.currentAnalysisContext().getSubtypes2().traverseSupertypesDepthFirst(o.getClassDescriptor(), accumulator);
             TypeQualifierAnnotation result = accumulator.getResult().getEffectiveTypeQualifierAnnotation();
             if (result == null && accumulator.overrides())
                 return TypeQualifierAnnotation.OVERRIDES_BUT_NO_ANNOTATION;
@@ -934,7 +934,7 @@ public class TypeQualifierApplications {
 
         ParameterAnnotationAccumulator accumulator = new ParameterAnnotationAccumulator(typeQualifierValue, xmethod, parameter);
         try {
-            AnalysisContext.currentAnalysisContext().getSubtypes2().traverseSupertypes(xmethod.getClassDescriptor(), accumulator);
+            AnalysisContext.currentAnalysisContext().getSubtypes2().traverseSupertypesDepthFirst(xmethod.getClassDescriptor(), accumulator);
             TypeQualifierAnnotation result = accumulator.getResult().getEffectiveTypeQualifierAnnotation();
             if (result == null && accumulator.overrides())
                 return TypeQualifierAnnotation.OVERRIDES_BUT_NO_ANNOTATION;
