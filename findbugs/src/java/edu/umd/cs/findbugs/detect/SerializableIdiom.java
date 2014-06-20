@@ -74,7 +74,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
     boolean isGUIClass;
 
     boolean isEjbImplClass;
-    
+
     boolean isJSPClass;
 
     boolean foundSynthetic;
@@ -119,6 +119,8 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     private boolean directlyImplementsExternalizable;
 
+    private boolean testingEnabled;
+
     // private JavaClass serializable;
     // private JavaClass collection;
     // private JavaClass map;
@@ -126,6 +128,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     public SerializableIdiom(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+        testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
     }
 
     @Override
@@ -501,7 +504,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
             XField xField = getXFieldOperand();
             if (xField != null && xField.getClassDescriptor().equals(getClassDescriptor())) {
                 Item first = stack.getStackItem(0);
-                
+
                 boolean isPutOfDefaultValue = first.isNull(); // huh?? ||
                                                               // first.isInitialParameter();
                 if (!isPutOfDefaultValue && first.getConstant() != null) {
@@ -578,10 +581,11 @@ public class SerializableIdiom extends OpcodeStackDetector {
                         || Subtypes2.instanceOf(fieldType, "javax.ejb.EJBHome")
                         || Subtypes2.instanceOf(fieldType, "javax.ejb.EJBObject")
                         || Subtypes2.instanceOf(fieldType, "javax.naming.Context")) {
-                    if (obj.isTransient())
+                    if (testingEnabled && obj.isTransient()) {
                         bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClass(this)
                                 .addVisitedField(this)
                                 .addString("EJB implementation classes should not have fields of this type"));
+                    }
                     return;
                 }
             }
@@ -602,10 +606,10 @@ public class SerializableIdiom extends OpcodeStackDetector {
             }
             XField xfield = getXField();
             Type type = TypeFrameModelingVisitor.getType(xfield);
-            if (type instanceof ReferenceType) 
+            if (type instanceof ReferenceType)
             try {
                 ReferenceType rtype = (ReferenceType) type;
-               
+
                 double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(rtype);
                 if (DEBUG) {
                     System.out.println("  isSerializable: " + isSerializable);

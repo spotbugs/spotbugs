@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.OpcodeStack.JumpInfo;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -44,9 +45,12 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
 
     final BugAccumulator accumulator;
 
+    private boolean testingEnabled;
+
     public CheckAnalysisContextContainedAnnotation(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.accumulator = new BugAccumulator(bugReporter);
+        testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
     }
 
     final static ClassDescriptor ConstantAnnotation = DescriptorFactory.createClassDescriptor(StaticConstant.class);
@@ -82,7 +86,7 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
     }
     @Override
     public void visit(Code code) {
-        boolean interesting = false;
+        boolean interesting = testingEnabled;
         if (interesting) {
             // initialize any variables we want to initialize for the method
             super.visit(code); // make callbacks to sawOpcode for all opcodes

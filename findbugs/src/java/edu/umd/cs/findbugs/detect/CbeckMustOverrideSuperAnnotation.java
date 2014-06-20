@@ -26,6 +26,7 @@ import org.apache.bcel.classfile.Code;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Lookup;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -38,14 +39,20 @@ public class CbeckMustOverrideSuperAnnotation extends OpcodeStackDetector {
 
     ClassDescriptor mustOverrideAnnotation = DescriptorFactory.createClassDescriptor(OverridingMethodsMustInvokeSuper.class);
 
+    private boolean testingEnabled;
+
     public CbeckMustOverrideSuperAnnotation(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+        testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
     }
 
     private boolean sawCallToSuper;
 
     @Override
     public void visit(Code code) {
+        if(!testingEnabled){
+            return;
+        }
         if (getMethod().isStatic() || getMethod().isPrivate())
             return;
         XMethod overrides = Lookup.findSuperImplementorAsXMethod(getThisClass(), getMethodName(), getMethodSig(), bugReporter);
@@ -64,7 +71,7 @@ public class CbeckMustOverrideSuperAnnotation extends OpcodeStackDetector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
      */
     @Override

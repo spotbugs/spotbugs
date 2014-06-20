@@ -50,11 +50,14 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
     final BugReporter bugReporter;
 
+    private boolean testingEnabled;
+
     final static boolean REPORT_INFERRED_METHODS = SystemProperties.getBoolean("mrc.inferred.report");
 
     public FunctionsThatMightBeMistakenForProcedures(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         setVisitMethodsInCallOrder(true);
+        testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
     }
 
     boolean isInnerClass, hasNonFinalFields;
@@ -140,7 +143,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 //         System.out.println("Investigating " + getFullyQualifiedMethodName());
         returnSelf = returnOther = updates = returnNew = returnUnknown = 0;
 
-        if (REPORT_INFERRED_METHODS
+        if (testingEnabled && REPORT_INFERRED_METHODS
                 && AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass()))
             inferredMethod = new BugInstance("TESTING", NORMAL_PRIORITY).addClassAndMethod(this);
         else

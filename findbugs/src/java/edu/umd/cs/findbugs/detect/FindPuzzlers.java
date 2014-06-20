@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -64,9 +65,12 @@ public class FindPuzzlers extends OpcodeStackDetector {
 
     final BugAccumulator bugAccumulator;
 
+    private boolean testingEnabled;
+
     public FindPuzzlers(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
+        testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
     }
 
     @Override
@@ -111,10 +115,10 @@ public class FindPuzzlers extends OpcodeStackDetector {
     XMethod previousMethodInvocation;
 
     boolean isTigerOrHigher;
-    
+
     static ClassDescriptor ITERATOR = DescriptorFactory.createClassDescriptor(Iterator.class);
     static ClassDescriptor MAP_ENTRY = DescriptorFactory.createClassDescriptor(Map.Entry.class);
-    
+
 
     @Override
     public void visit(JavaClass obj) {
@@ -152,7 +156,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
         return Math.abs(((Integer) constant).intValue()) * mul;
 
     }
-    
+
     @Override
     public boolean beforeOpcode(int seen) {
         super.beforeOpcode(seen);
@@ -163,17 +167,17 @@ public class FindPuzzlers extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        
+
         if (stack.isTop()) {
             pendingUnreachableBranch = null;
             if (becameTop == -1)
                 becameTop = getPC();
-            if (seen == GOTO && getBranchTarget() < becameTop)  {
+            if (testingEnabled && seen == GOTO && getBranchTarget() < becameTop)  {
                 pendingUnreachableBranch = new BugInstance(this, "TESTING", NORMAL_PRIORITY)
                 .addClassAndMethod(this).addString("Unreachable loop body").addSourceLineRange(this, becameTop, getPC());
             }
             return;
-           
+
         }
         if (pendingUnreachableBranch != null) {
            bugReporter.reportBug(pendingUnreachableBranch);
@@ -599,7 +603,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
        else
             previousMethodInvocation = null;
 
-        if (seen == IAND || seen == LAND) {
+        if (testingEnabled && seen == IAND || seen == LAND) {
             OpcodeStack.Item rhs = stack.getStackItem(0);
             OpcodeStack.Item lhs = stack.getStackItem(1);
             Object constant = rhs.getConstant();

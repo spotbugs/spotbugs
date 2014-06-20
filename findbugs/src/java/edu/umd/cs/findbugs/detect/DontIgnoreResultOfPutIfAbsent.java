@@ -84,20 +84,17 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
 
     final ClassDescriptor concurrentMapDescriptor = DescriptorFactory.createClassDescriptor(ConcurrentMap.class);
 
+    private boolean testingEnabled;
+
     public DontIgnoreResultOfPutIfAbsent(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.accumulator = new BugAccumulator(bugReporter);
+        testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.Detector#report()
-     */
     @Override
     public void report() {
-        // TODO Auto-generated method stub
-
+        //
     }
 
     @Override
@@ -259,7 +256,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
                                     isRetained = true;
                                     break;
                                 }
-                            if (countOtherCalls && !isRetained && SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors")) {
+                            if (testingEnabled && (countOtherCalls && !isRetained)) {
                                 int priority = LOW_PRIORITY;
                                 if (!isImmediateNullTest && !isIgnored) {
                                     TypeDataflow typeAnalysis = classContext.getTypeDataflow(method);
@@ -277,7 +274,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
                             }
 
                         }
-                    } else if (countOtherCalls) {
+                    } else if (testingEnabled && countOtherCalls) {
                         BugInstance bugInstance = new BugInstance(this, "TESTING2", Priorities.NORMAL_PRIORITY)
                                 .addClassAndMethod(methodGen, sourceFileName).addCalledMethod(methodGen, invoke);
                         SourceLineAnnotation where = SourceLineAnnotation.fromVisitedInstruction(classContext, method, location);

@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -151,9 +152,12 @@ public class FindSqlInjection implements Detector {
 
     BugAccumulator bugAccumulator;
 
+    private boolean testingEnabled;
+
     public FindSqlInjection(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
+        testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
     }
 
     @Override
@@ -490,6 +494,9 @@ public class FindSqlInjection implements Detector {
                     Location prev = getPreviousLocation(cfg, location, true);
                     if (prev == null || !isSafeValue(prev, cpg)) {
                         BugInstance bug = generateBugInstance(javaClass, methodGen, location.getHandle(), stringAppendState);
+                        if(!testingEnabled && "TESTING".equals(bug.getType())){
+                            continue;
+                        }
                         bugAccumulator.accumulateBug(
                                 bug,
                                 SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,

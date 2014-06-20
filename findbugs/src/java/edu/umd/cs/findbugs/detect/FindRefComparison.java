@@ -642,6 +642,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
     private final Set<String> suspiciousSet;
 
+    private boolean testingEnabled;
+
     /*
      * ----------------------------------------------------------------------
      * Implementation
@@ -662,6 +664,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 suspiciousSet.add(tok.nextToken());
             }
         }
+        testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
     }
 
     @Override
@@ -935,20 +938,23 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 String sourceFile = jclass.getSourceFileName();
 
                 boolean isAssertSame = handle.getInstruction() instanceof INVOKESTATIC;
-                if (isAssertSame)
+                if (isAssertSame) {
+                    if(testingEnabled) {
+                        bugAccumulator.accumulateBug(
+                                new BugInstance(this, "TESTING", result.getPriority())
+                                .addClassAndMethod(methodGen, sourceFile)
+                                .addString("Calling assertSame with two distinct objects")
+                                .addFoundAndExpectedType(rhsType, lhsType)
+                                        .addSomeSourceForTopTwoStackValues(classContext, method, location),
+                                SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle));
+                    }
+                } else {
                     bugAccumulator.accumulateBug(
-                            new BugInstance(this, "TESTING", result.getPriority())
-                            .addClassAndMethod(methodGen, sourceFile)
-                            .addString("Calling assertSame with two distinct objects")
-                            .addFoundAndExpectedType(rhsType, lhsType)
+                            new BugInstance(this, "EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", result.getPriority())
+                                    .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType, lhsType)
                                     .addSomeSourceForTopTwoStackValues(classContext, method, location),
                             SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle));
-                    else
-                bugAccumulator.accumulateBug(
-                        new BugInstance(this, "EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", result.getPriority())
-                                .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType, lhsType)
-                                .addSomeSourceForTopTwoStackValues(classContext, method, location),
-                        SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle));
+                }
                 return;
             }
             if (lhsType.equals(Type.OBJECT) && rhsType.equals(Type.OBJECT))

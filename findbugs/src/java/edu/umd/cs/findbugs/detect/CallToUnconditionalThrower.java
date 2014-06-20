@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -59,19 +60,16 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
 
     AnalysisContext analysisContext;
 
+    private boolean testingEnabled;
+
     public CallToUnconditionalThrower(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+        testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.Detector#report()
-     */
     @Override
     public void report() {
-        // TODO Auto-generated method stub
-
+        //
     }
 
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
@@ -150,6 +148,9 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
 
     @Override
     public void visitClassContext(ClassContext classContext) {
+        if(!testingEnabled){
+            return;
+        }
         analysisContext = AnalysisContext.currentAnalysisContext();
         Method[] methodList = classContext.getJavaClass().getMethods();
         for (Method method : methodList) {

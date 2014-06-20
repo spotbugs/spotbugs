@@ -45,7 +45,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.IntAnnotation;
-import edu.umd.cs.findbugs.JavaVersion;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -53,6 +52,7 @@ import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StringAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -110,9 +110,14 @@ public class DumbMethods extends OpcodeStackDetector {
     private int randomNextIntState;
 
     private boolean checkForBitIorofSignedByte;
+    
+    /**
+     * A heuristic - how long a catch block for OutOfMemoryError might be.
+     */
+    private static final int OOM_CATCH_LEN = 20;
 
-    private final boolean jdk15ChecksEnabled;
-
+    private boolean testingEnabled;
+    
     private final BugAccumulator accumulator;
     private final BugAccumulator absoluteValueAccumulator;
 
@@ -123,7 +128,7 @@ public class DumbMethods extends OpcodeStackDetector {
         this.bugReporter = bugReporter;
         accumulator = new BugAccumulator(bugReporter);
         absoluteValueAccumulator = new BugAccumulator(bugReporter);
-        jdk15ChecksEnabled = JavaVersion.getRuntimeVersion().isSameOrNewerThan(JavaVersion.JAVA_1_5);
+        testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
     }
 
     boolean isSynthetic;
@@ -158,7 +163,7 @@ public class DumbMethods extends OpcodeStackDetector {
         if (value == null) return;
         Constant c = getConstantPool().getConstant(value.getConstantValueIndex());
 
-        if (c instanceof ConstantLong && ((ConstantLong)c).getBytes()  == MICROS_PER_DAY_OVERFLOWED_AS_INT) {
+        if (testingEnabled && c instanceof ConstantLong && ((ConstantLong)c).getBytes() == MICROS_PER_DAY_OVERFLOWED_AS_INT) {
             bugReporter.reportBug( new BugInstance(this, "TESTING", HIGH_PRIORITY).addClass(this).addField(this)
             .addString("Did you mean MICROS_PER_DAY")
             .addInt(MICROS_PER_DAY_OVERFLOWED_AS_INT)
@@ -263,7 +268,7 @@ public class DumbMethods extends OpcodeStackDetector {
 
         if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
             Constant c = getConstantRefOperand();
-            if ((c instanceof ConstantInteger && ((ConstantInteger) c).getBytes() == MICROS_PER_DAY_OVERFLOWED_AS_INT
+            if (testingEnabled && (c instanceof ConstantInteger && ((ConstantInteger) c).getBytes() == MICROS_PER_DAY_OVERFLOWED_AS_INT
                     || c instanceof ConstantLong && ((ConstantLong) c).getBytes() == MICROS_PER_DAY_OVERFLOWED_AS_INT)) {
                 BugInstance bug = new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(this)
                         .addString("Did you mean MICROS_PER_DAY").addInt(MICROS_PER_DAY_OVERFLOWED_AS_INT)
@@ -310,7 +315,7 @@ public class DumbMethods extends OpcodeStackDetector {
                         && (returnValueOf.getClassName().equals("java.util.Date") || returnValueOf.getClassName().equals(
                                 "java.sql.Date"))) {
                     int year = (Integer) constant1;
-                    if (year > 1900)
+                    if (testingEnabled && year > 1900)
                         accumulator.accumulateBug(
                                 new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(this)
                                         .addString("Comparison of getYear does understand that it returns year-1900")
@@ -1005,7 +1010,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 ctorSeen = false;
             }
 
-            if (jdk15ChecksEnabled && (seen == INVOKEVIRTUAL) && isMonitorWait(getNameConstantOperand(), getSigConstantOperand())) {
+            if ((seen == INVOKEVIRTUAL) && isMonitorWait(getNameConstantOperand(), getSigConstantOperand())) {
                 checkMonitorWait();
             }
 
@@ -1178,11 +1183,6 @@ public class DumbMethods extends OpcodeStackDetector {
         super.visit(obj);
         flush();
     }
-
-    /**
-     * A heuristic - how long a catch block for OutOfMemoryError might be.
-     */
-    private static final int OOM_CATCH_LEN = 20;
 
     /**
      * Flush out cached state at the end of a method.
