@@ -101,6 +101,7 @@ import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PluginException;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionAssociations;
@@ -245,6 +246,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             }
             System.setProperty("findbugs.cloud.default", defCloud);
         }
+
+        // enable source searching for "fall" (ignore case) in switch statements
+        SystemProperties.setProperty("findbugs.sf.comment", "true");
 
         /** Don't load main classes */
         FindBugs.setNoMains();
