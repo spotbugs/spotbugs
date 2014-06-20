@@ -1,5 +1,10 @@
 Here is how to build the FindBugs Eclipse Plugin:
 
+Install Java 7+
+===============
+
+Make sure you are using Java 7 or greater (since version 3.0 FindBugs requires Java 7).
+
 Install Eclipse
 ================
 1) Download and install Eclipse 3.6.+ (minumum supported version).
