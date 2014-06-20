@@ -18,6 +18,7 @@
         <property name="fb-ant.jar" value="${findbugs.home}/lib/findbugs-ant.jar" />
         <property name="fb-baseline-ant.jar" value="${findbugs-baseline.home}/lib/findbugs-ant.jar" />
         <property name="history.dir" value="history"/>
+        <property name="enabledExtraVisitors" value="+CheckExpectedWarnings,+InefficientMemberAccess,+EmptyZipFileEntry"/>
 
         <path id="build.classpath">
         <pathelement location="${findbugs.home}/lib/annotations.jar" />
@@ -103,7 +104,7 @@
         <echo>fb-ant jar is ${fb-baseline-ant.jar}</echo>
         <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${fb-baseline-ant.jar}"/>
         <findbugs home="${findbugs-baseline.home}"  jvmargs="-ea -Xmx900m"
-             output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/baseline.xml">
+             output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="${enabledExtraVisitors}" outputFile="build/baseline.xml">
             <sourcePath path="${basedir}/src/java" />
             <auxclasspath refid="build.classpath"/>
             <class location="${basedir}/build/classes" />
@@ -116,7 +117,7 @@
         <echo>Test expected warnings with *min* effort</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
         	   output="xml:withMessages" timestampNow="true" reportLevel="low" effort="min"
-        	   chooseVisitors="+CheckExpectedWarnings" outputFile="build/minEffort.xml">
+        	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/minEffort.xml">
             <sourcePath path="${basedir}/src/java" />
             <auxclasspath refid="build.classpath"/>
             <class location="${basedir}/build/classes" />
@@ -125,7 +126,7 @@
         <echo>Test expected warnings with *less* effort</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
         	   output="xml:withMessages" timestampNow="true" reportLevel="low" effort="less"
-        	   chooseVisitors="+CheckExpectedWarnings" outputFile="build/lessEffort.xml">
+        	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/lessEffort.xml">
             <sourcePath path="${basedir}/src/java" />
             <auxclasspath refid="build.classpath"/>
             <class location="${basedir}/build/classes" />
@@ -134,7 +135,7 @@
         <echo>Test expected warnings with *more* effort</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
         	   output="xml:withMessages" timestampNow="true" reportLevel="low" effort="more"
-        	   chooseVisitors="+CheckExpectedWarnings" outputFile="build/moreEffort.xml">
+        	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/moreEffort.xml">
             <sourcePath path="${basedir}/src/java" />
             <auxclasspath refid="build.classpath"/>
             <class location="${basedir}/build/classes" />
@@ -143,7 +144,7 @@
         <echo>Test expected warnings with *max* effort</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
         	   output="xml:withMessages" timestampNow="true" reportLevel="low" effort="max"
-        	   chooseVisitors="+CheckExpectedWarnings" outputFile="build/maxEffort.xml">
+        	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/maxEffort.xml">
             <sourcePath path="${basedir}/src/java" />
             <auxclasspath refid="build.classpath"/>
             <class location="${basedir}/build/classes" />
@@ -159,7 +160,7 @@
         <echo>Test expected warnings with javac bytecode</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m -Dfindbugs.sf.comment=false"
                output="xml:withMessages" timestampNow="true" reportLevel="low"
-        	   chooseVisitors="+CheckExpectedWarnings" outputFile="build/normal.xml">
+        	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/normal.xml">
             <sourcePath path="${basedir}/src/java" />
             <auxclasspath refid="build.classpath"/>
             <class location="${basedir}/build/classes" />
@@ -181,7 +182,7 @@
         <echo>Test expected warnings with javac bytecode and source</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m -Dfindbugs.sf.comment=true"
                output="xml:withMessages" timestampNow="true" reportLevel="low"
-        	   chooseVisitors="+CheckExpectedWarnings" outputFile="build/analyzeSource.xml">
+        	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/analyzeSource.xml">
             <sourcePath path="${basedir}/src/java" />
             <auxclasspath refid="build.classpath"/>
             <class location="${basedir}/build/classes" />
@@ -203,7 +204,7 @@
         <echo>Test expected warnings with ecj bytecode</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
                output="xml:withMessages" timestampNow="true" reportLevel="low"
-        	   chooseVisitors="+CheckExpectedWarnings" outputFile="build/normalEclipse.xml"
+        	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/normalEclipse.xml"
             noClassOk="true">
             <sourcePath path="${basedir}/src/java" />
             <auxclasspath refid="build.classpath"/>

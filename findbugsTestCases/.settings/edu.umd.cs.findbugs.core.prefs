@@ -1,5 +1,5 @@
 #FindBugs User Preferences
-#Thu Jun 19 13:18:22 CEST 2014
+#Thu Jun 19 23:16:20 CEST 2014
 cloud_id=edu.umd.cs.findbugs.cloud.doNothingCloud
 detectorAppendingToAnObjectOutputStream=AppendingToAnObjectOutputStream|true
 detectorAtomicityProblem=AtomicityProblem|true
@@ -77,7 +77,7 @@ detectorIDivResultCastToDouble=IDivResultCastToDouble|true
 detectorIncompatMask=IncompatMask|true
 detectorInconsistentAnnotations=InconsistentAnnotations|true
 detectorInefficientIndexOf=InefficientIndexOf|true
-detectorInefficientMemberAccess=InefficientMemberAccess|false
+detectorInefficientMemberAccess=InefficientMemberAccess|true
 detectorInefficientToArray=InefficientToArray|true
 detectorInfiniteLoop=InfiniteLoop|true
 detectorInfiniteRecursiveLoop=InfiniteRecursiveLoop|true
