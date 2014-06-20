@@ -45,11 +45,11 @@ public class TestNullnessRelaxation2 {
 		@ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
 		String get();
 
-		@ExpectWarning("NP_METHOD_PARAMETER_RELAXING_ANNOTATION")
+		@ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
 		public Integer set(@NonNull Number o);
 
 		@CheckForNull
-		@ExpectWarning("NP_METHOD_PARAMETER_RELAXING_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
+		@ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
 		public Integer set2(@NonNull Integer o);
 	}
 
@@ -60,18 +60,18 @@ public class TestNullnessRelaxation2 {
             return null;
         }
 
-        @ExpectWarning("NP_METHOD_PARAMETER_RELAXING_ANNOTATION")
+        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
         public Integer set(@NonNull Number o){
             return null;
         }
 
         @CheckForNull
-        @ExpectWarning("NP_METHOD_PARAMETER_RELAXING_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
+        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public Integer set2(@NonNull Integer o){
             return null;
         }
     }
-    
+
     static interface SI3 extends I<Integer> {}
     static interface SI4 extends SI3, SI2 {}
     abstract static class Clazz1 implements SI4 {}
@@ -84,13 +84,13 @@ public class TestNullnessRelaxation2 {
             return null;
         }
 
-        @ExpectWarning("NP_METHOD_PARAMETER_RELAXING_ANNOTATION")
+        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
         public Integer set(@NonNull Number o){
             return null;
         }
 
         @CheckForNull
-        @ExpectWarning("NP_METHOD_PARAMETER_RELAXING_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
+        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public Integer set2(@NonNull Integer o){
             return null;
         }

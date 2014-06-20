@@ -15,16 +15,16 @@ public class CheckForNullVarArgs {
         final Object[] paramArray = param == null ? null : new Object[] { param };
         return method(paramArray);
     }
-    
+
     @NoWarning("NP,RCN")
     protected Object method(@CheckForNull Object... params) {
         return params == null ? Boolean.FALSE : Boolean.TRUE;
     }
-    
-    @ExpectWarning("IR")
+
+    @ExpectWarning("IL_INFINITE_RECURSIVE_LOOP")
     public void infiniteRecursiveLoop() {
     	    infiniteRecursiveLoop();
     }
-    
-    
+
+
 }

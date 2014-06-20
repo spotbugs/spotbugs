@@ -30,13 +30,13 @@ public class Ideas_2009_12_11 {
     }
 
     @NoWarning(value="EC_ARRAY_AND_NONARRAY", confidence=Confidence.MEDIUM)
-    @ExpectWarning("EC_INCOMPATIBLE_TYPES")
+    @ExpectWarning(value="EC_UNRELATED_TYPES", num=2)
     public static void main(String args[]) {
         Ideas_2009_12_11 a = new Ideas_2009_12_11();
         Ideas_2009_12_11 b = new Ideas_2009_12_11();
         Ideas_2009_12_11 c = new Ideas_2009_12_11();
         c.data[0][0] = 1;
-        System.out.println(a.equals(b)); 
+        System.out.println(a.equals(b));
         System.out.println(a.equals(b.data));
         System.out.println(a.equals(0)); // bad
         System.out.println(a.equals(c));

@@ -57,6 +57,7 @@ public class Bug2311502 {
              * Prints out {@link NPNonNullReturnViolationBug#junkField}, if it's
              * currently not <code>null</code>.
              */
+            @ExpectWarning("IMA_INEFFICIENT_MEMBER_ACCESS")
             public void printJunk() {
                 Object temp = junkField;
                 if (temp != null) { // should be perfectly safe
