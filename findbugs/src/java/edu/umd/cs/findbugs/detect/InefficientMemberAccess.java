@@ -26,7 +26,9 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.InnerClassAccess;
 
 public class InefficientMemberAccess extends BytecodeScanningDetector implements StatelessDetector {
 
@@ -44,8 +46,9 @@ public class InefficientMemberAccess extends BytecodeScanningDetector implements
     public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
         clsName = cls.getClassName();
-        if (clsName.indexOf("$") >= 0)
+        if (clsName.indexOf("$") >= 0) {
             super.visitClassContext(classContext);
+        }
     }
 
     @Override
@@ -53,24 +56,52 @@ public class InefficientMemberAccess extends BytecodeScanningDetector implements
 
         if (seen == INVOKESTATIC) {
             String methodName = getNameConstantOperand();
-            if (!methodName.startsWith(ACCESS_PREFIX))
+            if (!methodName.startsWith(ACCESS_PREFIX)) {
                 return;
+            }
 
             String methodSig = getSigConstantOperand();
             Type[] argTypes = Type.getArgumentTypes(methodSig);
-            if ((argTypes.length < 1) || (argTypes.length > 2))
+            if ((argTypes.length < 1) || (argTypes.length > 2)) {
                 return;
+            }
             String parCls = argTypes[0].getSignature();
-            if (parCls.length() < 3)
+            if (parCls.length() < 3) {
                 return;
+            }
             parCls = parCls.substring(1, parCls.length() - 1);
-            if (!parCls.equals(getClassConstantOperand()))
+            if (!parCls.equals(getClassConstantOperand())) {
                 return;
-            if ((argTypes.length == 2) && !argTypes[1].getSignature().equals(Type.getReturnType(methodSig).getSignature()))
+            }
+            if ((argTypes.length == 2) && !argTypes[1].getSignature().equals(Type.getReturnType(methodSig).getSignature())) {
                 return;
+            }
 
-            bugReporter.reportBug(new BugInstance(this, "IMA_INEFFICIENT_MEMBER_ACCESS", LOW_PRIORITY).addClassAndMethod(this)
-                    .addSourceLine(this));
+            InnerClassAccess access = null;
+            try {
+                String dottedClassConstantOperand = getDottedClassConstantOperand();
+                access = AnalysisContext.currentAnalysisContext().getInnerClassAccessMap().getInnerClassAccess(dottedClassConstantOperand, methodName);
+                if(access != null) {
+                    // if the enclosing class of the field differs from the enclosing class of the method, we shouln't report
+                    // because there is nothing wrong: see bug 1226
+                    if (!access.getField().getClassName().equals(dottedClassConstantOperand)) {
+                        return;
+                    }
+                    // the access method is created to access the synthetic reference to the enclosing class, we shouln't report
+                    // user can't do anything here, see bug 1191
+                    if(access.getField().isSynthetic()){
+                        return;
+                    }
+                }
+            } catch (ClassNotFoundException e) {
+            }
+
+            BugInstance bug = new BugInstance(this, "IMA_INEFFICIENT_MEMBER_ACCESS", LOW_PRIORITY).addClassAndMethod(this)
+                    .addSourceLine(this);
+            if(access != null) {
+                bug.addField(access.getField());
+            }
+            bugReporter.reportBug(bug);
         }
     }
 

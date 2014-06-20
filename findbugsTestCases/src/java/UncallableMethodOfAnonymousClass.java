@@ -1,5 +1,7 @@
 import java.util.Comparator;
 
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 public class UncallableMethodOfAnonymousClass {
     private final static Comparator COMPARATOR = new Comparator() {
         @Override
@@ -14,6 +16,7 @@ public class UncallableMethodOfAnonymousClass {
 
         public Object getDep() {
             return new Object() {
+                @NoWarning("IMA_INEFFICIENT_MEMBER_ACCESS")
                 public UncallableMethodOfAnonymousClass getDepSetter() {
                     return UncallableMethodOfAnonymousClass.this;
                 }
