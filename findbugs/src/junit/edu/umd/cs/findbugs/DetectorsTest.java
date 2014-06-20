@@ -58,6 +58,9 @@ public class DetectorsTest {
 
     private  File findbugsTestCases;
 
+    /** detectors which are disabled by default but which must be used in test */
+    private String[] enabledDetectors = {"CheckExpectedWarnings","InefficientMemberAccess","EmptyZipFileEntry"};
+
     public  File getFindbugsTestCases() throws IOException {
         if (findbugsTestCases != null)
             return findbugsTestCases;
@@ -186,8 +189,10 @@ public class DetectorsTest {
 
         engine.setBugReporter(this.bugReporter);
         UserPreferences preferences = UserPreferences.createDefaultUserPreferences();
-        DetectorFactory checkExpectedWarnings = detectorFactoryCollection.getFactory("CheckExpectedWarnings");
-        preferences.enableDetector(checkExpectedWarnings, true);
+        for (String factory : enabledDetectors) {
+            DetectorFactory detFactory = detectorFactoryCollection.getFactory(factory);
+            preferences.enableDetector(detFactory, true);
+        }
         preferences.getFilterSettings().clearAllCategories();
         this.engine.setUserPreferences(preferences);
 
