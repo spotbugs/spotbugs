@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.annotation.CheckForNull;
@@ -64,8 +63,6 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
-import edu.umd.cs.findbugs.plan.AnalysisPass;
-import edu.umd.cs.findbugs.plan.ExecutionPlan;
 
 /**
  * Check uses of the ExpectWarning and NoWarning annotations. This is for
@@ -79,8 +76,6 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
     private BugReporter reporter;
 
     private final BugCollection bugCollection;
-
-    private Set<String> possibleBugCodes;
 
     private boolean initialized = false;
     private Map<ClassDescriptor, Collection<BugInstance>> warningsByClass;
@@ -172,32 +167,6 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                 }
             }
 
-            //
-            // Based on enabled detectors, figure out which bug codes
-            // could possibly be reported. Don't complain about
-            // expected warnings that would be produced by detectors
-            // that aren't enabled.
-            //
-
-            possibleBugCodes = new HashSet<String>();
-            ExecutionPlan executionPlan = Global.getAnalysisCache().getDatabase(ExecutionPlan.class);
-            Iterator<AnalysisPass> i = executionPlan.passIterator();
-            while (i.hasNext()) {
-                AnalysisPass pass = i.next();
-                Iterator<DetectorFactory> j = pass.iterator();
-                while (j.hasNext()) {
-                    DetectorFactory factory = j.next();
-
-                    Collection<BugPattern> reportedPatterns = factory.getReportedBugPatterns();
-                    for (BugPattern pattern : reportedPatterns) {
-                        possibleBugCodes.add(pattern.getType());
-                        possibleBugCodes.add(pattern.getAbbrev());
-                    }
-                }
-            }
-            if (DEBUG) {
-                System.out.println("CEW: possible warnings are " + possibleBugCodes);
-            }
         }
 
         XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDescriptor);
@@ -305,8 +274,6 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                 StringTokenizer tok = new StringTokenizer(expectedBugCodes, ",");
                 while (tok.hasMoreTokens()) {
                     String bugCode = tok.nextToken().trim();
-                    if (!possibleBugCodes.contains(bugCode))
-                        continue;
                     checkAnnotation(bugCode, warnings, expectWarnings, priority, rank, num, descriptor, minPriority, cd);
                 }
             }
@@ -389,7 +356,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                 if (match.equals(bugCode)) {
                     matching.add(warning.getPrimarySourceLineAnnotation());
                     matching.addAll(warning.getAnotherInstanceSourceLineAnnotations());
-                    
+
                 }
             }
         }
