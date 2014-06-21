@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.visitclass.LVTHelper;
  * Find occurrences of a instanceof b where it can be determined statically
  * whether this is true or false. This may signal a misunderstanding of the
  * inheritance hierarchy in use, and potential bugs.
- * 
+ *
  * @author Dave Brosius
  */
 public class SuperfluousInstanceOf extends BytecodeScanningDetector implements StatelessDetector {
@@ -44,7 +44,7 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements S
 
     private static final int SEEN_ALOAD = 1;
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private LocalVariableTable varTable;
 
@@ -60,26 +60,29 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements S
     public void visit(Method obj) {
         state = SEEN_NOTHING;
         varTable = obj.getLocalVariableTable();
-        if (varTable != null)
+        if (varTable != null) {
             super.visit(obj);
+        }
     }
 
     @Override
     public void visit(Code obj) {
-        if (varTable != null)
+        if (varTable != null) {
             super.visit(obj);
+        }
     }
 
     @Override
     public void sawOpcode(int seen) {
         switch (state) {
         case SEEN_NOTHING:
-            if (seen == ALOAD)
+            if (seen == ALOAD) {
                 register = getRegisterOperand();
-            else if ((seen >= ALOAD_0) && (seen <= ALOAD_3))
+            } else if ((seen >= ALOAD_0) && (seen <= ALOAD_3)) {
                 register = seen - ALOAD_0;
-            else
+            } else {
                 return;
+            }
             state = SEEN_ALOAD;
             break;
 
@@ -96,7 +99,7 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements S
                             if (clsSignature.charAt(0) != '[') {
                                 if (org.apache.bcel.Repository.instanceOf(objSignature, clsSignature)) {
                                     bugReporter.reportBug(new BugInstance(this, "SIO_SUPERFLUOUS_INSTANCEOF", LOW_PRIORITY)
-                                            .addClassAndMethod(this).addSourceLine(this));
+                                    .addClassAndMethod(this).addSourceLine(this));
                                 }
                             }
                         }
@@ -108,9 +111,9 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements S
 
             state = SEEN_NOTHING;
             break;
+        default:
+            break;
         }
 
     }
 }
-
-// vim:ts=4

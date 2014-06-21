@@ -72,8 +72,11 @@ public class TypeQualifierValueSet {
                 break;
             case NEVER:
                 addSourceSinkInfo(whereNever, vn, sourceSinkInfo);
+                break;
+            default:
+                break;
             }
-        } else {
+        }/* else {
 
             if (flowValue.isYes()) {
                 addSourceSinkInfo(whereAlways, vn, sourceSinkInfo);
@@ -82,25 +85,28 @@ public class TypeQualifierValueSet {
             if (flowValue.isNo()) {
                 addSourceSinkInfo(whereNever, vn, sourceSinkInfo);
             }
+        }*/
+    }
+
+    private void setValue(ValueNumber vn, FlowValue flowValue) {
+        if (flowValue == FlowValue.TOP) {
+            pruneValue(vn);
+        } else {
+            valueMap.put(vn, flowValue);
         }
     }
 
-     private void setValue(ValueNumber vn, FlowValue flowValue) {
-         if (flowValue == FlowValue.TOP)
-             pruneValue(vn);
-         else
-             valueMap.put(vn, flowValue);
-    }
-
     static <K, V> void copyMapValue(Map<K, V> map, K from, K to) {
-        if (!map.containsKey(from))
+        if (!map.containsKey(from)) {
             return;
+        }
         map.put(to, map.get(from));
     }
 
     void copyInfo(ValueNumber from, ValueNumber to) {
-        if (state == State.TOP)
+        if (state == State.TOP) {
             return;
+        }
         copyMapValue(valueMap, from, to);
         copyMapValue(whereAlways, from, to);
         copyMapValue(whereNever, from, to);
@@ -109,10 +115,10 @@ public class TypeQualifierValueSet {
     private static void addSourceSinkInfo(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap, ValueNumber vn,
             SourceSinkInfo sourceSinkInfo) {
         Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.get(vn);
-                if (sourceSinkInfoSet == null) {
-                    sourceSinkInfoSet = new HashSet<SourceSinkInfo>(3);
-                    sourceSinkInfoSetMap.put(vn, sourceSinkInfoSet);
-                }
+        if (sourceSinkInfoSet == null) {
+            sourceSinkInfoSet = new HashSet<SourceSinkInfo>(3);
+            sourceSinkInfoSetMap.put(vn, sourceSinkInfoSet);
+        }
         sourceSinkInfoSet.add(sourceSinkInfo);
     }
 
@@ -143,11 +149,12 @@ public class TypeQualifierValueSet {
     private static Set<? extends SourceSinkInfo> getSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap,
             ValueNumber vn) {
         Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.get(vn);
-        if (sourceSinkInfoSet == null || sourceSinkInfoSet.isEmpty())
+        if (sourceSinkInfoSet == null || sourceSinkInfoSet.isEmpty()) {
             return Collections.emptySet();
+        }
 
         return sourceSinkInfoSet;
-        }
+    }
     private static Set<SourceSinkInfo> getOrCreateSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap,
             ValueNumber vn) {
         Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.get(vn);
@@ -321,11 +328,13 @@ public class TypeQualifierValueSet {
         StringBuilder buf = new StringBuilder();
 
         buf.append("{");
-        boolean first = true;
+        //        boolean first = true;
 
         for (ValueNumber vn : interesting) {
             FlowValue value = getValue(vn);
-            if (value == FlowValue.TOP ||  /* !isStrict && */ value == FlowValue.UNKNOWN) continue;
+            if (value == FlowValue.TOP ||  /* !isStrict && */ value == FlowValue.UNKNOWN) {
+                continue;
+            }
             if (buf.length() > 1) {
                 buf.append(", ");
             }
@@ -352,12 +361,15 @@ public class TypeQualifierValueSet {
             Set<? extends SourceSinkInfo> never = getSourceSinkInfoSet(whereNever, vn);
             if (value != FlowValue.UNKNOWN || !always.equals(never)) {
                 buf.append("[");
-                if (!always.isEmpty())
+                if (!always.isEmpty()) {
                     appendSourceSinkInfos(buf, "YES=", always);
-                if (!always.isEmpty() && !never.isEmpty())
+                }
+                if (!always.isEmpty() && !never.isEmpty()) {
                     buf.append(",");
-                if (!never.isEmpty())
+                }
+                if (!never.isEmpty()) {
                     appendSourceSinkInfos(buf, "NO=", never);
+                }
                 buf.append("]");
             }
         }

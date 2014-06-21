@@ -141,8 +141,9 @@ public class InnerClassAccessMap {
      */
     private static int toInt(byte b) {
         int value = b & 0x7F;
-        if ((b & 0x80) != 0)
+        if ((b & 0x80) != 0) {
             value |= 0x80;
+        }
         return value;
     }
 
@@ -153,10 +154,8 @@ public class InnerClassAccessMap {
         return (toInt(instructionList[index + 1]) << 8) | toInt(instructionList[index + 2]);
     }
 
+    /*
     private static class LookupFailure extends RuntimeException {
-        /**
-         *
-         */
         private static final long serialVersionUID = 1L;
 
         private final ClassNotFoundException exception;
@@ -169,6 +168,7 @@ public class InnerClassAccessMap {
             return exception;
         }
     }
+    */
 
     /**
      * Callback to scan an access method to determine what field it accesses,
@@ -219,6 +219,8 @@ public class InnerClassAccessMap {
             case Constants.PUTSTATIC:
                 setField(getIndex(instructionList, index), true, opcode == Constants.GETSTATIC);
                 break;
+            default:
+                break;
             }
         }
 
@@ -261,10 +263,10 @@ public class InnerClassAccessMap {
             String fieldSig = nameAndType.getSignature(cp);
 
 
-                XField xfield = Hierarchy.findXField(className, fieldName, fieldSig, isStatic);
-                if (xfield != null && xfield.isStatic() == isStatic && isValidAccessMethod(methodSig, xfield, isLoad)) {
-                    access = new InnerClassAccess(methodName, methodSig, xfield, isLoad);
-                }
+            XField xfield = Hierarchy.findXField(className, fieldName, fieldSig, isStatic);
+            if (xfield != null && xfield.isStatic() == isStatic && isValidAccessMethod(methodSig, xfield, isLoad)) {
+                access = new InnerClassAccess(methodName, methodSig, xfield, isLoad);
+            }
 
         }
 
@@ -285,8 +287,9 @@ public class InnerClassAccessMap {
             // Get the method parameters and return type
             // (as they appear in the method signature).
             int paramsEnd = methodSig.indexOf(')');
-            if (paramsEnd < 0)
+            if (paramsEnd < 0) {
                 return false;
+            }
             String methodParams = methodSig.substring(0, paramsEnd + 1);
             String methodReturnType = methodSig.substring(paramsEnd + 1);
 
@@ -294,10 +297,12 @@ public class InnerClassAccessMap {
             String classSig = "L" + javaClass.getClassName().replace('.', '/') + ";";
             StringBuilder buf = new StringBuilder();
             buf.append('(');
-            if (!field.isStatic())
+            if (!field.isStatic()) {
                 buf.append(classSig); // the OuterClass.this reference
-            if (!isLoad)
+            }
+            if (!isLoad) {
                 buf.append(field.getSignature()); // the value being stored
+            }
             buf.append(')');
             String expectedMethodParams = buf.toString();
 
@@ -345,37 +350,43 @@ public class InnerClassAccessMap {
                 Method[] methodList = javaClass.getMethods();
                 for (Method method : methodList) {
                     String methodName = method.getName();
-                    if (!methodName.startsWith("access$"))
+                    if (!methodName.startsWith("access$")) {
                         continue;
+                    }
 
                     Code code = method.getCode();
-                    if (code == null)
+                    if (code == null) {
                         continue;
+                    }
 
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("Analyzing " + className + "." + method.getName()
                                 + " as an inner-class access method...");
+                    }
 
                     byte[] instructionList = code.getCode();
                     String methodSig = method.getSignature();
                     InstructionCallback callback = new InstructionCallback(javaClass, methodName, methodSig, instructionList);
-                    try {
+//                    try {
                         new BytecodeScanner().scan(instructionList, callback);
-                    } catch (LookupFailure lf) {
-                        throw lf.getException();
-                    }
+//                    } catch (LookupFailure lf) {
+//                        throw lf.getException();
+//                    }
                     InnerClassAccess access = callback.getAccess();
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println((access != null ? "IS" : "IS NOT") + " an inner-class access method");
-                    if (access != null)
+                    }
+                    if (access != null) {
                         map.put(methodName, access);
+                    }
                 }
             }
 
-            if (map.size() == 0)
+            if (map.size() == 0) {
                 map = Collections.emptyMap();
-            else
+            } else {
                 map = new HashMap<String, InnerClassAccess>(map);
+            }
 
             classToAccessMap.put(className, map);
         }
@@ -384,5 +395,3 @@ public class InnerClassAccessMap {
     }
 
 }
-
-// vim:ts=4

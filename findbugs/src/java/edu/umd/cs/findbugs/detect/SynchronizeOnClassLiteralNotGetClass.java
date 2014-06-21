@@ -52,12 +52,6 @@ public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
-     */
-
-    /*
      * Looking for ALOAD 0 INVOKEVIRTUAL
      * java/lang/Object.getClass()Ljava/lang/Class; DUP ASTORE 1 MONITORENTER
      */
@@ -73,17 +67,20 @@ public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
             if (seen == PUTSTATIC) {
                 String classConstantOperand = getClassConstantOperand();
                 String thisClassName = getThisClass().getClassName().replace('.', '/');
-                if (classConstantOperand.equals(thisClassName))
+                if (classConstantOperand.equals(thisClassName)) {
                     seenPutStatic = true;
+                }
             } else if (seen == GETSTATIC) {
                 String classConstantOperand = getClassConstantOperand();
                 String thisClassName = getThisClass().getClassName().replace('.', '/');
-                if (classConstantOperand.equals(thisClassName))
+                if (classConstantOperand.equals(thisClassName)) {
                     seenGetStatic = true;
+                }
             } else if (seen == MONITOREXIT) {
                 int priority = LOW_PRIORITY;
-                if (seenPutStatic || seenGetStatic)
+                if (seenPutStatic || seenGetStatic) {
                     priority--;
+                }
                 try {
                     Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
                     Set<ClassDescriptor> directSubtypes = subtypes2.getDirectSubtypes(getClassDescriptor());
@@ -104,34 +101,42 @@ public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
         }
         switch (state) {
         case 0:
-            if (seen == ALOAD_0)
+            if (seen == ALOAD_0) {
                 state = 1;
+            }
             break;
         case 1:
             if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("getClass")
-                    && getSigConstantOperand().equals("()Ljava/lang/Class;"))
+            && getSigConstantOperand().equals("()Ljava/lang/Class;")) {
                 state = 2;
-            else
+            } else {
                 state = 0;
+            }
             break;
         case 2:
-            if (seen == DUP)
+            if (seen == DUP) {
                 state = 3;
-            else
+            } else {
                 state = 0;
+            }
             break;
         case 3:
-            if (isRegisterStore())
+            if (isRegisterStore()) {
                 state = 4;
-            else
+            } else {
                 state = 0;
+            }
             break;
         case 4:
-            if (seen == MONITORENTER)
+            if (seen == MONITORENTER) {
                 pendingBug = new BugInstance(this, "WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addSourceLine(this);
+                .addClassAndMethod(this).addSourceLine(this);
+            }
             state = 0;
             seenGetStatic = seenPutStatic = false;
+            break;
+        default:
+            break;
         }
     }
 

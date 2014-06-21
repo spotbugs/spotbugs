@@ -177,15 +177,17 @@ public class MainFrame extends FBFrame implements LogSync {
     private final PluginUpdateDialog pluginUpdateDialog = new PluginUpdateDialog();
 
     public static void makeInstance(FindBugsLayoutManagerFactory factory) {
-        if (instance != null)
+        if (instance != null) {
             throw new IllegalStateException();
+        }
         instance = new MainFrame(factory);
         instance.initializeGUI();
     }
 
     public static MainFrame getInstance() {
-        if (instance == null)
+        if (instance == null) {
             throw new IllegalStateException();
+        }
         return instance;
     }
 
@@ -215,8 +217,9 @@ public class MainFrame extends FBFrame implements LogSync {
                 System.err.println("acquiring display wait, count " + waitCount);
                 Thread.dumpStack();
             }
-            if (waitCount == 1)
+            if (waitCount == 1) {
                 mainFrameTree.showCard(BugCard.WAITCARD, new Cursor(Cursor.WAIT_CURSOR), this);
+            }
         }
     }
 
@@ -225,10 +228,11 @@ public class MainFrame extends FBFrame implements LogSync {
     public void releaseDisplayWait() {
         synchronized (waitLock) {
             if (waitCount <= 0) {
-                if (previousDecrementToZero != null)
+                if (previousDecrementToZero != null) {
                     throw new IllegalStateException("Can't decrease wait count; already zero", previousDecrementToZero);
-                else
+                } else {
                     throw new IllegalStateException("Can't decrease wait count; never incremented");
+                }
             }
             waitCount--;
             if (GUI2_DEBUG) {
@@ -271,11 +275,13 @@ public class MainFrame extends FBFrame implements LogSync {
      * b.
      */
     public void setProjectChanged(boolean b) {
-        if (curProject == null)
+        if (curProject == null) {
             return;
+        }
 
-        if (projectChanged == b)
+        if (projectChanged == b) {
             return;
+        }
 
         projectChanged = b;
         mainFrameMenu.setSaveMenu(this);
@@ -297,8 +303,9 @@ public class MainFrame extends FBFrame implements LogSync {
      */
     @Override
     public void writeToLog(String message) {
-        if (GUI2_DEBUG)
+        if (GUI2_DEBUG) {
             System.out.println(message);
+        }
     }
 
     public int showConfirmDialog(String message, String title, int optionType) {
@@ -344,22 +351,23 @@ public class MainFrame extends FBFrame implements LogSync {
                     + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bugs_hidden", "bugs hidden (see view menu)");
         }
         msg = updateCloudSigninStatus(msg);
-        if (errorMsg != null && errorMsg.length() > 0)
+        if (errorMsg != null && errorMsg.length() > 0) {
             msg = join(msg, errorMsg);
+        }
 
         mainFrameTree.setWaitStatusLabelText(msg); // should not be the URL
-        if (msg.length() == 0)
+        if (msg.length() == 0) {
             msg = "http://findbugs.sourceforge.net";
+        }
         statusBarLabel.setText(msg);
     }
 
     private String updateCloudSigninStatus(String msg) {
         if (getBugCollection() != null) {
             Cloud cloud = getBugCollection().getCloud();
-            if (cloud != null) {
-                String pluginMsg = cloud.getStatusMsg();
-                if (pluginMsg != null && pluginMsg.length() > 1)
-                    msg = join(msg, pluginMsg);
+            String pluginMsg = cloud.getStatusMsg();
+            if (pluginMsg != null && pluginMsg.length() > 1) {
+                msg = join(msg, pluginMsg);
             }
         }
         return msg;
@@ -370,8 +378,9 @@ public class MainFrame extends FBFrame implements LogSync {
      * the exit menuItem or by clicking on the window's system menu.
      */
     void callOnClose() {
-        if (!canNavigateAway())
+        if (!canNavigateAway()) {
             return;
+        }
 
         if (projectChanged && !SystemProperties.getBoolean("findbugs.skipSaveChangesWarning")) {
             Object[] options = {
@@ -383,15 +392,17 @@ public class MainFrame extends FBFrame implements LogSync {
                     edu.umd.cs.findbugs.L10N.getLocalString("msg.confirm_save_txt", "Do you want to save?"),
                     JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
-            if (value == 2 || value == JOptionPane.CLOSED_OPTION)
+            if (value == 2 || value == JOptionPane.CLOSED_OPTION) {
                 return;
-            else if (value == 0) {
+            } else if (value == 0) {
 
                 if (saveFile == null) {
-                    if (!mainFrameLoadSaveHelper.saveAs())
+                    if (!mainFrameLoadSaveHelper.saveAs()) {
                         return;
-                } else
+                    }
+                } else {
                     mainFrameLoadSaveHelper.save();
+                }
             }
         }
 
@@ -402,8 +413,7 @@ public class MainFrame extends FBFrame implements LogSync {
         guiSaveState.save();
         if (this.bugCollection != null) {
             Cloud cloud = this.bugCollection.getCloud();
-            if (cloud != null)
-                cloud.shutdown();
+            cloud.shutdown();
         }
         System.exit(0);
     }
@@ -465,10 +475,11 @@ public class MainFrame extends FBFrame implements LogSync {
     @SwingThread
     private void setProjectAndBugCollection(@CheckForNull Project project, @CheckForNull BugCollection bugCollection) {
         if (GUI2_DEBUG) {
-            if (bugCollection == null)
+            if (bugCollection == null) {
                 System.out.println("Setting bug collection to null");
-            else
+            } else {
                 System.out.println("Setting bug collection; contains " + bugCollection.getCollection().size() + " bugs");
+            }
 
         }
         if (bugCollection != null && bugCollection.getProject() != project) {
@@ -481,11 +492,9 @@ public class MainFrame extends FBFrame implements LogSync {
 
             if (this.bugCollection != bugCollection && this.bugCollection != null) {
                 Cloud plugin = this.bugCollection.getCloud();
-                if (plugin != null) {
-                    plugin.removeListener(userAnnotationListener);
-                    plugin.removeStatusListener(cloudStatusListener);
-                    plugin.shutdown();
-                }
+                plugin.removeListener(userAnnotationListener);
+                plugin.removeStatusListener(cloudStatusListener);
+                plugin.shutdown();
             }
             // setRebuilding(false);
             setProject(project);
@@ -496,10 +505,8 @@ public class MainFrame extends FBFrame implements LogSync {
             displayer.clearCache();
             if (bugCollection != null) {
                 Cloud plugin = bugCollection.getCloud();
-                if (plugin != null) {
-                    plugin.addListener(userAnnotationListener);
-                    plugin.addStatusListener(cloudStatusListener);
-                }
+                plugin.addListener(userAnnotationListener);
+                plugin.addStatusListener(cloudStatusListener);
             }
             mainFrameTree.updateBugTree();
             setProjectChanged(false);
@@ -522,10 +529,11 @@ public class MainFrame extends FBFrame implements LogSync {
                     updateTitle();
                 }
             };
-            if (SwingUtilities.isEventDispatchThread())
+            if (SwingUtilities.isEventDispatchThread()) {
                 runnable.run();
-            else
+            } else {
                 SwingUtilities.invokeLater(runnable);
+            }
         } finally {
             releaseDisplayWait();
         }
@@ -548,21 +556,24 @@ public class MainFrame extends FBFrame implements LogSync {
         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
-    @SuppressWarnings({ "SimplifiableIfStatement" })
+    //    @SuppressWarnings({ "SimplifiableIfStatement" })
     boolean shouldDisplayIssue(BugInstance b) {
         Project project = getProject();
         Filter suppressionFilter = project.getSuppressionFilter();
-        if (null == getBugCollection() || suppressionFilter.match(b))
+        if (null == getBugCollection() || suppressionFilter.match(b)) {
             return false;
+        }
         return viewFilter.show(b);
     }
 
     // ============================= menu actions
     // ===============================
 
+    @SuppressWarnings("unused")
     public void createNewProjectFromMenuItem() {
-        if (!canNavigateAway())
+        if (!canNavigateAway()) {
             return;
+        }
         new NewProjectWizard();
 
         newProject = true;
@@ -592,8 +603,9 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     void preferences() {
-        if (!canNavigateAway())
+        if (!canNavigateAway()) {
             return;
+        }
         PreferencesFrame.getInstance().setLocationRelativeTo(this);
         PreferencesFrame.getInstance().setVisible(true);
     }
@@ -611,26 +623,27 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     void redoAnalysis() {
-        if (!canNavigateAway())
+        if (!canNavigateAway()) {
             return;
+        }
 
         /// QQQ-TODO: new RuntimeException("Redo analysis called").printStackTrace();
         acquireDisplayWait();
         edu.umd.cs.findbugs.util.Util.runInDameonThread(
-        new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    updateDesignationDisplay();
-                    Project project = getProject();
-                    BugCollection bc = BugLoader.redoAnalysisKeepComments(project);
-                    updateProjectAndBugCollection(bc);
-                    setProjectAndBugCollectionInSwingThread(project, bc);
-                } finally {
-                    releaseDisplayWait();
-                }
-            }
-        });
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            updateDesignationDisplay();
+                            Project project = getProject();
+                            BugCollection bc = BugLoader.redoAnalysisKeepComments(project);
+                            updateProjectAndBugCollection(bc);
+                            setProjectAndBugCollectionInSwingThread(project, bc);
+                        } finally {
+                            releaseDisplayWait();
+                        }
+                    }
+                });
     }
 
     // ================================== misc junk 2
@@ -711,10 +724,11 @@ public class MainFrame extends FBFrame implements LogSync {
 
     private String getActionWithoutSavingMsg(String action) {
         String msg = edu.umd.cs.findbugs.L10N.getLocalString("msg.you_are_" + action + "_without_saving_txt", null);
-        if (msg != null)
+        if (msg != null) {
             return msg;
+        }
         return edu.umd.cs.findbugs.L10N.getLocalString("msg.you_are_" + action + "_txt", "You are " + action) + " "
-                + edu.umd.cs.findbugs.L10N.getLocalString("msg.without_saving_txt", "without saving. Do you want to save?");
+        + edu.umd.cs.findbugs.L10N.getLocalString("msg.without_saving_txt", "without saving. Do you want to save?");
     }
 
     public void updateBugTree() {
@@ -732,23 +746,27 @@ public class MainFrame extends FBFrame implements LogSync {
     public void updateTitle() {
         Project project = getProject();
         String name = project.getProjectName();
-        if ((name == null || name.trim().equals("")) && saveFile != null)
+        if ((name == null || name.trim().equals("")) && saveFile != null) {
             name = saveFile.getAbsolutePath();
-        if (name == null)
+        }
+        if (name == null) {
             name = "";//Project.UNNAMED_PROJECT;
+        }
         String oldTitle = this.getTitle();
         String newTitle = TITLE_START_TXT + (name.trim().equals("") ? "" : " - " + name);
-        if (oldTitle.equals(newTitle))
+        if (oldTitle.equals(newTitle)) {
             return;
+        }
         this.setTitle(newTitle);
     }
 
-    @SuppressWarnings({ "SimplifiableIfStatement" })
+    //    @SuppressWarnings({ "SimplifiableIfStatement" })
     private boolean shouldDisplayIssueIgnoringPackagePrefixes(BugInstance b) {
         Project project = getProject();
         Filter suppressionFilter = project.getSuppressionFilter();
-        if (null == getBugCollection() || suppressionFilter.match(b))
+        if (null == getBugCollection() || suppressionFilter.match(b)) {
             return false;
+        }
         return viewFilter.showIgnoringPackagePrefixes(b);
     }
 
@@ -756,13 +774,14 @@ public class MainFrame extends FBFrame implements LogSync {
         TreeSet<String> projects = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
         Multiset<String> count = new Multiset<String>();
         int total = 0;
-        for (BugInstance b : getBugCollection().getCollection())
+        for (BugInstance b : getBugCollection().getCollection()) {
             if (shouldDisplayIssueIgnoringPackagePrefixes(b)) {
                 TreeSet<String> projectsForThisBug = projectPackagePrefixes.getProjects(b.getPrimaryClass().getClassName());
                 projects.addAll(projectsForThisBug);
                 count.addAll(projectsForThisBug);
                 total++;
             }
+        }
         if (projects.size() == 0) {
             JOptionPane.showMessageDialog(this, "No issues in current view");
             return;
@@ -777,8 +796,9 @@ public class MainFrame extends FBFrame implements LogSync {
         ProjectSelector choice = (ProjectSelector) JOptionPane.showInputDialog(null,
                 "Choose a project to set appropriate package prefix(es)", "Select package prefixes by package",
                 JOptionPane.QUESTION_MESSAGE, null, selectors.toArray(), everything);
-        if (choice == null)
+        if (choice == null) {
             return;
+        }
 
         mainFrameTree.setFieldForPackagesToDisplayText(choice.filter);
         viewFilter.setPackagesToDisplay(choice.filter);
@@ -787,10 +807,12 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     private static String join(String s1, String s2) {
-        if (s1 == null || s1.length() == 0)
+        if (s1 == null || s1.length() == 0) {
             return s2;
-        if (s2 == null || s2.length() == 0)
+        }
+        if (s2 == null || s2.length() == 0) {
             return s1;
+        }
         return s1 + "; " + s2;
     }
 
@@ -804,15 +826,16 @@ public class MainFrame extends FBFrame implements LogSync {
 
                 summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(bug.getAbridgedMessage(), bug));
 
-                for (BugAnnotation b : bug.getAnnotationsForMessage(true))
+                for (BugAnnotation b : bug.getAnnotationsForMessage(true)) {
                     summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(b, bug));
+                }
 
 
                 BugPattern bugPattern = bug.getBugPattern();
                 String detailText =
                         bugPattern.getDetailText()
                         +"<br><p> <b>Bug kind and pattern: " +
-                                bugPattern.getAbbrev() + " - " + bugPattern.getType();
+                        bugPattern.getAbbrev() + " - " + bugPattern.getType();
                 String txt = bugPattern.getDetailHTML(detailText);
                 summaryHtmlArea.setText(txt);
 
@@ -849,9 +872,12 @@ public class MainFrame extends FBFrame implements LogSync {
         case 2:
             targetLineNum = displayer.findPrevious(targetString);
             break;
+        default:
+            break;
         }
-        if (targetLineNum != -1)
+        if (targetLineNum != -1) {
             displayer.foundItem(targetLineNum);
+        }
     }
 
     public boolean canNavigateAway() {
@@ -874,8 +900,9 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     public void setSaveType(SaveType saveType) {
-        if (GUI2_DEBUG && this.saveType != saveType)
+        if (GUI2_DEBUG && this.saveType != saveType) {
             System.out.println("Changing save type from " + this.saveType + " to " + saveType);
+        }
         this.saveType = saveType;
     }
 
@@ -1036,9 +1063,9 @@ public class MainFrame extends FBFrame implements LogSync {
                 Cloud cloud = getBugCollection().getCloud();
                 if (cloud instanceof DoNothingCloud) {
                     JOptionPane.showMessageDialog(MainFrame.this, "No cloud selected; enable and select optional Bug Collection XML Pseudo-Cloud plugin to store designations in XML");
-                } else if (comments.canSetDesignations())
+                } else if (comments.canSetDesignations()) {
                     comments.setDesignation(key);
-                else {
+                } else {
                     JOptionPane.showMessageDialog(MainFrame.this, "The currently selected cloud cannot store these designations");
                 }
             }
@@ -1083,8 +1110,9 @@ public class MainFrame extends FBFrame implements LogSync {
                 nextKnown = true;
                 while (base.hasNext()) {
                     next = base.next();
-                    if (shouldDisplayIssue(next))
+                    if (shouldDisplayIssue(next)) {
                         return true;
+                    }
                 }
                 next = null;
                 return false;
@@ -1094,8 +1122,9 @@ public class MainFrame extends FBFrame implements LogSync {
 
         @Override
         public BugInstance next() {
-            if (!hasNext())
+            if (!hasNext()) {
                 throw new NoSuchElementException();
+            }
             BugInstance result = next;
             next = null;
             nextKnown = false;
@@ -1115,8 +1144,8 @@ public class MainFrame extends FBFrame implements LogSync {
 
         @Override
         public void registerCloud(Project project, BugCollection collection, Cloud plugin) {
-//            assert collection.getCloud() == plugin
-//                    : collection.getCloud().getCloudName() + " vs " + plugin.getCloudName();
+            //            assert collection.getCloud() == plugin
+            //                    : collection.getCloud().getCloudName() + " vs " + plugin.getCloudName();
             if (MainFrame.this.bugCollection == collection) {
                 plugin.addListener(userAnnotationListener);
                 plugin.addStatusListener(cloudStatusListener);
@@ -1147,8 +1176,9 @@ public class MainFrame extends FBFrame implements LogSync {
     private class MyCloudListener implements CloudListener {
         @Override
         public void issueUpdated(BugInstance bug) {
-            if (mainFrameTree.getCurrentSelectedBugLeaf() != null && mainFrameTree.getCurrentSelectedBugLeaf().getBug() == bug)
+            if (mainFrameTree.getCurrentSelectedBugLeaf() != null && mainFrameTree.getCurrentSelectedBugLeaf().getBug() == bug) {
                 comments.updateCommentsFromLeafInformation(mainFrameTree.getCurrentSelectedBugLeaf());
+            }
         }
 
         @Override
@@ -1170,8 +1200,9 @@ public class MainFrame extends FBFrame implements LogSync {
         @Override
         public void handleStateChange(SigninState oldState, SigninState state) {
             Cloud cloud = MainFrame.this.bugCollection.getCloudLazily();
-            if (cloud != null && cloud.isInitialized())
-              mainFrameTree.rebuildBugTreeIfSortablesDependOnCloud();
+            if (cloud != null && cloud.isInitialized()) {
+                mainFrameTree.rebuildBugTreeIfSortablesDependOnCloud();
+            }
         }
     }
 

@@ -50,12 +50,14 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
         state = 0;
         lastMethodCall = -1;
 
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println(getXMethod());
+        }
         super.visit(obj);
         possibleOverwrite = null;
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println();
+        }
         initializedFields.clear();
     }
 
@@ -68,8 +70,9 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
     @Override
     public void sawOpcode(int seen) {
 
-        if (DEBUG)
+        if (DEBUG) {
             System.out.printf("%5d %12s %s%n", getPC(), OPCODE_NAMES[seen],stack);
+        }
         if (seen == PUTFIELD) {
             OpcodeStack.Item top = stack.getStackItem(0);
             OpcodeStack.Item next = stack.getStackItem(1);
@@ -80,7 +83,7 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
 
             }
             possibleOverwrite = null;
-           
+
             if (stack.getStackDepth() >= 4 && getNextOpcode() == PUTFIELD) {
                 OpcodeStack.Item third = stack.getStackItem(2);
                 OpcodeStack.Item fourth = stack.getStackItem(3);
@@ -92,7 +95,7 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
                     possibleOverwrite = f2;
                 }
             }
-            
+
             XField f = top.getXField();
             int registerNumber = next.getRegisterNumber();
             if (f != null && f.equals(getXFieldOperand()) && registerNumber >= 0
@@ -101,14 +104,15 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
 
                 LocalVariableAnnotation possibleMatch = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(),
                         getMethod(), getNameConstantOperand(), getSigConstantOperand());
-                if (possibleMatch != null)
+                if (possibleMatch != null) {
                     priority--;
-                else
+                } else {
                     possibleMatch = LocalVariableAnnotation.findUniqueBestMatchingParameter(getClassContext(), getMethod(),
                             getNameConstantOperand(), getSigConstantOperand());
+                }
                 if (possibleMatch == null) {
                     String signature = stack.getLVValue(registerNumber).getSignature();
-                    for (int i = 0; i < stack.getNumLocalValues(); i++)
+                    for (int i = 0; i < stack.getNumLocalValues(); i++) {
                         if (i != register) {
                             Item lvValue = stack.getLVValue(i);
                             if (lvValue != null && lvValue.getSignature().equals(signature)) {
@@ -116,36 +120,43 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
                                 break;
                             }
                         }
+                    }
                 }
 
                 bugReporter.reportBug(new BugInstance(this, "SA_FIELD_SELF_ASSIGNMENT", priority).addClassAndMethod(this)
                         .addReferencedField(this).addOptionalAnnotation(possibleMatch).addSourceLine(this));
 
             }
-        } else
+        } else {
             possibleOverwrite = null;
-        if (isMethodCall())
+        }
+        if (isMethodCall()) {
             lastMethodCall = getPC();
+        }
         switch (state) {
         case 0:
-            if (seen == DUP)
+            if (seen == DUP) {
                 state = 6;
+            }
             break;
         case 6:
             if (isRegisterStore()) {
                 state = 7;
                 register = getRegisterOperand();
-            } else
+            } else {
                 state = 0;
+            }
             break;
         case 7:
             if (isRegisterStore() && register == getRegisterOperand()) {
                 bugReporter.reportBug(new BugInstance(this, "SA_LOCAL_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
-                        .addClassAndMethod(this)
-                        .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC(), getPC() - 1))
-                        .addSourceLine(this));
+                .addClassAndMethod(this)
+                .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC(), getPC() - 1))
+                .addSourceLine(this));
             }
             state = 0;
+            break;
+        default:
             break;
         }
 

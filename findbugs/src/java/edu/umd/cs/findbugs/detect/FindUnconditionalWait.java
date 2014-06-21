@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 public class FindUnconditionalWait extends BytecodeScanningDetector implements StatelessDetector {
     int stage = 0;
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     public FindUnconditionalWait(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -49,16 +49,18 @@ public class FindUnconditionalWait extends BytecodeScanningDetector implements S
 
     @Override
     public void sawBranchTo(int target) {
-        if (stage == 1)
+        if (stage == 1) {
             stage = 0;
+        }
     }
 
     @Override
     public void sawOpcode(int seen) {
         switch (stage) {
         case 0:
-            if (seen == MONITORENTER)
+            if (seen == MONITORENTER) {
                 stage = 1;
+            }
             break;
         case 1:
             if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("wait")) {
@@ -67,6 +69,8 @@ public class FindUnconditionalWait extends BytecodeScanningDetector implements S
                         .addSourceLine(this));
                 stage = 2;
             }
+            break;
+        default:
             break;
         }
     }

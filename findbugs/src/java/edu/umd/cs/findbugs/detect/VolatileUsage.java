@@ -76,48 +76,57 @@ public class VolatileUsage extends BytecodeScanningDetector {
             }
             break;
         case GETFIELD:
-            if (seen == ICONST_1 || seen == LCONST_1 || seen == ICONST_M1)
+            if (seen == ICONST_1 || seen == LCONST_1 || seen == ICONST_M1) {
                 state = IncrementState.LOADCONSTANT;
-            else
+            } else {
                 resetIncrementState();
+            }
 
             break;
         case LOADCONSTANT:
             if (seen == IADD || seen == ISUB || seen == LADD || seen == LSUB) {
                 state = IncrementState.ADD;
-            } else
+            } else {
                 resetIncrementState();
+            }
             break;
         case ADD:
-            if (seen == PUTFIELD && incrementField.equals(getXFieldOperand()))
+            if (seen == PUTFIELD && incrementField.equals(getXFieldOperand())) {
                 bugReporter.reportBug(new BugInstance(this, "VO_VOLATILE_INCREMENT",
                         incrementField.getSignature().equals("J") ? Priorities.HIGH_PRIORITY : Priorities.NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addField(incrementField).addSourceLine(this));
+                .addClassAndMethod(this).addField(incrementField).addSourceLine(this));
+            }
             resetIncrementState();
             break;
         }
         switch (seen) {
         case PUTSTATIC: {
             XField f = getXFieldOperand();
-            if (!isVolatileArray(f))
+            if (!isVolatileArray(f)) {
                 return;
-            if (getMethodName().equals("<clinit>"))
+            }
+            if (getMethodName().equals("<clinit>")) {
                 initializationWrites.add(f);
-            else
+            } else {
                 otherWrites.add(f);
+            }
             break;
         }
         case PUTFIELD: {
             XField f = getXFieldOperand();
-            if (!isVolatileArray(f))
+            if (!isVolatileArray(f)) {
                 return;
+            }
 
-            if (getMethodName().equals("<init>"))
+            if (getMethodName().equals("<init>")) {
                 initializationWrites.add(f);
-            else
+            } else {
                 otherWrites.add(f);
+            }
             break;
         }
+        default:
+            break;
         }
     }
 
@@ -133,14 +142,16 @@ public class VolatileUsage extends BytecodeScanningDetector {
     public void report() {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 
-        for (XField f : AnalysisContext.currentXFactory().allFields())
+        for (XField f : AnalysisContext.currentXFactory().allFields()) {
             if (isVolatileArray(f) && subtypes2.isApplicationClass(f.getClassDescriptor())) {
                 int priority = LOW_PRIORITY;
-                if (initializationWrites.contains(f) && !otherWrites.contains(f))
+                if (initializationWrites.contains(f) && !otherWrites.contains(f)) {
                     priority = NORMAL_PRIORITY;
+                }
                 bugReporter.reportBug(new BugInstance(this, "VO_VOLATILE_REFERENCE_TO_ARRAY", priority).addClass(
                         f.getClassDescriptor()).addField(f));
             }
+        }
     }
 
     private boolean isVolatile(XField f) {

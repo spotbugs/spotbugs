@@ -35,11 +35,11 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Build the interprocedural call graph.
- * 
+ *
  * NOTE: at the present time, this facility is only used to find relevant type
  * qualifiers. It could become a more general-purpose facility if there were a
  * need.
- * 
+ *
  * @author David Hovemeyer
  */
 public class BuildInterproceduralCallGraph extends BytecodeScanningDetector implements NonReportingDetector {
@@ -50,7 +50,7 @@ public class BuildInterproceduralCallGraph extends BytecodeScanningDetector impl
 
     /**
      * Constructor.
-     * 
+     *
      * @param bugReporter
      *            the BugReporter to use
      */
@@ -61,13 +61,6 @@ public class BuildInterproceduralCallGraph extends BytecodeScanningDetector impl
         callGraph = new InterproceduralCallGraph();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.BytecodeScanningDetector#visitClassContext(edu.umd
-     * .cs.findbugs.ba.ClassContext)
-     */
     @Override
     public void visitClassContext(ClassContext classContext) {
         if (!Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {
@@ -76,24 +69,12 @@ public class BuildInterproceduralCallGraph extends BytecodeScanningDetector impl
         super.visitClassContext(classContext);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.visitclass.BetterVisitor#visitMethod(org.apache.bcel
-     * .classfile.Method)
-     */
     @Override
     public void visitMethod(Method obj) {
         currentVertex = findVertex(getXMethod());
         super.visitMethod(obj);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.umd.cs.findbugs.visitclass.DismantleBytecode#sawOpcode(int)
-     */
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
@@ -105,12 +86,15 @@ public class BuildInterproceduralCallGraph extends BytecodeScanningDetector impl
             XMethod calledXMethod = XFactory.createXMethod(called);
             InterproceduralCallGraphVertex calledVertex = findVertex(calledXMethod);
             callGraph.createEdge(currentVertex, calledVertex);
+            break;
+        default:
+            break;
         }
     }
 
     /**
      * Find the InterproceduralCallGraphVertex for given XMethod.
-     * 
+     *
      * @param xmethod
      *            an XMethod
      * @return the XMethod's InterproceduralCallGraphVertex
@@ -126,11 +110,6 @@ public class BuildInterproceduralCallGraph extends BytecodeScanningDetector impl
         return vertex;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.umd.cs.findbugs.BytecodeScanningDetector#report()
-     */
     @Override
     public void report() {
         if (!Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {

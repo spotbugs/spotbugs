@@ -1,29 +1,6 @@
 package edu.umd.cs.findbugs.detect;
 
-import static org.apache.bcel.Constants.DCMPG;
-import static org.apache.bcel.Constants.DCMPL;
-import static org.apache.bcel.Constants.FCMPG;
-import static org.apache.bcel.Constants.FCMPL;
-import static org.apache.bcel.Constants.IAND;
-import static org.apache.bcel.Constants.IF_ACMPEQ;
-import static org.apache.bcel.Constants.IF_ACMPNE;
-import static org.apache.bcel.Constants.IF_ICMPEQ;
-import static org.apache.bcel.Constants.IF_ICMPGE;
-import static org.apache.bcel.Constants.IF_ICMPGT;
-import static org.apache.bcel.Constants.IF_ICMPLE;
-import static org.apache.bcel.Constants.IF_ICMPLT;
-import static org.apache.bcel.Constants.IF_ICMPNE;
-import static org.apache.bcel.Constants.INVOKEINTERFACE;
-import static org.apache.bcel.Constants.INVOKEVIRTUAL;
-import static org.apache.bcel.Constants.IOR;
-import static org.apache.bcel.Constants.ISUB;
-import static org.apache.bcel.Constants.IXOR;
-import static org.apache.bcel.Constants.LAND;
-import static org.apache.bcel.Constants.LCMP;
-import static org.apache.bcel.Constants.LOR;
-import static org.apache.bcel.Constants.LSUB;
-import static org.apache.bcel.Constants.LXOR;
-import static org.apache.bcel.Constants.POP;
+import static org.apache.bcel.Constants.*;
 
 import java.util.BitSet;
 import java.util.Iterator;
@@ -38,7 +15,6 @@ import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -67,16 +43,18 @@ public class FindSelfComparison2 implements Detector {
         Method[] methodList = classContext.getJavaClass().getMethods();
 
         for (Method method : methodList) {
-            if (method.getCode() == null)
+            if (method.getCode() == null) {
                 continue;
+            }
 
             try {
                 analyzeMethod(classContext, method);
             } catch (MethodUnprofitableException mue) {
-                if (SystemProperties.getBoolean("unprofitable.debug")) // otherwise
-                                                                       // don't
-                                                                       // report
+                if (SystemProperties.getBoolean("unprofitable.debug")) {
+                    // don't
+                    // report
                     bugReporter.logError("skipping unprofitable method in " + getClass().getName());
+                }
             } catch (CFGBuilderException e) {
                 bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
             } catch (DataflowAnalysisException e) {
@@ -85,12 +63,12 @@ public class FindSelfComparison2 implements Detector {
         }
     }
 
-     static boolean booleanComparisonMethod(String methodName) {
+    static boolean booleanComparisonMethod(String methodName) {
         return methodName.equals("equals") ||methodName.equals("endsWith") || methodName.equals("startsWith")
                 || methodName.equals("contains") || methodName.equals("equalsIgnoreCase");
     }
 
-     static boolean comparatorMethod(String methodName) {
+    static boolean comparatorMethod(String methodName) {
         return  methodName.equals("compareTo") || methodName.equals("compareToIgnoreCase");
     }
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
@@ -110,21 +88,26 @@ public class FindSelfComparison2 implements Detector {
                 InvokeInstruction iins = (InvokeInstruction) ins;
                 String invoking = iins.getName(cpg);
                 if ( comparatorMethod(invoking) || booleanComparisonMethod(invoking) ) {
-                    if (methodGen.getName().toLowerCase().indexOf("test") >= 0)
+                    if (methodGen.getName().toLowerCase().indexOf("test") >= 0) {
                         break;
-                    if (methodGen.getClassName().toLowerCase().indexOf("test") >= 0)
+                    }
+                    if (methodGen.getClassName().toLowerCase().indexOf("test") >= 0) {
                         break;
-                    if (classContext.getJavaClass().getSuperclassName().toLowerCase().indexOf("test") >= 0)
+                    }
+                    if (classContext.getJavaClass().getSuperclassName().toLowerCase().indexOf("test") >= 0) {
                         break;
-                    if (location.getHandle().getNext().getInstruction().getOpcode() == POP)
+                    }
+                    if (location.getHandle().getNext().getInstruction().getOpcode() == POP) {
                         break;
+                    }
                     String sig = iins.getSignature(cpg);
 
                     SignatureParser parser = new SignatureParser(sig);
                     if (parser.getNumParameters() == 1
-                            && ( booleanComparisonMethod(invoking)  && sig.endsWith(";)Z") || comparatorMethod(invoking) && sig.endsWith(";)I")))
+                            && ( booleanComparisonMethod(invoking)  && sig.endsWith(";)Z") || comparatorMethod(invoking) && sig.endsWith(";)I"))) {
                         checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPARISON", method, methodGen,
                                 sourceFile);
+                    }
 
                 }
                 break;
@@ -154,7 +137,9 @@ public class FindSelfComparison2 implements Detector {
             case IF_ICMPLT:
             case IF_ICMPGE:
                 checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPARISON", method, methodGen, sourceFile);
-
+                break;
+            default:
+                break;
             }
 
         }
@@ -162,67 +147,73 @@ public class FindSelfComparison2 implements Detector {
 
     /**
      * @param classContext
-     *            TODO
      * @param location
      * @param method
-     *            TODO
      * @param methodGen
-     *            TODO
      * @param sourceFile
-     *            TODO
-     * @param string
      * @throws DataflowAnalysisException
      */
     private void checkForSelfOperation(ClassContext classContext, Location location, ValueNumberDataflow valueNumberDataflow,
             String op, Method method, MethodGen methodGen, String sourceFile) throws DataflowAnalysisException {
         ValueNumberFrame frame = valueNumberDataflow.getFactAtLocation(location);
-        if (!frame.isValid())
+        if (!frame.isValid()) {
             return;
+        }
         Instruction ins = location.getHandle().getInstruction();
         int opcode = ins.getOpcode();
         int offset = 1;
-        if (opcode == LCMP || opcode == LXOR || opcode == LAND || opcode == LOR || opcode == LSUB)
+        if (opcode == LCMP || opcode == LXOR || opcode == LAND || opcode == LOR || opcode == LSUB) {
             offset = 2;
+        }
         ValueNumber v0 = frame.getStackValue(0);
         ValueNumber v1 = frame.getStackValue(offset);
-        if (!v1.equals(v0))
+        if (!v1.equals(v0)) {
             return;
-        if (v0.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT) || v0.hasFlag(ValueNumber.CONSTANT_VALUE))
+        }
+        if (v0.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT) || v0.hasFlag(ValueNumber.CONSTANT_VALUE)) {
             return;
+        }
 
         int priority = HIGH_PRIORITY;
-        if (opcode == ISUB || opcode == LSUB || opcode == INVOKEINTERFACE || opcode == INVOKEVIRTUAL)
+        if (opcode == ISUB || opcode == LSUB || opcode == INVOKEINTERFACE || opcode == INVOKEVIRTUAL) {
             priority = NORMAL_PRIORITY;
+        }
         XField field = ValueNumberSourceInfo.findXFieldFromValueNumber(method, location, v0, frame);
         BugAnnotation annotation;
         String prefix;
         if (field != null) {
-            if (field.isVolatile())
+            if (field.isVolatile()) {
                 return;
-            if (true)
+            }
+            if (true) {
                 return; // don't report these; too many false positives
-            annotation = FieldAnnotation.fromXField(field);
-            prefix = "SA_FIELD_SELF_";
+            }
+            //            annotation = FieldAnnotation.fromXField(field);
+            //            prefix = "SA_FIELD_SELF_";
         } else {
             annotation = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, location, v0, frame);
             prefix = "SA_LOCAL_SELF_";
-            if (opcode == ISUB)
+            if (opcode == ISUB) {
                 return; // only report this if simple detector reports it
+            }
         }
-        if (annotation == null)
+        if (annotation == null) {
             return;
+        }
         SourceLineAnnotation sourceLine = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile,
                 location.getHandle());
         int line = sourceLine.getStartLine();
         BitSet occursMultipleTimes = classContext.linesMentionedMultipleTimes(method);
-        if (line > 0 && occursMultipleTimes.get(line))
+        if (line > 0 && occursMultipleTimes.get(line)) {
             return;
+        }
         BugInstance bug = new BugInstance(this, prefix + op, priority).addClassAndMethod(methodGen, sourceFile);
-        if (ins instanceof InvokeInstruction)
+        if (ins instanceof InvokeInstruction) {
             bug.addCalledMethod(classContext.getConstantPoolGen(), (InvokeInstruction) ins);
+        }
 
         bug.add(annotation)
-                .addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
+        .addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
         bugReporter.reportBug(bug);
     }
 

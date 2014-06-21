@@ -27,7 +27,7 @@ import java.util.BitSet;
 /**
  * A simple tokenizer for Java source text. This is not intended to be a
  * compliant lexer; instead, it is for quick and dirty scanning.
- * 
+ *
  * @author David Hovemeyer
  * @see Token
  */
@@ -69,11 +69,11 @@ public class Tokenizer {
         single.set('~');
     }
 
-    private PushbackReader reader;
+    private final PushbackReader reader;
 
     /**
      * Constructor.
-     * 
+     *
      * @param reader
      *            the Reader for the Java source text
      */
@@ -83,23 +83,23 @@ public class Tokenizer {
 
     /**
      * Get the next Token in the stream.
-     * 
+     *
      * @return the Token
      */
     public Token next() throws IOException {
         skipWhitespace();
         int c = reader.read();
-        if (c < 0)
+        if (c < 0) {
             return new Token(Token.EOF);
-        else if (c == '\n')
+        } else if (c == '\n') {
             return new Token(Token.EOL);
-        else if (c == '\'' || c == '"')
+        } else if (c == '\'' || c == '"') {
             return munchString(c);
-        else if (c == '/')
+        } else if (c == '/') {
             return maybeComment();
-        else if (single.get(c))
+        } else if (single.get(c)) {
             return new Token(Token.SINGLE, String.valueOf((char) c));
-        else {
+        } else {
             reader.unread(c);
             return parseWord();
         }
@@ -108,8 +108,9 @@ public class Tokenizer {
     private void skipWhitespace() throws IOException {
         for (;;) {
             int c = reader.read();
-            if (c < 0)
+            if (c < 0) {
                 break;
+            }
             if (!whiteSpace.get(c)) {
                 reader.unread(c);
                 break;
@@ -128,18 +129,22 @@ public class Tokenizer {
 
         while (state != DONE) {
             int c = reader.read();
-            if (c < 0)
+            if (c < 0) {
                 break;
+            }
             result.append((char) c);
             switch (state) {
             case SCAN:
-                if (c == delimiter)
+                if (c == delimiter) {
                     state = DONE;
-                else if (c == '\\')
+                } else if (c == '\\') {
                     state = ESCAPE;
+                }
                 break;
             case ESCAPE:
                 state = SCAN;
+                break;
+            default:
                 break;
             }
         }
@@ -154,9 +159,9 @@ public class Tokenizer {
             result.append("//");
             for (;;) {
                 c = reader.read();
-                if (c < 0)
+                if (c < 0) {
                     break;
-                else if (c == '\n') {
+                } else if (c == '\n') {
                     reader.unread(c);
                     break;
                 }
@@ -173,20 +178,23 @@ public class Tokenizer {
             int state = SCAN;
             while (state != DONE) {
                 c = reader.read();
-                if (c < 0)
+                if (c < 0) {
                     state = DONE;
-                else
+                } else {
                     result.append((char) c);
+                }
                 switch (state) {
                 case SCAN:
-                    if (c == '*')
+                    if (c == '*') {
                         state = STAR;
+                    }
                     break;
                 case STAR:
-                    if (c == '/')
+                    if (c == '/') {
                         state = DONE;
-                    else if (c != '*')
+                    } else if (c != '*') {
                         state = SCAN;
+                    }
                     break;
                 case DONE:
                     break;
@@ -194,8 +202,9 @@ public class Tokenizer {
             }
             return new Token(Token.COMMENT, result.toString());
         } else {
-            if (c >= 0)
+            if (c >= 0) {
                 reader.unread(c);
+            }
             return new Token(Token.SINGLE, "/");
         }
     }
@@ -204,8 +213,9 @@ public class Tokenizer {
         StringBuilder result = new StringBuilder();
         for (;;) {
             int c = reader.read();
-            if (c < 0)
+            if (c < 0) {
                 break;
+            }
             if (whiteSpace.get(c) || c == '\n' || single.get(c)) {
                 reader.unread(c);
                 break;
@@ -216,4 +226,3 @@ public class Tokenizer {
     }
 }
 
-// vim:ts=4

@@ -154,31 +154,31 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
      * Meaning of bytecode operands
      */
     static final byte[][] MEANING_OF_OPERANDS = {
-            // 0 1 2 3 4 5 6 7 8 9
-            {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, { M_INT }, { M_INT }, { M_CP }, { M_CP }, { M_CP },
-            { M_R }, { M_R }, { M_R }, { M_R }, { M_R }, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-            {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, { M_R }, { M_R }, { M_R }, { M_R }, { M_R }, {}, {}, {}, {}, {}, {}, {}, {},
-            {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-            {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            // 130 1 2 3 4 5 6 7 8 9
-            {}, {}, { M_R, M_INT }, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, { M_BR },
-            { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR },
-            { M_BR }, { M_BR }, { M_BR },
-            { M_BR },
-            { M_R },
-            // 170 1 2 3 4 5 6 7 8 9
-            {}, {}, {}, {}, {}, {}, {}, {}, { M_CP }, { M_CP }, { M_CP }, { M_CP }, { M_CP }, { M_CP }, { M_CP },
-            { M_CP, M_PAD, M_PAD },  { M_CP, M_PAD, M_PAD }, { M_CP }, { M_UINT },
-            { M_CP },
-            // 190 1 2 3 4 5 6 7 8 9
-            {}, {}, { M_CP }, { M_CP }, {}, {}, { M_PAD }, { M_CP, M_UINT }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, {}, {}, {},
-            {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-            {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} };
+        // 0 1 2 3 4 5 6 7 8 9
+        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, { M_INT }, { M_INT }, { M_CP }, { M_CP }, { M_CP },
+        { M_R }, { M_R }, { M_R }, { M_R }, { M_R }, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, { M_R }, { M_R }, { M_R }, { M_R }, { M_R }, {}, {}, {}, {}, {}, {}, {}, {},
+        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        // 130 1 2 3 4 5 6 7 8 9
+        {}, {}, { M_R, M_INT }, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, { M_BR },
+        { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, { M_BR },
+        { M_BR }, { M_BR }, { M_BR },
+        { M_BR },
+        { M_R },
+        // 170 1 2 3 4 5 6 7 8 9
+        {}, {}, {}, {}, {}, {}, {}, {}, { M_CP }, { M_CP }, { M_CP }, { M_CP }, { M_CP }, { M_CP }, { M_CP },
+        { M_CP, M_PAD, M_PAD },  { M_CP, M_PAD, M_PAD }, { M_CP }, { M_UINT },
+        { M_CP },
+        // 190 1 2 3 4 5 6 7 8 9
+        {}, {}, { M_CP }, { M_CP }, {}, {}, { M_PAD }, { M_CP, M_UINT }, { M_BR }, { M_BR }, { M_BR }, { M_BR }, {}, {}, {},
+        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} };
 
     protected byte[] codeBytes;
 
@@ -187,8 +187,9 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     // Accessors
 
     public ClassDescriptor getClassDescriptorOperand() {
-        if (referencedClass == null)
+        if (referencedClass == null) {
             throw new IllegalStateException("getClassDescriptorOperand called but value not available");
+        }
         return referencedClass;
     }
 
@@ -209,8 +210,9 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         }
     }
     public MethodDescriptor getMethodDescriptorOperand() {
-        if (nameConstantOperand == NOT_AVAILABLE || classConstantOperand == NOT_AVAILABLE)
+        if (nameConstantOperand == NOT_AVAILABLE || classConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getMethodDescriptorOperand called but value not available");
+        }
 
         if (referencedMethod == null) {
             referencedMethod = DescriptorFactory.instance().getMethodDescriptor(classConstantOperand, nameConstantOperand,
@@ -221,8 +223,9 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
     public @CheckForNull
     XMethod getXMethodOperand() {
-        if (nameConstantOperand == NOT_AVAILABLE || classConstantOperand == NOT_AVAILABLE)
+        if (nameConstantOperand == NOT_AVAILABLE || classConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getXMethodOperand called but value not available");
+        }
 
         if (getReferencedXClass() != null && referencedXMethod == null) {
             referencedXMethod = Hierarchy2.findInvocationLeastUpperBound(getReferencedXClass(), nameConstantOperand,
@@ -233,8 +236,9 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     }
 
     public FieldDescriptor getFieldDescriptorOperand() {
-        if (nameConstantOperand == NOT_AVAILABLE)
+        if (nameConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getFieldDescriptorOperand called but value not available");
+        }
 
         if (referencedField == null) {
             referencedField = DescriptorFactory.instance().getFieldDescriptor(classConstantOperand, nameConstantOperand,
@@ -245,9 +249,10 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
     public @CheckForNull
     XField getXFieldOperand() {
-        if (getReferencedXClass() != null && referencedXField == null)
+        if (getReferencedXClass() != null && referencedXField == null) {
             referencedXField = getReferencedXClass().findField(nameConstantOperand, sigConstantOperand,
                     opcode == GETSTATIC || opcode == PUTSTATIC);
+        }
 
         return referencedXField;
     }
@@ -261,8 +266,9 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
             assert dottedClassConstantOperand != NOT_AVAILABLE;
             return dottedClassConstantOperand;
         }
-        if (classConstantOperand == NOT_AVAILABLE)
+        if (classConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getDottedClassConstantOperand called but value not available");
+        }
         dottedClassConstantOperand = ClassName.toDottedClassName(classConstantOperand);
         return dottedClassConstantOperand;
     }
@@ -273,14 +279,15 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
      */
     @Deprecated
     public String getRefConstantOperand() {
-        if (refConstantOperand == NOT_AVAILABLE)
+        if (refConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getRefConstantOperand called but value not available");
+        }
         if (refConstantOperand == null) {
             String dottedClassConstantOperand = getDottedClassConstantOperand();
             StringBuilder ref = new StringBuilder(dottedClassConstantOperand.length() + nameConstantOperand.length()
                     + sigConstantOperand.length() + 5);
             ref.append(dottedClassConstantOperand).append(".").append(nameConstantOperand).append(" : ")
-                    .append(replaceSlashesWithDots(sigConstantOperand));
+            .append(replaceSlashesWithDots(sigConstantOperand));
             refConstantOperand = ref.toString();
         }
         return refConstantOperand;
@@ -288,8 +295,9 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
     /** If the current opcode has a reference constant operand, get its name */
     public String getNameConstantOperand() {
-        if (nameConstantOperand == NOT_AVAILABLE)
+        if (nameConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getNameConstantOperand called but value not available");
+        }
         return nameConstantOperand;
     }
 
@@ -298,8 +306,9 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
      * signature, slash-formatted
      */
     public String getSigConstantOperand() {
-        if (sigConstantOperand == NOT_AVAILABLE)
+        if (sigConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getSigConstantOperand called but value not available");
+        }
         return sigConstantOperand;
     }
 
@@ -309,21 +318,24 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
      */
     public @SlashedClassName
     String getClassConstantOperand() {
-        if (classConstantOperand == NOT_AVAILABLE)
+        if (classConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getClassConstantOperand called but value not available");
+        }
         return classConstantOperand;
     }
 
     /** If the current opcode has a string constant operand, get its name */
     public String getStringConstantOperand() {
-        if (stringConstantOperand == NOT_AVAILABLE)
+        if (stringConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getStringConstantOperand called but value not available");
+        }
         return stringConstantOperand;
     }
 
     public Constant getConstantRefOperand() {
-        if (constantRefOperand == null)
+        if (constantRefOperand == null) {
             throw new IllegalStateException("getConstantRefOperand called but value not available");
+        }
         return constantRefOperand;
     }
 
@@ -336,8 +348,9 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     }
 
     public int getRegisterOperand() {
-        if (registerOperand == -1)
+        if (registerOperand == -1) {
             throw new IllegalStateException("getRegisterOperand called but value not available");
+        }
         return registerOperand;
     }
 
@@ -350,26 +363,30 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         return longConstant;
     }
     public int getBranchOffset() {
-        if (branchOffset == INVALID_OFFSET)
+        if (branchOffset == INVALID_OFFSET) {
             throw new IllegalStateException("getBranchOffset called but value not available");
+        }
         return branchOffset;
     }
 
     public int getBranchTarget() {
-        if (branchTarget == INVALID_OFFSET)
+        if (branchTarget == INVALID_OFFSET) {
             throw new IllegalStateException("getBranchTarget called but value not available");
+        }
         return branchTarget;
     }
 
     public int getBranchFallThrough() {
-        if (branchFallThrough == INVALID_OFFSET)
+        if (branchFallThrough == INVALID_OFFSET) {
             throw new IllegalStateException("getBranchFallThrough called but value not available");
+        }
         return branchFallThrough;
     }
 
     public int getDefaultSwitchOffset() {
-        if (defaultSwitchOffset == INVALID_OFFSET)
+        if (defaultSwitchOffset == INVALID_OFFSET) {
             throw new IllegalStateException("getDefaultSwitchOffset called but value not available");
+        }
         return defaultSwitchOffset;
     }
 
@@ -388,13 +405,16 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
      *            0 for current opcode, 1 for one before that, etc.
      */
     public int getPrevOpcode(int offset) {
-        if (offset < 0)
+        if (offset < 0) {
             throw new IllegalArgumentException("offset (" + offset + ") must be nonnegative");
-        if (offset >= prevOpcode.length || offset > sizePrevOpcodeBuffer)
+        }
+        if (offset >= prevOpcode.length || offset > sizePrevOpcodeBuffer) {
             return NOP;
+        }
         int pos = currentPosInPrevOpcodeBuffer - offset;
-        if (pos < 0)
+        if (pos < 0) {
             pos += prevOpcode.length;
+        }
         return prevOpcode[pos];
     }
 
@@ -427,15 +447,17 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
     @SuppressFBWarnings("EI")
     public int[] getSwitchOffsets() {
-        if (switchOffsets == null)
+        if (switchOffsets == null) {
             throw new IllegalStateException("getSwitchOffsets called but value not available");
+        }
         return switchOffsets;
     }
 
     @SuppressFBWarnings("EI")
     public int[] getSwitchLabels() {
-        if (switchLabels == null)
+        if (switchLabels == null) {
             throw new IllegalStateException("getSwitchLabels called but value not available");
+        }
         return switchLabels;
     }
 
@@ -462,9 +484,11 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         // Sort by offset
         for (int j = 0; j < npairs; j++) {
             int min = j;
-            for (int k = j + 1; k < npairs; k++)
-                if (switchOffsets[min] > switchOffsets[k])
+            for (int k = j + 1; k < npairs; k++) {
+                if (switchOffsets[min] > switchOffsets[k]) {
                     min = k;
+                }
+            }
             if (min > j) {
                 int tmp = switchOffsets[min];
                 switchOffsets[min] = switchOffsets[j];
@@ -489,18 +513,20 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     }
 
     public boolean atCatchBlock() {
-        for (CodeException e : getCode().getExceptionTable())
-            if (e.getHandlerPC() == getPC())
+        for (CodeException e : getCode().getExceptionTable()) {
+            if (e.getHandlerPC() == getPC()) {
                 return true;
+            }
+        }
         return false;
     }
 
     @Override
     public void visit(Code obj) {
-//        if (getXMethod().usesInvokeDynamic()) {
-//            AnalysisContext.currentAnalysisContext().analysisSkippedDueToInvokeDynamic(getXMethod());
-//            return;
-//        }
+        //        if (getXMethod().usesInvokeDynamic()) {
+        //            AnalysisContext.currentAnalysisContext().analysisSkippedDueToInvokeDynamic(getXMethod());
+        //            return;
+        //        }
         sizePrevOpcodeBuffer = 0;
         currentPosInPrevOpcodeBuffer = prevOpcode.length - 1;
 
@@ -520,8 +546,9 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
                 sizePrevOpcodeBuffer++;
                 currentPosInPrevOpcodeBuffer++;
-                if (currentPosInPrevOpcodeBuffer >= prevOpcode.length)
+                if (currentPosInPrevOpcodeBuffer >= prevOpcode.length) {
                     currentPosInPrevOpcodeBuffer = 0;
+                }
                 prevOpcode[currentPosInPrevOpcodeBuffer] = opcode;
                 i++;
                 // System.out.println(OPCODE_NAMES[opCode]);
@@ -530,11 +557,13 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
                     if (opcode == LOOKUPSWITCH) {
                         int pad = 4 - (i & 3);
-                        if (pad == 4)
+                        if (pad == 4) {
                             pad = 0;
+                        }
                         int count = pad;
-                        while (count > 0)
+                        while (count > 0) {
                             count -= byteStream.skipBytes(count);
+                        }
                         i += pad;
                         defaultSwitchOffset = byteStream.readInt();
                         branchOffset = defaultSwitchOffset;
@@ -552,11 +581,13 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                         sortByOffset(switchOffsets, switchLabels);
                     } else if (opcode == TABLESWITCH) {
                         int pad = 4 - (i & 3);
-                        if (pad == 4)
+                        if (pad == 4) {
                             pad = 0;
+                        }
                         int count = pad;
-                        while (count > 0)
+                        while (count > 0) {
                             count -= byteStream.skipBytes(count);
+                        }
                         i += pad;
                         defaultSwitchOffset = byteStream.readInt();
                         branchOffset = defaultSwitchOffset;
@@ -603,11 +634,13 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                         default:
                             throw new IllegalStateException(String.format("bad wide bytecode %d: %s" , opcode, OPCODE_NAMES[opcode]));
                         }
-                    } else
+                    } else {
                         throw new IllegalStateException(String.format("bad unpredicatable bytecode %d: %s" , opcode, OPCODE_NAMES[opcode]));
+                    }
                 } else {
-                    if (byteStreamArgCount < 0)
+                    if (byteStreamArgCount < 0) {
                         throw new IllegalStateException(String.format("bad length for bytecode %d: %s" , opcode, OPCODE_NAMES[opcode]));
+                    }
                     for (int k = 0; k < TYPE_OF_OPERANDS[opcode].length; k++) {
 
                         int v;
@@ -616,10 +649,11 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                         boolean unsigned = (m == M_CP || m == M_R || m == M_UINT);
                         switch (t) {
                         case T_BYTE:
-                            if (unsigned)
+                            if (unsigned) {
                                 v = byteStream.readUnsignedByte();
-                            else
+                            } else {
                                 v = byteStream.readByte();
+                            }
                             /*
                              * System.out.print("Read byte " + v);
                              * System.out.println(" with meaning" + m);
@@ -627,10 +661,11 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                             i++;
                             break;
                         case T_SHORT:
-                            if (unsigned)
+                            if (unsigned) {
                                 v = byteStream.readUnsignedShort();
-                            else
+                            } else {
                                 v = byteStream.readShort();
+                            }
                             i += 2;
                             break;
                         case T_INT:
@@ -653,15 +688,15 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                                 classConstantOperand = getStringFromIndex(clazz.getNameIndex());
                                 referencedClass = DescriptorFactory.createClassDescriptor(classConstantOperand);
 
-                            } else if (constantRefOperand instanceof ConstantInteger)
+                            } else if (constantRefOperand instanceof ConstantInteger) {
                                 intConstant = ((ConstantInteger) constantRefOperand).getBytes();
-                            else if (constantRefOperand instanceof ConstantLong)
+                            } else if (constantRefOperand instanceof ConstantLong) {
                                 longConstant = ((ConstantLong) constantRefOperand).getBytes();
-                            else if (constantRefOperand instanceof ConstantFloat)
+                            } else if (constantRefOperand instanceof ConstantFloat) {
                                 floatConstant = ((ConstantFloat) constantRefOperand).getBytes();
-                            else if (constantRefOperand instanceof ConstantDouble)
+                            } else if (constantRefOperand instanceof ConstantDouble) {
                                 doubleConstant = ((ConstantDouble) constantRefOperand).getBytes();
-                            else if (constantRefOperand instanceof ConstantString) {
+                            } else if (constantRefOperand instanceof ConstantString) {
                                 int s = ((ConstantString) constantRefOperand).getStringIndex();
 
                                 stringConstantOperand = getStringFromIndex(s);
@@ -682,8 +717,8 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                                         id.getNameAndTypeIndex());
                                 nameConstantOperand = getStringFromIndex(sig.getNameIndex());
                                 sigConstantOperand = getStringFromIndex(sig.getSignatureIndex());
-                                
-                                
+
+
                             }
                             break;
                         case M_R:
@@ -799,7 +834,8 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                 case DSTORE:
                     isRegisterStore = true;
                     break;
-
+                default:
+                    break;
                 }
 
                 switch (opcode) {
@@ -828,32 +864,35 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                 case PUTFIELD:
                     refFieldIsStatic = false;
                     break;
+                default:
+                    break;
                 }
 
                 nextPC = i;
-                if (beforeOpcode(opcode))
+                if (beforeOpcode(opcode)) {
                     sawOpcode(opcode);
+                }
                 afterOpcode(opcode);
 
                 if (opcode == TABLESWITCH) {
                     sawInt(switchLow);
                     sawInt(switchHigh);
-                    int prevOffset = i - PC;
+                    //                    int prevOffset = i - PC;
                     for (int o = 0; o <= switchHigh - switchLow; o++) {
                         sawBranchTo(switchOffsets[o] + PC);
-                        prevOffset = switchOffsets[o];
+                        //                        prevOffset = switchOffsets[o];
                     }
                     sawBranchTo(defaultSwitchOffset + PC);
                 } else if (opcode == LOOKUPSWITCH) {
                     sawInt(switchOffsets.length);
-                    int prevOffset = i - PC;
+                    //                    int prevOffset = i - PC;
                     for (int o = 0; o < switchOffsets.length; o++) {
                         sawBranchTo(switchOffsets[o] + PC);
-                        prevOffset = switchOffsets[o];
+                        //                        prevOffset = switchOffsets[o];
                         sawInt(switchLabels[o]);
                     }
                     sawBranchTo(defaultSwitchOffset + PC);
-                } else
+                } else {
                     for (int k = 0; k < TYPE_OF_OPERANDS[opcode].length; k++) {
                         int m = MEANING_OF_OPERANDS[opcode][k];
                         switch (m) {
@@ -861,24 +900,25 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                             sawBranchTo(branchOffset + PC);
                             break;
                         case M_CP:
-                            if (constantRefOperand instanceof ConstantInteger)
+                            if (constantRefOperand instanceof ConstantInteger) {
                                 sawInt(intConstant);
-                            else if (constantRefOperand instanceof ConstantLong)
+                            } else if (constantRefOperand instanceof ConstantLong) {
                                 sawLong(longConstant);
-                            else if (constantRefOperand instanceof ConstantFloat)
+                            } else if (constantRefOperand instanceof ConstantFloat) {
                                 sawFloat(floatConstant);
-                            else if (constantRefOperand instanceof ConstantDouble)
+                            } else if (constantRefOperand instanceof ConstantDouble) {
                                 sawDouble(doubleConstant);
-                            else if (constantRefOperand instanceof ConstantString)
+                            } else if (constantRefOperand instanceof ConstantString) {
                                 sawString(stringConstantOperand);
-                            else if (constantRefOperand instanceof ConstantFieldref)
+                            } else if (constantRefOperand instanceof ConstantFieldref) {
                                 sawField();
-                            else if (constantRefOperand instanceof ConstantMethodref)
+                            } else if (constantRefOperand instanceof ConstantMethodref) {
                                 sawMethod();
-                            else if (constantRefOperand instanceof ConstantInterfaceMethodref)
+                            } else if (constantRefOperand instanceof ConstantInterfaceMethodref) {
                                 sawIMethod();
-                            else if (constantRefOperand instanceof ConstantClass)
+                            } else if (constantRefOperand instanceof ConstantClass) {
                                 sawClass();
+                            }
                             break;
                         case M_R:
                             sawRegister(registerOperand);
@@ -886,8 +926,11 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                         case M_INT:
                             sawInt(intConstant);
                             break;
+                        default:
+                            break;
                         }
                     }
+                }
             }
         } catch (IOException e) {
             AnalysisContext.logError("Error while dismantling bytecode", e);
@@ -953,26 +996,27 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
     public void printOpCode(int seen) {
         System.out.print("  " + this.getClass().getSimpleName() + ": [" + formatter.format(getPC()) + "]  " + OPCODE_NAMES[seen]);
-        if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC))
+        if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC)) {
             System.out.print("   " + getClassConstantOperand() + "." + getNameConstantOperand() + " " + getSigConstantOperand());
-        else if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
+        } else if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
             Constant c = getConstantRefOperand();
-            if (c instanceof ConstantString)
+            if (c instanceof ConstantString) {
                 System.out.print("   \"" + getStringConstantOperand() + "\"");
-            else if (c instanceof ConstantClass)
+            } else if (c instanceof ConstantClass) {
                 System.out.print("   " + getClassConstantOperand());
-            else
+            } else {
                 System.out.print("   " + c);
-        } else if ((seen == ALOAD) || (seen == ASTORE))
+            }
+        } else if ((seen == ALOAD) || (seen == ASTORE)) {
             System.out.print("   " + getRegisterOperand());
-        else if ((seen == GOTO) || (seen == GOTO_W) || (seen == IF_ACMPEQ) || (seen == IF_ACMPNE) || (seen == IF_ICMPEQ)
+        } else if ((seen == GOTO) || (seen == GOTO_W) || (seen == IF_ACMPEQ) || (seen == IF_ACMPNE) || (seen == IF_ICMPEQ)
                 || (seen == IF_ICMPGE) || (seen == IF_ICMPGT) || (seen == IF_ICMPLE) || (seen == IF_ICMPLT)
                 || (seen == IF_ICMPNE) || (seen == IFEQ) || (seen == IFGE) || (seen == IFGT) || (seen == IFLE) || (seen == IFLT)
-                || (seen == IFNE) || (seen == IFNONNULL) || (seen == IFNULL))
+                || (seen == IFNE) || (seen == IFNONNULL) || (seen == IFNULL)) {
             System.out.print("   " + getBranchTarget());
-        else if ((seen == NEW) || (seen == INSTANCEOF))
+        } else if ((seen == NEW) || (seen == INSTANCEOF)) {
             System.out.print("   " + getClassConstantOperand());
-        else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
+        } else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
             System.out.print("    [");
             int switchPC = getPC();
             int[] offsets = getSwitchOffsets();
@@ -1011,10 +1055,12 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     }
 
     public static boolean areOppositeBranches(int opcode1, int opcode2) {
-        if (!isBranch(opcode1))
+        if (!isBranch(opcode1)) {
             throw new IllegalArgumentException(OPCODE_NAMES[opcode1] + " isn't a branch");
-        if (!isBranch(opcode2))
+        }
+        if (!isBranch(opcode2)) {
             throw new IllegalArgumentException(OPCODE_NAMES[opcode2] + " isn't a branch");
+        }
         switch (opcode1) {
         case IF_ACMPEQ:
         case IF_ACMPNE:
@@ -1091,12 +1137,13 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
      * @return Returns the referencedXClass.
      */
     private XClass getReferencedXClass() {
-        if (referencedXClass == null && referencedClass != null)
+        if (referencedXClass == null && referencedClass != null) {
             try {
                 referencedXClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, referencedClass);
             } catch (CheckedAnalysisException e) {
                 assert true;
             }
+        }
         return referencedXClass;
     }
 }

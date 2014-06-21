@@ -55,7 +55,7 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
 
     boolean sawMethodCall, sawMethodCallOld;
 
-    private BugAccumulator bugAccumulator;
+    private final BugAccumulator bugAccumulator;
 
     public FindNonShortCircuit(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
@@ -116,8 +116,9 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
             break;
 
         case INVOKEVIRTUAL:
-            if (getNameConstantOperand().equals("length") && getClassConstantOperand().equals("java/lang/String"))
+            if (getNameConstantOperand().equals("length") && getClassConstantOperand().equals("java/lang/String")) {
                 break;
+            }
             sawDanger = true;
             sawMethodCall = true;
             break;
@@ -153,13 +154,16 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
             OpcodeStack.Item item0 = stack.getStackItem(0);
             OpcodeStack.Item item1 = stack.getStackItem(1);
             if (item0.getConstant() == null && item1.getConstant() == null && distance < 4) {
-                if (item0.getRegisterNumber() >= 0 && item1.getRegisterNumber() >= 0)
-                    if (false)
-                        clearAll();
+                //                if (item0.getRegisterNumber() >= 0 && item1.getRegisterNumber() >= 0) {
+                //                    if (false) {
+                //                        clearAll();
+                //                    }
+                //                }
                 operator = seen;
                 stage2 = 1;
-            } else
+            } else {
                 stage2 = 0;
+            }
             break;
         case IFEQ:
         case IFNE:
@@ -188,13 +192,15 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
         String pattern = "NS_NON_SHORT_CIRCUIT";
 
         if (sawDangerOld) {
-            if (sawNullTestVeryOld)
+            if (sawNullTestVeryOld) {
                 priority = HIGH_PRIORITY;
+            }
             if (sawMethodCallOld || sawNumericTestVeryOld && sawArrayDangerOld) {
                 priority = HIGH_PRIORITY;
                 pattern = "NS_DANGEROUS_NON_SHORT_CIRCUIT";
-            } else
+            } else {
                 priority = NORMAL_PRIORITY;
+            }
         }
 
         bugAccumulator.accumulateBug(new BugInstance(this, pattern, priority).addClassAndMethod(this), this);
@@ -212,6 +218,9 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
             case ILOAD_2:
             case ILOAD_3:
                 clearAll();
+                break;
+            default:
+                break;
             }
             break;
         case ICONST_1:
@@ -231,16 +240,17 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
 
             break;
         case GOTO:
-            if (stage1 == 1)
+            if (stage1 == 1) {
                 stage1 = 2;
-            else {
+            } else {
                 stage1 = 0;
                 clearAll();
             }
             break;
         case ICONST_0:
-            if (stage1 == 2)
+            if (stage1 == 2) {
                 sawBooleanValue();
+            }
             stage1 = 0;
             break;
         case INVOKEINTERFACE:
@@ -248,8 +258,9 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
         case INVOKESPECIAL:
         case INVOKESTATIC:
             String sig = getSigConstantOperand();
-            if (sig.endsWith(")Z"))
+            if (sig.endsWith(")Z")) {
                 sawBooleanValue();
+            }
             stage1 = 0;
             break;
         default:

@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
  * Find occurrences of using the String "+" or "+=" operators within a loop.
  * This is much less efficient than creating a dedicated StringBuffer object
  * outside the loop, and then appending to it.
- * 
+ *
  * @author Dave Brosius
  * @author William Pugh
  */
@@ -55,7 +55,7 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 
     static final int POSSIBLE_CASE = 5;
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private boolean reportedThisMethod;
 
@@ -77,8 +77,9 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 
     @Override
     public void visit(Method obj) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("------------------- Analyzing " + obj.getName() + " ----------------");
+        }
         reset();
         clobberedRegisters = new HashMap<Integer, Integer>();
         reportedThisMethod = false;
@@ -94,8 +95,9 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
         // For debugging: print what call to reset() is being invoked.
         // This helps figure out why the detector is failing to
         // recognize a particular idiom.
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Reset from: " + new Throwable().getStackTrace()[1]);
+        }
     }
 
     private boolean storeIntoRegister(int seen, int reg) {
@@ -117,8 +119,9 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 
     @Override
     public void sawOpcode(int seen) {
-        if (reportedThisMethod)
+        if (reportedThisMethod) {
             return;
+        }
         int oldState = state;
         if (DEBUG) {
             System.out.print("Opcode: ");
@@ -144,6 +147,8 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
         case ASTORE:
             storeTo = getRegisterOperand();
             break;
+        default:
+            break;
         }
         if (storeTo >= 0 && state != CONSTRUCTED_STRING_ON_STACK) {
             clobberedRegisters.put(storeTo, getPC());
@@ -159,46 +164,50 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 
         case SEEN_NEW:
             if (seen == INVOKESPECIAL && "<init>".equals(getNameConstantOperand())
-                    && "(Ljava/lang/String;)V".equals(getSigConstantOperand())
-                    && getClassConstantOperand().startsWith("java/lang/StringBu") && registerOnStack >= 0) {
+            && "(Ljava/lang/String;)V".equals(getSigConstantOperand())
+            && getClassConstantOperand().startsWith("java/lang/StringBu") && registerOnStack >= 0) {
                 state = SEEN_APPEND1;
                 stringSource = registerOnStack;
             } else if (seen == INVOKEVIRTUAL && "append".equals(getNameConstantOperand())
                     && getClassConstantOperand().startsWith("java/lang/StringBu")) {
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("Saw string being appended from register " + registerOnStack);
+                }
                 if (getSigConstantOperand().startsWith("(Ljava/lang/String;)") && registerOnStack >= 0) {
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("Saw string being appended, source = " + registerOnStack);
+                    }
                     state = SEEN_APPEND1;
                     stringSource = registerOnStack;
-                } else
+                } else {
                     reset();
+                }
             }
             break;
         case SEEN_APPEND1:
-            if (storeIntoRegister(seen, stringSource))
+            if (storeIntoRegister(seen, stringSource)) {
                 reset();
-            else if (seen == INVOKEVIRTUAL && "append".equals(getNameConstantOperand())
+            } else if (seen == INVOKEVIRTUAL && "append".equals(getNameConstantOperand())
                     && getClassConstantOperand().startsWith("java/lang/StringBu")) {
                 state = SEEN_APPEND2;
             }
             break;
 
         case SEEN_APPEND2:
-            if (storeIntoRegister(seen, stringSource))
+            if (storeIntoRegister(seen, stringSource)) {
                 reset();
-            else if (seen == INVOKEVIRTUAL && "toString".equals(getNameConstantOperand())
+            } else if (seen == INVOKEVIRTUAL && "toString".equals(getNameConstantOperand())
                     && getClassConstantOperand().startsWith("java/lang/StringBu")) {
                 state = CONSTRUCTED_STRING_ON_STACK;
             }
             break;
 
         case CONSTRUCTED_STRING_ON_STACK:
-            if (storeIntoRegister(seen, stringSource))
+            if (storeIntoRegister(seen, stringSource)) {
                 state = POSSIBLE_CASE;
-            else
+            } else {
                 reset();
+            }
             break;
 
         case POSSIBLE_CASE:
@@ -227,7 +236,7 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
                 }
 
                 bugReporter.reportBug(new BugInstance(this, "SBSC_USE_STRINGBUFFER_CONCATENATION", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addSourceLine(this, createPC));
+                .addClassAndMethod(this).addSourceLine(this, createPC));
                 // System.out.println("SBSC spread: " + (getPC() -
                 // getBranchTarget()));
                 reset();
@@ -236,13 +245,15 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
                 state = SEEN_NEW;
                 createPC = getPC();
             } else {
-                if (DismantleBytecode.isBranch(seen) && DEBUG) {
+                if (DEBUG && DismantleBytecode.isBranch(seen)) {
                     System.out.println("Rejecting branch:");
                     System.out.println("  spread: " + (getPC() - getBranchTarget()));
                     System.out.println("  getBranchTarget(): " + getBranchTarget());
                     System.out.println("  createPC: " + createPC);
                 }
             }
+            break;
+        default:
             break;
         }
 
@@ -268,12 +279,14 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
             case ALOAD:
                 registerOnStack = getRegisterOperand();
                 break;
+            default:
+                break;
             }
         }
-        if (DEBUG && state != oldState)
+        if (DEBUG && state != oldState) {
             System.out.println("At PC " + getPC() + " changing from state " + oldState + " to state " + state + ", regOnStack = "
                     + registerOnStack);
+        }
     }
 }
 
-// vim:ts=4

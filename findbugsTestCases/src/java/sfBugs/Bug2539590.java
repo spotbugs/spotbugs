@@ -13,6 +13,7 @@
 package sfBugs;
 
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
+import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
@@ -51,7 +52,7 @@ public class Bug2539590 {
     /*
      * Behavior at filing: warning message thrown for fallthrough in switch
      * statement does not mention missing default case
-     * 
+     *
      * warning thrown => M D SF_SWITCH_FALLTHROUGH SF: Switch statement found in
      * \ sfBugs.Bug2539590.fallthroughMethod(int) where one case falls \ through
      * to the next case At Bug2539590.java:[lines 33-35]
@@ -66,10 +67,36 @@ public class Bug2539590 {
     }
 
     @DesireNoWarning("SF_SWITCH_NO_DEFAULT")
+    @DesireWarning("SF_SWITCH_FALLTHROUGH")
     public static void fallthroughMethod(int which) {
         switch (which) {
         case 0:
             doSomething();
+        default:
+            break;
+        }
+    }
+
+    @ExpectWarning("SF_SWITCH_FALLTHROUGH")
+    public static void fallthroughMethod2(int which) {
+        switch (which) {
+        case 0:
+            doSomething();
+        case 2:
+            doSomething();
+            break;
+        default:
+            break;
+        }
+    }
+
+    @NoWarning("SF_SWITCH_FALLTHROUGH")
+    public static void fallthroughMethod3(int which) {
+        switch (which) {
+        case 0:
+        case 2:
+            doSomething();
+            break;
         default:
             break;
         }

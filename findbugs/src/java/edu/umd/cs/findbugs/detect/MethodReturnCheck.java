@@ -93,29 +93,36 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
     private boolean badUseOfCompareResult(Item left, Item right) {
         XMethod m = left.getReturnValueOf();
 
-        if (m == null)
+        if (m == null) {
             return false;
+        }
         String name = m.getName();
-        
-        if (!name.startsWith("compare"))
+
+        if (!name.startsWith("compare")) {
             return false;
-       
+        }
+
         Object value = right.getConstant();
-        if (!(value instanceof Integer) || ((Integer) value).intValue() == 0)
+        if (!(value instanceof Integer) || ((Integer) value).intValue() == 0) {
             return false;
-        if (!m.isPublic() && m.isResolved())
+        }
+        if (!m.isPublic() && m.isResolved()) {
             return false;
-        
-        
+        }
+
+
         if (m.isStatic() || !m.isResolved()) {
-            if (name.equals("compare") && m.getClassName().startsWith("com.google.common.primitives."))
+            if (name.equals("compare") && m.getClassName().startsWith("com.google.common.primitives.")) {
                 return true;
+            }
         }
         if (!m.isStatic() || !m.isResolved()) {
-            if (name.equals("compareTo") && m.getSignature().equals("(Ljava/lang/Object;)I"))
+            if (name.equals("compareTo") && m.getSignature().equals("(Ljava/lang/Object;)I")) {
                 return true;
-            if (name.equals("compare") && m.getSignature().equals("(Ljava/lang/Object;Ljava/lang/Object;)I"))
+            }
+            if (name.equals("compare") && m.getSignature().equals("(Ljava/lang/Object;Ljava/lang/Object;)I")) {
                 return true;
+            }
         }
 
         return false;
@@ -124,11 +131,13 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
     @Override
     public void sawOpcode(int seen) {
 
-        if (DEBUG)
+        if (DEBUG) {
             System.out.printf("%3d %10s %3s %s%n", getPC(), OPCODE_NAMES[seen], state, stack);
+        }
 
         switch (seen) {
         case Constants.IF_ICMPEQ:
+
         case Constants.IF_ICMPNE:
             OpcodeStack.Item left = stack.getStackItem(1);
             OpcodeStack.Item right = stack.getStackItem(0);
@@ -136,13 +145,16 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                 XMethod returnValueOf = left.getReturnValueOf();
                 assert returnValueOf != null;
                 bugAccumulator.accumulateBug(new BugInstance(this, "RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addMethod(returnValueOf).describe(MethodAnnotation.METHOD_CALLED).addValueSource(right, this), this);
+                .addClassAndMethod(this).addMethod(returnValueOf).describe(MethodAnnotation.METHOD_CALLED).addValueSource(right, this), this);
             } else if (badUseOfCompareResult(right, left)) {
                 XMethod returnValueOf = right.getReturnValueOf();
                 assert returnValueOf != null;
                 bugAccumulator.accumulateBug(new BugInstance(this, "RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addMethod(returnValueOf).describe(MethodAnnotation.METHOD_CALLED).addValueSource(left, this), this);
+                .addClassAndMethod(this).addMethod(returnValueOf).describe(MethodAnnotation.METHOD_CALLED).addValueSource(left, this), this);
             }
+            break;
+        default:
+            break;
         }
 
         checkForInitWithoutCopyOnStack: if (seen == INVOKESPECIAL && getNameConstantOperand().equals("<init>")) {
@@ -152,8 +164,9 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
 
                 for (int i = arguments + 1; i < stack.getStackDepth(); i++) {
                     OpcodeStack.Item item = stack.getStackItem(i);
-                    if (item.isNewlyAllocated() && item.getSignature().equals(invokedOn.getSignature()))
+                    if (item.isNewlyAllocated() && item.getSignature().equals(invokedOn.getSignature())) {
                         break checkForInitWithoutCopyOnStack;
+                    }
                 }
 
                 callSeen = XFactory.createReferencedXMethod(this);
@@ -166,16 +179,18 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
             }
         }
 
-        if (state == SAW_INVOKE && isPop(seen))
+        if (state == SAW_INVOKE && isPop(seen)) {
             sawMethodCallWithIgnoredReturnValue();
-        else if (INVOKE_OPCODE_SET.get(seen)) {
+        } else if (INVOKE_OPCODE_SET.get(seen)) {
             callPC = getPC();
             callSeen = XFactory.createReferencedXMethod(this);
             state = SAW_INVOKE;
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("  invoking " + callSeen);
-        } else
+            }
+        } else {
             state = SCAN;
+        }
 
         if (seen == NEW) {
             previousOpcodeWasNEW = true;
@@ -185,8 +200,9 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                 if (annotation != null && annotation != CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE) {
                     int priority = annotation.getPriority();
                     if (!checkReturnAnnotationDatabase.annotationIsDirect(callSeen)
-                            && !callSeen.getSignature().endsWith(callSeen.getClassName().replace('.', '/') + ";"))
+                            && !callSeen.getSignature().endsWith(callSeen.getClassName().replace('.', '/') + ";")) {
                         priority++;
+                    }
                     bugAccumulator.accumulateBug(new BugInstance(this, annotation.getPattern(), priority).addClassAndMethod(this)
                             .addCalledMethod(this), this);
                 }
@@ -205,33 +221,39 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
             CheckReturnValueAnnotation annotation = checkReturnAnnotationDatabase.getResolvedAnnotation(callSeen, false);
             if (annotation == null) {
                 XFactory xFactory = AnalysisContext.currentXFactory();
-                
+
                 if (xFactory.isFunctionshatMightBeMistakenForProcedures(callSeen.getMethodDescriptor())) {
                     annotation = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_INFERRED;
                 }
             }
             if (annotation != null && annotation.getPriority() <= LOW_PRIORITY) {
                 int popPC = getPC();
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("Saw POP @" + popPC);
+                }
                 int catchSize = getSizeOfSurroundingTryBlock(popPC);
 
                 int priority = annotation.getPriority();
-                if (catchSize <= 1)
+                if (catchSize <= 1) {
                     priority += 2;
-                else if (catchSize <= 2)
+                } else if (catchSize <= 2) {
                     priority += 1;
+                }
                 if (!checkReturnAnnotationDatabase.annotationIsDirect(callSeen)
-                        && !callSeen.getSignature().endsWith(callSeen.getClassName().replace('.', '/') + ";"))
+                        && !callSeen.getSignature().endsWith(callSeen.getClassName().replace('.', '/') + ";")) {
                     priority++;
-                if (callSeen.isPrivate())
+                }
+                if (callSeen.isPrivate()) {
                     priority++;
-                if (callSeen.getName().equals("clone") || callSeen.getName().startsWith("get"))
+                }
+                if (callSeen.getName().equals("clone") || callSeen.getName().startsWith("get")) {
                     priority++;
+                }
                 String pattern = annotation.getPattern();
                 if (callSeen.getName().equals("<init>")
-                        && (callSeen.getClassName().endsWith("Exception") || callSeen.getClassName().endsWith("Error")))
+                        && (callSeen.getClassName().endsWith("Exception") || callSeen.getClassName().endsWith("Error"))) {
                     pattern = "RV_EXCEPTION_NOT_THROWN";
+                }
                 BugInstance warning = new BugInstance(this, pattern, priority).addClassAndMethod(this).addMethod(callSeen)
                         .describe(MethodAnnotation.METHOD_CALLED);
                 bugAccumulator.accumulateBug(warning, SourceLineAnnotation.fromVisitedInstruction(this, callPC));

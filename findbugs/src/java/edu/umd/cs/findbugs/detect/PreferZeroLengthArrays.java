@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 public class PreferZeroLengthArrays extends BytecodeScanningDetector implements StatelessDetector {
     boolean nullOnTOS = false;
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     public PreferZeroLengthArrays(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -49,14 +49,15 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
         if (getMethodName().equals("listFiles")) {
             return;
         }
-        String returnType = getMethodSig().substring(getMethodSig().indexOf(")") + 1);
+        String returnType = getMethodSig().substring(getMethodSig().indexOf(')') + 1);
         if (returnType.startsWith("[")) {
             nullOnTOS = false;
             super.visit(obj);
             if (!found.isEmpty()) {
                 BugInstance bug = new BugInstance(this, "PZLA_PREFER_ZERO_LENGTH_ARRAYS", LOW_PRIORITY).addClassAndMethod(this);
-                for (SourceLineAnnotation s : found)
+                for (SourceLineAnnotation s : found) {
                     bug.add(s);
+                }
                 bugReporter.reportBug(bug);
                 found.clear();
             }
@@ -74,10 +75,12 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
             if (nullOnTOS) {
                 SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this,
                         getPC());
-                if (sourceLineAnnotation != null)
+                if (sourceLineAnnotation != null) {
                     found.add(sourceLineAnnotation);
+                }
             }
-
+            break;
+        default:
             break;
         }
         nullOnTOS = false;

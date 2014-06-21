@@ -98,9 +98,10 @@ public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode implem
             // stemming from called methods.
 
             if (!Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {
-            XMethod m = getXMethodOperand();
-            if (m != null)
-                updateApplicableAnnotations(m);
+                XMethod m = getXMethodOperand();
+                if (m != null) {
+                    updateApplicableAnnotations(m);
+                }
             }
             break;
 
@@ -116,6 +117,8 @@ public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode implem
 
             break;
         }
+        default:
+            break;
         }
     }
 

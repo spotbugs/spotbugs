@@ -50,7 +50,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
     final BugReporter bugReporter;
 
-    private boolean testingEnabled;
+    private final boolean testingEnabled;
 
     final static boolean REPORT_INFERRED_METHODS = SystemProperties.getBoolean("mrc.inferred.report");
 
@@ -71,10 +71,12 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
     @Override
     public void visit(Field obj) {
-        if (obj.getName().equals("this$0"))
+        if (obj.getName().equals("this$0")) {
             isInnerClass = true;
-        if (!obj.isFinal() && !obj.isStatic() && !BCELUtil.isSynthetic(obj))
+        }
+        if (!obj.isFinal() && !obj.isStatic() && !BCELUtil.isSynthetic(obj)) {
             hasNonFinalFields = true;
+        }
     }
 
     @Override
@@ -110,8 +112,9 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
         String returnType = parser.getReturnTypeSignature();
         @SlashedClassName
         String r = ClassName.fromFieldSignature(returnType);
-        if (r == null || !r.equals(getClassName()))
+        if (r == null || !r.equals(getClassName())) {
             return;
+        }
         // System.out.println("Checking " + getFullyQualifiedMethodName());
         boolean funky = false;
         for (int i = 0; i < parser.getNumParameters(); i++) {
@@ -132,24 +135,25 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 funky = true;
             }
 
-//            if (false) {
-//                XClass c = getXClass();
-//                String classSourceSig = c.getSourceSignature();
-//                if (!genericReturnValue.equals(classSourceSig))
-//                    return;
-//            }
+            //            if (false) {
+            //                XClass c = getXClass();
+            //                String classSourceSig = c.getSourceSignature();
+            //                if (!genericReturnValue.equals(classSourceSig))
+            //                    return;
+            //            }
         }
 
-//         System.out.println("Investigating " + getFullyQualifiedMethodName());
+        //         System.out.println("Investigating " + getFullyQualifiedMethodName());
         returnSelf = returnOther = updates = returnNew = returnUnknown = 0;
 
         if (testingEnabled && REPORT_INFERRED_METHODS
-                && AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass()))
+                && AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass())) {
             inferredMethod = new BugInstance("TESTING", NORMAL_PRIORITY).addClassAndMethod(this);
-        else
+        } else {
             inferredMethod = null;
+        }
         super.visit(code); // make callbacks to sawOpcode for all opcodes
-//         System.out.printf("  %3d %3d %3d %3d%n", returnSelf, updates, returnOther, returnNew);
+        //         System.out.printf("  %3d %3d %3d %3d%n", returnSelf, updates, returnOther, returnNew);
 
         if (returnSelf > 0 && returnOther == 0) {
             okToIgnore.add(m);
@@ -158,16 +162,21 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
         } else if (returnOther > 0 && returnOther >= returnSelf && returnNew > 0 && returnNew >= returnOther - 1) {
 
             int priority = HIGH_PRIORITY;
-            if (returnSelf > 0 || updates > 0)
+            if (returnSelf > 0 || updates > 0) {
                 priority++;
-            if (returnUnknown > 0)
+            }
+            if (returnUnknown > 0) {
                 priority++;
-            if (returnNew > 0 && priority > NORMAL_PRIORITY)
+            }
+            if (returnNew > 0 && priority > NORMAL_PRIORITY) {
                 priority = NORMAL_PRIORITY;
-            if (updates > 0)
+            }
+            if (updates > 0) {
                 priority = LOW_PRIORITY;
-            if (priority <= HIGH_PRIORITY)
+            }
+            if (priority <= HIGH_PRIORITY) {
                 doNotIgnoreHigh.add(m);
+            }
             if (priority <= NORMAL_PRIORITY) {
                 // System.out.printf("  adding %d %s%n", priority,
                 // MethodAnnotation.fromVisitedMethod(this).getSourceLines());
@@ -195,25 +204,29 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
         switch (seen) {
         case INVOKEVIRTUAL:
         case INVOKESPECIAL: {
-            if (getMethod().isStatic() || !hasNonFinalFields)
+            if (getMethod().isStatic() || !hasNonFinalFields) {
                 break;
+            }
 
             String name = getNameConstantOperand();
             String sig = getSigConstantOperand();
             if ((name.startsWith("set") || name.startsWith("update")) || sig.endsWith(")V")) {
                 Item invokedOn = stack.getItemMethodInvokedOn(this);
-                if (invokedOn.isInitialParameter() && invokedOn.getRegisterNumber() == 0)
+                if (invokedOn.isInitialParameter() && invokedOn.getRegisterNumber() == 0) {
                     updates++;
-                if (inferredMethod != null)
+                }
+                if (inferredMethod != null) {
                     inferredMethod.addCalledMethod(this);
+                }
             }
             break;
         }
 
         case ARETURN: {
             OpcodeStack.Item rv = stack.getStackItem(0);
-            if (rv.isNull())
+            if (rv.isNull()) {
                 break;
+            }
             if (rv.isInitialParameter()) {
                 returnSelf++;
                 break;
@@ -224,8 +237,9 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 returnSelf++;
                 break;
             }
-            if (inferredMethod != null)
+            if (inferredMethod != null) {
                 inferredMethod.addCalledMethod(xMethod);
+            }
             if (okToIgnore.contains(xMethod) ) {
                 returnSelf++;
                 break;
@@ -260,16 +274,18 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 // System.out.println("  calls " + xMethod);
                 // System.out.println("  at " +
                 // MethodAnnotation.fromXMethod(xMethod).getSourceLines());
-                if (xMethod.getName().equals("<init>") || doNotIgnore.contains(xMethod))
+                if (xMethod.getName().equals("<init>") || doNotIgnore.contains(xMethod)) {
                     returnNew++;
+                }
             } else if (doNotIgnore.contains(xMethod)) {
                 returnOther++;
                 // System.out.println("  calls " + xMethod);
                 // System.out.println("  at " +
                 // MethodAnnotation.fromXMethod(xMethod).getSourceLines());
 
-            } else
+            } else {
                 returnUnknown++;
+            }
 
         }
         break;
@@ -277,12 +293,16 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
             OpcodeStack.Item rv = stack.getStackItem(1);
             if (rv.getRegisterNumber() == 0 && rv.isInitialParameter()) {
-                if (inferredMethod != null)
+                if (inferredMethod != null) {
                     inferredMethod.addReferencedField(this);
+                }
                 updates++;
 
             }
         }
+        break;
+        default:
+            break;
         }
     }
 }

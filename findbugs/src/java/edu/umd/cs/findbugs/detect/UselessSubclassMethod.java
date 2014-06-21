@@ -98,9 +98,10 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
         if ((interfaceMethods != null) && ((obj.getAccessFlags() & Constants.ACC_ABSTRACT) != 0)) {
             String curDetail = obj.getName() + obj.getSignature();
             for (String infMethodDetail : interfaceMethods) {
-                if (curDetail.equals(infMethodDetail))
+                if (curDetail.equals(infMethodDetail)) {
                     bugReporter.reportBug(new BugInstance(this, "USM_USELESS_ABSTRACT_METHOD", LOW_PRIORITY).addClassAndMethod(
                             getClassContext().getJavaClass(), obj));
+                }
             }
         }
         super.visitMethod(obj);
@@ -120,13 +121,15 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
                  */
                 Attribute[] atts = getMethod().getAttributes();
                 for (Attribute att : atts) {
-                    if (att.getClass().equals(Synthetic.class))
+                    if (att.getClass().equals(Synthetic.class)) {
                         return;
+                    }
                 }
 
                 byte[] codeBytes = obj.getCode();
-                if ((codeBytes.length == 0) || (codeBytes[0] != ALOAD_0))
+                if ((codeBytes.length == 0) || (codeBytes[0] != ALOAD_0)) {
                     return;
+                }
 
                 state = State.SEEN_NOTHING;
                 invokePC = 0;
@@ -136,8 +139,9 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
                     Method superMethod = findSuperclassMethod(superclassName, getMethod());
                     if ((superMethod == null) || differentAttributes(getMethod(), superMethod)
                             || getMethod().isProtected()
-                            && !samePackage(getDottedClassName(), superclassName))
+                            && !samePackage(getDottedClassName(), superclassName)) {
                         return;
+                    }
 
                     bugReporter.reportBug(new BugInstance(this, "USM_USELESS_SUBCLASS_METHOD", LOW_PRIORITY).addClassAndMethod(
                             this).addSourceLine(this, invokePC));
@@ -150,13 +154,14 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 
     public String getPackage(@DottedClassName String classname) {
         int i = classname.lastIndexOf('.');
-        if (i < 0)
+        if (i < 0) {
             return "";
+        }
         return classname.substring(0,i);
     }
     public boolean samePackage(@DottedClassName String classname1, @DottedClassName String classname2) {
         return getPackage(classname1).equals(getPackage(classname2));
-        
+
     }
     @Override
     public void sawOpcode(int seen) {
@@ -166,18 +171,20 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
                 argTypes = Type.getArgumentTypes(this.getMethodSig());
                 curParm = 0;
                 curParmOffset = 1;
-                if (argTypes.length > 0)
+                if (argTypes.length > 0) {
                     state = State.SEEN_PARM;
-                else
+                } else {
                     state = State.SEEN_LAST_PARM;
-            } else
+                }
+            } else {
                 state = State.SEEN_INVALID;
+            }
             break;
 
         case SEEN_PARM:
-            if (curParm >= argTypes.length)
+            if (curParm >= argTypes.length) {
                 state = State.SEEN_INVALID;
-            else {
+            } else {
                 String signature = argTypes[curParm++].getSignature();
                 char typeChar0 = signature.charAt(0);
                 if ((typeChar0 == 'L') || (typeChar0 == '[')) {
@@ -190,11 +197,13 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
                     checkParm(seen, ILOAD_0, ILOAD, 1);
                 } else if (typeChar0 == 'J') {
                     checkParm(seen, LLOAD_0, LLOAD, 2);
-                } else
+                } else {
                     state = State.SEEN_INVALID;
+                }
 
-                if ((state != State.SEEN_INVALID) && (curParm >= argTypes.length))
+                if ((state != State.SEEN_INVALID) && (curParm >= argTypes.length)) {
                     state = State.SEEN_LAST_PARM;
+                }
 
             }
             break;
@@ -204,48 +213,54 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
                     && getMethodSig().equals(getSigConstantOperand())) {
                 invokePC = getPC();
                 state = State.SEEN_INVOKE;
-            } else
+            } else {
                 state = State.SEEN_INVALID;
+            }
             break;
 
         case SEEN_INVOKE:
             Type returnType = getMethod().getReturnType();
             char retSigChar0 = returnType.getSignature().charAt(0);
-            if ((retSigChar0 == 'V') && (seen == RETURN))
+            if ((retSigChar0 == 'V') && (seen == RETURN)) {
                 state = State.SEEN_RETURN;
-            else if (((retSigChar0 == 'L') || (retSigChar0 == '[')) && (seen == ARETURN))
+            } else if (((retSigChar0 == 'L') || (retSigChar0 == '[')) && (seen == ARETURN)) {
                 state = State.SEEN_RETURN;
-            else if ((retSigChar0 == 'D') && (seen == DRETURN))
+            } else if ((retSigChar0 == 'D') && (seen == DRETURN)) {
                 state = State.SEEN_RETURN;
-            else if ((retSigChar0 == 'F') && (seen == FRETURN))
+            } else if ((retSigChar0 == 'F') && (seen == FRETURN)) {
                 state = State.SEEN_RETURN;
-            else if ((retSigChar0 == 'I' || retSigChar0 == 'S' || retSigChar0 == 'C' || retSigChar0 == 'B' || retSigChar0 == 'Z')
-                    && (seen == IRETURN))
+            } else if ((retSigChar0 == 'I' || retSigChar0 == 'S' || retSigChar0 == 'C' || retSigChar0 == 'B' || retSigChar0 == 'Z')
+                    && (seen == IRETURN)) {
                 state = State.SEEN_RETURN;
-            else if ((retSigChar0 == 'J') && (seen == LRETURN))
+            } else if ((retSigChar0 == 'J') && (seen == LRETURN)) {
                 state = State.SEEN_RETURN;
-            else
+            } else {
                 state = State.SEEN_INVALID;
+            }
             break;
 
         case SEEN_RETURN:
             state = State.SEEN_INVALID;
+            break;
+        default:
             break;
         }
     }
 
     private void checkParm(int seen, int fastOpBase, int slowOp, int parmSize) {
         if ((curParmOffset >= 1) && (curParmOffset <= 3)) {
-            if (seen == (fastOpBase + curParmOffset))
+            if (seen == (fastOpBase + curParmOffset)) {
                 curParmOffset += parmSize;
-            else
+            } else {
                 state = State.SEEN_INVALID;
-        } else if (curParmOffset == 0)
+            }
+        } else if (curParmOffset == 0) {
             state = State.SEEN_INVALID;
-        else if ((seen == slowOp) && (getRegisterOperand() == curParmOffset))
+        } else if ((seen == slowOp) && (getRegisterOperand() == curParmOffset)) {
             curParmOffset += parmSize;
-        else
+        } else {
             state = State.SEEN_INVALID;
+        }
     }
 
     private Method findSuperclassMethod(@DottedClassName String superclassName, Method subclassMethod) throws ClassNotFoundException {
@@ -256,13 +271,15 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
         Method[] methods = superClass.getMethods();
         outer: for (Method m : methods) {
             if (m.getName().equals(methodName)) {
-                if (subArgs == null)
+                if (subArgs == null) {
                     subArgs = Type.getArgumentTypes(subclassMethod.getSignature());
+                }
                 Type[] superArgs = Type.getArgumentTypes(m.getSignature());
                 if (subArgs.length == superArgs.length) {
                     for (int j = 0; j < subArgs.length; j++) {
-                        if (!superArgs[j].equals(subArgs[j]))
+                        if (!superArgs[j].equals(subArgs[j])) {
                             continue outer;
+                        }
                     }
                     return m;
                 }
@@ -283,25 +300,30 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
     HashSet<String> thrownExceptions(Method m) {
         HashSet<String> result = new HashSet<String>();
         ExceptionTable exceptionTable = m.getExceptionTable();
-        if (exceptionTable != null)
-            for (String e : exceptionTable.getExceptionNames())
+        if (exceptionTable != null) {
+            for (String e : exceptionTable.getExceptionNames()) {
                 result.add(e);
+            }
+        }
         return result;
     }
     private boolean differentAttributes(Method m1, Method m2) {
-        if (m1.getAnnotationEntries().length > 0 || m2.getAnnotationEntries().length > 0)
+        if (m1.getAnnotationEntries().length > 0 || m2.getAnnotationEntries().length > 0) {
             return true;
+        }
         int access1 = m1.getAccessFlags()
                 & (Constants.ACC_PRIVATE | Constants.ACC_PROTECTED | Constants.ACC_PUBLIC | Constants.ACC_FINAL);
         int access2 = m2.getAccessFlags()
                 & (Constants.ACC_PRIVATE | Constants.ACC_PROTECTED | Constants.ACC_PUBLIC | Constants.ACC_FINAL);
 
-        
+
         m1.getAnnotationEntries();
-        if (access1 != access2)
+        if (access1 != access2) {
             return true;
-        if (!thrownExceptions(m1).equals(thrownExceptions(m2)))
+        }
+        if (!thrownExceptions(m1).equals(thrownExceptions(m2))) {
             return false;
+        }
         m1.getExceptionTable();
         return false;
     }

@@ -51,19 +51,22 @@ public class Noise extends OpcodeStackDetector {
         // data is next..size-1, 0..next-1
         public void push(byte b) {
             data[next++] = b;
-            if (next == size)
+            if (next == size) {
                 next = 0;
+            }
         }
 
         public void reset() {
             next = 0;
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < size; i++) {
                 data[i] = 0;
+            }
         }
 
         public void push(String s) {
-            for (byte b : UTF8.getBytes(s))
+            for (byte b : UTF8.getBytes(s)) {
                 push(b);
+            }
         }
 
         public void pushHash(Object x) {
@@ -91,20 +94,22 @@ public class Noise extends OpcodeStackDetector {
 
             if ((hash & 0x1ff0) == 0) {
                 hash = hash & 0xf;
-                if (hash < 1)
+                if (hash < 1) {
                     return Priorities.HIGH_PRIORITY;
-                else if (hash < 1 + 2)
+                } else if (hash < 1 + 2) {
                     return Priorities.NORMAL_PRIORITY;
-                else if (hash < 1 + 2 + 4)
+                } else if (hash < 1 + 2 + 4) {
                     return Priorities.LOW_PRIORITY;
-                else
+                } else {
                     return Priorities.IGNORE_PRIORITY;
-            } else
+                }
+            } else {
                 return Priorities.IGNORE_PRIORITY + 1;
+            }
         }
     }
 
-    final BugReporter bugReporter;
+//    final BugReporter bugReporter;
 
     final BugAccumulator accumulator;
 
@@ -113,7 +118,7 @@ public class Noise extends OpcodeStackDetector {
     byte[] primer;
 
     public Noise(BugReporter bugReporter) throws NoSuchAlgorithmException {
-        this.bugReporter = bugReporter;
+//        this.bugReporter = bugReporter;
         this.accumulator = new BugAccumulator(bugReporter);
         hq = new HashQueue(24);
     }
@@ -147,12 +152,6 @@ public class Noise extends OpcodeStackDetector {
         hq.push(getClassConstantOperand());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
-     */
-
     @Override
     public void sawOpcode(int seen) {
         int priority;
@@ -162,28 +161,31 @@ public class Noise extends OpcodeStackDetector {
         case INVOKESPECIAL:
         case INVOKESTATIC:
             hq.pushHash(getClassConstantOperand());
-            if (getNameConstantOperand().indexOf('$') == -1)
+            if (getNameConstantOperand().indexOf('$') == -1) {
                 hq.pushHash(getNameConstantOperand());
+            }
             hq.pushHash(getSigConstantOperand());
 
             priority = hq.getPriority();
-            if (priority <= Priorities.LOW_PRIORITY)
+            if (priority <= Priorities.LOW_PRIORITY) {
                 accumulator.accumulateBug(new BugInstance(this, "NOISE_METHOD_CALL", priority).addClassAndMethod(this)
                         .addCalledMethod(this), this);
-
+            }
             break;
         case GETFIELD:
         case PUTFIELD:
         case GETSTATIC:
         case PUTSTATIC:
             hq.pushHash(getClassConstantOperand());
-            if (getNameConstantOperand().indexOf('$') == -1)
+            if (getNameConstantOperand().indexOf('$') == -1) {
                 hq.pushHash(getNameConstantOperand());
+            }
             hq.pushHash(getSigConstantOperand());
             priority = hq.getPriority();
-            if (priority <= Priorities.LOW_PRIORITY)
+            if (priority <= Priorities.LOW_PRIORITY) {
                 accumulator.accumulateBug(new BugInstance(this, "NOISE_FIELD_REFERENCE", priority).addClassAndMethod(this)
                         .addReferencedField(this), this);
+            }
             break;
         case CHECKCAST:
         case INSTANCEOF:
@@ -241,10 +243,14 @@ public class Noise extends OpcodeStackDetector {
         case BASTORE:
             hq.push(seen);
             priority = hq.getPriority();
-            if (priority <= Priorities.LOW_PRIORITY)
+            if (priority <= Priorities.LOW_PRIORITY) {
                 accumulator.accumulateBug(
                         new BugInstance(this, "NOISE_OPERATION", priority).addClassAndMethod(this).addString(OPCODE_NAMES[seen]),
                         this);
+            }
+            break;
+        default:
+            break;
         }
     }
 

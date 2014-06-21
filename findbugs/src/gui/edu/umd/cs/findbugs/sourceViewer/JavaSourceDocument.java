@@ -30,10 +30,8 @@ import java.io.StringReader;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
-import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.TabSet;
 import javax.swing.text.TabStop;
@@ -73,9 +71,9 @@ public class JavaSourceDocument {
 
     final NumberedEditorKit dek = new NumberedEditorKit(highlights);
 
-    final StyleContext styleContext = new StyleContext();
+//    final StyleContext styleContext = new StyleContext();
 
-    final Element root;
+//    final Element root;
 
     final DefaultStyledDocument doc;
 
@@ -115,15 +113,16 @@ public class JavaSourceDocument {
         }
         in.close();
         doc.putProperty(Document.TitleProperty, title);
-        root = doc.getDefaultRootElement();
+//        root = doc.getDefaultRootElement();
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         FontMetrics fontMetrics = toolkit.getFontMetrics(sourceFont);
         TabStop[] tabs = new TabStop[50];
         float width = fontMetrics.stringWidth(" ");
 
         int tabSize = GUISaveState.getInstance().getTabSize();
-        for (int i = 0; i < tabs.length; i++)
+        for (int i = 0; i < tabs.length; i++) {
             tabs[i] = new TabStop(width * (tabSize + tabSize * i));
+        }
         TAB_SET = new TabSet(tabs);
         StyleConstants.setTabSet(commentAttributes, TAB_SET);
         StyleConstants.setTabSet(javadocAttributes, TAB_SET);
@@ -146,19 +145,21 @@ public class JavaSourceDocument {
             switch (kind) {
             case JavaScanner.COMMENT:
                 doc.setCharacterAttributes(parser.getStartPosition(), parser.getLength(), commentAttributes, true);
-
                 break;
+
             case JavaScanner.KEYWORD:
                 doc.setCharacterAttributes(parser.getStartPosition(), parser.getLength(), keywordsAttributes, true);
-
                 break;
+
             case JavaScanner.JAVADOC:
                 doc.setCharacterAttributes(parser.getStartPosition(), parser.getLength(), javadocAttributes, true);
-
                 break;
+
             case JavaScanner.QUOTE:
                 doc.setCharacterAttributes(parser.getStartPosition(), parser.getLength(), quotesAttributes, true);
+                break;
 
+            default:
                 break;
             }
 
@@ -166,7 +167,7 @@ public class JavaSourceDocument {
 
     }
 
-    private static final long serialVersionUID = 0L;
+    //    private static final long serialVersionUID = 0L;
 
     public static final JavaSourceDocument UNKNOWNSOURCE;
     static {

@@ -56,12 +56,13 @@ public class FindSelfComparison extends OpcodeStackDetector {
     XField putFieldXField;
 
     int lastMethodCall;
-    
+
     static final boolean DEBUG = SystemProperties.getBoolean("fsc.debug");
     @Override
     public void visit(Code obj) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println(getFullyQualifiedMethodName());
+        }
         whichRegister = -1;
         registerLoadCount = 0;
         lastMethodCall = -1;
@@ -69,8 +70,9 @@ public class FindSelfComparison extends OpcodeStackDetector {
         super.visit(obj);
         resetDoubleAssignmentState();
         bugAccumulator.reportAccumulatedBugs();
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println();
+        }
     }
 
     private void resetDoubleAssignmentState() {
@@ -87,12 +89,14 @@ public class FindSelfComparison extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.printf("%3d %-15s %s%n", getPC(), OPCODE_NAMES[seen], stack);
-       
-       
-        if (stack.hasIncomingBranches(getPC()))
+        }
+
+
+        if (stack.hasIncomingBranches(getPC())) {
             resetDoubleAssignmentState();
+        }
 
         if (seen == PUTFIELD) {
             OpcodeStack.Item obj = stack.getStackItem(1);
@@ -107,24 +111,29 @@ public class FindSelfComparison extends OpcodeStackDetector {
                 if (table != null) {
                     int first = table.getSourceLine(putFieldPC);
                     int second = table.getSourceLine(getPC());
-                    if (first + 1 != second && first != second)
+                    if (first + 1 != second && first != second) {
                         break checkPUTFIELD;
-                } else if (putFieldPC + 3 != getPC())
+                    }
+                } else if (putFieldPC + 3 != getPC()) {
                     break checkPUTFIELD;
+                }
 
                 int priority = NORMAL_PRIORITY;
-                if (value.equals(putFieldValue) && putFieldPC + 3 != getPC())
+                if (value.equals(putFieldValue) && putFieldPC + 3 != getPC()) {
                     priority++;
+                }
                 boolean storeOfDefaultValue = putFieldValue.isNull() || putFieldValue.hasConstantValue(0);
-                if (storeOfDefaultValue)
+                if (storeOfDefaultValue) {
                     priority++;
-                if (f.isVolatile())
+                }
+                if (f.isVolatile()) {
                     priority++;
+                }
                 XField intendedTarget = null;
 
                 double minimumDistance = 2;
                 int matches = 0;
-                for (XField f2 : x.getXFields())
+                for (XField f2 : x.getXFields()) {
                     if (!f.equals(f2) && !f2.isStatic() && !f2.isFinal() && !f2.isSynthetic()
                             && f2.getSignature().equals(f.getSignature())) {
 
@@ -136,14 +145,17 @@ public class FindSelfComparison extends OpcodeStackDetector {
                         }
 
                     }
-                if (minimumDistance > 0.6 && (matches > 1 || storeOfDefaultValue))
+                }
+                if (minimumDistance > 0.6 && (matches > 1 || storeOfDefaultValue)) {
                     intendedTarget = null;
-                else if (intendedTarget != null)
+                } else if (intendedTarget != null) {
                     priority--;
+                }
                 BugInstance bug = new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", priority).addClassAndMethod(this)
                         .addReferencedField(this);
-                if (intendedTarget != null)
+                if (intendedTarget != null) {
                     bug.addField(intendedTarget).describe(FieldAnnotation.DID_YOU_MEAN_ROLE);
+                }
 
                 bugAccumulator.accumulateBug(bug, this);
             }
@@ -152,26 +164,31 @@ public class FindSelfComparison extends OpcodeStackDetector {
             putFieldObj = obj;
             putFieldValue = value;
 
-        } else if (isReturn(seen))
+        } else if (isReturn(seen)) {
             resetDoubleAssignmentState();
-        else if (seen == GETFIELD && Util.nullSafeEquals(getXFieldOperand(), putFieldXField)) {
+        } else if (seen == GETFIELD && Util.nullSafeEquals(getXFieldOperand(), putFieldXField)) {
             OpcodeStack.Item obj = stack.getStackItem(0);
-            if (obj.equals(putFieldObj))
+            if (obj.equals(putFieldObj)) {
                 resetDoubleAssignmentState();
+            }
         }
 
         switch (seen) {
         case INVOKEVIRTUAL:
         case INVOKEINTERFACE:
-//        case INVOKESTATIC:
-            if (getClassName().toLowerCase().indexOf("test") >= 0)
+            //        case INVOKESTATIC:
+            if (getClassName().toLowerCase().indexOf("test") >= 0) {
                 break;
-            if (getMethodName().toLowerCase().indexOf("test") >= 0)
+            }
+            if (getMethodName().toLowerCase().indexOf("test") >= 0) {
                 break;
-            if (getSuperclassName().toLowerCase().indexOf("test") >= 0)
+            }
+            if (getSuperclassName().toLowerCase().indexOf("test") >= 0) {
                 break;
-            if (getNextOpcode() == POP)
+            }
+            if (getNextOpcode() == POP) {
                 break;
+            }
             String name = getNameConstantOperand();
 
             boolean booleanComparisonMethod = FindSelfComparison2.booleanComparisonMethod(name);
@@ -181,8 +198,9 @@ public class FindSelfComparison extends OpcodeStackDetector {
                 int numParameters = parser.getNumParameters();
                 if ((numParameters == 1 ||  seen == INVOKESTATIC && numParameters  == 2)
                         && (booleanComparisonMethod && sig.endsWith(";)Z")
-                                ||  FindSelfComparison2.comparatorMethod(name) && sig.endsWith(";)I")))
+                                ||  FindSelfComparison2.comparatorMethod(name) && sig.endsWith(";)I"))) {
                     checkForSelfOperation(seen, "COMPARISON");
+                }
             }
             break;
 
@@ -211,11 +229,14 @@ public class FindSelfComparison extends OpcodeStackDetector {
         case IF_ICMPLT:
         case IF_ICMPGE:
             checkForSelfOperation(seen, "COMPARISON");
+            break;
+        default:
+            break;
         }
         if (isRegisterLoad() && seen != IINC) {
-            if (getRegisterOperand() == whichRegister)
+            if (getRegisterOperand() == whichRegister) {
                 registerLoadCount++;
-            else {
+            } else {
                 whichRegister = getRegisterOperand();
                 registerLoadCount = 1;
             }
@@ -223,9 +244,10 @@ public class FindSelfComparison extends OpcodeStackDetector {
             whichRegister = -1;
             registerLoadCount = 0;
         }
-        
-        if (isMethodCall())
+
+        if (isMethodCall()) {
             lastMethodCall = getPC();
+        }
 
     }
 
@@ -236,14 +258,16 @@ public class FindSelfComparison extends OpcodeStackDetector {
     private void checkForSelfOperation(int opCode, String op) {
         {
 
-            
+
             OpcodeStack.Item item0 = stack.getStackItem(0);
             OpcodeStack.Item item1 = stack.getStackItem(1);
 
-            if (item0.getSignature().equals("D") || item0.getSignature().equals("F"))
+            if (item0.getSignature().equals("D") || item0.getSignature().equals("F")) {
                 return;
-            if (item1.getSignature().equals("D") || item1.getSignature().equals("F"))
+            }
+            if (item1.getSignature().equals("D") || item1.getSignature().equals("F")) {
                 return;
+            }
 
             BitSet linesMentionedMultipleTimes = getClassContext().linesMentionedMultipleTimes(getMethod());
             SourceLineAnnotation source = SourceLineAnnotation.fromVisitedInstruction(this);
@@ -255,16 +279,18 @@ public class FindSelfComparison extends OpcodeStackDetector {
                     int line0 = lineNumberTable.getSourceLine(item0.getPC());
                     int line1 = lineNumberTable.getSourceLine(item1.getPC());
                     int firstPos = Math.min(item0.getPC(), item1.getPC());
-                    if (firstPos < lastMethodCall && line0 != line1)
+                    if (firstPos < lastMethodCall && line0 != line1) {
                         return;
+                    }
 
                     linesDifference = Math.abs(line0 - line1);
                 } else {
                     int firstPos = Math.min(item0.getPC(), item1.getPC());
                     int lastPos = Math.max(item0.getPC(), item1.getPC());
 
-                    if (firstPos < lastMethodCall && lastPos - firstPos > 4)
+                    if (firstPos < lastMethodCall && lastPos - firstPos > 4) {
                         return;
+                    }
                     linesDifference = (lastPos - firstPos)/10;
                 }
             }
@@ -274,28 +300,32 @@ public class FindSelfComparison extends OpcodeStackDetector {
             int fr1 = item1.getFieldLoadedFromRegister();
             if (field0 != null && field0.equals(field1) && (field0.isStatic() || fr0 != -1 && fr0 == fr1)) {
                 int priority = NORMAL_PRIORITY;
-                if (field0.isVolatile())
-                    priority++;
-                if (linesDifference > 1) {
-                    if (possibleClone)
-                        return;
+                if (field0.isVolatile()) {
                     priority++;
                 }
-                
+                if (linesDifference > 1) {
+                    if (possibleClone) {
+                        return;
+                    }
+                    priority++;
+                }
+
                 BugInstance bug = new BugInstance(this, "SA_FIELD_SELF_" + op, priority)
-                        .addClassAndMethod(this).addField(field0);
-                
-                if (this.isMethodCall())
+                .addClassAndMethod(this).addField(field0);
+
+                if (this.isMethodCall()) {
                     bug.addCalledMethod(this);
+                }
                 bugAccumulator.accumulateBug(bug, this);
             }
 
             else if (opCode == IXOR && item0.equals(item1)) {
                 LocalVariableAnnotation localVariableAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(this, item0);
-                if (localVariableAnnotation != null)
+                if (localVariableAnnotation != null) {
                     bugAccumulator.accumulateBug(
                             new BugInstance(this, "SA_LOCAL_SELF_" + op, linesDifference > 1 ? NORMAL_PRIORITY : HIGH_PRIORITY).addClassAndMethod(this).add(
                                     localVariableAnnotation), this);
+                }
             }
         }
     }

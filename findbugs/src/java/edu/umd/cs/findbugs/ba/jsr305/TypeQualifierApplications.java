@@ -147,13 +147,16 @@ public class TypeQualifierApplications {
      */
     private static Collection<AnnotationValue> getDirectAnnotation(AnnotatedObject m) {
         Collection<AnnotationValue> result = getDirectObjectAnnotations().get(m);
-        if (result != null)
+        if (result != null) {
             return result;
-        if (m.getAnnotationDescriptors().isEmpty())
+        }
+        if (m.getAnnotationDescriptors().isEmpty()) {
             return Collections.<AnnotationValue> emptyList();
+        }
         result = TypeQualifierResolver.resolveTypeQualifiers(m.getAnnotations());
-        if (result.size() == 0)
+        if (result.size() == 0) {
             result = Collections.<AnnotationValue> emptyList();
+        }
         getDirectObjectAnnotations().put(m, result);
         return result;
     }
@@ -174,21 +177,26 @@ public class TypeQualifierApplications {
         if (map == null) {
             int n = m.getNumParams();
             if (m.isVarArgs())
+            {
                 n--; // ignore annotations on varargs parameters
+            }
             map = new HashMap<Integer, Collection<AnnotationValue>>(n + 2);
             for (int i = 0; i < n; i++) {
                 Collection<AnnotationValue> a = TypeQualifierResolver.resolveTypeQualifiers(m.getParameterAnnotations(i));
-                if (!a.isEmpty())
+                if (!a.isEmpty()) {
                     map.put(i, a);
+                }
             }
-            if (map.isEmpty())
+            if (map.isEmpty()) {
                 map = Collections.emptyMap();
+            }
             directParameterAnnotations.put(m, map);
         }
 
         Collection<AnnotationValue> result = map.get(parameter);
-        if (result != null)
+        if (result != null) {
             return result;
+        }
         return Collections.emptyList();
     }
 
@@ -205,8 +213,9 @@ public class TypeQualifierApplications {
      */
     public static void getDirectApplications(Set<TypeQualifierAnnotation> result, XMethod o, int parameter) {
         Collection<AnnotationValue> values = getDirectAnnotation(o, parameter);
-        for (AnnotationValue v : values)
+        for (AnnotationValue v : values) {
             constructTypeQualifierAnnotation(result, v);
+        }
 
     }
 
@@ -222,11 +231,13 @@ public class TypeQualifierApplications {
      *            ElementType representing kind of annotated object
      */
     public static void getDirectApplications(Set<TypeQualifierAnnotation> result, AnnotatedObject o, ElementType e) {
-        if (!o.getElementType().equals(e))
+        if (!o.getElementType().equals(e)) {
             return;
+        }
         Collection<AnnotationValue> values = getDirectAnnotation(o);
-        for (AnnotationValue v : values)
+        for (AnnotationValue v : values) {
             constructTypeQualifierAnnotation(result, v);
+        }
 
     }
 
@@ -277,8 +288,9 @@ public class TypeQualifierApplications {
     private static void getApplicableScopedApplications(Set<TypeQualifierAnnotation> result, AnnotatedObject o, ElementType e) {
         if (!o.isSynthetic()) {
             AnnotatedObject outer = o.getContainingScope();
-            if (outer != null)
+            if (outer != null) {
                 getApplicableScopedApplications(result, outer, e);
+            }
         }
         getDirectApplications(result, o, e);
     }
@@ -434,6 +446,7 @@ public class TypeQualifierApplications {
             break;
         default:
             // ignore
+            break;
         }
 
         // Try out default JDT (Eclipse) annotations
@@ -487,7 +500,7 @@ public class TypeQualifierApplications {
             if (!(obj instanceof Type)) {
                 if (DEBUG_DEFAULT_ANNOTATION) {
                     System.out
-                            .println("Found a non-Type value in value array of " + defaultAnnotation.toString() + " annotation");
+                    .println("Found a non-Type value in value array of " + defaultAnnotation.toString() + " annotation");
                 }
                 continue;
             }
@@ -507,8 +520,9 @@ public class TypeQualifierApplications {
             AnnotationValue annotation = new AnnotationValue(typeDesc);
             Collection<AnnotationValue> resolvedTypeQualifiers = TypeQualifierResolver.resolveTypeQualifiers(annotation);
             TypeQualifierAnnotation tqa = extractAnnotation(resolvedTypeQualifiers, typeQualifierValue);
-            if (tqa != null)
+            if (tqa != null) {
                 return tqa;
+            }
 
         }
 
@@ -674,8 +688,9 @@ public class TypeQualifierApplications {
         try {
             AnalysisContext.currentAnalysisContext().getSubtypes2().traverseSupertypesDepthFirst(o.getClassDescriptor(), accumulator);
             TypeQualifierAnnotation result = accumulator.getResult().getEffectiveTypeQualifierAnnotation();
-            if (result == null && accumulator.overrides())
+            if (result == null && accumulator.overrides()) {
                 return TypeQualifierAnnotation.OVERRIDES_BUT_NO_ANNOTATION;
+            }
             return result;
         } catch (ClassNotFoundException e) {
             AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
@@ -698,15 +713,19 @@ public class TypeQualifierApplications {
             TypeQualifierValue<?> typeQualifierValue, boolean stopAtClassScope) {
 
         if (o.isSynthetic())
+        {
             return null; // synthetic objects don't get default annotations
+        }
 
         ElementType elementType = o.getElementType();
         while (true) {
             o = o.getContainingScope();
-            if (o == null)
+            if (o == null) {
                 return null;
-            if (stopAtClassScope && o instanceof XClass)
+            }
+            if (stopAtClassScope && o instanceof XClass) {
                 return null;
+            }
             TypeQualifierAnnotation result;
 
             // Check direct applications of the type qualifier
@@ -716,7 +735,7 @@ public class TypeQualifierApplications {
             if (result != null) {
                 // Great - found an outer scope with a relevant annotation
                 assert false : "I don't think we should be looking here";
-                return result;
+            return result;
             }
 
             // Check default annotations
@@ -818,53 +837,54 @@ public class TypeQualifierApplications {
                 }
             }
             else {
-            // Check direct application
-            if (DEBUG) {
-                System.out.print("  (1) Checking direct application...");
-            }
-            tqa = getDirectTypeQualifierAnnotation(xmethod, parameter, typeQualifierValue);
-            if (DEBUG) {
-                System.out.println(tqa != null ? "FOUND" : "none");
-            }
-
-            // If it's an instance method, check for inherited annotation
-            if (tqa == null && !xmethod.isStatic() && !xmethod.isPrivate() && !xmethod.getName().equals("<init>")) {
+                // Check direct application
                 if (DEBUG) {
-                    System.out.print("  (2) Checking inherited...");
+                    System.out.print("  (1) Checking direct application...");
                 }
-                tqa = getInheritedTypeQualifierAnnotation(xmethod, parameter, typeQualifierValue);
+                tqa = getDirectTypeQualifierAnnotation(xmethod, parameter, typeQualifierValue);
                 if (DEBUG) {
-                    if (tqa == TypeQualifierAnnotation.OVERRIDES_BUT_NO_ANNOTATION)
-                        System.out.println("Overrides, no annotation inherited");
-                    else if (tqa != null)
-                        System.out.println("Inherited " + tqa.when);
-                    else
-                        System.out.println("Nothing inherited");
+                    System.out.println(tqa != null ? "FOUND" : "none");
                 }
-            }
-            boolean overriddenMethod = false;
-            if (tqa == TypeQualifierAnnotation.OVERRIDES_BUT_NO_ANNOTATION) {
-                overriddenMethod = true;
-                tqa = null;
-            }
-            // Check for default (outer scope) annotation
-            if (tqa == null) {
-                if (xmethod.isVariableSynthetic((xmethod.isStatic() ? 0 : 1) + parameter)) {
-                    if (DEBUG) {
-                        System.out.print("  (3) Skipping default for synthetic parameter");
-                    }
-                } else {
-                    if (DEBUG) {
-                        System.out.print("  (3) Checking default...");
-                    }
 
-                    tqa = getDefaultTypeQualifierAnnotationForParameters(xmethod, typeQualifierValue, overriddenMethod);
-
+                // If it's an instance method, check for inherited annotation
+                if (tqa == null && !xmethod.isStatic() && !xmethod.isPrivate() && !xmethod.getName().equals("<init>")) {
                     if (DEBUG) {
-                        System.out.println(tqa != null ? "FOUND" : "none");
+                        System.out.print("  (2) Checking inherited...");
+                    }
+                    tqa = getInheritedTypeQualifierAnnotation(xmethod, parameter, typeQualifierValue);
+                    if (DEBUG) {
+                        if (tqa == TypeQualifierAnnotation.OVERRIDES_BUT_NO_ANNOTATION) {
+                            System.out.println("Overrides, no annotation inherited");
+                        } else if (tqa != null) {
+                            System.out.println("Inherited " + tqa.when);
+                        } else {
+                            System.out.println("Nothing inherited");
+                        }
                     }
                 }
-            }
+                boolean overriddenMethod = false;
+                if (tqa == TypeQualifierAnnotation.OVERRIDES_BUT_NO_ANNOTATION) {
+                    overriddenMethod = true;
+                    tqa = null;
+                }
+                // Check for default (outer scope) annotation
+                if (tqa == null) {
+                    if (xmethod.isVariableSynthetic((xmethod.isStatic() ? 0 : 1) + parameter)) {
+                        if (DEBUG) {
+                            System.out.print("  (3) Skipping default for synthetic parameter");
+                        }
+                    } else {
+                        if (DEBUG) {
+                            System.out.print("  (3) Checking default...");
+                        }
+
+                        tqa = getDefaultTypeQualifierAnnotationForParameters(xmethod, typeQualifierValue, overriddenMethod);
+
+                        if (DEBUG) {
+                            System.out.println(tqa != null ? "FOUND" : "none");
+                        }
+                    }
+                }
             }
 
             // Cache answer
@@ -872,10 +892,11 @@ public class TypeQualifierApplications {
             map.put(xmethod, parameter, result);
 
             if (DEBUG) {
-                if (result == null)
+                if (result == null) {
                     System.out.println("  => Answer: no annotation on parameter " + parameter + " of " + xmethod);
-                else
+                } else {
                     System.out.println("  => Answer: " + result.when + " on parameter " + parameter + " of " + xmethod);
+                }
             }
         }
 
@@ -903,8 +924,9 @@ public class TypeQualifierApplications {
     public static @CheckForNull @CheckReturnValue
     TypeQualifierAnnotation getDirectTypeQualifierAnnotation(XMethod xmethod, int parameter, TypeQualifierValue<?> typeQualifierValue) {
         XMethod bridge = xmethod.bridgeTo();
-        if (bridge != null)
+        if (bridge != null) {
             xmethod = bridge;
+        }
         Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
         getDirectApplications(applications, xmethod, parameter);
         if (DEBUG_METHOD != null && DEBUG_METHOD.equals(xmethod.getName())) {
@@ -936,8 +958,9 @@ public class TypeQualifierApplications {
         try {
             AnalysisContext.currentAnalysisContext().getSubtypes2().traverseSupertypesDepthFirst(xmethod.getClassDescriptor(), accumulator);
             TypeQualifierAnnotation result = accumulator.getResult().getEffectiveTypeQualifierAnnotation();
-            if (result == null && accumulator.overrides())
+            if (result == null && accumulator.overrides()) {
                 return TypeQualifierAnnotation.OVERRIDES_BUT_NO_ANNOTATION;
+            }
             return result;
         } catch (ClassNotFoundException e) {
             AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
@@ -954,7 +977,6 @@ public class TypeQualifierApplications {
      * @param typeQualifierValue
      *            the kind of TypeQualifierValue we are looking for
      * @param stopAtMethodScope
-     *            TODO
      * @return the default (outer scope) TypeQualifierAnnotation on the
      *         parameter, or null if there is no default TypeQualifierAnnotation
      */
@@ -963,16 +985,21 @@ public class TypeQualifierApplications {
             TypeQualifierValue<?> typeQualifierValue, boolean stopAtMethodScope) {
 
         if (xmethod.isSynthetic())
+        {
             return null; // synthetic methods don't get default annotations
+        }
         // System.out.println("Looking for default " + typeQualifierValue +
         // " annotation of parameters of " + xmethod);
         if (xmethod.getName().equals("<init>") && xmethod.getClassDescriptor().isAnonymousClass())
+        {
             return null; // constructors for anonymous inner classes don't get
-                         // default annotations
+            // default annotations
+        }
 
         /** private methods don't inherit from class or package scope */
-        if (xmethod.isPrivate())
+        if (xmethod.isPrivate()) {
             stopAtMethodScope = true;
+        }
 
         boolean stopAtClassScope = false;
 
@@ -987,11 +1014,13 @@ public class TypeQualifierApplications {
 
         AnnotatedObject o = xmethod;
         while (true) {
-            if (o == null)
+            if (o == null) {
                 return null;
+            }
 
-            if (stopAtMethodScope && o instanceof XClass)
+            if (stopAtMethodScope && o instanceof XClass) {
                 return null;
+            }
             // Check for direct type qualifier annotation
             Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
             getDirectApplications(applications, o, ElementType.PARAMETER);
@@ -999,20 +1028,22 @@ public class TypeQualifierApplications {
             if (tqa != null) {
                 // Found matching annotation in outer scope
                 assert false : "I think this code is dead; it shouldn't find anything";
-                return tqa;
+            return tqa;
             }
             // Check for default annotation
             tqa = getDefaultAnnotation(o, typeQualifierValue, ElementType.PARAMETER);
             if (tqa != null) {
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("Found default of " + tqa + " @ " + o);
+                }
                 return tqa;
             }
-            if (stopAtClassScope && o instanceof XClass)
+            if (stopAtClassScope && o instanceof XClass) {
                 return null;
-           
+            }
+
             o = o.getContainingScope();
-            
+
         }
 
     }

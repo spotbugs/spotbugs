@@ -42,9 +42,9 @@ import edu.umd.cs.findbugs.ba.XField;
  * @author David Hovemeyer
  */
 public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet> {
-    private ConstantPoolGen cpg;
+    private final ConstantPoolGen cpg;
 
-    private Map<InstructionHandle, XField> instructionToFieldMap;
+    private final Map<InstructionHandle, XField> instructionToFieldMap;
 
     public FieldSetAnalysis(DepthFirstSearch dfs, ConstantPoolGen cpg) {
         super(dfs);
@@ -103,15 +103,16 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
     @Override
     public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, FieldSet fact)
             throws DataflowAnalysisException {
-        if (!isFactValid(fact))
+        if (!isFactValid(fact)) {
             return;
+        }
 
         handleInstruction(handle, basicBlock, fact);
-       
+
     }
 
     private void handleInstruction(InstructionHandle handle, BasicBlock basicBlock, FieldSet fact)
-            {
+    {
         Instruction ins = handle.getInstruction();
         short opcode = ins.getOpcode();
         XField field;
@@ -140,6 +141,8 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
             // Assume that the called method assigns loads and stores all
             // possible fields
             fact.setBottom();
+            break;
+        default:
             break;
         }
     }

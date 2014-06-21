@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
  * if we get from a ConcurrentHashMap and assign to a variable... and don't do
  * anything else and perform a null check on it... and then do a set on it...
  * (or anything else inside the if that modifies it?) then we have a bug.
- * 
+ *
  * @author Michael Midgley-Biggs
  */
 public class AtomicityProblem extends OpcodeStackDetector {
@@ -41,7 +41,7 @@ public class AtomicityProblem extends OpcodeStackDetector {
 
     int lastQuestionableCheckTarget = -1;
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     final static boolean DEBUG = false;
 
@@ -61,7 +61,7 @@ public class AtomicityProblem extends OpcodeStackDetector {
     /**
      * This is the "dumb" version of the detector. It may generate false
      * positives, and/or not detect all instances of the bug.
-     * 
+     *
      * @see edu.umd.cs.findbugs.visitclass.DismantleBytecode#sawOpcode(int)
      */
     @Override
@@ -116,13 +116,15 @@ public class AtomicityProblem extends OpcodeStackDetector {
                 if (xClass != null && methodName.equals("put")) {
                     if ((getPC() < lastQuestionableCheckTarget) && (lastQuestionableCheckTarget != -1)) {
                         bugReporter.reportBug(new BugInstance(this, "AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION", priority)
-                                .addClassAndMethod(this).addType(xClass.getClassDescriptor()).addCalledMethod(this)
-                                .addSourceLine(this));
+                        .addClassAndMethod(this).addType(xClass.getClassDescriptor()).addCalledMethod(this)
+                        .addSourceLine(this));
                     }
                 }
             }
             break;
         }
+        default:
+            break;
         }
     }
 }

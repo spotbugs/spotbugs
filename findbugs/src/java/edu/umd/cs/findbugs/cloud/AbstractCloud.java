@@ -83,7 +83,7 @@ public abstract class AbstractCloud implements Cloud {
             }
         }
         LEADERBOARD_BLACKLIST_PATTERN = p;
-        
+
     }
 
     protected final CloudPlugin plugin;
@@ -154,8 +154,9 @@ public abstract class AbstractCloud implements Cloud {
                 this.sourceFileLinkFormatWithLine = sfwl;
             } catch (RuntimeException e) {
                 LOGGER.log(Level.WARNING, "Could not compile pattern " + sp, e);
-                if (THROW_EXCEPTION_IF_CANT_CONNECT)
+                if (THROW_EXCEPTION_IF_CANT_CONNECT) {
                     throw e;
+                }
             }
         }
         return true;
@@ -249,22 +250,27 @@ public abstract class AbstractCloud implements Cloud {
     }
 
     public boolean hasVoted(BugInstance bug) {
-        for (BugDesignation bd : getLatestDesignationFromEachUser(bug))
-            if (getUser().equals(bd.getUser()))
+        for (BugDesignation bd : getLatestDesignationFromEachUser(bug)) {
+            if (getUser().equals(bd.getUser())) {
                 return true;
+            }
+        }
         return false;
     }
 
     public String notInCloudMsg(BugInstance b) {
-        
-        if (!!isOnlineCloud())
+
+        if (!!isOnlineCloud()) {
             return "off line cloud";
-        if (getSigninState().canDownload())
+        }
+        if (getSigninState().canDownload()) {
             return "disconnected from cloud";
-        if (!issueDataDownloaded)
+        }
+        if (!issueDataDownloaded) {
             return "Waiting for issue data...";
+        }
         return  "Issue not recorded in cloud";
-        
+
     }
     @Override
     public String getCloudReport(BugInstance b) {
@@ -301,8 +307,9 @@ public abstract class AbstractCloud implements Cloud {
             if (bugLinkStatus != null && bugLinkStatus.bugIsFiled()) {
 
                 builder.append("\nBug status is ").append(getBugStatus(b));
-                if (getBugIsUnassigned(b))
+                if (getBugIsUnassigned(b)) {
                     builder.append("\nBug is unassigned");
+                }
 
                 builder.append("\n\n");
             }
@@ -342,10 +349,12 @@ public abstract class AbstractCloud implements Cloud {
 
     @Override
     public void addListener(CloudListener listener) {
-        if (listener == null)
+        if (listener == null) {
             throw new NullPointerException();
-        if (!listeners.contains(listener))
+        }
+        if (!listeners.contains(listener)) {
             listeners.add(listener);
+        }
     }
 
     @Override
@@ -355,10 +364,12 @@ public abstract class AbstractCloud implements Cloud {
 
     @Override
     public void addStatusListener(CloudStatusListener listener) {
-        if (listener == null)
+        if (listener == null) {
             throw new NullPointerException();
-        if (!statusListeners.contains(listener))
+        }
+        if (!statusListeners.contains(listener)) {
             statusListeners.add(listener);
+        }
     }
 
     @Override
@@ -383,8 +394,9 @@ public abstract class AbstractCloud implements Cloud {
 
     @Override
     public UserDesignation getConsensusDesignation(BugInstance b) {
-        if (b == null)
+        if (b == null) {
             throw new NullPointerException("null bug instance");
+        }
         Multiset<UserDesignation> designations = new Multiset<UserDesignation>();
         int count = 0;
         int totalCount = 0;
@@ -393,10 +405,11 @@ public abstract class AbstractCloud implements Cloud {
         int notAProblem = 0;
         for (BugDesignation designation : getLatestDesignationFromEachUser(b)) {
             UserDesignation d = UserDesignation.valueOf(designation.getDesignationKey());
-            if (d == UserDesignation.I_WILL_FIX)
+            if (d == UserDesignation.I_WILL_FIX) {
                 d = UserDesignation.MUST_FIX;
-            else if (d == UserDesignation.UNCLASSIFIED)
+            } else if (d == UserDesignation.UNCLASSIFIED) {
                 continue;
+            }
             switch (d) {
             case I_WILL_FIX:
             case MUST_FIX:
@@ -409,16 +422,20 @@ public abstract class AbstractCloud implements Cloud {
             case OBSOLETE_CODE:
                 notAProblem++;
                 break;
+            default:
+                break;
             }
             designations.add(d);
             totalCount++;
-            if (d.nonVoting())
+            if (d.nonVoting()) {
                 continue;
+            }
             count++;
             total += d.score();
         }
-        if (totalCount == 0)
+        if (totalCount == 0) {
             return UserDesignation.UNCLASSIFIED;
+        }
         UserDesignation mostCommonVotingDesignation = null;
         UserDesignation mostCommonDesignation = null;
 
@@ -426,23 +443,28 @@ public abstract class AbstractCloud implements Cloud {
             UserDesignation d = e.getKey();
             if (mostCommonVotingDesignation == null && !d.nonVoting()) {
                 mostCommonVotingDesignation = d;
-                if (e.getValue() > count / 2)
+                if (e.getValue() > count / 2) {
                     return d;
+                }
             }
             if (mostCommonDesignation == null && d != UserDesignation.UNCLASSIFIED) {
                 mostCommonDesignation = d;
-                if (e.getValue() > count / 2)
+                if (e.getValue() > count / 2) {
                     return d;
+                }
             }
         }
 
         double score = total / count;
-        if (score >= UserDesignation.SHOULD_FIX.score() || isAProblem > notAProblem)
+        if (score >= UserDesignation.SHOULD_FIX.score() || isAProblem > notAProblem) {
             return UserDesignation.SHOULD_FIX;
-        if (score <= UserDesignation.NOT_A_BUG.score())
+        }
+        if (score <= UserDesignation.NOT_A_BUG.score()) {
             return UserDesignation.NOT_A_BUG;
-        if (score <= UserDesignation.MOSTLY_HARMLESS.score() || notAProblem > isAProblem)
+        }
+        if (score <= UserDesignation.MOSTLY_HARMLESS.score() || notAProblem > isAProblem) {
             return UserDesignation.MOSTLY_HARMLESS;
+        }
         return UserDesignation.NEEDS_STUDY;
 
     }
@@ -460,8 +482,9 @@ public abstract class AbstractCloud implements Cloud {
         double total = 0.0;
         for (BugDesignation designation : getLatestDesignationFromEachUser(b)) {
             UserDesignation d = UserDesignation.valueOf(designation.getDesignationKey());
-            if (d.nonVoting())
+            if (d.nonVoting()) {
                 continue;
+            }
             count++;
             total += d.score();
         }
@@ -477,8 +500,9 @@ public abstract class AbstractCloud implements Cloud {
         double totalSquares = 0.0;
         for (BugDesignation designation : getLatestDesignationFromEachUser(b)) {
             UserDesignation d = UserDesignation.valueOf(designation.getDesignationKey());
-            if (d.nonVoting())
+            if (d.nonVoting()) {
                 continue;
+            }
             count++;
             total += d.score();
             totalSquares += d.score() * d.score();
@@ -495,8 +519,9 @@ public abstract class AbstractCloud implements Cloud {
         for (BugDesignation designation : getLatestDesignationFromEachUser(b)) {
             count++;
             UserDesignation d = UserDesignation.valueOf(designation.getDesignationKey());
-            if (d == UserDesignation.OBSOLETE_CODE)
+            if (d == UserDesignation.OBSOLETE_CODE) {
                 total++;
+            }
         }
         return total / count;
     }
@@ -547,8 +572,9 @@ public abstract class AbstractCloud implements Cloud {
             w.println("Code analyzed");
         }
         w.printf("%,7d packages%n%,7d classes%n", packageCount, classCount);
-        if (ncss > 0)
+        if (ncss > 0) {
             w.printf("%,7d thousands of lines of non-commenting source statements%n", (ncss + 999) / 1000);
+        }
         w.println();
         int count = 0;
         for (BugInstance bd : bugs) {
@@ -556,23 +582,26 @@ public abstract class AbstractCloud implements Cloud {
             count++;
             HashSet<String> reviewers = new HashSet<String>();
             String status = supportsBugLinks() && getBugLinkStatus(bd).bugIsFiled() ? getBugStatus(bd) : null;
-            if (status != null)
+            if (status != null) {
                 bugStatus.add(status);
+            }
 
-            for (BugDesignation d : getLatestDesignationFromEachUser(bd))
+            for (BugDesignation d : getLatestDesignationFromEachUser(bd)) {
                 if (reviewers.add(d.getUser())) {
                     evaluations.add(d.getUser());
                     designations.add(i18n.getUserDesignation(d.getDesignationKey()));
                 }
+            }
 
             int numReviews = Math.min(reviewers.size(), issuesWithThisManyReviews.length - 1);
             issuesWithThisManyReviews[numReviews]++;
 
         }
-        if (count == getBugCollection().getCollection().size())
+        if (count == getBugCollection().getCollection().size()) {
             w.printf("Summary for %d issues%n%n", count);
-        else
+        } else {
             w.printf("Summary for %d issues that are in the current view%n%n", count);
+        }
         if (evaluations.numKeys() == 0) {
             w.println("No reviews found");
         } else {
@@ -595,14 +624,16 @@ public abstract class AbstractCloud implements Cloud {
         }
         w.println();
         w.println("Distribution of number of reviews");
-        for (int i = 0; i < issuesWithThisManyReviews.length; i++)
+        for (int i = 0; i < issuesWithThisManyReviews.length; i++) {
             if (issuesWithThisManyReviews[i] > 0) {
                 w.printf("%4d  with %3d review", issuesWithThisManyReviews[i], i);
-                if (i != 1)
+                if (i != 1) {
                     w.print("s");
+                }
                 w.println();
 
             }
+        }
     }
 
     @SuppressWarnings("boxing")
@@ -620,19 +651,23 @@ public abstract class AbstractCloud implements Cloud {
                 previousScore = num;
             }
             String key = e.getKey();
-            if (LEADERBOARD_BLACKLIST_PATTERN != null && LEADERBOARD_BLACKLIST_PATTERN.matcher(key).matches())
+            if (LEADERBOARD_BLACKLIST_PATTERN != null && LEADERBOARD_BLACKLIST_PATTERN.matcher(key).matches()) {
                 continue;
+            }
 
             boolean shouldAlwaysPrint = key.equals(alwaysPrint);
-            if (row <= maxRows || shouldAlwaysPrint)
+            if (row <= maxRows || shouldAlwaysPrint) {
                 w.printf(format, position, num, key);
+            }
 
-            if (shouldAlwaysPrint)
+            if (shouldAlwaysPrint) {
                 foundAlwaysPrint = true;
+            }
             row++;
             if (row >= maxRows) {
-                if (alwaysPrint == null)
+                if (alwaysPrint == null) {
                     break;
+                }
                 if (foundAlwaysPrint) {
                     w.printf("Total of %d %ss%n", evaluations.numKeys(), title);
                     break;
@@ -660,27 +695,31 @@ public abstract class AbstractCloud implements Cloud {
     @Override
     public UserDesignation getUserDesignation(BugInstance b) {
         BugDesignation bd = getPrimaryDesignation(b);
-        if (bd == null)
+        if (bd == null) {
             return UserDesignation.UNCLASSIFIED;
+        }
         return UserDesignation.valueOf(bd.getDesignationKey());
     }
 
     @Override
     public String getUserEvaluation(BugInstance b) {
         BugDesignation bd = getPrimaryDesignation(b);
-        if (bd == null)
+        if (bd == null) {
             return "";
+        }
         String result = bd.getAnnotationText();
-        if (result == null)
+        if (result == null) {
             return "";
+        }
         return result;
     }
 
     @Override
     public long getUserTimestamp(BugInstance b) {
         BugDesignation bd = getPrimaryDesignation(b);
-        if (bd == null)
+        if (bd == null) {
             return Long.MAX_VALUE;
+        }
         return bd.getTimestamp();
 
     }
@@ -720,8 +759,9 @@ public abstract class AbstractCloud implements Cloud {
 
     protected void fireIssueDataDownloadedEvent() {
         issueDataDownloaded = true;
-        for (CloudStatusListener statusListener : statusListeners)
+        for (CloudStatusListener statusListener : statusListeners) {
             statusListener.handleIssueDataDownloadedEvent();
+        }
     }
 
     @Override
@@ -729,15 +769,16 @@ public abstract class AbstractCloud implements Cloud {
         return signinState;
     }
 
-    @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     public void setSigninState(SigninState state) {
         SigninState oldState = this.signinState;
-        if (oldState == state)
+        if (oldState == state) {
             return;
+        }
         LOGGER.log(Level.FINER, "State " + oldState + " -> " + state, new Throwable("Change in login state at:"));
         this.signinState = state;
-        for (CloudStatusListener statusListener : statusListeners)
+        for (CloudStatusListener statusListener : statusListeners) {
             statusListener.handleStateChange(oldState, state);
+        }
     }
 
     public BugInstance getBugByHash(String hash) {
@@ -797,10 +838,11 @@ public abstract class AbstractCloud implements Cloud {
 
     private static void printLeaderBoard(PrintWriter w, Multiset<String> evaluations, int maxRows, String alwaysPrint,
             boolean listRank, String title) {
-        if (listRank)
+        if (listRank) {
             w.printf("%3s %4s %s%n", "rnk", "num", title);
-        else
+        } else {
             w.printf("%4s %s%n", "num", title);
+        }
         printLeaderBoard2(w, evaluations, maxRows, alwaysPrint, listRank ? "%3d %4d %s%n" : "%2$4d %3$s%n", title);
     }
 
@@ -816,8 +858,9 @@ public abstract class AbstractCloud implements Cloud {
     @Override
     @SuppressWarnings("boxing")
     public @CheckForNull URL getSourceLink(BugInstance b) {
-        if (sourceFileLinkPattern == null)
+        if (sourceFileLinkPattern == null) {
             return null;
+        }
 
         SourceLineAnnotation src = b.getPrimarySourceLineAnnotation();
         String fileName = src.getSourcePath();
@@ -825,18 +868,20 @@ public abstract class AbstractCloud implements Cloud {
         int endLine = src.getEndLine();
         java.util.regex.Matcher m = sourceFileLinkPattern.matcher(fileName);
         boolean isMatch = m.matches();
-        if (isMatch)
+        if (isMatch) {
             try {
                 URL link;
-                if (startLine > 0)
+                if (startLine > 0) {
                     link = new URL(String.format(sourceFileLinkFormatWithLine, m.group(1),
                             startLine, startLine - 10, endLine));
-                else
+                } else {
                     link = new URL(String.format(sourceFileLinkFormat, m.group(1)));
+                }
                 return link;
             } catch (Exception e) {
                 AnalysisContext.logError("Error generating source link for " + src, e);
             }
+        }
 
         return null;
 
@@ -874,8 +919,9 @@ public abstract class AbstractCloud implements Cloud {
     @Override
     public Set<String> getReviewers(BugInstance b) {
         HashSet<String> result = new HashSet<String>();
-        for (BugDesignation d : getLatestDesignationFromEachUser(b))
+        for (BugDesignation d : getLatestDesignationFromEachUser(b)) {
             result.add(d.getUser());
+        }
         return result;
     }
 
@@ -888,7 +934,7 @@ public abstract class AbstractCloud implements Cloud {
     public String getCloudName() {
         return getPlugin().getDescription();
     }
-    
+
     @Override
     public boolean communicationInitiated() {
         return !isOnlineCloud();
@@ -897,14 +943,16 @@ public abstract class AbstractCloud implements Cloud {
     public long getLocalFirstSeen(BugInstance b) {
         long firstVersion = b.getFirstVersion();
         AppVersion v = getBugCollection().getAppVersionFromSequenceNumber(firstVersion);
-        if (v == null)
+        if (v == null) {
             return getBugCollection().getTimestamp();
+        }
         long firstSeen = v.getTimestamp();
         if (b.hasXmlProps()) {
             XmlProps props = b.getXmlProps();
             Date propsFirstSeen = props.getFirstSeen();
-            if (propsFirstSeen != null && firstSeen > propsFirstSeen.getTime())
+            if (propsFirstSeen != null && firstSeen > propsFirstSeen.getTime()) {
                 firstSeen = propsFirstSeen.getTime();
+            }
         }
         return firstSeen;
     }

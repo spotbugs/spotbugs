@@ -38,7 +38,7 @@ public class MutableLock extends BytecodeScanningDetector implements StatelessDe
 
     boolean thisOnTOS = false;
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     public MutableLock(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -53,8 +53,9 @@ public class MutableLock extends BytecodeScanningDetector implements StatelessDe
     @Override
     public void visit(Field obj) {
         super.visit(obj);
-        if (obj.isFinal())
+        if (obj.isFinal()) {
             finalFields.add(obj.getName());
+        }
     }
 
     @Override
@@ -75,18 +76,21 @@ public class MutableLock extends BytecodeScanningDetector implements StatelessDe
             setFields.clear();
             break;
         case PUTFIELD:
-            if (getClassConstantOperand().equals(getClassName()))
+            if (getClassConstantOperand().equals(getClassName())) {
                 setFields.add(getNameConstantOperand());
+            }
             break;
         case GETFIELD:
             if (thisOnTOS && getClassConstantOperand().equals(getClassName()) && setFields.contains(getNameConstantOperand())
                     && asUnsignedByte(codeBytes[getPC() + 3]) == DUP && asUnsignedByte(codeBytes[getPC() + 5]) == MONITORENTER
 
-                    && !finalFields.contains(getNameConstantOperand()))
+                    && !finalFields.contains(getNameConstantOperand())) {
                 bugReporter.reportBug(new BugInstance(this, "ML_SYNC_ON_UPDATED_FIELD", NORMAL_PRIORITY).addClassAndMethod(this)
                         .addReferencedField(this).addSourceLine(this, getPC() + 5));
+            }
             break;
         default:
+            break;
         }
         thisOnTOS = false;
     }

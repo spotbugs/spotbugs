@@ -73,7 +73,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
     private @SlashedClassName
     String slashedClassName;
 
-    private final ClassDescriptor expectedClassDescriptor;
+    //    private final ClassDescriptor expectedClassDescriptor;
 
     private final ICodeBaseEntry codeBaseEntry;
 
@@ -196,10 +196,11 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
         @Override
         public void visitLdcInsn(Object cst) {
-            if (cst.equals("Stub!"))
+            if (cst.equals("Stub!")) {
                 stubState = StubState.LOADED_STUB;
-            else
+            } else {
                 stubState = StubState.INITIAL;
+            }
             identityState = IdentityMethodState.NOT;
         }
 
@@ -214,20 +215,24 @@ public class ClassParserUsingASM implements ClassParserInterface {
             case Constants.LRETURN:
             case Constants.DRETURN:
             case Constants.FRETURN:
-                if (identityState == IdentityMethodState.LOADED_PARAMETER)
+                if (identityState == IdentityMethodState.LOADED_PARAMETER) {
                     mBuilder.setIsIdentity();
+                }
                 sawReturn = true;
                 break;
             case Constants.RETURN:
                 sawReturn = true;
                 break;
             case Constants.ATHROW:
-                if (stubState == StubState.INITIALIZE_RUNTIME)
+                if (stubState == StubState.INITIALIZE_RUNTIME) {
                     sawStubThrow = true;
-                else if (justSawInitializationOfUnsupportedOperationException)
+                } else if (justSawInitializationOfUnsupportedOperationException) {
                     sawUnsupportedThrow = true;
-                else
+                } else {
                     sawNormalThrow = true;
+                }
+                break;
+            default:
                 break;
             }
 
@@ -250,9 +255,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
             boolean match = false;
             if (parameterLoadState == ParameterLoadState.OTHER && !isStatic() && var == 0) {
-                    parameterLoadState = ParameterLoadState.LOADED_THIS;
+                parameterLoadState = ParameterLoadState.LOADED_THIS;
 
-                    match = true;
+                match = true;
             }
             else if (parameterLoadState == ParameterLoadState.LOADED_THIS  && var > 0){
                 parameterLoadState = ParameterLoadState.LOADED_THIS_AND_PARAMETER;
@@ -262,21 +267,23 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
             if (identityState == IdentityMethodState.INITIAL) {
                 match = true;
-                if (var > 0 || isStatic())
+                if (var > 0 || isStatic()) {
                     identityState = IdentityMethodState.LOADED_PARAMETER;
-                else
+                } else {
                     identityState = IdentityMethodState.NOT;
+                }
 
             }
-            if (!match)
+            if (!match) {
                 visitSomeInsn();
+            }
         }
 
         @Override
         public void visitFieldInsn(int opcode,
-                            String owner,
-                            String name,
-                            String desc) {
+                String owner,
+                String name,
+                String desc) {
             if (opcode == Opcodes.PUTFIELD && parameterLoadState == ParameterLoadState.LOADED_THIS_AND_PARAMETER
                     && owner.equals(slashedClassName) && name.startsWith("this$")) {
                 mBuilder.setVariableIsSynthetic(parameterForLoadState);
@@ -318,42 +325,53 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 this.accessForField = false;
             }
             if (stubState == StubState.LOADED_STUB && opcode == Opcodes.INVOKESPECIAL
-                    && owner.equals("java/lang/RuntimeException") && name.equals("<init>"))
+                    && owner.equals("java/lang/RuntimeException") && name.equals("<init>")) {
                 stubState = StubState.INITIALIZE_RUNTIME;
-            else
+            } else {
                 stubState = StubState.INITIAL;
-            if (owner.startsWith("java/util/concurrent"))
+            }
+            if (owner.startsWith("java/util/concurrent")) {
                 mBuilder.setUsesConcurrency();
-            if (opcode == Opcodes.INVOKEINTERFACE)
+            }
+            if (opcode == Opcodes.INVOKEINTERFACE) {
                 return;
+            }
 
             if (owner.charAt(0) == '[' && owner.charAt(owner.length() - 1) != ';') {
                 // primitive array
                 return;
             }
             if (opcode == Opcodes.INVOKESTATIC && owner.equals("java/lang/System") && name.equals("exit")
-                    && !sawReturn)
+                    && !sawReturn) {
                 sawSystemExit = true;
+            }
             justSawInitializationOfUnsupportedOperationException = opcode == Opcodes.INVOKESPECIAL
                     && owner.equals("java/lang/UnsupportedOperationException") && name.equals("<init>");
 
-            if (isBridge && bridgedMethodSignature == null)
+            if (isBridge && bridgedMethodSignature == null) {
                 switch (opcode) {
                 case Opcodes.INVOKEVIRTUAL:
                 case Opcodes.INVOKESPECIAL:
                 case Opcodes.INVOKESTATIC:
                 case Opcodes.INVOKEINTERFACE:
-                    if (desc != null && name.equals(methodName))
+                    if (desc != null && name.equals(methodName)) {
                         bridgedMethodSignature = desc;
+                    }
+                    break;
+                default:
+                    break;
                 }
+            }
 
             // System.out.println("Call from " +
             // ClassParserUsingASM.this.slashedClassName +
             // " to " + owner + " : " + desc);
-            if (desc == null || desc.indexOf('[') == -1 && desc.indexOf('L') == -1)
+            if (desc == null || desc.indexOf('[') == -1 && desc.indexOf('L') == -1) {
                 return;
-            if (ClassParserUsingASM.this.slashedClassName.equals(owner))
+            }
+            if (ClassParserUsingASM.this.slashedClassName.equals(owner)) {
                 return;
+            }
             ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(owner);
             calledClassSet.add(classDescriptor);
 
@@ -361,8 +379,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
         private void sawBranchTo(Label label) {
             sawBranch = true;
-            if (labelsSeen.contains(label))
+            if (labelsSeen.contains(label)) {
                 sawBackBranch = true;
+            }
         }
 
         @Override
@@ -375,8 +394,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
         @Override
         public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
             sawBranchTo(dflt);
-            for (Label lbl : labels)
+            for (Label lbl : labels) {
                 sawBranchTo(lbl);
+            }
             identityState = IdentityMethodState.NOT;
             super.visitLookupSwitchInsn(dflt, keys, labels);
         }
@@ -384,8 +404,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
         @Override
         public void visitTableSwitchInsn(int min, int max, Label dflt, Label... labels) {
             sawBranchTo(dflt);
-            for (Label lbl : labels)
+            for (Label lbl : labels) {
                 sawBranchTo(lbl);
+            }
             identityState = IdentityMethodState.NOT;
             super.visitTableSwitchInsn(min, max, dflt, labels);
         }
@@ -407,26 +428,34 @@ public class ClassParserUsingASM implements ClassParserInterface {
                     boolean isSetter = methodDesc.endsWith(")V");
                     int numArg = new SignatureParser(methodDesc).getNumParameters();
                     int expected = 0;
-                    if (!accessIsStatic) expected++;
-                    if (isSetter) expected++;
+                    if (!accessIsStatic) {
+                        expected++;
+                    }
+                    if (isSetter) {
+                        expected++;
+                    }
                     boolean OK;
-                    if (isSetter)
+                    if (isSetter) {
                         OK = methodDesc.substring(1).startsWith(ClassName.toSignature(accessOwner) + accessDesc);
-                    else
+                    } else {
                         OK = methodDesc.substring(1).startsWith(ClassName.toSignature(accessOwner));
-                    if (numArg == expected && OK)
+                    }
+                    if (numArg == expected && OK) {
                         mBuilder.setAccessMethodForField(accessOwner, accessName, accessDesc, accessIsStatic);
+                    }
                 }
             }
-            if (sawBackBranch)
+            if (sawBackBranch) {
                 mBuilder.setHasBackBranch();
+            }
             boolean sawThrow = sawNormalThrow | sawUnsupportedThrow | sawStubThrow;
             if (sawThrow && !sawReturn || sawSystemExit && !sawBranch) {
 
                 mBuilder.setIsUnconditionalThrower();
                 if (!sawReturn && !sawNormalThrow) {
-                    if (sawUnsupportedThrow)
+                    if (sawUnsupportedThrow) {
                         mBuilder.setUnsupported();
+                    }
                     if (sawStubThrow) {
                         mBuilder.addAccessFlags(Constants.ACC_SYNTHETIC);
                         mBuilder.setIsStub();
@@ -440,15 +469,18 @@ public class ClassParserUsingASM implements ClassParserInterface {
             mBuilder.setNumberMethodCalls(methodCallCount);
             MethodInfo methodInfo = mBuilder.build();
             Builder classBuilder = (ClassInfo.Builder) cBuilder;
-            if (isBridge && bridgedMethodSignature != null && !bridgedMethodSignature.equals(methodDesc))
+            if (isBridge && bridgedMethodSignature != null && !bridgedMethodSignature.equals(methodDesc)) {
                 classBuilder.addBridgeMethodDescriptor(methodInfo, bridgedMethodSignature);
-            else
+            } else {
                 classBuilder.addMethodDescriptor(methodInfo);
+            }
 
-            if (methodInfo.usesConcurrency())
+            if (methodInfo.usesConcurrency()) {
                 classBuilder.setUsesConcurrency();
-            if (methodInfo.isStub())
+            }
+            if (methodInfo.isStub()) {
                 classBuilder.setHasStubs();
+            }
         }
 
         @Override
@@ -473,17 +505,10 @@ public class ClassParserUsingASM implements ClassParserInterface {
     public ClassParserUsingASM(ClassReader classReader, @CheckForNull ClassDescriptor expectedClassDescriptor,
             ICodeBaseEntry codeBaseEntry) {
         this.classReader = classReader;
-        this.expectedClassDescriptor = expectedClassDescriptor;
+        //        this.expectedClassDescriptor = expectedClassDescriptor;
         this.codeBaseEntry = codeBaseEntry;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd
-     * .cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder)
-     */
     @Override
     public void parse(final ClassNameAndSuperclassInfo.Builder cBuilder) throws InvalidClassFileFormatException {
 
@@ -493,7 +518,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
         classReader.accept(new ClassVisitor(FindBugsASM.ASM_VERSION) {
 
-//            boolean isInnerClass = false;
+            //            boolean isInnerClass = false;
 
             @Override
             public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
@@ -502,8 +527,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 cBuilder.setAccessFlags(access);
                 cBuilder.setClassDescriptor(DescriptorFactory.createClassDescriptor(name));
                 cBuilder.setInterfaceDescriptorList(DescriptorFactory.createClassDescriptor(interfaces));
-                if (superName != null)
+                if (superName != null) {
                     cBuilder.setSuperclassDescriptor(DescriptorFactory.createClassDescriptor(superName));
+                }
                 if (cBuilder instanceof ClassInfo.Builder) {
                     ((ClassInfo.Builder) cBuilder).setSourceSignature(signature);
                 }
@@ -521,27 +547,27 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
             @Override
             public void visitAttribute(Attribute arg0) {
-                // TODO Auto-generated method stub
-
+                //
             }
 
             @Override
             public void visitEnd() {
-                // TODO Auto-generated method stub
-
+                //
             }
 
             @Override
             public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-//                if (name.equals("this$0"))
-//                    isInnerClass = true;
+                //                if (name.equals("this$0"))
+                //                    isInnerClass = true;
 
-                if (desc == null)
+                if (desc == null) {
                     throw new NullPointerException("Description cannot be null");
+                }
                 if (cBuilder instanceof ClassInfo.Builder) {
                     final ClassInfo.Builder cBuilder2 = (ClassInfo.Builder) cBuilder;
-                    if ((access & Opcodes.ACC_VOLATILE) != 0 || desc.contains("util/concurrent"))
+                    if ((access & Opcodes.ACC_VOLATILE) != 0 || desc.contains("util/concurrent")) {
                         cBuilder2.setUsesConcurrency();
+                    }
                     final FieldInfo.Builder fBuilder = new FieldInfo.Builder(slashedClassName, name, desc, access);
                     fBuilder.setSourceSignature(signature);
                     return new AbstractFieldAnnotationVisitor() {
@@ -585,8 +611,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
                     final MethodInfo.Builder mBuilder = new MethodInfo.Builder(slashedClassName, methodName, methodDesc, access);
                     mBuilder.setSourceSignature(signature);
                     mBuilder.setThrownExceptions(exceptions);
-                    if ((access & Opcodes.ACC_SYNCHRONIZED) != 0)
+                    if ((access & Opcodes.ACC_SYNCHRONIZED) != 0) {
                         mBuilder.setUsesConcurrency();
+                    }
 
                     return new ClassParserMethodVisitor(calledClassSet, mBuilder, methodName, access, methodDesc, cBuilder);
 

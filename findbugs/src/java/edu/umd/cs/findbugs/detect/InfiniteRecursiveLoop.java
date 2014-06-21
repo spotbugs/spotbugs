@@ -33,13 +33,13 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class InfiniteRecursiveLoop extends OpcodeStackDetector implements StatelessDetector {
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private boolean seenTransferOfControl;
 
     private boolean seenReturn;
 
-    private boolean seenThrow;
+    //    private boolean seenThrow;
 
     private boolean seenStateChange;
 
@@ -56,7 +56,7 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
         seenTransferOfControl = false;
         seenStateChange = false;
         seenReturn = false;
-        seenThrow = false;
+        //        seenThrow = false;
         largestBranchTarget = -1;
 
         if (DEBUG) {
@@ -68,10 +68,12 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
 
     @Override
     public void sawBranchTo(int target) {
-        if (target == getNextPC())
+        if (target == getNextPC()) {
             return;
-        if (largestBranchTarget < target)
+        }
+        if (largestBranchTarget < target) {
             largestBranchTarget = target;
+        }
         seenTransferOfControl = true;
     }
 
@@ -82,8 +84,9 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
      */
     @Override
     public void sawOpcode(int seen) {
-        if (seenReturn && seenTransferOfControl && seenStateChange)
+        if (seenReturn && seenTransferOfControl && seenStateChange) {
             return;
+        }
 
         if (DEBUG) {
             System.out.println(stack);
@@ -96,9 +99,10 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
             int r0 = it0.getRegisterNumber();
             OpcodeStack.Item it1 = stack.getStackItem(1);
             int r1 = it1.getRegisterNumber();
-            if (r0 == r1 && r0 > 0)
+            if (r0 == r1 && r0 > 0) {
                 bugReporter.reportBug(new BugInstance(this, "IL_CONTAINER_ADDED_TO_ITSELF", NORMAL_PRIORITY).addClassAndMethod(
                         this).addSourceLine(this));
+            }
         }
 
         if ((seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKEINTERFACE || seen == INVOKESTATIC)
@@ -110,8 +114,9 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
             Type arguments[] = getMethod().getArgumentTypes();
             // stack.getStackDepth() >= parameters
             int parameters = arguments.length;
-            if (!getMethod().isStatic())
+            if (!getMethod().isStatic()) {
                 parameters++;
+            }
             XMethod xMethod = XFactory.createReferencedXMethod(this);
             if (DEBUG) {
                 System.out.println("IL: Checking...");
@@ -123,8 +128,9 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
                 // Invocation of same method
                 // Now need to see if parameters are the same
                 int firstParameter = 0;
-                if (getMethodName().equals("<init>"))
+                if (getMethodName().equals("<init>")) {
                     firstParameter = 1;
+                }
 
                 // match1 should be true if it is any call to the exact same
                 // method
@@ -137,19 +143,22 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
                 boolean match1 = !seenStateChange;
                 for (int i = firstParameter; match1 && i < parameters; i++) {
                     OpcodeStack.Item it = stack.getStackItem(parameters - 1 - i);
-                    if (!it.isInitialParameter() || it.getRegisterNumber() != i)
+                    if (!it.isInitialParameter() || it.getRegisterNumber() != i) {
                         match1 = false;
+                    }
                 }
 
                 boolean sameMethod = seen == INVOKESTATIC || getNameConstantOperand().equals("<init>");
                 if (!sameMethod) {
                     // Have to check if first parmeter is the same
                     // know there must be a this argument
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("Stack is " + stack);
+                    }
                     OpcodeStack.Item p = stack.getStackItem(parameters - 1);
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("parameters = " + parameters + ", Item is " + p);
+                    }
                     String sig = p.getSignature();
                     sameMethod = p.isInitialParameter() && p.getRegisterNumber() == 0 && sig.equals("L" + getClassName() + ";");
 
@@ -168,13 +177,14 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
                 boolean match2 = sameMethod && !seenTransferOfControl;
                 boolean match3 = sameMethod && !seenReturn && largestBranchTarget < getPC();
                 if (match1 || match2 || match3) {
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("IL: " + sameMethod + " " + match1 + " " + match2 + " " + match3);
-                    int priority = HIGH_PRIORITY;
-                    if (!match1 && !match2 && seenThrow)
-                        priority = NORMAL_PRIORITY;
-                    if (seen == INVOKEINTERFACE)
-                        priority = NORMAL_PRIORITY;
+                    }
+                    //                    int priority = HIGH_PRIORITY;
+                    //                    if (!match1 && !match2 && seenThrow)
+                    //                        priority = NORMAL_PRIORITY;
+                    //                    if (seen == INVOKEINTERFACE)
+                    //                        priority = NORMAL_PRIORITY;
                     bugReporter.reportBug(new BugInstance(this, "IL_INFINITE_RECURSIVE_LOOP", HIGH_PRIORITY).addClassAndMethod(
                             this).addSourceLine(this));
                 }
@@ -192,7 +202,7 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
             seenTransferOfControl = true;
             break;
         case ATHROW:
-            seenThrow = true;
+            //            seenThrow = true;
             seenTransferOfControl = true;
             break;
         case PUTSTATIC:
@@ -212,9 +222,12 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
         case INVOKEINTERFACE:
         case INVOKESTATIC:
             if (getNameConstantOperand().equals("print") || getNameConstantOperand().equals("println")
-                    || getNameConstantOperand().equals("log") || getNameConstantOperand().equals("toString"))
+                    || getNameConstantOperand().equals("log") || getNameConstantOperand().equals("toString")) {
                 break;
+            }
             seenStateChange = true;
+            break;
+        default:
             break;
         }
     }

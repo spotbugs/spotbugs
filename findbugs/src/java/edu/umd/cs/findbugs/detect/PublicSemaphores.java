@@ -41,7 +41,7 @@ public class PublicSemaphores extends BytecodeScanningDetector implements Statel
 
     private static final int SEEN_ALOAD_0 = 1;
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private int state;
 
@@ -54,8 +54,9 @@ public class PublicSemaphores extends BytecodeScanningDetector implements Statel
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
-        if ((!cls.isPublic()) || (cls.getClassName().indexOf("$") >= 0))
+        if ((!cls.isPublic()) || (cls.getClassName().indexOf('$') >= 0)) {
             return;
+        }
 
         alreadyReported = false;
         super.visitClassContext(classContext);
@@ -64,8 +65,9 @@ public class PublicSemaphores extends BytecodeScanningDetector implements Statel
     @Override
     public void visit(Code obj) {
         Method m = getMethod();
-        if (m.isStatic() || alreadyReported)
+        if (m.isStatic() || alreadyReported) {
             return;
+        }
 
         state = SEEN_NOTHING;
         super.visit(obj);
@@ -73,13 +75,15 @@ public class PublicSemaphores extends BytecodeScanningDetector implements Statel
 
     @Override
     public void sawOpcode(int seen) {
-        if (alreadyReported)
+        if (alreadyReported) {
             return;
+        }
 
         switch (state) {
         case SEEN_NOTHING:
-            if (seen == ALOAD_0)
+            if (seen == ALOAD_0) {
                 state = SEEN_ALOAD_0;
+            }
             break;
 
         case SEEN_ALOAD_0:
@@ -92,6 +96,8 @@ public class PublicSemaphores extends BytecodeScanningDetector implements Statel
                 }
             }
             state = SEEN_NOTHING;
+            break;
+        default:
             break;
         }
 

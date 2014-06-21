@@ -77,7 +77,7 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
         protected void addMethodAnnotation(@DottedClassName String cName, String mName, String mSig, boolean isStatic,
                 DefaultEncodingAnnotation annotation) {
             super.addMethodAnnotation(cName, mName, mSig, isStatic, annotation);
-                classes.add(DescriptorFactory.createClassDescriptorFromDottedClassName(cName));
+            classes.add(DescriptorFactory.createClassDescriptorFromDottedClassName(cName));
 
         }
 
@@ -174,6 +174,9 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
                 bugAccumulator.accumulateBug(new BugInstance(this, "DM_DEFAULT_ENCODING", HIGH_PRIORITY).addClassAndMethod(this)
                         .addCalledMethod(this), this);
             }
+            break;
+        default:
+            break;
         }
     }
 }

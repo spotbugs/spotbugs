@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 
 public class WrongMapIterator extends BytecodeScanningDetector implements StatelessDetector {
-    private BugAccumulator bugAccumulator;
+    private final BugAccumulator bugAccumulator;
 
     private static final int SAW_NOTHING = 0;
 
@@ -98,7 +98,7 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
     /**
      * Determine from the class descriptor for a variable whether that variable
      * implements java.util.Map.
-     * 
+     *
      * @param d
      *            class descriptor for variable we want to check implements Map
      * @return true iff the descriptor corresponds to an implementor of Map
@@ -130,8 +130,9 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
         switch (state) {
         case SAW_NOTHING:
             loadedRegister = getLoadStoreRegister(seen, true);
-            if (loadedRegister >= 0)
+            if (loadedRegister >= 0) {
                 state = SAW_MAP_LOAD1;
+            }
             break;
 
         case SAW_MAP_LOAD1:
@@ -149,81 +150,91 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
 
         case SAW_KEYSET:
             keySetRegister = getLoadStoreRegister(seen, false);
-            if (keySetRegister >= 0)
+            if (keySetRegister >= 0) {
                 state = SAW_KEYSET_STORE;
-            else if ((seen == INVOKEINTERFACE) && ("iterator".equals(getNameConstantOperand()))
-                    && ("()Ljava/util/Iterator;".equals(getSigConstantOperand())))
+            } else if ((seen == INVOKEINTERFACE) && ("iterator".equals(getNameConstantOperand()))
+                    && ("()Ljava/util/Iterator;".equals(getSigConstantOperand()))) {
                 state = SAW_ITERATOR;
-            else
+            } else {
                 state = SAW_NOTHING;
+            }
             break;
 
         case SAW_KEYSET_STORE:
             if ((seen == INVOKEINTERFACE) && ("iterator".equals(getNameConstantOperand()))
-                    && ("()Ljava/util/Iterator;".equals(getSigConstantOperand())))
+                    && ("()Ljava/util/Iterator;".equals(getSigConstantOperand()))) {
                 state = SAW_ITERATOR;
-            else
+            } else {
                 state = NEED_KEYSET_LOAD;
+            }
             break;
 
         case NEED_KEYSET_LOAD:
             loadedRegister = getLoadStoreRegister(seen, true);
-            if (loadedRegister == iteratorRegister)
+            if (loadedRegister == iteratorRegister) {
                 state = SAW_ITERATOR;
+            }
             break;
 
         case SAW_ITERATOR:
             iteratorRegister = getLoadStoreRegister(seen, false);
-            if (iteratorRegister >= 0)
+            if (iteratorRegister >= 0) {
                 state = SAW_ITERATOR_STORE;
-            else
+            } else {
                 state = SAW_NOTHING;
+            }
             break;
 
         case SAW_ITERATOR_STORE:
             loadedRegister = getLoadStoreRegister(seen, true);
-            if (loadedRegister == iteratorRegister)
+            if (loadedRegister == iteratorRegister) {
                 state = SAW_ITERATOR_LOAD;
+            }
             break;
 
         case SAW_ITERATOR_LOAD:
             if ((seen == INVOKEINTERFACE) && ("next".equals(getNameConstantOperand()))
-                    && ("()Ljava/lang/Object;".equals(getSigConstantOperand())))
+                    && ("()Ljava/lang/Object;".equals(getSigConstantOperand()))) {
                 state = SAW_NEXT;
-            else
+            } else {
                 state = SAW_ITERATOR_STORE;
+            }
             break;
 
         case SAW_NEXT:
-            if (seen == CHECKCAST)
+            if (seen == CHECKCAST) {
                 state = SAW_CHECKCAST_ON_NEXT;
-            else {
+            } else {
                 keyRegister = getLoadStoreRegister(seen, false);
-                if (keyRegister >= 0)
+                if (keyRegister >= 0) {
                     state = SAW_KEY_STORE;
-                else
+                } else {
                     state = SAW_NOTHING;
+                }
             }
             break;
 
         case SAW_CHECKCAST_ON_NEXT:
             keyRegister = getLoadStoreRegister(seen, false);
-            if (keyRegister >= 0)
+            if (keyRegister >= 0) {
                 state = SAW_KEY_STORE;
+            }
             break;
 
         case SAW_KEY_STORE:
             loadedRegister = getLoadStoreRegister(seen, true);
-            if (loadedRegister == mapRegister)
+            if (loadedRegister == mapRegister) {
                 state = SAW_MAP_LOAD2;
+            }
             break;
 
         case SAW_MAP_LOAD2:
             loadedRegister = getLoadStoreRegister(seen, true);
-            if (loadedRegister == keyRegister)
+            if (loadedRegister == keyRegister) {
                 state = SAW_KEY_LOAD;
-            else
+            } else {
                 state = SAW_KEY_STORE;
+            }
             break;
 
         case SAW_KEY_LOAD:
@@ -235,6 +246,8 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
                 state = SAW_NOTHING;
             }
             break;
+        default:
+            break;
         }
     }
 
@@ -244,26 +257,30 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
         case ALOAD_1:
         case ALOAD_2:
         case ALOAD_3:
-            if (doLoad)
+            if (doLoad) {
                 return seen - ALOAD_0;
+            }
             break;
 
         case ALOAD:
-            if (doLoad)
+            if (doLoad) {
                 return getRegisterOperand();
+            }
             break;
 
         case ASTORE_0:
         case ASTORE_1:
         case ASTORE_2:
         case ASTORE_3:
-            if (!doLoad)
+            if (!doLoad) {
                 return seen - ASTORE_0;
+            }
             break;
 
         case ASTORE:
-            if (!doLoad)
+            if (!doLoad) {
                 return getRegisterOperand();
+            }
             break;
         }
 

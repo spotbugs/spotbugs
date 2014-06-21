@@ -53,7 +53,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 
     int countSinceGetBoolean;
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     public FindDoubleCheck(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -61,8 +61,9 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 
     @Override
     public void visit(Method obj) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println(getFullyQualifiedMethodName());
+        }
         super.visit(obj);
         fields.clear();
         twice.clear();
@@ -76,15 +77,18 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println(getPC() + "\t" + OPCODE_NAMES[seen] + "\t" + stage + "\t" + count + "\t" + countSinceGetReference);
+        }
 
-        if (seen == MONITORENTER)
+        if (seen == MONITORENTER) {
             sawMonitorEnter = true;
+        }
         if (seen == GETFIELD || seen == GETSTATIC) {
             pendingFieldLoad = FieldAnnotation.fromReferencedField(this);
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("\t" + pendingFieldLoad);
+            }
             String sig = getSigConstantOperand();
             if (sig.equals("Z")) {
                 countSinceGetBoolean = 0;
@@ -127,8 +131,9 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
                 }
             } else {
                 count++;
-                if (count > 10)
+                if (count > 10) {
                     stage = 0;
+                }
             }
             break;
         case 2:
@@ -142,14 +147,16 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
                 }
             }
             count++;
-            if (count > 10)
+            if (count > 10) {
                 stage = 0;
+            }
             break;
         case 3:
             if (seen == PUTFIELD || seen == PUTSTATIC) {
                 FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("\t" + f);
+                }
                 if (twice.contains(f) && !getNameConstantOperand().startsWith("class$")
                         && !getSigConstantOperand().equals("Ljava/lang/String;")) {
                     Field declaration = findField(getClassConstantOperand(), getNameConstantOperand());
@@ -157,14 +164,16 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
                      * System.out.println(f); System.out.println(declaration);
                      * System.out.println(getSigConstantOperand());
                      */
-                    if (declaration == null || !declaration.isVolatile())
+                    if (declaration == null || !declaration.isVolatile()) {
                         bugReporter.reportBug(new BugInstance(this, "DC_DOUBLECHECK", NORMAL_PRIORITY).addClassAndMethod(this)
                                 .addField(f).describe("FIELD_ON").addSourceLineRange(this, startPC, endPC));
+                    }
                     stage++;
                 }
             }
             break;
         default:
+            break;
         }
     }
 
@@ -179,11 +188,12 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
                 fieldDefinedIn = Repository.lookupClass(className);
             }
             Field[] f = fieldDefinedIn.getFields();
-            for (Field aF : f)
+            for (Field aF : f) {
                 if (aF.getName().equals(fieldName)) {
                     // System.out.println("Found " + f[i]);
                     return aF;
                 }
+            }
             return null;
         } catch (ClassNotFoundException e) {
             return null;

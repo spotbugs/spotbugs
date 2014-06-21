@@ -57,12 +57,12 @@ import edu.umd.cs.findbugs.classfile.IErrorLogger;
 /**
  * Dataflow analysis to track obligations (i/o streams and other resources which
  * must be closed).
- * 
+ *
  * <p>
  * See Weimer and Necula, <a href="http://doi.acm.org/10.1145/1028976.1029011"
  * >Finding and preventing run-time error handling mistakes</a>, OOPSLA 2004.
  * </p>
- * 
+ *
  * @author David Hovemeyer
  */
 public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
@@ -71,19 +71,19 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
 
     private static final boolean DEBUG_NULL_CHECK = SystemProperties.getBoolean("oa.debug.nullcheck");
 
-    private XMethod xmethod;
+    private final XMethod xmethod;
 
-    private ObligationFactory factory;
+    private final ObligationFactory factory;
 
-    private ObligationPolicyDatabase database;
+    private final ObligationPolicyDatabase database;
 
-    private TypeDataflow typeDataflow;
+    private final TypeDataflow typeDataflow;
 
-    private IsNullValueDataflow invDataflow;
+    private final IsNullValueDataflow invDataflow;
 
-    private IErrorLogger errorLogger;
+    private final IErrorLogger errorLogger;
 
-    private InstructionActionCache actionCache;
+    private final InstructionActionCache actionCache;
 
     private StateSet cachedEntryFact;
 
@@ -91,7 +91,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param dfs
      *            a DepthFirstSearch on the method to be analyzed
      * @param xmethod
@@ -136,9 +136,10 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
     @Override
     public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StateSet fact)
             throws DataflowAnalysisException {
-         Collection<ObligationPolicyDatabaseAction> actionList = actionCache.getActions(basicBlock, handle);
-         if (actionList.isEmpty())
-             return;
+        Collection<ObligationPolicyDatabaseAction> actionList = actionCache.getActions(basicBlock, handle);
+        if (actionList.isEmpty()) {
+            return;
+        }
         if (DEBUG) {
             System.out.println("Applying actions at " + handle + " to " + fact);
         }
@@ -153,14 +154,6 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transfer(edu.umd.cs.findbugs
-     * .ba.BasicBlock, org.apache.bcel.generic.InstructionHandle,
-     * java.lang.Object, java.lang.Object)
-     */
     @Override
     public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, StateSet start, StateSet result)
             throws DataflowAnalysisException {
@@ -214,9 +207,9 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
         if (isPossibleIfComparison(edge)) {
             Obligation comparedObligation = comparesObligationTypeToNull(edge);
             if (comparedObligation != null/*
-                                           * && comparedObligation.equals(
-                                           * possiblyLeakedObligation)
-                                           */) {
+             * && comparedObligation.equals(
+             * possiblyLeakedObligation)
+             */) {
                 if (DEBUG_NULL_CHECK) {
                     System.out.println("Deleting " + comparedObligation.toString() + " on edge from comparision "
                             + edge.getSource().getLastInstruction());
@@ -251,6 +244,8 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
         case Constants.IF_ACMPEQ:
         case Constants.IF_ACMPNE:
             type = acmpNullCheck(opcode, edge, last, sourceBlock);
+            break;
+        default:
             break;
         }
 
@@ -326,25 +321,11 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
         return type;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.ba.DataflowAnalysis#copy(edu.umd.cs.findbugs.ba.obl
-     * .StateSet, edu.umd.cs.findbugs.ba.obl.StateSet)
-     */
     @Override
     public void copy(StateSet src, StateSet dest) {
         dest.copyFrom(src);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.ba.DataflowAnalysis#initEntryFact(edu.umd.cs.findbugs
-     * .ba.obl.StateSet)
-     */
     @Override
     public void initEntryFact(StateSet fact) throws DataflowAnalysisException {
         if (cachedEntryFact == null) {
@@ -378,7 +359,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.DataflowAnalysis#makeFactTop(edu.umd.cs.findbugs
      * .ba.obl.StateSet)
@@ -393,26 +374,11 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
         return fact.isTop();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.ba.DataflowAnalysis#same(edu.umd.cs.findbugs.ba.obl
-     * .StateSet, edu.umd.cs.findbugs.ba.obl.StateSet)
-     */
     @Override
     public boolean same(StateSet a, StateSet b) {
         return a.equals(b);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(edu.umd.cs.findbugs.
-     * ba.obl.StateSet, edu.umd.cs.findbugs.ba.Edge,
-     * edu.umd.cs.findbugs.ba.obl.StateSet)
-     */
     @Override
     public void meetInto(StateSet fact, Edge edge, StateSet result) throws DataflowAnalysisException {
         final StateSet inputFact = fact;
@@ -431,11 +397,11 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
 
         // Handle easy top and bottom cases
         if (inputFact.isTop() || result.isBottom() ) {
-         // Nothing to do
+            // Nothing to do
         } else if (inputFact.isBottom() || result.isTop() || result.isEmpty()) {
             copy(inputFact, result);
-         } else if (inputFact.isOnExceptionPath() 
-                 && !result.isOnExceptionPath()) {
+        } else if (inputFact.isOnExceptionPath()
+                && !result.isOnExceptionPath()) {
             if (DEBUG) {
                 System.out.println("Ignoring " + inputFact + " in favor of " + result);
                 BasicBlock from = edge.getSource();
@@ -443,10 +409,11 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
                 System.out.printf("  edge %s -> %s%n", from, to);
             }
             // Nothing to do
-         } else if(!inputFact.isOnExceptionPath() && !inputFact.isEmpty() 
-                 && result.isOnExceptionPath()) {
-            if (DEBUG)
+        } else if(!inputFact.isOnExceptionPath() && !inputFact.isEmpty()
+                && result.isOnExceptionPath()) {
+            if (DEBUG) {
                 System.out.println("overwriting " + result + " with " + inputFact);
+            }
             copy(inputFact, result);
         } else {
             // We will destructively replace the state map of the result fact
@@ -497,4 +464,3 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
     }
 }
 
-// vim:ts=4

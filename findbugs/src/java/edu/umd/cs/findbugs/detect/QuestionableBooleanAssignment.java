@@ -39,7 +39,7 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
 
     public static final int SEEN_IF = 5;
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private int state;
 
@@ -60,25 +60,28 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
     public void sawOpcode(int seen) {
         if (seen == GOTO && getBranchOffset() == 4) {
             state = SEEN_GOTO;
-        } else
+        } else {
             switch (state) {
             case SEEN_NOTHING:
-                if ((seen == ICONST_1) || (seen == ICONST_0))
+                if ((seen == ICONST_1) || (seen == ICONST_0)) {
                     state = SEEN_ICONST_0_OR_1;
+                }
                 break;
 
             case SEEN_ICONST_0_OR_1:
-                if (seen == DUP)
+                if (seen == DUP) {
                     state = SEEN_DUP;
-                else
+                } else {
                     state = SEEN_NOTHING;
+                }
                 break;
 
             case SEEN_DUP:
-                if (((seen >= ISTORE_0) && (seen <= ISTORE_3)) || (seen == ISTORE))
+                if (((seen >= ISTORE_0) && (seen <= ISTORE_3)) || (seen == ISTORE)) {
                     state = SEEN_ISTORE;
-                else
+                } else {
                     state = SEEN_NOTHING;
+                }
                 break;
 
             case SEEN_ISTORE:
@@ -86,23 +89,27 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
                     bug = new BugInstance(this, "QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT", HIGH_PRIORITY).addClassAndMethod(this)
                             .addSourceLine(this);
                     state = SEEN_IF;
-                } else
+                } else {
                     state = SEEN_NOTHING;
+                }
                 break;
 
             case SEEN_IF:
                 state = SEEN_NOTHING;
                 if (seen == NEW) {
                     String cName = getClassConstantOperand();
-                    if (cName.equals("java/lang/AssertionError"))
+                    if (cName.equals("java/lang/AssertionError")) {
                         break;
+                    }
                 }
                 bugReporter.reportBug(bug);
-
                 break;
             case SEEN_GOTO:
                 state = SEEN_NOTHING;
                 break;
+            default:
+                break;
             }
+        }
     }
 }
