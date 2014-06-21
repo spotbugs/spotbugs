@@ -20,12 +20,18 @@ package de.tobject.findbugs.builder;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -57,26 +63,28 @@ public class PDEClassPathGenerator {
      * @return never null (may be empty array)
      */
     public static String[] computeClassPath(IJavaProject javaProject) {
-        String[] classPath = new String[0];
+        Collection<String> classPath = Collections.EMPTY_SET;
+        Set<IProject> projectOnCp = new HashSet<>();
+        projectOnCp.add(javaProject.getProject());
         try {
             // first try to check and resolve plugin project. It can fail if
             // there is no
             // PDE plugins installed in the current Eclipse instance (PDE is
             // optional)
-            classPath = createPluginClassPath(javaProject);
+            classPath = createPluginClassPath(javaProject, projectOnCp);
         } catch (NoClassDefFoundError ce) {
             // ok, we do not have PDE installed, now try to get default java
             // classpath
-            classPath = createJavaClasspath(javaProject);
+            classPath = createJavaClasspath(javaProject, projectOnCp);
         } catch (CoreException e) {
             FindbugsPlugin.getDefault().logException(e, "Could not compute aux. classpath for project " + javaProject);
-            return classPath;
+            return new String[0];
         }
-        return classPath;
+        return classPath.toArray(new String[classPath.size()]);
     }
 
     @SuppressWarnings("restriction")
-    private static String[] createJavaClasspath(IJavaProject javaProject) {
+    private static Set<String> createJavaClasspath(IJavaProject javaProject, Set<IProject> projectOnCp) {
         LinkedHashSet<String> classPath = new LinkedHashSet<String>();
         try {
             // doesn't return jre libraries
@@ -105,10 +113,13 @@ public class PDEClassPathGenerator {
                             }
                         } else {
                             IClasspathEntry[] classpathEntries = classpathContainer.getClasspathEntries();
-                            for (IClasspathEntry iClasspathEntry : classpathEntries) {
-                                IPath path = iClasspathEntry.getPath();
-                                if (isValidPath(path)) {
+                            for (IClasspathEntry classpathEntry : classpathEntries) {
+                                IPath path = classpathEntry.getPath();
+                                // shortcut for real files
+                                if (classpathEntry.getEntryKind() == IClasspathEntry.CPE_LIBRARY && isValidPath(path)) {
                                     classPath.add(path.toOSString());
+                                } else {
+                                    resolveInWorkspace(classpathEntry, classPath, projectOnCp);
                                 }
                             }
                         }
@@ -118,7 +129,65 @@ public class PDEClassPathGenerator {
         } catch (CoreException e) {
             FindbugsPlugin.getDefault().logException(e, "Could not compute aux. classpath for project " + javaProject);
         }
-        return classPath.toArray(new String[classPath.size()]);
+        return classPath;
+    }
+
+    private static void resolveInWorkspace(IClasspathEntry classpathEntry, Set<String> classPath, Set<IProject> projectOnCp) {
+        int entryKind = classpathEntry.getEntryKind();
+        switch (entryKind){
+        case IClasspathEntry.CPE_PROJECT:
+            Set<String> cp = resolveProjectClassPath(classpathEntry.getPath(), projectOnCp);
+            classPath.addAll(cp);
+            break;
+        case IClasspathEntry.CPE_VARIABLE:
+            classpathEntry = JavaCore.getResolvedClasspathEntry(classpathEntry);
+            if(classpathEntry == null) {
+                return;
+            }
+            //$FALL-THROUGH$
+        case IClasspathEntry.CPE_LIBRARY:
+            String lib = resolveLibrary(classpathEntry.getPath());
+            if(lib != null) {
+                classPath.add(lib);
+            }
+            break;
+        case IClasspathEntry.CPE_SOURCE:
+            // ???
+            break;
+        default:
+            break;
+        }
+    }
+
+    @CheckForNull
+    private static String resolveLibrary(IPath path) {
+        if(path == null || path.segmentCount() != 1) {
+            return null;
+        }
+        IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
+        if(resource == null || !resource.isAccessible()){
+            return null;
+        }
+        IPath location = resource.getLocation();
+        return location == null? null : location.toOSString();
+    }
+
+    private static Set<String> resolveProjectClassPath(IPath path, Set<IProject> projectOnCp) {
+        if(path == null || path.segmentCount() != 1) {
+            return Collections.emptySet();
+        }
+        IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(path.lastSegment());
+
+        // prevent endless loops because of cyclic project dependencies
+        if(project == null || projectOnCp.contains(project)){
+            return Collections.emptySet();
+        }
+        projectOnCp.add(project);
+        IJavaProject javaProject2 = JavaCore.create(project);
+        if(javaProject2 != null){
+            return createJavaClasspath(javaProject2, projectOnCp);
+        }
+        return Collections.emptySet();
     }
 
     /**
@@ -131,14 +200,14 @@ public class PDEClassPathGenerator {
         return path != null && path.segmentCount() > 1 && path.toFile().exists();
     }
 
-    private static String[] createPluginClassPath(IJavaProject javaProject) throws CoreException {
-        String[] javaClassPath = createJavaClasspath(javaProject);
+    private static Collection<String> createPluginClassPath(IJavaProject javaProject, Set<IProject> projectOnCp) throws CoreException {
+        Set<String> javaClassPath = createJavaClasspath(javaProject, projectOnCp);
         IPluginModelBase model = PluginRegistry.findModel(javaProject.getProject());
         if (model == null || model.getPluginBase().getId() == null) {
             return javaClassPath;
         }
-        List<String> pdeClassPath = new ArrayList<String>();
-        pdeClassPath.addAll(Arrays.asList(javaClassPath));
+        ArrayList<String> pdeClassPath = new ArrayList<>();
+        pdeClassPath.addAll(javaClassPath);
 
         BundleDescription target = model.getBundleDescription();
 
@@ -162,7 +231,7 @@ public class PDEClassPathGenerator {
                 pdeClassPath.add(0, defaultOutput);
             }
         }
-        return pdeClassPath.toArray(new String[pdeClassPath.size()]);
+        return pdeClassPath;
     }
 
     private static void appendBundleToClasspath(BundleDescription bd, List<String> pdeClassPath, IPath defaultOutputLocation) {
