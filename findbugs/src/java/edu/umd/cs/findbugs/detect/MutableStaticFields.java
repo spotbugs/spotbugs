@@ -51,10 +51,10 @@ public class MutableStaticFields extends BytecodeScanningDetector {
     }
 
     static boolean mutableSignature(String sig) {
-        return sig.equals("Ljava/util/Hashtable;") || sig.equals("Ljava/util/Date;") || 
-        sig.equals("Ljava/sql/Date;") || 
-        sig.equals("Ljava/sql/Timestamp;") || 
-        sig.charAt(0) == '[';
+        return sig.equals("Ljava/util/Hashtable;") || sig.equals("Ljava/util/Date;") ||
+                sig.equals("Ljava/sql/Date;") ||
+                sig.equals("Ljava/sql/Timestamp;") ||
+                sig.charAt(0) == '[';
     }
 
     LinkedList<XField> seen = new LinkedList<XField>();
@@ -77,7 +77,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 
     Set<XField> outsidePackage = new HashSet<XField>();
     Set<XField> needsRefactoringToBeFinal = new HashSet<XField>();
-    
+
     Set<XField> writtenInMethod = new HashSet<XField>();
     Set<XField> writtenTwiceInMethod = new HashSet<XField>();
 
@@ -114,14 +114,15 @@ public class MutableStaticFields extends BytecodeScanningDetector {
         // System.out.println(methodName);
         inStaticInitializer = getMethodName().equals("<clinit>");
     }
-    
+
     @Override
     public void visit(Code obj) {
         writtenInMethod.clear();
         writtenTwiceInMethod.clear();
         super.visit(obj);
-        if (inStaticInitializer)
+        if (inStaticInitializer) {
             needsRefactoringToBeFinal.addAll(writtenTwiceInMethod);
+        }
         writtenInMethod.clear();
         writtenTwiceInMethod.clear();
     }
@@ -150,8 +151,9 @@ public class MutableStaticFields extends BytecodeScanningDetector {
                 readAnywhere.add(xField);
             }
             if (seen == PUTSTATIC) {
-                if (!writtenInMethod.add(xField))
+                if (!writtenInMethod.add(xField)) {
                     writtenTwiceInMethod.add(xField);
+                }
             }
 
             if (!samePackage) {
@@ -250,7 +252,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
             String fieldSig = f.getSignature();
             String fieldName = f.getName();
             boolean couldBeFinal = !isFinal && !notFinal.contains(f);
-            boolean isPublic = f.isPublic();
+            //            boolean isPublic = f.isPublic();
             boolean couldBePackage = !outsidePackage.contains(f);
             boolean movedOutofInterface = false;
 
@@ -263,9 +265,9 @@ public class MutableStaticFields extends BytecodeScanningDetector {
             boolean isHashtable = fieldSig.equals("Ljava/util/Hashtable;");
             boolean isArray = fieldSig.charAt(0) == '[' && unsafeValue.contains(f);
             boolean isReadAnywhere = readAnywhere.contains(f);
-            if (false) {
-                System.out.println(className + "." + fieldName + " : " + fieldSig + "\t" + isHashtable + "\t" + isArray);
-            }
+            //            if (false) {
+            //                System.out.println(className + "." + fieldName + " : " + fieldSig + "\t" + isHashtable + "\t" + isArray);
+            //            }
 
             String bugType;
             int priority = NORMAL_PRIORITY;
@@ -277,8 +279,9 @@ public class MutableStaticFields extends BytecodeScanningDetector {
                 bugType = "MS_FINAL_PKGPROTECT";
             } else if (couldBeFinal && !isHashtable && !isArray) {
                 bugType = "MS_SHOULD_BE_FINAL";
-                if (needsRefactoringToBeFinal.contains(f))
+                if (needsRefactoringToBeFinal.contains(f)) {
                     bugType = "MS_SHOULD_BE_REFACTORED_TO_BE_FINAL";
+                }
                 if (fieldName.equals(fieldName.toUpperCase()) || fieldSig.charAt(0) == 'L') {
                     priority = HIGH_PRIORITY;
                 }
@@ -291,7 +294,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
                 }
             } else if (isArray) {
                 bugType = "MS_MUTABLE_ARRAY";
-                if (fieldSig.indexOf("L") >= 0 || !isFinal) {
+                if (fieldSig.indexOf('L') >= 0 || !isFinal) {
                     priority = HIGH_PRIORITY;
                 }
             } else if (!isFinal) {

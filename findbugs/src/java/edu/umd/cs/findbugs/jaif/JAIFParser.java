@@ -27,16 +27,16 @@ import edu.umd.cs.findbugs.charsets.UTF8;
 
 /**
  * Parse an external annotation file.
- * 
+ *
  * @author David Hovemeyer
  * @see <a
  *      href="http://groups.csail.mit.edu/pag/jsr308/annotation-file-utilities/">Annotation
  *      File Utilities/</a>
  */
 public class JAIFParser {
-    private JAIFScanner scanner;
+    private final JAIFScanner scanner;
 
-    private JAIFEvents callback;
+    private final JAIFEvents callback;
 
     public JAIFParser(Reader reader, JAIFEvents callback) {
         this.scanner = new JAIFScanner(reader);
@@ -128,11 +128,11 @@ public class JAIFParser {
     private String readType() throws IOException, JAIFSyntaxException {
         StringBuilder buf = new StringBuilder();
 
-        JAIFToken t = expect(JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
+        /*JAIFToken t = */expect(JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
 
-        if (t.lexeme.equals("enum")) {
-
-        }
+        //        if (t.lexeme.equals("enum")) {
+        //
+        //        }
 
         return buf.toString();
     }

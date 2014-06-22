@@ -97,7 +97,7 @@ public class SourceFinder {
      * A directory containing source files.
      */
     private static class DirectorySourceRepository implements SourceRepository {
-        private String baseDir;
+        private final String baseDir;
 
         public DirectorySourceRepository(String baseDir) {
             this.baseDir = baseDir;
@@ -112,8 +112,9 @@ public class SourceFinder {
         public boolean contains(String fileName) {
             File file = new File(getFullFileName(fileName));
             boolean exists = file.exists();
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Exists " + exists + " for " + file);
+            }
             return exists;
         }
 
@@ -142,19 +143,22 @@ public class SourceFinder {
                 while (true) {
 
                     ZipEntry e = in.getNextEntry();
-                    if (e == null)
+                    if (e == null) {
                         break;
+                    }
                     if (!e.isDirectory()) {
                         String name = e.getName();
                         long size = e.getSize();
 
-                        if (size > Integer.MAX_VALUE)
+                        if (size > Integer.MAX_VALUE) {
                             throw new IOException(name + " is too big at " + size + " bytes");
+                        }
                         ByteArrayOutputStream out;
-                        if (size <= 0)
+                        if (size <= 0) {
                             out = new ByteArrayOutputStream();
-                        else
+                        } else {
                             out = new ByteArrayOutputStream((int) size);
+                        }
                         GZIPOutputStream gOut = new GZIPOutputStream(out);
                         IO.copy(in, gOut);
                         gOut.close();
@@ -170,25 +174,11 @@ public class SourceFinder {
 
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * edu.umd.cs.findbugs.ba.SourceFinder.SourceRepository#contains(java
-         * .lang.String)
-         */
         @Override
         public boolean contains(String fileName) {
             return contents.containsKey(fileName);
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * edu.umd.cs.findbugs.ba.SourceFinder.SourceRepository#getDataSource
-         * (java.lang.String)
-         */
         @Override
         public SourceFileDataSource getDataSource(final String fileName) {
             return new SourceFileDataSource() {
@@ -205,21 +195,15 @@ public class SourceFinder {
 
                 @Override
                 public long getLastModified() {
-                   Long when = lastModified.get(fileName);
-                   if (when == null || when < 0)
-                       return 0;
-                   return when;
+                    Long when = lastModified.get(fileName);
+                    if (when == null || when < 0) {
+                        return 0;
+                    }
+                    return when;
                 }
             };
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * edu.umd.cs.findbugs.ba.SourceFinder.SourceRepository#isPlatformDependent
-         * ()
-         */
         @Override
         public boolean isPlatformDependent() {
             return false;
@@ -237,12 +221,14 @@ public class SourceFinder {
 
                     URLConnection connection = new URL(url).openConnection();
                     in = connection.getInputStream();
-                    if (getProject().isGuiAvaliable())
+                    if (getProject().isGuiAvaliable()) {
                         in = getProject().getGuiCallback().getProgressMonitorInputStream(in, connection.getContentLength(),
                                 "Downloading project source code...");
+                    }
 
-                    if (url.endsWith(".z0p.gz"))
+                    if (url.endsWith(".z0p.gz")) {
                         in = new GZIPInputStream(in);
+                    }
 
                     r.setBase(new InMemorySourceRepository(new ZipInputStream(in)));
 
@@ -402,17 +388,18 @@ public class SourceFinder {
                     if (repos.startsWith("http:") || repos.startsWith("https:") || repos.startsWith("file:")) {
                         String url = SystemProperties.rewriteURLAccordingToProperties(repos);
                         repositoryList.add(makeInMemorySourceRepository(url));
-                    } else
+                    } else {
                         repositoryList.add(new ZipSourceRepository(new ZipFile(repos)));
+                    }
                 } catch (IOException e) {
                     // Ignored - we won't use this archive
                     AnalysisContext.logError("Unable to load " + repos, e);
                 }
             } else {
                 File dir = new File(repos);
-                if (dir.canRead() && dir.isDirectory())
+                if (dir.canRead() && dir.isDirectory()) {
                     repositoryList.add(new DirectorySourceRepository(repos));
-                else {
+                } else {
                     AnalysisContext.logError("Unable to load " + repos);
 
                 }
@@ -478,25 +465,29 @@ public class SourceFinder {
         // Is the file in the cache already? Always cache it with the canonical
         // name
         SourceFile sourceFile = cache.get(canonicalName);
-        if (sourceFile != null)
+        if (sourceFile != null) {
             return sourceFile;
+        }
 
         // Find this source file, add its data to the cache
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Trying " + fileName + " in package " + packageName + "...");
+        }
         // Query each element of the source path to find the requested source
         // file
         for (SourceRepository repos : repositoryList) {
-            if (repos instanceof BlockingSourceRepository && !((BlockingSourceRepository) repos).isReady())
+            if (repos instanceof BlockingSourceRepository && !((BlockingSourceRepository) repos).isReady()) {
                 continue;
+            }
             fileName = repos.isPlatformDependent() ? platformName : canonicalName;
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Looking in " + repos + " for " + fileName);
+            }
             if (repos.contains(fileName)) {
                 // Found it
                 sourceFile = new SourceFile(repos.getDataSource(fileName));
                 cache.put(canonicalName, sourceFile); // always cache with
-                                                      // canonicalName
+                // canonicalName
                 return sourceFile;
             }
         }
@@ -509,30 +500,34 @@ public class SourceFinder {
                 + fileName;
         return platformName;
     }
-    
+
     public static String getPlatformName(SourceLineAnnotation source) {
         return getPlatformName(source.getPackageName(), getOrGuessSourceFile(source));
     }
-    
+
     public static String getCanonicalName(SourceLineAnnotation source) {
         return getCanonicalName(source.getPackageName(), getOrGuessSourceFile(source));
     }
+
     public static String getCanonicalName(String packageName, String fileName) {
         String canonicalName = packageName.replace('.', '/') + (packageName.length() > 0 ? "/" : "") + fileName;
         return canonicalName;
     }
 
     public static String getOrGuessSourceFile(SourceLineAnnotation source)  {
-        if (source.isSourceFileKnown())
+        if (source.isSourceFileKnown()) {
             return source.getSourceFile();
+        }
         String baseClassName = source.getClassName();
         int i = baseClassName.lastIndexOf('.');
         baseClassName = baseClassName.substring(i + 1);
-        int j = baseClassName.indexOf("$");
-        if (j >= 0)
+        int j = baseClassName.indexOf('$');
+        if (j >= 0) {
             baseClassName = baseClassName.substring(0, j);
+        }
         return baseClassName + ".java";
     }
+
     public boolean hasSourceFile(SourceLineAnnotation source) {
         return hasSourceFile(source.getPackageName(), getOrGuessSourceFile(source));
     }
@@ -559,20 +554,24 @@ public class SourceFinder {
         // Is the file in the cache already? Always cache it with the canonical
         // name
         SourceFile sourceFile = cache.get(canonicalName);
-        if (sourceFile != null)
+        if (sourceFile != null) {
             return true;
+        }
 
         // Find this source file, add its data to the cache
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Trying " + fileName + " in package " + packageName + "...");
+        }
         // Query each element of the source path to find the requested source
         // file
         for (SourceRepository repos : repositoryList) {
-            if (repos instanceof BlockingSourceRepository && !((BlockingSourceRepository) repos).isReady())
+            if (repos instanceof BlockingSourceRepository && !((BlockingSourceRepository) repos).isReady()) {
                 continue;
+            }
             fileName = repos.isPlatformDependent() ? platformName : canonicalName;
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Looking in " + repos + " for " + fileName);
+            }
             if (repos.contains(fileName)) {
                 return true;
             }
@@ -581,11 +580,6 @@ public class SourceFinder {
         return false;
     }
 
-   
-
-    /**
-     * @param project
-     */
     private void setProject(Project project) {
         this.project = project;
         repositoryList = new LinkedList<SourceRepository>();
@@ -594,4 +588,3 @@ public class SourceFinder {
     }
 }
 
-// vim:ts=4

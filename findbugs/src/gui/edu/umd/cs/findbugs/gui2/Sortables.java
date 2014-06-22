@@ -44,7 +44,7 @@ import edu.umd.cs.findbugs.util.ClassName;
  * in BugInstances This is the preferred way for getting the information out of
  * a BugInstance and formatting it for display It also has the comparators for
  * the different types of data
- * 
+ *
  * @author Reuven
  */
 
@@ -96,14 +96,16 @@ public enum Sortables implements Comparator<String> {
         public String formatValue(String value) {
             int seqNum = Integer.parseInt(value);
             BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
-            if (bugCollection == null)
+            if (bugCollection == null) {
                 return "--";
+            }
             AppVersion appVersion = bugCollection.getAppVersionFromSequenceNumber(seqNum);
             if (appVersion != null) {
                 String timestamp = new Timestamp(appVersion.getTimestamp()).toString();
                 return appVersion.getReleaseName() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
-            } else
+            } else {
                 return "#" + seqNum;
+            }
         }
 
         @Override
@@ -133,44 +135,53 @@ public enum Sortables implements Comparator<String> {
         @Override
         public String formatValue(String value) {
             // System.out.println("Formatting last version value");
-            if (value.equals("-1"))
+            if (value.equals("-1")) {
                 return "";
+            }
             int seqNum = Integer.parseInt(value);
             BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
-            if (bugCollection == null)
+            if (bugCollection == null) {
                 return "--";
+            }
             AppVersion appVersion = bugCollection.getAppVersionFromSequenceNumber(seqNum);
             if (appVersion != null) {
                 String timestamp = new Timestamp(appVersion.getTimestamp()).toString();
                 return appVersion.getReleaseName() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
+            } else {
+                return "#" + seqNum;
             }
-            else return "#" + seqNum;
         }
 
         @Override
         public int compare(String one, String two) {
-            if (one.equals(two))
+            if (one.equals(two)) {
                 return 0;
+            }
 
             // Numerical (except that -1 is last)
             int first = Integer.parseInt(one);
             int second = Integer.parseInt(two);
-            if (first == second)
+            if (first == second) {
                 return 0;
-            if (first < 0)
+            }
+            if (first < 0) {
                 return 1;
-            if (second < 0)
+            }
+            if (second < 0) {
                 return -1;
-            if (first < second)
+            }
+            if (first < second) {
                 return -1;
+            }
             return 1;
         }
 
         @Override
         public boolean isAvailable(MainFrame mainframe) {
             BugCollection bugCollection = mainframe.getBugCollection();
-            if (bugCollection == null)
+            if (bugCollection == null) {
                 return true;
+            }
             return bugCollection.getCurrentAppVersion().getSequenceNumber() > 0;
 
         }
@@ -185,26 +196,30 @@ public enum Sortables implements Comparator<String> {
 
         @Override
         public String formatValue(String value) {
-            if (value.equals(String.valueOf(Priorities.HIGH_PRIORITY)))
+            if (value.equals(String.valueOf(Priorities.HIGH_PRIORITY))) {
                 return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_high", "High");
-            if (value.equals(String.valueOf(Priorities.NORMAL_PRIORITY)))
+            }
+            if (value.equals(String.valueOf(Priorities.NORMAL_PRIORITY))) {
                 return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_normal", "Normal");
-            if (value.equals(String.valueOf(Priorities.LOW_PRIORITY)))
+            }
+            if (value.equals(String.valueOf(Priorities.LOW_PRIORITY))) {
                 return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_low", "Low");
-            if (value.equals(String.valueOf(Priorities.EXP_PRIORITY)))
+            }
+            if (value.equals(String.valueOf(Priorities.EXP_PRIORITY))) {
                 return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_experimental", "Experimental");
+            }
             return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_ignore", "Ignore"); // This
-                                                                                              // probably
-                                                                                              // shouldn't
-                                                                                              // ever
-                                                                                              // happen,
-                                                                                              // but
-                                                                                              // what
-                                                                                              // the
-                                                                                              // hell,
-                                                                                              // let's
-                                                                                              // be
-                                                                                              // complete
+            // probably
+            // shouldn't
+            // ever
+            // happen,
+            // but
+            // what
+            // the
+            // hell,
+            // let's
+            // be
+            // complete
 
         }
 
@@ -226,12 +241,13 @@ public enum Sortables implements Comparator<String> {
             // compare the numbers after the dollar signs.
             try {
                 if (one.contains("$") && two.contains("$")
-                        && one.substring(0, one.lastIndexOf("$")).equals(two.substring(0, two.lastIndexOf("$"))))
-                    return Integer.valueOf(one.substring(one.lastIndexOf("$"))).compareTo(
-                            Integer.valueOf(two.substring(two.lastIndexOf("$"))));
+                        && one.substring(0, one.lastIndexOf('$')).equals(two.substring(0, two.lastIndexOf('$')))) {
+                    return Integer.valueOf(one.substring(one.lastIndexOf('$'))).compareTo(
+                            Integer.valueOf(two.substring(two.lastIndexOf('$'))));
+                }
             } catch (NumberFormatException e) {
             } // Somebody's playing silly buggers with dollar signs, just do it
-              // lexicographically
+            // lexicographically
 
             // Otherwise, lexicographicalify it
             return one.compareTo(two);
@@ -245,8 +261,9 @@ public enum Sortables implements Comparator<String> {
 
         @Override
         public String formatValue(String value) {
-            if (value.equals(""))
+            if (value.equals("")) {
                 return "(Default)";
+            }
             return value;
         }
     },
@@ -255,8 +272,9 @@ public enum Sortables implements Comparator<String> {
         public String getFrom(BugInstance bug) {
             int count = GUISaveState.getInstance().getPackagePrefixSegments();
 
-            if (count < 1)
+            if (count < 1) {
                 count = 1;
+            }
             String packageName = bug.getPrimarySourceLineAnnotation().getPackageName();
             return ClassName.extractPackagePrefix(packageName, count);
         }
@@ -284,12 +302,15 @@ public enum Sortables implements Comparator<String> {
             String catOne = one;
             String catTwo = two;
             int compare = catOne.compareTo(catTwo);
-            if (compare == 0)
+            if (compare == 0) {
                 return 0;
-            if (catOne.equals("CORRECTNESS"))
+            }
+            if (catOne.equals("CORRECTNESS")) {
                 return -1;
-            if (catTwo.equals("CORRECTNESS"))
+            }
+            if (catTwo.equals("CORRECTNESS")) {
                 return 1;
+            }
             return compare;
 
         }
@@ -303,7 +324,7 @@ public enum Sortables implements Comparator<String> {
 
         /**
          * value is the key of the designations.
-         * 
+         *
          * @param value
          * @return
          */
@@ -314,9 +335,9 @@ public enum Sortables implements Comparator<String> {
 
         @Override
         public String[] getAllSorted() {// FIXME I think we always want user to
-                                        // see all possible designations, not
-                                        // just the ones he has set in his
-                                        // project, Agreement? -Dan
+            // see all possible designations, not
+            // just the ones he has set in his
+            // project, Agreement? -Dan
             List<String> sortedDesignations = I18N.instance().getUserDesignationKeys(true);
             return sortedDesignations.toArray(new String[sortedDesignations.size()]);
         }
@@ -365,8 +386,9 @@ public enum Sortables implements Comparator<String> {
         @Override
         public boolean isAvailable(MainFrame mf) {
             BugCollection bugCollection = mf.getBugCollection();
-            if (bugCollection == null || bugCollection.getCloud() == null)
+            if (bugCollection == null) {
                 return false;
+            }
             return bugCollection.getCloud().getMode() == Mode.COMMUNAL;
 
         }
@@ -376,8 +398,9 @@ public enum Sortables implements Comparator<String> {
         String[] values;
         {
             values = new String[40];
-            for (int i = 0; i < values.length; i++)
+            for (int i = 0; i < values.length; i++) {
                 values[i] = String.format("%2d", i);
+            }
         }
 
         @Override
@@ -403,8 +426,9 @@ public enum Sortables implements Comparator<String> {
             BugFilingStatus status = cloud.getBugLinkStatus(bug);
             if (status == BugFilingStatus.VIEW_BUG) {
                 String bugStatus = cloud.getBugStatus(bug);
-                if (bugStatus != null)
+                if (bugStatus != null) {
                     return bugStatus;
+                }
             }
 
             return CONSENSUS.getFrom(bug);
@@ -418,8 +442,9 @@ public enum Sortables implements Comparator<String> {
         @Override
         public boolean isAvailable(MainFrame mf) {
             BugCollection bugCollection = mf.getBugCollection();
-            if (bugCollection == null || bugCollection.getCloud() == null)
+            if (bugCollection == null) {
                 return false;
+            }
             boolean a = bugCollection.getCloud().supportsBugLinks() && bugCollection.getCloud().getMode() == Mode.COMMUNAL;
             return a;
 
@@ -432,8 +457,9 @@ public enum Sortables implements Comparator<String> {
         public String getFrom(BugInstance bug) {
             ProjectPackagePrefixes p = MainFrame.getInstance().getProjectPackagePrefixes();
             Collection<String> projects = p.getProjects(bug.getPrimaryClass().getClassName());
-            if (projects.size() == 0)
+            if (projects.size() == 0) {
                 return "unclassified";
+            }
             String result = projects.toString();
 
             return result.substring(1, result.length() - 1);
@@ -515,7 +541,7 @@ public enum Sortables implements Comparator<String> {
         return values;
     }
 
-    private SortableStringComparator comparator = new SortableStringComparator(this);
+    private final SortableStringComparator comparator = new SortableStringComparator(this);
 
     public SortableStringComparator getComparator() {
         return comparator;
@@ -533,8 +559,9 @@ public enum Sortables implements Comparator<String> {
 
     public static Sortables getSortableByPrettyName(String name) {
         for (Sortables s : values()) {
-            if (s.prettyName.equals(name))
+            if (s.prettyName.equals(name)) {
                 return s;
+            }
         }
         return null;
     }

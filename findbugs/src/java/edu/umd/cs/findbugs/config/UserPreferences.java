@@ -63,12 +63,10 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class UserPreferences implements Cloneable {
 
-    // Public constants
-
     /**
      * Separator string for values composed from a string and boolean
      */
-    private static final String BOOL_SEPARATOR = "|";
+    private static final char BOOL_SEPARATOR = '|';
 
     public static final String EFFORT_MIN = "min";
 
@@ -304,8 +302,9 @@ public class UserPreferences implements Cloneable {
         props.put(DETECTOR_THRESHOLD_KEY, String.valueOf(filterSettings.getMinPriorityAsInt()));
         props.put(RUN_AT_FULL_BUILD, String.valueOf(runAtFullBuild));
         props.setProperty(EFFORT_KEY, effort);
-        if (cloudId != null)
+        if (cloudId != null) {
             props.setProperty(CLOUD_ID_KEY, cloudId);
+        }
         writeProperties(props, KEY_INCLUDE_FILTER, includeFilterFiles);
         writeProperties(props, KEY_EXCLUDE_FILTER, excludeFilterFiles);
         writeProperties(props, KEY_EXCLUDE_BUGS, excludeBugsFiles);

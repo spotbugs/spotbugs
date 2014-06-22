@@ -61,7 +61,9 @@ import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class Naming extends PreorderVisitor implements Detector {
+
     public static class NamingProperty extends AbstractWarningProperty {
+
         private NamingProperty(String name, PriorityAdjustment priorityAdjustment) {
             super(name, priorityAdjustment);
         }
@@ -71,7 +73,6 @@ public class Naming extends PreorderVisitor implements Detector {
 
         public static final NamingProperty METHOD_IS_DEPRECATED = new NamingProperty("CONFUSING_METHOD_IS_DEPRECATED",
                 PriorityAdjustment.LOWER_PRIORITY);
-
     }
 
     String baseClassName;
@@ -80,37 +81,48 @@ public class Naming extends PreorderVisitor implements Detector {
 
     public static @CheckForNull
     XMethod definedIn(JavaClass clazz, XMethod m) {
-        for (Method m2 : clazz.getMethods())
-            if (m.getName().equals(m2.getName()) && m.getSignature().equals(m2.getSignature()) && m.isStatic() == m2.isStatic())
+        for (Method m2 : clazz.getMethods()) {
+            if (m.getName().equals(m2.getName()) && m.getSignature().equals(m2.getSignature()) && m.isStatic() == m2.isStatic()) {
                 return XFactory.createXMethod(clazz, m2);
+            }
+        }
         return null;
     }
 
     public static boolean confusingMethodNamesWrongCapitalization(XMethod m1, XMethod m2) {
-        if (m1.isStatic() != m2.isStatic())
+        if (m1.isStatic() != m2.isStatic()) {
             return false;
-        if (m1.getClassName().equals(m2.getClassName()))
+        }
+        if (m1.getClassName().equals(m2.getClassName())) {
             return false;
-        if (m1.getName().equals(m2.getName()))
+        }
+        if (m1.getName().equals(m2.getName())) {
             return false;
+        }
         if (m1.getName().equalsIgnoreCase(m2.getName())
-                && removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature())))
+                && removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature()))) {
             return true;
+        }
         return false;
     }
 
     public static boolean confusingMethodNamesWrongPackage(XMethod m1, XMethod m2) {
-        if (m1.isStatic() != m2.isStatic())
+        if (m1.isStatic() != m2.isStatic()) {
             return false;
-        if (m1.getClassName().equals(m2.getClassName()))
+        }
+        if (m1.getClassName().equals(m2.getClassName())) {
             return false;
+        }
 
-        if (!m1.getName().equals(m2.getName()))
+        if (!m1.getName().equals(m2.getName())) {
             return false;
-        if (m1.getSignature().equals(m2.getSignature()))
+        }
+        if (m1.getSignature().equals(m2.getSignature())) {
             return false;
-        if (removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature())))
+        }
+        if (removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature()))) {
             return true;
+        }
         return false;
     }
 
@@ -119,7 +131,7 @@ public class Naming extends PreorderVisitor implements Detector {
 
     HashSet<String> visited = new HashSet<String>();
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     public Naming(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -131,10 +143,12 @@ public class Naming extends PreorderVisitor implements Detector {
     }
 
     private boolean checkSuper(XMethod m, Set<XMethod> others) {
-        if (m.isStatic())
+        if (m.isStatic()) {
             return false;
-        if (m.getName().equals("<init>") || m.getName().equals("<clinit>"))
+        }
+        if (m.getName().equals("<init>") || m.getName().equals("<clinit>")) {
             return false;
+        }
         for (XMethod m2 : others) {
             try {
                 if ((confusingMethodNamesWrongCapitalization(m, m2) || confusingMethodNamesWrongPackage(m, m2))
@@ -158,24 +172,27 @@ public class Naming extends PreorderVisitor implements Detector {
                     }
 
                     XFactory xFactory = AnalysisContext.currentXFactory();
-                    if (m3 == null && xFactory.isCalled(m))
+                    if (m3 == null && xFactory.isCalled(m)) {
                         propertySet.addProperty(NamingProperty.METHOD_IS_CALLED);
-                    else if (m.isDeprecated() || m2.isDeprecated())
+                    } else if (m.isDeprecated() || m2.isDeprecated()) {
                         propertySet.addProperty(NamingProperty.METHOD_IS_DEPRECATED);
+                    }
 
                     if (!m.getName().equals(m2.getName()) && m.getName().equalsIgnoreCase(m2.getName())) {
                         String pattern = intentional ? "NM_VERY_CONFUSING_INTENTIONAL" : "NM_VERY_CONFUSING";
                         Set<XMethod> overrides = Hierarchy2.findSuperMethods(m);
                         if (!overrides.isEmpty()) {
-                            if (intentional || allAbstract(overrides))
+                            if (intentional || allAbstract(overrides)) {
                                 break;
+                            }
                             priority++;
                         }
                         BugInstance bug = new BugInstance(this, pattern, priority).addClass(m.getClassName()).addMethod(m)
                                 .addClass(m2.getClassName()).describe(ClassAnnotation.SUPERCLASS_ROLE).addMethod(m2)
                                 .describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
-                        if (m3 != null)
+                        if (m3 != null) {
                             bug.addMethod(m3).describe(MethodAnnotation.METHOD_OVERRIDDEN);
+                        }
                         propertySet.decorateBugInstance(bug);
                         bugReporter.reportBug(bug);
                     } else if (!m.getSignature().equals(m2.getSignature())
@@ -184,8 +201,9 @@ public class Naming extends PreorderVisitor implements Detector {
                         String pattern = intentional ? "NM_WRONG_PACKAGE_INTENTIONAL" : "NM_WRONG_PACKAGE";
                         Set<XMethod> overrides = Hierarchy2.findSuperMethods(m);
                         if (!overrides.isEmpty()) {
-                            if (intentional || allAbstract(overrides))
+                            if (intentional || allAbstract(overrides)) {
                                 break;
+                            }
                             priority++;
                         }
                         Iterator<String> s = new SignatureParser(m.getSignature()).parameterSignatureIterator();
@@ -198,8 +216,9 @@ public class Naming extends PreorderVisitor implements Detector {
                                         .addMethod(m).addClass(m2.getClassName()).describe(ClassAnnotation.SUPERCLASS_ROLE)
                                         .addMethod(m2).describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE)
                                         .addFoundAndExpectedType(p, p2);
-                                if (m3 != null)
+                                if (m3 != null) {
                                     bug.addMethod(m3).describe(MethodAnnotation.METHOD_OVERRIDDEN);
+                                }
                                 propertySet.decorateBugInstance(bug);
                                 bugReporter.reportBug(bug);
 
@@ -220,22 +239,24 @@ public class Naming extends PreorderVisitor implements Detector {
     private boolean allAbstract(Set<XMethod> overrides) {
         boolean allAbstract = true;
         for (XMethod m4 : overrides) {
-            if (!m4.isAbstract())
+            if (!m4.isAbstract()) {
                 allAbstract = false;
+            }
         }
         return allAbstract;
     }
 
-    @SuppressWarnings("unchecked")
     private boolean checkNonSuper(XMethod m, Set<XMethod> others) {
-        if (m.isStatic())
+        if (m.isStatic()) {
             return false;
-        if (m.getName().startsWith("<init>") || m.getName().startsWith("<clinit>"))
+        }
+        if (m.getName().startsWith("<init>") || m.getName().startsWith("<clinit>")) {
             return false;
+        }
         for (XMethod m2 : others) {
             if (confusingMethodNamesWrongCapitalization(m, m2)) {
-                XMethod mm1 = m;
-                XMethod mm2 = m2;
+                XMethod mm1;
+                XMethod mm2;
                 if (m.compareTo(m2) < 0) {
                     mm1 = m;
                     mm2 = m2;
@@ -258,28 +279,33 @@ public class Naming extends PreorderVisitor implements Detector {
             TreeSet<XMethod> conflictingMethods = e.getValue();
             HashSet<String> trueNames = new HashSet<String>();
 
-            for (XMethod m : conflictingMethods)
+            for (XMethod m : conflictingMethods) {
                 trueNames.add(m.getName() + m.getSignature());
-            if (trueNames.size() <= 1)
+            }
+            if (trueNames.size() <= 1) {
                 continue;
+            }
             for (Iterator<XMethod> j = conflictingMethods.iterator(); j.hasNext();) {
-                if (checkSuper(j.next(), conflictingMethods))
+                if (checkSuper(j.next(), conflictingMethods)) {
                     j.remove();
+                }
             }
             for (XMethod conflictingMethod : conflictingMethods) {
-                if (checkNonSuper(conflictingMethod, conflictingMethods))
+                if (checkNonSuper(conflictingMethod, conflictingMethods)) {
                     break;
+                }
             }
         }
     }
 
     public String stripPackageName(String className) {
-        if (className.indexOf('.') >= 0)
+        if (className.indexOf('.') >= 0) {
             return className.substring(className.lastIndexOf('.') + 1);
-        else if (className.indexOf('/') >= 0)
+        } else if (className.indexOf('/') >= 0) {
             return className.substring(className.lastIndexOf('/') + 1);
-        else
+        } else {
             return className;
+        }
     }
 
     public boolean sameSimpleName(String class1, String class2) {
@@ -288,11 +314,13 @@ public class Naming extends PreorderVisitor implements Detector {
 
     @Override
     public void visitJavaClass(JavaClass obj) {
-        if (BCELUtil.isSynthetic(obj))
+        if (BCELUtil.isSynthetic(obj)) {
             return;
+        }
         String name = obj.getClassName();
-        if (!visited.add(name))
+        if (!visited.add(name)) {
             return;
+        }
 
         String superClassName = obj.getSuperclassName();
         if (!name.equals("java.lang.Object")) {
@@ -300,28 +328,31 @@ public class Naming extends PreorderVisitor implements Detector {
                 bugReporter.reportBug(new BugInstance(this, "NM_SAME_SIMPLE_NAME_AS_SUPERCLASS", HIGH_PRIORITY).addClass(name)
                         .addClass(superClassName));
             }
-            for (String interfaceName : obj.getInterfaceNames())
+            for (String interfaceName : obj.getInterfaceNames()) {
                 if (sameSimpleName(interfaceName, name)) {
                     bugReporter.reportBug(new BugInstance(this, "NM_SAME_SIMPLE_NAME_AS_INTERFACE", NORMAL_PRIORITY).addClass(
                             name).addClass(interfaceName));
                 }
+            }
         }
-        if (obj.isInterface())
+        if (obj.isInterface()) {
             return;
+        }
 
-        if (superClassName.equals("java.lang.Object") && !visited.contains(superClassName))
+        if (superClassName.equals("java.lang.Object") && !visited.contains(superClassName)) {
             try {
                 visitJavaClass(obj.getSuperClass());
             } catch (ClassNotFoundException e) {
                 // ignore it
             }
+        }
         super.visitJavaClass(obj);
     }
 
     /**
      * Determine whether the class descriptor ultimately inherits from
      * java.lang.Exception
-     * 
+     *
      * @param d
      *            class descriptor we want to check
      * @return true iff the descriptor ultimately inherits from Exception
@@ -352,7 +383,7 @@ public class Naming extends PreorderVisitor implements Detector {
      * message constants. Unfortunately these fields often has bad names which
      * does not follow Java code convention, so FB reports tons of warnings for
      * such Eclipse message fields.
-     * 
+     *
      * @see edu.umd.cs.findbugs.detect.MutableStaticFields
      */
     private boolean isEclipseNLS;
@@ -362,14 +393,17 @@ public class Naming extends PreorderVisitor implements Detector {
         String name = obj.getClassName();
         String[] parts = name.split("[$+.]");
         baseClassName = parts[parts.length - 1];
-        for (String p : name.split("[.]"))
-            if (p.length() == 1)
+        for (String p : name.split("[.]")) {
+            if (p.length() == 1) {
                 return;
-        if (name.indexOf("Proto$") >= 0)
+            }
+        }
+        if (name.indexOf("Proto$") >= 0) {
             return;
+        }
         classIsPublicOrProtected = obj.isPublic() || obj.isProtected();
         if (Character.isLetter(baseClassName.charAt(0)) && !Character.isUpperCase(baseClassName.charAt(0))
-                && baseClassName.indexOf("_") == -1) {
+                && baseClassName.indexOf('_') == -1) {
             int priority = classIsPublicOrProtected ? NORMAL_PRIORITY : LOW_PRIORITY;
 
             bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NAMING_CONVENTION", priority).addClass(this));
@@ -383,14 +417,18 @@ public class Naming extends PreorderVisitor implements Detector {
         }
 
         int badFieldNames = 0;
-        for (Field f : obj.getFields())
-            if (f.getName().length() >= 2 && badFieldName(f))
+        for (Field f : obj.getFields()) {
+            if (f.getName().length() >= 2 && badFieldName(f)) {
                 badFieldNames++;
+            }
+        }
         hasBadFieldNames = badFieldNames > 3 && badFieldNames > obj.getFields().length / 3;
         int badMethodNames = 0;
-        for (Method m : obj.getMethods())
-            if (badMethodName(m.getName()))
+        for (Method m : obj.getMethods()) {
+            if (badMethodName(m.getName())) {
                 badMethodNames++;
+            }
+        }
         hasBadMethodNames = badMethodNames > 3 && badMethodNames > obj.getMethods().length / 3;
         isEclipseNLS = "org.eclipse.osgi.util.NLS".equals(obj.getSuperclassName());
         super.visit(obj);
@@ -398,8 +436,9 @@ public class Naming extends PreorderVisitor implements Detector {
 
     @Override
     public void visit(Field obj) {
-        if (getFieldName().length() == 1)
+        if (getFieldName().length() == 1) {
             return;
+        }
 
         if (isEclipseNLS) {
             int flags = obj.getAccessFlags();
@@ -412,44 +451,52 @@ public class Naming extends PreorderVisitor implements Detector {
         if (badFieldName(obj)) {
             bugReporter.reportBug(new BugInstance(this, "NM_FIELD_NAMING_CONVENTION", classIsPublicOrProtected
                     && (obj.isPublic() || obj.isProtected()) && !hasBadFieldNames ? NORMAL_PRIORITY : LOW_PRIORITY)
-                    .addClass(this).addVisitedField(this));
+            .addClass(this).addVisitedField(this));
         }
     }
 
     private boolean badFieldName(Field obj) {
         String fieldName = obj.getName();
         return !obj.isFinal() && Character.isLetter(fieldName.charAt(0)) && !Character.isLowerCase(fieldName.charAt(0))
-                && fieldName.indexOf("_") == -1 && Character.isLetter(fieldName.charAt(1))
+                && fieldName.indexOf('_') == -1 && Character.isLetter(fieldName.charAt(1))
                 && Character.isLowerCase(fieldName.charAt(1));
     }
 
     private final static Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
 
-  
+
 
     private static @CheckForNull
     String getSignatureOfOuterClass(JavaClass obj) {
-        for (Field f : obj.getFields())
-            if (f.getName().startsWith("this$"))
+        for (Field f : obj.getFields()) {
+            if (f.getName().startsWith("this$")) {
                 return f.getSignature();
+            }
+        }
         return null;
     }
 
     private boolean markedAsNotUsable(Method obj) {
-        for (Attribute a : obj.getAttributes())
-            if (a instanceof Deprecated)
+        for (Attribute a : obj.getAttributes()) {
+            if (a instanceof Deprecated) {
                 return true;
+            }
+        }
         Code code = obj.getCode();
-        if (code == null)
+        if (code == null) {
             return false;
+        }
         byte[] codeBytes = code.getCode();
         if (codeBytes.length > 1 && codeBytes.length < 10) {
             int lastOpcode = codeBytes[codeBytes.length - 1] & 0xff;
-            if (lastOpcode != ATHROW)
+            if (lastOpcode != ATHROW) {
                 return false;
-            for (int b : codeBytes)
-                if ((b & 0xff) == RETURN)
+            }
+            for (int b : codeBytes) {
+                if ((b & 0xff) == RETURN) {
                     return false;
+                }
+            }
             return true;
         }
         return false;
@@ -457,9 +504,11 @@ public class Naming extends PreorderVisitor implements Detector {
 
     private static @CheckForNull
     Method findVoidConstructor(JavaClass clazz) {
-        for (Method m : clazz.getMethods())
-            if (isVoidConstructor(clazz, m))
+        for (Method m : clazz.getMethods()) {
+            if (isVoidConstructor(clazz, m)) {
                 return m;
+            }
+        }
         return null;
 
     }
@@ -467,49 +516,63 @@ public class Naming extends PreorderVisitor implements Detector {
     @Override
     public void visit(Method obj) {
         String mName = getMethodName();
-        if (mName.length() == 1)
+        if (mName.length() == 1) {
             return;
-        if (mName.equals("isRequestedSessionIdFromURL") || mName.equals("isRequestedSessionIdFromUrl"))
+        }
+        if (mName.equals("isRequestedSessionIdFromURL") || mName.equals("isRequestedSessionIdFromUrl")) {
             return;
+        }
         String sig = getMethodSig();
         if (mName.equals(baseClassName) && sig.equals("()V")) {
             Code code = obj.getCode();
             Method realVoidConstructor = findVoidConstructor(getThisClass());
             if (code != null && !markedAsNotUsable(obj)) {
                 int priority = NORMAL_PRIORITY;
-                if (codeDoesSomething(code))
+                if (codeDoesSomething(code)) {
                     priority--;
-                else if (!obj.isPublic() && getThisClass().isPublic())
+                } else if (!obj.isPublic() && getThisClass().isPublic()) {
                     priority--;
+                }
                 boolean instanceMembers = false;
-                for (Method m : this.getThisClass().getMethods())
-                    if (!m.isStatic() && m != obj && !isVoidConstructor(getThisClass(), m))
+                for (Method m : this.getThisClass().getMethods()) {
+                    if (!m.isStatic() && m != obj && !isVoidConstructor(getThisClass(), m)) {
                         instanceMembers = true;
-                for (Field f : this.getThisClass().getFields())
-                    if (!f.isStatic())
+                    }
+                }
+                for (Field f : this.getThisClass().getFields()) {
+                    if (!f.isStatic()) {
                         instanceMembers = true;
-                if (!codeDoesSomething(code) && !instanceMembers && getSuperclassName().equals("java/lang/Object"))
+                    }
+                }
+                if (!codeDoesSomething(code) && !instanceMembers && getSuperclassName().equals("java/lang/Object")) {
                     priority += 2;
-                if (hasBadMethodNames)
+                }
+                if (hasBadMethodNames) {
                     priority++;
-                if (!getXClass().getAnnotations().isEmpty())
+                }
+                if (!getXClass().getAnnotations().isEmpty()) {
                     priority++;
-                if (realVoidConstructor != null)
+                }
+                if (realVoidConstructor != null) {
                     priority = LOW_PRIORITY;
+                }
 
                 bugReporter.reportBug(new BugInstance(this, "NM_METHOD_CONSTRUCTOR_CONFUSION", priority).addClassAndMethod(this)
                         .lowerPriorityIfDeprecated());
                 return;
             }
-        } else if (badMethodName(mName))
+        } else if (badMethodName(mName)) {
             bugReporter.reportBug(new BugInstance(this, "NM_METHOD_NAMING_CONVENTION", classIsPublicOrProtected
                     && (obj.isPublic() || obj.isProtected()) && !hasBadMethodNames ? NORMAL_PRIORITY : LOW_PRIORITY)
-                    .addClassAndMethod(this));
+            .addClassAndMethod(this));
+        }
 
-        if (obj.isAbstract())
+        if (obj.isAbstract()) {
             return;
-        if (obj.isPrivate())
+        }
+        if (obj.isPrivate()) {
             return;
+        }
 
         if (mName.equals("equal") && sig.equals("(Ljava/lang/Object;)Z")) {
             bugReporter.reportBug(new BugInstance(this, "NM_BAD_EQUAL", HIGH_PRIORITY).addClassAndMethod(this)
@@ -527,8 +590,9 @@ public class Naming extends PreorderVisitor implements Detector {
             return;
         }
 
-        if (obj.isPrivate() || obj.isStatic() || mName.equals("<init>"))
+        if (obj.isPrivate() || obj.isStatic() || mName.equals("<init>")) {
             return;
+        }
 
         String sig2 = removePackageNamesFromSignature(sig);
         String allSmall = mName.toLowerCase() + sig2;
@@ -547,14 +611,15 @@ public class Naming extends PreorderVisitor implements Detector {
 
     private static boolean isVoidConstructor(JavaClass clazz, Method m) {
         String outerClassSignature = getSignatureOfOuterClass(clazz);
-        if (outerClassSignature == null)
+        if (outerClassSignature == null) {
             outerClassSignature = "";
+        }
         return m.getName().equals("<init>") && m.getSignature().equals("(" + outerClassSignature + ")V");
     }
 
     private boolean badMethodName(String mName) {
         return mName.length() >= 2 && Character.isLetter(mName.charAt(0)) && !Character.isLowerCase(mName.charAt(0))
-                && Character.isLetter(mName.charAt(1)) && Character.isLowerCase(mName.charAt(1)) && mName.indexOf("_") == -1;
+                && Character.isLetter(mName.charAt(1)) && Character.isLowerCase(mName.charAt(1)) && mName.indexOf('_') == -1;
     }
 
     private boolean codeDoesSomething(Code code) {
@@ -563,7 +628,7 @@ public class Naming extends PreorderVisitor implements Detector {
     }
 
     private static String removePackageNamesFromSignature(String sig) {
-        int end = sig.indexOf(")");
+        int end = sig.indexOf(')');
         Matcher m = sigType.matcher(sig.substring(0, end));
         return m.replaceAll("L$2") + sig.substring(end);
     }

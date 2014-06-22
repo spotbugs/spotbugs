@@ -47,18 +47,22 @@ public class ProjectPackagePrefixes {
 
         PrefixFilter(String prefixes) {
             prefixes = prefixes.replace('/', '.').trim();
-            if (prefixes.length() == 0)
+            if (prefixes.length() == 0) {
                 parts = new String[0];
-            else
+            } else {
                 parts = prefixes.split("[ ,:]+");
+            }
         }
 
         boolean matches(@DottedClassName String className) {
-            if (parts.length == 0)
+            if (parts.length == 0) {
                 return true;
-            for (String p : parts)
-                if (p.length() > 0 && className.startsWith(p))
+            }
+            for (String p : parts) {
+                if (p.length() > 0 && className.startsWith(p)) {
                     return true;
+                }
+            }
             return false;
         }
 
@@ -110,8 +114,9 @@ public class ProjectPackagePrefixes {
     public TreeSet<String> getProjects(@DottedClassName String className) {
         TreeSet<String> results = new TreeSet<String>();
         for (Map.Entry<String, PrefixFilter> e : map.entrySet()) {
-            if (e.getValue().matches(className))
+            if (e.getValue().matches(className)) {
                 results.add(e.getKey());
+            }
         }
         return results;
     }
@@ -122,10 +127,11 @@ public class ProjectPackagePrefixes {
 
     static <T> void incrementCount(Map<T, Integer> counter, T t, int valueToAdd) {
         Integer v = counter.get(t);
-        if (v == null)
+        if (v == null) {
             counter.put(t, valueToAdd);
-        else
+        } else {
             counter.put(t, v + valueToAdd);
+        }
     }
 
     static final Pattern FORBIDDEN_PACKAGE_PREFIXES = Pattern.compile(SystemProperties.getProperty(
@@ -138,15 +144,17 @@ public class ProjectPackagePrefixes {
 
         for (Map.Entry<String, Integer> e : rawPackageCount.entrySet()) {
             String packageName = e.getKey();
-            if (e.getValue() > 5)
+            if (e.getValue() > 5) {
                 System.out.printf("%5d %s%n", e.getValue(), packageName);
+            }
         }
         System.out.println("Count by project");
 
         for (Map.Entry<Set<String>, Integer> e : count.entrySet()) {
             Set<String> projects = e.getKey();
-            if (e.getValue() > 5)
+            if (e.getValue() > 5) {
                 System.out.printf("%5d %s%n", e.getValue(), projects);
+            }
         }
         System.out.println("Count by package for items not associated with a project");
 
@@ -157,22 +165,24 @@ public class ProjectPackagePrefixes {
             for (String p1 : packages) {
                 int num = missingProjectCount.get(p1);
                 if (num < 3) {
-                    int x = p1.lastIndexOf(".");
+                    int x = p1.lastIndexOf('.');
                     String p2 = p1.substring(0, x);
-                    if (FORBIDDEN_PACKAGE_PREFIXES.matcher(p2).matches())
+                    if (FORBIDDEN_PACKAGE_PREFIXES.matcher(p2).matches()) {
                         continue;
+                    }
 
                     extraSuperPackages.add(p2);
                 }
             }
-            for (String p1 : extraSuperPackages)
+            for (String p1 : extraSuperPackages) {
                 missingProjectCount.put(p1, 0);
+            }
 
             for (Iterator<String> i = packages.iterator(); i.hasNext();) {
                 String p1 = i.next();
                 int num = missingProjectCount.get(p1);
 
-                for (String p2 : packages)
+                for (String p2 : packages) {
                     if (p2.length() < p1.length() && p1.startsWith(p2)) {
                         // p1 is a subpackage of p2
                         // System.out.printf("%s is a subpackage of %s\n", p1,
@@ -181,14 +191,16 @@ public class ProjectPackagePrefixes {
                         incrementCount(missingProjectCount, p2, num);
                         break;
                     }
+                }
 
             }
         }
 
         System.out.println("Count of missing files in packages not associated with a project");
         for (Map.Entry<String, Integer> e : missingProjectCount.entrySet()) {
-            if (e.getValue() > 5)
+            if (e.getValue() > 5) {
                 System.out.printf("%5d %s%n", e.getValue(), e.getKey());
+            }
         }
     }
 
@@ -198,20 +210,22 @@ public class ProjectPackagePrefixes {
 
             BufferedReader in = null;
             try {
-                 in = UTF8.bufferedReader(u.openStream());
+                in = UTF8.bufferedReader(u.openStream());
                 while (true) {
                     String s = in.readLine();
-                    if (s == null)
+                    if (s == null) {
                         break;
+                    }
                     String[] parts = s.split("=");
-                    if (parts.length == 2 && !map.containsKey(parts[0]))
+                    if (parts.length == 2 && !map.containsKey(parts[0])) {
                         map.put(parts[0], new PrefixFilter(parts[1]));
+                    }
                 }
             } catch (IOException e1) {
 
                 AnalysisContext.logError("Error loading projects paths", e1);
             } finally {
-               Util.closeSilently(in);
+                Util.closeSilently(in);
             }
 
         }

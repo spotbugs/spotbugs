@@ -34,7 +34,6 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -56,7 +55,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
         CLASS, ANY
     }
 
-    private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
+    //    private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
 
     private final Map<Object, AnnotationEnum> directAnnotations = new HashMap<Object, AnnotationEnum>();
 
@@ -86,10 +85,12 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
     }
 
     public void addDefaultAnnotation(Target target, String c, AnnotationEnum n) {
-        if (!defaultAnnotation.containsKey(target))
+        if (!defaultAnnotation.containsKey(target)) {
             return;
-        if (DEBUG)
+        }
+        if (DEBUG) {
             System.out.println("Default annotation " + target + " " + c + " " + n);
+        }
         defaultAnnotation.get(target).put(c, n);
         seen.add(n);
     }
@@ -122,17 +123,19 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
             }
         }
         Map<Object, AnnotationEnum> cache;
-        if (getMinimal)
+        if (getMinimal) {
             cache = cachedMinimal;
-        else
+        } else {
             cache = cachedMaximal;
+        }
 
         if (cache.containsKey(o)) {
             return cache.get(o);
         }
         AnnotationEnum n = getUncachedResolvedAnnotation(o, getMinimal);
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("TTT: " + o + " " + n);
+        }
         cache.put(o, n);
         return n;
     }
@@ -145,8 +148,9 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
     public AnnotationEnum getUncachedResolvedAnnotation(final Object o, boolean getMinimal) {
 
         AnnotationEnum n = getDirectAnnotation(o);
-        if (n != null)
+        if (n != null) {
             return n;
+        }
 
         try {
 
@@ -169,12 +173,14 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
                     className = m.getClassName();
                     kind = Target.PARAMETER;
                     if (m.getName().equals("<init>")) {
-                        int i = className.lastIndexOf("$");
-                        if (i + 1 < className.length() && Character.isDigit(className.charAt(i + 1)))
+                        int i = className.lastIndexOf('$');
+                        if (i + 1 < className.length() && Character.isDigit(className.charAt(i + 1))) {
                             isParameterToInitMethodofAnonymousInnerClass = true;
+                        }
                     }
-                } else
+                } else {
                     throw new IllegalStateException("impossible");
+                }
 
                 if (!m.isStatic() && !m.getName().equals("<init>")) {
                     JavaClass c = Repository.lookupClass(className);
@@ -183,21 +189,26 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
                     if (c.getSuperclassNameIndex() > 0) {
 
                         n = lookInOverriddenMethod(o, c.getSuperclassName(), m, getMinimal);
-                        if (n != null)
+                        if (n != null) {
                             inheritedAnnotations.add(n);
+                        }
                     }
                     for (String implementedInterface : c.getInterfaceNames()) {
                         n = lookInOverriddenMethod(o, implementedInterface, m, getMinimal);
-                        if (n != null)
+                        if (n != null) {
                             inheritedAnnotations.add(n);
+                        }
                     }
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("# of inherited annotations : " + inheritedAnnotations.size());
+                    }
                     if (!inheritedAnnotations.isEmpty()) {
-                        if (inheritedAnnotations.size() == 1)
+                        if (inheritedAnnotations.size() == 1) {
                             return inheritedAnnotations.first();
-                        if (!getMinimal)
+                        }
+                        if (!getMinimal) {
                             return inheritedAnnotations.last();
+                        }
 
                         AnnotationEnum min = inheritedAnnotations.first();
                         if (min.getIndex() == 0) {
@@ -208,10 +219,12 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
                     }
                     // check to see if method is defined in this class;
                     // if not, on't consider default annotations
-                    if (!classDefinesMethod(c, m))
+                    if (!classDefinesMethod(c, m)) {
                         return null;
-                    if (DEBUG)
+                    }
+                    if (DEBUG) {
                         System.out.println("looking for default annotations: " + c.getClassName() + " defines " + m);
+                    }
                 } // if not static
             } // associated with method
             else if (o instanceof XField) {
@@ -222,54 +235,66 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
                 assert false;
                 className = (String) o;
                 kind = Target.CLASS;
-            } else
+            } else {
                 throw new IllegalArgumentException("Can't look up annotation for " + o.getClass().getName());
+            }
 
             // <init> method parameters for inner classes don't inherit default
             // annotations
             // since some of them are synthetic
-            if (isParameterToInitMethodofAnonymousInnerClass)
+            if (isParameterToInitMethodofAnonymousInnerClass) {
                 return null;
+            }
 
             // synthetic elements should not inherit default annotations
-            if (isSyntheticMethod)
+            if (isSyntheticMethod) {
                 return null;
+            }
             try {
                 XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class,
                         DescriptorFactory.createClassDescriptorFromDottedClassName(className));
 
-                if (c != null && c.isSynthetic())
+                if (c != null && c.isSynthetic()) {
                     return null;
+                }
             } catch (CheckedAnalysisException e) {
                 assert true;
             }
 
             // look for default annotation
             n = defaultAnnotation.get(kind).get(className);
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Default annotation for " + kind + " is " + n);
-            if (n != null)
+            }
+            if (n != null) {
                 return n;
+            }
 
             n = defaultAnnotation.get(Target.ANY).get(className);
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Default annotation for any is " + n);
-            if (n != null)
+            }
+            if (n != null) {
                 return n;
+            }
 
             int p = className.lastIndexOf('.');
             className = className.substring(0, p + 1) + "package-info";
             n = defaultAnnotation.get(kind).get(className);
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Default annotation for " + kind + " is " + n);
-            if (n != null)
+            }
+            if (n != null) {
                 return n;
+            }
 
             n = defaultAnnotation.get(Target.ANY).get(className);
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Default annotation for any is " + n);
-            if (n != null)
+            }
+            if (n != null) {
                 return n;
+            }
 
             return n;
         } catch (ClassNotFoundException e) {
@@ -284,10 +309,12 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
     }
 
     private boolean classDefinesMethod(JavaClass c, XMethod m) {
-        for (Method definedMethod : c.getMethods())
+        for (Method definedMethod : c.getMethods()) {
             if (definedMethod.getName().equals(m.getName()) && definedMethod.getSignature().equals(m.getSignature())
-                    && definedMethod.isStatic() == m.isStatic())
+                    && definedMethod.isStatic() == m.isStatic()) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -298,18 +325,21 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
             // Look in supermethod
             XMethod superMethod = XFactory.createXMethod(classToLookIn, originalMethod.getName(), originalMethod.getSignature(),
                     originalMethod.isStatic());
-            if (!superMethod.isResolved())
+            if (!superMethod.isResolved()) {
                 return null;
-            if (DEBUG)
+            }
+            if (DEBUG) {
                 System.out.println("Looking for overridden method " + superMethod);
+            }
 
             Object probe;
-            if (originalQuery instanceof XMethod)
+            if (originalQuery instanceof XMethod) {
                 probe = superMethod;
-            else if (originalQuery instanceof XMethodParameter)
+            } else if (originalQuery instanceof XMethodParameter) {
                 probe = new XMethodParameter(superMethod, ((XMethodParameter) originalQuery).getParameterNumber());
-            else
+            } else {
                 throw new IllegalStateException("impossible");
+            }
 
             n = getResolvedAnnotation(probe, getMinimal);
             return n;
@@ -331,35 +361,36 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
         // if (!Subtypes.DO_NOT_USE) {
         // subtypes.addNamedClass(cName);
         // }
-
-        if (addClassOnly)
+        if (addClassOnly) {
             return;
-
+        }
         addDefaultAnnotation(AnnotationDatabase.Target.METHOD, cName, annotation);
-
     }
 
     protected void addFieldAnnotation(String cName, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
         // if (!Subtypes.DO_NOT_USE) {
         // subtypes.addNamedClass(cName);
         // }
-        if (addClassOnly)
+        if (addClassOnly) {
             return;
+        }
         XField m = XFactory.createXField(cName, mName, mSig, isStatic);
         addDirectAnnotation(m, annotation);
     }
 
-    protected void addMethodAnnotation(Class<?> clazz, String mName, String mSig, boolean isStatic,
-            AnnotationEnum annotation) {
+    protected void addMethodAnnotation(Class<?> clazz, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
         addMethodAnnotation(clazz.getName(), mName, mSig, isStatic, annotation);
     }
-    protected void addMethodAnnotation(@DottedClassName String cName, String mName, String mSig, boolean isStatic,
-            AnnotationEnum annotation) {
-        if (addClassOnly)
+
+    protected void addMethodAnnotation(@DottedClassName String cName, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
+        if (addClassOnly) {
             return;
+        }
         XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
-        if (!m.getClassName().equals(cName))
+        if (!m.getClassName().equals(cName)){
             return;
+        }
+        /*
         if (false && !m.isResolved()) {
             System.out.println("Unable to add annotation " + annotation + " to " + m);
             ClassDescriptor c = DescriptorFactory.createClassDescriptorFromDottedClassName(cName);
@@ -375,7 +406,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
                     e.printStackTrace();
                 }
         }
-
+         */
         addDirectAnnotation(m, annotation);
     }
 
@@ -389,11 +420,13 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
         // if (!Subtypes.DO_NOT_USE) {
         // subtypes.addNamedClass(cName);
         // }
-        if (addClassOnly)
+        if (addClassOnly) {
             return;
+        }
         SignatureParser parser = new SignatureParser(mSig);
-        if (param < 0 || param >= parser.getNumParameters())
+        if (param < 0 || param >= parser.getNumParameters()) {
             throw new IllegalArgumentException("can't annotation parameter #" + param + " of " + cName + "." + mName + mSig);
+        }
         String signature = parser.getParameter(param);
         char firstChar = signature.charAt(0);
         boolean isReference = firstChar == 'L' || firstChar == '[';

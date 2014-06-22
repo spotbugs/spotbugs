@@ -85,9 +85,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     public static final String METHOD_COMPUTED_IN = "METHOD_COMPUTED_IN";
 
     public static final String METHOD_ALTERNATIVE_TARGET = "METHOD_ALTERNATIVE_TARGET";
-    
+
     public static final String SHOULD_CALL = "SHOULD_CALL";
-    
+
     /**
      * Constructor.
      *
@@ -103,7 +103,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     public MethodAnnotation(@DottedClassName String className, String methodName, String methodSig, boolean isStatic) {
         super(className, DEFAULT_ROLE);
         this.methodName = methodName;
-        if (methodSig.indexOf(".") >= 0) {
+        if (methodSig.indexOf('.') >= 0) {
             assert false : "signatures should not be dotted: " + methodSig;
             methodSig = methodSig.replace('.', '/');
         }
@@ -360,9 +360,6 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     /**
      * Get the "full" method name. This is a format which looks sort of like a
      * method signature that would appear in Java source code.
-     *
-     * @param primaryClass
-     *            TODO
      */
     public String getNameInClass(ClassAnnotation primaryClass) {
         return getNameInClass(true, false, false, false);
@@ -387,10 +384,6 @@ public class MethodAnnotation extends PackageMemberAnnotation {
      * @param shortenPackages
      *            whether to shorten package names if they are in java or in the
      *            same package as this method.
-     * @param useJVMMethodName
-     *            TODO
-     * @param hash
-     *            TODO
      */
     public String getNameInClass(boolean shortenPackages, boolean useJVMMethodName, boolean hash, boolean omitMethodName) {
         // Convert to "nice" representation
@@ -432,9 +425,6 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     /**
      * Get the "full" method name. This is a format which looks sort of like a
      * method signature that would appear in Java source code.
-     *
-     * @param primaryClass
-     *            TODO
      */
     public String getFullMethod(ClassAnnotation primaryClass) {
         if (fullMethod == null) {
@@ -536,5 +526,3 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         return true;
     }
 }
-
-// vim:ts=4

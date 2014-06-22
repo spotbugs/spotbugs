@@ -54,7 +54,7 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
     private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug.annotation");
 
-    private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
+    //    private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
 
     @StaticConstant
     private static final Map<String, AnnotationDatabase.Target> defaultKind = new HashMap<String, AnnotationDatabase.Target>();
@@ -73,23 +73,18 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
     }
 
     static String lastPortion(String className) {
-        int i = className.lastIndexOf(".");
-        if (i < 0)
+        int i = className.lastIndexOf('.');
+        if (i < 0) {
             return className;
+        }
         return className.substring(i + 1);
     }
 
-    /*
-     * * @param value
-     *
-     * @param map
-     *
-     * @param annotationTarget
-     */
     private void handleClassElementValue(ClassElementValue value, Target annotationTarget) {
         NullnessAnnotation n = NullnessAnnotation.Parser.parse(value.getClassString());
-        if (n != null)
+        if (n != null) {
             database.addDefaultAnnotation(annotationTarget, getDottedClassName(), n);
+        }
 
     }
 
@@ -107,26 +102,29 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
                 annotationClass = annotationClass.substring("DefaultAnnotation".length());
 
                 Target annotationTarget = defaultKind.get(annotationClass);
-                if (annotationTarget != Target.METHOD)
+                if (annotationTarget != Target.METHOD) {
                     return;
+                }
 
                 ElementValue v = map.get("value");
                 if (v instanceof ClassElementValue) {
                     handleClassElementValue((ClassElementValue) v, annotationTarget);
                 } else if (v instanceof ArrayElementValue) {
                     for (ElementValue v2 : ((ArrayElementValue) v).getElementValuesArray()) {
-                        if (v2 instanceof ClassElementValue)
+                        if (v2 instanceof ClassElementValue) {
                             handleClassElementValue((ClassElementValue) v2, annotationTarget);
+                        }
                     }
                 }
 
                 return;
             }
 
-        } else if (visitingMethod())
+        } else if (visitingMethod()) {
             database.addDirectAnnotation(XFactory.createXMethod(this), n);
-        else if (visitingField())
+        } else if (visitingField()) {
             database.addDirectAnnotation(XFactory.createXField(this), n);
+        }
 
     }
 
@@ -152,8 +150,9 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
         NullnessAnnotation n = NullnessAnnotation.Parser.parse(annotationClass);
         annotationClass = lastPortion(annotationClass);
-        if (n == null)
+        if (n == null) {
             return;
+        }
 
         XMethod xmethod = XFactory.createXMethod(this);
         if (DEBUG) {

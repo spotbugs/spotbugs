@@ -48,22 +48,24 @@ public class ObjectTypeFactory {
     public static ObjectType getInstance(Class<?> c) {
         return getInstance(c.getName());
     }
-        
-    
+
+
     public static ObjectType getInstance(@DottedClassName String s) {
         if (FindBugs.DEBUG && s.startsWith("[")) {
             throw new IllegalArgumentException("Cannot create an ObjectType to represent an array type: " + s);
         }
-        if (s.endsWith(";"))
+        if (s.endsWith(";")) {
             throw new IllegalArgumentException(s);
-        if (s.indexOf("/") >= 0) {
+        }
+        if (s.indexOf('/') >= 0) {
             s = s.replace('/', '.');
         }
 
         Map<String, ObjectType> map = instance.get();
         ObjectType result = map.get(s);
-        if (result != null)
+        if (result != null) {
             return result;
+        }
         result = ObjectType.getInstance(s);
         map.put(s, result);
         return result;

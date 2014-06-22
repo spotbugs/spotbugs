@@ -34,7 +34,7 @@ public class InefficientMemberAccess extends BytecodeScanningDetector implements
 
     public static final String ACCESS_PREFIX = "access$";
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private String clsName;
 
@@ -46,7 +46,7 @@ public class InefficientMemberAccess extends BytecodeScanningDetector implements
     public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
         clsName = cls.getClassName();
-        if (clsName.indexOf("$") >= 0) {
+        if (clsName.indexOf('$') >= 0) {
             super.visitClassContext(classContext);
         }
     }

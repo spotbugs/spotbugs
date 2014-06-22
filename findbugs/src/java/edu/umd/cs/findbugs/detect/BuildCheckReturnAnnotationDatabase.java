@@ -54,7 +54,6 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
         defaultKind.put("ForParameters", AnnotationDatabase.Target.PARAMETER);
         defaultKind.put("ForMethods", AnnotationDatabase.Target.METHOD);
         defaultKind.put("ForFields", AnnotationDatabase.Target.FIELD);
-
     }
 
     public BuildCheckReturnAnnotationDatabase() {
@@ -62,9 +61,10 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
     }
 
     static String simpleClassName(@DottedClassName String className) {
-        int i = className.lastIndexOf(".");
-        if (i < 0)
+        int i = className.lastIndexOf('.');
+        if (i < 0) {
             return className;
+        }
         return className.substring(i + 1);
     }
 
@@ -77,16 +77,18 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
             annotationClassSimpleName = annotationClassSimpleName.substring(DEFAULT_ANNOTATION_ANNOTATION_CLASS.length());
 
             Target annotationTarget = defaultKind.get(annotationClassSimpleName);
-            if (annotationTarget != Target.METHOD)
+            if (annotationTarget != Target.METHOD) {
                 return;
+            }
 
             ElementValue v = map.get("value");
             if (v instanceof ClassElementValue) {
                 handleClassElementValue((ClassElementValue) v, map, annotationTarget);
             } else if (v instanceof ArrayElementValue) {
                 for (ElementValue v2 : ((ArrayElementValue) v).getElementValuesArray()) {
-                    if (v2 instanceof ClassElementValue)
+                    if (v2 instanceof ClassElementValue) {
                         handleClassElementValue((ClassElementValue) v2, map, annotationTarget);
+                    }
                 }
             }
 
@@ -100,45 +102,46 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
             if (v instanceof EnumElementValue) {
                 EnumElementValue when = (EnumElementValue) v;
                 String w = simpleClassName(when.getEnumValueString());
-                if (w.equals("NEVER") || w.equals("UNKNOWN"))
+                if (w.equals("NEVER") || w.equals("UNKNOWN")) {
                     n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE;
-                else if (w.equals("MAYBE"))
+                } else if (w.equals("MAYBE")) {
                     n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE;
-                else if (w.equals("ALWAYS"))
+                } else if (w.equals("ALWAYS")) {
                     n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH;
-                else
+                } else {
                     return;
-            } else
+                }
+            } else {
                 n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
+            }
 
         } else if (annotationClassName.equals(edu.umd.cs.findbugs.annotations.CheckReturnValue.class.getName())) {
             n = CheckReturnValueAnnotation.parse(getAnnotationParameterAsString(map, "priority"));
         } else if (annotationClassSimpleName.equals("CheckReturnValue")) {
             n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
-        } else
+        } else {
             return;
-        if (n == null)
+        }
+        if (n == null) {
             return;
-        if (visitingMethod())
+        }
+        if (visitingMethod()) {
             AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase()
-                    .addDirectAnnotation(XFactory.createXMethod(this), n);
-        else
+            .addDirectAnnotation(XFactory.createXMethod(this), n);
+        } else {
             AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase()
-                    .addDefaultAnnotation(Target.METHOD, getDottedClassName(), n);
+            .addDefaultAnnotation(Target.METHOD, getDottedClassName(), n);
+        }
 
     }
 
-    /**
-     * @param value
-     * @param map
-     * @param annotationTarget
-     */
     private void handleClassElementValue(ClassElementValue value, Map<String, ElementValue> map, Target annotationTarget) {
         if (simpleClassName(value.getClassString()).equals("CheckReturnValue")) {
             CheckReturnValueAnnotation n = CheckReturnValueAnnotation.parse(getAnnotationParameterAsString(map, "priority"));
-            if (n != null)
+            if (n != null) {
                 AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase()
-                        .addDefaultAnnotation(annotationTarget, getDottedClassName(), n);
+                .addDefaultAnnotation(annotationTarget, getDottedClassName(), n);
+            }
 
         }
     }

@@ -134,8 +134,8 @@ public class TypeQualifierValue<A extends Annotation> {
         this.isStrict = isStrict1;
         this.isExclusive = isExclusive1;
         this.isExhaustive = isExhaustive1;
-        
-        
+
+
         if (xclass != null) {
             ClassDescriptor checkerName = DescriptorFactory.createClassDescriptor(typeQualifier.getClassName() + "$Checker");
 
@@ -150,7 +150,9 @@ public class TypeQualifierValue<A extends Annotation> {
                     // found it.
                     SecurityManager m = System.getSecurityManager();
                     if (m == null) {
-                        if (DEBUG_CLASSLOADING) System.out.println("Setting ValidationSecurityManager");
+                        if (DEBUG_CLASSLOADING) {
+                            System.out.println("Setting ValidationSecurityManager");
+                        }
                         System.setSecurityManager(ValidationSecurityManager.INSTANCE);
                     }
 
@@ -167,8 +169,9 @@ public class TypeQualifierValue<A extends Annotation> {
 
                             @Override
                             public Object invoke(Object arg0, Method arg1, Object[] arg2) throws Throwable {
-                                if (arg1.getName() == "value")
+                                if ("value".equals(arg1.getName())) {
                                     return TypeQualifierValue.this.value;
+                                }
                                 throw new UnsupportedOperationException("Can't handle " + arg1);
                             }
                         };
@@ -191,7 +194,9 @@ public class TypeQualifierValue<A extends Annotation> {
             else if (DEBUG_CLASSLOADING) {
                 SecurityManager m = System.getSecurityManager();
                 if (m == null) {
-                    if (DEBUG_CLASSLOADING) System.out.println("Setting ValidationSecurityManager");
+                    if (DEBUG_CLASSLOADING) {
+                        System.out.println("Setting ValidationSecurityManager");
+                    }
                     System.setSecurityManager(ValidationSecurityManager.INSTANCE);
                 }
             }
@@ -203,23 +208,25 @@ public class TypeQualifierValue<A extends Annotation> {
 
     private static <A extends Annotation> TypeQualifierValidator<A> getValidator(
             Class<? extends TypeQualifierValidator<A>> checkerClass)
-            throws InstantiationException, IllegalAccessException {
+                    throws InstantiationException, IllegalAccessException {
         return checkerClass.newInstance();
     }
 
     @SuppressWarnings("unchecked")
     private static <A> Class<A> getQualifierClass(ClassDescriptor typeQualifier) throws ClassNotFoundException {
         @DottedClassName String className = typeQualifier.getDottedClassName();
-        if (DEBUG_CLASSLOADING)
+        if (DEBUG_CLASSLOADING) {
             System.out.println("Getting qualifier class for " + className);
-        if (className.startsWith("javax.annotation"))
+        }
+        if (className.startsWith("javax.annotation")) {
             return (Class<A>) Class.forName(className);
+        }
         try {
             Global.getAnalysisCache().getClassAnalysis(ClassData.class, typeQualifier);
         } catch (CheckedAnalysisException e) {
             throw new ClassNotFoundException("No class data found for " + className);
         }
-        
+
         ValidatorClassLoader validatorLoader = ValidatorClassLoader.INSTANCE;
         return (Class<A>) validatorLoader.loadClass(typeQualifier.getDottedClassName());
     }
@@ -253,14 +260,16 @@ public class TypeQualifierValue<A extends Annotation> {
     }
 
     public boolean canValidate(@CheckForNull Object constantValue) {
-        if (validator == null)
+        if (validator == null) {
             return false;
+        }
         return true;
     }
 
     public When validate(@CheckForNull Object constantValue) {
-        if (validator == null)
+        if (validator == null) {
             throw new IllegalStateException("No validator");
+        }
         IAnalysisCache analysisCache = Global.getAnalysisCache();
         Profiler profiler = analysisCache.getProfiler();
         profiler.start(validator.getClass());
@@ -289,8 +298,9 @@ public class TypeQualifierValue<A extends Annotation> {
     TypeQualifierValue<?> getValue(ClassDescriptor desc, @CheckForNull  Object value) {
         DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue<?>> map = instance.get().typeQualifierMap;
         TypeQualifierValue<?> result = map.get(desc, value);
-        if (result != null)
+        if (result != null) {
             return result;
+        }
         result = new TypeQualifierValue(desc, value);
         map.put(desc, value, result);
         instance.get().allKnownTypeQualifiers.add(result);
@@ -399,15 +409,17 @@ public class TypeQualifierValue<A extends Annotation> {
     @Override
     public int hashCode() {
         int result = typeQualifier.hashCode();
-        if (value != null)
+        if (value != null) {
             result += 37 * value.hashCode();
+        }
         return result;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof TypeQualifierValue))
+        if (!(o instanceof TypeQualifierValue)) {
             return false;
+        }
         TypeQualifierValue<?> other = (TypeQualifierValue<?>) o;
         return typeQualifier.equals(other.typeQualifier) && Util.nullSafeEquals(value, other.value);
     }

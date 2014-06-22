@@ -47,7 +47,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * A BugAnnotation specifying a particular field in particular class.
- * 
+ *
  * @author David Hovemeyer
  * @see BugAnnotation
  */
@@ -68,17 +68,17 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
     public static final String ARGUMENT_ROLE = "FIELD_ARGUMENT";
 
-    private String fieldName;
+    private final String fieldName;
 
-    private String fieldSig;
+    private final String fieldSig;
 
     private String fieldSourceSig;
 
-    private boolean isStatic;
+    private final boolean isStatic;
 
     /**
      * Constructor.
-     * 
+     *
      * @param className
      *            the name of the class containing the field
      * @param fieldName
@@ -88,7 +88,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
      */
     public FieldAnnotation(@DottedClassName String className, String fieldName, String fieldSig, boolean isStatic) {
         super(className, DEFAULT_ROLE);
-        if (fieldSig.indexOf(".") >= 0) {
+        if (fieldSig.indexOf('.') >= 0) {
             assert false : "signatures should not be dotted: " + fieldSig;
             fieldSig = fieldSig.replace('.', '/');
         }
@@ -105,7 +105,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
     /**
      * Constructor.
-     * 
+     *
      * @param className
      *            the name of the class containing the field
      * @param fieldName
@@ -122,7 +122,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
     /**
      * Factory method. Class name, field name, and field signatures are taken
      * from the given visitor, which is visiting the field.
-     * 
+     *
      * @param visitor
      *            the visitor which is visiting the field
      * @return the FieldAnnotation object
@@ -136,7 +136,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
      * Factory method. Class name, field name, and field signatures are taken
      * from the given visitor, which is visiting a reference to the field (i.e.,
      * a getfield or getstatic instruction).
-     * 
+     *
      * @param visitor
      *            the visitor which is visiting the field reference
      * @return the FieldAnnotation object
@@ -149,7 +149,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
     /**
      * Factory method. Construct from class name and BCEL Field object.
-     * 
+     *
      * @param className
      *            the name of the class which defines the field
      * @param field
@@ -162,7 +162,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
     /**
      * Factory method. Construct from class name and BCEL Field object.
-     * 
+     *
      * @param jClass
      *            the class which defines the field
      * @param field
@@ -175,7 +175,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
     /**
      * Factory method. Construct from a FieldDescriptor.
-     * 
+     *
      * @param fieldDescriptor
      *            the FieldDescriptor
      * @return the FieldAnnotation
@@ -190,13 +190,13 @@ public class FieldAnnotation extends PackageMemberAnnotation {
                 fieldDescriptor.getSourceSignature(), fieldDescriptor.isStatic());
     }
 
-    
+
     public XField toXField() {
         return XFactory.createXField(className, fieldName, fieldSig, isStatic);
     }
-    
+
     public FieldDescriptor toFieldDescriptor() {
-       return DescriptorFactory.instance().getFieldDescriptor(this);
+        return DescriptorFactory.instance().getFieldDescriptor(this);
     }
     /**
      * Get the field name.
@@ -221,7 +221,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
     /**
      * Is the given instruction a read of a field?
-     * 
+     *
      * @param ins
      *            the Instruction to check
      * @param cpg
@@ -233,13 +233,14 @@ public class FieldAnnotation extends PackageMemberAnnotation {
             FieldInstruction fins = (FieldInstruction) ins;
             String className = fins.getClassName(cpg);
             return new FieldAnnotation(className, fins.getName(cpg), fins.getSignature(cpg), fins instanceof GETSTATIC);
-        } else
+        } else {
             return null;
+        }
     }
 
     /**
      * Is the instruction a write of a field?
-     * 
+     *
      * @param ins
      *            the Instruction to check
      * @param cpg
@@ -251,8 +252,9 @@ public class FieldAnnotation extends PackageMemberAnnotation {
             FieldInstruction fins = (FieldInstruction) ins;
             String className = fins.getClassName(cpg);
             return new FieldAnnotation(className, fins.getName(cpg), fins.getSignature(cpg), fins instanceof PUTSTATIC);
-        } else
+        } else {
             return null;
+        }
     }
 
     @Override
@@ -262,41 +264,47 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
     @Override
     protected String formatPackageMember(String key, ClassAnnotation primaryClass) {
-        if (key.equals("") || key.equals("hash"))
+        if (key.equals("") || key.equals("hash")) {
             return className + "." + fieldName;
-        else if (key.equals("givenClass")) {
+        } else if (key.equals("givenClass")) {
             String primaryClassName = primaryClass.getClassName();
-            if (className.equals(primaryClassName))
+            if (className.equals(primaryClassName)) {
                 return getNameInClass(primaryClass);
-            else
+            } else {
                 return shorten(primaryClass.getPackageName(), className) + "." + fieldName;
-        } else if (key.equals("name"))
+            }
+        } else if (key.equals("name")) {
             return fieldName;
-        else if (key.equals("fullField")) {
+        } else if (key.equals("fullField")) {
             SignatureConverter converter = new SignatureConverter(fieldSig);
             StringBuilder result = new StringBuilder();
-            if (isStatic)
+            if (isStatic) {
                 result.append("static ");
+            }
             result.append(converter.parseNext());
             result.append(' ');
             result.append(className);
             result.append('.');
             result.append(fieldName);
             return result.toString();
-        } else
+        } else {
             throw new IllegalArgumentException("unknown key " + key);
+        }
     }
 
     private String getNameInClass(ClassAnnotation primaryClass) {
-        if (primaryClass == null)
+        if (primaryClass == null) {
             return className + "." + fieldName;
+        }
         String givenPackageName = primaryClass.getPackageName();
         String thisPackageName = this.getPackageName();
-        if (thisPackageName.equals(givenPackageName))
-            if (thisPackageName.length() == 0)
+        if (thisPackageName.equals(givenPackageName)) {
+            if (thisPackageName.length() == 0) {
                 return fieldName;
-            else
+            } else {
                 return className.substring(thisPackageName.length() + 1) + "." + fieldName;
+            }
+        }
         return className + "." + fieldName;
     }
 
@@ -307,8 +315,9 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof FieldAnnotation))
+        if (!(o instanceof FieldAnnotation)) {
             return false;
+        }
         FieldAnnotation other = (FieldAnnotation) o;
         return className.equals(other.className) && fieldName.equals(other.fieldName) && fieldSig.equals(other.fieldSig)
                 && isStatic == other.isStatic;
@@ -316,41 +325,40 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
     @Override
     public int compareTo(BugAnnotation o) {
-        if (!(o instanceof FieldAnnotation)) // BugAnnotations must be
-                                             // Comparable with any type of
-                                             // BugAnnotation
+        if (!(o instanceof FieldAnnotation)) {
+            // Comparable with any type of
+            // BugAnnotation
             return this.getClass().getName().compareTo(o.getClass().getName());
+        }
         FieldAnnotation other = (FieldAnnotation) o;
         int cmp;
         cmp = className.compareTo(other.className);
-        if (cmp != 0)
+        if (cmp != 0) {
             return cmp;
+        }
         cmp = fieldName.compareTo(other.fieldName);
-        if (cmp != 0)
+        if (cmp != 0) {
             return cmp;
+        }
         return fieldSig.compareTo(other.fieldSig);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.umd.cs.findbugs.PackageMemberAnnotation#getSourceLines()
-     */
     @Override
     public SourceLineAnnotation getSourceLines() {
         if (sourceLines == null) {
             // Create source line annotation for field on demand
             AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
-            if (currentAnalysisContext == null)
+            if (currentAnalysisContext == null) {
                 sourceLines = new SourceLineAnnotation(className, sourceFileName, -1, -1, -1, -1);
-            else {
+            } else {
                 SourceInfoMap.SourceLineRange fieldLine = currentAnalysisContext.getSourceInfoMap().getFieldLine(className,
                         fieldName);
-                if (fieldLine == null)
+                if (fieldLine == null) {
                     sourceLines = new SourceLineAnnotation(className, sourceFileName, -1, -1, -1, -1);
-                else
+                } else {
                     sourceLines = new SourceLineAnnotation(className, sourceFileName, fieldLine.getStart(), fieldLine.getEnd(),
                             -1, -1);
+                }
             }
         }
         return sourceLines;
@@ -373,15 +381,18 @@ public class FieldAnnotation extends PackageMemberAnnotation {
     public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("classname", getClassName())
                 .addAttribute("name", getFieldName()).addAttribute("signature", getFieldSignature());
-        if (fieldSourceSig != null)
+        if (fieldSourceSig != null) {
             attributeList.addAttribute("sourceSignature", fieldSourceSig);
+        }
         attributeList.addAttribute("isStatic", String.valueOf(isStatic()));
-        if (isPrimary)
+        if (isPrimary) {
             attributeList.addAttribute("primary", "true");
+        }
 
         String role = getDescription();
-        if (!role.equals(DEFAULT_ROLE))
+        if (!role.equals(DEFAULT_ROLE)) {
             attributeList.addAttribute("role", role);
+        }
 
         xmlOutput.openTag(ELEMENT_NAME, attributeList);
         getSourceLines().writeXML(xmlOutput, addMessages, false);
@@ -393,5 +404,3 @@ public class FieldAnnotation extends PackageMemberAnnotation {
         xmlOutput.closeTag(ELEMENT_NAME);
     }
 }
-
-// vim:ts=4

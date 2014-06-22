@@ -41,10 +41,6 @@ public class HTML {
 
         boolean startingParagraph = false;
 
-        /**
-         * @param w
-         * @param doc
-         */
         public HTMLtoPlainTextWriter2(Writer w, HTMLDocument doc) {
             super(w, doc);
             setLineLength(80);
@@ -63,9 +59,9 @@ public class HTML {
             } else if (name.equals("li")) {
                 super.incrIndent();
                 write("* ");
-            } else if (name.equals("p")) {
+            } /*else if (name.equals("p")) {
 
-            }
+            }*/
         }
 
         @Override
@@ -102,8 +98,9 @@ public class HTML {
 
         @Override
         protected void emptyTag(Element elem) throws IOException, BadLocationException {
-            if (elem.getName().equals("content"))
+            if (elem.getName().equals("content")) {
                 super.emptyTag(elem);
+            }
         }
 
         @Override
@@ -113,8 +110,9 @@ public class HTML {
                 contentStr = contentStr.replaceAll("\\s+", " ");
 
                 if (startingParagraph) {
-                    while (contentStr.length() > 0 && contentStr.charAt(0) == ' ')
+                    while (contentStr.length() > 0 && contentStr.charAt(0) == ' ') {
                         contentStr = contentStr.substring(1);
+                    }
                 }
 
                 startingParagraph = false;

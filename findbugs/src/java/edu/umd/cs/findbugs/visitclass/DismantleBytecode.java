@@ -209,6 +209,8 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
         }
     }
+
+    @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
     public MethodDescriptor getMethodDescriptorOperand() {
         if (nameConstantOperand == NOT_AVAILABLE || classConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getMethodDescriptorOperand called but value not available");
@@ -222,6 +224,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     }
 
     public @CheckForNull
+    @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
     XMethod getXMethodOperand() {
         if (nameConstantOperand == NOT_AVAILABLE || classConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getXMethodOperand called but value not available");
@@ -235,6 +238,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         return referencedXMethod;
     }
 
+    @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
     public FieldDescriptor getFieldDescriptorOperand() {
         if (nameConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getFieldDescriptorOperand called but value not available");
@@ -261,6 +265,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
      * If the current opcode has a class operand, get the associated class
      * constant, dot-formatted
      */
+    @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
     public String getDottedClassConstantOperand() {
         if (dottedClassConstantOperand != null) {
             assert dottedClassConstantOperand != NOT_AVAILABLE;
@@ -278,6 +283,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
      * representation
      */
     @Deprecated
+    @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
     public String getRefConstantOperand() {
         if (refConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getRefConstantOperand called but value not available");
@@ -294,6 +300,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     }
 
     /** If the current opcode has a reference constant operand, get its name */
+    @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
     public String getNameConstantOperand() {
         if (nameConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getNameConstantOperand called but value not available");
@@ -305,6 +312,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
      * If the current opcode has a reference constant operand, get its
      * signature, slash-formatted
      */
+    @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
     public String getSigConstantOperand() {
         if (sigConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getSigConstantOperand called but value not available");
@@ -317,6 +325,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
      * slash-formatted.
      */
     public @SlashedClassName
+    @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
     String getClassConstantOperand() {
         if (classConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getClassConstantOperand called but value not available");
@@ -325,6 +334,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     }
 
     /** If the current opcode has a string constant operand, get its name */
+    @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
     public String getStringConstantOperand() {
         if (stringConstantOperand == NOT_AVAILABLE) {
             throw new IllegalStateException("getStringConstantOperand called but value not available");

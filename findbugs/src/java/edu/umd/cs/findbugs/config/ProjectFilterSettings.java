@@ -74,20 +74,20 @@ public class ProjectFilterSettings implements Cloneable {
      * The character used for delimiting whole fields in filter settings encoded
      * as strings
      */
-    private static String FIELD_DELIMITER = "|";
+    private static final char FIELD_DELIMITER = '|';
 
     /**
      * The character used for delimiting list items in filter settings encoded
      * as strings
      */
-    private static String LISTITEM_DELIMITER = ",";
+    private static final String LISTITEM_DELIMITER = ",";
 
-    private static int DEFAULT_MIN_RANK = 15;
+    private static final int DEFAULT_MIN_RANK = 15;
 
     // Fields
     private Set<String> activeBugCategorySet; // not used for much:
-                                              // hiddenBugCategorySet has
-                                              // priority.
+    // hiddenBugCategorySet has
+    // priority.
 
     private Set<String> hiddenBugCategorySet;
 
@@ -205,18 +205,18 @@ public class ProjectFilterSettings implements Cloneable {
             String minRankStr;
             if (bar >= 0) {
                 minRankStr = s.substring(0, bar);
-                s = s.substring(bar + 1);
+                //                s = s.substring(bar + 1);
             } else {
                 minRankStr = s;
-                s = "";
+                //                s = "";
             }
             result.setMinRank(Integer.parseInt(minRankStr));
         }
 
-        if (s.length() > 0) {
-            // Can add other fields here...
-            assert true;
-        }
+        //        if (s.length() > 0) {
+        //            // Can add other fields here...
+        //            assert true;
+        //        }
 
         return result;
 
@@ -277,7 +277,7 @@ public class ProjectFilterSettings implements Cloneable {
         // HACK: it is conceivable that the detector plugin which generated
         // this warning is not available any more, in which case we can't
         // find out the category. Let the warning be visible in this case.
-        if (bugPattern != null && !containsCategory(bugPattern.getCategory())) {
+        if (!containsCategory(bugPattern.getCategory())) {
             return false;
         }
 
