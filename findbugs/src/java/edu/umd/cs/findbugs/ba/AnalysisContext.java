@@ -18,6 +18,7 @@
  */
 
 package edu.umd.cs.findbugs.ba;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -122,21 +123,19 @@ public class AnalysisContext {
         }
     };
 
-
-
     /**
      * save the original SyntheticRepository so we may obtain JavaClass objects
      * which we can reuse. (A URLClassPathRepository gets closed after
      * analysis.)
      */
     private static final org.apache.bcel.util.Repository originalRepository = Repository.getRepository(); // BCEL
-                                                                                                          // SyntheticRepository
+    // SyntheticRepository
 
     /**
      * Default maximum number of ClassContext objects to cache. FIXME: need to
      * evaluate this parameter. Need to keep stats about accesses.
      */
-    private static final int DEFAULT_CACHE_SIZE = 3;
+    //    private static final int DEFAULT_CACHE_SIZE = 3;
 
     // Instance fields
     private BitSet boolPropertySet;
@@ -145,10 +144,46 @@ public class AnalysisContext {
 
     private String databaseOutputDir;
 
-    public AnalysisContext() {
+    boolean missingClassWarningsSuppressed;
+
+    private ClassSummary classSummary;
+
+    private ClassDescriptor classBeingAnalyzed;
+
+    private FieldSummary fieldSummary;
+
+    private UnreadFields unreadFields;
+
+    private TypeQualifierNullnessAnnotationDatabase tqNullnessDatabase;
+
+    private final HashSet<MethodDescriptor> skippedDueToInvokeDynamic;
+
+    private final Project project;
+
+    private final EqualsKindSummary equalsKindSummary;
+
+    private final UnreadFieldsData unreadFieldsData;
+
+    private final SuppressionMatcher suppressionMatcher;
+
+    protected final RepositoryLookupFailureCallback lookupFailureCallback;
+
+    private final Map<MethodInfo, MethodInfo> bridgeTo;
+
+    private final Map<MethodInfo, MethodInfo> bridgeFrom;
+
+
+    public AnalysisContext(@Nonnull Project project) {
+        requireNonNull(project);
+        this.project = project;
         this.boolPropertySet = new BitSet();
         this.lookupFailureCallback = new DelegatingRepositoryLookupFailureCallback();
-
+        skippedDueToInvokeDynamic = new HashSet<>();
+        equalsKindSummary = new EqualsKindSummary();
+        unreadFieldsData = new UnreadFieldsData();
+        suppressionMatcher = new SuppressionMatcher();
+        bridgeTo = new IdentityHashMap<>();
+        bridgeFrom = new IdentityHashMap<>();
     }
 
     private void clear() {
@@ -156,7 +191,6 @@ public class AnalysisContext {
         databaseInputDir = null;
         databaseOutputDir = null;
     }
-
 
     /**
      * Get the AnalysisContext associated with this thread
@@ -169,10 +203,6 @@ public class AnalysisContext {
         return currentXFactory.get();
     }
 
-    ClassSummary classSummary;
-
-    ClassDescriptor classBeingAnalyzed;
-
     public ClassDescriptor getClassBeingAnalyzed() {
         return classBeingAnalyzed;
     }
@@ -180,28 +210,28 @@ public class AnalysisContext {
     public void setClassBeingAnalyzed(@Nonnull ClassDescriptor classBeingAnalyzed) {
         this.classBeingAnalyzed = classBeingAnalyzed;
     }
+
     public void clearClassBeingAnalyzed() {
         this.classBeingAnalyzed = null;
     }
+
     public ClassSummary getClassSummary() {
-        if (classSummary == null)
+        if (classSummary == null) {
             throw new IllegalStateException("ClassSummary not set");
+        }
         return classSummary;
     }
 
     public void setClassSummary(@Nonnull ClassSummary classSummary) {
-        if (this.classSummary != null)
+        if (this.classSummary != null) {
             throw new IllegalStateException("ClassSummary already set");
+        }
         this.classSummary = classSummary;
     }
-
-    final EqualsKindSummary equalsKindSummary = new EqualsKindSummary();
 
     public EqualsKindSummary getEqualsKindSummary() {
         return equalsKindSummary;
     }
-
-    FieldSummary fieldSummary;
 
     public FieldSummary getFieldSummary() {
         if (fieldSummary == null) {
@@ -218,16 +248,14 @@ public class AnalysisContext {
         this.fieldSummary = fieldSummary;
     }
 
-    final UnreadFieldsData unreadFieldsData = new UnreadFieldsData();
-    UnreadFields unreadFields;
-
     public @Nonnull UnreadFieldsData getUnreadFieldsData() {
         return unreadFieldsData;
     }
 
     public @Nonnull UnreadFields getUnreadFields() {
-        if (unreadFieldsAvailable())
+        if (!unreadFieldsAvailable()) {
             throw new IllegalStateException();
+        }
         return unreadFields;
     }
 
@@ -236,22 +264,25 @@ public class AnalysisContext {
     }
 
     public void setUnreadFields(@Nonnull UnreadFields unreadFields) {
-        if (this.unreadFields != null)
+        if (this.unreadFields != null) {
             throw new IllegalStateException("UnreadFields detector already set");
+        }
         this.unreadFields = unreadFields;
     }
 
-     private static boolean skipReportingMissingClass(@CheckForNull @DottedClassName String missing) {
+    private static boolean skipReportingMissingClass(@CheckForNull @DottedClassName String missing) {
         return missing == null || missing.length() == 0 || missing.charAt(0) == '[' || missing.endsWith("package-info");
     }
 
     private static @CheckForNull
     RepositoryLookupFailureCallback getCurrentLookupFailureCallback() {
         AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
-        if (currentAnalysisContext2 == null)
+        if (currentAnalysisContext2 == null) {
             return null;
-        if (currentAnalysisContext2.missingClassWarningsSuppressed)
+        }
+        if (currentAnalysisContext2.missingClassWarningsSuppressed) {
             return null;
+        }
         return currentAnalysisContext2.getLookupFailureCallback();
     }
 
@@ -261,54 +292,59 @@ public class AnalysisContext {
      * @see #getLookupFailureCallback()
      */
     static public void reportMissingClass(ClassNotFoundException e) {
-        if (e == null)
-            throw new NullPointerException("argument is null");
+        requireNonNull(e, "argument is null");
         String missing = AbstractBugReporter.getMissingClassName(e);
-        if (skipReportingMissingClass(missing))
+        if (skipReportingMissingClass(missing)) {
             return;
-        if (!analyzingApplicationClass())
+        }
+        if (!analyzingApplicationClass()) {
             return;
+        }
 
         RepositoryLookupFailureCallback lookupFailureCallback = getCurrentLookupFailureCallback();
-        if (lookupFailureCallback != null)
+        if (lookupFailureCallback != null) {
             lookupFailureCallback.reportMissingClass(e);
+        }
     }
 
     static public void reportMissingClass(edu.umd.cs.findbugs.ba.MissingClassException e) {
-        if (e == null)
-            throw new NullPointerException("argument is null");
+        requireNonNull(e, "argument is null");
         reportMissingClass(e.getClassDescriptor());
     }
 
     static public boolean analyzingApplicationClass() {
         AnalysisContext context = AnalysisContext.currentAnalysisContext();
-        if (context == null)
+        if (context == null) {
             return false;
+        }
         ClassDescriptor clazz = context.getClassBeingAnalyzed();
-        if (clazz == null)
+        if (clazz == null) {
             return false;
+        }
         return context.isApplicationClass(clazz);
     }
+
     static public void reportMissingClass(edu.umd.cs.findbugs.classfile.MissingClassException e) {
-        if (e == null)
-            throw new NullPointerException("argument is null");
+        requireNonNull(e, "argument is null");
         reportMissingClass(e.getClassDescriptor());
     }
 
-
     static public void reportMissingClass(ClassDescriptor c) {
-        if (c == null)
-            throw new NullPointerException("argument is null");
-        if (!analyzingApplicationClass())
+        requireNonNull(c, "argument is null");
+        if (!analyzingApplicationClass()) {
             return;
+        }
         String missing = c.getDottedClassName();
-        if (missing.length() == 1)
+        if (missing.length() == 1) {
             System.out.println(c);
-        if (skipReportingMissingClass(missing))
+        }
+        if (skipReportingMissingClass(missing)) {
             return;
+        }
         RepositoryLookupFailureCallback lookupFailureCallback = getCurrentLookupFailureCallback();
-        if (lookupFailureCallback != null)
+        if (lookupFailureCallback != null) {
             lookupFailureCallback.reportMissingClass(c);
+        }
     }
 
     /**
@@ -317,13 +353,16 @@ public class AnalysisContext {
     static public void logError(String msg, Exception e) {
         AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
         if (currentAnalysisContext2 == null) {
-            if (e instanceof NoSuchBugPattern)
+            if (e instanceof NoSuchBugPattern) {
                 return;
+            }
+            /*
             if (false && SystemProperties.ASSERTIONS_ENABLED) {
                 AssertionError e2 = new AssertionError("Exception logged with no analysis context");
                 e2.initCause(e);
                 throw e2;
             }
+             */
             e.printStackTrace(System.err);
             return;
         }
@@ -337,8 +376,9 @@ public class AnalysisContext {
         }
 
         RepositoryLookupFailureCallback lookupFailureCallback = currentAnalysisContext2.getLookupFailureCallback();
-        if (lookupFailureCallback != null)
+        if (lookupFailureCallback != null) {
             lookupFailureCallback.logError(msg, e);
+        }
     }
 
     /**
@@ -346,42 +386,33 @@ public class AnalysisContext {
      */
     static public void logError(String msg) {
         AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
-        if (currentAnalysisContext2 == null)
+        if (currentAnalysisContext2 == null) {
             return;
+        }
         currentAnalysisContext2.logAnError(msg);
     }
 
     public void logAnError(String msg) {
         RepositoryLookupFailureCallback lookupFailureCallback = getLookupFailureCallback();
-        if (lookupFailureCallback != null)
+        if (lookupFailureCallback != null) {
             lookupFailureCallback.logError(msg);
+        }
     }
 
     public void analysisSkippedDueToInvokeDynamic(XMethod m) {
-        if (!m.usesInvokeDynamic())
+        if (!m.usesInvokeDynamic()) {
             throw new IllegalArgumentException();
-        if (skippedDueToInvokeDynamic.add(m.getMethodDescriptor()))
+        }
+        if (skippedDueToInvokeDynamic.add(m.getMethodDescriptor())) {
             logAnError(m + " skipped due to invoke_dynamic");
+        }
 
     }
-    HashSet<MethodDescriptor> skippedDueToInvokeDynamic = new HashSet<MethodDescriptor>();
-    
-    boolean missingClassWarningsSuppressed = false;
-
-    protected Project project;
 
     public boolean setMissingClassWarningsSuppressed(boolean value) {
         boolean oldValue = missingClassWarningsSuppressed;
         missingClassWarningsSuppressed = value;
         return oldValue;
-    }
-
-
-    /**
-     * Set the source path.
-     */
-    public final void setProject(Project project) {
-        this.project = project;
     }
 
     // /**
@@ -432,7 +463,7 @@ public class AnalysisContext {
         IAnalysisCache analysisCache = Global.getAnalysisCache();
 
         try {
-            ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, desc);
+            /* ClassContext classContext =*/ analysisCache.getClassAnalysis(ClassContext.class, desc);
             ClassData classData = analysisCache.getClassAnalysis(ClassData.class, desc);
             return classData.getData().length;
 
@@ -443,7 +474,6 @@ public class AnalysisContext {
             AnalysisContext.logError("Could not get class context for "  + desc, e);
             return 10000;
         }
-
     }
 
     public boolean isTooBig(ClassDescriptor desc) {
@@ -452,12 +482,14 @@ public class AnalysisContext {
         try {
             ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, desc);
             ClassData classData = analysisCache.getClassAnalysis(ClassData.class, desc);
-            if (classData.getData().length > 1000000)
+            if (classData.getData().length > 1000000) {
                 return true;
+            }
             try {
-            JavaClass javaClass = classContext.getJavaClass();
-            if (javaClass.getMethods().length > 1000)
-                return true;
+                JavaClass javaClass = classContext.getJavaClass();
+                if (javaClass.getMethods().length > 1000) {
+                    return true;
+                }
             } catch (RuntimeException e) {
                 AnalysisContext.logError("Error parsing class " + desc
                         + " from " + classData.getCodeBaseEntry().getCodeBase(), e);
@@ -472,7 +504,6 @@ public class AnalysisContext {
             return true;
         }
         return false;
-
     }
 
     /**
@@ -505,10 +536,10 @@ public class AnalysisContext {
     public static JavaClass lookupSystemClass(@Nonnull String className) throws ClassNotFoundException {
         // TODO: eventually we should move to our own thread-safe repository
         // implementation
-        if (className == null)
-            throw new IllegalArgumentException("className is null");
-        if (originalRepository == null)
+        requireNonNull (className, "className is null");
+        if (originalRepository == null) {
             throw new IllegalStateException("originalRepository is null");
+        }
 
         JavaClass clazz = originalRepository.findClass(className);
         return (clazz == null ? originalRepository.loadClass(className) : clazz);
@@ -524,8 +555,7 @@ public class AnalysisContext {
      *         determine
      */
     public final String lookupSourceFile(@Nonnull @DottedClassName String dottedClassName) {
-        if (dottedClassName == null)
-            throw new IllegalArgumentException("className is null");
+        requireNonNull(dottedClassName, "className is null");
         try {
             XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class,
                     DescriptorFactory.createClassDescriptorFromDottedClassName(dottedClassName));
@@ -555,8 +585,9 @@ public class AnalysisContext {
      * dereference parameters.
      */
     public final void loadDefaultInterproceduralDatabases() {
-        if (IGNORE_BUILTIN_MODELS)
+        if (IGNORE_BUILTIN_MODELS) {
             return;
+        }
         loadPropertyDatabaseFromResource(getUnconditionalDerefParamDatabase(), UNCONDITIONAL_DEREF_DB_RESOURCE,
                 "unconditional param deref database");
         loadPropertyDatabaseFromResource(getReturnValueNullnessPropertyDatabase(), NONNULL_RETURN_DB_RESOURCE,
@@ -594,8 +625,9 @@ public class AnalysisContext {
      *            the interprocedural database input directory
      */
     public final void setDatabaseInputDir(String databaseInputDir) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Setting database input directory: " + databaseInputDir);
+        }
         this.databaseInputDir = databaseInputDir;
     }
 
@@ -615,8 +647,9 @@ public class AnalysisContext {
      *            the interprocedural database output directory
      */
     public final void setDatabaseOutputDir(String databaseOutputDir) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Setting database output directory: " + databaseOutputDir);
+        }
         this.databaseOutputDir = databaseOutputDir;
     }
 
@@ -628,8 +661,6 @@ public class AnalysisContext {
     public final String getDatabaseOutputDir() {
         return databaseOutputDir;
     }
-
-
 
     /**
      * Load an interprocedural property database.
@@ -652,8 +683,9 @@ public class AnalysisContext {
             DatabaseType database, String fileName, String description) {
         try {
             File dbFile = new File(getDatabaseInputDir(), fileName);
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Loading " + description + " from " + dbFile.getPath() + "...");
+            }
 
             database.readFromFile(dbFile.getPath());
             return database;
@@ -662,7 +694,6 @@ public class AnalysisContext {
         } catch (PropertyDatabaseFormatException e) {
             getLookupFailureCallback().logError("Invalid " + description, e);
         }
-
         return null;
     }
 
@@ -686,15 +717,16 @@ public class AnalysisContext {
     public <DatabaseType extends PropertyDatabase<KeyType, Property>, KeyType extends FieldOrMethodDescriptor, Property> DatabaseType loadPropertyDatabaseFromResource(
             DatabaseType database, String resourceName, String description) {
         try {
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Loading default " + description + " from " + resourceName + " @ "
                         + database.getClass().getResource(resourceName) + " ... ");
-            InputStream in = database.getClass().getResourceAsStream(resourceName);
-            if (in == null) {
-                AnalysisContext.logError("Unable to load " + description + " from resource " + resourceName);
-            } else {
-                database.read(in);
-                in.close();
+            }
+            try(InputStream in = database.getClass().getResourceAsStream(resourceName)){
+                if (in == null) {
+                    AnalysisContext.logError("Unable to load " + description + " from resource " + resourceName);
+                } else {
+                    database.read(in);
+                }
             }
             return database;
         } catch (IOException e) {
@@ -702,7 +734,6 @@ public class AnalysisContext {
         } catch (PropertyDatabaseFormatException e) {
             getLookupFailureCallback().logError("Invalid " + description, e);
         }
-
         return null;
     }
 
@@ -727,8 +758,9 @@ public class AnalysisContext {
 
         try {
             File dbFile = new File(getDatabaseOutputDir(), fileName);
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Writing " + description + " to " + dbFile.getPath() + "...");
+            }
             database.writeToFile(dbFile.getPath());
         } catch (IOException e) {
             getLookupFailureCallback().logError("Error writing " + description, e);
@@ -743,17 +775,18 @@ public class AnalysisContext {
      */
     public static void setCurrentAnalysisContext(AnalysisContext analysisContext) {
         currentAnalysisContext.set(analysisContext);
-        if (Global.getAnalysisCache() != null)
+        if (Global.getAnalysisCache() != null) {
             currentXFactory.set(new XFactory());
+        }
     }
 
     public static void removeCurrentAnalysisContext() {
         AnalysisContext context = currentAnalysisContext();
-        if (context != null)
+        if (context != null) {
             context.clear();
+        }
         currentAnalysisContext.remove();
     }
-
 
     /**
      * Get Collection of all XClass objects seen so far.
@@ -763,16 +796,6 @@ public class AnalysisContext {
     public Collection<XClass> getXClassCollection() {
         return getSubtypes2().getXClassCollection();
     }
-
-    private final SuppressionMatcher suppressionMatcher = new SuppressionMatcher();
-
-    private TypeQualifierNullnessAnnotationDatabase tqNullnessDatabase;
-
-    protected final RepositoryLookupFailureCallback lookupFailureCallback;
-
-    final Map<MethodInfo, MethodInfo> bridgeTo = new IdentityHashMap<MethodInfo, MethodInfo>();
-
-    final Map<MethodInfo, MethodInfo> bridgeFrom = new IdentityHashMap<MethodInfo, MethodInfo>();
 
     public SuppressionMatcher getSuppressionMatcher() {
         return suppressionMatcher;
@@ -806,11 +829,9 @@ public class AnalysisContext {
         Repository.setRepository(new AnalysisCacheToRepositoryAdapter());
     }
 
-
     public AnnotationRetentionDatabase getAnnotationRetentionDatabase() {
         return getDatabase(AnnotationRetentionDatabase.class);
     }
-
 
     public CheckReturnAnnotationDatabase getCheckReturnAnnotationDatabase() {
         return getDatabase(CheckReturnAnnotationDatabase.class);
@@ -917,8 +938,9 @@ public class AnalysisContext {
      */
     public JavaClass lookupClass(@Nonnull @DottedClassName String className) throws ClassNotFoundException {
         try {
-            if (className.length() == 0)
+            if (className.length() == 0) {
                 throw new IllegalArgumentException("Class name is empty");
+            }
             if (!ClassName.isValidClassName(className)) {
                 throw new ClassNotFoundException("Invalid class name: " + className);
             }
@@ -934,28 +956,30 @@ public class AnalysisContext {
     }
 
     public void setAppClassList(List<ClassDescriptor> appClassCollection) {
-
         // FIXME: we really should drive the progress callback here
         HashSet<ClassDescriptor> appSet = new HashSet<ClassDescriptor>(appClassCollection);
 
         Collection<ClassDescriptor> allClassDescriptors = new ArrayList<ClassDescriptor>(DescriptorFactory.instance()
                 .getAllClassDescriptors());
-        for (ClassDescriptor appClass : allClassDescriptors)
+        for (ClassDescriptor appClass : allClassDescriptors) {
             try {
                 XClass xclass = currentXFactory().getXClass(appClass);
 
-                if (xclass == null)
+                if (xclass == null) {
                     continue;
+                }
 
                 // Add the application class to the database
-                if (appSet.contains(appClass))
+                if (appSet.contains(appClass)) {
                     getSubtypes2().addApplicationClass(xclass);
-                else if (xclass instanceof ClassInfo)
+                } else if (xclass instanceof ClassInfo) {
                     getSubtypes2().addClass(xclass);
+                }
 
             } catch (Exception e) {
                 AnalysisContext.logError("Unable to get XClass for " + appClass, e);
             }
+        }
 
         if (true && Subtypes2.DEBUG) {
             System.out.println(getSubtypes2().getGraph().getNumVertices() + " vertices in inheritance graph");
@@ -1018,11 +1042,11 @@ public class AnalysisContext {
     }
 
     public TypeQualifierNullnessAnnotationDatabase getNullnessAnnotationDatabase() {
-            if (tqNullnessDatabase == null) {
-                tqNullnessDatabase = new TypeQualifierNullnessAnnotationDatabase();
-            }
-            return tqNullnessDatabase;
-       
+        if (tqNullnessDatabase == null) {
+            tqNullnessDatabase = new TypeQualifierNullnessAnnotationDatabase();
+        }
+        return tqNullnessDatabase;
+
     }
 
     protected <E> E getDatabase(Class<E> cls) {
@@ -1031,60 +1055,26 @@ public class AnalysisContext {
 
     static class DelegatingRepositoryLookupFailureCallback implements RepositoryLookupFailureCallback {
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * edu.umd.cs.findbugs.classfile.IErrorLogger#logError(java.lang.String)
-         */
         @Override
         public void logError(String message) {
             Global.getAnalysisCache().getErrorLogger().logError(message);
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * edu.umd.cs.findbugs.classfile.IErrorLogger#logError(java.lang.String,
-         * java.lang.Throwable)
-         */
         @Override
         public void logError(String message, Throwable e) {
             Global.getAnalysisCache().getErrorLogger().logError(message, e);
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(java
-         * .lang.ClassNotFoundException)
-         */
         @Override
         public void reportMissingClass(ClassNotFoundException ex) {
             Global.getAnalysisCache().getErrorLogger().reportMissingClass(ex);
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu
-         * .umd.cs.findbugs.classfile.ClassDescriptor)
-         */
         @Override
         public void reportMissingClass(ClassDescriptor classDescriptor) {
             Global.getAnalysisCache().getErrorLogger().reportMissingClass(classDescriptor);
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * edu.umd.cs.findbugs.classfile.IErrorLogger#reportSkippedAnalysis(
-         * edu.umd.cs.findbugs.classfile.MethodDescriptor)
-         */
         @Override
         public void reportSkippedAnalysis(MethodDescriptor method) {
             Global.getAnalysisCache().getErrorLogger().reportSkippedAnalysis(method);
@@ -1094,4 +1084,3 @@ public class AnalysisContext {
 
 }
 
-// vim:ts=4
