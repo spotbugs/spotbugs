@@ -65,7 +65,7 @@ public class Version {
      * Release candidate number. "0" indicates that the version is not a release
      * candidate.
      */
-    public static final int RELEASE_CANDIDATE = 0;
+    public static final int RELEASE_CANDIDATE = 1;
 
 
     public static final String GIT_REVISION  = System.getProperty("git.revision", "UNKNOWN");
