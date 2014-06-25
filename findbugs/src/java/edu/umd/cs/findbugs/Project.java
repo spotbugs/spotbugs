@@ -24,11 +24,10 @@
  */
 
 package edu.umd.cs.findbugs;
-
 import static edu.umd.cs.findbugs.xml.XMLOutputUtil.writeElementList;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -138,35 +137,29 @@ public class Project implements XMLWriteable {
      * @param configuration The configuration to set, non null
      */
     public void setConfiguration(@Nonnull UserPreferences configuration) {
-        if (configuration == null)
-            throw new NullPointerException();
+        requireNonNull(configuration);
         this.configuration = configuration;
     }
 
-    /**
-     * @return Returns the cloudId.
-     */
     public @CheckForNull String getCloudId() {
         return cloudId;
     }
 
-    /**
-     * @param cloudId
-     *            The cloudId to set.
-     */
     public void setCloudId(@Nullable String cloudId) {
         if (cloudId != null && cloudId.indexOf('.') == -1) {
             Map<String, CloudPlugin> registeredClouds = DetectorFactoryCollection.instance().getRegisteredClouds();
             String check = "." + cloudId;
             int count = 0;
             String result = cloudId;
-            for(String name : registeredClouds.keySet())
+            for(String name : registeredClouds.keySet()) {
                 if (name.endsWith(check)) {
                     count++;
                     result = name;
                 }
-            if (count == 1)
+            }
+            if (count == 1) {
                 cloudId = result;
+            }
         }
         this.cloudId = cloudId;
     }
@@ -260,8 +253,9 @@ public class Project implements XMLWriteable {
     }
 
     public void setCurrentWorkingDirectory(File f) {
-        if (f != null)
+        if (f != null) {
             addWorkingDir(f.toString());
+        }
     }
 
     /**
@@ -316,8 +310,9 @@ public class Project implements XMLWriteable {
      *         directory was already present
      */
     public boolean addWorkingDir(String dirName) {
-        if (dirName == null)
+        if (dirName == null) {
             throw new NullPointerException();
+        }
         return addToListInternal(currentWorkingDirectoryList, new File(dirName));
     }
 
@@ -776,7 +771,7 @@ public class Project implements XMLWriteable {
 
     /**
      * Read a line from a BufferedReader, ignoring blank lines and comments.
-     */
+     *
     private static String getLine(BufferedReader reader) throws IOException {
         String line;
         while ((line = reader.readLine()) != null) {
@@ -786,7 +781,7 @@ public class Project implements XMLWriteable {
             }
         }
         return line;
-    }
+    }*/
 
     /**
      * Convert to a string in a nice (displayable) format.
@@ -838,7 +833,7 @@ public class Project implements XMLWriteable {
         writeXML(xmlOutput, null, null);
     }
 
-    public void writeXML(XMLOutput xmlOutput, @CheckForNull File destination, @CheckForNull BugCollection bugCollection) 
+    public void writeXML(XMLOutput xmlOutput, @CheckForNull File destination, @CheckForNull BugCollection bugCollection)
             throws IOException {
         {
             XMLAttributeList attributeList = new XMLAttributeList();
@@ -855,8 +850,9 @@ public class Project implements XMLWriteable {
             writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, convertToRelative(auxClasspathEntryList, base));
             writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, convertToRelative(srcDirList, base));
             List<String> cwdStrings = new ArrayList<String>();
-            for (File file : currentWorkingDirectoryList)
+            for (File file : currentWorkingDirectoryList) {
                 cwdStrings.add(file.getPath());
+            }
             XMLOutputUtil.writeElementList(xmlOutput, WRK_DIR_ELEMENT_NAME, convertToRelative(cwdStrings, base));
         } else {
             // TODO to allow relative paths: refactor the code which uses null
@@ -867,7 +863,7 @@ public class Project implements XMLWriteable {
             XMLOutputUtil.writeFileList(xmlOutput, WRK_DIR_ELEMENT_NAME, currentWorkingDirectoryList);
         }
 
-        if (suppressionFilter != null && !suppressionFilter.isEmpty()) {
+        if (!suppressionFilter.isEmpty()) {
             xmlOutput.openTag("SuppressionFilter");
             suppressionFilter.writeBodyAsXML(xmlOutput);
             xmlOutput.closeTag("SuppressionFilter");
@@ -888,15 +884,17 @@ public class Project implements XMLWriteable {
         CloudPlugin cloudPlugin = bugCollection == null ? null : CloudFactory.getCloudPlugin(bugCollection);
         if (cloudPlugin != null) {
             String id = cloudPlugin.getId();
-            if (id == null)
+            if (id == null) {
                 id = cloudId;
+            }
             xmlOutput.startTag(CLOUD_ELEMENT_NAME);
             xmlOutput.addAttribute(CLOUD_ID_ATTRIBUTE_NAME, id);
             boolean onlineCloud = cloudPlugin.isOnline();
             xmlOutput.addAttribute("online", Boolean.toString(onlineCloud));
             String url = cloudPlugin.getProperties().getProperty("cloud.detailsUrl");
-            if (url != null)
+            if (url != null) {
                 xmlOutput.addAttribute("detailsUrl", url);
+            }
             xmlOutput.stopTag(false);
             for (Map.Entry<?,?> e : cloudProperties.entrySet()) {
                 xmlOutput.startTag(CLOUD_PROPERTY_ELEMENT_NAME);
@@ -991,9 +989,7 @@ public class Project implements XMLWriteable {
                 return path.toString();
             }
         }
-
         return srcFile;
-
     }
 
     /**
@@ -1002,7 +998,7 @@ public class Project implements XMLWriteable {
      * @param fileName
      *            path to convert
      * @return the converted filename
-     */
+     *
     private String convertToAbsolute(String fileName)  {
         // At present relative paths are only calculated if the fileName is
         // below the project file. This need not be the case, and we could use
@@ -1014,13 +1010,14 @@ public class Project implements XMLWriteable {
         if (!file.isAbsolute()) {
             for (File cwd : currentWorkingDirectoryList) {
                 File test = new File(cwd, fileName);
-                if (test.canRead())
+                if (test.canRead()) {
                     return test.getAbsolutePath();
+                }
             }
             return file.getAbsolutePath();
         }
         return fileName;
-    }
+    }*/
 
     /**
      * Make the given filename absolute relative to the current working
@@ -1095,7 +1092,7 @@ public class Project implements XMLWriteable {
     /**
      * Make the given list of pathnames absolute relative to the absolute path
      * of the project file.
-     */
+     *
     private void makeListAbsoluteProject(List<String> list)  {
         List<String> replace = new LinkedList<String>();
         for (String fileName : list) {
@@ -1105,12 +1102,8 @@ public class Project implements XMLWriteable {
 
         list.clear();
         list.addAll(replace);
-    }
+    }*/
 
-    /**
-     * @param timestamp
-     *            The timestamp to set.
-     */
     public void setTimestamp(long timestamp) {
         this.timestampForAnalyzedClasses = timestamp;
     }
@@ -1121,41 +1114,23 @@ public class Project implements XMLWriteable {
         }
     }
 
-    /**
-     * @return Returns the timestamp.
-     */
     public long getTimestamp() {
         return timestampForAnalyzedClasses;
     }
 
-    /**
-     * @param projectName
-     *            The projectName to set.
-     */
     public void setProjectName(String projectName) {
         this.projectName = projectName;
     }
 
-    /**
-     * @return Returns the projectName.
-     */
     public String getProjectName() {
         return projectName;
     }
 
-    /**
-     * @param suppressionFilter
-     *            The suppressionFilter to set.
-     */
     public void setSuppressionFilter(@Nonnull Filter suppressionFilter) {
-        if (suppressionFilter == null)
-            throw new NullPointerException();
+        requireNonNull(suppressionFilter);
         this.suppressionFilter = suppressionFilter;
     }
 
-    /**
-     * @return Returns the suppressionFilter.
-     */
     public Filter getSuppressionFilter() {
         return suppressionFilter;
     }
@@ -1165,8 +1140,9 @@ public class Project implements XMLWriteable {
     }
 
     public IGuiCallback getGuiCallback() {
-        if (guiCallback == null)
+        if (guiCallback == null) {
             guiCallback = new CommandLineUiCallback();
+        }
         return guiCallback;
     }
 
@@ -1180,21 +1156,22 @@ public class Project implements XMLWriteable {
             }
             File f = new File(s);
             if (f.isAbsolute() || currentWorkingDirectoryList.isEmpty()) {
-                if (f.canRead())
+                if (f.canRead()) {
                     result.add(s);
+                }
                 continue;
             }
-            for (File d : currentWorkingDirectoryList)
+            for (File d : currentWorkingDirectoryList) {
                 if (d.canRead() && d.isDirectory()) {
                     File a = new File(d, s);
-                    if (a.canRead())
+                    if (a.canRead()) {
                         result.add(a.getAbsolutePath());
+                    }
 
                 }
+            }
 
         }
         return result;
     }
 }
-
-// vim:ts=4

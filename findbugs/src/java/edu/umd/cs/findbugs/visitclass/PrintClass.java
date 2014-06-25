@@ -48,17 +48,20 @@ public class PrintClass {
             String s1 = e1.getName();
             int pos1 = s1.lastIndexOf('/');
             String p1 = "-";
-            if (pos1 >= 0)
+            if (pos1 >= 0) {
                 p1 = s1.substring(0, pos1);
+            }
 
             String s2 = e2.getName();
             int pos2 = s2.lastIndexOf('/');
             String p2 = "-";
-            if (pos2 >= 0)
+            if (pos2 >= 0) {
                 p2 = s2.substring(0, pos2);
+            }
             int r = p1.compareTo(p2);
-            if (r != 0)
+            if (r != 0) {
                 return r;
+            }
             return s1.compareTo(s2);
         }
     }
@@ -70,7 +73,6 @@ public class PrintClass {
     public static void main(String argv[]) throws IOException {
         String[] file_name = new String[argv.length];
         int files = 0;
-        ClassParser parser = null;
         String zip_file = null;
 
         /*
@@ -78,51 +80,61 @@ public class PrintClass {
          */
         for (int i = 0; i < argv.length; i++) {
             if (argv[i].charAt(0) == '-') { // command line switch
-                if (argv[i].equals("-constants"))
+                if (argv[i].equals("-constants")) {
                     constants = true;
-                else if (argv[i].equals("-code"))
+                } else if (argv[i].equals("-code")) {
                     code = true;
-                else if (argv[i].equals("-super"))
+                } else if (argv[i].equals("-super")) {
                     superClasses = true;
-                else if (argv[i].equals("-zip"))
+                } else if (argv[i].equals("-zip")) {
                     zip_file = argv[++i];
-            } else if (argv[i].endsWith(".zip") || argv[i].endsWith(".jar"))
+                }
+            } else if (argv[i].endsWith(".zip") || argv[i].endsWith(".jar")) {
                 zip_file = argv[i];
-            else { // add file name to list
+            } else { // add file name to list
                 file_name[files++] = argv[i];
             }
         }
 
-        if (!constants)
+        if (!constants) {
             code = true;
+        }
         if (files == 0 && zip_file == null) {
             System.err.println("list: No input files specified");
         } else if (zip_file != null) {
-            for (int i = 0; i < files; i++)
+            for (int i = 0; i < files; i++) {
                 file_name[i] = file_name[i].replace('.', '/');
-            ZipFile z = new ZipFile(zip_file);
-            TreeSet<ZipEntry> zipEntries = new TreeSet<ZipEntry>(new ZipEntryComparator());
-            for (Enumeration<? extends ZipEntry> e = z.entries(); e.hasMoreElements();)
-                zipEntries.add(e.nextElement());
-
-            for (ZipEntry ze : zipEntries) {
-                String name = ze.getName();
-                if (!name.endsWith(".class"))
-                    continue;
-                checkMatch: if (files > 0) {
-                    for (int i = 0; i < files; i++)
-                        if (name.indexOf(file_name[i]) >= 0)
-                            break checkMatch;
-                    continue;
-                }
-                printClass(new ClassParser(z.getInputStream(ze), name));
-
             }
-            z.close();
-        } else
-            for (int i = 0; i < files; i++)
-                if (file_name[i].endsWith(".class"))
+            try(ZipFile z = new ZipFile(zip_file)){
+                TreeSet<ZipEntry> zipEntries = new TreeSet<ZipEntry>(new ZipEntryComparator());
+                for (Enumeration<? extends ZipEntry> e = z.entries(); e.hasMoreElements();) {
+                    zipEntries.add(e.nextElement());
+                }
+
+                for (ZipEntry ze : zipEntries) {
+                    String name = ze.getName();
+                    if (!name.endsWith(".class")) {
+                        continue;
+                    }
+                    checkMatch: if (files > 0) {
+                        for (int i = 0; i < files; i++) {
+                            if (name.indexOf(file_name[i]) >= 0) {
+                                break checkMatch;
+                            }
+                        }
+                        continue;
+                    }
+                    printClass(new ClassParser(z.getInputStream(ze), name));
+
+                }
+            }
+        } else {
+            for (int i = 0; i < files; i++) {
+                if (file_name[i].endsWith(".class")) {
                     printClass(new ClassParser(file_name[i]));
+                }
+            }
+        }
     }
 
 
@@ -143,13 +155,16 @@ public class PrintClass {
             System.out.println();
             return;
         }
-        if (constants || code)
+        if (constants || code) {
             System.out.println(java_class); // Dump the contents
-        if (constants) // Dump the constant pool ?
+        }
+        if (constants) {
             System.out.println(java_class.getConstantPool());
+        }
 
-        if (code) // Dump the method code ?
+        if (code) {
             printCode(java_class.getMethods());
+        }
     }
 
     /**
@@ -159,8 +174,9 @@ public class PrintClass {
         for (Method m : methods) {
             System.out.println(m);
             Code code = m.getCode();
-            if (code != null)
+            if (code != null) {
                 System.out.println(code);
+            }
 
         }
     }

@@ -66,11 +66,6 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
-     */
     @Override
     public void sawOpcode(int seen) {
         if (seen == IAND || seen == IOR) {
@@ -91,14 +86,16 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
             // null guarantees a branch
             boolean nullGuaranteesZero = seen == IAND;
             boolean nullGuaranteesBranch = nullGuaranteesZero ^ (nextOpcode == IFNE);
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println(item.getPC() + " null guarantees " + nullGuaranteesBranch + " branch");
+            }
             try {
                 CFG cfg = getClassContext().getCFG(getMethod());
                 Location produced = findLocation(cfg, item.getPC());
                 Location branch = findLocation(cfg, getPC() + 1);
-                if (produced == null || branch == null)
+                if (produced == null || branch == null) {
                     return;
+                }
 
                 IfInstruction branchInstruction = (IfInstruction) branch.getHandle().getInstruction();
 
@@ -109,8 +106,9 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
                 ValueNumberFrame valueNumberFact = valueNumberDataflow.getFactAtLocation(produced);
                 IsNullValueFrame isNullFact = isNullValueDataflow.getFactAtLocation(produced);
                 ValueNumber value = valueNumberFact.getTopValue();
-                if (isNullFact.getTopValue().isDefinitelyNotNull())
+                if (isNullFact.getTopValue().isDefinitelyNotNull()) {
                     return;
+                }
                 if (DEBUG) {
                     System.out.println("Produced: " + produced);
                     System.out.println(valueNumberFact);
@@ -123,8 +121,9 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
                 }
                 Location guaranteed = findLocation(cfg, nullGuaranteesBranch ? branchInstruction.getTarget() : branch.getHandle()
                         .getNext());
-                if (guaranteed == null)
+                if (guaranteed == null) {
                     return;
+                }
 
                 UnconditionalValueDerefSet unconditionalDeref = unconditionalValueDerefDataflow.getFactAtLocation(guaranteed);
                 if (DEBUG) {
@@ -144,14 +143,16 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
                         bug = new BugInstance(this, "NP_GUARANTEED_DEREF", NORMAL_PRIORITY).addClassAndMethod(this);
                         bug.addOptionalAnnotation(variableAnnotation);
                         bug.addSourceLine(tested).describe("SOURCE_LINE_KNOWN_NULL");
-                        for (Location dereferenced : unconditionalDerefLocationSet)
+                        for (Location dereferenced : unconditionalDerefLocationSet) {
                             bug.addSourceLine(getClassContext(), getMethod(), dereferenced).describe("SOURCE_LINE_DEREF");
+                        }
 
                     } else {
                         bug = new BugInstance(this, "NP_NULL_ON_SOME_PATH", NORMAL_PRIORITY).addClassAndMethod(this);
                         bug.addOptionalAnnotation(variableAnnotation);
-                        for (Location dereferenced : unconditionalDerefLocationSet)
+                        for (Location dereferenced : unconditionalDerefLocationSet) {
                             bug.addSourceLine(getClassContext(), getMethod(), dereferenced).describe("SOURCE_LINE_DEREF");
+                        }
 
                         bug.addSourceLine(tested).describe("SOURCE_LINE_KNOWN_NULL");
 
@@ -173,8 +174,9 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
     Location findLocation(CFG cfg, int pc) {
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location loc = i.next();
-            if (loc.getHandle().getPosition() == pc)
+            if (loc.getHandle().getPosition() == pc) {
                 return loc;
+            }
         }
         return null;
     }
@@ -183,8 +185,9 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
     Location findLocation(CFG cfg, InstructionHandle handle) {
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location loc = i.next();
-            if (loc.getHandle() == handle)
+            if (loc.getHandle() == handle) {
                 return loc;
+            }
         }
         return null;
     }
@@ -194,8 +197,10 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
                 || item.getSpecialKind() == OpcodeStack.Item.NONZERO_MEANS_NULL && seen == IOR;
     }
 
+    /*
     private void emitWarning() {
-        System.out.println("Warn about " + getMethodName()); // TODO
+        System.out.println("Warn about " + getMethodName());
     }
+     */
 
 }

@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -70,7 +72,7 @@ public class AnalysisCache implements IAnalysisCache {
      */
     private static final int MAX_CLASS_RESULTS_TO_CACHE = 5000;
 
-    private static final boolean ASSERTIONS_ENABLED = SystemProperties.ASSERTIONS_ENABLED;
+    //    private static final boolean ASSERTIONS_ENABLED = SystemProperties.ASSERTIONS_ENABLED;
 
     // Fields
     private final IClassPath classPath;
@@ -138,8 +140,9 @@ public class AnalysisCache implements IAnalysisCache {
 
     @SuppressWarnings("unchecked")
     static <E> E checkedCast(Class<E> analysisClass, Object o) {
-        if (SystemProperties.ASSERTIONS_ENABLED)
+        if (SystemProperties.ASSERTIONS_ENABLED) {
             return analysisClass.cast(o);
+        }
         return (E) o;
     }
 
@@ -161,11 +164,6 @@ public class AnalysisCache implements IAnalysisCache {
         this.databaseMap = new HashMap<Class<?>, Object>();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getClassPath()
-     */
     @Override
     public IClassPath getClassPath() {
         return classPath;
@@ -237,19 +235,10 @@ public class AnalysisCache implements IAnalysisCache {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.classfile.IAnalysisCache#getClassAnalysis(java.lang
-     * .Class, edu.umd.cs.findbugs.classfile.ClassDescriptor)
-     */
     @Override
     @SuppressWarnings("unchecked")
     public <E> E getClassAnalysis(Class<E> analysisClass, @Nonnull ClassDescriptor classDescriptor) throws CheckedAnalysisException {
-        if (classDescriptor == null) {
-            throw new NullPointerException("classDescriptor is null");
-        }
+        requireNonNull(classDescriptor, "classDescriptor is null");
         // Get the descriptor->result map for this analysis class,
         // creating if necessary
         Map<ClassDescriptor, Object> descriptorMap = findOrCreateDescriptorMap(classAnalysisMap,
@@ -309,13 +298,6 @@ public class AnalysisCache implements IAnalysisCache {
         return checkedCast(analysisClass, analysisResult);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.classfile.IAnalysisCache#probeClassAnalysis(java.
-     * lang.Class, edu.umd.cs.findbugs.classfile.ClassDescriptor)
-     */
     @Override
     public <E> E probeClassAnalysis(Class<E> analysisClass, @Nonnull ClassDescriptor classDescriptor) {
         Map<ClassDescriptor, Object> descriptorMap = classAnalysisMap.get(analysisClass);
@@ -329,18 +311,9 @@ public class AnalysisCache implements IAnalysisCache {
         return Integer.toHexString(System.identityHashCode(o));
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.classfile.IAnalysisCache#getMethodAnalysis(java.lang
-     * .Class, edu.umd.cs.findbugs.classfile.MethodDescriptor)
-     */
     @Override
     public <E> E getMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
-        if (methodDescriptor == null) {
-            throw new NullPointerException("methodDescriptor is null");
-        }
+        requireNonNull(methodDescriptor, "methodDescriptor is null");
         ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
         Object object = classContext.getMethodAnalysis(analysisClass, methodDescriptor);
 
@@ -399,14 +372,6 @@ public class AnalysisCache implements IAnalysisCache {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.classfile.IAnalysisCache#eagerlyPutMethodAnalysis
-     * (java.lang.Class, edu.umd.cs.findbugs.classfile.MethodDescriptor,
-     * java.lang.Object)
-     */
     @Override
     public <E> void eagerlyPutMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor, E analysisObject) {
         try {
@@ -421,13 +386,6 @@ public class AnalysisCache implements IAnalysisCache {
 
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.classfile.IAnalysisCache#purgeMethodAnalyses(edu.
-     * umd.cs.findbugs.classfile.MethodDescriptor)
-     */
     @Override
     public void purgeMethodAnalyses(@Nonnull MethodDescriptor methodDescriptor) {
         try {
@@ -490,48 +448,21 @@ public class AnalysisCache implements IAnalysisCache {
         return descriptorMap;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.classfile.IAnalysisCache#registerClassAnalysisEngine
-     * (java.lang.Class, edu.umd.cs.findbugs.classfile.IClassAnalysisEngine)
-     */
     @Override
     public <E> void registerClassAnalysisEngine(Class<E> analysisResultType, IClassAnalysisEngine<E> classAnalysisEngine) {
         classAnalysisEngineMap.put(analysisResultType, classAnalysisEngine);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.classfile.IAnalysisCache#registerMethodAnalysisEngine
-     * (java.lang.Class, edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine)
-     */
     @Override
     public <E> void registerMethodAnalysisEngine(Class<E> analysisResultType, IMethodAnalysisEngine<E> methodAnalysisEngine) {
         methodAnalysisEngineMap.put(analysisResultType, methodAnalysisEngine);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.classfile.IAnalysisCache#registerDatabaseFactory(
-     * java.lang.Class, edu.umd.cs.findbugs.classfile.IDatabaseFactory)
-     */
     @Override
     public <E> void registerDatabaseFactory(Class<E> databaseClass, IDatabaseFactory<E> databaseFactory) {
         databaseFactoryMap.put(databaseClass, databaseFactory);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.classfile.IAnalysisCache#getDatabase(java.lang.Class)
-     */
     @Override
     public <E> E getDatabase(Class<E> databaseClass) {
         return getDatabase(databaseClass, false);
@@ -548,7 +479,9 @@ public class AnalysisCache implements IAnalysisCache {
                 // Find the database factory
                 IDatabaseFactory<?> databaseFactory = databaseFactoryMap.get(databaseClass);
                 if (databaseFactory == null) {
-                    if (optional) return null;
+                    if (optional) {
+                        return null;
+                    }
                     throw new IllegalArgumentException("No database factory registered for " + databaseClass.getName());
                 }
 
@@ -559,7 +492,6 @@ public class AnalysisCache implements IAnalysisCache {
                 database = new AbnormalAnalysisResult(e);
             }
             // FIXME: should catch and re-throw RuntimeExceptions?
-
             databaseMap.put(databaseClass, database);
         }
 
@@ -567,37 +499,19 @@ public class AnalysisCache implements IAnalysisCache {
             throw new UncheckedAnalysisException("Error instantiating " + databaseClass.getName() + " database",
                     ((AbnormalAnalysisResult) database).checkedAnalysisException);
         }
-
         return databaseClass.cast(database);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.classfile.IAnalysisCache#eagerlyPutDatabase(java.
-     * lang.Class, java.lang.Object)
-     */
     @Override
     public <E> void eagerlyPutDatabase(Class<E> databaseClass, E database) {
         databaseMap.put(databaseClass, database);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getErrorLogger()
-     */
     @Override
     public IErrorLogger getErrorLogger() {
         return bugReporter;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getProfiler()
-     */
     @Override
     public Profiler getProfiler() {
         return bugReporter.getProjectStats().getProfiler();

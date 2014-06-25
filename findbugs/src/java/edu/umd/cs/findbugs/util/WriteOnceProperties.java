@@ -19,38 +19,29 @@ public class WriteOnceProperties extends Properties {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-
-    @Override
-    public String getProperty(String key) {
+    public synchronized String getProperty(String key) {
         String result = super.getProperty(key);
-        if (result != null && result.length() > 0 && !propertReadAt.containsKey(key))
+        if (result != null && result.length() > 0 && !propertReadAt.containsKey(key)) {
             propertReadAt.put(key, new PropertyReadAt());
+        }
         return result;
     }
 
     @Override
-    public String getProperty(String key, String defaultValue) {
+    public synchronized String getProperty(String key, String defaultValue) {
         String result = super.getProperty(key, defaultValue);
-        if (result != null && result.length() > 0 && !propertReadAt.containsKey(key))
+        if (result != null && result.length() > 0 && !propertReadAt.containsKey(key)) {
             propertReadAt.put(key, new PropertyReadAt());
+        }
         return result;
     }
 
     @Override
-    public Object setProperty(String key, String value) {
+    public synchronized Object setProperty(String key, String value) {
         if (propertReadAt.containsKey(key) && !value.equals(super.getProperty(key))) {
             IllegalStateException e = new IllegalStateException("Changing property '" + key + "' to '" + value
                     + "' after it has already been read as '" + super.getProperty(key) + "'");
             e.initCause(propertReadAt.get(key));
-
             throw e;
         }
         return super.setProperty(key, value);
@@ -58,8 +49,9 @@ public class WriteOnceProperties extends Properties {
 
     public static void makeSystemPropertiesWriteOnce() {
         Properties properties = System.getProperties();
-        if (properties instanceof WriteOnceProperties)
+        if (properties instanceof WriteOnceProperties) {
             return;
+        }
         System.setProperties(new WriteOnceProperties(properties));
     }
 
@@ -76,9 +68,6 @@ public class WriteOnceProperties extends Properties {
 
     }
 
-    /**
-     *
-     */
     private static void dumpProperties() {
 
         Properties properties = System.getProperties();

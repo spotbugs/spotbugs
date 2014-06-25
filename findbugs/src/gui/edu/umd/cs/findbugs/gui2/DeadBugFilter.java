@@ -19,18 +19,11 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import edu.umd.cs.findbugs.BugInstance;
-
 /**
  * @author Dan
  */
 public class DeadBugFilter extends FilterMatcher {
 
-    /**
-     * @param filterBy
-     * @param value
-     * @param mode
-     */
     public DeadBugFilter(Sortables filterBy, String value, FilterWhere mode) {
         super(filterBy, value, mode);
     }
@@ -40,8 +33,4 @@ public class DeadBugFilter extends FilterMatcher {
         return edu.umd.cs.findbugs.L10N.getLocalString("pref.dead_bugs", "Dead Bugs");
     }
 
-    @Override
-    public boolean match(BugInstance bugInstance) {
-        return super.match(bugInstance);
-    }
 }

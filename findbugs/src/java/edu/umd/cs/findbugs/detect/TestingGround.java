@@ -21,27 +21,26 @@ package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.classfile.Code;
 
-import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class TestingGround extends OpcodeStackDetector {
 
-    final BugReporter bugReporter;
+    //    final BugReporter bugReporter;
 
-    final BugAccumulator accumulator;
+    //    final BugAccumulator accumulator;
 
     public TestingGround(BugReporter bugReporter) {
-        this.bugReporter = bugReporter;
-        this.accumulator = new BugAccumulator(bugReporter);
+        //        this.bugReporter = bugReporter;
+        //        this.accumulator = new BugAccumulator(bugReporter);
     }
 
     @Override
     public void visit(Code code) {
-      System.out.println(getFullyQualifiedMethodName());
-      super.visit(code);
-      System.out.println();
-      }
+        System.out.println(getFullyQualifiedMethodName());
+        super.visit(code);
+        System.out.println();
+    }
 
     @Override
     public void sawOpcode(int seen) {

@@ -14,21 +14,22 @@ import edu.umd.cs.findbugs.util.ClassName;
 public class IDivResultCastToDouble extends BytecodeScanningDetector {
     private static final boolean DEBUG = SystemProperties.getBoolean("idcd.debug");
 
-    private final BugReporter bugReporter;
+    //    private final BugReporter bugReporter;
 
     private final BugAccumulator bugAccumulator;
 
     private int prevOpCode;
 
     public IDivResultCastToDouble(BugReporter bugReporter) {
-        this.bugReporter = bugReporter;
+        //        this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
     @Override
     public void visit(Method obj) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Visiting " + obj);
+        }
     }
 
     @Override
@@ -42,14 +43,15 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
 
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Saw opcode " + OPCODE_NAMES[seen] + " " + pendingIdivCastToDivBugLocation);
+        }
 
         if ((prevOpCode == I2D || prevOpCode == L2D) && seen == INVOKESTATIC && ClassName.isMathClass(getClassConstantOperand())
                 && getNameConstantOperand().equals("ceil")) {
             bugAccumulator
-                    .accumulateBug(new BugInstance(this, "ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", HIGH_PRIORITY)
-                            .addClassAndMethod(this), this);
+            .accumulateBug(new BugInstance(this, "ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", HIGH_PRIORITY)
+            .addClassAndMethod(this), this);
             pendingIdivCastToDivBugLocation = null;
         } else if ((prevOpCode == I2F || prevOpCode == L2F) && seen == INVOKESTATIC
                 && ClassName.isMathClass(getClassConstantOperand()) && getNameConstantOperand().equals("round")) {
@@ -64,8 +66,9 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
             pendingIdivCastToDivBugLocation = null;
         }
 
-        if (prevOpCode == IDIV && (seen == I2D || seen == I2F) || prevOpCode == LDIV && (seen == L2D || seen == L2F))
+        if (prevOpCode == IDIV && (seen == I2D || seen == I2F) || prevOpCode == LDIV && (seen == L2D || seen == L2F)) {
             pendingIdivCastToDivBugLocation = SourceLineAnnotation.fromVisitedInstruction(this);
+        }
         prevOpCode = seen;
     }
 }

@@ -32,13 +32,14 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.SystemProperties;
 
 /**
  * Class to handle Strings annotated with embedded mnemonics
- * 
+ *
  * Note: Since the human interface guidelines for Mac OS X say never to use
  * mnemonics, this class behaves as if no mnemonics are set when run on Mac OS
  * X.
@@ -80,7 +81,7 @@ public class AnnotatedString {
     /**
      * Return the appropriate mnemonic character for this string. If no mnemonic
      * should be displayed, KeyEvent.VK_UNDEFINED is returned.
-     * 
+     *
      * @return the Mnemonic character, or VK_UNDEFINED if no mnemonic should be
      *         set
      */
@@ -126,7 +127,7 @@ public class AnnotatedString {
     public static void main(String[] args) {
         // Some basic tests
 
-        JFrame frame = new JFrame();
+        final JFrame frame = new JFrame();
         frame.getContentPane().setLayout(new FlowLayout());
 
         addButton(frame, "&File");
@@ -142,14 +143,20 @@ public class AnnotatedString {
         addButton(frame, "Cat & Dog");
         addButton(frame, "Cat && Dog");
 
-        frame.pack();
-        frame.setVisible(true);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                frame.pack();
+                frame.setVisible(true);
+            }
+        });
+
     }
 
     /**
      * Localise the given AbstractButton, setting the text and optionally
      * mnemonic Note that AbstractButton includes menus and menu items.
-     * 
+     *
      * @param button
      *            The button to localise
      * @param key

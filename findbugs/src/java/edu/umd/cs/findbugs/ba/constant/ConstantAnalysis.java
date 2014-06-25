@@ -30,14 +30,14 @@ import edu.umd.cs.findbugs.ba.Location;
 
 /**
  * Dataflow analysis to find constant values.
- * 
+ *
  * @see edu.umd.cs.findbugs.ba.constant.Constant
  * @author David Hovemeyer
  */
 public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFrame> {
-    private MethodGen methodGen;
+    private final MethodGen methodGen;
 
-    private ConstantFrameModelingVisitor visitor;
+    private final ConstantFrameModelingVisitor visitor;
 
     public ConstantAnalysis(MethodGen methodGen, DepthFirstSearch dfs) {
         super(dfs);
@@ -74,7 +74,7 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
             ConstantFrame tmpFact = null;
 
             if (edge.isExceptionEdge()) {
-                tmpFact = modifyFrame(fact, tmpFact);
+                tmpFact = modifyFrame(fact, null);
                 tmpFact.clearStack();
                 tmpFact.pushValue(Constant.NOT_CONSTANT);
             }

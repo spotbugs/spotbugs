@@ -46,6 +46,7 @@ import org.apache.bcel.generic.MethodGen;
 import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.OpcodeStack.JumpInfo;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
@@ -126,12 +127,13 @@ public class ClassContext {
     public Map<MethodDescriptor, Object> getObjectMap(Class<?> analysisClass) {
         Map<MethodDescriptor, Object> objectMap = methodAnalysisObjectMap.get(analysisClass);
         if (objectMap == null) {
-            if (analysisClass == ValueNumberDataflow.class)
+            if (analysisClass == ValueNumberDataflow.class) {
                 objectMap = new MapCache<MethodDescriptor, Object>(300);
-            else if (Dataflow.class.isAssignableFrom(analysisClass))
+            } else if (Dataflow.class.isAssignableFrom(analysisClass)) {
                 objectMap = new MapCache<MethodDescriptor, Object>(500);
-            else
+            } else {
                 objectMap = new HashMap<MethodDescriptor, Object>();
+            }
             methodAnalysisObjectMap.put(analysisClass, objectMap);
         }
         return objectMap;
@@ -248,8 +250,9 @@ public class ClassContext {
         List<Method> methodsInCallOrder = new ArrayList<Method>(xmethodsInCallOrder.size());
         for (XMethod x : xmethodsInCallOrder) {
             Method m = map.get(x);
-            if (m != null)
+            if (m != null) {
                 methodsInCallOrder.add(m);
+            }
         }
         return methodsInCallOrder;
     }
@@ -318,7 +321,7 @@ public class ClassContext {
      * @return the UsagesRequiringNonNullValues
      */
     public UsagesRequiringNonNullValues getUsagesRequiringNonNullValues(Method method) throws DataflowAnalysisException,
-            CFGBuilderException {
+    CFGBuilderException {
         return getMethodAnalysis(UsagesRequiringNonNullValues.class, method);
     }
 
@@ -377,8 +380,8 @@ public class ClassContext {
         return getMethodAnalysisNoDataflowAnalysisException(ReverseDepthFirstSearch.class, method);
     }
 
-    static final AnalysisLocal<MapCache<XMethod, BitSet>> cachedBitsets_AL
-     = new AnalysisLocal<MapCache<XMethod, BitSet>>() {
+    static final AnalysisLocal<MapCache<XMethod, BitSet>> cachedBitsets_AL =
+            new AnalysisLocal<MapCache<XMethod, BitSet>>() {
         @Override
         protected MapCache<XMethod, BitSet> initialValue() {
             return  new MapCache<XMethod, BitSet>(64);
@@ -431,8 +434,9 @@ public class ClassContext {
             return cachedBitsets().get(xmethod);
         }
         Code code = method.getCode();
-        if (code == null)
+        if (code == null) {
             return null;
+        }
 
         byte[] instructionList = code.getCode();
 
@@ -445,8 +449,9 @@ public class ClassContext {
 
         UnpackedCode unpackedCode = callback.getUnpackedCode();
         BitSet result = null;
-        if (unpackedCode != null)
+        if (unpackedCode != null) {
             result = unpackedCode.getBytecodeSet();
+        }
         cachedBitsets().put(xmethod, result);
         return result;
     }
@@ -466,7 +471,7 @@ public class ClassContext {
                 assert false;
                 return Collections.<Integer> emptySet();
             }
-           return result;
+            return result;
         }
         Code code = method.getCode();
         if (code == null) {
@@ -477,11 +482,14 @@ public class ClassContext {
         byte[] instructionList = code.getCode();
 
         Set<Integer> result = new HashSet<Integer>();
-        for (int i = 0; i < instructionList.length; i++)
-            if (checkForBranchExit(instructionList, i))
+        for (int i = 0; i < instructionList.length; i++) {
+            if (checkForBranchExit(instructionList, i)) {
                 result.add(i);
-        if (result.size() == 0)
+            }
+        }
+        if (result.size() == 0) {
             result = Collections.<Integer> emptySet();
+        }
 
         cachedLoopExits().put(xmethod, result);
         return result;
@@ -500,8 +508,9 @@ public class ClassContext {
     }
 
     static boolean checkForBranchExit(byte[] codeBytes, int pos) {
-        if (pos < 0 || pos + 2 >= codeBytes.length)
+        if (pos < 0 || pos + 2 >= codeBytes.length) {
             return false;
+        }
         switch (0xff & codeBytes[pos]) {
         case Constants.IF_ACMPEQ:
         case Constants.IF_ACMPNE:
@@ -516,13 +525,16 @@ public class ClassContext {
             return false;
         }
         int branchTarget = pos + getBranchOffset(codeBytes, pos + 1);
-        if (branchTarget - 3 < pos || branchTarget >= codeBytes.length)
+        if (branchTarget - 3 < pos || branchTarget >= codeBytes.length) {
             return false;
-        if ((codeBytes[branchTarget - 3] & 0xff) != Constants.GOTO)
+        }
+        if ((codeBytes[branchTarget - 3] & 0xff) != Constants.GOTO) {
             return false;
+        }
         int backBranchTarget = branchTarget + getBranchOffset(codeBytes, branchTarget - 2);
-        if (backBranchTarget <= pos && backBranchTarget + 12 >= pos)
+        if (backBranchTarget <= pos && backBranchTarget + 12 >= pos) {
             return true;
+        }
         return false;
     }
 
@@ -537,6 +549,8 @@ public class ClassContext {
      * @return map of bytecode offsets to opcodes, or null if the method has no
      *         code
      */
+    @CheckForNull
+    @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
     public short[] getOffsetToOpcodeMap(Method method) {
         UnpackedCode unpackedCode = getMethodAnalysisNoException(UnpackedCode.class, method);
         return unpackedCode != null ? unpackedCode.getOffsetToBytecodeMap() : null;
@@ -588,7 +602,7 @@ public class ClassContext {
      * @return the DominatorsAnalysis
      */
     public DominatorsAnalysis getNonExceptionDominatorsAnalysis(Method method) throws CFGBuilderException,
-            DataflowAnalysisException {
+    DataflowAnalysisException {
         return getMethodAnalysis(DominatorsAnalysis.class, method);
     }
 
@@ -601,7 +615,7 @@ public class ClassContext {
      * @return the DominatorsAnalysis
      */
     public PostDominatorsAnalysis getNonImplicitExceptionDominatorsAnalysis(Method method) throws CFGBuilderException,
-            DataflowAnalysisException {
+    DataflowAnalysisException {
         return getMethodAnalysis(NonImplicitExceptionPostDominatorsAnalysis.class, method);
     }
 
@@ -614,7 +628,7 @@ public class ClassContext {
      * @return the PostDominatorsAnalysis
      */
     public PostDominatorsAnalysis getNonExceptionPostDominatorsAnalysis(Method method) throws CFGBuilderException,
-            DataflowAnalysisException {
+    DataflowAnalysisException {
         return getMethodAnalysis(NonExceptionPostdominatorsAnalysis.class, method);
     }
 
@@ -762,39 +776,46 @@ public class ClassContext {
         BitSet pcInFinallyBlock = new BitSet();
 
         Code code = method.getCode();
-        if (code == null)
+        if (code == null) {
             return lineMentionedMultipleTimes;
+        }
         CodeException[] exceptionTable = code.getExceptionTable();
-        if (exceptionTable == null || exceptionTable.length == 0)
+        if (exceptionTable == null || exceptionTable.length == 0) {
             return lineMentionedMultipleTimes;
+        }
         int firstHandler = Integer.MAX_VALUE;
-        for (CodeException e : exceptionTable)
+        for (CodeException e : exceptionTable) {
             if (e.getCatchType() == 0) {
                 int pc = e.getHandlerPC();
                 firstHandler = Math.min(firstHandler, pc);
                 if (jumpInfo != null) {
                     int end = jumpInfo.getNextJump(pc + 1);
-                    if (end >= pc)
+                    if (end >= pc) {
                         pcInFinallyBlock.set(pc, end);
+                    }
                 }
             }
+        }
         BitSet foundOnce = new BitSet();
         BitSet afterHandler = new BitSet();
         LineNumberTable lineNumberTable = method.getLineNumberTable();
         int lineNum = -1;
         int prevStartPc = -1;
-        if (lineNumberTable != null)
+        if (lineNumberTable != null) {
             for (LineNumber line : lineNumberTable.getLineNumberTable()) {
                 int newLine = line.getLineNumber();
-                if (newLine == lineNum || newLine == -1)
+                if (newLine == lineNum || newLine == -1) {
                     continue;
+                }
                 if (prevStartPc >= 0) {
                     int nextPcInFinallyBlock = pcInFinallyBlock.nextSetBit(prevStartPc);
-                    if (nextPcInFinallyBlock < line.getStartPC())
+                    if (nextPcInFinallyBlock < line.getStartPC()) {
                         lineMentionedMultipleTimes.set(lineNum);
+                    }
                 }
-                if (line.getStartPC() >= firstHandler)
+                if (line.getStartPC() >= firstHandler) {
                     afterHandler.set(lineNum);
+                }
 
                 lineNum = newLine;
                 prevStartPc = line.getStartPC();
@@ -804,6 +825,7 @@ public class ClassContext {
                     foundOnce.set(lineNum);
                 }
             }
+        }
         lineMentionedMultipleTimes.and(afterHandler);
         return lineMentionedMultipleTimes;
     }
@@ -818,7 +840,7 @@ public class ClassContext {
      * @throws DataflowAnalysisException
      */
     public UnconditionalValueDerefDataflow getUnconditionalValueDerefDataflow(Method method) throws CFGBuilderException,
-            DataflowAnalysisException {
+    DataflowAnalysisException {
         return getMethodAnalysis(UnconditionalValueDerefDataflow.class, method);
     }
 
@@ -876,19 +898,9 @@ public class ClassContext {
         }
     }
 
-    /**
-     * @param method
-     * @param cfg
-     * @param vnd
-     * @param inv
-     * @param dataflow
-     * @param typeDataflow
-     *            TODO
-     * @throws DataflowAnalysisException
-     */
     public static void dumpDataflowInformation(Method method, CFG cfg, ValueNumberDataflow vnd, IsNullValueDataflow inv,
             @CheckForNull UnconditionalValueDerefDataflow dataflow, @CheckForNull TypeDataflow typeDataflow)
-            throws DataflowAnalysisException {
+                    throws DataflowAnalysisException {
         System.out.println("\n\n{ UnconditionalValueDerefAnalysis analysis for " + method.getName());
         TreeSet<Location> tree = new TreeSet<Location>();
 
@@ -898,29 +910,27 @@ public class ClassContext {
         }
         for (Location loc : tree) {
             System.out.println();
-            if (dataflow != null)
+            if (dataflow != null) {
                 System.out.println("\n Pre: " + dataflow.getFactAfterLocation(loc));
+            }
             System.out.println("Vna: " + vnd.getFactAtLocation(loc));
             System.out.println("inv: " + inv.getFactAtLocation(loc));
-            if (typeDataflow != null)
+            if (typeDataflow != null) {
                 System.out.println("type: " + typeDataflow.getFactAtLocation(loc));
+            }
             System.out.println("Location: " + loc);
-            if (dataflow != null)
+            if (dataflow != null) {
                 System.out.println("Post: " + dataflow.getFactAtLocation(loc));
+            }
             System.out.println("Vna: " + vnd.getFactAfterLocation(loc));
             System.out.println("inv: " + inv.getFactAfterLocation(loc));
-            if (typeDataflow != null)
+            if (typeDataflow != null) {
                 System.out.println("type: " + typeDataflow.getFactAfterLocation(loc));
+            }
         }
         System.out.println("}\n\n");
     }
 
-    /**
-     * @param method
-     * @param cfg
-     * @param typeDataflow
-     * @throws DataflowAnalysisException
-     */
     public static void dumpTypeDataflow(Method method, CFG cfg, TypeDataflow typeDataflow) throws DataflowAnalysisException {
         System.out.println("\n\n{ Type analysis for " + cfg.getMethodGen().getClassName() + "." + method.getName()
                 + method.getSignature());
@@ -986,7 +996,7 @@ public class ClassContext {
     }
 
     private <Analysis> Analysis getMethodAnalysis(Class<Analysis> analysisClass, Method method) throws DataflowAnalysisException,
-            CFGBuilderException {
+    CFGBuilderException {
         try {
             MethodDescriptor methodDescriptor = BCELUtil.getMethodDescriptor(jclass, method);
             return Global.getAnalysisCache().getMethodAnalysis(analysisClass, methodDescriptor);
@@ -1035,5 +1045,3 @@ public class ClassContext {
     // }
     // }
 }
-
-// vim:ts=3

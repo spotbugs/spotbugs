@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -88,21 +87,24 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
         int numLocals = methodGen.getMaxLocals();
         this.entryLocalValueList = new ValueNumber[numLocals];
-        for (int i = 0; i < numLocals; ++i)
+        for (int i = 0; i < numLocals; ++i) {
             this.entryLocalValueList[i] = factory.createFreshValue();
+        }
 
         this.exceptionHandlerValueNumberMap = new IdentityHashMap<BasicBlock, ValueNumber>();
 
         // For non-static methods, keep track of which value represents the
         // "this" reference
-        if (!methodGen.isStatic())
+        if (!methodGen.isStatic()) {
             this.thisValue = entryLocalValueList[0];
+        }
 
         this.factAtLocationMap = new HashMap<Location, ValueNumberFrame>();
         this.factAfterLocationMap = new HashMap<Location, ValueNumberFrame>();
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("VNA Analysis " + methodGen.getClassName() + "." + methodGen.getName() + " : "
                     + methodGen.getSignature());
+        }
 
     }
 
@@ -155,18 +157,19 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
      * @return the ValueNumber assigned to that parameter
      */
     public ValueNumber getEntryValueForParameter(int param) {
-        
+
         SignatureParser sigParser = new SignatureParser(methodGen.getSignature());
         int p = 0;
         int slotOffset =  methodGen.isStatic() ? 0 : 1;
 
         for ( String paramSig : sigParser.parameterSignatures()) {
-            if (p == param)
+            if (p == param) {
                 return getEntryValue(slotOffset);
+            }
             param++;
             slotOffset += SignatureParser.getNumSlotsForType(paramSig);
         }
-        
+
         throw new IllegalStateException();
     }
 
@@ -183,8 +186,9 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         // At entry to the method, each local has (as far as we know) a unique
         // value.
         int numSlots = result.getNumSlots();
-        for (int i = 0; i < numSlots; ++i)
+        for (int i = 0; i < numSlots; ++i) {
             result.setValue(i, entryLocalValueList[i]);
+        }
     }
 
     @Override
@@ -240,8 +244,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         resultFrame.setValue(slot, value);
     }
 
-    private ValueNumber mergeValues(ValueNumberFrame frame, int slot, ValueNumber mine, ValueNumber other)
-             {
+    private ValueNumber mergeValues(ValueNumberFrame frame, int slot, ValueNumber mine, ValueNumber other) {
 
         // Merging slot values:
         // - Merging identical values results in no change
@@ -257,11 +260,13 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         // I believe (but haven't proved) that this technique is a dumb way
         // of computing SSA.
 
-        if (mine != frame.getValue(slot))
+        if (mine != frame.getValue(slot)) {
             throw new IllegalStateException();
+        }
 
-        if (mine.equals(other))
+        if (mine.equals(other)) {
             return mine;
+        }
 
         ValueNumber mergedValue = frame.getMergedValue(slot);
         if (mergedValue == null) {
@@ -292,16 +297,18 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
     @Override
     public ValueNumberFrame getFactAfterLocation(Location location) {
-        if (TRACE)
+        if (TRACE) {
             System.out.println("getting fact after " + location);
+        }
         ValueNumberFrame fact = factAfterLocationMap.get(location);
         if (fact == null) {
-            if (TRACE)
+            if (TRACE) {
                 System.out
-                        .println("Initialized fact after " + location + " @ "
-                                + Integer.toHexString(System.identityHashCode(location)) + " in "
-                                + Integer.toHexString(System.identityHashCode(this)) + " : "
-                                + factAfterLocationMap.containsKey(location));
+                .println("Initialized fact after " + location + " @ "
+                        + Integer.toHexString(System.identityHashCode(location)) + " in "
+                        + Integer.toHexString(System.identityHashCode(this)) + " : "
+                        + factAfterLocationMap.containsKey(location));
+            }
 
             fact = createFact();
             makeFactTop(fact);
@@ -320,6 +327,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     }
 
     // These fields are used by the compactValueNumbers() method.
+    /*
     private static class ValueCompacter {
         public final BitSet valuesUsed;
 
@@ -336,8 +344,9 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
             // specify value numbers which are not actually used (and thus can
             // be purged.)
             discovered = new int[origNumValuesAllocated];
-            for (int i = 0; i < discovered.length; ++i)
+            for (int i = 0; i < discovered.length; ++i) {
                 discovered[i] = -1;
+            }
         }
 
         public boolean isUsed(int number) {
@@ -352,6 +361,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
             return numValuesUsed++;
         }
     }
+     */
 
     /**
      * Compact the value numbers assigned. This should be done only after the
@@ -370,8 +380,10 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
      */
     @Deprecated
     public void compactValueNumbers(Dataflow<ValueNumberFrame, ValueNumberAnalysis> dataflow) {
-        if (true)
+        if (true) {
             throw new UnsupportedOperationException();
+        }
+        /*
         ValueCompacter compacter = new ValueCompacter(factory.getNumValuesAllocated());
 
         // We can get all extant Frames by looking at the values in
@@ -392,18 +404,20 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
         int after = factory.getNumValuesAllocated();
 
-        if (DEBUG && after < before && before > 0)
+        if (DEBUG && after < before && before > 0) {
             System.out.println("Value compaction: " + after + "/" + before + " (" + ((after * 100) / before) + "%)");
-
+        }
+         */
     }
 
     /**
      * Mark value numbers in a value number frame for compaction.
-     */
+     *
     private static void markFrameValues(ValueNumberFrame frame, ValueCompacter compacter) {
         // We don't need to do anything for top and bottom frames.
-        if (!frame.isValid())
+        if (!frame.isValid()) {
             return;
+        }
 
         for (int j = 0; j < frame.getNumSlots(); ++j) {
             ValueNumber value = frame.getValue(j);
@@ -415,6 +429,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
             }
         }
     }
+     */
 
     // /**
     // * Test driver.
@@ -454,5 +469,3 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         return factory.getClassName(v);
     }
 }
-
-// vim:ts=4

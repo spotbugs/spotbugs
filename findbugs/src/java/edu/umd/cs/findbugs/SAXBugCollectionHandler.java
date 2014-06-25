@@ -40,7 +40,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import edu.umd.cs.findbugs.ba.ClassHash;
 import edu.umd.cs.findbugs.filter.AndMatcher;
 import edu.umd.cs.findbugs.filter.BugMatcher;
 import edu.umd.cs.findbugs.filter.ClassMatcher;
@@ -159,18 +158,19 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     }
 
     private String memoized(String s) {
-        if (s == null)
+        if (s == null) {
             return s;
+        }
         String result = cache.get(s);
-        if (result != null)
+        if (result != null) {
             return result;
+        }
         cache.put(s, s);
         return s;
     }
 
     private static boolean DEBUG = false;
 
-    @SuppressWarnings("hiding")
     @Override
     public void startElement(String uri, String name, String qName, Attributes attributes) throws SAXException {
         // URI should always be empty.
@@ -182,16 +182,18 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             // ignore it
         } else {
             // We should be parsing the outer BugCollection element.
-            if (elementStack.isEmpty() && !qName.equals(topLevelName))
+            if (elementStack.isEmpty() && !qName.equals(topLevelName)) {
                 throw new SAXException("Invalid top-level element (expected " + topLevelName + ", saw " + qName + ")");
+            }
 
             if (qName.equals(BUG_COLLECTION)) {
                 BugCollection bugCollection = this.bugCollection;
                 assert bugCollection != null;
                 // Read and set the sequence number.
                 String version = getOptionalAttribute(attributes, "version");
-                if (bugCollection instanceof SortedBugCollection)
+                if (bugCollection instanceof SortedBugCollection) {
                     bugCollection.setAnalysisVersion(version);
+                }
 
                 // Read and set the sequence number.
                 String sequence = getOptionalAttribute(attributes, "sequence");
@@ -227,8 +229,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 assert project != null;
                 // Project element
                 String projectName = getOptionalAttribute(attributes, Project.PROJECTNAME_ATTRIBUTE_NAME);
-                if (projectName != null)
+                if (projectName != null) {
                     project.setProjectName(projectName);
+                }
             } else {
                 String outerElement = elementStack.get(elementStack.size() - 1);
                 if (outerElement.equals(BUG_COLLECTION)) {
@@ -256,8 +259,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                             bugInstance.setLastVersion(Long.parseLong(lastVersion));
                         }
 
-                        if (bugInstance.isDead() && bugInstance.getFirstVersion() > bugInstance.getLastVersion())
+                        if (bugInstance.isDead() && bugInstance.getFirstVersion() > bugInstance.getLastVersion()) {
                             throw new IllegalStateException("huh");
+                        }
 
                         String introducedByChange = getOptionalAttribute(attributes, "introducedByChange");
                         if (introducedByChange != null) {
@@ -268,8 +272,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                             bugInstance.setRemovedByChangeOfPersistingClass(Boolean.parseBoolean(removedByChange));
                         }
                         String oldInstanceHash = getOptionalAttribute(attributes, "instanceHash");
-                        if (oldInstanceHash == null)
+                        if (oldInstanceHash == null) {
                             oldInstanceHash = getOptionalAttribute(attributes, "oldInstanceHash");
+                        }
                         if (oldInstanceHash != null) {
                             bugInstance.setOldInstanceHash(oldInstanceHash);
                         }
@@ -285,8 +290,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                         }
 
                         String isInCloud = getOptionalAttribute(attributes, "isInCloud");
-                        if (isInCloud != null)
+                        if (isInCloud != null) {
                             bugInstance.getXmlProps().setIsInCloud(Boolean.parseBoolean(isInCloud));
+                        }
 
                         String reviewCount = getOptionalAttribute(attributes, "reviews");
                         if (reviewCount != null) {
@@ -304,16 +310,19 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                         String timestamp = getRequiredAttribute(attributes, "timestamp", qName);
                         String vmVersion = getOptionalAttribute(attributes, "vm_version");
                         String totalClasses = getOptionalAttribute(attributes, "total_classes");
-                        if (totalClasses != null && totalClasses.length() > 0)
+                        if (totalClasses != null && totalClasses.length() > 0) {
                             bugCollection.getProjectStats().setTotalClasses(Integer.parseInt(totalClasses));
+                        }
 
                         String totalSize = getOptionalAttribute(attributes, "total_size");
-                        if (totalSize != null && totalSize.length() > 0)
+                        if (totalSize != null && totalSize.length() > 0) {
                             bugCollection.getProjectStats().setTotalSize(Integer.parseInt(totalSize));
+                        }
 
                         String referencedClasses = getOptionalAttribute(attributes, "referenced_classes");
-                        if (referencedClasses != null && referencedClasses.length() > 0)
+                        if (referencedClasses != null && referencedClasses.length() > 0) {
                             bugCollection.getProjectStats().setReferencedClasses(Integer.parseInt(referencedClasses));
+                        }
                         bugCollection.getProjectStats().setVMVersion(vmVersion);
                         try {
                             bugCollection.getProjectStats().setTimestamp(timestamp);
@@ -379,14 +388,18 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                             String codeSize = getOptionalAttribute(attributes, "codeSize");
                             String numClasses = getOptionalAttribute(attributes, "numClasses");
                             AppVersion appVersion = new AppVersion(Long.parseLong(sequence));
-                            if (timestamp != null)
+                            if (timestamp != null) {
                                 appVersion.setTimestamp(Long.parseLong(timestamp));
-                            if (releaseName != null)
+                            }
+                            if (releaseName != null) {
                                 appVersion.setReleaseName(releaseName);
-                            if (codeSize != null)
+                            }
+                            if (codeSize != null) {
                                 appVersion.setCodeSize(Integer.parseInt(codeSize));
-                            if (numClasses != null)
+                            }
+                            if (numClasses != null) {
                                 appVersion.setNumClasses(Integer.parseInt(numClasses));
+                            }
 
                             bugCollection.addAppVersion(appVersion);
                         } catch (NumberFormatException e) {
@@ -434,18 +447,21 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     }
 
     private void addMatcher(Matcher m) {
-        if (m == null)
+        if (m == null) {
             throw new IllegalArgumentException("matcher must not be null");
+        }
 
         CompoundMatcher peek = matcherStack.peek();
-        if (peek == null)
+        if (peek == null) {
             throw new NullPointerException("Top of stack is null");
+        }
         peek.addChild(m);
         if (nextMatchedIsDisabled) {
-            if (peek instanceof Filter)
+            if (peek instanceof Filter) {
                 ((Filter) peek).disable(m);
-            else
+            } else {
                 assert false;
+            }
             nextMatchedIsDisabled = false;
         }
     }
@@ -456,8 +472,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     }
 
     private void pushCompoundMatcher(CompoundMatcher m) {
-        if (m == null)
+        if (m == null) {
             throw new IllegalArgumentException("matcher must not be null");
+        }
         matcherStack.push(m);
     }
 
@@ -465,8 +482,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     private final Set<String> outerElementTags = unmodifiableSet(new HashSet<String>(asList("And", "Match", "Or", "Not")));
 
     private void parseMatcher(String qName, Attributes attributes) throws SAXException {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println(elementStack + " " + qName + " " + matcherStack);
+        }
         String disabled = getOptionalAttribute(attributes, "disabled");
         nextMatchedIsDisabled = "true".equals(disabled);
         if (qName.equals("Bug")) {
@@ -516,10 +534,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 String classregex = getOptionalAttribute(attributes, "classregex");
                 String classMatch = getOptionalAttribute(attributes, "class");
 
-                if (classregex != null)
+                if (classregex != null) {
                     addMatcher(new ClassMatcher("~" + classregex));
-                else if (classMatch != null)
+                } else if (classMatch != null) {
                     addMatcher(new ClassMatcher(classMatch));
+                }
             }
         } else if(qName.equals("Not")) {
             NotMatcher matcher = new NotMatcher();
@@ -541,8 +560,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             TypeAnnotation typeAnnotation;
             bugAnnotation = bugAnnotationWithSourceLines = typeAnnotation = new TypeAnnotation(typeDescriptor);
             String typeParameters = getOptionalAttribute(attributes, "typeParameters");
-            if (typeParameters != null)
+            if (typeParameters != null) {
                 typeAnnotation.setTypeParameters(Strings.unescapeXml(typeParameters));
+            }
 
         } else if (qName.equals("Method") || qName.equals("Field")) {
             String classname = getRequiredAttribute(attributes, "classname", qName);
@@ -565,8 +585,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
         } else if (qName.equals("SourceLine")) {
             SourceLineAnnotation sourceAnnotation = createSourceLineAnnotation(qName, attributes);
-            if (!sourceAnnotation.isSynthetic())
+            if (!sourceAnnotation.isSynthetic()) {
                 bugAnnotation = sourceAnnotation;
+            }
         } else if (qName.equals("Int")) {
             try {
                 String value = getRequiredAttribute(attributes, "value", qName);
@@ -598,10 +619,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 bugInstance.setUserDesignationKey(s, null);
             }
             s = getOptionalAttribute(attributes, "user"); // optional
-            if (s != null)
+            if (s != null) {
                 bugInstance.setUser(s);
+            }
             s = getOptionalAttribute(attributes, "timestamp"); // optional
-            if (s != null)
+            if (s != null) {
                 try {
                     long timestamp = Long.parseLong(s);
                     bugInstance.setUserAnnotationTimestamp(timestamp);
@@ -610,17 +632,21 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     // designation.
                     // but is there anyplace to report this?
                 }
+            }
             s = getOptionalAttribute(attributes, "needsSync"); // optional
-            if (s == null || s.equals("false"))
+            if (s == null || s.equals("false")) {
                 bugInstance.setUserAnnotationDirty(false);
+            }
 
-        } else
+        } else {
             throw new SAXException("Unknown bug annotation named " + qName);
+        }
 
         if (bugAnnotation != null) {
             String role = getOptionalAttribute(attributes, "role");
-            if (role != null)
+            if (role != null) {
                 bugAnnotation.setDescription(role);
+            }
             setAnnotationRole(attributes, bugAnnotation);
             bugInstance.add(bugAnnotation);
         }
@@ -636,7 +662,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         return value;
     }
 
-    /**
+    /*
      * Extract a hash value from an element.
      *
      * @param qName
@@ -645,7 +671,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
      *            element attributes
      * @return the decoded hash value
      * @throws SAXException
-     */
+     *
     private byte[] extractHash(String qName, Attributes attributes) throws SAXException {
         String encodedHash = getRequiredAttribute(attributes, "value", qName);
         byte[] hash;
@@ -656,25 +682,27 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             throw new SAXException("Invalid class hash", e);
         }
         return hash;
-    }
+    }*/
 
     private void setAnnotationRole(Attributes attributes, BugAnnotation bugAnnotation) {
         String role = getOptionalAttribute(attributes, "role");
-        if (role != null)
+        if (role != null) {
             bugAnnotation.setDescription(role);
+        }
     }
 
     private SourceLineAnnotation createSourceLineAnnotation(String qName, Attributes attributes) throws SAXException {
         String classname = getRequiredAttribute(attributes, "classname", qName);
         String sourceFile = getOptionalAttribute(attributes, "sourcefile");
-        if (sourceFile == null)
+        if (sourceFile == null) {
             sourceFile = SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
+        }
         String startLine = getOptionalAttribute(attributes, "start"); // "start"/"end"
-                                                                      // are now
-                                                                      // optional
+        // are now
+        // optional
         String endLine = getOptionalAttribute(attributes, "end"); // (were too
-                                                                  // many "-1"s
-                                                                  // in the xml)
+        // many "-1"s
+        // in the xml)
         String startBytecode = getOptionalAttribute(attributes, "startBytecode");
         String endBytecode = getOptionalAttribute(attributes, "endBytecode");
         String synthetic = getOptionalAttribute(attributes, "synthetic");
@@ -686,15 +714,15 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             int eb = endBytecode != null ? Integer.parseInt(endBytecode) : -1;
 
             SourceLineAnnotation s = new SourceLineAnnotation(classname, sourceFile, sl, el, sb, eb);
-            if ("true".equals(synthetic))
+            if ("true".equals(synthetic)) {
                 s.setSynthetic(true);
+            }
             return s;
         } catch (NumberFormatException e) {
             throw new SAXException("Bad integer value in SourceLine element", e);
         }
     }
 
-    @SuppressWarnings("hiding")
     @Override
     public void endElement(String uri, String name, String qName) throws SAXException {
         // URI should always be empty.
@@ -710,8 +738,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             String outerElement = elementStack.get(elementStack.size() - 2);
 
             if (isTopLevelFilter(qName) || isCompoundElementTag(qName)) {
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("  ending " + elementStack + " " + qName + " " + matcherStack);
+                }
 
                 matcherStack.pop();
             } else if (outerElement.equals(BUG_COLLECTION)) {
@@ -723,12 +752,13 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             } else if (outerElement.equals(PROJECT)) {
                 Project project = this.project;
                 assert project != null;
-                if (qName.equals("Jar"))
+                if (qName.equals("Jar")) {
                     project.addFile(makeAbsolute(getTextContents()));
-                else if (qName.equals("SrcDir"))
+                } else if (qName.equals("SrcDir")) {
                     project.addSourceDir(makeAbsolute(getTextContents()));
-                else if (qName.equals("AuxClasspathEntry"))
+                } else if (qName.equals("AuxClasspathEntry")) {
                     project.addAuxClasspathEntry(makeAbsolute(getTextContents()));
+                }
 
 
 
@@ -781,12 +811,15 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
     private String makeAbsolute(String possiblyRelativePath) {
         if (possiblyRelativePath.contains("://") || possiblyRelativePath.startsWith("http:")
-                || possiblyRelativePath.startsWith("https:") || possiblyRelativePath.startsWith("file:"))
+                || possiblyRelativePath.startsWith("https:") || possiblyRelativePath.startsWith("file:")) {
             return possiblyRelativePath;
-        if (base == null)
+        }
+        if (base == null) {
             return possiblyRelativePath;
-        if (new File(possiblyRelativePath).isAbsolute())
+        }
+        if (new File(possiblyRelativePath).isAbsolute()) {
             return possiblyRelativePath;
+        }
 
         return new File(base.getParentFile(), possiblyRelativePath).getAbsolutePath();
     }
@@ -798,11 +831,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
     private String getRequiredAttribute(Attributes attributes, String attrName, String elementName) throws SAXException {
         String value = attributes.getValue(attrName);
-        if (value == null)
+        if (value == null) {
             throw new SAXException(elementName + " element missing " + attrName + " attribute");
+        }
         return memoized(Strings.unescapeXml(value));
     }
 
 }
-
-// vim:ts=4

@@ -77,9 +77,9 @@ public class SelfMethodCalls {
         return map;
     }
 
-    private final ClassReader classReader;
+    //    private final ClassReader classReader;
 
     public SelfMethodCalls(ClassReader classReader) {
-        this.classReader = classReader;
+        //        this.classReader = classReader;
     }
 }

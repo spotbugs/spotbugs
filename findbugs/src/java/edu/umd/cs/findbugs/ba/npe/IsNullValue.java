@@ -98,34 +98,34 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
     private static final int FLAG_MASK = EXCEPTION | PARAM | RETURN_VAL | FIELD_VAL | READLINE_VAL;
 
     private static final int[][] mergeMatrix = {
-            // NULL, CHECKED_NULL, NN, CHECKED_NN, NO_KABOOM_NN, NSP,
-            // NN_UNKNOWN, NCP2, NCP3
-            { NULL }, // NULL
-            { NULL, CHECKED_NULL, }, // CHECKED_NULL
-            { NSP, NSP, NN }, // NN
-            { NSP, NSP, NN, CHECKED_NN, }, // CHECKED_NN
-            { NSP, NSP, NN, NN, NO_KABOOM_NN }, // NO_KABOOM_NN
-            { NSP, NSP, NSP, NSP, NSP, NSP }, // NSP
-            { NSP, NSP, NN_UNKNOWN, NN_UNKNOWN, NN_UNKNOWN, NSP, NN_UNKNOWN, }, // NN_UNKNOWN
-            { NSP, NSP, NCP2, NCP2, NCP2, NSP, NCP2, NCP2, }, // NCP2
-            { NSP, NSP, NCP3, NCP3, NCP3, NSP, NCP3, NCP3, NCP3 } // NCP3
+        // NULL, CHECKED_NULL, NN, CHECKED_NN, NO_KABOOM_NN, NSP,
+        // NN_UNKNOWN, NCP2, NCP3
+        { NULL }, // NULL
+        { NULL, CHECKED_NULL, }, // CHECKED_NULL
+        { NSP, NSP, NN }, // NN
+        { NSP, NSP, NN, CHECKED_NN, }, // CHECKED_NN
+        { NSP, NSP, NN, NN, NO_KABOOM_NN }, // NO_KABOOM_NN
+        { NSP, NSP, NSP, NSP, NSP, NSP }, // NSP
+        { NSP, NSP, NN_UNKNOWN, NN_UNKNOWN, NN_UNKNOWN, NSP, NN_UNKNOWN, }, // NN_UNKNOWN
+        { NSP, NSP, NCP2, NCP2, NCP2, NSP, NCP2, NCP2, }, // NCP2
+        { NSP, NSP, NCP3, NCP3, NCP3, NSP, NCP3, NCP3, NCP3 } // NCP3
     };
 
     private static final IsNullValue[][] instanceByFlagsList = createInstanceByFlagList();
 
     private static IsNullValue[][] createInstanceByFlagList() {
         final int max = FLAG_MASK >>> FLAG_SHIFT;
-        IsNullValue[][] result = new IsNullValue[max + 1][];
-        for (int i = 0; i <= max; ++i) {
-            final int flags = i << FLAG_SHIFT;
-            result[i] = new IsNullValue[] { new IsNullValue(NULL | flags), new IsNullValue(CHECKED_NULL | flags),
-                    new IsNullValue(NN | flags), new IsNullValue(CHECKED_NN | flags),
-                    null, // NO_KABOOM_NN values must be allocated dynamically
-                    new IsNullValue(NSP | flags), new IsNullValue(NN_UNKNOWN | flags), new IsNullValue(NCP2 | flags),
-                    new IsNullValue(NCP3 | flags), };
-        }
+    IsNullValue[][] result = new IsNullValue[max + 1][];
+    for (int i = 0; i <= max; ++i) {
+        final int flags = i << FLAG_SHIFT;
+        result[i] = new IsNullValue[] { new IsNullValue(NULL | flags), new IsNullValue(CHECKED_NULL | flags),
+                new IsNullValue(NN | flags), new IsNullValue(CHECKED_NN | flags),
+                null, // NO_KABOOM_NN values must be allocated dynamically
+                new IsNullValue(NSP | flags), new IsNullValue(NN_UNKNOWN | flags), new IsNullValue(NCP2 | flags),
+                new IsNullValue(NCP3 | flags), };
+    }
 
-        return result;
+    return result;
     }
 
     // Fields
@@ -136,15 +136,17 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
     private IsNullValue(int kind) {
         this.kind = kind;
         locationOfKaBoom = null;
-        if (VERIFY_INTEGRITY)
+        if (VERIFY_INTEGRITY) {
             checkNoKaboomNNLocation();
+        }
     }
 
     private IsNullValue(int kind, Location ins) {
         this.kind = kind;
         locationOfKaBoom = ins;
-        if (VERIFY_INTEGRITY)
+        if (VERIFY_INTEGRITY) {
             checkNoKaboomNNLocation();
+        }
     }
 
     private void checkNoKaboomNNLocation() {
@@ -155,23 +157,28 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || this.getClass() != o.getClass())
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
+        }
         IsNullValue other = (IsNullValue) o;
-        if (kind != other.kind)
+        if (kind != other.kind) {
             return false;
-        if (locationOfKaBoom == other.locationOfKaBoom)
+        }
+        if (locationOfKaBoom == other.locationOfKaBoom) {
             return true;
-        if (locationOfKaBoom == null || other.locationOfKaBoom == null)
+        }
+        if (locationOfKaBoom == null || other.locationOfKaBoom == null) {
             return false;
+        }
         return locationOfKaBoom.equals(other.locationOfKaBoom);
     }
 
     @Override
     public int hashCode() {
         int hashCode = kind;
-        if (locationOfKaBoom != null)
+        if (locationOfKaBoom != null) {
             hashCode += locationOfKaBoom.hashCode();
+        }
         return hashCode;
     }
 
@@ -231,16 +238,19 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
         return getBaseKind() == NO_KABOOM_NN;
     }
 
+    /*
     private IsNullValue toBaseValue() {
         return instanceByFlagsList[0][getBaseKind()];
     }
+     */
 
     /**
      * Convert to an exception path value.
      */
     public IsNullValue toExceptionValue() {
-        if (getBaseKind() == NO_KABOOM_NN)
+        if (getBaseKind() == NO_KABOOM_NN) {
             return new IsNullValue(kind | EXCEPTION, locationOfKaBoom);
+        }
         return instanceByFlagsList[(getFlags() | EXCEPTION) >> FLAG_SHIFT][getBaseKind()];
     }
 
@@ -259,10 +269,12 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
         }
 
         int flag = RETURN_VAL;
-        if (methodInvoked.getName().equals("readLine") && methodInvoked.getSignature().equals("()Ljava/lang/String;"))
+        if (methodInvoked.getName().equals("readLine") && methodInvoked.getSignature().equals("()Ljava/lang/String;")) {
             flag = READLINE_VAL;
-        if (getBaseKind() == NO_KABOOM_NN)
+        }
+        if (getBaseKind() == NO_KABOOM_NN) {
             return new IsNullValue(kind | flag, locationOfKaBoom);
+        }
         return instanceByFlagsList[(getFlags() | flag) >> FLAG_SHIFT][getBaseKind()];
     }
 
@@ -274,8 +286,9 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
      *            TODO
      */
     public IsNullValue markInformationAsComingFromFieldValue(XField field) {
-        if (getBaseKind() == NO_KABOOM_NN)
+        if (getBaseKind() == NO_KABOOM_NN) {
             return new IsNullValue(kind | FIELD_VAL, locationOfKaBoom);
+        }
         return instanceByFlagsList[(getFlags() | FIELD_VAL) >> FLAG_SHIFT][getBaseKind()];
     }
 
@@ -315,8 +328,9 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
      * would have occurred if it were null.
      */
     public static IsNullValue noKaboomNonNullValue(@Nonnull Location ins) {
-        if (ins == null)
+        if (ins == null) {
             throw new NullPointerException("ins cannot be null");
+        }
         return new IsNullValue(NO_KABOOM_NN, ins);
     }
 
@@ -384,10 +398,12 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
      * Merge two values.
      */
     public static IsNullValue merge(IsNullValue a, IsNullValue b) {
-        if (a == b)
+        if (a == b) {
             return a;
-        if (a.equals(b))
+        }
+        if (a.equals(b)) {
             return a;
+        }
         int aKind = a.kind & 0xff;
         int bKind = b.kind & 0xff;
         int aFlags = a.getFlags();
@@ -395,10 +411,11 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 
         int combinedFlags = aFlags & bFlags;
 
-        if (!(a.isNullOnSomePath() || a.isDefinitelyNull()) && b.isException())
+        if (!(a.isNullOnSomePath() || a.isDefinitelyNull()) && b.isException()) {
             combinedFlags |= EXCEPTION;
-        else if (!(b.isNullOnSomePath() || b.isDefinitelyNull()) && a.isException())
+        } else if (!(b.isNullOnSomePath() || b.isDefinitelyNull()) && a.isException()) {
             combinedFlags |= EXCEPTION;
+        }
 
         // Left hand value should be >=, since it is used
         // as the first dimension of the matrix to index.
@@ -488,17 +505,21 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
         String pfx = "";
         if (DEBUG_EXCEPTION) {
             int flags = getFlags();
-            if (flags == 0)
+            if (flags == 0) {
                 pfx = "_";
-            else {
-                if ((flags & EXCEPTION) != 0)
+            } else {
+                if ((flags & EXCEPTION) != 0) {
                     pfx += "e";
-                if ((flags & PARAM) != 0)
+                }
+                if ((flags & PARAM) != 0) {
                     pfx += "p";
-                if ((flags & RETURN_VAL) != 0)
+                }
+                if ((flags & RETURN_VAL) != 0) {
                     pfx += "r";
-                if ((flags & FIELD_VAL) != 0)
+                }
+                if ((flags & FIELD_VAL) != 0) {
                     pfx += "f";
+                }
             }
         }
         if (DEBUG_KABOOM && locationOfKaBoom == null) {
@@ -542,19 +563,19 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
         if (NCP_EXTRA_BRANCH) {
             // Experimental: track two distinct kinds of "null on complex path"
             // values.
-            if (value.isNullOnSomePath())
+            if (value.isNullOnSomePath()) {
                 value = nullOnComplexPathValue();
-            else if (value.equals(nullOnComplexPathValue()))
+            } else if (value.equals(nullOnComplexPathValue())) {
                 value = nullOnComplexPathValue3();
+            }
 
         } else {
             // Downgrade "null on simple path" values to
             // "null on complex path".
-            if (value.isNullOnSomePath())
+            if (value.isNullOnSomePath()) {
                 value = nullOnComplexPathValue();
+            }
         }
         return value;
     }
 }
-
-// vim:ts=4

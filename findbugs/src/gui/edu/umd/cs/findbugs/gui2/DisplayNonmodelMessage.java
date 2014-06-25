@@ -50,11 +50,15 @@ public class DisplayNonmodelMessage {
 
     static Font sourceFont = new Font("Monospaced", Font.PLAIN, (int) Driver.getFontSize());
 
+    static void setMessageFrame(JFrame messageFrame) {
+        DisplayNonmodelMessage.messageFrame = messageFrame;
+    }
+
     public static void displayNonmodelMessage(String title, String message, @CheckForNull Component centerOver, boolean onTop) {
         boolean positionWindow = false;
         if (messageFrame == null) {
             positionWindow = true;
-            messageFrame = new JFrame(title);
+            setMessageFrame(new JFrame(title));
 
             messageTextArea = new JTextArea(40, 80);
             messageTextArea.setEditable(false);
@@ -75,7 +79,7 @@ public class DisplayNonmodelMessage {
                 @Override
                 public void windowClosed(WindowEvent e) {
                     JFrame tmp = messageFrame;
-                    messageFrame = null;
+                    setMessageFrame(null);
                     tmp.setVisible(false);
                     tmp.dispose();
                 }
@@ -84,8 +88,9 @@ public class DisplayNonmodelMessage {
         messageTextArea.setText(message);
         messageFrame.setTitle(title);
         messageFrame.pack();
-        if (positionWindow)
+        if (positionWindow) {
             messageFrame.setLocationRelativeTo(centerOver);
+        }
 
         messageFrame.setVisible(true);
         messageFrame.toFront();
@@ -103,6 +108,7 @@ public class DisplayNonmodelMessage {
         }
     }
 
+    /*
     static Runnable moveToFrontLater = new Runnable() {
         @Override
         public void run() {
@@ -110,6 +116,7 @@ public class DisplayNonmodelMessage {
             SwingUtilities.invokeLater(moveToFront);
         }
     };
+     */
 
     static Runnable clearAlwaysOnTopLater = new Runnable() {
         @Override
@@ -119,21 +126,25 @@ public class DisplayNonmodelMessage {
         }
     };
 
+    /*
     static Runnable moveToFront = new Runnable() {
         @Override
         public void run() {
             JFrame frame = messageFrame;
-            if (frame != null)
+            if (frame != null) {
                 frame.toFront();
+            }
         }
     };
+     */
 
     static Runnable clearAlwaysOnTop = new Runnable() {
         @Override
         public void run() {
             JFrame frame = messageFrame;
-            if (frame != null)
+            if (frame != null) {
                 frame.setAlwaysOnTop(false);
+            }
         }
     };
 }

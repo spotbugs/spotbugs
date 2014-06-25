@@ -58,44 +58,41 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
         } catch (IOException e) {
             if (!file.exists()) {
                 File parent = file.getParentFile();
-                if (!(parent.exists() && parent.isDirectory() && parent.canRead()))
+                if (!(parent.exists() && parent.isDirectory() && parent.canRead())) {
                     throw new IOException("Can't read directory containing zip file: " + file);
+                }
                 throw new IOException("Zip file doesn't exist: " + file);
             }
-            if (!file.canRead())
+            if (!file.canRead()) {
                 throw new IOException("Can't read file zip file: " + file);
-            if (!file.isFile())
+            }
+            if (!file.isFile()) {
                 throw new IOException("Zip file isn't a normal file: " + file);
-            if (file.length() == 0)
+            }
+            if (file.length() == 0) {
                 throw new IOException("Zip file is empty: " + file);
+            }
             if (!(e instanceof ZipException)) {
                 IOException ioException = new IOException("Error opening zip file " + file + " of " + file.length() + " bytes");
                 ioException.initCause(e);
                 throw ioException;
             }
-            DataInputStream in = new DataInputStream(new FileInputStream(file));
             int magicBytes;
-            try {
+            try (DataInputStream in = new DataInputStream(new FileInputStream(file))){
                 magicBytes = in.readInt();
-                in.close();
             } catch (IOException e3) {
                 throw new IOException(String.format("Unable read first 4 bytes of zip file %s of %d bytes", file, file.length()));
             }
-            if (magicBytes != 0x504b0304)
+            if (magicBytes != 0x504b0304) {
                 throw new IOException(String.format("Wrong magic bytes of %x for zip file %s of %d bytes", magicBytes, file,
                         file.length()));
+            }
             ZipException e2 = new ZipException("Error opening zip file " + file + " of " + file.length() + " bytes");
             e2.initCause(e);
             throw e2;
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
-     */
     @Override
     public ICodeBaseEntry lookupResource(String resourceName) {
         // Translate resource name, in case a resource name
@@ -129,11 +126,6 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
                 return nextEntry != null;
             }
 
-            /*
-             * (non-Javadoc)
-             *
-             * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
-             */
             @Override
             public ICodeBaseEntry next() throws InterruptedException {
                 scanForNextEntry();
@@ -160,25 +152,14 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
                     }
                 }
             }
-
         };
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
-     */
     @Override
     public String getPathName() {
         return zipFile.getName();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
-     */
     @Override
     public void close() {
         try {
@@ -188,11 +169,6 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return zipFile.getName();

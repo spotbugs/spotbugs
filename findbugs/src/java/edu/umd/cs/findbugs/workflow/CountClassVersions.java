@@ -56,8 +56,9 @@ public class CountClassVersions {
         List<String> lst = new LinkedList<String>();
         while (true) {
             String s = in.readLine();
-            if (s == null)
+            if (s == null) {
                 return lst;
+            }
             lst.add(s);
         }
     }
@@ -76,35 +77,22 @@ public class CountClassVersions {
             addOption("-prefix", "class name prefix", "prefix of class names that should be analyzed e.g., edu.umd.cs.)");
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String,
-         * java.lang.String)
-         */
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
             throw new IllegalArgumentException("Unknown option : " + option);
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java
-         * .lang.String, java.lang.String)
-         */
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
-            if (option.equals("-prefix"))
+            if (option.equals("-prefix")) {
                 prefix = argument;
-            else if (option.equals("-inputFileList"))
+            } else if (option.equals("-inputFileList")) {
                 inputFileList = argument;
-            else if (option.equals("-maxAge"))
+            } else if (option.equals("-maxAge")) {
                 maxAge = System.currentTimeMillis() - (24 * 60 * 60 * 1000L) * Integer.parseInt(argument);
-            else
+            } else {
                 throw new IllegalArgumentException("Unknown option : " + option);
+            }
         }
 
     }
@@ -115,15 +103,15 @@ public class CountClassVersions {
         int argCount = commandLine.parse(args, 0, Integer.MAX_VALUE, "Usage: " + CountClassVersions.class.getName()
                 + " [options] [<jarFile>+] ");
 
-        int analysisClassCount = 0;
         List<String> fileList;
 
-        if (commandLine.inputFileList != null)
+        if (commandLine.inputFileList != null) {
             fileList = readFrom(UTF8.fileReader(commandLine.inputFileList));
-        else if (argCount == args.length)
+        } else if (argCount == args.length) {
             fileList = readFromStandardInput();
-        else
+        } else {
             fileList = Arrays.asList(args).subList(argCount, args.length - 1);
+        }
         byte buffer[] = new byte[8192];
         MessageDigest digest = Util.getMD5Digest();
         DualKeyHashMap<String, String, String> map = new DualKeyHashMap<String, String, String>();
@@ -135,41 +123,43 @@ public class CountClassVersions {
                 continue;
             }
             System.err.println("Opening " + f);
-            ZipFile zipInputFile;
-            try {
-                zipInputFile = new ZipFile(f);
+
+            try (ZipFile zipInputFile = new ZipFile(f)){
+                for (Enumeration<? extends ZipEntry> e = zipInputFile.entries(); e.hasMoreElements();) {
+                    ZipEntry ze = e.nextElement();
+
+                    if (ze == null) {
+                        break;
+                    }
+                    if (ze.isDirectory()) {
+                        continue;
+                    }
+
+                    String name = ze.getName();
+                    if (!name.endsWith(".class")) {
+                        continue;
+                    }
+                    if (!name.replace('/', '.').startsWith(commandLine.prefix)) {
+                        continue;
+                    }
+
+                    InputStream zipIn = zipInputFile.getInputStream(ze);
+
+                    while (true) {
+                        int bytesRead = zipIn.read(buffer);
+                        if (bytesRead < 0) {
+                            break;
+                        }
+                        digest.update(buffer, 0, bytesRead);
+
+                    }
+                    String hash = new BigInteger(1, digest.digest()).toString(16);
+                    map.put(name, hash, fInName);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 continue;
             }
-
-            for (Enumeration<? extends ZipEntry> e = zipInputFile.entries(); e.hasMoreElements();) {
-                ZipEntry ze = e.nextElement();
-
-                if (ze == null)
-                    break;
-                if (ze.isDirectory())
-                    continue;
-
-                String name = ze.getName();
-                if (!name.endsWith(".class"))
-                    continue;
-                if (!name.replace('/', '.').startsWith(commandLine.prefix))
-                    continue;
-
-                InputStream zipIn = zipInputFile.getInputStream(ze);
-
-                while (true) {
-                    int bytesRead = zipIn.read(buffer);
-                    if (bytesRead < 0)
-                        break;
-                    digest.update(buffer, 0, bytesRead);
-
-                }
-                String hash = new BigInteger(1, digest.digest()).toString(16);
-                map.put(name, hash, fInName);
-            }
-            zipInputFile.close();
         }
         for (String s : map.keySet()) {
             Map<String, String> values = map.get(s);

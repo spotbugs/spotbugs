@@ -55,7 +55,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
      * don't care about.
      */
     private class FilteringAnnotationIterator implements Iterator<BugAnnotation> {
-        private Iterator<BugAnnotation> iter;
+        private final Iterator<BugAnnotation> iter;
 
         private BugAnnotation next;
 
@@ -73,8 +73,9 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
         @Override
         public BugAnnotation next() {
             findNext();
-            if (next == null)
+            if (next == null) {
                 throw new NoSuchElementException();
+            }
             BugAnnotation result = next;
             next = null;
             return result;
@@ -87,8 +88,9 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 
         private void findNext() {
             while (next == null) {
-                if (!iter.hasNext())
+                if (!iter.hasNext()) {
                     break;
+                }
                 BugAnnotation candidate = iter.next();
                 if (!isBoring(candidate)) {
                     next = candidate;
@@ -103,6 +105,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
         return !(annotation instanceof LocalVariableAnnotation || annotation.isSignificant());
     }
 
+    /*
     private static int compareNullElements(Object a, Object b) {
         if (a != null)
             return 1;
@@ -114,8 +117,9 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 
     private static String getCode(String pattern) {
         int sep = pattern.indexOf('_');
-        if (sep < 0)
+        if (sep < 0) {
             return "";
+        }
         return pattern.substring(0, sep);
     }
 
@@ -125,8 +129,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
         while (i.hasNext()) {
             System.out.println("  " + i.next());
         }
-
-    }
+    }*/
 
     @Override
     public int compare(BugInstance lhs, BugInstance rhs) {
@@ -140,46 +143,34 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
         BugPattern lhsPattern = lhs.getBugPattern();
         BugPattern rhsPattern = rhs.getBugPattern();
 
-        if (lhsPattern == null || rhsPattern == null) {
-            // One of the patterns is missing.
-            // However, we can still accurately match by abbrev (usually) by
-            // comparing
-            // the part of the type before the first '_' character.
-            // This is almost always equivalent to the abbrev.
-
-            String lhsCode = getCode(lhs.getType());
-            String rhsCode = getCode(rhs.getType());
-
-            if ((cmp = lhsCode.compareTo(rhsCode)) != 0) {
-                return cmp;
-            }
-        } else {
-            // Compare by abbrev instead of type. The specific bug type can
-            // change
-            // (e.g., "definitely null" to "null on simple path"). Also, we
-            // often
-            // change bug pattern types from one version of FindBugs to the
-            // next.
-            //
-            // Source line and field name are still matched precisely, so this
-            // shouldn't
-            // cause loss of precision.
-            if ((cmp = lhsPattern.getAbbrev().compareTo(rhsPattern.getAbbrev())) != 0)
-                return cmp;
-            if (isExactBugPatternMatch() && (cmp = lhsPattern.getType().compareTo(rhsPattern.getType())) != 0)
-                return cmp;
+        // Compare by abbrev instead of type. The specific bug type can
+        // change
+        // (e.g., "definitely null" to "null on simple path"). Also, we
+        // often
+        // change bug pattern types from one version of FindBugs to the
+        // next.
+        //
+        // Source line and field name are still matched precisely, so this
+        // shouldn't
+        // cause loss of precision.
+        if ((cmp = lhsPattern.getAbbrev().compareTo(rhsPattern.getAbbrev())) != 0) {
+            return cmp;
+        }
+        if (isExactBugPatternMatch() && (cmp = lhsPattern.getType().compareTo(rhsPattern.getType())) != 0) {
+            return cmp;
         }
 
         if (comparePriorities) {
             cmp = lhs.getPriority() - rhs.getPriority();
-            if (cmp != 0)
+            if (cmp != 0) {
                 return cmp;
+            }
         }
 
         Iterator<BugAnnotation> lhsIter = new FilteringAnnotationIterator(lhs.annotationIterator());
         Iterator<BugAnnotation> rhsIter = new FilteringAnnotationIterator(rhs.annotationIterator());
 
-        annotationLoop: while (lhsIter.hasNext() && rhsIter.hasNext()) {
+        while (lhsIter.hasNext() && rhsIter.hasNext()) {
             BugAnnotation lhsAnnotation = lhsIter.next();
             BugAnnotation rhsAnnotation = rhsIter.next();
             Class<? extends BugAnnotation> lhsClass;
@@ -188,16 +179,18 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
                 // so just compare by class name.
                 lhsClass = lhsAnnotation.getClass();
                 Class<? extends BugAnnotation> rhsClass = rhsAnnotation.getClass();
-                if (lhsClass == rhsClass)
+                if (lhsClass == rhsClass) {
                     break;
+                }
                 if (lhsClass == LocalVariableAnnotation.class && !((LocalVariableAnnotation) lhsAnnotation).isSignificant()
-                        && lhsIter.hasNext())
+                        && lhsIter.hasNext()) {
                     lhsAnnotation = lhsIter.next();
-                else if (rhsClass == LocalVariableAnnotation.class && !((LocalVariableAnnotation) rhsAnnotation).isSignificant()
-                        && rhsIter.hasNext())
+                } else if (rhsClass == LocalVariableAnnotation.class && !((LocalVariableAnnotation) rhsAnnotation).isSignificant()
+                        && rhsIter.hasNext()) {
                     rhsAnnotation = rhsIter.next();
-                else
+                } else {
                     return lhsClass.getName().compareTo(rhsClass.getName());
+                }
             }
 
             if (lhsClass == ClassAnnotation.class) {
@@ -233,8 +226,9 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
             } else if (lhsClass == LocalVariableAnnotation.class) {
                 String lhsName = ((LocalVariableAnnotation) lhsAnnotation).getName();
                 String rhsName = ((LocalVariableAnnotation) rhsAnnotation).getName();
-                if (lhsName.equals("?") || rhsName.equals("?"))
+                if (lhsName.equals("?") || rhsName.equals("?")) {
                     continue;
+                }
                 cmp = lhsName.compareTo(rhsName);
 
             } else if (lhsClass == TypeAnnotation.class) {
@@ -251,29 +245,35 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 
             } else if (isBoring(lhsAnnotation)) {
                 throw new IllegalStateException("Impossible");
-            } else
+            } else {
                 throw new IllegalStateException("Unknown annotation type: " + lhsClass.getName());
-            if (cmp != 0)
+            }
+            if (cmp != 0) {
                 return cmp;
+            }
         }
 
-        if (interestingNext(rhsIter))
+        if (interestingNext(rhsIter)) {
             return -1;
-        else if (interestingNext(lhsIter))
+        } else if (interestingNext(lhsIter)) {
             return 1;
-        else
+        } else {
             return 0;
+        }
     }
 
     private boolean interestingNext(Iterator<BugAnnotation> i) {
         while (i.hasNext()) {
             BugAnnotation a = i.next();
-            if (isBoring(a))
+            if (isBoring(a)) {
                 continue;
-            if (!(a instanceof LocalVariableAnnotation))
+            }
+            if (!(a instanceof LocalVariableAnnotation)) {
                 return true;
-            if (((LocalVariableAnnotation) a).isSignificant())
+            }
+            if (((LocalVariableAnnotation) a).isSignificant()) {
                 return true;
+            }
         }
         return false;
     }

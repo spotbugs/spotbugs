@@ -18,20 +18,14 @@
  */
 package edu.umd.cs.findbugs.visitclass;
 
-import java.io.DataInputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.CheckForNull;
 
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Annotations;
 import org.apache.bcel.classfile.ArrayElementValue;
-import org.apache.bcel.classfile.Constant;
-import org.apache.bcel.classfile.ConstantDouble;
-import org.apache.bcel.classfile.ConstantFloat;
-import org.apache.bcel.classfile.ConstantInteger;
-import org.apache.bcel.classfile.ConstantLong;
-import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.ElementValue;
 import org.apache.bcel.classfile.ElementValuePair;
 import org.apache.bcel.classfile.ParameterAnnotationEntry;
@@ -39,33 +33,23 @@ import org.apache.bcel.classfile.ParameterAnnotations;
 import org.apache.bcel.classfile.SimpleElementValue;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Subclass of PreorderVisitor that visits annotations on classes, fields,
  * methods, and method parameters.
- * 
+ *
  * @author William Pugh
  */
 public class AnnotationVisitor extends PreorderVisitor {
-
-
-    private static final String RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS = "RuntimeInvisibleParameterAnnotations";
-
-
-    private static final String RUNTIME_INVISIBLE_ANNOTATIONS = "RuntimeInvisibleAnnotations";
-
-
-    private static final String RUNTIME_VISIBLE_ANNOTATIONS = "RuntimeVisibleAnnotations";
-
-    private static final String RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS = "RuntimeVisibleParameterAnnotations";
 
     static final boolean DEBUG = SystemProperties.getBoolean("annotation.visitor");
 
     /**
      * Visit annotation on a class, field or method
-     * 
+     *
      * @param annotationClass
      *            class of annotation
      * @param map
@@ -87,8 +71,9 @@ public class AnnotationVisitor extends PreorderVisitor {
         try {
             ElementValue ev = map.get(parameter);
 
-            if (ev instanceof SimpleElementValue)
+            if (ev instanceof SimpleElementValue) {
                 return ((SimpleElementValue) ev).getValueString();
+            }
             return null;
         } catch (Exception e) {
             return null;
@@ -96,24 +81,27 @@ public class AnnotationVisitor extends PreorderVisitor {
         }
     }
 
+    @CheckForNull
+    @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
     protected static String[] getAnnotationParameterAsStringArray(Map<String, ElementValue> map, String parameter) {
         try {
             ElementValue e = map.get(parameter);
             ArrayElementValue a = (ArrayElementValue) e;
             int size = a.getElementValuesArraySize();
             String[] result = new String[size];
-            for (int i = 0; i < size; i++)
-                result[i] = ((SimpleElementValue) a.getElementValuesArray()[i]).getValueString();
+            ElementValue[] elementValuesArray = a.getElementValuesArray();
+            for (int i = 0; i < size; i++) {
+                result[i] = ((SimpleElementValue) elementValuesArray[i]).getValueString();
+            }
             return result;
         } catch (Exception e) {
             return null;
-
         }
     }
 
     /**
      * Visit annotation on a method parameter
-     * 
+     *
      * @param p
      *            parameter number, starting at zero ("this" parameter is not
      *            counted)
@@ -132,45 +120,59 @@ public class AnnotationVisitor extends PreorderVisitor {
     public void visitSyntheticParameterAnnotation(int p, boolean runtimeVisible) {
     }
 
-  
+    /*
+
+    private static final String RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS = "RuntimeInvisibleParameterAnnotations";
+    private static final String RUNTIME_INVISIBLE_ANNOTATIONS = "RuntimeInvisibleAnnotations";
+    private static final String RUNTIME_VISIBLE_ANNOTATIONS = "RuntimeVisibleAnnotations";
+    private static final String RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS = "RuntimeVisibleParameterAnnotations";
+
     private Map<String, Object> readAnnotationValues(DataInputStream bytes, int numPairs) throws IOException {
         Map<String, Object> values = new HashMap<String, Object>();
         for (int j = 0; j < numPairs; j++) {
             int memberNameIndex = bytes.readUnsignedShort();
             String memberName = ((ConstantUtf8) getConstantPool().getConstant(memberNameIndex)).getBytes();
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("memberName: " + memberName);
+            }
             Object value = readAnnotationValue(bytes);
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println(memberName + ":" + value);
+            }
             values.put(memberName, value);
         }
         return values;
     }
+
 
     private @DottedClassName
     String getAnnotationName(DataInputStream bytes) throws IOException {
         int annotationNameIndex = bytes.readUnsignedShort();
         String annotationName = ((ConstantUtf8) getConstantPool().getConstant(annotationNameIndex)).getBytes().replace('/', '.');
         annotationName = annotationName.substring(1, annotationName.length() - 1);
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Annotation name: " + annotationName);
+        }
         return annotationName;
     }
+
 
     private Object readAnnotationValue(DataInputStream bytes) throws IOException {
         try {
             char tag = (char) bytes.readUnsignedByte();
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("tag: " + tag);
+            }
             switch (tag) {
             case '[': {
                 int sz = bytes.readUnsignedShort();
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("Array of " + sz + " entries");
+                }
                 Object[] result = new Object[sz];
-                for (int i = 0; i < sz; i++)
+                for (int i = 0; i < sz; i++) {
                     result[i] = readAnnotationValue(bytes);
+                }
                 return result;
             }
             case 'B':
@@ -206,14 +208,17 @@ public class AnnotationVisitor extends PreorderVisitor {
                     return ((ConstantUtf8) c).getBytes();
                 case 'c':
                     String cName = ((ConstantUtf8) c).getBytes().replace('/', '.');
-                    if (cName.startsWith("L") && cName.endsWith(";"))
+                    if (cName.startsWith("L") && cName.endsWith(";")) {
                         cName = cName.substring(1, cName.length() - 1);
-                    if (DEBUG)
+                    }
+                    if (DEBUG) {
                         System.out.println("cName: " + cName);
+                    }
                     return cName;
                 default:
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("Impossible");
+                    }
                     throw new IllegalStateException("Impossible");
                 }
             case '@':
@@ -222,8 +227,9 @@ public class AnnotationVisitor extends PreorderVisitor {
                 int cp1 = bytes.readUnsignedShort();
                 ConstantUtf8 c1 = (ConstantUtf8) getConstantPool().getConstant(cp1);
                 String cName = c1.getBytes().replace('/', '.');
-                if (cName.startsWith("L") && cName.endsWith(";"))
+                if (cName.startsWith("L") && cName.endsWith(";")) {
                     cName = cName.substring(1, cName.length() - 1);
+                }
                 int cp2 = bytes.readUnsignedShort();
                 ConstantUtf8 c2 = (ConstantUtf8) getConstantPool().getConstant(cp2);
                 String result = cName + "." + c2.getBytes();
@@ -231,8 +237,9 @@ public class AnnotationVisitor extends PreorderVisitor {
                 return result;
             }
             default:
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("Unexpected tag of " + tag);
+                }
                 throw new IllegalArgumentException("Unexpected tag of " + tag);
             }
         } catch (RuntimeException e) {
@@ -243,6 +250,7 @@ public class AnnotationVisitor extends PreorderVisitor {
             throw e;
         }
     }
+     */
 
     @Override
     public void visitParameterAnnotation(ParameterAnnotations arg0) {
@@ -258,8 +266,9 @@ public class AnnotationVisitor extends PreorderVisitor {
                 boolean runtimeVisible = ae.isRuntimeVisible();
 
                 String name = ClassName.fromFieldSignature(ae.getAnnotationType());
-                if (name == null)
+                if (name == null) {
                     continue;
+                }
                 name = ClassName.toDottedClassName(name);
                 Map<String, ElementValue> map = new HashMap<String, ElementValue>();
                 for (ElementValuePair ev : ae.getElementValuePairs()) {
@@ -273,7 +282,7 @@ public class AnnotationVisitor extends PreorderVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.apache.bcel.classfile.Visitor#visitAnnotation(org.apache.bcel.classfile
      * .Annotations)
@@ -283,8 +292,9 @@ public class AnnotationVisitor extends PreorderVisitor {
         for (AnnotationEntry ae : arg0.getAnnotationEntries()) {
             boolean runtimeVisible = ae.isRuntimeVisible();
             String name = ClassName.fromFieldSignature(ae.getAnnotationType());
-            if (name == null)
+            if (name == null) {
                 continue;
+            }
             name = ClassName.toDottedClassName(name);
             Map<String, ElementValue> map = new HashMap<String, ElementValue>();
             for (ElementValuePair ev : ae.getElementValuePairs()) {

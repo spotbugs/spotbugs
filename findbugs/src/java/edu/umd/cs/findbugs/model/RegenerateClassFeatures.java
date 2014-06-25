@@ -35,13 +35,13 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 /**
  * Repopulate a BugCollection with class features from the classes in a
  * specified jar file.
- * 
+ *
  * @author David Hovemeyer
  */
 public class RegenerateClassFeatures {
-    private BugCollection bugCollection;
+    private final BugCollection bugCollection;
 
-    private String jarFile;
+    private final String jarFile;
 
     public RegenerateClassFeatures(BugCollection bugCollection, String jarFile) {
         this.bugCollection = bugCollection;
@@ -51,25 +51,27 @@ public class RegenerateClassFeatures {
     public RegenerateClassFeatures execute() throws IOException {
         bugCollection.clearClassFeatures();
 
-        ZipFile zipFile = new ZipFile(jarFile);
 
         ArrayList<JavaClass> classList = new ArrayList<JavaClass>();
 
-        // Add all classes to repository (for hierarchy queries)
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
-        while (entries.hasMoreElements()) {
-            ZipEntry entry = entries.nextElement();
+        try (ZipFile zipFile = new ZipFile(jarFile)){
 
-            if (!entry.getName().endsWith(".class"))
-                continue;
+            // Add all classes to repository (for hierarchy queries)
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
 
-            ClassParser parser = new ClassParser(zipFile.getInputStream(entry), entry.getName());
-            JavaClass javaClass = parser.parse();
+                if (!entry.getName().endsWith(".class")) {
+                    continue;
+                }
 
-            Repository.addClass(javaClass);
-            classList.add(javaClass);
+                ClassParser parser = new ClassParser(zipFile.getInputStream(entry), entry.getName());
+                JavaClass javaClass = parser.parse();
+
+                Repository.addClass(javaClass);
+                classList.add(javaClass);
+            }
         }
-        zipFile.close();
 
         for (JavaClass javaClass : classList) {
             ClassFeatureSet classFeatureSet = new ClassFeatureSet().initialize(javaClass);

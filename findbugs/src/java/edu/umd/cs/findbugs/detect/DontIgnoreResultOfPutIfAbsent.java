@@ -32,8 +32,6 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.IFNONNULL;
-import org.apache.bcel.generic.IFNULL;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -50,7 +48,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -84,12 +81,12 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
 
     final ClassDescriptor concurrentMapDescriptor = DescriptorFactory.createClassDescriptor(ConcurrentMap.class);
 
-    private boolean testingEnabled;
+    //    private final boolean testingEnabled;
 
     public DontIgnoreResultOfPutIfAbsent(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.accumulator = new BugAccumulator(bugReporter);
-        testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
+        //        testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
     }
 
     @Override
@@ -103,7 +100,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
         JavaClass javaClass = classContext.getJavaClass();
         ConstantPool pool = javaClass.getConstantPool();
         boolean found = false;
-        for (Constant constantEntry : pool.getConstantPool())
+        for (Constant constantEntry : pool.getConstantPool()) {
             if (constantEntry instanceof ConstantNameAndType) {
                 ConstantNameAndType nt = (ConstantNameAndType) constantEntry;
                 if (nt.getName(pool).equals("putIfAbsent")) {
@@ -111,15 +108,18 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
                     break;
                 }
             }
-        if (!found)
+        }
+        if (!found) {
             return;
+        }
 
         Method[] methodList = javaClass.getMethods();
 
         for (Method method : methodList) {
             MethodGen methodGen = classContext.getMethodGen(method);
-            if (methodGen == null)
+            if (methodGen == null) {
                 continue;
+            }
 
             try {
                 analyzeMethod(classContext, method);
@@ -151,50 +151,60 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
             ClassDescriptor cd = DescriptorFactory.getClassDescriptor((ObjectType) type);
             @SlashedClassName
             String className = cd.getClassName();
-            if (immutableClassNames.contains(className))
+            if (immutableClassNames.contains(className)) {
                 return Priorities.LOW_PRIORITY;
+            }
 
             XClass xClass = AnalysisContext.currentXFactory().getXClass(cd);
-            if (xClass == null)
+            if (xClass == null) {
                 return Priorities.IGNORE_PRIORITY;
+            }
             ClassDescriptor superclassDescriptor = xClass.getSuperclassDescriptor();
             if (superclassDescriptor != null) {
                 @SlashedClassName
                 String superClassName = superclassDescriptor.getClassName();
-                if (superClassName.equals("java/lang/Enum"))
+                if (superClassName.equals("java/lang/Enum")) {
                     return Priorities.LOW_PRIORITY;
+                }
             }
             boolean hasMutableField = false;
             boolean hasUpdates = false;
-            for (XField f : xClass.getXFields())
+            for (XField f : xClass.getXFields()) {
                 if (!f.isStatic()) {
                     if (!f.isFinal() && !f.isSynthetic()) {
                         hasMutableField = true;
-                        if (unreadFields.isWrittenOutsideOfInitialization(f))
+                        if (unreadFields.isWrittenOutsideOfInitialization(f)) {
                             hasUpdates = true;
+                        }
                     }
                     String signature = f.getSignature();
                     if (signature.startsWith("Ljava/util/concurrent") || signature.startsWith("Ljava/lang/StringB")
                             || signature.charAt(0) == '[' || signature.indexOf("Map") >= 0 || signature.indexOf("List") >= 0
-                            || signature.indexOf("Set") >= 0)
+                            || signature.indexOf("Set") >= 0) {
                         hasMutableField = hasUpdates = true;
+                    }
 
                 }
+            }
 
-            if (!hasMutableField && !xClass.isInterface() && !xClass.isAbstract())
+            if (!hasMutableField && !xClass.isInterface() && !xClass.isAbstract()) {
                 return Priorities.LOW_PRIORITY;
+            }
             if (hasUpdates || className.startsWith("java/util") || className.indexOf("Map") >= 0
-                    || className.indexOf("List") >= 0)
+                    || className.indexOf("List") >= 0) {
                 return Priorities.HIGH_PRIORITY;
+            }
             return Priorities.NORMAL_PRIORITY;
 
-        } else
+        } else {
             return Priorities.IGNORE_PRIORITY;
+        }
     }
 
     private void analyzeMethod(ClassContext classContext, Method method) throws DataflowAnalysisException, CFGBuilderException {
-        if (BCELUtil.isSynthetic(method) || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE)
+        if (BCELUtil.isSynthetic(method) || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE) {
             return;
+        }
 
         if (DEBUG) {
             System.out.println("    Analyzing method " + classContext.getJavaClass().getClassName() + "." + method.getName());
@@ -227,60 +237,66 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
                             && !(invoke instanceof INVOKESTATIC) && extendsConcurrentMap(className)) {
                         InstructionHandle next = handle.getNext();
                         boolean isIgnored = next != null && next.getInstruction() instanceof POP;
-                        boolean isImmediateNullTest = next != null
-                                && (next.getInstruction() instanceof IFNULL || next.getInstruction() instanceof IFNONNULL);
+                        //                        boolean isImmediateNullTest = next != null
+                        //                                && (next.getInstruction() instanceof IFNULL || next.getInstruction() instanceof IFNONNULL);
                         if (countOtherCalls || isIgnored) {
                             BitSet live = llsaDataflow.getAnalysis().getFactAtLocation(location);
                             ValueNumberFrame vna = vnaDataflow.getAnalysis().getFactAtLocation(location);
                             ValueNumber vn = vna.getTopValue();
 
                             int locals = vna.getNumLocals();
-                            boolean isRetained = false;
-                            for (int pos = 0; pos < locals; pos++)
+                            //                            boolean isRetained = false;
+                            for (int pos = 0; pos < locals; pos++) {
                                 if (vna.getValue(pos).equals(vn) && live.get(pos)) {
                                     BugAnnotation ba = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, vn,
                                             vnaDataflow.getFactAtLocation(location), "VALUE_OF");
-                                    if (ba == null)
+                                    if (ba == null) {
                                         continue;
+                                    }
                                     String pattern = "RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED";
-                                    if (!isIgnored)
+                                    if (!isIgnored) {
                                         pattern = "UNKNOWN";
+                                    }
                                     Type type = typeDataflow.getAnalysis().getFactAtLocation(location).getTopValue();
                                     int priority = getPriorityForBeingMutable(type);
                                     BugInstance bugInstance = new BugInstance(this, pattern, priority)
-                                            .addClassAndMethod(methodGen, sourceFileName).addCalledMethod(methodGen, invoke)
-                                            .add(new TypeAnnotation(type)).add(ba);
+                                    .addClassAndMethod(methodGen, sourceFileName).addCalledMethod(methodGen, invoke)
+                                    .add(new TypeAnnotation(type)).add(ba);
                                     SourceLineAnnotation where = SourceLineAnnotation.fromVisitedInstruction(classContext,
                                             method, location);
                                     accumulator.accumulateBug(bugInstance, where);
-                                    isRetained = true;
+                                    //                                    isRetained = true;
                                     break;
                                 }
+                            }
+                            /*
                             if (testingEnabled && (countOtherCalls && !isRetained)) {
                                 int priority = LOW_PRIORITY;
                                 if (!isImmediateNullTest && !isIgnored) {
                                     TypeDataflow typeAnalysis = classContext.getTypeDataflow(method);
                                     Type type = typeAnalysis.getFactAtLocation(location).getTopValue();
                                     String valueSignature = type.getSignature();
-                                    if (!valueSignature.startsWith("Ljava/util/concurrent/atomic/Atomic"))
+                                    if (!valueSignature.startsWith("Ljava/util/concurrent/atomic/Atomic")) {
                                         priority = Priorities.HIGH_PRIORITY;
+                                    }
                                 }
                                 BugInstance bugInstance = new BugInstance(this, "TESTING", priority)
-                                        .addClassAndMethod(methodGen, sourceFileName).addString("Counting putIfAbsentCalls")
-                                        .addCalledMethod(methodGen, invoke);
+                                .addClassAndMethod(methodGen, sourceFileName).addString("Counting putIfAbsentCalls")
+                                .addCalledMethod(methodGen, invoke);
                                 SourceLineAnnotation where = SourceLineAnnotation.fromVisitedInstruction(classContext, method,
                                         location);
                                 accumulator.accumulateBug(bugInstance, where);
                             }
-
+                             */
                         }
-                    } else if (testingEnabled && countOtherCalls) {
+                    } /* else if (testingEnabled && countOtherCalls) {
                         BugInstance bugInstance = new BugInstance(this, "TESTING2", Priorities.NORMAL_PRIORITY)
-                                .addClassAndMethod(methodGen, sourceFileName).addCalledMethod(methodGen, invoke);
+                        .addClassAndMethod(methodGen, sourceFileName).addCalledMethod(methodGen, invoke);
                         SourceLineAnnotation where = SourceLineAnnotation.fromVisitedInstruction(classContext, method, location);
                         accumulator.accumulateBug(bugInstance, where);
 
                     }
+                     */
                 }
 
             }
@@ -290,14 +306,16 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
 
     private boolean extendsConcurrentMap(@DottedClassName String className) {
         if (className.equals("java.util.concurrent.ConcurrentHashMap")
-                || className.equals(concurrentMapDescriptor.getDottedClassName()))
+                || className.equals(concurrentMapDescriptor.getDottedClassName())) {
             return true;
+        }
         ClassDescriptor c = DescriptorFactory.createClassDescriptorFromDottedClassName(className);
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 
         try {
-            if (subtypes2.isSubtype(c, concurrentMapDescriptor))
+            if (subtypes2.isSubtype(c, concurrentMapDescriptor)) {
                 return true;
+            }
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
         }

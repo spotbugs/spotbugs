@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.TrainingDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 
@@ -30,19 +29,14 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
  * dereferenced. We do this by performing a backwards dataflow analysis which
  * sees which params are dereferenced on all non-implicit-exception paths from
  * the CFG entry.
- * 
+ *
  * @author David Hovemeyer
  */
-public class TrainUnconditionalDerefParams extends BuildUnconditionalParamDerefDatabase implements Detector, TrainingDetector {
-    
+public class TrainUnconditionalDerefParams extends BuildUnconditionalParamDerefDatabase implements TrainingDetector {
+
     public TrainUnconditionalDerefParams(BugReporter bugReporter) {
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.umd.cs.findbugs.Detector#report()
-     */
     @Override
     public void report() {
         AnalysisContext.currentAnalysisContext().storePropertyDatabase(
@@ -56,7 +50,6 @@ public class TrainUnconditionalDerefParams extends BuildUnconditionalParamDerefD
     @Override
     protected void reportBug(BugInstance bug) {
         // Ignore it
-
     }
 
 }

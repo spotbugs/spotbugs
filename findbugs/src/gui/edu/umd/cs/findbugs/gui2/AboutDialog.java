@@ -25,9 +25,7 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.regex.Pattern;
@@ -36,7 +34,6 @@ import javax.swing.JFrame;
 import javax.swing.event.HyperlinkEvent;
 
 import edu.umd.cs.findbugs.Version;
-import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.log.Logger;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
@@ -76,7 +73,7 @@ public class AboutDialog extends javax.swing.JDialog {
     /**
      * Process an HTML page to replace certain substitution patterns. Right now,
      * we just expand @VERSION@.
-     */
+     *
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings("OS_OPEN_STREAM")
     private void processPage(javax.swing.JEditorPane pane, String fileName) throws IOException {
         InputStream in = null;
@@ -114,7 +111,7 @@ public class AboutDialog extends javax.swing.JDialog {
             } catch (IOException e) {
             }
         }
-    }
+    }*/
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -261,5 +258,3 @@ public class AboutDialog extends javax.swing.JDialog {
     // End of variables declaration//GEN-END:variables
 
 }
-
-// vim:ts=4

@@ -64,13 +64,15 @@ public class CrossSiteScripting extends OpcodeStackDetector {
         assert item.isServletParameterTainted();
         String s = item.getHttpParameterName();
         int pc = item.getInjectionPC();
-        if (s != null && xmlSafe.matcher(s).matches())
+        if (s != null && xmlSafe.matcher(s).matches()) {
             bug.addString(s).describe(StringAnnotation.PARAMETER_NAME_ROLE);
+        }
         SourceLineAnnotation thisLine = SourceLineAnnotation.fromVisitedInstruction(this);
         if (pc >= 0) {
             SourceLineAnnotation source = SourceLineAnnotation.fromVisitedInstruction(this, pc);
-            if (thisLine.getStartLine() != source.getStartLine())
+            if (thisLine.getStartLine() != source.getStartLine()) {
                 bug.add(source).describe(SourceLineAnnotation.ROLE_GENERATED_AT);
+            }
         }
 
         bug.addOptionalLocalVariable(this, item);
@@ -133,8 +135,9 @@ public class CrossSiteScripting extends OpcodeStackDetector {
                 OpcodeStack.Item value = stack.getStackItem(0);
                 OpcodeStack.Item name = stack.getStackItem(1);
                 Object nameConstant = name.getConstant();
-                if (nameConstant instanceof String)
+                if (nameConstant instanceof String) {
                     map.put((String) nameConstant, value);
+                }
             } else if (calledClassName.equals("javax/servlet/http/HttpSession") && calledMethodName.equals("getAttribute")) {
                 OpcodeStack.Item name = stack.getStackItem(0);
                 Object nameConstant = name.getConstant();
@@ -151,16 +154,17 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 
                 OpcodeStack.Item writing = stack.getStackItem(0);
                 if (isTainted(writing)) {
-                    if (calledMethodName.equals("sendError"))
+                    if (calledMethodName.equals("sendError")) {
                         annotateAndReport(
                                 new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_SEND_ERROR", taintPriority(writing))
-                                        .addClassAndMethod(this),
+                                .addClassAndMethod(this),
                                 writing);
-                    else
+                    } else {
                         annotateAndReport(
                                 new BugInstance(this, "HRS_REQUEST_PARAMETER_TO_HTTP_HEADER", taintPriority(writing))
-                                        .addClassAndMethod(this),
+                                .addClassAndMethod(this),
                                 writing);
+                    }
                 }
             }
 
@@ -175,42 +179,46 @@ public class CrossSiteScripting extends OpcodeStackDetector {
                 OpcodeStack.Item writing = stack.getStackItem(0);
                 // System.out.println(SourceLineAnnotation.fromVisitedInstruction(this)
                 // + " writing " + writing);
-                if (isTainted(writing))
+                if (isTainted(writing)) {
                     annotateAndReport(
                             new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_JSP_WRITER", taintPriority(writing))
-                                    .addClassAndMethod(this),
+                            .addClassAndMethod(this),
                             writing);
-                else if (isTainted(oldTop))
+                } else if (isTainted(oldTop)) {
                     annotateAndReport(
                             new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_JSP_WRITER", Priorities.NORMAL_PRIORITY)
-                                    .addClassAndMethod(this),
+                            .addClassAndMethod(this),
                             oldTop);
+                }
             } else if (calledClassName.startsWith("java/io/") && calledClassName.endsWith("Writer")
                     && (calledMethodName.startsWith("print") || calledMethodName.startsWith("write"))
                     && (calledMethodSig.equals("(Ljava/lang/Object;)V") || calledMethodSig.equals("(Ljava/lang/String;)V"))) {
                 OpcodeStack.Item writing = stack.getStackItem(0);
                 OpcodeStack.Item writingTo = stack.getStackItem(1);
-                if (isTainted(writing) && writingTo.isServletWriter())
+                if (isTainted(writing) && writingTo.isServletWriter()) {
                     annotateAndReport(
                             new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER", taintPriority(writing))
-                                    .addClassAndMethod(this),
+                            .addClassAndMethod(this),
                             writing);
-                else if (isTainted(oldTop) && writingTo.isServletWriter())
+                } else if (isTainted(oldTop) && writingTo.isServletWriter()) {
                     annotateAndReport(
                             new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER", Priorities.NORMAL_PRIORITY)
-                                    .addClassAndMethod(this),
+                            .addClassAndMethod(this),
                             writing);
+                }
 
             }
         }
     }
 
     private boolean isTainted(OpcodeStack.Item writing) {
-        if (writing == null)
+        if (writing == null) {
             return false;
+        }
         return writing.isServletParameterTainted();
     }
 
+    /*
     private boolean isDirectTaint(OpcodeStack.Item writing) {
         if (writing == null)
             return false;
@@ -224,17 +232,18 @@ public class CrossSiteScripting extends OpcodeStackDetector {
         String clsName = m.getClassName();
         return  clsName.equals("javax/servlet/http/HttpServletRequest") || clsName.equals("javax/servlet/http/ServletRequest");
     }
+     */
+
     private int taintPriority(OpcodeStack.Item writing) {
-        if (writing == null)
+        if (writing == null) {
             return Priorities.NORMAL_PRIORITY;
+        }
         XMethod method = writing.getReturnValueOf();
         if (method != null && method.getName().equals("getParameter")
-                && method.getClassName().equals("javax.servlet.http.HttpServletRequest"))
+                && method.getClassName().equals("javax.servlet.http.HttpServletRequest")) {
             return Priorities.HIGH_PRIORITY;
+        }
         return Priorities.NORMAL_PRIORITY;
-
     }
-
-
 
 }

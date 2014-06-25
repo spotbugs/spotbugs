@@ -43,7 +43,9 @@ public class NotMatcher extends CompoundMatcher {
     public void writeXML(XMLOutput xmlOutput, boolean disabled)  throws IOException {
         if(childIterator().hasNext()) {
             xmlOutput.startTag("Not");
-            if (disabled) xmlOutput.addAttribute("disabled","true");
+            if (disabled) {
+                xmlOutput.addAttribute("disabled","true");
+            }
             Matcher invertedMatcher = childIterator().next();
             xmlOutput.stopTag(false);
 
@@ -52,6 +54,7 @@ public class NotMatcher extends CompoundMatcher {
             xmlOutput.closeTag("Not");
         }
     }
+
     @Override
     public String toString() {
         Matcher invertedMatcher = childIterator().hasNext() ? childIterator().next() : null;
@@ -64,11 +67,6 @@ public class NotMatcher extends CompoundMatcher {
         return 1;
     }
 
-    @Override
-    public void addChild(Matcher child) {
-        super.addChild(child);
-    }
-    
     public Matcher originalMatcher() {
         Iterator<Matcher> childMatchers = childIterator();
         if (childMatchers.hasNext()) {

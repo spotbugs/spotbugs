@@ -37,17 +37,17 @@ import junit.framework.TestSuite;
  * Run all of the JUnit tests in a jar file using the JUnit textui. There might
  * be a simple way of doing this directly with JUnit. However, I'm lazy and
  * impatient, and writing some code to do this was very simple.
- * 
+ *
  * @author David Hovemeyer
  */
 public class JUnitJarRunner {
-    private String jarFileName;
+    private final String jarFileName;
 
     private String classpath;
 
     /**
      * Constructor.
-     * 
+     *
      * @param jarFileName
      *            name of jar file to load tests from
      */
@@ -58,7 +58,7 @@ public class JUnitJarRunner {
     /**
      * Set the classpath containing the code to be tested (if it is not already
      * on the system classpath).
-     * 
+     *
      * @param classpath
      *            the classpath
      */
@@ -68,7 +68,7 @@ public class JUnitJarRunner {
 
     /**
      * Build a TestSuite of all the tests contained in the jar file.
-     * 
+     *
      * @return TestSuite for running all of the tests in the jar file
      */
     public TestSuite buildTestSuite() throws Exception {
@@ -94,23 +94,25 @@ public class JUnitJarRunner {
 
         Class<junit.framework.TestCase> testCaseClass = getTestCase(cl);
 
-        JarFile jarFile = new JarFile(jarFileName);
-        Enumeration<JarEntry> e = jarFile.entries();
-        while (e.hasMoreElements()) {
-            JarEntry entry = e.nextElement();
-            String entryName = entry.getName();
-            if (entryName.endsWith(".class")) {
-                String className = entryName.substring(0, entryName.length() - ".class".length()).replace('/', '.');
-                if (!className.endsWith("Test"))
-                    continue;
-                System.out.println("Loading test class: " + className);
-                System.out.flush();
-                Class<?> jarClass = cl.loadClass(className);
-                if (testCaseClass.isAssignableFrom(jarClass))
-                    suite.addTestSuite(testCaseClass.asSubclass(testCaseClass));
+        try(JarFile jarFile = new JarFile(jarFileName)){
+            Enumeration<JarEntry> e = jarFile.entries();
+            while (e.hasMoreElements()) {
+                JarEntry entry = e.nextElement();
+                String entryName = entry.getName();
+                if (entryName.endsWith(".class")) {
+                    String className = entryName.substring(0, entryName.length() - ".class".length()).replace('/', '.');
+                    if (!className.endsWith("Test")) {
+                        continue;
+                    }
+                    System.out.println("Loading test class: " + className);
+                    System.out.flush();
+                    Class<?> jarClass = cl.loadClass(className);
+                    if (testCaseClass.isAssignableFrom(jarClass)) {
+                        suite.addTestSuite(testCaseClass.asSubclass(testCaseClass));
+                    }
+                }
             }
         }
-        jarFile.close();
 
         return suite;
     }
@@ -128,8 +130,9 @@ public class JUnitJarRunner {
         } else if (how.equals("-swingui")) {
             // junit.swingui.TestRunner.run(suite);
             throw new UnsupportedOperationException("I don't know how to run the Swing UI on a test suite yet");
-        } else
+        } else {
             throw new IllegalArgumentException("Unknown option: " + how);
+        }
     }
 
     public static void main(String[] argv) throws Exception {
@@ -145,11 +148,10 @@ public class JUnitJarRunner {
         }
         String jarFileName = argv[arg++];
         JUnitJarRunner runner = new JUnitJarRunner(jarFileName);
-        if (arg < argv.length)
+        if (arg < argv.length) {
             runner.setClassPath(argv[arg++]);
+        }
         TestSuite suite = runner.buildTestSuite();
         runner.run(suite, how);
     }
 }
-
-// vim:ts=4

@@ -25,11 +25,9 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -41,9 +39,11 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class Lookup implements Constants2 {
 
+    /*
     private static Subtypes2 subtypes2() {
         return AnalysisContext.currentAnalysisContext().getSubtypes2();
     }
+     */
 
     public static XClass getXClass(ClassDescriptor c) throws CheckedAnalysisException {
         return Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
@@ -86,16 +86,18 @@ public class Lookup implements Constants2 {
             throws CheckedAnalysisException {
 
         ClassDescriptor superclassDescriptor = clazz.getSuperclassDescriptor();
-        if (superclassDescriptor == null)
+        if (superclassDescriptor == null) {
             return clazz;
+        }
         return findImplementor(getXClass(superclassDescriptor), name, signature, isStatic);
     }
 
     public static XClass findImplementor(XClass clazz, String name, String signature, boolean isStatic)
             throws CheckedAnalysisException {
         XMethod m = clazz.findMethod(name, signature, isStatic);
-        if (m != null)
+        if (m != null) {
             return clazz;
+        }
         return findSuperImplementor(clazz, name, signature, isStatic);
     }
 
@@ -105,8 +107,9 @@ public class Lookup implements Constants2 {
             JavaClass c = clazz;
             while (true) {
                 c = c.getSuperClass();
-                if (c == null)
+                if (c == null) {
                     return null;
+                }
                 Method m = findImplementation(c, name, signature);
                 if (m != null) {
                     return c;
@@ -124,11 +127,13 @@ public class Lookup implements Constants2 {
             JavaClass c = clazz;
             while (true) {
                 c = c.getSuperClass();
-                if (c == null)
+                if (c == null) {
                     return null;
+                }
                 Method m = findImplementation(c, name, signature);
-                if (m != null && !m.isAbstract())
+                if (m != null && !m.isAbstract()) {
                     return c;
+                }
 
             }
         } catch (ClassNotFoundException e) {
@@ -143,11 +148,13 @@ public class Lookup implements Constants2 {
             JavaClass c = clazz;
             while (true) {
                 c = c.getSuperClass();
-                if (c == null)
+                if (c == null) {
                     return null;
+                }
                 Method m = findImplementation(c, name, signature);
-                if (m != null && !m.isAbstract())
+                if (m != null && !m.isAbstract()) {
                     return XFactory.createXMethod(c, m);
+                }
 
             }
         } catch (ClassNotFoundException e) {
@@ -172,8 +179,9 @@ public class Lookup implements Constants2 {
 
         for (JavaClass aClazz : clazz) {
             Method m = findImplementation(aClazz, name, signature);
-            if (m != null && !m.isAbstract())
+            if (m != null && !m.isAbstract()) {
                 return aClazz;
+            }
 
         }
         return null;
@@ -181,9 +189,11 @@ public class Lookup implements Constants2 {
 
     public static Method findImplementation(JavaClass clazz, String name, String signature) {
         Method[] m = clazz.getMethods();
-        for (Method aM : m)
-            if (aM.getName().equals(name) && aM.getSignature().equals(signature) && !aM.isPrivate() && !aM.isStatic())
+        for (Method aM : m) {
+            if (aM.getName().equals(name) && aM.getSignature().equals(signature) && !aM.isPrivate() && !aM.isStatic()) {
                 return aM;
+            }
+        }
         return null;
     }
 }

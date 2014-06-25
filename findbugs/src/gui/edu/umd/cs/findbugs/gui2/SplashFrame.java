@@ -87,8 +87,9 @@ public class SplashFrame extends JWindow {
     @Override
     public void setVisible(boolean b) {
         super.setVisible(b);
-        if (!b)
+        if (!b) {
             animator.interrupt();
+        }
     }
 
     private static class Viewer extends JPanel {
@@ -110,7 +111,7 @@ public class SplashFrame extends JWindow {
 
         int ypos = 0;
 
-        int farRight;
+        //        int farRight;
 
         public Viewer(Image i1, Image i2, Image i1r, Image i2r) {
             image = i1;
@@ -137,8 +138,9 @@ public class SplashFrame extends JWindow {
                     int deltaX = 1;
 
                     while (true) {
-                        if (Thread.currentThread().isInterrupted())
+                        if (Thread.currentThread().isInterrupted()) {
                             return;
+                        }
 
                         callCount++;
                         if (callCount == 10) {
@@ -174,19 +176,16 @@ public class SplashFrame extends JWindow {
             animator.start();
         }
 
-        @Override
-        public void setPreferredSize(Dimension d) {
-            super.setPreferredSize(d);
-        }
-
         private Image imageToDraw() {
             if (swap) {
-                if (!reverse)
+                if (!reverse) {
                     return image;
+                }
                 return imageR;
             } else {
-                if (!reverse)
+                if (!reverse) {
                     return image2;
+                }
                 return image2R;
             }
         }

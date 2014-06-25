@@ -48,6 +48,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -78,6 +79,7 @@ import javax.swing.tree.TreeModel;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.PluginException;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.filter.Filter;
@@ -118,8 +120,9 @@ public class PreferencesFrame extends FBDialog {
     }
 
     public static PreferencesFrame getInstance() {
-        if (instance == null)
+        if (instance == null) {
             instance = new PreferencesFrame();
+        }
 
         return instance;
     }
@@ -127,10 +130,10 @@ public class PreferencesFrame extends FBDialog {
     private boolean pluginsAdded = false;
     private final JPanel filterPane;
     private final JTabbedPane mainTabPane;
-    
+
     public void showFilterPane() {
         mainTabPane.setSelectedComponent(filterPane);
-        
+
     }
     private PreferencesFrame() {
         setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.fil_sup_ttl", "Preferences"));
@@ -190,8 +193,9 @@ public class PreferencesFrame extends FBDialog {
 
     private void handleWindowClose() {
         TreeModel bt = (MainFrame.getInstance().getTree().getModel());
-        if (bt instanceof BugTreeModel)
+        if (bt instanceof BugTreeModel) {
             ((BugTreeModel) bt).checkSorter();
+        }
         Project project = getCurrentProject();
 
         boolean changed = pluginsAdded;
@@ -204,15 +208,17 @@ public class PreferencesFrame extends FBDialog {
             if (project != null) {
                 Boolean newSetting = enabled.project;
                 Boolean existingSetting = project.getPluginStatus(plugin);
-                if (existingSetting != newSetting && (newSetting == null || !newSetting.equals(existingSetting))) {
+                boolean sameSettings = Objects.equals(existingSetting, newSetting);
+                if (!sameSettings) {
                     project.setPluginStatusTrinary(plugin.getPluginId(), newSetting);
                     changed = true;
                 }
             }
-            if (enabled.global)
+            if (enabled.global) {
                 enabledPlugins.add(plugin.getPluginId());
-            else
+            } else {
                 disabledPlugins.add(plugin.getPluginId());
+            }
             if (plugin.isGloballyEnabled() != enabled.global) {
                 plugin.setGloballyEnabled(enabled.global);
                 changed = true;
@@ -259,15 +265,17 @@ public class PreferencesFrame extends FBDialog {
                         return "FindBugs Plugin (*.jar)";
                     }
 
-                    @SuppressWarnings({"RedundantIfStatement"})
                     @Override
                     public boolean accept(File f) {
-                        if (f.isDirectory())
+                        if (f.isDirectory()) {
                             return true;
-                        if (!f.canRead())
+                        }
+                        if (!f.canRead()) {
                             return false;
-                        if (f.getName().endsWith(".jar"))
+                        }
+                        if (f.getName().endsWith(".jar")) {
                             return true;
+                        }
                         return false;
                     }
                 });
@@ -291,7 +299,7 @@ public class PreferencesFrame extends FBDialog {
                         pluginsAdded = true;
                         rebuildPluginCheckboxes();
 
-                    } catch (Exception e1) {
+                    } catch (PluginException | MalformedURLException e1) {
                         LOGGER.log(Level.WARNING, "Could not load " + f.getPath(), e1);
                         JOptionPane.showMessageDialog(PreferencesFrame.this, "Could not load " + f.getPath()
                                 + "\n\n"
@@ -310,7 +318,7 @@ public class PreferencesFrame extends FBDialog {
     EnabledSettings isEnabled(@CheckForNull Project project, Plugin plugin) {
         return new EnabledSettings(plugin.isGloballyEnabled(), project == null ? null : project.getPluginStatus(plugin));
     }
-    
+
     private void rebuildPluginCheckboxes() {
         Project currentProject = getCurrentProject();
         pluginPanelCenter.removeAll();
@@ -319,9 +327,9 @@ public class PreferencesFrame extends FBDialog {
             g.fill = GridBagConstraints.NONE;
             g.insets = new Insets(5,5,5,5);
             g.gridy = 0;
-    //        g.anchor = GridBagConstraints.WEST;
-    //        g.gridx = 1;
-    //        pluginPanelCenter.add(new JLabel("Global Setting"), g);
+            //        g.anchor = GridBagConstraints.WEST;
+            //        g.gridx = 1;
+            //        pluginPanelCenter.add(new JLabel("Global Setting"), g);
             g.anchor = GridBagConstraints.CENTER;
             g.gridx = 2;
             pluginPanelCenter.add(new JLabel("Project Setting"), g);
@@ -329,12 +337,14 @@ public class PreferencesFrame extends FBDialog {
         Collection<Plugin> plugins = Plugin.getAllPlugins();
         int added = 0;
         for (final Plugin plugin : plugins) {
-            if (plugin.isCorePlugin())
+            if (plugin.isCorePlugin()) {
                 continue;
+            }
             String text = plugin.getShortDescription();
             String id = plugin.getPluginId();
-            if (text == null)
+            if (text == null) {
                 text = id;
+            }
             final URL url = plugin.getPluginLoader().getURL();
             String pluginUrlStr = url.toExternalForm();
             if ("file".equals(url.getProtocol())) {
@@ -351,24 +361,25 @@ public class PreferencesFrame extends FBDialog {
             final JCheckBox checkGlobal = new JCheckBox(text, enabled.global);
             final boolean cannotDisable = plugin.isEnabledByDefault() && plugin.cannotDisable();
             if (cannotDisable) {
-                if (!enabled.global)
+                if (!enabled.global) {
                     throw new IllegalStateException(
                             plugin.getPluginId() + " is enabled by default and cannot be disabled, but is disabled");
+                }
                 checkGlobal.setEnabled(false);
             } else {
                 checkGlobal.addMouseListener(new MouseAdapter() {
-            
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    if (SwingUtilities.isRightMouseButton(e)) {
-                        JPopupMenu menu = new JPopupMenu();
-                        JMenuItem item = new JMenuItem("Uninstall " + plugin.getShortDescription() + "...");
-                        item.addActionListener(new UninstallClickListener(plugin, url));
-                        menu.add(item);
-                        menu.show(checkGlobal, e.getX(), e.getY());
+
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        if (SwingUtilities.isRightMouseButton(e)) {
+                            JPopupMenu menu = new JPopupMenu();
+                            JMenuItem item = new JMenuItem("Uninstall " + plugin.getShortDescription() + "...");
+                            item.addActionListener(new UninstallClickListener(plugin, url));
+                            menu.add(item);
+                            menu.show(checkGlobal, e.getX(), e.getY());
+                        }
                     }
-                }
-            });
+                });
                 checkGlobal.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -378,10 +389,11 @@ public class PreferencesFrame extends FBDialog {
             }
             checkGlobal.setVerticalTextPosition(SwingConstants.TOP);
             String longText = plugin.getDetailedDescription();
-            if (longText != null)
+            if (longText != null) {
                 checkGlobal.setToolTipText("<html>" + longText + "</html>");
+            }
             pluginEnabledStatus.put(plugin, enabled);
-           
+
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.fill = GridBagConstraints.BOTH;
             gbc.weightx = 1;
@@ -393,19 +405,34 @@ public class PreferencesFrame extends FBDialog {
 
             if (currentProject != null && !cannotDisable) {
                 final JComboBox<String> combo = new WideComboBox<>(new String[]{"DEFAULT", "DISABLED", "ENABLED"});
-                if (enabled.project == null) combo.setSelectedIndex(0);
-                else combo.setSelectedIndex(enabled.project ? 2 : 1);
+                if (enabled.project == null) {
+                    combo.setSelectedIndex(0);
+                } else {
+                    combo.setSelectedIndex(enabled.project ? 2 : 1);
+                }
                 combo.setRenderer(new DefaultListCellRenderer() {
                     @Override
                     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                         if (index == -1) {
-                            if (value.equals("DEFAULT")) value = "Default";
-                            if (value.equals("DISABLED")) value = "Disabled";
-                            if (value.equals("ENABLED")) value = "Enabled";
+                            if (value.equals("DEFAULT")) {
+                                value = "Default";
+                            }
+                            if (value.equals("DISABLED")) {
+                                value = "Disabled";
+                            }
+                            if (value.equals("ENABLED")) {
+                                value = "Enabled";
+                            }
                         } else {
-                            if (value.equals("DEFAULT")) value = "Default (use global setting)";
-                            if (value.equals("DISABLED")) value = "Disabled for this project";
-                            if (value.equals("ENABLED")) value = "Enabled for this project";
+                            if (value.equals("DEFAULT")) {
+                                value = "Default (use global setting)";
+                            }
+                            if (value.equals("DISABLED")) {
+                                value = "Disabled for this project";
+                            }
+                            if (value.equals("ENABLED")) {
+                                value = "Enabled for this project";
+                            }
                         }
                         return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                     }
@@ -416,7 +443,9 @@ public class PreferencesFrame extends FBDialog {
                         Boolean[] array = { null, false, true };
                         int i = combo.getSelectedIndex();
                         if (i < 0 || i > 2)
+                        {
                             return; // ??
+                        }
                         pluginEnabledStatus.get(plugin).project = array[i];
                     }
                 });
@@ -450,7 +479,7 @@ public class PreferencesFrame extends FBDialog {
 
     private void addField(JPanel p, GridBagConstraints c, int y, String lbl, JComponent field) {
         c.gridy = y;
-         JLabel l = new JLabel(lbl, JLabel.TRAILING);
+        JLabel l = new JLabel(lbl, JLabel.TRAILING);
         l.setLabelFor(field);
         c.anchor = GridBagConstraints.LINE_END;
         c.gridx = 0;
@@ -464,14 +493,14 @@ public class PreferencesFrame extends FBDialog {
         JPanel mainPanel = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.ipadx = c.ipady = 5;
-        
+
 
         float currFS = Driver.getFontSize();
 
         tabTextField = new JTextField(Integer.toString(GUISaveState.getInstance().getTabSize()));
         tabTextField.setPreferredSize(new Dimension((int) (currFS * 4), (int) (currFS * 2)));
         addField(mainPanel, c, 0, "Tab size", tabTextField);
-        
+
         fontTextField = new JTextField(Float.toString(GUISaveState.getInstance().getFontSize()));
         fontTextField.setPreferredSize(new Dimension((int) (currFS * 6), (int) (currFS * 2)));
         addField(mainPanel, c, 1, "Font size", fontTextField);
@@ -508,15 +537,16 @@ public class PreferencesFrame extends FBDialog {
 
         public PluginWithDescription(String description, CloudPlugin plugin) {
             this.description = description;
-            this.plugin = plugin;
+            //            this.plugin = plugin;
         }
         final String description;
-        final CloudPlugin plugin;
+        //        final CloudPlugin plugin;
+
         @Override
         public String toString() {
             return description;
         }
-        
+
     }
     private void changeTabSize() {
         int tabSize;
@@ -525,7 +555,7 @@ public class PreferencesFrame extends FBDialog {
             tabSize = Integer.decode(tabTextField.getText());
         } catch (NumberFormatException exc) {
             JOptionPane.showMessageDialog(instance, "Error in tab size field.", "Tab Size Error",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
@@ -651,8 +681,9 @@ public class PreferencesFrame extends FBDialog {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 Object[] selected = filterCheckBoxList.getSelectedValues();
-                if (selected.length == 0)
+                if (selected.length == 0) {
                     return;
+                }
                 for (Object o : selected) {
                     MatchBox box = (MatchBox) o;
                     MainFrame.getInstance().getProject().getSuppressionFilter().removeChild(box.getMatcher());
@@ -671,13 +702,15 @@ public class PreferencesFrame extends FBDialog {
             public void actionPerformed(ActionEvent evt) {
                 boolean needsRebuild = false;
                 Filter suppressionFilter = MainFrame.getInstance().getProject().getSuppressionFilter();
-                if (!suppressionFilter.isEmpty())
+                if (!suppressionFilter.isEmpty()) {
                     needsRebuild = true;
+                }
                 suppressionFilter.clear();
 
-                if (needsRebuild)// TODO This will rebuild even if all the
-                                 // filters being cleared were disabled
+                if (needsRebuild) {
+                    // filters being cleared were disabled
                     FilterActivity.notifyListeners(FilterListener.Action.UNFILTERING, null);
+                }
                 MainFrame.getInstance().setProjectChanged(true);
                 updateFilterPanel();
             }
@@ -714,8 +747,9 @@ public class PreferencesFrame extends FBDialog {
                 public void itemStateChanged(ItemEvent evt) {
                     boolean isSelected = ((JCheckBox) evt.getSource()).isSelected();
                     boolean wasSelected = f.isEnabled(m);
-                    if (isSelected == wasSelected)
+                    if (isSelected == wasSelected) {
                         return;
+                    }
                     f.setEnabled(m, isSelected);
                     updateFilters(isSelected);
 
@@ -749,8 +783,8 @@ public class PreferencesFrame extends FBDialog {
             int result = JOptionPane.showOptionDialog(PreferencesFrame.this,
                     "Are you sure you want to uninstall " + plugin.getShortDescription() + "?" +
                             "\n\nNo files will be deleted from your computer.", "",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-                    new Object[]{"Uninstall", "Cancel"}, "Cancel");
+                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                            new Object[]{"Uninstall", "Cancel"}, "Cancel");
             if (result == 0) {
                 if (!GUISaveState.getInstance().removeCustomPlugin(url)) {
                     if ("file".equals(url.getProtocol())) {
@@ -768,7 +802,7 @@ public class PreferencesFrame extends FBDialog {
                                 "The plugin could not be uninstalled automatically.\n\n" +
                                         "You can try to delete this plugin manually: \n"
                                         + path + "\n\n(This path has been copied to your clipboard)",
-                                "Error", JOptionPane.ERROR_MESSAGE);
+                                        "Error", JOptionPane.ERROR_MESSAGE);
                     } else {
                         JOptionPane.showMessageDialog(PreferencesFrame.this,
                                 "This plugin is not actually in the list of plugins...\n" +
@@ -776,7 +810,7 @@ public class PreferencesFrame extends FBDialog {
                                         + url.toExternalForm()
                                         + "\n\nPlugin URL's:\n" +
                                         GUISaveState.getInstance().getCustomPlugins(),
-                                "Error", JOptionPane.ERROR_MESSAGE);
+                                        "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
                     JOptionPane.showMessageDialog(PreferencesFrame.this,
