@@ -1617,7 +1617,7 @@ using the &FindBugs; task.
 The FindBugs Eclipse plugin allows &FindBugs; to be used within
 the <ulink url="http://www.eclipse.org/">Eclipse</ulink> IDE.
 The FindBugs Eclipse plugin was generously contributed by Peter Friese.
-Phil Crosby and Andrei Loskutov contributed major improvements
+Phil Crosby and Andrey Loskutov contributed major improvements
 to the plugin.
 </para>
 
@@ -3845,8 +3845,8 @@ contributed the string concatenation detector.</para>
 <para>Thomas Klaeger contributed a number of bug fixes and
 bug detector improvements.</para>
 
-<para>Andrei Loskutov made a number of improvements to the
-Eclipse plugin.</para>
+<para>Andrey Loskutov made a number of bug fixes and
+bug detector improvements. He is maintainer of the Eclipse plugin.</para>
 
 <para>Brian Goetz contributed a major refactoring of the
 visitor classes to improve readability and understandability.</para>
