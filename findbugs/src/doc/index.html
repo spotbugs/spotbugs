@@ -38,9 +38,8 @@
                 <p>The current version of FindBugs is @VERSION@.</p>
 
                 <p>
-                    FindBugs requires JRE (or JDK) 1.5.0 or later to run.&nbsp; However, it can analyze programs
-                    compiled for any version of Java, from 1.0 to 1.7. Some classfiles compiled for Java 1.8 give 
-                    FindBugs problems, the next major release of FindBugs will handle Java 1.8 classfiles.
+                    FindBugs requires JRE (or JDK) 1.7.0 or later to run.&nbsp; However, it can analyze programs
+                    compiled for any version of Java, from 1.0 to 1.8. 
                     
                 <p> The current version of FindBugs is @VERSION@,
 
@@ -49,16 +48,67 @@
                         href="http://sourceforge.net/tracker/?func=browse&amp;group_id=96405&amp;atid=614693"> our
                         sourceforge bug tracker</a>
                 </p>
-                <p>The current version of FindBugs may encounter errors when analyzing 
-                Java 1.8 bytecode, due to changes in the classfile format. After FindBugs 2.0.3
-                is released, work will start on the next major release of FindBugs, which will
-                be able to analyze Java 1.8 (and will require Java 1.7 to compile and run).
                 
 
                 <p>
                     <a href="#changes">Changes</a> | <a href="#talks">Talks</a> | <a href="#papers">Papers </a> | <a
                         href="#sponsors">Sponsors</a> | <a href="#support">Support</a>
                 </p>
+
+		<h1>FindBugs 3.0.0 Release</h1>
+
+                <ul>
+                    <li>FindBugs supports Java 8 now (both as runtime and target platform).
+                    <li>FindBugs requires minimum Java 7 as runtime environment!
+                    <li>FindBugs uses ASM 5 now which means that some 3rd party detectors based on FindBugs 2.x/ASM 3 has to be upgraded.
+                    See details in <a href="http://download.forge.objectweb.org/asm/asm4-guide.pdf#chapter.5">ASM documentation</a>.
+                    <li>New Bug patterns:
+                        <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#NP_OPTIONAL_RETURN_NULL">NP_OPTIONAL_RETURN_NULL</a>,
+                        <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#IIO_INEFFICIENT_INDEX_OF">IIO_INEFFICIENT_INDEX_OF</a>,
+                        <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#IIO_INEFFICIENT_LAST_INDEX_OF">IIO_INEFFICIENT_LAST_INDEX_OF</a>
+                        <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#CNT_ROUGH_CONSTANT_VALUE">CNT_ROUGH_CONSTANT_VALUE</a>
+                    </li>
+                    <li>New "Source" filter which can be used to filter out classes generated from other languages:
+                        <pre>
+                            &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+                            &lt;FindBugsFilter&gt;
+                            &lt;Match&gt;
+                                &lt;Source name="~.*\.groovy" /&gt;
+                            &lt;/Match&gt;
+                            &lt;/FindBugsFilter&gt;
+                        </pre>
+                    </li>
+                    <li>New "-auxclasspathFromFile" and "-analyzeFromFile" command line options.
+                    </li>
+                    <li>New "nested" ant task attribute.
+                    </li>
+
+
+               <!--
+                    <li>Fixed false positives for the following bug patterns (XXX occurrences in findbugsTestCases):
+                        <ul>
+                            <li><a
+                                href="http://findbugs.sourceforge.net/bugDescriptions.html#XXX">XXX</a>
+                        </ul>
+                    </li>
+
+                    <li>Fixed false negatives for the following bug patterns (XXX occurrences in findbugsTestCases):
+                        <ul>
+                            <li><a
+                                href="http://findbugs.sourceforge.net/bugDescriptions.html#XXX">XXX</a>
+                        </ul>
+                    </li>
+               -->
+
+                    <li>Various bug fixes, also many patches from community. Thanks for your contributions!
+                    </li>
+                </ul>
+
+
 
                 <h1>FindBugs 2.0.3 Release</h1>
                 <p>FindBugs 2.0.3 is intended to be a minor bug fix release over
