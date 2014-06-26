@@ -2059,8 +2059,8 @@ In other words, each of the children must be true for the predicate to be true.
    <term><literal>&lt;And&gt;</literal></term>
     <listitem><para>
    This element combines <literal>Match</literal> clauses which both must evaluate to true.  I.e., you can put
-   <literal>Bug</literal> and <literal>Priority</literal> elements in an <literal>And</literal> clause in order
-   to match specific bugs with given priority only.
+   <literal>Bug</literal> and <literal>Confidence</literal> elements in an <literal>And</literal> clause in order
+   to match specific bugs with given confidence only.
    </para></listitem>
  </varlistentry>
  <varlistentry>
