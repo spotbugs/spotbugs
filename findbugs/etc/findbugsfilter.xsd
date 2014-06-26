@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://findbugs.sourceforge.net/filter/3.0.0" elementFormDefault="qualified"
+<schema targetNamespace="http://findbugs.sourceforge.net/filter/3.0.0" elementFormDefault="unqualified"
     xmlns="http://www.w3.org/2001/XMLSchema" xmlns:fb="http://findbugs.sourceforge.net/filter/3.0.0">
 
     <element name="FindBugsFilter" type="fb:FindBugsFilterType"></element>
@@ -228,6 +228,8 @@
             <element ref="fb:And" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Or" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Not" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:BugCode" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:BugPattern" maxOccurs="unbounded" minOccurs="0"></element>
         </sequence>
     </complexType>
 
