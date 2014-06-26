@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://findbugs.sourceforge.net/filter/1.3.0" elementFormDefault="qualified"
+    xmlns="http://www.w3.org/2001/XMLSchema" xmlns:fb="http://findbugs.sourceforge.net/filter/1.3.0">
+
+    <element name="FindBugsFilter" type="fb:FindBugsFilterType"></element>
+
+    <element name="Match" type="fb:MatchType"></element>
+
+    <element name="Bug" type="fb:BugType">
+        <annotation>
+            <documentation>This element specifies a particular bug pattern or patterns to match.
+                If more than one attribute is specified on the same Bug element, all bug patterns that match either one of specified
+                pattern names, abbreviations, or categories will be matched.</documentation>
+        </annotation>
+    </element>
+
+    <element name="Priority" type="fb:PriorityType">
+        <annotation>
+            <documentation>This element matches warnings with a particular priority.</documentation>
+        </annotation>
+    </element>
+
+    <element name="Package" type="fb:PackageType">
+        <annotation>
+            <documentation>This element matches warnings associated with classes within the package specified using name
+                attribute.</documentation>
+        </annotation>
+    </element>
+
+    <element name="Class" type="fb:ClassType">
+        <annotation>
+            <documentation>This element matches warnings associated with a particular class.</documentation>
+        </annotation>
+    </element>
+
+    <element name="Method" type="fb:MethodType">
+        <annotation>
+            <documentation>This element specifies a method.</documentation>
+        </annotation>
+    </element>
+
+    <element name="Field" type="fb:FieldType">
+        <annotation>
+            <documentation>This element specifies a field.</documentation>
+        </annotation>
+    </element>
+
+    <element name="Local" type="fb:LocalType">
+        <annotation>
+            <documentation>This element specifies a local variable.</documentation>
+        </annotation>
+    </element>
+
+    <element name="Or" type="fb:OrType">
+        <annotation>
+            <documentation>This element combines Match clauses as disjuncts. I.e., you can put two Method elements in an Or
+                clause in order to match either method.</documentation>
+        </annotation>
+    </element>
+
+
+    <complexType name="FindBugsFilterType">
+        <sequence>
+            <element ref="fb:Match" maxOccurs="unbounded" minOccurs="0"></element>
+        </sequence>
+    </complexType>
+
+
+    <complexType name="BugType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <attribute name="pattern" type="string">
+            <annotation>
+                <documentation>A comma-separated list of bug pattern types. You can find the bug pattern types for particular warnings by looking at the output produced by the -xml output option (the type attribute of BugInstance elements), or from the bug descriptions document.</documentation>
+            </annotation></attribute>
+        <attribute name="code" type="string">
+            <annotation>
+                <documentation>A comma-separated list of bug abbreviations.</documentation>
+            </annotation></attribute>
+        <attribute name="category" type="string">
+            <annotation>
+                <documentation>A comma separated list of bug category names.</documentation>
+            </annotation></attribute>
+    </complexType>
+
+    <complexType name="ClassType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <attribute name="name" type="string">
+            <annotation>
+                <documentation>The exact or regex match pattern for a class name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
+            </annotation></attribute>
+    </complexType>
+
+    <complexType name="FieldType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <attribute name="name" type="string">
+            <annotation>
+                <documentation>The exact or regex match pattern for a field name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
+            </annotation></attribute>
+        <attribute name="type" type="string">
+            <annotation>
+                <documentation>Fully qualified type of the field</documentation>
+            </annotation></attribute>
+    </complexType>
+
+    <complexType name="LocalType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <attribute name="name" type="string">
+            <annotation>
+                <documentation>The exact or regex match pattern for a local variable name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation></annotation></attribute>
+    </complexType>
+
+    <complexType name="MethodType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <attribute name="name" type="string">
+            <annotation>
+                <documentation>The exact or regex match pattern for a method name.. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
+            </annotation></attribute>
+        <attribute name="params" type="string">
+            <annotation>
+                <documentation>A comma-separated list of the fully qualified  types of the method's parameters.</documentation>
+            </annotation></attribute>
+        <attribute name="returns" type="string">
+            <annotation>
+                <documentation>The method's fully qualified return type</documentation>
+            </annotation></attribute>
+    </complexType>
+
+    <complexType name="OrType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <sequence maxOccurs="unbounded" minOccurs="0">
+            <element ref="fb:Bug" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Class" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Field" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Local" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Method" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Package" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Priority" maxOccurs="unbounded" minOccurs="0"></element>
+        </sequence>
+    </complexType>
+
+    <complexType name="PackageType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <attribute name="name" type="string">
+            <annotation>
+                <documentation>The exact or regex match pattern for a package name. Nested packages are not included (along the lines of Java import statement). If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
+            </annotation></attribute>
+    </complexType>
+
+    <complexType name="PriorityType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <attribute name="value" type="fb:PriorityValueType">
+            <annotation>
+                <documentation>1: high-priority warnings, 2: medium-priority warnings, 3: low-priority warnings</documentation>
+            </annotation></attribute>
+    </complexType>
+
+
+    <simpleType name="PriorityValueType">
+        <restriction base="int">
+            <minInclusive value="1"></minInclusive>
+            <maxInclusive value="3"></maxInclusive>
+        </restriction>
+    </simpleType>
+
+    <complexType name="MatchType">
+        <sequence maxOccurs="unbounded" minOccurs="0">
+            <element ref="fb:Bug" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Class" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Field" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Local" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Method" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Or" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Package" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Priority" maxOccurs="unbounded" minOccurs="0"></element>
+        </sequence>
+    </complexType>
+</schema>
