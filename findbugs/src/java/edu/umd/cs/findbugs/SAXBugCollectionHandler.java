@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.filter.AndMatcher;
 import edu.umd.cs.findbugs.filter.BugMatcher;
 import edu.umd.cs.findbugs.filter.ClassMatcher;
 import edu.umd.cs.findbugs.filter.CompoundMatcher;
+import edu.umd.cs.findbugs.filter.ConfidenceMatcher;
 import edu.umd.cs.findbugs.filter.DesignationMatcher;
 import edu.umd.cs.findbugs.filter.FieldMatcher;
 import edu.umd.cs.findbugs.filter.Filter;
@@ -506,8 +507,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             addMatcher(new LocalMatcher(getRequiredAttribute(attributes, "name", qName)));
         } else if (qName.equals("BugPattern")) {
             addMatcher(new BugMatcher("", getRequiredAttribute(attributes, "name", qName), ""));
-        } else if (qName.equals("Priority") || qName.equals("Confidence")) {
+        } else if (qName.equals("Priority")) {
             addMatcher(new PriorityMatcher(getRequiredAttribute(attributes, "value", qName)));
+        } else if (qName.equals("Confidence")) {
+            addMatcher(new ConfidenceMatcher(getRequiredAttribute(attributes, "value", qName)));
         } else if (qName.equals("Rank")) {
             addMatcher(new RankMatcher(getRequiredAttribute(attributes, "value", qName)));
         } else if (qName.equals("Package")) {
