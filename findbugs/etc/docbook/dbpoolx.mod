@@ -2462,7 +2462,7 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 
 <!ENTITY % varlistentry.element "INCLUDE">
 <![%varlistentry.element;[
-<!ELEMENT varlistentry %ho; (term+, listitem)>
+<!ELEMENT varlistentry %ho; (term+, listitem+)>
 <!--end of varlistentry.element-->]]>
 
 <!ENTITY % varlistentry.attlist "INCLUDE">
