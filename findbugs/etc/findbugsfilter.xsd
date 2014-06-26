@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://findbugs.sourceforge.net/filter/1.3.0" elementFormDefault="qualified"
-    xmlns="http://www.w3.org/2001/XMLSchema" xmlns:fb="http://findbugs.sourceforge.net/filter/1.3.0">
+<schema targetNamespace="http://findbugs.sourceforge.net/filter/3.0.0" elementFormDefault="qualified"
+    xmlns="http://www.w3.org/2001/XMLSchema" xmlns:fb="http://findbugs.sourceforge.net/filter/3.0.0">
 
     <element name="FindBugsFilter" type="fb:FindBugsFilterType"></element>
 
@@ -16,7 +16,20 @@
 
     <element name="Priority" type="fb:PriorityType">
         <annotation>
-            <documentation>This element matches warnings with a particular priority.</documentation>
+            <documentation>This element matches warnings with a particular priority.
+            This is deprecated, 'Confidence' should be used instead</documentation>
+        </annotation>
+    </element>
+
+    <element name="Confidence" type="fb:ConfidenceType">
+        <annotation>
+            <documentation>This element matches warnings with a particular confidence.</documentation>
+        </annotation>
+    </element>
+
+    <element name="Rank" type="fb:RankType">
+        <annotation>
+            <documentation>This element matches warnings with a particular rank.</documentation>
         </annotation>
     </element>
 
@@ -30,6 +43,12 @@
     <element name="Class" type="fb:ClassType">
         <annotation>
             <documentation>This element matches warnings associated with a particular class.</documentation>
+        </annotation>
+    </element>
+
+    <element name="Source" type="fb:SourceType">
+        <annotation>
+            <documentation>This element matches warnings associated with a particular source file name.</documentation>
         </annotation>
     </element>
 
@@ -53,11 +72,24 @@
 
     <element name="Or" type="fb:OrType">
         <annotation>
-            <documentation>This element combines Match clauses as disjuncts. I.e., you can put two Method elements in an Or
-                clause in order to match either method.</documentation>
+            <documentation>This element combines Match clauses as disjuncts.
+            I.e., you can put two Method elements in an Or clause in order to match either method.</documentation>
         </annotation>
     </element>
 
+    <element name="And" type="fb:AndType">
+        <annotation>
+            <documentation>This element combines Match clauses which both must evaluate to true.
+            I.e., you can put Bug and Confidence elements in an And clause in order to match specific bugs with given confidence only.</documentation>
+        </annotation>
+    </element>
+
+    <element name="Not" type="fb:NotType">
+        <annotation>
+            <documentation>This element inverts the included child Match.
+            I.e., you can put a Bug element in a Not clause in order to match any bug excluding the given one.</documentation>
+        </annotation>
+    </element>
 
     <complexType name="FindBugsFilterType">
         <sequence>
@@ -91,6 +123,16 @@
         <attribute name="name" type="string">
             <annotation>
                 <documentation>The exact or regex match pattern for a class name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
+            </annotation></attribute>
+    </complexType>
+
+    <complexType name="SourceType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <attribute name="name" type="string">
+            <annotation>
+                <documentation>The exact or regex match pattern for a source file name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
             </annotation></attribute>
     </complexType>
 
@@ -142,11 +184,59 @@
         <sequence maxOccurs="unbounded" minOccurs="0">
             <element ref="fb:Bug" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Class" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Source" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Field" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Local" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Method" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Package" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Priority" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Confidence" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Rank" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:And" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Or" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Not" maxOccurs="unbounded" minOccurs="0"></element>
+        </sequence>
+    </complexType>
+
+    <complexType name="AndType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <sequence maxOccurs="unbounded" minOccurs="0">
+            <element ref="fb:Bug" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Class" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Source" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Field" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Local" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Method" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Package" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Priority" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Confidence" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Rank" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:And" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Or" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Not" maxOccurs="unbounded" minOccurs="0"></element>
+        </sequence>
+    </complexType>
+
+    <complexType name="NotType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <sequence maxOccurs="unbounded" minOccurs="0">
+            <element ref="fb:Bug" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Class" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Source" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Field" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Local" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Method" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Package" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Priority" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Confidence" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Rank" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:And" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Or" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Not" maxOccurs="unbounded" minOccurs="0"></element>
         </sequence>
     </complexType>
 
@@ -162,7 +252,7 @@
 
     <complexType name="PriorityType">
         <annotation>
-            <documentation></documentation>
+            <documentation>Deprecated. Use ConfidenceType instead</documentation>
         </annotation>
         <attribute name="value" type="fb:PriorityValueType">
             <annotation>
@@ -170,6 +260,25 @@
             </annotation></attribute>
     </complexType>
 
+    <complexType name="ConfidenceType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <attribute name="value" type="fb:ConfidenceValueType">
+            <annotation>
+                <documentation>1: high-priority warnings, 2: medium-priority warnings, 3: low-priority warnings</documentation>
+            </annotation></attribute>
+    </complexType>
+
+    <complexType name="RankType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <attribute name="value" type="fb:RankValueType">
+            <annotation>
+                <documentation>1 to 4 are scariest, 5 to 9 scary, 10 to 14 troubling, and 15 to 20 of concern bugs.</documentation>
+            </annotation></attribute>
+    </complexType>
 
     <simpleType name="PriorityValueType">
         <restriction base="int">
@@ -178,16 +287,35 @@
         </restriction>
     </simpleType>
 
+    <simpleType name="ConfidenceValueType">
+        <restriction base="int">
+            <minInclusive value="1"></minInclusive>
+            <maxInclusive value="3"></maxInclusive>
+        </restriction>
+    </simpleType>
+
+    <simpleType name="RankValueType">
+        <restriction base="int">
+            <minInclusive value="1"></minInclusive>
+            <maxInclusive value="20"></maxInclusive>
+        </restriction>
+    </simpleType>
+
     <complexType name="MatchType">
         <sequence maxOccurs="unbounded" minOccurs="0">
             <element ref="fb:Bug" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Class" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Source" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Field" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Local" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Method" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Or" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:And" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Package" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Priority" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Confidence" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Rank" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Not" maxOccurs="unbounded" minOccurs="0"></element>
         </sequence>
     </complexType>
 </schema>
