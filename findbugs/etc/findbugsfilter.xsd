@@ -14,6 +14,19 @@
         </annotation>
     </element>
 
+    <element name="BugCode" type="fb:BugCodeType">
+        <annotation>
+            <documentation>This element specifies a particular bug code or multiple bug codes to match.
+            </documentation>
+        </annotation>
+    </element>
+
+    <element name="BugPattern" type="fb:BugPatternType">
+        <annotation>
+            <documentation>This element specifies a particular bug pattern or multiple patterns to match.</documentation>
+        </annotation>
+    </element>
+
     <element name="Priority" type="fb:PriorityType">
         <annotation>
             <documentation>This element matches warnings with a particular priority.
@@ -97,6 +110,26 @@
         </sequence>
     </complexType>
 
+
+    <complexType name="BugCodeType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <attribute name="name" type="string">
+            <annotation>
+                <documentation>A comma-separated list of bug code types. You can find the bug code types for particular warnings by looking at the output produced by the -xml output option (the type attribute of BugInstance elements), or from the bug descriptions document.</documentation>
+            </annotation></attribute>
+    </complexType>
+
+    <complexType name="BugPatternType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <attribute name="name" type="string">
+            <annotation>
+                <documentation>A comma-separated list of bug pattern types. You can find the bug pattern types for particular warnings by looking at the output produced by the -xml output option (the type attribute of BugInstance elements), or from the bug descriptions document.</documentation>
+            </annotation></attribute>
+    </complexType>
 
     <complexType name="BugType">
         <annotation>
@@ -216,6 +249,8 @@
             <element ref="fb:And" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Or" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Not" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:BugCode" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:BugPattern" maxOccurs="unbounded" minOccurs="0"></element>
         </sequence>
     </complexType>
 
@@ -237,6 +272,8 @@
             <element ref="fb:And" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Or" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Not" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:BugCode" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:BugPattern" maxOccurs="unbounded" minOccurs="0"></element>
         </sequence>
     </complexType>
 
@@ -316,6 +353,8 @@
             <element ref="fb:Confidence" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Rank" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:Not" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:BugCode" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:BugPattern" maxOccurs="unbounded" minOccurs="0"></element>
         </sequence>
     </complexType>
 </schema>
