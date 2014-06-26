@@ -620,7 +620,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         // project-specific but not user-specific?
         IPath path = getDefault().getStateLocation(); // user-specific but not
         // project-specific
-        return path.append(project.getName() + ".fbwarnings");
+        return path.append(project.getName() + ".fbwarnings.xml");
     }
 
     private static boolean isBugCollectionDirty(IProject project) throws CoreException {
