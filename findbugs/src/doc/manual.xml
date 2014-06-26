@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-                    "file:../etc/docbook/docbookx.dtd" [
+                    "../../etc/docbook/docbookx.dtd" [
 <!ENTITY FindBugs "<application>FindBugs</application>">
 <!ENTITY Ant "<application>Ant</application>">
 <!ENTITY Saxon "<application>Saxon</application>">
@@ -1757,7 +1757,7 @@ for more information). There are two ways to contribute custom plugins to the Ec
         <guimenu>Window</guimenu>
         <guimenuitem>Preferences</guimenuitem>
         <guimenuitem>Java</guimenuitem>
-        <guimenuitem>&FindBugs;</guimenuitem>
+        <guimenuitem>FindBugs</guimenuitem>
         <guimenuitem>Misc. Settings</guimenuitem>
         <guimenuitem>Custom Detectors</guimenuitem>
     </menuchoice>.
@@ -2540,7 +2540,9 @@ files in the classpath while compiling your program.
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.CheckForNull</command></term>
     <listitem>
-<command>[Target]</command> Field, Method, Parameter
+    <para>
+        <command>[Target]</command> Field, Method, Parameter
+    </para>
     </listitem>
     <listitem>
       <para>
@@ -2553,7 +2555,9 @@ When this annotation is applied to a method it applies to the method return valu
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.CheckReturnValue</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Method, Constructor
+    </para>
     </listitem>
     <listitem>
       <variablelist>
@@ -2582,7 +2586,9 @@ This annotation is used to denote a method whose return value should always be c
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.DefaultAnnotation</command></term>
     <listitem>
-      <command>[Target]</command> Type, Package
+      <para>
+        <command>[Target]</command> Type, Package
+      </para>
     </listitem>
     <listitem>
       <variablelist>
@@ -2615,7 +2621,9 @@ on those parameters, methods or fields that you want to allow to be null.
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.DefaultAnnotationForFields</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Type, Package
+    </para>
     </listitem>
     <listitem>
       <variablelist>
@@ -2644,7 +2652,9 @@ This is same as the DefaultAnnotation except it only applys to fields.
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.DefaultAnnotationForMethods</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Type, Package
+    </para>
     </listitem>
     <listitem>
       <variablelist>
@@ -2673,7 +2683,9 @@ This is same as the DefaultAnnotation except it only applys to methods.
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Type, Package
+    </para>
     </listitem>
     <listitem>
       <variablelist>
@@ -2702,7 +2714,9 @@ This is same as the DefaultAnnotation except it only applys to method parameters
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.NonNull</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Field, Method, Parameter
+    </para>
     </listitem>
     <listitem>
       <para>
@@ -2715,7 +2729,9 @@ Annotated fields must not be null after construction has completed. Annotated me
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.Nullable</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Field, Method, Parameter
+    </para>
     </listitem>
     <listitem>
       <para>
@@ -2734,7 +2750,9 @@ annotation.
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.OverrideMustInvoke</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Method
+    </para>
     </listitem>
     <listitem>
       <variablelist>
@@ -2772,7 +2790,9 @@ This annotation is deprecated. Use CheckForNull instead.
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.SuppressWarnings</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Type, Field, Method, Parameter, Constructor, Package
+    </para>
     </listitem>
     <listitem>
       <variablelist>
@@ -2807,7 +2827,9 @@ are encouraged to cooperate to ensure that the same names work across multiple c
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.UnknownNullness</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Field, Method, Parameter
+    </para>
     </listitem>
     <listitem>
       <para>
@@ -2819,7 +2841,9 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.UnknownNullness</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Field, Method, Parameter
+    </para>
     </listitem>
     <listitem>
       <para>
@@ -2832,10 +2856,10 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
 <para>
  &FindBugs; also supports the following annotations:
 <itemizedlist>
-  <listitem>net.jcip.annotations.GuardedBy</listitem>
-  <listitem>net.jcip.annotations.Immutable</listitem>
-  <listitem>net.jcip.annotations.NotThreadSafe</listitem>
-  <listitem>net.jcip.annotations.ThreadSafe</listitem>
+  <listitem><para>net.jcip.annotations.GuardedBy</para></listitem>
+  <listitem><para>net.jcip.annotations.Immutable</para></listitem>
+  <listitem><para>net.jcip.annotations.NotThreadSafe</para></listitem>
+  <listitem><para>net.jcip.annotations.ThreadSafe</para></listitem>
 </itemizedlist>
 </para>
 <para>

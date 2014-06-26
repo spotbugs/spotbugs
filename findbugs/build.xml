@@ -37,7 +37,7 @@
     <property name="samplesrc.dir" value="src/sampleXml"/>
     <property name="etc.dir" value="etc"/>
     <property name="test.dir" value="test"/>
-    <property name="doc.dir" value="doc"/>
+    <property name="doc.dir" value="build/doc"/>
     <property name="web.dir" value="web"/>
     <property name="apiDoc.dir" value="apiJavaDoc"/>
     <property name="annotationDoc.dir" value="annotationJavaDoc"/>
@@ -113,14 +113,14 @@
                         encoding="ISO-8859-1"
                         deprecation="off"
                         debug="on"
-			compiler="com.google.errorprone.ErrorProneAntCompilerAdapter"
-			>
+            compiler="com.google.errorprone.ErrorProneAntCompilerAdapter"
+            >
                     <compilerarg value="-Xlint:unchecked"/>
                     <src path="${src.dir}"/>
                     <src path="${src5.dir}"/>
                     <classpath refid="findbugs.classpath"/>
                 </javac>
-	</target>
+    </target>
     <target name="classes" depends="init">
 
         <!-- Compile Java source files. -->
@@ -464,7 +464,7 @@
       <sourcePath path="src/java:src/gui:src/junit:src/tools:src/antTask"/>
       <auxClasspath refid="tools.classpath"/>
       <auxClasspath path="lib/ant.jar"/>
-	</findbugs>
+    </findbugs>
    </target>
 
 
@@ -631,12 +631,12 @@
     <!-- Get version properties.  -->
 
     <target name="-get-git-revision">
-	<exec executable="git" spawn="false" outputproperty="gitrnum">
-    		<arg value="log"/>
-    		<arg value="--pretty=format:%h"/>
-    		<arg value="-n"/>
-    		<arg value="1"/>
-	</exec>
+    <exec executable="git" spawn="false" outputproperty="gitrnum">
+            <arg value="log"/>
+            <arg value="--pretty=format:%h"/>
+            <arg value="-n"/>
+            <arg value="1"/>
+    </exec>
         <echo>Got git revision ${gitrnum}</echo>
     </target>
 
@@ -1117,14 +1117,14 @@
     <target name="srcdist" description="Source distribution" unless="doNotExportSrc" depends="version">
         <delete dir="${build.dir}/src"/>
         <mkdir dir="${build.dir}/src"/>
-	<exec executable="git" spawn="true">
-    		<arg value="archive"/>
-    		<arg value="-o"/>
-    		<arg value="${build.dir}/src/findbugs-${release.number}-source.zip"/>
-    		<arg value="--prefix"/>
-    		<arg value="findbugs-${release.number}/"/>
-    		<arg value="HEAD"/>
-	</exec>
+    <exec executable="git" spawn="true">
+            <arg value="archive"/>
+            <arg value="-o"/>
+            <arg value="${build.dir}/src/findbugs-${release.number}-source.zip"/>
+            <arg value="--prefix"/>
+            <arg value="findbugs-${release.number}/"/>
+            <arg value="HEAD"/>
+    </exec>
     </target>
 
     <!-- Delete generated files. -->
