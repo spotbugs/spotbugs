@@ -118,7 +118,8 @@
         <attribute name="name" type="string">
             <annotation>
                 <documentation>A comma-separated list of bug code types. You can find the bug code types for particular warnings by looking at the output produced by the -xml output option (the type attribute of BugInstance elements), or from the bug descriptions document.</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
     </complexType>
 
     <complexType name="BugPatternType">
@@ -128,7 +129,8 @@
         <attribute name="name" type="string">
             <annotation>
                 <documentation>A comma-separated list of bug pattern types. You can find the bug pattern types for particular warnings by looking at the output produced by the -xml output option (the type attribute of BugInstance elements), or from the bug descriptions document.</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
     </complexType>
 
     <complexType name="BugType">
@@ -210,75 +212,6 @@
             </annotation></attribute>
     </complexType>
 
-    <complexType name="OrType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <sequence maxOccurs="unbounded" minOccurs="0">
-            <element ref="fb:Bug" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Class" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Source" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Field" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Local" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Method" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Package" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Priority" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Confidence" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Rank" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:And" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Or" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Not" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:BugCode" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:BugPattern" maxOccurs="unbounded" minOccurs="0"></element>
-        </sequence>
-    </complexType>
-
-    <complexType name="AndType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <sequence maxOccurs="unbounded" minOccurs="0">
-            <element ref="fb:Bug" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Class" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Source" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Field" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Local" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Method" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Package" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Priority" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Confidence" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Rank" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:And" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Or" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Not" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:BugCode" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:BugPattern" maxOccurs="unbounded" minOccurs="0"></element>
-        </sequence>
-    </complexType>
-
-    <complexType name="NotType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <sequence maxOccurs="unbounded" minOccurs="0">
-            <element ref="fb:Bug" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Class" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Source" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Field" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Local" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Method" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Package" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Priority" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Confidence" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Rank" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:And" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Or" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:Not" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:BugCode" maxOccurs="unbounded" minOccurs="0"></element>
-            <element ref="fb:BugPattern" maxOccurs="unbounded" minOccurs="0"></element>
-        </sequence>
-    </complexType>
-
     <complexType name="PackageType">
         <annotation>
             <documentation></documentation>
@@ -357,6 +290,75 @@
             <element ref="fb:Not" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:BugCode" maxOccurs="unbounded" minOccurs="0"></element>
             <element ref="fb:BugPattern" maxOccurs="unbounded" minOccurs="0"></element>
+        </sequence>
+    </complexType>
+
+    <complexType name="NotType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <sequence maxOccurs="unbounded" minOccurs="0">
+            <element ref="fb:And" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Bug" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:BugCode" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:BugPattern" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Class" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Confidence" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Field" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Local" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Method" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Not" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Or" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Package" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Priority" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Rank" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Source" maxOccurs="unbounded" minOccurs="0"></element>
+        </sequence>
+    </complexType>
+
+    <complexType name="OrType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <sequence maxOccurs="unbounded" minOccurs="0">
+            <element ref="fb:And" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Bug" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:BugCode" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:BugPattern" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Class" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Confidence" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Field" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Local" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Method" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Not" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Or" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Package" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Priority" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Rank" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Source" maxOccurs="unbounded" minOccurs="0"></element>
+        </sequence>
+    </complexType>
+
+    <complexType name="AndType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <sequence maxOccurs="unbounded" minOccurs="0">
+            <element ref="fb:And" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Bug" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:BugCode" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:BugPattern" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Class" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Confidence" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Field" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Local" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Method" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Not" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Or" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Package" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Priority" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Rank" maxOccurs="unbounded" minOccurs="0"></element>
+            <element ref="fb:Source" maxOccurs="unbounded" minOccurs="0"></element>
         </sequence>
     </complexType>
 </schema>
