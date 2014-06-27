@@ -36,7 +36,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 
     private boolean exactBugPatternMatch = true;
 
-    private boolean comparePriorities = false;
+    private boolean comparePriorities;
 
     public VersionInsensitiveBugComparator() {
     }
@@ -278,20 +278,11 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
         return false;
     }
 
-    /**
-     * @param exactBugPatternMatch
-     *            The exactBugPatternMatch to set.
-     */
     public void setExactBugPatternMatch(boolean exactBugPatternMatch) {
         this.exactBugPatternMatch = exactBugPatternMatch;
     }
 
-    /**
-     * @return Returns the exactBugPatternMatch.
-     */
     public boolean isExactBugPatternMatch() {
         return exactBugPatternMatch;
     }
 }
-
-// vim:ts=4

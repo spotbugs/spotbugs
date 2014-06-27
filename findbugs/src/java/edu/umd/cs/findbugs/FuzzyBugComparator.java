@@ -46,9 +46,9 @@ public class FuzzyBugComparator implements WarningComparator {
     private static final boolean DEBUG = false;
 
     // Don't use hashes for now. Still ironing out issues there.
-    private static final boolean USE_HASHES = false;
+    //    private static final boolean USE_HASHES = false;
 
-    private static final long serialVersionUID = 1L;
+    //    private static final long serialVersionUID = 1L;
 
     /**
      * Filter ignored BugAnnotations from given Iterator.
@@ -75,37 +75,23 @@ public class FuzzyBugComparator implements WarningComparator {
             }
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.Iterator#hasNext()
-         */
         @Override
         public boolean hasNext() {
             findNext();
             return next != null;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.Iterator#next()
-         */
         @Override
         public BugAnnotation next() {
             findNext();
-            if (next == null)
+            if (next == null) {
                 throw new NoSuchElementException();
+            }
             BugAnnotation result = next;
             next = null;
             return result;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.Iterator#remove()
-         */
         @Override
         public void remove() {
             throw new UnsupportedOperationException();
@@ -127,8 +113,9 @@ public class FuzzyBugComparator implements WarningComparator {
     // private Map<ClassHash, String> classHashToCanonicalClassNameMap;
 
     public FuzzyBugComparator() {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Created fuzzy comparator");
+        }
         this.bugCollectionMap = new IdentityHashMap<BugInstance, BugCollection>();
         // this.classHashToCanonicalClassNameMap = new TreeMap<ClassHash,
         // String>();
@@ -145,13 +132,6 @@ public class FuzzyBugComparator implements WarningComparator {
         // For now, nothing to do
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.WarningComparator#setClassNameRewriter(edu.umd.cs
-     * .findbugs.model.MovedClassMap)
-     */
     @Override
     public void setClassNameRewriter(ClassNameRewriter classNameRewriter) {
         this.classNameRewriter = classNameRewriter;
@@ -161,27 +141,16 @@ public class FuzzyBugComparator implements WarningComparator {
     public int compare(BugInstance lhs, BugInstance rhs) {
         int cmp;
 
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Fuzzy comparison");
+        }
 
         // Bug abbreviations must match.
         BugPattern lhsPattern = lhs.getBugPattern();
         BugPattern rhsPattern = rhs.getBugPattern();
 
-        if (lhsPattern == null || rhsPattern == null) {
-            if (DEBUG) {
-                if (lhsPattern == null)
-                    System.out.println("Missing pattern: " + lhs.getType());
-                if (rhsPattern == null)
-                    System.out.println("Missing pattern: " + rhs.getType());
-            }
-            String lhsCode = getCode(lhs.getType());
-            String rhsCode = getCode(rhs.getType());
-            if ((cmp = lhsCode.compareTo(rhsCode)) != 0)
-                return cmp;
-        } else {
-            if ((cmp = lhsPattern.getAbbrev().compareTo(rhsPattern.getAbbrev())) != 0)
-                return cmp;
+        if ((cmp = lhsPattern.getAbbrev().compareTo(rhsPattern.getAbbrev())) != 0) {
+            return cmp;
         }
 
         BugCollection lhsCollection = bugCollectionMap.get(lhs);
@@ -196,63 +165,70 @@ public class FuzzyBugComparator implements WarningComparator {
             BugAnnotation lhsAnnotation = lhsIter.next();
             BugAnnotation rhsAnnotation = rhsIter.next();
 
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Compare annotations: " + lhsAnnotation + "," + rhsAnnotation);
+            }
 
             // Annotation classes must match exactly
             cmp = lhsAnnotation.getClass().getName().compareTo(rhsAnnotation.getClass().getName());
             if (cmp != 0) {
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("annotation class mismatch: " + lhsAnnotation.getClass().getName() + ","
                             + rhsAnnotation.getClass().getName());
+                }
                 return cmp;
             }
 
-            if (lhsAnnotation.getClass() == ClassAnnotation.class)
+            if (lhsAnnotation.getClass() == ClassAnnotation.class) {
                 cmp = compareClasses(lhsCollection, rhsCollection, (ClassAnnotation) lhsAnnotation,
                         (ClassAnnotation) rhsAnnotation);
-            else if (lhsAnnotation.getClass() == MethodAnnotation.class)
+            } else if (lhsAnnotation.getClass() == MethodAnnotation.class) {
                 cmp = compareMethods(lhsCollection, rhsCollection, (MethodAnnotation) lhsAnnotation,
                         (MethodAnnotation) rhsAnnotation);
-            else if (lhsAnnotation.getClass() == SourceLineAnnotation.class)
+            } else if (lhsAnnotation.getClass() == SourceLineAnnotation.class) {
                 cmp = compareSourceLines(lhsCollection, rhsCollection, (SourceLineAnnotation) lhsAnnotation,
                         (SourceLineAnnotation) rhsAnnotation);
-            else
+            } else {
                 // everything else just compare directly
                 cmp = lhsAnnotation.compareTo(rhsAnnotation);
+            }
 
-            if (cmp != 0)
+            if (cmp != 0) {
                 return cmp;
+            }
         }
 
         // Number of bug annotations must match
         if (!lhsIter.hasNext() && !rhsIter.hasNext()) {
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Match!");
+            }
             return 0;
-        } else
+        } else {
             return (lhsIter.hasNext() ? 1 : -1);
+        }
     }
 
-    /**
+    /*
      * @param type
      * @return the code of the Bug
-     */
+     *
     private String getCode(String type) {
         int bar = type.indexOf('_');
         if (bar < 0)
             return "";
         else
             return type.substring(0, bar);
-    }
+    }*/
 
     private static int compareNullElements(Object a, Object b) {
-        if (a != null)
+        if (a != null) {
             return 1;
-        else if (b != null)
+        } else if (b != null) {
             return -1;
-        else
+        } else {
             return 0;
+        }
     }
 
     public int compareClasses(BugCollection lhsCollection, BugCollection rhsCollection, ClassAnnotation lhsClass,
@@ -304,7 +280,7 @@ public class FuzzyBugComparator implements WarningComparator {
      * For now, just look at the 2 preceeding and succeeding opcodes for fuzzy
      * source line matching.
      */
-    private static final int NUM_CONTEXT_OPCODES = 2;
+    //    private static final int NUM_CONTEXT_OPCODES = 2;
 
     /**
      * Compare source line annotations.
@@ -327,8 +303,9 @@ public class FuzzyBugComparator implements WarningComparator {
 
         // Classes must match fuzzily.
         int cmp = compareClassesByName(lhsCollection, rhsCollection, lhs.getClassName(), rhs.getClassName());
-        if (cmp != 0)
+        if (cmp != 0) {
             return cmp;
+        }
 
         return 0;
     }
@@ -347,8 +324,8 @@ public class FuzzyBugComparator implements WarningComparator {
         significantDescriptionSet.add("METHOD_DEFAULT");
         significantDescriptionSet.add(MethodAnnotation.METHOD_CALLED);
         significantDescriptionSet.add("METHOD_DANGEROUS_TARGET"); // but do NOT
-                                                                  // use safe
-                                                                  // targets
+        // use safe
+        // targets
         significantDescriptionSet.add("METHOD_DECLARED_NONNULL");
         significantDescriptionSet.add("FIELD_DEFAULT");
         significantDescriptionSet.add("FIELD_ON");

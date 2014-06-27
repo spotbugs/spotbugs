@@ -58,6 +58,7 @@ public class Plugin {
 
 
     private static final String USE_FINDBUGS_VERSION = "USE_FINDBUGS_VERSION";
+    static Map<URI, Plugin> allPlugins = new LinkedHashMap<URI, Plugin>();
     private final String pluginId;
 
     private final String version;
@@ -81,7 +82,7 @@ public class Plugin {
     private final LinkedHashMap<String, BugCategory> bugCategories;
     private final LinkedHashSet<CloudPlugin> cloudList;
 
-    private final HashMap<String,String> myGlobalOptions = new HashMap<String, String>();
+    private final HashMap<String,String> myGlobalOptions;
 
     private final DualKeyHashMap<Class<?>, String, ComponentPlugin<?>> componentPlugins;
 
@@ -102,21 +103,15 @@ public class Plugin {
 
     private final boolean cannotDisable;
 
-    static Map<URI, Plugin> allPlugins = new LinkedHashMap<URI, Plugin>();
-
-    enum EnabledState { PLUGIN_DEFAULT, ENABLED, DISABLED}
+    static enum EnabledState { PLUGIN_DEFAULT, ENABLED, DISABLED }
 
     private EnabledState enabled;
-
 
     /**
      * Constructor. Creates an empty plugin object.
      *
      * @param pluginId
      *            the plugin's unique identifier
-     * @param version TODO
-     * @param enabled TODO
-     * @param cannotDisable TODO
      */
     public Plugin(String pluginId, String version, Date releaseDate, @Nonnull PluginLoader pluginLoader, boolean enabled, boolean cannotDisable) {
         this.pluginId = pluginId;
@@ -127,6 +122,7 @@ public class Plugin {
             releaseDate = Version.getReleaseDate();
         }
         assert enabled || !cannotDisable;
+        myGlobalOptions = new HashMap<String, String>();
         cloudList = new LinkedHashSet<CloudPlugin>();
         componentPlugins = new DualKeyHashMap<Class<?>, String, ComponentPlugin<?>> ();
         this.version = version;
@@ -177,7 +173,6 @@ public class Plugin {
         return provider;
     }
 
-
     public void setUpdateUrl(String url) throws URISyntaxException {
         this.updateUrl = new URI(url);
     }
@@ -193,6 +188,7 @@ public class Plugin {
     Map<String,String> getMyGlobalOptions() {
         return Collections.unmodifiableMap(myGlobalOptions);
     }
+
     /**
      * Set plugin website.
      *
@@ -210,8 +206,9 @@ public class Plugin {
      * @return the website, or null if the was not specified
      */
     public  @CheckForNull String getWebsite() {
-        if (website == null)
+        if (website == null) {
             return null;
+        }
         return website.toASCIIString();
     }
 
@@ -282,20 +279,22 @@ public class Plugin {
      */
     public void addBugCategory(BugCategory bugCategory) {
         BugCategory old = bugCategories.get(bugCategory.getCategory());
-        if (old != null)
+        if (old != null) {
             throw new IllegalArgumentException("Category already exists");
+        }
         bugCategories.put(bugCategory.getCategory(), bugCategory);
     }
 
-
     public BugCategory addOrCreateBugCategory(String id) {
         BugCategory c = bugCategories.get(id);
-        if (c != null)
+        if (c != null) {
             return c;
+        }
         c = new BugCategory(id);
         bugCategories.put(id, c);
         return c;
     }
+
     /**
      * Add an inter-pass Detector ordering constraint.
      *
@@ -373,6 +372,7 @@ public class Plugin {
     public Set<BugCode> getBugCodes() {
         return bugCodeList;
     }
+
     /**
      * Get Iterator over BugCategories objects in the Plugin.
      *
@@ -394,6 +394,7 @@ public class Plugin {
     public Set<CloudPlugin> getCloudPlugins() {
         return cloudList;
     }
+
     /**
      * Return an Iterator over the inter-pass Detector ordering constraints.
      */
@@ -408,15 +409,10 @@ public class Plugin {
         return intraPassConstraintList.iterator();
     }
 
-    /**
-     * @return Returns the pluginId.
-     */
     public String getPluginId() {
         return pluginId;
     }
-    /**
-     * @return Returns the short pluginId.
-     */
+
     public String getShortPluginId() {
         int i = pluginId.lastIndexOf('.');
         return pluginId.substring(i+1);
@@ -442,9 +438,6 @@ public class Plugin {
         return engineRegistrarClass;
     }
 
-    /**
-     * @return Returns the pluginLoader.
-     */
     public PluginLoader getPluginLoader() {
         return pluginLoader;
     }
@@ -456,15 +449,13 @@ public class Plugin {
     private @CheckForNull
     DetectorFactory findFirstMatchingFactory(FactoryChooser chooser) {
         for (DetectorFactory factory : getDetectorFactories()) {
-            if (chooser.choose(factory))
+            if (chooser.choose(factory)) {
                 return factory;
+            }
         }
         return null;
     }
 
-    /**
-     * @param ranker
-     */
     public void setBugRanker(BugRanker ranker) {
         this.bugRanker = ranker;
     }
@@ -491,8 +482,9 @@ public class Plugin {
 
     <T> void addComponentPlugin(Class<T> componentKind, ComponentPlugin<T> plugin) {
         Class<? extends T> componentClass = plugin.getComponentClass();
-        if (componentClass != null && !componentKind.isAssignableFrom(componentClass))
-                throw new IllegalArgumentException();
+        if (componentClass != null && !componentKind.isAssignableFrom(componentClass)) {
+            throw new IllegalArgumentException();
+        }
         componentPlugins.put(componentKind, plugin.getId(), plugin);
     }
 
@@ -514,14 +506,15 @@ public class Plugin {
         }
         for(Plugin plugin : allPlugins.values()) {
             // the second part is questionable, as this may lead to id collisions
-            if (name.equals(plugin.getPluginId()) /*|| name.equals(plugin.getShortPluginId())*/)
+            if (name.equals(plugin.getPluginId()) /*|| name.equals(plugin.getShortPluginId())*/) {
                 return plugin;
+            }
         }
         return null;
     }
 
     public static synchronized void removePlugin(URI uri) {
-       allPlugins.remove(uri);
+        allPlugins.remove(uri);
     }
 
     /**
@@ -532,11 +525,13 @@ public class Plugin {
     }
 
     public static synchronized Collection<String> getAllPluginIds() {
-       ArrayList<String> result = new ArrayList<String>();
-       for(Plugin p : allPlugins.values())
-           result.add(p.getPluginId());
-       return result;
+        ArrayList<String> result = new ArrayList<String>();
+        for(Plugin p : allPlugins.values()) {
+            result.add(p.getPluginId());
+        }
+        return result;
     }
+
     /**
      * @return a copy of the internal plugins collection
      */
@@ -551,9 +546,7 @@ public class Plugin {
 
             try {
                 URI uri = plugin.getPluginLoader().getURL().toURI();
-                if(uri != null) {
-                    uris.add(uri);
-                }
+                uris.add(uri);
             } catch (URISyntaxException e) {
                 AnalysisContext.logError("Unable to get URI", e);
             }
@@ -587,8 +580,9 @@ public class Plugin {
     }
 
     public boolean isGloballyEnabled() {
-        if (isCorePlugin())
+        if (isCorePlugin()) {
             return true;
+        }
         switch (enabled) {
         case ENABLED:
             return true;
@@ -603,30 +597,35 @@ public class Plugin {
 
     public void setGloballyEnabled(boolean enabled) {
         if (isCorePlugin()) {
-            if (!enabled)
+            if (!enabled) {
                 throw new IllegalArgumentException("Can't disable core plugin");
+            }
             return;
         }
         if (cannotDisable) {
-            if (enabled) return;
+            if (enabled) {
+                return;
+            }
             throw new IllegalArgumentException("Cannot disable " + pluginId);
         }
-        EnabledState oldState = this.enabled;
+        //        EnabledState oldState = this.enabled;
 
         if (enabled) {
-            if (isEnabledByDefault())
+            if (isEnabledByDefault()) {
                 this.enabled = EnabledState.PLUGIN_DEFAULT;
-            else
+            } else {
                 this.enabled = EnabledState.ENABLED;
+            }
         } else {
-            if (isEnabledByDefault())
+            if (isEnabledByDefault()) {
                 this.enabled = EnabledState.DISABLED;
-            else
+            } else {
                 this.enabled = EnabledState.PLUGIN_DEFAULT;
+            }
         }
-        if(oldState != this.enabled) {
-            // TODO update detector factory collection?
-        }
+        //        if(oldState != this.enabled) {
+        // TODO update detector factory collection?
+        //        }
     }
 
     public boolean isInitialPlugin() {
@@ -642,8 +641,9 @@ public class Plugin {
     }
 
     public @CheckForNull Plugin getParentPlugin() {
-        if (getPluginLoader().hasParent())
+        if (getPluginLoader().hasParent()) {
             return Plugin.getByPluginId(getPluginLoader().parentId);
+        }
         return null;
     }
 
@@ -675,15 +675,17 @@ public class Plugin {
     public static @CheckForNull Plugin addCustomPlugin(URL u) throws PluginException {
         return addCustomPlugin(u, PluginLoader.class.getClassLoader());
     }
+
     public static @CheckForNull  Plugin addCustomPlugin(URI u) throws PluginException {
         return addCustomPlugin(u, PluginLoader.class.getClassLoader());
     }
+
     public static @CheckForNull Plugin addCustomPlugin(URL u, ClassLoader parent) throws PluginException {
         PluginLoader pluginLoader = PluginLoader.getPluginLoader(u, parent, false, true);
         Plugin plugin = pluginLoader.loadPlugin();
-        if (plugin != null)
+        if (plugin != null) {
             DetectorFactoryCollection.instance().loadPlugin(plugin);
-
+        }
         return plugin;
     }
 
@@ -696,6 +698,7 @@ public class Plugin {
         }
         return addCustomPlugin(url, parent);
     }
+
     public static synchronized void removeCustomPlugin(Plugin plugin) {
         Set<Entry<URI, Plugin>> entrySet = Plugin.allPlugins.entrySet();
         for (Entry<URI, Plugin> entry : entrySet) {

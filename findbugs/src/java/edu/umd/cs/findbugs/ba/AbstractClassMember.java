@@ -38,29 +38,29 @@ public abstract class AbstractClassMember implements ClassMember {
 
     private int cachedHashCode = 0;
 
-    static int slashCountClass = 0;
-
-    static int dottedCountClass = 0;
-
-    static int slashCountSignature = 0;
-
-    static int dottedCountSignature = 0;
+    //    static int slashCountClass = 0;
+    //    static int dottedCountClass = 0;
+    //    static int slashCountSignature = 0;
+    //    static int dottedCountSignature = 0;
 
     protected AbstractClassMember(@DottedClassName String className, String name, String signature, int accessFlags) {
         if (className.indexOf('.') >= 0) {
             // className = className.replace('.','/');
-            dottedCountClass++;
+            //            dottedCountClass++;
         } else if (className.indexOf('/') >= 0) {
             assert false;
-            slashCountClass++;
+            //            slashCountClass++;
             className = className.replace('/', '.');
         }
+
         if (signature.indexOf('.') >= 0) {
             assert false;
             signature = signature.replace('.', '/');
-            dottedCountSignature++;
-        } else if (signature.indexOf('/') >= 0)
-            slashCountSignature++;
+            //            dottedCountSignature++;
+        }
+        // else if (signature.indexOf('/') >= 0) {
+        //     slashCountSignature++;
+        // }
         this.className = DescriptorFactory.canonicalizeString(className);
         this.name = DescriptorFactory.canonicalizeString(name);
         this.signature = DescriptorFactory.canonicalizeString(signature);
@@ -68,16 +68,11 @@ public abstract class AbstractClassMember implements ClassMember {
     }
 
     @Override
-    public @DottedClassName
-    String getClassName() {
+    @DottedClassName
+    public String getClassName() {
         return className;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getClassDescriptor()
-     */
     @Override
     public ClassDescriptor getClassDescriptor() {
         return DescriptorFactory.instance().getClassDescriptorForDottedClassName(className);
@@ -89,11 +84,12 @@ public abstract class AbstractClassMember implements ClassMember {
     }
 
     @Override
-    public @DottedClassName
-    String getPackageName() {
+    @DottedClassName
+    public String getPackageName() {
         int lastDot = className.lastIndexOf('.');
-        if (lastDot == -1)
+        if (lastDot == -1) {
             return className;
+        }
         return className.substring(0, lastDot);
     }
 
@@ -188,8 +184,9 @@ public abstract class AbstractClassMember implements ClassMember {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || this.getClass() != o.getClass())
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
+        }
         AbstractClassMember other = (AbstractClassMember) o;
         return className.equals(other.className) && name.equals(other.name) && signature.equals(other.signature);
     }

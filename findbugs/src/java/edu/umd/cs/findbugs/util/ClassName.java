@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.util;
 import javax.annotation.CheckForNull;
 import javax.annotation.meta.When;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
@@ -46,27 +47,47 @@ public abstract class ClassName {
         return className;
     }
     public static String toSignature(@SlashedClassName String className) {
-        if (className.length() == 0)
+        if (className.length() == 0) {
             throw new IllegalArgumentException("classname can't be empty");
-        if (className.charAt(0) == '[' || className.endsWith(";"))
+        }
+        if (className.charAt(0) == '[' || className.endsWith(";")) {
             return className;
+        }
         return "L" + className + ";";
     }
 
     public static @CheckForNull String getPrimitiveType(@SlashedClassName String cls) {
-        if (!cls.startsWith("java/lang/")) return null;
+        if (!cls.startsWith("java/lang/")) {
+            return null;
+        }
         cls = cls.substring(10);
-        if (cls.equals("Integer")) return "I";
-        if (cls.equals("Float")) return "F";
-        if (cls.equals("Double")) return "D";
-        if (cls.equals("Long")) return "J";
-        if (cls.equals("Byte")) return "B";
-        if (cls.equals("Character")) return "C";
-        if (cls.equals("Short")) return "S";
-        if (cls.equals("Boolean")) return "Z";
+        if (cls.equals("Integer")) {
+            return "I";
+        }
+        if (cls.equals("Float")) {
+            return "F";
+        }
+        if (cls.equals("Double")) {
+            return "D";
+        }
+        if (cls.equals("Long")) {
+            return "J";
+        }
+        if (cls.equals("Byte")) {
+            return "B";
+        }
+        if (cls.equals("Character")) {
+            return "C";
+        }
+        if (cls.equals("Short")) {
+            return "S";
+        }
+        if (cls.equals("Boolean")) {
+            return "Z";
+        }
         return null;
     }
-    
+
     /**
      * Converts from signature to slashed class name
      * (e.g., from Ljava/lang/String; to java/lang/String).
@@ -82,7 +103,6 @@ public abstract class ClassName {
         return signature.substring(1, signature.length() - 1);
     }
 
-
     /**
      * Convert class name to slashed format. If the class name is already in
      * slashed format, it is returned unmodified.
@@ -91,8 +111,9 @@ public abstract class ClassName {
      *            a class name
      * @return the same class name in slashed format
      */
-    public static @SlashedClassName
-    String toSlashedClassName(@SlashedClassName(when = When.UNKNOWN) String className) {
+    @SlashedClassName
+    @SuppressFBWarnings("TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK")
+    public static String toSlashedClassName(@SlashedClassName(when = When.UNKNOWN) String className) {
         if (className.indexOf('.') >= 0) {
             return DescriptorFactory.canonicalizeString(className.replace('.', '/'));
         }
@@ -107,8 +128,9 @@ public abstract class ClassName {
      *            a class name
      * @return the same class name in dotted format
      */
-    public static @DottedClassName
-    String toDottedClassName(@SlashedClassName(when = When.UNKNOWN) String className) {
+    @DottedClassName
+    @SuppressFBWarnings("TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK")
+    public static String toDottedClassName(@SlashedClassName(when = When.UNKNOWN) String className) {
         if (className.indexOf('/') >= 0) {
             return DescriptorFactory.canonicalizeString(className.replace('/', '.'));
         }
@@ -126,15 +148,17 @@ public abstract class ClassName {
     public static @DottedClassName
     String extractPackageName(@DottedClassName String className) {
         int i = className.lastIndexOf('.');
-        if (i < 0)
+        if (i < 0) {
             return "";
+        }
         return className.substring(0, i);
     }
 
     public static String extractSimpleName(@DottedClassName String className) {
         int i = className.lastIndexOf('.');
-        if (i > 0)
+        if (i > 0) {
             className = className.substring(i + 1);
+        }
         className = className.replace('$', '.');
         return className;
     }
@@ -181,14 +205,18 @@ public abstract class ClassName {
     public static @SlashedClassName
     String extractClassName(String originalName) {
         String name = originalName;
-        if (name.charAt(0) != '[' && name.charAt(name.length() - 1) != ';')
+        if (name.charAt(0) != '[' && name.charAt(name.length() - 1) != ';') {
             return name;
-        while (name.charAt(0) == '[')
+        }
+        while (name.charAt(0) == '[') {
             name = name.substring(1);
-        if (name.charAt(0) == 'L' && name.charAt(name.length() - 1) == ';')
+        }
+        if (name.charAt(0) == 'L' && name.charAt(name.length() - 1) == ';') {
             name = name.substring(1, name.length() - 1);
-        if (name.charAt(0) == '[')
+        }
+        if (name.charAt(0) == '[') {
             throw new IllegalArgumentException("Bad class name: " + originalName);
+        }
         return name;
     }
 
@@ -197,24 +225,29 @@ public abstract class ClassName {
         int prefixLength = 0;
         while (dotsSeen < count) {
             int p = packageName.indexOf('.', prefixLength);
-            if (p < 0)
+            if (p < 0) {
                 return packageName;
+            }
             prefixLength = p + 1;
             dotsSeen++;
         }
-        if (prefixLength == 0)
+        if (prefixLength == 0) {
             return "";
+        }
         return packageName.substring(0, prefixLength - 1);
     }
 
     public static boolean matchedPrefixes(String[] classSearchStrings, @DottedClassName String className) {
         String[] pp = classSearchStrings;
-        if (pp == null || pp.length == 0)
+        if (pp == null || pp.length == 0) {
             return true;
+        }
 
-        for (String p : pp)
-            if (p.length() > 0 && className.indexOf(p) >= 0)
+        for (String p : pp) {
+            if (p.length() > 0 && className.indexOf(p) >= 0) {
                 return true;
+            }
+        }
 
         return false;
 

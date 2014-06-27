@@ -53,7 +53,9 @@ public class BugAccumulator {
 
     private BugInstance lastBug;
     private SourceLineAnnotation lastSourceLine;
+
     static class Data {
+
         public Data(int priority, SourceLineAnnotation primarySource) {
             this.priority = priority;
             this.primarySource = primarySource;
@@ -86,7 +88,6 @@ public class BugAccumulator {
     public void forgetLastBug() {
         Data d = map.get(lastBug);
         if (d != null) {
-
             d.allSource.remove(lastSourceLine);
             if (d.allSource.isEmpty()) {
                 map.remove(lastBug);
@@ -96,6 +97,7 @@ public class BugAccumulator {
         lastBug = null;
         lastSourceLine = null;
     }
+
     /**
      * Accumulate a warning at given source location.
      *
@@ -105,13 +107,15 @@ public class BugAccumulator {
      *            the source location
      */
     public void accumulateBug(BugInstance bug, SourceLineAnnotation sourceLine) {
-        if (sourceLine == null)
+        if (sourceLine == null) {
             throw new NullPointerException("Missing source line");
+        }
         int priority = bug.getPriority();
-        if (!performAccumulation)
+        if (!performAccumulation) {
             bug.addSourceLine(sourceLine);
-        else
+        } else {
             bug.setPriority(Priorities.NORMAL_PRIORITY);
+        }
 
         lastBug = bug;
         lastSourceLine = sourceLine;
@@ -120,8 +124,9 @@ public class BugAccumulator {
             String hash = bug.getInstanceHash();
             BugInstance conflictingBug = hashes.get(hash);
             if (conflictingBug != null) {
-                if (conflictingBug.getPriority() <= priority)
+                if (conflictingBug.getPriority() <= priority) {
                     return;
+                }
                 map.remove(conflictingBug);
             }
             d = new Data(priority, sourceLine);
@@ -178,21 +183,19 @@ public class BugAccumulator {
         clearBugs();
     }
 
-    /**
-     * @param bug
-     * @param d
-     */
     public void reportBug(BugInstance bug, Data d) {
         bug.setPriority(d.priority);
         bug.addSourceLine(d.primarySource);
         HashSet<Integer> lines = new HashSet<Integer>();
         lines.add(d.primarySource.getStartLine());
         d.allSource.remove(d.primarySource);
-        for (SourceLineAnnotation source : d.allSource)  if (lines.add(source.getStartLine())) {
-            bug.addSourceLine(source);
-            bug.describe(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE);
-        } else if (false && SystemProperties.ASSERTIONS_ENABLED) {
-            AnalysisContext.logError("Skipping duplicated source warning for " + bug.getInstanceHash() + " " + bug.getMessage());
+        for (SourceLineAnnotation source : d.allSource) {
+            if (lines.add(source.getStartLine())) {
+                bug.addSourceLine(source);
+                bug.describe(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE);
+            } /* else if (false && SystemProperties.ASSERTIONS_ENABLED) {
+                AnalysisContext.logError("Skipping duplicated source warning for " + bug.getInstanceHash() + " " + bug.getMessage());
+            }*/
         }
         reporter.reportBug(bug);
     }

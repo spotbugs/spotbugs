@@ -54,7 +54,7 @@ import edu.umd.cs.findbugs.util.Util;
  *
  * @author David Hovemeyer
  */
-public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, AnnotatedObject {
+public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
     private final FieldInfo[] xFields;
 
     private final MethodInfo[] xMethods;
@@ -72,6 +72,11 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
     private final boolean usesConcurrency;
 
     private final boolean hasStubs;
+
+    @CheckForNull
+    AnnotatedObject containingScope;
+
+    private boolean containingScopeCached;
 
     public static class Builder extends ClassNameAndSuperclassInfo.Builder {
         private List<FieldInfo> fieldInfoList = new LinkedList<FieldInfo>();
@@ -100,26 +105,29 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
             AnalysisContext context = AnalysisContext.currentAnalysisContext();
             FieldInfo fields[];
             MethodInfo methods[];
-            if (fieldInfoList.size() == 0)
+            if (fieldInfoList.size() == 0) {
                 fields = FieldInfo.EMPTY_ARRAY;
-            else
+            } else {
                 fields = fieldInfoList.toArray(new FieldInfo[fieldInfoList.size()]);
+            }
 
             for (Map.Entry<MethodInfo, String> e : bridgedSignatures.entrySet()) {
                 MethodInfo method = e.getKey();
                 String signature = e.getValue();
-                for (MethodInfo m : methodInfoList)
+                for (MethodInfo m : methodInfoList) {
                     if (m.getName().equals(method.getName()) && m.getSignature().equals(signature)) {
                         context.setBridgeMethod(method, m);
 
                     }
+                }
 
             }
 
-            if (methodInfoList.size() == 0)
+            if (methodInfoList.size() == 0) {
                 methods = MethodInfo.EMPTY_ARRAY;
-            else
+            } else {
                 methods = methodInfoList.toArray(new MethodInfo[methodInfoList.size()]);
+            }
 
             return new ClassInfo(classDescriptor, classSourceSignature, superclassDescriptor, interfaceDescriptorList,
                     codeBaseEntry, accessFlags, source, majorVersion, minorVersion, referencedClassDescriptorList,
@@ -131,9 +139,6 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
             this.source = source;
         }
 
-        /**
-         * @return Returns the classDescriptor.
-         */
         public ClassDescriptor getClassDescriptor() {
             return classDescriptor;
         }
@@ -147,10 +152,6 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
             classAnnotations.put(annotationClass, value);
         }
 
-        /**
-         * @param fieldDescriptorList
-         *            The fieldDescriptorList to set.
-         */
         public void setFieldDescriptorList(FieldInfo[] fieldDescriptorList) {
             this.fieldInfoList = Arrays.asList(fieldDescriptorList);
         }
@@ -159,10 +160,6 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
             fieldInfoList.add(field);
         }
 
-        /**
-         * @param methodDescriptorList
-         *            The methodDescriptorList to set.
-         */
         public void setMethodDescriptorList(MethodInfo[] methodDescriptorList) {
             this.methodInfoList = Arrays.asList(methodDescriptorList);
         }
@@ -178,10 +175,6 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
             addMethodDescriptor(method);
         }
 
-        /**
-         * @param immediateEnclosingClass
-         *            The immediateEnclosingClass to set.
-         */
         public void setImmediateEnclosingClass(ClassDescriptor immediateEnclosingClass) {
             this.immediateEnclosingClass = immediateEnclosingClass;
         }
@@ -235,16 +228,10 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
      * @param referencedClassDescriptorList
      *            ClassDescriptors of all classes/interfaces referenced by the
      *            class
-     * @param calledClassDescriptors
-     *            TODO
      * @param fieldDescriptorList
      *            FieldDescriptors of fields defined in the class
      * @param methodInfoList
      *            MethodDescriptors of methods defined in the class
-     * @param usesConcurrency
-     *            TODO
-     * @param hasStubs
-     *            TODO
      */
     private ClassInfo(ClassDescriptor classDescriptor, String classSourceSignature, ClassDescriptor superclassDescriptor,
             ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags, String source,
@@ -256,8 +243,9 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
                 referencedClassDescriptorList, calledClassDescriptors, majorVersion, minorVersion);
         this.source = source;
         this.classSourceSignature = classSourceSignature;
-        if (fieldDescriptorList.length == 0)
+        if (fieldDescriptorList.length == 0) {
             fieldDescriptorList = FieldInfo.EMPTY_ARRAY;
+        }
         this.xFields = fieldDescriptorList;
         this.xMethods = methodInfoList;
         this.immediateEnclosingClass = immediateEnclosingClass;
@@ -265,6 +253,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
         this.usesConcurrency = usesConcurrency;
         this.hasStubs = hasStubs;
         this.methodsInCallOrder = computeMethodsInCallOrder();
+        /*
         if (false) {
             System.out.println("Methods in call order for " + classDescriptor);
             for (MethodInfo m : methodsInCallOrder) {
@@ -272,54 +261,35 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
             }
             System.out.println();
         }
+         */
     }
 
-    /**
-     * @return Returns the fieldDescriptorList.
-     */
     @Override
     public List<? extends XField> getXFields() {
         return Arrays.asList(xFields);
     }
 
-    /**
-     * @return Returns the methodDescriptorList.
-     */
     @Override
     public List<? extends XMethod> getXMethods() {
         return Arrays.asList(xMethods);
     }
 
-    /**
-     * @return Returns the methodDescriptorList.
-     */
     public List<? extends XMethod> getXMethodsInCallOrder() {
         return Arrays.asList(methodsInCallOrder);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.XClass#findMethod(java.lang.String,
-     * java.lang.String, boolean)
-     */
     @Override
     public XMethod findMethod(String methodName, String methodSig, boolean isStatic) {
         int hash = FieldOrMethodDescriptor.getNameSigHashCode(methodName, methodSig);
-        for (MethodInfo mInfo : xMethods)
+        for (MethodInfo mInfo : xMethods) {
             if (mInfo.getNameSigHashCode() == hash && mInfo.getName().equals(methodName)
-                    && mInfo.getSignature().equals(methodSig) && mInfo.isStatic() == isStatic)
+                    && mInfo.getSignature().equals(methodSig) && mInfo.isStatic() == isStatic) {
                 return mInfo;
+            }
+        }
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.ba.XClass#findMethod(edu.umd.cs.findbugs.classfile
-     * .MethodDescriptor)
-     */
     @Override
     public XMethod findMethod(MethodDescriptor descriptor) {
         if (!descriptor.getClassDescriptor().equals(this)) {
@@ -333,34 +303,34 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
         return findMethod(descriptor.getName(), descriptor.getSignature(), descriptor.isStatic());
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.XClass#findField(java.lang.String,
-     * java.lang.String, boolean)
-     */
     @Override
     public XField findField(String name, String signature, boolean isStatic) {
         int hash = FieldOrMethodDescriptor.getNameSigHashCode(name, signature);
-        for (FieldInfo fInfo : xFields)
+        for (FieldInfo fInfo : xFields) {
             if (fInfo.getNameSigHashCode() == hash && fInfo.getName().equals(name) && fInfo.getSignature().equals(signature)
-                    && fInfo.isStatic() == isStatic)
+                    && fInfo.isStatic() == isStatic) {
                 return fInfo;
+            }
+        }
         try {
-            if (getSuperclassDescriptor() == null)
+            if (getSuperclassDescriptor() == null) {
                 return null;
+            }
             XClass superClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, getSuperclassDescriptor());
             XField result = superClass.findField(name, signature, isStatic);
-            if (result != null)
+            if (result != null) {
                 return result;
-            if (!isStatic)
+            }
+            if (!isStatic) {
                 return null;
+            }
             ClassDescriptor[] interfaces = getInterfaceDescriptorList();
             for (ClassDescriptor implementedInterface : interfaces) {
                 superClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, implementedInterface);
                 result = superClass.findField(name, signature, isStatic);
-                if (result != null)
+                if (result != null) {
                     return result;
+                }
             }
             return null;
         } catch (CheckedAnalysisException e) {
@@ -368,19 +338,11 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
         }
     }
 
-    /**
-     * @return Returns the immediateEnclosingClass.
-     */
     @Override
     public ClassDescriptor getImmediateEnclosingClass() {
         return immediateEnclosingClass;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getPackageName()
-     */
     @Override
     public String getPackageName() {
         String dottedClassName = getClassDescriptor().toDottedClassName();
@@ -391,12 +353,6 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
             return dottedClassName.substring(0, lastDot);
         }
     }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getPackageName()
-     */
 
     public String getSlashedPackageName() {
         String slashedClassName = getClassDescriptor().getClassName();
@@ -442,10 +398,11 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
     @Override
     public ElementType getElementType() {
-        if (getClassName().endsWith("package-info"))
+        if (getClassName().endsWith("package-info")) {
             return ElementType.PACKAGE;
-        else if (isAnnotation())
+        } else if (isAnnotation()) {
             return ElementType.ANNOTATION_TYPE;
+        }
         return ElementType.TYPE;
 
     }
@@ -455,11 +412,6 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
     String getSource() {
         return source;
     }
-
-    @CheckForNull
-    AnnotatedObject containingScope;
-
-    private boolean containingScopeCached = false;
 
     @Override
     public @CheckForNull
@@ -487,11 +439,6 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.XClass#getSourceSignature()
-     */
     @Override
     public String getSourceSignature() {
         return classSourceSignature;
