@@ -523,7 +523,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             if (FindBugsBuilder.DEBUG) {
                 System.out.println("Pluginpath: " + path); //$NON-NLS-1$
             }
-            if (path.endsWith("fb-trunk/eclipsePlugin/")) {
+            if (path.endsWith("/eclipsePlugin/")) {
                 File f = new File(path);
                 f = f.getParentFile();
                 f = new File(f, "findbugs");

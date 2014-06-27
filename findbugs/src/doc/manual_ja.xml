@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "http://findbugs.googlecode.com/svn/trunk/findbugs/etc/docbook/docbookx.dtd"
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "http://findbugs.googlecode.com/git/findbugs/etc/docbook/docbookx.dtd"
 [
 <!ENTITY FindBugs "<application>FindBugs</application>">
 <!ENTITY Ant "<application>Ant</application>">
@@ -1489,7 +1489,9 @@ Command Line Interface.
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.CheckForNull</command></term>
     <listitem>
-<command>[Target]</command> Field, Method, Parameter
+    <para>
+        <command>[Target]</command> Field, Method, Parameter
+    </para>
     </listitem>
     <listitem>
       <para>アノテーションをつけた要素は、 null である可能性があります。したがって、当該要素を使用する際は null チェックをするべきです。このアノテーションをメソッドに適用すると、メソッドの戻り値に適用されます。</para>
@@ -1499,7 +1501,9 @@ Command Line Interface.
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.CheckReturnValue</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Method, Constructor
+    </para>
     </listitem>
     <listitem>
       <variablelist>
@@ -1524,7 +1528,9 @@ Command Line Interface.
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.DefaultAnnotation</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Type, Package
+    </para>
     </listitem>
     <listitem>
       <variablelist>
@@ -1555,7 +1561,9 @@ on those parameters, methods or fields that you want to allow to be null.
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.DefaultAnnotationForFields</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Type, Package
+    </para>
     </listitem>
     <listitem>
       <variablelist>
@@ -1582,7 +1590,9 @@ This is same as the DefaultAnnotation except it only applys to fields.
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.DefaultAnnotationForMethods</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Type, Package
+    </para>
     </listitem>
     <listitem>
       <variablelist>
@@ -1609,7 +1619,9 @@ This is same as the DefaultAnnotation except it only applys to methods.
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Type, Package
+    </para>
     </listitem>
     <listitem>
       <variablelist>
@@ -1636,7 +1648,9 @@ This is same as the DefaultAnnotation except it only applys to method parameters
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.NonNull</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Field, Method, Parameter
+    </para>
     </listitem>
     <listitem>
       <para>アノテーションをつけた要素は、 null であってはいけません。アノテーションをつけたフィールドは、構築完了後 null であってはいけません。アノテーションをつけたメソッドは、 null ではない値を戻り値としなければなりません。</para>
@@ -1646,7 +1660,9 @@ This is same as the DefaultAnnotation except it only applys to method parameters
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.Nullable</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Field, Method, Parameter
+    </para>
     </listitem>
     <listitem>
       <para>アノテーションをつけた要素は、 null であってはいけません。In general, this means developers will have to read the documentation to determine when a null value is acceptable and whether it is neccessary to check for a null value. FindBugs will treat the annotated items as though they had no annotation.</para>
@@ -1660,7 +1676,9 @@ annotation.
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.OverrideMustInvoke</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Method
+    </para>
     </listitem>
     <listitem>
       <variablelist>
@@ -1698,7 +1716,9 @@ This annotation is deprecated. Use CheckForNull instead.
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.SuppressWarnings</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Type, Field, Method, Parameter, Constructor, Package
+    </para>
     </listitem>
     <listitem>
       <variablelist>
@@ -1732,7 +1752,9 @@ are encouraged to cooperate to ensure that the same names work across multiple c
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.UnknownNullness</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Field, Method, Parameter
+    </para>
     </listitem>
     <listitem>
       <para>
@@ -1744,7 +1766,9 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.UnknownNullness</command></term>
     <listitem>
+    <para>
       <command>[Target]</command> Field, Method, Parameter
+    </para>
     </listitem>
     <listitem>
       <para>
@@ -1755,10 +1779,10 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
 </variablelist>
 
 <para>また、 &FindBugs; 次に示すアノテーションもサポートしています。 :<itemizedlist>
-  <listitem>net.jcip.annotations.GuardedBy</listitem>
-  <listitem>net.jcip.annotations.Immutable</listitem>
-  <listitem>net.jcip.annotations.NotThreadSafe</listitem>
-  <listitem>net.jcip.annotations.ThreadSafe</listitem>
+  <listitem><para>net.jcip.annotations.GuardedBy</para></listitem>
+  <listitem><para>net.jcip.annotations.Immutable</para></listitem>
+  <listitem><para>net.jcip.annotations.NotThreadSafe</para></listitem>
+  <listitem><para>net.jcip.annotations.ThreadSafe</para></listitem>
 </itemizedlist>
 </para>
 <para><ulink url="http://jcip.net/">Java Concurrency in Practice</ulink> の <ulink url="http://jcip.net/annotations/doc/index.html"> API ドキュメント</ulink> を参照してください。</para>
