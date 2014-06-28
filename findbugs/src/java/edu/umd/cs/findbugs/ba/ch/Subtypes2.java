@@ -85,7 +85,7 @@ public class Subtypes2 {
      * Object to record the results of a supertype search.
      */
     private static class SupertypeQueryResults {
-        private Set<ClassDescriptor> supertypeSet = new HashSet<ClassDescriptor>(4);
+        private final Set<ClassDescriptor> supertypeSet = new HashSet<ClassDescriptor>(4);
 
         private boolean encounteredMissingClasses = false;
 
@@ -148,15 +148,20 @@ public class Subtypes2 {
 
     public static boolean isJSP(JavaClass javaClass) {
         @DottedClassName String className = javaClass.getClassName();
-        if ( className.endsWith("_jsp") || className.endsWith("_tag"))
+        if ( className.endsWith("_jsp") || className.endsWith("_tag")) {
             return true;
-        for(Method m : javaClass.getMethods())
-            if (m.getName().startsWith("_jsp"))
+        }
+        for(Method m : javaClass.getMethods()) {
+            if (m.getName().startsWith("_jsp")) {
                 return true;
-        
-        for(Field f : javaClass.getFields())
-            if (f.getName().startsWith("_jsp"))
+            }
+        }
+
+        for(Field f : javaClass.getFields()) {
+            if (f.getName().startsWith("_jsp")) {
                 return true;
+            }
+        }
         return Subtypes2.instanceOf(className, "javax.servlet.jsp.JspPage")
                 || Subtypes2.instanceOf(className, "org.apache.jasper.runtime.HttpJspBase")
                 || Subtypes2.instanceOf(className, "javax.servlet.jsp.tagext.SimpleTagSupport")
@@ -191,10 +196,12 @@ public class Subtypes2 {
     }
 
     public static boolean instanceOf(JavaClass subtype, @DottedClassName String dottedSupertype) {
-        if (subtype.getClassName().equals(dottedSupertype) || subtype.getSuperclassName().equals(dottedSupertype))
+        if (subtype.getClassName().equals(dottedSupertype) || subtype.getSuperclassName().equals(dottedSupertype)) {
             return true;
-        if (subtype.getSuperclassName().equals("java.lang.Object") && subtype.getInterfaceIndices().length == 0)
+        }
+        if (subtype.getSuperclassName().equals("java.lang.Object") && subtype.getInterfaceIndices().length == 0) {
             return false;
+        }
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
         ClassDescriptor subDescriptor = DescriptorFactory.createClassDescriptor(subtype);
         ClassDescriptor superDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(dottedSupertype);
@@ -215,8 +222,9 @@ public class Subtypes2 {
      */
     public void addApplicationClass(XClass appXClass) {
         for (XMethod m : appXClass.getXMethods()) {
-            if (m.isStub())
+            if (m.isStub()) {
                 return;
+            }
         }
         ClassVertex vertex = addClassAndGetClassVertex(appXClass);
         vertex.markAsApplicationClass();
@@ -321,10 +329,12 @@ public class Subtypes2 {
         if (type.equals(possibleSupertype)) {
             return true;
         }
-        if (possibleSupertype.equals(Type.OBJECT))
+        if (possibleSupertype.equals(Type.OBJECT)) {
             return true;
-        if (type.equals(Type.OBJECT))
+        }
+        if (type.equals(Type.OBJECT)) {
             return false;
+        }
 
         boolean typeIsObjectType = (type instanceof ObjectType);
         boolean possibleSupertypeIsObjectType = (possibleSupertype instanceof ObjectType);
@@ -389,10 +399,11 @@ public class Subtypes2 {
     }
     ClassDescriptor prevSubDesc, prevSuperDesc;
     boolean prevResult;
-    
+
     public boolean isSubtype(ClassDescriptor subDesc, ClassDescriptor superDesc) throws ClassNotFoundException {
-        if (subDesc == prevSubDesc && prevSuperDesc == superDesc)
+        if (subDesc == prevSubDesc && prevSuperDesc == superDesc) {
             return prevResult;
+        }
         prevResult = isSubtype0(subDesc, superDesc);
         prevSubDesc = subDesc;
         prevSuperDesc = superDesc;
@@ -401,62 +412,81 @@ public class Subtypes2 {
 
     public boolean isSubtype(ClassDescriptor subDesc, ClassDescriptor... superDesc) throws ClassNotFoundException {
         for (ClassDescriptor s : superDesc) {
-            if (subDesc.equals(s))
+            if (subDesc.equals(s)) {
                 return true;
+            }
         }
         XClass xclass = AnalysisContext.currentXFactory().getXClass(subDesc);
         if (xclass != null) {
             ClassDescriptor xSuper = xclass.getSuperclassDescriptor();
             for (ClassDescriptor s : superDesc) {
-                if (s.equals(xSuper))
+                if (s.equals(xSuper)) {
                     return true;
+                }
             }
         }
         SupertypeQueryResults supertypeQueryResults = getSupertypeQueryResults(subDesc);
-        for (ClassDescriptor s : superDesc)
-            if (supertypeQueryResults.containsType(s))
+        for (ClassDescriptor s : superDesc) {
+            if (supertypeQueryResults.containsType(s)) {
                 return true;
+            }
+        }
         return false;
     }
-        
+
     public boolean isSubtype0(ClassDescriptor subDesc, ClassDescriptor superDesc) throws ClassNotFoundException {
         assert subDesc != null;
         assert superDesc != null;
-        if (subDesc.equals(superDesc))
+        if (subDesc.equals(superDesc)) {
             return true;
+        }
         String superName = superDesc.getClassName();
-        if (superName.equals("java/lang/Object"))
+        if (superName.equals("java/lang/Object")) {
             return true;
+        }
         String subName = subDesc.getClassName();
-        if (subName.equals("java/lang/Object"))
+        if (subName.equals("java/lang/Object")) {
             return false;
-      
-        
-        if (true) {
+        }
+
+        //        if (true) {
+        // XXX call below causes 88% of all MissingClassException thrown (20000 on java* JDK7 classes)
         XClass xclass = AnalysisContext.currentXFactory().getXClass(subDesc);
         if (xclass != null) {
             ClassDescriptor xSuper = xclass.getSuperclassDescriptor();
-            if (superDesc.equals(xSuper))
+            if (superDesc.equals(xSuper)) {
                 return true;
+            }
             ClassDescriptor[] interfaces = xclass.getInterfaceDescriptorList();
             if (interfaces.length == 0) {
-                if (xSuper == null)
+                if (xSuper == null) {
                     return false;
-                if (xSuper.getClassName().equals("java/lang/Object"))
+                }
+                if (xSuper.getClassName().equals("java/lang/Object")) {
                     return false;
-            } else for (ClassDescriptor i : interfaces)
-                if (superDesc.equals(i))
-                    return true;
+                }
+            } else {
+                for (ClassDescriptor i : interfaces) {
+                    if (superDesc.equals(i)) {
+                        return true;
+                    }
+                }
+            }
         }
-        }
+        //        }
+
+        /*
         if (false) {
-            if (subName.equals("java/lang/Error") && superName.equals("java/lang/RuntimeException"))
-                    System.out.println("huh");
+            if (subName.equals("java/lang/Error") && superName.equals("java/lang/RuntimeException")) {
+                System.out.println("huh");
+            }
             System.out.println("sub: " + subDesc);
             System.out.println("SUP: " + superDesc);
             System.out.println("CHECK: " + subDesc + " " + superDesc);
-            }
+        }
+         */
         SupertypeQueryResults supertypeQueryResults = getSupertypeQueryResults(subDesc);
+        // XXX call below causes 88% of all ClassNotFoundException thrown (20000 on java* JDK7 classes)
         return supertypeQueryResults.containsType(superDesc);
     }
 
@@ -693,10 +723,12 @@ public class Subtypes2 {
 
         Set<ClassDescriptor> aSuperTypes = computeKnownSupertypes(aDesc);
         Set<ClassDescriptor> bSuperTypes = computeKnownSupertypes(bDesc);
-        if (bSuperTypes.contains(aDesc))
+        if (bSuperTypes.contains(aDesc)) {
             return a;
-        if (aSuperTypes.contains(bDesc))
+        }
+        if (aSuperTypes.contains(bDesc)) {
             return b;
+        }
         ArrayList<ClassVertex> aSuperList = getAllSuperclassVertices(aVertex);
         ArrayList<ClassVertex> bSuperList = getAllSuperclassVertices(bVertex);
 
@@ -715,22 +747,26 @@ public class Subtypes2 {
             aIndex--;
             bIndex--;
         }
-        if (lastCommonInBackwardsSearch == null)
+        if (lastCommonInBackwardsSearch == null) {
             firstCommonSupertype = Type.OBJECT;
-        else
+        } else {
             firstCommonSupertype = ObjectTypeFactory.getInstance(lastCommonInBackwardsSearch.getClassDescriptor()
                     .toDottedClassName());
+        }
         if (firstCommonSupertype.equals(Type.OBJECT)) {
             // see if we can't do better
             ClassDescriptor objDesc = DescriptorFactory.getClassDescriptor(Type.OBJECT);
             aSuperTypes.retainAll(bSuperTypes);
             aSuperTypes.remove(objDesc);
-            for (ClassDescriptor c : aSuperTypes)
-                if (c.getPackageName().equals(aDesc.getPackageName()) || c.getPackageName().equals(bDesc.getPackageName()))
+            for (ClassDescriptor c : aSuperTypes) {
+                if (c.getPackageName().equals(aDesc.getPackageName()) || c.getPackageName().equals(bDesc.getPackageName())) {
                     return ObjectTypeFactory.getInstance(c.toDottedClassName());
+                }
+            }
 
-            for (ClassDescriptor c : aSuperTypes)
+            for (ClassDescriptor c : aSuperTypes) {
                 return ObjectTypeFactory.getInstance(c.toDottedClassName());
+            }
         }
 
         return firstCommonSupertype;
@@ -851,7 +887,7 @@ public class Subtypes2 {
         return result;
     }
 
-     
+
     /**
      * Get Collection of all XClass objects (resolved classes) seen so far.
      *
@@ -973,10 +1009,10 @@ public class Subtypes2 {
     public void traverseSupertypesDepthFirst(ClassDescriptor start, SupertypeTraversalVisitor visitor) throws ClassNotFoundException {
         this.traverseSupertypesDepthFirstHelper(start, visitor, new HashSet<ClassDescriptor>());
     }
-    
+
     private void traverseSupertypesDepthFirstHelper(ClassDescriptor cur, SupertypeTraversalVisitor visitor,
             Set<ClassDescriptor> seen) throws ClassNotFoundException {
-        
+
         if (seen.contains(cur)) {
             return;
         }
@@ -1080,13 +1116,14 @@ public class Subtypes2 {
         return new HashSet<ClassDescriptor>(result);
     }
 
-    
+
     public boolean hasKnownSubclasses(ClassDescriptor classDescriptor) throws ClassNotFoundException {
-       
+
         ClassVertex startVertex = resolveClassVertex(classDescriptor);
-        if (!startVertex.isInterface())
+        if (!startVertex.isInterface()) {
             return true;
-        
+        }
+
         LinkedList<ClassVertex> workList = new LinkedList<ClassVertex>();
 
         workList.addLast(startVertex);
@@ -1102,8 +1139,9 @@ public class Subtypes2 {
             }
 
             // Add class to the result
-            if (current.isResolved() && !current.isInterface())
+            if (current.isResolved() && !current.isInterface()) {
                 return true;
+            }
 
             // Add all known subtype vertices to the work list
             Iterator<InheritanceEdge> i = graph.incomingEdgeIterator(current);
@@ -1170,7 +1208,7 @@ public class Subtypes2 {
      * @return SupertypeQueryResults containing known supertypes of the class
      */
     private SupertypeQueryResults computeSupertypes(ClassDescriptor classDescriptor) // throws
-                                                                                     // ClassNotFoundException
+    // ClassNotFoundException
     {
         if (DEBUG_QUERIES) {
             System.out.println("Computing supertypes for " + classDescriptor.toDottedClassName());
@@ -1270,8 +1308,9 @@ public class Subtypes2 {
 
         // Direct superclass
         ClassDescriptor superclassDescriptor = xclass.getSuperclassDescriptor();
-        if (superclassDescriptor != null)
+        if (superclassDescriptor != null) {
             addInheritanceEdge(vertex, superclassDescriptor, false, workList);
+        }
 
         // Directly implemented interfaces
         for (ClassDescriptor ifaceDesc : xclass.getInterfaceDescriptorList()) {

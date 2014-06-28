@@ -102,8 +102,9 @@ public class FindBadCast2 implements Detector {
         Method[] methodList = javaClass.getMethods();
 
         for (Method method : methodList) {
-            if (method.getCode() == null)
+            if (method.getCode() == null) {
                 continue;
+            }
 
             try {
                 analyzeMethod(classContext, method);
@@ -139,8 +140,9 @@ public class FindBadCast2 implements Detector {
     }
 
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
-        if (BCELUtil.isSynthetic(method) || !prescreen(classContext, method))
+        if (BCELUtil.isSynthetic(method) || !prescreen(classContext, method)) {
             return;
+        }
         BugAccumulator accumulator = new BugAccumulator(bugReporter);
 
         CFG cfg = classContext.getCFG(method);
@@ -152,8 +154,9 @@ public class FindBadCast2 implements Detector {
 
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
         MethodGen methodGen = classContext.getMethodGen(method);
-        if (methodGen == null)
+        if (methodGen == null) {
             return;
+        }
         String methodName = methodGen.getClassName() + "." + methodGen.getName();
         String sourceFile = classContext.getJavaClass().getSourceFileName();
         if (DEBUG) {
@@ -169,22 +172,25 @@ public class FindBadCast2 implements Detector {
             InstructionHandle handle = location.getHandle();
             Instruction ins = handle.getInstruction();
 
-            if (!(ins instanceof CHECKCAST) && !(ins instanceof INSTANCEOF))
+            if (!(ins instanceof CHECKCAST) && !(ins instanceof INSTANCEOF)) {
                 continue;
+            }
 
             SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
                     sourceFile, handle);
             if (ins instanceof CHECKCAST) {
                 if (!haveCast.add(sourceLineAnnotation)) {
                     haveMultipleCast.add(sourceLineAnnotation);
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("Have multiple casts for " + sourceLineAnnotation);
+                    }
                 }
             } else {
                 if (!haveInstanceOf.add(sourceLineAnnotation)) {
                     haveMultipleInstanceOf.add(sourceLineAnnotation);
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("Have multiple instanceof for " + sourceLineAnnotation);
+                    }
                 }
             }
         }
@@ -227,21 +233,24 @@ public class FindBadCast2 implements Detector {
                 }
             }
 
-            if (!(ins instanceof CHECKCAST) && !(ins instanceof INSTANCEOF))
+            if (!(ins instanceof CHECKCAST) && !(ins instanceof INSTANCEOF)) {
                 continue;
+            }
 
             boolean isCast = ins instanceof CHECKCAST;
             int occurrences = cfg.getLocationsContainingInstructionWithOffset(pc).size();
             boolean split = occurrences > 1;
             if (lineNumberTable != null) {
                 int line = lineNumberTable.getSourceLine(handle.getPosition());
-                if (line > 0 && linesMentionedMultipleTimes.get(line))
+                if (line > 0 && linesMentionedMultipleTimes.get(line)) {
                     split = true;
+                }
             }
 
             IsNullValueFrame nullFrame = isNullDataflow.getFactAtLocation(location);
-            if (!nullFrame.isValid())
+            if (!nullFrame.isValid()) {
                 continue;
+            }
             IsNullValue operandNullness = nullFrame.getTopValue();
             if (DEBUG) {
                 String kind = isCast ? "checkedCast" : "instanceof";
@@ -280,9 +289,10 @@ public class FindBadCast2 implements Detector {
                 SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
                         sourceFile, handle);
                 assert castSig.length() > 1;
-                if (!isCast)
+                if (!isCast) {
                     accumulator.accumulateBug(new BugInstance(this, "NP_NULL_INSTANCEOF", split ? LOW_PRIORITY : NORMAL_PRIORITY)
-                            .addClassAndMethod(methodGen, sourceFile).addType(castSig), sourceLineAnnotation);
+                    .addClassAndMethod(methodGen, sourceFile).addType(castSig), sourceLineAnnotation);
+                }
                 continue;
 
             }
@@ -293,8 +303,9 @@ public class FindBadCast2 implements Detector {
             final ReferenceType refType = (ReferenceType) operandType;
             boolean impliesByGenerics = typeDataflow.getAnalysis().isImpliedByGenericTypes(refType);
 
-            if (impliesByGenerics && !isCast)
+            if (impliesByGenerics && !isCast) {
                 continue;
+            }
 
             final boolean typesAreEqual = refType.equals(castType);
             if (isCast && typesAreEqual) {
@@ -317,20 +328,23 @@ public class FindBadCast2 implements Detector {
             if (refSig2.charAt(0) != 'L' || castSig2.charAt(0) != 'L') {
                 if (castSig2.charAt(0) == '['
                         && (refSig2.equals("Ljava/io/Serializable;") || refSig2.equals("Ljava/lang/Object;") || refSig2
-                                .equals("Ljava/lang/Cloneable;")))
+                                .equals("Ljava/lang/Cloneable;"))) {
                     continue;
+                }
                 if (refSig2.charAt(0) == '['
                         && (castSig2.equals("Ljava/io/Serializable;") || castSig2.equals("Ljava/lang/Object;") || castSig2
-                                .equals("Ljava/lang/Cloneable;")))
+                                .equals("Ljava/lang/Cloneable;"))) {
                     continue;
+                }
                 int priority = HIGH_PRIORITY;
-                if (split && (castSig2.endsWith("Error;") || castSig2.endsWith("Exception;")))
+                if (split && (castSig2.endsWith("Error;") || castSig2.endsWith("Exception;"))) {
                     priority = LOW_PRIORITY;
+                }
                 // report bug only if types are not equal, see bug 3598482
                 if(!typesAreEqual){
                     bugReporter.reportBug(new BugInstance(this, isCast ? "BC_IMPOSSIBLE_CAST" : "BC_IMPOSSIBLE_INSTANCEOF", priority)
-                        .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType)
-                        .addSourceLine(sourceLineAnnotation));
+                    .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType)
+                    .addSourceLine(sourceLineAnnotation));
                 }
                 continue;
             }
@@ -338,22 +352,26 @@ public class FindBadCast2 implements Detector {
             if (!operandTypeIsExact && refSig2.equals("Ljava/lang/Object;")) {
                 continue;
             }
+            /*
             if (false && isCast && haveMultipleCast.contains(sourceLineAnnotation) || !isCast
                     && haveMultipleInstanceOf.contains(sourceLineAnnotation)) {
                 // skip; might be due to JSR inlining
                 continue;
-            }
+            }*/
             String castName = castSig2.substring(1, castSig2.length() - 1).replace('/', '.');
             String refName = refSig2.substring(1, refSig2.length() - 1).replace('/', '.');
 
-            if (vnaDataflow == null)
+            if (vnaDataflow == null) {
                 vnaDataflow = classContext.getValueNumberDataflow(method);
+            }
             ValueNumberFrame vFrame = vnaDataflow.getFactAtLocation(location);
-            if (paramValueNumberSet == null)
+            if (paramValueNumberSet == null) {
                 paramValueNumberSet = getParameterValueNumbers(classContext, method, cfg);
+            }
             ValueNumber valueNumber = vFrame.getTopValue();
             BugAnnotation valueSource = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, valueNumber, vFrame,
                     "VALUE_OF");
+            // XXX call below causes 86% of all OpcodeStackDetector.EarlyExitException (getPC() == targetPC) thrown (13000 on java* JDK7 classes)
             BugAnnotation source = BugInstance.getSourceForTopStackValue(classContext, method, location);
             boolean isParameter = paramValueNumberSet.contains(valueNumber) && source instanceof LocalVariableAnnotation;
 
@@ -363,16 +381,18 @@ public class FindBadCast2 implements Detector {
 
                 boolean upcast = Repository.instanceOf(refJavaClass, castJavaClass);
                 if (upcast || typesAreEqual) {
-                    if (!isCast)
+                    if (!isCast) {
                         accumulator.accumulateBug(new BugInstance(this, "BC_VACUOUS_INSTANCEOF", NORMAL_PRIORITY)
-                                .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType),
-                                sourceLineAnnotation);
+                        .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType),
+                        sourceLineAnnotation);
+                    }
                 } else {
                     boolean castMayThrow = !Repository.instanceOf(refJavaClass, castJavaClass);
                     boolean downCast = Repository.instanceOf(castJavaClass, refJavaClass);
 
-                    if (!operandTypeIsExact && refName.equals("java.lang.Object"))
+                    if (!operandTypeIsExact && refName.equals("java.lang.Object")) {
                         continue;
+                    }
                     double rank = 0.0;
                     boolean castToConcreteCollection = concreteCollectionClasses.contains(castName)
                             && abstractCollectionClasses.contains(refName);
@@ -386,14 +406,17 @@ public class FindBadCast2 implements Detector {
 
                     if (!operandTypeIsExact) {
                         rank = Analyze.deepInstanceOf(refJavaClass, castJavaClass);
-                        if (castToConcreteCollection && rank > 0.6)
+                        if (castToConcreteCollection && rank > 0.6) {
                             rank = (rank + 0.6) / 2;
-                        else if (castToAbstractCollection && rank > 0.3)
+                        } else if (castToAbstractCollection && rank > 0.3) {
                             rank = (rank + 0.3) / 2;
+                        }
                     }
-
-                    if (false)
+                    /*
+                    if (false) {
                         System.out.println("Rank:\t" + rank + "\t" + refName + "\t" + castName);
+                    }
+                     */
                     boolean completeInformation = (!castJavaClass.isInterface() && !refJavaClass.isInterface())
                             || refJavaClass.isFinal() || castJavaClass.isFinal();
                     if (DEBUG) {
@@ -408,21 +431,25 @@ public class FindBadCast2 implements Detector {
                         System.out.println("  isParameter: " + valueNumber);
                         System.out.println("  score: " + rank);
                         System.out.println("  source is: " + valueSource);
-                        if (catchSize < Integer.MAX_VALUE)
+                        if (catchSize < Integer.MAX_VALUE) {
                             System.out.println("  catch block size is: " + catchSize);
-                        if (constantClass != null)
+                        }
+                        if (constantClass != null) {
                             System.out.println("  constant class " + constantClass + " at " + pcForConstantClass);
-                        if (handle.getPrev() == null)
+                        }
+                        if (handle.getPrev() == null) {
                             System.out.println("  prev is null");
-                        else
+                        } else {
                             System.out.println("  prev is " + handle.getPrev());
+                        }
                     }
                     if (!isCast && castMayThrow && valueSource != null) {
                         String oldCheck = instanceOfChecks.get(valueSource);
-                        if (oldCheck == null)
+                        if (oldCheck == null) {
                             instanceOfChecks.put(valueSource, castName);
-                        else if (!oldCheck.equals(castName))
+                        } else if (!oldCheck.equals(castName)) {
                             instanceOfChecks.put(valueSource, "");
+                        }
                     }
                     if (!downCast && completeInformation || operandTypeIsExact) {
                         String bugPattern;
@@ -430,19 +457,22 @@ public class FindBadCast2 implements Detector {
                             if (downCast && operandTypeIsExact) {
                                 if (refSig.equals("[Ljava/lang/Object;") && source instanceof MethodAnnotation
                                         && ((MethodAnnotation) source).getMethodName().equals("toArray")
-                                        && ((MethodAnnotation) source).getMethodSignature().equals("()[Ljava/lang/Object;"))
+                                        && ((MethodAnnotation) source).getMethodSignature().equals("()[Ljava/lang/Object;")) {
                                     bugPattern = "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY";
-                                else
+                                } else {
                                     bugPattern = "BC_IMPOSSIBLE_DOWNCAST";
-                            } else
+                                }
+                            } else {
                                 bugPattern = "BC_IMPOSSIBLE_CAST";
-                        } else
+                            }
+                        } else {
                             bugPattern = "BC_IMPOSSIBLE_INSTANCEOF";
+                        }
 
                         bugReporter.reportBug(new BugInstance(this, bugPattern, isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
-                                .addClassAndMethod(methodGen, sourceFile)
-                                .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(valueSource, source)
-                                .addSourceLine(sourceLineAnnotation));
+                        .addClassAndMethod(methodGen, sourceFile)
+                        .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(valueSource, source)
+                        .addSourceLine(sourceLineAnnotation));
                     } else if (isCast && rank < 0.9
                             && !valueNumber.hasFlag(ValueNumber.ARRAY_VALUE)) {
 
@@ -456,89 +486,115 @@ public class FindBadCast2 implements Detector {
                             priority += 1;
                         } else if ("".equals(oldCheck)) {
                             priority += 1;
-                            if (!(source instanceof LocalVariableAnnotation)) continue;
+                            if (!(source instanceof LocalVariableAnnotation)) {
+                                continue;
+                            }
                         }
 
-                         if (rank > 0.75)
+                        if (rank > 0.75) {
                             priority += 2;
-                        else if (rank > 0.5)
+                        } else if (rank > 0.5) {
                             priority += 1;
-                        else if (rank > 0.25)
+                        } else if (rank > 0.25) {
                             priority += 0;
-                        else
+                        } else {
                             priority--;
+                        }
 
 
 
-                        if (DEBUG)
+                        if (DEBUG) {
                             System.out.println(" priority a: " + priority);
-                        if (methodGen.getClassName().startsWith(refName) || methodGen.getClassName().startsWith(castName))
+                        }
+                        if (methodGen.getClassName().startsWith(refName) || methodGen.getClassName().startsWith(castName)) {
                             priority += 1;
-                        if (DEBUG)
+                        }
+                        if (DEBUG) {
                             System.out.println(" priority b: " + priority);
-                        if (castJavaClass.isInterface() && !castToAbstractCollection)
+                        }
+                        if (castJavaClass.isInterface() && !castToAbstractCollection) {
                             priority++;
-                        if (DEBUG)
+                        }
+                        if (DEBUG) {
                             System.out.println(" priority c: " + priority);
-                        if (castToConcreteCollection && veryAbstractCollectionClasses.contains(refName))
+                        }
+                        if (castToConcreteCollection && veryAbstractCollectionClasses.contains(refName)) {
                             priority--;
-                        if (DEBUG)
+                        }
+                        if (DEBUG) {
                             System.out.println(" priority d: " + priority);
+                        }
                         if (priority <= LOW_PRIORITY && !castToAbstractCollection && !castToConcreteCollection
-                                && (refJavaClass.isInterface() || refJavaClass.isAbstract()))
+                                && (refJavaClass.isInterface() || refJavaClass.isAbstract())) {
                             priority++;
-                        if (DEBUG)
+                        }
+                        if (DEBUG) {
                             System.out.println(" priority e: " + priority);
-                        if (DEBUG)
+                        }
+                        if (DEBUG) {
                             System.out.println(" ref name: " + refName);
-                        if (methodGen.getName().equals("compareTo"))
+                        }
+                        if (methodGen.getName().equals("compareTo")) {
                             priority++;
-                        else if (methodGen.isPublic() && isParameter && !castName.equals(oldCheck))
+                        } else if (methodGen.isPublic() && isParameter && !castName.equals(oldCheck)) {
                             priority--;
-                        if (wasMethodInvocationWasGeneric && valueNumber.hasFlag(ValueNumber.RETURN_VALUE))
+                        }
+                        if (wasMethodInvocationWasGeneric && valueNumber.hasFlag(ValueNumber.RETURN_VALUE)) {
                             continue;
+                        }
                         if (constantClass != null && pcForConstantClass +20 >= pc && valueNumber.hasFlag(ValueNumber.RETURN_VALUE)
-                                && ClassName.toDottedClassName(constantClass).equals(castName))
+                                && ClassName.toDottedClassName(constantClass).equals(castName)) {
                             priority += 2;
-                        if (DEBUG)
+                        }
+                        if (DEBUG) {
                             System.out.println(" priority f: " + priority);
-                       if (source instanceof MethodAnnotation) {
-                           MethodAnnotation m = (MethodAnnotation) source;
-                           XMethod xm = m.toXMethod();
-                           if (xm != null && (xm.isPrivate() || xm.isStatic()) && priority == Priorities.LOW_PRIORITY)
-                               continue;
-                       }
+                        }
+                        if (source instanceof MethodAnnotation) {
+                            MethodAnnotation m = (MethodAnnotation) source;
+                            XMethod xm = m.toXMethod();
+                            if (xm != null && (xm.isPrivate() || xm.isStatic()) && priority == Priorities.LOW_PRIORITY) {
+                                continue;
+                            }
+                        }
 
-                        if (valueNumber.hasFlag(ValueNumber.RETURN_VALUE) &&  priority < Priorities.LOW_PRIORITY)
+                        if (valueNumber.hasFlag(ValueNumber.RETURN_VALUE) &&  priority < Priorities.LOW_PRIORITY) {
                             priority = Priorities.LOW_PRIORITY;
-                        if (DEBUG)
+                        }
+                        if (DEBUG) {
                             System.out.println(" priority g: " + priority);
+                        }
 
-                        if (DEBUG)
+                        if (DEBUG) {
                             System.out.println(" priority h: " + priority);
+                        }
 
-                        if (catchSize < 15)
+                        if (catchSize < 15) {
                             return;
-                        if (catchSize < 25)
+                        }
+                        if (catchSize < 25) {
                             priority++;
-                        if (DEBUG)
+                        }
+                        if (DEBUG) {
                             System.out.println(" priority i: " + priority);
+                        }
 
 
-                        if (priority < HIGH_PRIORITY)
+                        if (priority < HIGH_PRIORITY) {
                             priority = HIGH_PRIORITY;
+                        }
                         if (priority <= LOW_PRIORITY) {
                             String bug = "BC_UNCONFIRMED_CAST";
-                            if (valueNumber.hasFlag(ValueNumber.RETURN_VALUE) || valueSource instanceof MethodAnnotation)
+                            if (valueNumber.hasFlag(ValueNumber.RETURN_VALUE) || valueSource instanceof MethodAnnotation) {
                                 bug = "BC_UNCONFIRMED_CAST_OF_RETURN_VALUE";
-                            else if (castToConcreteCollection)
+                            } else if (castToConcreteCollection) {
                                 bug = "BC_BAD_CAST_TO_CONCRETE_COLLECTION";
-                            else if (castToAbstractCollection)
+                            } else if (castToAbstractCollection) {
                                 bug = "BC_BAD_CAST_TO_ABSTRACT_COLLECTION";
+                            }
 
                             BugInstance bugInstance = new BugInstance(this, bug, priority)
-                                    .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType)
-                                    .addOptionalAnnotation(valueSource);
+                            .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType)
+                            .addOptionalAnnotation(valueSource);
 
                             accumulator.accumulateBug(bugInstance, sourceLineAnnotation);
                         }
@@ -552,11 +608,12 @@ public class FindBadCast2 implements Detector {
                 }
                 if (isCast && refSig.equals("[Ljava/lang/Object;") && source instanceof MethodAnnotation
                         && ((MethodAnnotation) source).getMethodName().equals("toArray")
-                        && ((MethodAnnotation) source).getMethodSignature().equals("()[Ljava/lang/Object;"))
+                        && ((MethodAnnotation) source).getMethodSignature().equals("()[Ljava/lang/Object;")) {
                     bugReporter.reportBug(new BugInstance(this,  "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY", isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
                     .addClassAndMethod(methodGen, sourceFile)
                     .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(valueSource, source)
                     .addSourceLine(sourceLineAnnotation));
+                }
 
 
             }
