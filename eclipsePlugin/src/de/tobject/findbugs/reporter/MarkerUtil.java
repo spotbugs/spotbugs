@@ -209,15 +209,23 @@ public final class MarkerUtil {
             FieldAnnotation primaryField = bug.getPrimaryField();
             if (primaryField != null && primaryField.getSourceLines() != null) {
                 startLine = primaryField.getSourceLines().getStartLine();
-                if (startLine < 0) {
-                    // We have to provide line number, otherwise editor wouldn't
-                    // show it
-                    startLine = 1;
-                }
-            } else {
+            }
+            if (startLine < 0) {
                 // We have to provide line number, otherwise editor wouldn't
                 // show it
                 startLine = 1;
+            }
+        }
+
+        // "first line of a file" is too simplistic. What if we have inner types?
+        if(primaryLine <= 1 && startLine <= 1 && type instanceof IType){
+            IType iType = (IType) type;
+            try {
+                startLine = getLineStart(iType);
+//                    System.out.println("Fixed start line to: " + startLine + " on " + type.getElementName());
+            } catch (JavaModelException e1) {
+                FindbugsPlugin.getDefault().logException(e1, "Could not find source line for Java type " + type
+                        + "for FindBugs warning: " + bug);
             }
         }
 
@@ -524,11 +532,11 @@ public final class MarkerUtil {
         // remove any markers added by our builder
         // This triggers resource update on IResourceChangeListener's
         // (BugTreeView)
-    	res.deleteMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);
-    	if (res instanceof IProject) {
+        res.deleteMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);
+        if (res instanceof IProject) {
             IProject project = (IProject) res;
             FindbugsPlugin.clearBugCollection(project);
-        }        
+        }
     }
 
     /**
