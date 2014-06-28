@@ -159,7 +159,13 @@ public abstract class ClassName {
         if (i > 0) {
             className = className.substring(i + 1);
         }
-        className = className.replace('$', '.');
+        // to be consistent with the Class.getSimpleName(),
+        // simple class name does not! contain the enclosing class name
+        i = className.lastIndexOf('$');
+        if (i > 0) {
+            className = className.substring(i + 1);
+        }
+        // can be empty!
         return className;
     }
 
