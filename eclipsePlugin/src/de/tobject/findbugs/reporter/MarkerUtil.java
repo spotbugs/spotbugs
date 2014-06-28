@@ -81,7 +81,6 @@ import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -95,12 +94,13 @@ import edu.umd.cs.findbugs.config.ProjectFilterSettings;
  * @author David Hovemeyer
  */
 public final class MarkerUtil {
-
+    // group 1 matches class name for all except anonymous classes,
+    // group 2 matches the number part of the anonymous class
     final static Pattern fullName = Pattern.compile("^(.+?)(([$+][0-9].*)?)");
 
     private static final IMarker[] EMPTY = new IMarker[0];
 
-    private static final int START_LINE_OF_ENCLOSING_TYPE = 1;
+    private static final int DONT_KNOW_LINE = -42;
 
     /**
      * don't instantiate an utility class
@@ -204,28 +204,32 @@ public final class MarkerUtil {
         // If not, we just provide two values - one for Eclipse, another for
         // FindBugs itself.
 
-        int startLine = -1;
-        if (primaryLine <= 0) {
-            FieldAnnotation primaryField = bug.getPrimaryField();
-            if (primaryField != null && primaryField.getSourceLines() != null) {
-                startLine = primaryField.getSourceLines().getStartLine();
-            }
-            if (startLine < 0) {
-                // We have to provide line number, otherwise editor wouldn't
-                // show it
-                startLine = 1;
+        int startLine = DONT_KNOW_LINE;
+
+        // only update if we don't already tried it
+        if(primaryLine != DONT_KNOW_LINE) {
+            // XXX "first line of a file" is too simplistic. What if we have inner types?
+            if (primaryLine <= 1 && type instanceof IType) {
+                IType iType = (IType) type;
+                try {
+                    startLine = getLineStart(iType);
+                    if(startLine > 0) {
+                        if (Reporter.DEBUG) {
+                            System.out.println("4. Fixed start line to: " + startLine + " on " + type.getElementName());
+                        }
+                    }
+                } catch (JavaModelException e1) {
+                    FindbugsPlugin.getDefault().logException(e1, "Could not find source line for Java type " + type
+                            + "for FindBugs warning: " + bug);
+                }
             }
         }
 
-        // "first line of a file" is too simplistic. What if we have inner types?
-        if(primaryLine <= 1 && startLine <= 1 && type instanceof IType){
-            IType iType = (IType) type;
-            try {
-                startLine = getLineStart(iType);
-//                    System.out.println("Fixed start line to: " + startLine + " on " + type.getElementName());
-            } catch (JavaModelException e1) {
-                FindbugsPlugin.getDefault().logException(e1, "Could not find source line for Java type " + type
-                        + "for FindBugs warning: " + bug);
+        if (primaryLine <= 0 && startLine <= 0) {
+            // We have to provide line number, otherwise editor wouldn't show it
+            startLine = 1;
+            if (Reporter.DEBUG) {
+                System.out.println("5. Fixed start line to *default* (1) on " + type);
             }
         }
 
@@ -235,10 +239,10 @@ public final class MarkerUtil {
         } else {
             parameter = new MarkerParameter(bug, resource, primaryLine, primaryLine);
         }
-        if (Reporter.DEBUG) {
-            System.out
-            .println("Creating marker for " + resource.getPath() + ": line " + parameter.primaryLine + bug.getMessage());
-        }
+//        if (Reporter.DEBUG) {
+//            System.out
+//            .println("Creating marker for " + resource.getPath() + ": line " + parameter.primaryLine + bug.getMessage());
+//        }
         return parameter;
     }
 
@@ -273,26 +277,11 @@ public final class MarkerUtil {
     IJavaElement getJavaElement(BugInstance bug, IJavaProject project) throws JavaModelException {
 
         SourceLineAnnotation primarySourceLineAnnotation = bug.getPrimarySourceLineAnnotation();
-        PackageMemberAnnotation packageAnnotation = null;
-        String packageName = null;
-        String qualifiedClassName = null;
-        if (primarySourceLineAnnotation == null) {
-            packageAnnotation = bug.getPrimaryClass();
-            if (packageAnnotation != null) {
-                packageName = packageAnnotation.getPackageName();
-                qualifiedClassName = packageAnnotation.getClassName();
-            }
-        } else {
-            packageName = primarySourceLineAnnotation.getPackageName();
-            qualifiedClassName = primarySourceLineAnnotation.getClassName();
-        }
-        if (qualifiedClassName == null) {
-            return null;
-        }
+        String qualifiedClassName = primarySourceLineAnnotation.getClassName();
 
-        if (Reporter.DEBUG) {
-            System.out.println("Looking up class: " + packageName + ", " + qualifiedClassName);
-        }
+//        if (Reporter.DEBUG) {
+//            System.out.println("Looking up class: " + packageName + ", " + qualifiedClassName);
+//        }
 
         Matcher m = fullName.matcher(qualifiedClassName);
         IType type;
@@ -331,19 +320,16 @@ public final class MarkerUtil {
         // reassign it as it may be changed for inner classes
         primarySourceLineAnnotation = bug.getPrimarySourceLineAnnotation();
 
-        int startLine;
         /*
          * Eclipse can help us find the line number for fields => we trying to
          * add line info for fields here
          */
-        if (primarySourceLineAnnotation != null) {
-            startLine = primarySourceLineAnnotation.getStartLine();
-            if (startLine <= 0 && bug.getPrimaryField() != null) {
-                completeFieldInfo(qualifiedClassName, innerName, type, bug);
-            }
-        } else {
-            if (bug.getPrimaryField() != null) {
-                completeFieldInfo(qualifiedClassName, innerName, type, bug);
+        int startLine = primarySourceLineAnnotation.getStartLine();
+        // TODO don't use "1", use "0" ?
+        if (startLine <= 1 && type != null) {
+            FieldAnnotation primaryField = bug.getPrimaryField();
+            if(primaryField != null) {
+                completeFieldInfo(qualifiedClassName, type, bug, primaryField);
             }
         }
 
@@ -351,24 +337,22 @@ public final class MarkerUtil {
     }
 
     private static boolean hasLineInfo(SourceLineAnnotation annotation) {
-        return annotation != null && annotation.getStartLine() > 0;
+        // XXX don't use "1", use "0" ?
+        return annotation != null && annotation.getStartLine() > 1;
     }
 
-    private static void completeFieldInfo(String qualifiedClassName, String innerName, IType type, BugInstance bug) {
-        FieldAnnotation field = bug.getPrimaryField();
-        if (field == null || type == null) {
-            return;
-        }
+    private static void completeFieldInfo(String qualifiedClassName,
+            @Nonnull IType type, @Nonnull BugInstance bug, @Nonnull FieldAnnotation field) {
 
         IField ifield = type.getField(field.getFieldName());
         ISourceRange sourceRange = null;
-        IScanner scanner = null;
         JavaModelException ex = null;
         try {
             sourceRange = ifield.getNameRange();
         } catch (JavaModelException e) {
             ex = e;
         }
+        IScanner scanner = null;
         try {
             // second try...
             if (sourceRange == null) {
@@ -388,9 +372,13 @@ public final class MarkerUtil {
             return;
         }
         int lineNbr = scanner.getLineNumber(sourceRange.getOffset());
-        lineNbr = lineNbr <= 0 ? 1 : lineNbr;
-        String sourceFileStr = getSourceFileHint(type, qualifiedClassName);
-        field.setSourceLines(new SourceLineAnnotation(qualifiedClassName, sourceFileStr, lineNbr, lineNbr, 0, 0));
+        if(lineNbr > 0){
+            String sourceFileStr = getSourceFileHint(type, qualifiedClassName);
+            field.setSourceLines(new SourceLineAnnotation(qualifiedClassName, sourceFileStr, lineNbr, lineNbr, 0, 0));
+            if (Reporter.DEBUG) {
+                System.out.println("2. Fixed start line to: " + lineNbr + " on " + qualifiedClassName);
+            }
+        }
     }
 
     private static String getSourceFileHint(IType type, String qualifiedClassName) {
@@ -402,19 +390,21 @@ public final class MarkerUtil {
         return sourceFileStr;
     }
 
-    private static void completeInnerClassInfo(String qualifiedClassName, String innerName, @Nonnull IType type, BugInstance bug)
-            throws JavaModelException {
+    private static void completeInnerClassInfo(String qualifiedClassName, String innerName, @Nonnull IType type, BugInstance bug) throws JavaModelException {
         int lineNbr = findChildSourceLine(type, innerName, bug);
-        // should be always first line, if not found
-        lineNbr = lineNbr <= 0 ? 1 : lineNbr;
-        String sourceFileStr = getSourceFileHint(type, qualifiedClassName);
-        if (sourceFileStr != null && sourceFileStr.length() > 0) {
-            bug.addSourceLine(new SourceLineAnnotation(qualifiedClassName, sourceFileStr, lineNbr, lineNbr, 0, 0));
+        if(lineNbr > 0){
+            String sourceFileStr = getSourceFileHint(type, qualifiedClassName);
+            if (sourceFileStr != null && sourceFileStr.length() > 0) {
+                bug.addSourceLine(new SourceLineAnnotation(qualifiedClassName, sourceFileStr, lineNbr, lineNbr, 0, 0));
+                if (Reporter.DEBUG) {
+                    System.out.println("1. Fixed start line to: " + lineNbr + " on " + qualifiedClassName + "$" + innerName);
+                }
+            }
         }
     }
 
     /**
-     * @return start line of given type, or 1 if line could not be found
+     * @return start line of given type, or {@link #DONT_KNOW_LINE} if line could not be found
      */
     private static int getLineStart(IType source) throws JavaModelException {
         ISourceRange range = source.getNameRange();
@@ -425,7 +415,7 @@ public final class MarkerUtil {
         if (scanner != null && range != null) {
             return scanner.getLineNumber(range.getOffset());
         }
-        return START_LINE_OF_ENCLOSING_TYPE;
+        return DONT_KNOW_LINE;
     }
 
     /**
@@ -498,18 +488,18 @@ public final class MarkerUtil {
         if (anon != null) {
             return getLineStart(anon);
         }
-        return START_LINE_OF_ENCLOSING_TYPE;
+        return DONT_KNOW_LINE;
     }
 
-    private static int findInnerClassSourceLine(IJavaElement parentType, String name) throws JavaModelException {
-        String elemName = parentType.getElementName();
+    private static int findInnerClassSourceLine(IJavaElement type, String name) throws JavaModelException {
+        String elemName = type.getElementName();
         if (name.equals(elemName)) {
-            if (parentType instanceof IType) {
-                return getLineStart((IType) parentType);
+            if (type instanceof IType) {
+                return getLineStart((IType) type);
             }
         }
-        if (parentType instanceof IParent) {
-            IJavaElement[] children = ((IParent) parentType).getChildren();
+        if (type instanceof IParent) {
+            IJavaElement[] children = ((IParent) type).getChildren();
             for (int i = 0; i < children.length; i++) {
                 // recursive call
                 int line = findInnerClassSourceLine(children[i], name);
@@ -518,7 +508,7 @@ public final class MarkerUtil {
                 }
             }
         }
-        return START_LINE_OF_ENCLOSING_TYPE;
+        return DONT_KNOW_LINE;
     }
 
     /**
