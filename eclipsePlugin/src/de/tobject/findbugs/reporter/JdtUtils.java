@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -104,6 +103,7 @@ public class JdtUtils {
          *
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
+        @Override
         public int compare(IType m1, IType m2) {
             if (m1 == m2) {
                 return 0;
@@ -167,15 +167,15 @@ public class JdtUtils {
             Integer prio;
             if ((prio = map.get(anonType)) != null) {
                 compilePrio = prio.intValue();
-                if (Reporter.DEBUG) {
-                    System.out.println("Using cache");
-                }
+//                if (Reporter.DEBUG) {
+//                    System.out.println("Using cache");
+//                }
             } else {
                 compilePrio = getAnonCompilePriority(anonType, firstAncestor, topAncestorType, is50OrHigher);
                 map.put(anonType, Integer.valueOf(compilePrio));
-                if (Reporter.DEBUG) {
-                    System.out.println("Calculating value!");
-                }
+//                if (Reporter.DEBUG) {
+//                    System.out.println("Calculating value!");
+//                }
             }
             return compilePrio;
         }
@@ -192,6 +192,7 @@ public class JdtUtils {
          *            should be IType
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
+        @Override
         public int compare(IType o1, IType o2) {
             IType m1 = o1;
             IType m2 = o2;
@@ -335,15 +336,17 @@ public class JdtUtils {
         final AnonymClassComparator classComparator = new AnonymClassComparator(anonType, sourceComparator);
         Collections.sort(anonymous, classComparator);
 
-        if (Reporter.DEBUG) {
-            debugCompilePrio(classComparator);
-        }
+//        if (Reporter.DEBUG) {
+//            debugCompilePrio(classComparator);
+//        }
     }
 
+    /*
     private static void debugCompilePrio(final AnonymClassComparator classComparator) {
         final Map<IType, Integer> map = classComparator.map;
         Comparator<IType> prioComp = new Comparator<IType>() {
 
+            @Override
             public int compare(IType e1, IType e2) {
                 int result = map.get(e2).compareTo(map.get(e1));
                 if (result == 0) {
@@ -361,6 +364,7 @@ public class JdtUtils {
             System.out.println(map.get(key) + " : " + key);
         }
     }
+*/
 
     private static int getAnonCompilePriority(IJavaElement elt, IJavaElement firstAncestor, IJavaElement topAncestor,
             boolean is50OrHigher) {

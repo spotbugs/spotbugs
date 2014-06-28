@@ -66,7 +66,7 @@ import edu.umd.cs.findbugs.log.Profiler;
 public class Reporter extends AbstractBugReporter implements FindBugsProgress {
 
     /** Controls debugging for the reporter */
-    public static boolean DEBUG = Boolean.getBoolean("findbugsPlugin.debug");
+    public static boolean DEBUG;
 
     private final IJavaProject project;
 
@@ -86,15 +86,13 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
      *
      * @param project
      *            the project whose classes are being analyzed for bugs
-     * @param findBugsProject
-     *            TODO
      * @param monitor
      *            progress monitor
      */
     public Reporter(IJavaProject project, Project findBugsProject, IProgressMonitor monitor) {
         super();
         if (DEBUG) {
-            printToStream("Eclipse FindBugs plugin debugging enabled");
+            printToStream("Eclipse FindBugs plugin REPORTER debugging enabled");
         }
         this.monitor = monitor;
         this.project = project;
@@ -145,6 +143,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
         List<Error> errorList = new ArrayList<Error>(getQueuedErrors());
         if (errorList.size() > 0) {
             Collections.sort(errorList, new Comparator<Error>() {
+                @Override
                 public int compare(Error o1, Error o2) {
                     return o1.getSequence() - o2.getSequence();
                 }
@@ -172,6 +171,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
         }
     }
 
+    @Override
     public void finish() {
         if (DEBUG) {
             System.out.println("Finish: Found " + bugCount + " bugs."); //$NON-NLS-1$//$NON-NLS-2$
@@ -231,16 +231,18 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
      *
      * @return The collection that hold the bugs found in this project.
      */
+    @Override
     public SortedBugCollection getBugCollection() {
         return bugCollection;
     }
 
+    @Override
     public void observeClass(ClassDescriptor classDescriptor) {
         String className = classDescriptor.getDottedClassName();
 
-        if (DEBUG) {
-            System.out.println("Observing class: " + className); //$NON-NLS-1$
-        }
+//        if (DEBUG) {
+//            System.out.println("Observing class: " + className); //$NON-NLS-1$
+//        }
 
         if (monitor.isCanceled()) {
             // causes break in FindBugs main loop
@@ -274,18 +276,22 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
         return this;
     }
 
+    @Override
     public void finishArchive() {
         // printToStream("archive finished");
     }
 
+    @Override
     public void finishClass() {
         // noop
     }
 
+    @Override
     public void finishPerClassAnalysis() {
         // printToStream("finish per class analysis");
     }
 
+    @Override
     public void reportNumberOfArchives(int numArchives) {
         printToStream("\nStarting FindBugs analysis on file(s) from: " + project.getElementName());
         List<String> classpathEntryList = new ArrayList<String>(bugCollection.getProject().getAuxClasspathEntryList());
@@ -296,11 +302,13 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
         printToStream("\nArchives to analyze: " + numArchives);
     }
 
+    @Override
     public void startAnalysis(int numClasses) {
         pass++;
         printToStream("Start pass: " + pass + " on " + numClasses + " classes");
     }
 
+    @Override
     public void predictPassCount(int[] classesPerPass) {
         int expectedWork = 0;
         for (int i = 0; i < classesPerPass.length; i++) {
@@ -312,6 +320,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
         }
     }
 
+    @Override
     public void startArchive(String name) {
         if (DEBUG) {
             printToStream("start archive: " + name);
