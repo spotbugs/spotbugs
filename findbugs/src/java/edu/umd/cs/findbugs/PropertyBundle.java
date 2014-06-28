@@ -46,12 +46,13 @@ public class PropertyBundle {
 
         Rewriter() {
             Pattern p = null;
-            if (urlRewritePatternString != null && urlRewriteFormat != null)
+            if (urlRewritePatternString != null && urlRewriteFormat != null) {
                 try {
                     p = Pattern.compile(urlRewritePatternString);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     assert true;
                 }
+            }
 
             urlRewritePattern = p;
         }
@@ -62,8 +63,9 @@ public class PropertyBundle {
     Rewriter getRewriter() {
         if (rewriter == null) {
             synchronized (this) {
-                if (rewriter == null)
+                if (rewriter == null) {
                     rewriter = new Rewriter();
+                }
             }
         }
         return rewriter;
@@ -123,7 +125,7 @@ public class PropertyBundle {
     /**
      * Get boolean property, returning false if a security manager prevents us
      * from accessing system properties
-     * 
+     *
      * @return true if the property exists and is set to true
      */
     public boolean getBoolean(String name) {
@@ -134,8 +136,9 @@ public class PropertyBundle {
         boolean result = defaultValue;
         try {
             String value = getProperty(name);
-            if (value == null)
+            if (value == null) {
                 return defaultValue;
+            }
             result = toBoolean(value);
         } catch (IllegalArgumentException e) {
         } catch (NullPointerException e) {
@@ -157,8 +160,9 @@ public class PropertyBundle {
     public int getInt(String name, int defaultValue) {
         try {
             String value = getProperty(name);
-            if (value != null)
+            if (value != null) {
                 return Integer.decode(value);
+            }
         } catch (Exception e) {
             assert true;
         }
@@ -173,8 +177,9 @@ public class PropertyBundle {
     public String getOSDependentProperty(String name) {
         String osDependentName = name + SystemProperties.OS_NAME;
         String value = getProperty(osDependentName);
-        if (value != null)
+        if (value != null) {
             return value;
+        }
         return getProperty(name);
     }
 
@@ -186,8 +191,9 @@ public class PropertyBundle {
     public String getProperty(String name) {
         try {
             String value = SystemProperties.getProperty(name);
-            if (value != null)
+            if (value != null) {
                 return value;
+            }
             return properties.getProperty(name);
         } catch (Exception e) {
             return null;
@@ -213,17 +219,20 @@ public class PropertyBundle {
      */
     public String getProperty(String name, String defaultValue) {
         String value = getProperty(name);
-        if (value != null)
+        if (value != null) {
             return value;
+        }
         return defaultValue;
     }
 
     public String rewriteURLAccordingToProperties(String u) {
-        if (getRewriter().urlRewritePattern == null || getRewriter().urlRewriteFormat == null)
+        if (getRewriter().urlRewritePattern == null || getRewriter().urlRewriteFormat == null) {
             return u;
+        }
         Matcher m = getRewriter().urlRewritePattern.matcher(u);
-        if (!m.matches())
+        if (!m.matches()) {
             return u;
+        }
         String result = String.format(getRewriter().urlRewriteFormat, m.group(1));
         return result;
     }

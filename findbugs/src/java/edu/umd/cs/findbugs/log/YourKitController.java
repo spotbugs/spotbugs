@@ -57,18 +57,20 @@ public class YourKitController {
     }
 
     public void advanceGeneration(String name) {
-        if (controller == null)
+        if (controller == null) {
             return;
+        }
         try {
             advanceGeneration.invoke(controller, name);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             assert true;
         }
     }
 
     public long getStatus() {
-        if (getStatus == null)
+        if (getStatus == null) {
             return 0;
+        }
         try {
             return (Long) getStatus.invoke(controller);
         } catch (RuntimeException e) {
@@ -80,14 +82,15 @@ public class YourKitController {
 
     @SuppressFBWarnings("DM_GC")
     public void captureMemorySnapshot() {
-        if (controller == null)
+        if (controller == null) {
             return;
+        }
         try {
             System.gc();
             captureMemorySnapshot.invoke(controller);
         } catch (RuntimeException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             assert true;
         }
     }

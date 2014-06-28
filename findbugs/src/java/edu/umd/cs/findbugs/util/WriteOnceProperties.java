@@ -7,15 +7,25 @@ import java.util.Properties;
 public class WriteOnceProperties extends Properties {
 
     private static final long serialVersionUID = 1L;
+    private final Map<String, PropertyReadAt> propertReadAt = new HashMap<String, PropertyReadAt>();
 
     static class PropertyReadAt extends Exception {
         private static final long serialVersionUID = 1L;
     }
 
-    private final Map<String, PropertyReadAt> propertReadAt = new HashMap<String, PropertyReadAt>();
-
     private WriteOnceProperties(Properties initialValue) {
         super.putAll(initialValue);
+    }
+
+    @Override
+    public final synchronized int hashCode() {
+        return super.hashCode();
+    }
+
+    /* overridden to avoid EQ_DOESNT_OVERRIDE_EQUALS */
+    @Override
+    public final synchronized boolean equals(Object o) {
+        return super.equals(o);
     }
 
     @Override

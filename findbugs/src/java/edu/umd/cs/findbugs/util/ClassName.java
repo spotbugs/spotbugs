@@ -129,7 +129,7 @@ public abstract class ClassName {
      * @return the same class name in dotted format
      */
     @DottedClassName
-    @SuppressFBWarnings("TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK")
+    @SuppressFBWarnings("TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK")
     public static String toDottedClassName(@SlashedClassName(when = When.UNKNOWN) String className) {
         if (className.indexOf('/') >= 0) {
             return DescriptorFactory.canonicalizeString(className.replace('/', '.'));

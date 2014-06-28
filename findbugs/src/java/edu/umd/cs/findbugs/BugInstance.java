@@ -440,7 +440,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Get the primary class annotation, which indicates where the bug occurs.
      */
-    @CheckForNull
     public ClassAnnotation getPrimaryClass() {
         return findPrimaryAnnotationOfType(ClassAnnotation.class);
     }
