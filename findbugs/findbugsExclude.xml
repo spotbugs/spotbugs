@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<FindBugsFilter>
+<FindBugsFilter xmlns="http://findbugs.sourceforge.net/filter/3.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://findbugs.sourceforge.net/filter/3.0.0 https://findbugs.googlecode.com/git/findbugs/etc/findbugsfilter.xsd">
 
   <Match>
     <Bug pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED,NM_CLASS_NOT_EXCEPTION,EI_EXPOSE_REP,EI_EXPOSE_REP2,MS_PKGPROTECT,MS_MUTABLE_ARRAY"/>
@@ -21,88 +23,50 @@
     <Bug pattern="DM_EXIT"/>
   </Match>
   <Match>
-    <Priority value="3"/>
-  </Match>
-  <Match>
     <BugCode name="Se"/>
     <Class name="~edu.umd.cs.findbugs.gui.*"/>
   </Match>
   <Match>
     <Class name="~edu.umd.cs.findbugs.*Test"/>
   </Match>
+
   <Match>
-    <BugCode name="Se"/>
+    <Or>
+        <BugCode name="Se"/>
+        <Bug pattern="SE_NO_SERIALVERSIONID"/>
+    </Or>
     <Class name="~edu.umd.cs.findbugs.gui2.*"/>
   </Match>
 
-      <Match>
-        <Class name="edu.umd.cs.findbugs.ba.DFSEdgeTypes"/>
-        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_INTERFACE"/>
-      </Match>
-      <Match>
-        <Class name="edu.umd.cs.findbugs.ba.DepthFirstSearch"/>
-        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
-      </Match>
-      <Match>
-        <Class name="edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch"/>
-        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
-      </Match>
- <!--
-      <Match>
-        <Class name="edu.umd.cs.findbugs.detect.IncompatMask"/>
-        <Bug pattern="SF_SWITCH_FALLTHROUGH"/>
-      </Match>
-      <Match>
-        <Class name="edu.umd.cs.findbugs.detect.TestingGround"/>
-        <Bug pattern="URF_UNREAD_FIELD"/>
-      </Match>
-      <Match>
-        <Class name="edu.umd.cs.findbugs.jaif.JAIFToken"/>
-        <Bug pattern="URF_UNREAD_FIELD"/>
-      </Match>
+  <Match>
+    <Class name="edu.umd.cs.findbugs.ba.DFSEdgeTypes" />
+    <Bug pattern="NM_SAME_SIMPLE_NAME_AS_INTERFACE" />
+  </Match>
+  <Match>
+    <Class name="edu.umd.cs.findbugs.ba.DepthFirstSearch" />
+    <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS" />
+  </Match>
+  <Match>
+    <Class name="edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch" />
+    <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS" />
+  </Match>
+
    <Match>
-        <Bug pattern="OS_OPEN_STREAM"/>
-        <Class name="edu.umd.cs.findbugs.util.Util"/>
-      </Match>
-      <Match>
-        <Bug pattern="URF_UNREAD_FIELD"/>
-        <Class name="edu.umd.cs.findbugs.classfile.engine.ClassParser"/>
-      </Match>
-      <Match>
-        <Bug pattern="URF_UNREAD_FIELD"/>
-        <Class name="edu.umd.cs.findbugs.classfile.engine.ClassParserUsingASM$1$2"/>
-      </Match>
-  <And>
-    <Bug pattern="OBL_UNSATISFIED_OBLIGATION"/>
-    <Class name="edu.umd.cs.findbugs.gui2.MainFrame"/>
-  </And>
-  <And>
-    <Bug pattern="OBL_UNSATISFIED_OBLIGATION"/>
-    <Class name="edu.umd.cs.findbugs.ml.GenerateUIDs"/>
-  </And>
-  <And>
-    <Bug pattern="OBL_UNSATISFIED_OBLIGATION"/>
-    <Class name="edu.umd.cs.findbugs.userAnnotations.ri.XMLFileUserAnnotationPlugin"/>
-  </And>
-  <Match>
-    <Bug pattern="OBL_UNSATISFIED_OBLIGATION"/>
-    <Class name="edu.umd.cs.findbugs.util.Util"/>
+   <And>
+    <Priority value="3"/>
+    <Or>
+        <Bug pattern="DM_CONVERT_CASE"/>
+        <Bug pattern="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"/>
+        <Bug pattern="SE_NO_SERIALVERSIONID" />
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON" />
+        <Bug pattern="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE" />
+        <Bug pattern="BC_UNCONFIRMED_CAST" />
+        <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" />
+        <Bug pattern="NM_CONFUSING" />
+        <Rank value="20"/>
+    </Or>
+   </And>
   </Match>
-  <Match>
-    <Bug pattern="OBL_UNSATISFIED_OBLIGATION"/>
-    <Class name="edu.umd.cs.findbugs.workflow.RejarClassesForAnalysis"/>
-  </Match>
-  <Match>
-    <Bug pattern="OBL_UNSATISFIED_OBLIGATION"/>
-    <Class name="edu.umd.cs.findbugs.xml.OutputStreamXMLOutput"/>
-  </Match>
-  <Match>
-    <Bug pattern="URF_UNREAD_FIELD"/>
-    <Class name="edu.umd.cs.findbugs.classfile.engine.ClassParserUsingASM$1"/>
-  </Match>
-  <Match>
-    <Bug pattern="URF_UNREAD_FIELD"/>
-    <Class name="edu.umd.cs.findbugs.userAnnotations.SimpleWebPlugin"/>
-  </Match>
-  -->
+
 </FindBugsFilter>
