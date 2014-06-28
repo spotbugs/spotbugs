@@ -435,6 +435,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Get the primary class annotation, which indicates where the bug occurs.
      */
+    @CheckForNull
     public ClassAnnotation getPrimaryClass() {
         return findPrimaryAnnotationOfType(ClassAnnotation.class);
     }
@@ -442,6 +443,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Get the primary method annotation, which indicates where the bug occurs.
      */
+    @CheckForNull
     public MethodAnnotation getPrimaryMethod() {
         return findPrimaryAnnotationOfType(MethodAnnotation.class);
     }
@@ -449,6 +451,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     /**
      * Get the primary method annotation, which indicates where the bug occurs.
      */
+    @CheckForNull
     public FieldAnnotation getPrimaryField() {
         return findPrimaryAnnotationOfType(FieldAnnotation.class);
     }
@@ -475,6 +478,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      * @return the first matching BugAnnotation of the given type, or null if
      *         there is no such BugAnnotation
      */
+    @CheckForNull
     private <T extends BugAnnotation> T findPrimaryAnnotationOfType(Class<T> cls) {
         T firstMatch = null;
         for (Iterator<BugAnnotation> i = annotationIterator(); i.hasNext();) {

@@ -109,6 +109,12 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     public static final String DESCRIPTION_LOOP_BOTTOM = "SOURCE_LINE_LOOP_BOTTOM";
 
+    static final ThreadLocal<Project> myProject = new ThreadLocal<Project>();
+
+    static final ThreadLocal<String> relativeSourceBase = new ThreadLocal<String>();
+
+    private static final String ELEMENT_NAME = "SourceLine";
+
     /**
      * Constructor.
      *
@@ -617,16 +623,16 @@ public class SourceLineAnnotation implements BugAnnotation {
         return code.getLineNumberTable();
     }
 
-    /**
-     * Get the class name.
-     */
-    public @DottedClassName String getClassName() {
+    @Nonnull
+    @DottedClassName
+    public String getClassName() {
         return className;
     }
 
     /**
      * Get the source file name.
      */
+    @Nonnull
     public String getSourceFile() {
         return sourceFile;
     }
@@ -656,9 +662,6 @@ public class SourceLineAnnotation implements BugAnnotation {
         return className.substring(lastDot + 1);
     }
 
-    /**
-     * Get the package name.
-     */
     public String getPackageName() {
         int lastDot = className.lastIndexOf('.');
         if (lastDot < 0) {
@@ -844,16 +847,10 @@ public class SourceLineAnnotation implements BugAnnotation {
      * ----------------------------------------------------------------------
      */
 
-    private static final String ELEMENT_NAME = "SourceLine";
-
     @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         writeXML(xmlOutput, false, false);
     }
-
-    static final ThreadLocal<Project> myProject = new ThreadLocal<Project>();
-
-    static final ThreadLocal<String> relativeSourceBase = new ThreadLocal<String>();
 
     public static void generateRelativeSource(File relativeSourceBase, Project project) {
         try {
@@ -913,7 +910,6 @@ public class SourceLineAnnotation implements BugAnnotation {
                 } catch (IOException e) {
                     assert true;
                 }
-
             }
         }
 
@@ -945,17 +941,10 @@ public class SourceLineAnnotation implements BugAnnotation {
         return sourcePath;
     }
 
-    /**
-     * @param synthetic
-     *            The synthetic to set.
-     */
     public void setSynthetic(boolean synthetic) {
         this.synthetic = synthetic;
     }
 
-    /**
-     * @return Returns the synthetic.
-     */
     public boolean isSynthetic() {
         return synthetic;
     }
@@ -1034,4 +1023,3 @@ public class SourceLineAnnotation implements BugAnnotation {
         return toString();
     }
 }
-// vim:ts=4
