@@ -2800,7 +2800,7 @@ Don't do it.
   </BugPattern>
   <BugPattern type="EQ_DOESNT_OVERRIDE_EQUALS">
     <ShortDescription>Class doesn't override equals in superclass</ShortDescription>
-    <LongDescription>{0} doesn't override {1.givenClass}</LongDescription>
+    <LongDescription>{0} doesn't override {2.givenClass}</LongDescription>
     <Details>
 <![CDATA[
   <p> This class extends a class that defines an equals method and adds fields, but doesn't

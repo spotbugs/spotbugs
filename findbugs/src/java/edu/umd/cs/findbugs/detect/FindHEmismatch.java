@@ -41,6 +41,7 @@ import edu.umd.cs.findbugs.Lookup;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -325,8 +326,12 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
                 && !inheritedEquals.getClassDescriptor().getSimpleName().contains("Abstract")
                 && !inheritedEquals.getClassDescriptor().getClassName().equals("java/lang/Enum")) {
 
-            BugInstance bug = new BugInstance(this, "EQ_DOESNT_OVERRIDE_EQUALS", NORMAL_PRIORITY).addClass(this)
-                    .addMethod(inheritedEquals).describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
+            BugInstance bug = new BugInstance(this, "EQ_DOESNT_OVERRIDE_EQUALS", NORMAL_PRIORITY);
+
+            // create annotation pointing to this class source line 1, otherwise the primary annotation shows parent class
+            SourceLineAnnotation sourceLine = new SourceLineAnnotation(getDottedClassName(), obj.getSourceFileName(), 1, 1, 0, 0);
+            bug.addClass(getDottedClassName()).add(sourceLine);
+            bug.addMethod(inheritedEquals).describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
             bugReporter.reportBug(bug);
         }
     }
