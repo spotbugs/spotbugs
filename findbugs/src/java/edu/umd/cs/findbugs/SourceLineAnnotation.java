@@ -573,6 +573,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      * @return the SourceLineAnnotation, or null if we do not have line number
      *         information for the instruction
      */
+    @Nonnull
     public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, MethodGen methodGen, String sourceFile,
             @Nonnull InstructionHandle handle) {
         LineNumberTable table = methodGen.getLineNumberTable(methodGen.getConstantPool());

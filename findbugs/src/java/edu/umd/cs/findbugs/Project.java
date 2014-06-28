@@ -1131,6 +1131,7 @@ public class Project implements XMLWriteable {
         this.suppressionFilter = suppressionFilter;
     }
 
+    @Nonnull
     public Filter getSuppressionFilter() {
         return suppressionFilter;
     }
