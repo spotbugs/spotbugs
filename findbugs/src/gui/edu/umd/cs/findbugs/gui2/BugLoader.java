@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import static java.util.Objects.requireNonNull;
+
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
@@ -87,7 +89,7 @@ public class BugLoader {
      * @throws IOException
      */
     public static BugCollection doAnalysis(@Nonnull Project p, FindBugsProgress progressCallback) throws IOException,
-            InterruptedException {
+    InterruptedException {
         StringWriter stringWriter = new StringWriter();
         BugCollectionBugReporter pcb = new BugCollectionBugReporter(p, new PrintWriter(stringWriter, true));
         pcb.setPriorityThreshold(Priorities.NORMAL_PRIORITY);
@@ -156,13 +158,9 @@ public class BugLoader {
         return col;
     }
 
-    /**
-     * @param col
-     */
     private static void initiateCommunication(SortedBugCollection col) {
         Cloud cloud = col.getCloud();
-        if (cloud != null)
-            cloud.initiateCommunication();
+        cloud.initiateCommunication();
     }
 
     public static @CheckForNull
@@ -183,18 +181,21 @@ public class BugLoader {
             initiateCommunication(col);
             addDeadBugMatcher(col);
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             String msg = SystemProperties.getOSDependentProperty("findbugs.unableToLoadViaURL");
-            if (msg == null)
+            if (msg == null) {
                 msg = e.getMessage();
-            else try {
-                msg = String.format(msg, url);
-            } catch (Exception e2) {
-                msg = e.getMessage();
+            } else {
+                try {
+                    msg = String.format(msg, url);
+                } catch (Exception e2) {
+                    msg = e.getMessage();
+                }
             }
             JOptionPane.showMessageDialog(mainFrame, "Could not read " + url + "\n" + msg);
-            if (SystemProperties.getBoolean("findbugs.failIfUnableToLoadViaURL"))
+            if (SystemProperties.getBoolean("findbugs.failIfUnableToLoadViaURL")) {
                 System.exit(1);
+            }
         }
         MainFrame.getInstance().setProjectAndBugCollectionInSwingThread(project, col);
         return col;
@@ -204,11 +205,9 @@ public class BugLoader {
         if (bugCollection == null  || !bugCollection.hasDeadBugs()) {
             return;
         }
-            
+
         Filter suppressionMatcher = bugCollection.getProject().getSuppressionFilter();
-        if (suppressionMatcher != null) {
-            suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
-        }
+        suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
     }
 
     public static @CheckForNull
@@ -249,8 +248,9 @@ public class BugLoader {
             // This is done by FBFileChooser.
             chooser.setMultiSelectionEnabled(true);
             chooser.setDialogTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.choose_xmls_ttl", "Choose All XML's To Combine"));
-            if (chooser.showOpenDialog(MainFrame.getInstance()) == JFileChooser.CANCEL_OPTION)
+            if (chooser.showOpenDialog(MainFrame.getInstance()) == JFileChooser.CANCEL_OPTION) {
                 return null;
+            }
 
             SortedBugCollection conglomeration = new SortedBugCollection();
             conglomeration.readXML(chooser.getSelectedFiles()[0]);
@@ -260,11 +260,11 @@ public class BugLoader {
                 SortedBugCollection col = new SortedBugCollection();
                 col.readXML(f);
                 conglomeration = (SortedBugCollection) update.mergeCollections(conglomeration, col, false, false);// False
-                                                                                                                  // means
-                                                                                                                  // dont
-                                                                                                                  // show
-                                                                                                                  // dead
-                                                                                                                  // bugs
+                // means
+                // dont
+                // show
+                // dead
+                // bugs
             }
 
             return conglomeration;
@@ -287,17 +287,17 @@ public class BugLoader {
      */
     public static @CheckForNull
     BugCollection doAnalysis(@Nonnull Project p) {
-        if (p == null)
-            throw new NullPointerException("null project");
+        requireNonNull(p, "null project");
 
         RedoAnalysisCallback ac = new RedoAnalysisCallback();
 
         AnalyzingDialog.show(p, ac, true);
 
-        if (ac.finished)
+        if (ac.finished) {
             return ac.getBugCollection();
-        else
+        } else {
             return null;
+        }
 
     }
 
@@ -310,29 +310,29 @@ public class BugLoader {
      */
     public static @CheckForNull
     BugCollection redoAnalysisKeepComments(@Nonnull Project p) {
-        if (p == null)
-            throw new NullPointerException("null project");
-        
+        requireNonNull(p, "null project");
+
         BugCollection current = MainFrame.getInstance().getBugCollection();
-        
+
         Update update = new Update();
 
         RedoAnalysisCallback ac = new RedoAnalysisCallback();
 
         AnalyzingDialog.show(p, ac, true);
 
-        if (!ac.finished)
+        if (!ac.finished) {
             return null;
-        if (current == null)
+        }
+        if (current == null) {
             current =  ac.getBugCollection();
-        else {
+        } else {
             current =  update.mergeCollections(current, ac.getBugCollection(), true, false);
             if (current.hasDeadBugs()) {
                 addDeadBugMatcher(current);
             }
         }
-       return current;
-       
+        return current;
+
 
     }
 

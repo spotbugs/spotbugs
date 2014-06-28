@@ -187,7 +187,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
         private final BitSet instructionSet;
 
-        private final CFG cfg;
+        private final CFG cfgSub;
 
         private final IdentityHashMap<InstructionHandle, BasicBlock> blockMap;
 
@@ -210,7 +210,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         public Subroutine(InstructionHandle start) {
             this.start = start;
             this.instructionSet = new BitSet();
-            this.cfg = new CFG();
+            this.cfgSub = new CFG();
             this.blockMap = new IdentityHashMap<InstructionHandle, BasicBlock>();
             this.escapeTargetListMap = new IdentityHashMap<BasicBlock, List<EscapeTarget>>();
             this.returnBlockSet = new BitSet();
@@ -230,7 +230,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
          * Allocate a new basic block in the subroutine.
          */
         public BasicBlock allocateBasicBlock() {
-            return cfg.allocate();
+            return cfgSub.allocate();
         }
 
         /**
@@ -258,14 +258,14 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
          * Get the entry block for the subroutine's CFG.
          */
         public BasicBlock getEntry() {
-            return cfg.getEntry();
+            return cfgSub.getEntry();
         }
 
         /**
          * Get the exit block for the subroutine's CFG.
          */
         public BasicBlock getExit() {
-            return cfg.getExit();
+            return cfgSub.getExit();
         }
 
         /**
@@ -280,7 +280,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
          * Get the subroutine's CFG.
          */
         public CFG getCFG() {
-            return cfg;
+            return cfgSub;
         }
 
         /**
@@ -293,8 +293,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
          */
         public void addInstruction(InstructionHandle handle) throws CFGBuilderException {
             int position = handle.getPosition();
-            if (usedInstructionSet.get(position))
+            if (usedInstructionSet.get(position)) {
                 throw new CFGBuilderException("Instruction " + handle + " visited in multiple subroutines");
+            }
             instructionSet.set(position);
             usedInstructionSet.set(position);
         }
@@ -324,8 +325,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
                 // Block is an exception handler?
                 CodeExceptionGen exceptionGen = exceptionHandlerMap.getHandlerForStartInstruction(start);
-                if (exceptionGen != null)
+                if (exceptionGen != null) {
                     block.setExceptionGen(null, exceptionGen);
+                }
 
                 addItem(new WorkListItem(start, block));
             }
@@ -425,12 +427,13 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
          */
         public void addEdge(BasicBlock sourceBlock, BasicBlock destBlock, @Edge.Type int edgeType) {
             if (VERIFY_INTEGRITY) {
-                if (destBlock.isExceptionHandler() && edgeType != HANDLED_EXCEPTION_EDGE)
+                if (destBlock.isExceptionHandler() && edgeType != HANDLED_EXCEPTION_EDGE) {
                     throw new IllegalStateException("In method " + SignatureConverter.convertMethodSignature(methodGen)
                             + ": exception handler " + destBlock.getFirstInstruction() + " reachable by non exception edge type "
                             + edgeType);
+                }
             }
-            cfg.createEdge(sourceBlock, destBlock, edgeType);
+            cfgSub.createEdge(sourceBlock, destBlock, edgeType);
         }
 
         /**
@@ -442,8 +445,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
          */
         public Iterator<EscapeTarget> escapeTargetIterator(BasicBlock sourceBlock) {
             List<EscapeTarget> escapeTargetList = escapeTargetListMap.get(sourceBlock);
-            if (escapeTargetList == null)
+            if (escapeTargetList == null) {
                 escapeTargetList = Collections.emptyList();
+            }
             return escapeTargetList.iterator();
         }
     }
@@ -505,10 +509,10 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
         /**
          * Add a basic block to the inlining work list.
-         */
+         *
         public void addItem(BasicBlock item) {
             workList.add(item);
-        }
+        }*/
 
         /**
          * Are there more work list items?
@@ -562,8 +566,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
             Context callerContext = caller;
 
             while (callerContext != null) {
-                if (callerContext.subroutine == this.subroutine)
+                if (callerContext.subroutine == this.subroutine) {
                     throw new CFGBuilderException("JSR recursion detected!");
+                }
                 callerContext = callerContext.caller;
             }
         }
@@ -617,8 +622,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         } catch (CheckedAnalysisException e) {
             AnalysisContext.logError("Unable to generate exceptionSetFactory for " + descriptor, e);
         }
-        
-        
+
+
         this.exceptionHandlerMap = new ExceptionHandlerMap(methodGen, merger);
         this.usedInstructionSet = new BitSet();
         this.jsrSubroutineMap = new IdentityHashMap<InstructionHandle, Subroutine>();
@@ -627,8 +632,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
     public int getIndex(FieldDescriptor f) {
         Integer i = addedFields.get(f);
-        if (i != null)
+        if (i != null) {
             return i;
+        }
         int index = cpg.addFieldref(f.getSlashedClassName(), f.getName(), f.getSignature());
         addedFields.put(f, index);
         return index;
@@ -650,24 +656,28 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                     FieldDescriptor field = invoked.getAccessMethodForField();
                     if (field != null) {
                         boolean isSetter = signature.endsWith("V");
-                            Instruction replacement;
-                            int index = getIndex(field);
-                            if (field.isStatic()) {
-                                if (isSetter)
-                                    replacement = new PUTSTATIC(index);
-                                else
-                                    replacement = new GETSTATIC(index);
+                        Instruction replacement;
+                        int index = getIndex(field);
+                        if (field.isStatic()) {
+                            if (isSetter) {
+                                replacement = new PUTSTATIC(index);
                             } else {
-                                if (isSetter)
-                                    replacement = new PUTFIELD(index);
-                                else
-                                    replacement = new GETFIELD(index);
+                                replacement = new GETSTATIC(index);
                             }
-                            head.swapInstruction(replacement);
+                        } else {
+                            if (isSetter) {
+                                replacement = new PUTFIELD(index);
+                            } else {
+                                replacement = new GETFIELD(index);
+                            }
+                        }
+                        head.swapInstruction(replacement);
+                        /*
                             if (false)
                                 System.out.println("Substituting " + (isSetter ? "set" : "get") + " of " + field + " for call of "
                                     + invoked + " in " + methodGen.getClassName() + "." + methodGen.getName()
                                     + methodGen.getSignature());
+                         */
 
                     }
 
@@ -679,8 +689,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                 InstructionHandle next = head.getNext();
                 if (target.equals(next)) {
                     int consumed = ii.consumeStack(methodGen.getConstantPool());
-                    if (consumed != 1 && consumed != 2)
+                    if (consumed != 1 && consumed != 2) {
                         throw new IllegalStateException();
+                    }
                     head.swapInstruction(consumed == 1 ? new POP() : new POP2());
                 }
 
@@ -689,14 +700,22 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                 IfInstruction ii = (IfInstruction) i;
                 InstructionHandle target = ii.getTarget();
                 InstructionHandle next1 = head.getNext(); // ICONST
-                if (next1 == null) break;
+                if (next1 == null) {
+                    break;
+                }
                 if (next1.getInstruction() instanceof ICONST) {
                     InstructionHandle next2 = next1.getNext(); // GOTO
-                    if (next2 == null) break;
+                    if (next2 == null) {
+                        break;
+                    }
                     InstructionHandle next3 = next2.getNext(); // ICONST
-                    if (next3== null) break;
+                    if (next3== null) {
+                        break;
+                    }
                     InstructionHandle next4 = next3.getNext();
-                    if (next4 == null) break;
+                    if (next4 == null) {
+                        break;
+                    }
                     if (target.equals(next3)  && next2.getInstruction() instanceof GOTO
                             && next3.getInstruction() instanceof ICONST && next1.getTargeters().length == 0
                             && next2.getTargeters().length == 0 && next3.getTargeters().length == 1
@@ -735,16 +754,16 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                         // need to update
                         head.swapInstruction(new NOP());
                         IfInstruction ifTest = (IfInstruction) check;
-                        if (check instanceof IF_ACMPNE)
+                        if (check instanceof IF_ACMPNE) {
                             next2.swapInstruction(new IFNONNULL(ifTest.getTarget()));
-                        else
+                        } else {
                             next2.swapInstruction(new IFNULL(ifTest.getTarget()));
+                        }
                     }
                 }
             }
             head = head.getNext();
         }
-
     }
 
     @Override
@@ -757,8 +776,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         // Build top level subroutine and all JSR subroutines
         while (!subroutineWorkList.isEmpty()) {
             Subroutine subroutine = subroutineWorkList.removeFirst();
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Starting subroutine " + subroutine.getStartInstruction());
+            }
             build(subroutine);
         }
 
@@ -772,8 +792,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         InstructionList il = new InstructionList();
         entryBlock.addInstruction(il.append(new NOP()));
 
-        if (VERIFY_INTEGRITY)
+        if (VERIFY_INTEGRITY) {
             cfg.checkIntegrity();
+        }
 
         if (true) {
             cfg.checkIntegrity();
@@ -815,19 +836,22 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
             // Add exception handler block (ETB) for exception-throwing
             // instructions
             if (isPEI(handle)) {
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("ETB block " + basicBlock.getLabel() + " for " + handle);
+                }
                 handleExceptions(subroutine, handle, basicBlock);
                 BasicBlock body = subroutine.allocateBasicBlock();
                 subroutine.addEdge(basicBlock, body, FALL_THROUGH_EDGE);
                 basicBlock = body;
             }
 
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("BODY block " + basicBlock.getLabel() + " for " + handle);
+            }
 
-            if (!basicBlock.isEmpty())
+            if (!basicBlock.isEmpty()) {
                 throw new IllegalStateException("Block isn't empty!");
+            }
 
             // Add instructions until we get to the end of the block
             boolean endOfBasicBlock = false;
@@ -835,8 +859,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                 Instruction ins = handle.getInstruction();
 
                 // Add the instruction to the block
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("BB " + basicBlock.getLabel() + ": adding" + handle);
+                }
                 basicBlock.addInstruction(handle);
                 subroutine.addInstruction(handle);
 
@@ -893,8 +918,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
                 if (!endOfBasicBlock) {
                     InstructionHandle next = handle.getNext();
-                    if (next == null)
+                    if (next == null) {
                         throw new CFGBuilderException("Control falls off end of method: " + handle);
+                    }
 
                     // Is the next instruction a control merge or a PEI?
                     if (isMerge(next) || isPEI(next)) {
@@ -934,8 +960,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                 InstructionHandle handlerStart = exceptionHandler.getHandlerPC();
                 subroutine.addEdgeAndExplore(etb, handlerStart, HANDLED_EXCEPTION_EDGE);
 
-                if (Hierarchy.isUniversalExceptionHandler(exceptionHandler.getCatchType()))
+                if (Hierarchy.isUniversalExceptionHandler(exceptionHandler.getCatchType())) {
                     sawUniversalExceptionHandler = true;
+                }
             }
         }
 
@@ -944,8 +971,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         // ANY exception type, then the exception can be thrown out of the
         // method.
         if (!sawUniversalExceptionHandler) {
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Adding unhandled exception edge from " + pei);
+            }
             subroutine.setUnhandledExceptionBlock(etb);
         }
     }
@@ -960,24 +988,32 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
     private boolean isPEI(InstructionHandle handle) {
         Instruction ins = handle.getInstruction();
 
-        if (!(ins instanceof ExceptionThrower))
+        if (!(ins instanceof ExceptionThrower)) {
             return false;
+        }
 
-        if (ins instanceof NEW)
+        if (ins instanceof NEW) {
             return false;
+        }
         // if (ins instanceof ATHROW) return false;
-        if (ins instanceof GETSTATIC)
+        if (ins instanceof GETSTATIC) {
             return false;
-        if (ins instanceof PUTSTATIC)
+        }
+        if (ins instanceof PUTSTATIC) {
             return false;
-        if (ins instanceof ReturnInstruction)
+        }
+        if (ins instanceof ReturnInstruction) {
             return false;
-        if (ins instanceof INSTANCEOF)
+        }
+        if (ins instanceof INSTANCEOF) {
             return false;
-        if (ins instanceof MONITOREXIT)
+        }
+        if (ins instanceof MONITOREXIT) {
             return false;
-        if (ins instanceof LDC)
+        }
+        if (ins instanceof LDC) {
             return false;
+        }
         return true;
 
     }
@@ -995,8 +1031,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
             // of them are branches. If so, the instruction is a merge.
             InstructionTargeter[] targeterList = handle.getTargeters();
             for (InstructionTargeter targeter : targeterList) {
-                if (targeter instanceof BranchInstruction)
+                if (targeter instanceof BranchInstruction) {
                     return true;
+                }
             }
         }
         return false;
@@ -1056,12 +1093,14 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
             }
 
             // Set exception thrower status
-            if (subBlock.isExceptionThrower())
+            if (subBlock.isExceptionThrower()) {
                 resultBlock.setExceptionThrower(subBlock.getExceptionThrower());
+            }
 
             // Set exception handler status
-            if (subBlock.isExceptionHandler())
+            if (subBlock.isExceptionHandler()) {
                 resultBlock.setExceptionGen(null, subBlock.getExceptionGen());
+            }
 
             // Add control edges (including inlining JSR subroutines)
             Iterator<Edge> edgeIter = subCFG.outgoingEdgeIterator(subBlock);
@@ -1111,14 +1150,16 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                 // Look for the calling context which has the target instruction
                 Context caller = context.getCaller();
                 while (caller != null) {
-                    if (caller.getSubroutine().containsInstruction(targetInstruction))
+                    if (caller.getSubroutine().containsInstruction(targetInstruction)) {
                         break;
+                    }
                     caller = caller.getCaller();
                 }
 
-                if (caller == null)
+                if (caller == null) {
                     throw new CFGBuilderException("Unknown caller for escape target " + targetInstruction + " referenced by "
                             + context.getSubroutine().getStartInstruction());
+                }
 
                 // Find result block in caller
                 BasicBlock subCallerTargetBlock = caller.getSubroutine().getBlock(targetInstruction);
@@ -1191,11 +1232,13 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
         Method[] methodList = jclass.getMethods();
         for (Method method : methodList) {
-            if (method.isAbstract() || method.isNative())
+            if (method.isAbstract() || method.isNative()) {
                 continue;
+            }
 
-            if (methodName != null && !method.getName().equals(methodName))
+            if (methodName != null && !method.getName().equals(methodName)) {
                 continue;
+            }
 
             MethodDescriptor descriptor = DescriptorFactory.instance().getMethodDescriptor(jclass, method);
             MethodGen methodGen = new MethodGen(method, jclass.getClassName(), classGen.getConstantPool());
@@ -1214,5 +1257,3 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
     }
 
 }
-
-// vim:ts=4

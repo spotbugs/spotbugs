@@ -83,11 +83,6 @@ import edu.umd.cs.findbugs.visitclass.Util;
  */
 public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<UnconditionalValueDerefSet> {
 
-    @Override
-    public String toString() {
-        return this.getClass().getSimpleName() + " of " + method;
-    }
-
     public static final boolean DEBUG = SystemProperties.getBoolean("fnd.derefs.debug");
 
     public static final boolean ASSUME_NONZERO_TRIP_LOOPS = SystemProperties.getBoolean("fnd.derefs.nonzerotrip");
@@ -99,6 +94,10 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
     public static final boolean CHECK_CALLS = SystemProperties.getBoolean("fnd.derefs.checkcalls", true);
 
     public static final boolean DEBUG_CHECK_CALLS = SystemProperties.getBoolean("fnd.derefs.checkcalls.debug");
+
+    private static final int NULLCHECK1[] = { Opcodes.DUP, Opcodes.INVOKESPECIAL, Opcodes.ATHROW };
+
+    private static final int NULLCHECK2[] = { Opcodes.DUP, Opcodes.LDC, Opcodes.INVOKESPECIAL, Opcodes.ATHROW };
 
     private final CFG cfg;
 
@@ -119,12 +118,8 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
      *
      * @param rdfs
      *            the reverse depth-first-search (for the block order)
-     * @param dfs
-     *            TODO
      * @param cfg
      *            the CFG for the method
-     * @param method
-     *            TODO
      * @param methodGen
      *            the MethodGen for the method
      * @param vnaDataflow
@@ -143,7 +138,11 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
             System.out.println("UnconditionalValueDerefAnalysis analysis " + methodGen.getClassName() + "." + methodGen.getName()
                     + " : " + methodGen.getSignature());
         }
+    }
 
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + " of " + method;
     }
 
     /**
@@ -157,34 +156,20 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         this.invDataflow = invDataflow;
     }
 
-    /**
-     *
-     *
-     */
     public void setTypeDataflow(TypeDataflow typeDataflow) {
         this.typeDataflow = typeDataflow;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#isFactValid(java.lang
-     * .Object)
-     */
     @Override
     public boolean isFactValid(UnconditionalValueDerefSet fact) {
         return !fact.isTop() && !fact.isBottom();
     }
 
-    private static final int NULLCHECK1[] = { Opcodes.DUP, Opcodes.INVOKESPECIAL, Opcodes.ATHROW };
-
-    private static final int NULLCHECK2[] = { Opcodes.DUP, Opcodes.LDC, Opcodes.INVOKESPECIAL, Opcodes.ATHROW };
-
     private static boolean check(InstructionHandle h, int[] opcodes) {
         for (int opcode : opcodes) {
-            if (h == null)
+            if (h == null) {
                 return false;
+            }
             short opcode2 = h.getInstruction().getOpcode();
             if (opcode == Constants.LDC) {
                 switch (opcode2) {
@@ -198,23 +183,27 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
                 default:
                     return false;
                 }
-            } else if (opcode2 != opcode)
+            } else if (opcode2 != opcode) {
                 return false;
+            }
             h = h.getNext();
         }
         return true;
     }
 
     public static boolean isNullCheck(InstructionHandle h, ConstantPoolGen cpg) {
-        if (!(h.getInstruction() instanceof IFNONNULL))
+        if (!(h.getInstruction() instanceof IFNONNULL)) {
             return false;
+        }
         h = h.getNext();
         final Instruction newInstruction = h.getInstruction();
-        if (!(newInstruction instanceof NEW))
+        if (!(newInstruction instanceof NEW)) {
             return false;
+        }
         final ObjectType loadClassType = ((NEW) newInstruction).getLoadClassType(cpg);
-        if (!loadClassType.getClassName().equals("java.lang.NullPointerException"))
+        if (!loadClassType.getClassName().equals("java.lang.NullPointerException")) {
             return false;
+        }
         h = h.getNext();
         return check(h, NULLCHECK1) || check(h, NULLCHECK2);
 
@@ -230,31 +219,27 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     public static boolean reportPotentialDereference(Location location, IsNullValueFrame invFrame)
             throws DataflowAnalysisException {
-        if (!invFrame.isValid())
+        if (!invFrame.isValid()) {
             return false;
+        }
         IsNullValue value = invFrame.getTopValue();
-        if (value.isDefinitelyNotNull())
+        if (value.isDefinitelyNotNull()) {
             return false;
-        if (value.isDefinitelyNull())
+        }
+        if (value.isDefinitelyNull()) {
             return false;
+        }
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transferInstruction(org
-     * .apache.bcel.generic.InstructionHandle,
-     * edu.umd.cs.findbugs.ba.BasicBlock, java.lang.Object)
-     */
     @Override
     public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, UnconditionalValueDerefSet fact)
             throws DataflowAnalysisException {
 
         Instruction instruction = handle.getInstruction();
-        if (fact.isTop())
+        if (fact.isTop()) {
             return;
+        }
         Location location = new Location(handle, basicBlock);
 
         // If this is a call to an assertion method,
@@ -264,9 +249,10 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         // returns normally.
         // TODO: at some point, evaluate whether we should revisit this
         if (isAssertion(handle) // || handle.getInstruction() instanceof ATHROW
-        ) {
-            if (DEBUG)
+                ) {
+            if (DEBUG) {
                 System.out.println("MAKING BOTTOM0 AT: " + location);
+            }
             fact.clear();
             return;
         }
@@ -274,8 +260,9 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         // Get value number frame
         ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(location);
         if (!vnaFrame.isValid()) {
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("MAKING TOP1 AT: " + location);
+            }
             // Probably dead code.
             // Assume this location can't be reached.
             makeFactTop(fact);
@@ -310,11 +297,14 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         // Check to see if an instance value is dereferenced here
         checkInstance(location, vnaFrame, fact);
 
-        if (false)
+        /*
+        if (false) {
             fact.cleanDerefSet(location, vnaFrame);
+        }*/
 
-        if (DEBUG && fact.isTop())
+        if (DEBUG && fact.isTop()) {
             System.out.println("MAKING TOP2 At: " + location);
+        }
 
     }
 
@@ -335,59 +325,69 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         ConstantPoolGen constantPool = methodGen.getConstantPool();
 
         for (ValueNumber vn : checkUnconditionalDerefDatabase(location, vnaFrame, constantPool,
-                invDataflow.getFactAtLocation(location), typeDataflow))
+                invDataflow.getFactAtLocation(location), typeDataflow)) {
             fact.addDeref(vn, location);
+        }
     }
 
     public static Set<ValueNumber> checkUnconditionalDerefDatabase(Location location, ValueNumberFrame vnaFrame,
             ConstantPoolGen constantPool, @CheckForNull IsNullValueFrame invFrame, TypeDataflow typeDataflow)
-            throws DataflowAnalysisException {
-        if (invFrame != null && !invFrame.isValid())
+                    throws DataflowAnalysisException {
+        if (invFrame != null && !invFrame.isValid()) {
             return Collections.emptySet();
+        }
 
         InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
 
         SignatureParser sigParser = new SignatureParser(inv.getSignature(constantPool));
         int numParams = sigParser.getNumParameters();
-        if (numParams == 0 || !sigParser.hasReferenceParameters())
+        if (numParams == 0 || !sigParser.hasReferenceParameters()) {
             return Collections.emptySet();
+        }
         ParameterNullnessPropertyDatabase database = AnalysisContext.currentAnalysisContext()
                 .getUnconditionalDerefParamDatabase();
         if (database == null) {
-            if (DEBUG_CHECK_CALLS)
+            if (DEBUG_CHECK_CALLS) {
                 System.out.println("no database!");
+            }
             return Collections.emptySet();
         }
 
         TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
         if (!typeFrame.isValid()) {
-            if (DEBUG_CHECK_CALLS)
+            if (DEBUG_CHECK_CALLS) {
                 System.out.println("invalid type frame!");
+            }
             return Collections.emptySet();
         }
 
         try {
             Set<XMethod> targetSet = Hierarchy2.resolveMethodCallTargets(inv, typeFrame, constantPool);
 
-            if (targetSet.isEmpty())
+            if (targetSet.isEmpty()) {
                 return Collections.emptySet();
+            }
 
-            if (DEBUG_CHECK_CALLS)
+            if (DEBUG_CHECK_CALLS) {
                 System.out.println("target set size: " + targetSet.size());
+            }
             // Compute the intersection of all properties
             ParameterProperty derefParamSet = null;
             for (XMethod target : targetSet) {
-                if (target.isStub())
+                if (target.isStub()) {
                     continue;
-                if (DEBUG_CHECK_CALLS)
+                }
+                if (DEBUG_CHECK_CALLS) {
                     System.out.print("Checking: " + target + ": ");
+                }
 
                 ParameterProperty targetDerefParamSet = database.getProperty(target.getMethodDescriptor());
                 if (targetDerefParamSet == null) {
                     // Hmm...no information for this target.
                     // assume it doesn't dereference anything
-                    if (DEBUG_CHECK_CALLS)
+                    if (DEBUG_CHECK_CALLS) {
                         System.out.println("==> no information, assume no guaranteed dereferences");
+                    }
                     return Collections.emptySet();
                 }
 
@@ -403,8 +403,9 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
             }
 
             if (derefParamSet == null || derefParamSet.isEmpty()) {
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("** Nothing");
+                }
                 return Collections.emptySet();
             }
             if (DEBUG_CHECK_CALLS) {
@@ -417,10 +418,12 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
                     continue;
                 }
                 int argSlot = vnaFrame.getStackLocation(sigParser.getSlotsFromTopOfStackForParameter(i));
-                if (invFrame != null && !reportDereference(invFrame, argSlot))
+                if (invFrame != null && !reportDereference(invFrame, argSlot)) {
                     continue;
-                if (DEBUG_CHECK_CALLS)
+                }
+                if (DEBUG_CHECK_CALLS) {
                     System.out.println("  dereference @ " + location.getHandle().getPosition() + " of parameter " + i);
+                }
 
                 requiredToBeNonnull.add(vnaFrame.getValue(argSlot));
             }
@@ -438,8 +441,6 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
      * If this is a method call instruction, check to see if any of the
      * parameters are @NonNull, and treat them as dereferences.
      *
-     * @param thisMethod
-     *            TODO
      * @param location
      *            the Location of the instruction
      * @param vnaFrame
@@ -453,8 +454,9 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
             UnconditionalValueDerefSet fact) throws DataflowAnalysisException {
         INullnessAnnotationDatabase database = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
 
-        if (database.getResolvedAnnotation(thisMethod, true) != NullnessAnnotation.NONNULL)
+        if (database.getResolvedAnnotation(thisMethod, true) != NullnessAnnotation.NONNULL) {
             return;
+        }
         if (reportPotentialDereference(location, invDataflow.getFactAtLocation(location))) {
             ValueNumber vn = vnaFrame.getTopValue();
             fact.addDeref(vn, location);
@@ -481,13 +483,15 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
         XField field = XFactory.createXField(fieldIns, methodGen.getConstantPool());
         char firstChar = field.getSignature().charAt(0);
-        if (firstChar != 'L' && firstChar != '[')
+        if (firstChar != 'L' && firstChar != '[') {
             return;
+        }
         NullnessAnnotation resolvedAnnotation = database.getResolvedAnnotation(field, true);
         if (resolvedAnnotation == NullnessAnnotation.NONNULL) {
             IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
-            if (!invFrame.isValid())
+            if (!invFrame.isValid()) {
                 return;
+            }
             IsNullValue value = invFrame.getTopValue();
             if (reportDereference(value)) {
                 ValueNumber vn = vnaFrame.getTopValue();
@@ -513,8 +517,9 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         ConstantPoolGen constantPool = methodGen.getConstantPool();
         Set<ValueNumber> nonNullParams = checkNonNullParams(location, vnaFrame, constantPool, method,
                 invDataflow.getFactAtLocation(location));
-        for (ValueNumber vn : nonNullParams)
+        for (ValueNumber vn : nonNullParams) {
             fact.addDeref(vn, location);
+        }
     }
 
     public static Set<ValueNumber> checkAllNonNullParams(Location location, ValueNumberFrame vnaFrame,
@@ -526,21 +531,22 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         }
         Set<ValueNumber> result1 = checkNonNullParams(location, vnaFrame, constantPool, method, invFrame);
         Set<ValueNumber> result2 = checkUnconditionalDerefDatabase(location, vnaFrame, constantPool, invFrame, typeDataflow);
-        if (result1.isEmpty())
+        if (result1.isEmpty()) {
             return result2;
-        if (result2.isEmpty())
+        }
+        if (result2.isEmpty()) {
             return result1;
+        }
         result1.addAll(result2);
-
         return result1;
-
     }
 
     public static Set<ValueNumber> checkNonNullParams(Location location, ValueNumberFrame vnaFrame, ConstantPoolGen constantPool,
             @CheckForNull Method method, @CheckForNull IsNullValueFrame invFrame) throws DataflowAnalysisException {
 
-        if (invFrame != null && !invFrame.isValid())
+        if (invFrame != null && !invFrame.isValid()) {
             return Collections.emptySet();
+        }
         INullnessAnnotationDatabase database = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
 
         InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
@@ -553,13 +559,15 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         for (int i = 0; i < numParams; i++) {
             String parameterSignature = parameterIterator.next();
             char firstChar = parameterSignature.charAt(0);
-            if (firstChar != 'L' && firstChar != '[')
+            if (firstChar != 'L' && firstChar != '[') {
                 continue;
+            }
             int offset = sigParser.getSlotsFromTopOfStackForParameter(i);
             if (invFrame != null) {
                 int slot = invFrame.getStackLocation(offset);
-                if (!reportDereference(invFrame, slot))
+                if (!reportDereference(invFrame, slot)) {
                     continue;
+                }
             }
             if (database.parameterMustBeNonNull(called, i)) {
                 int catchSizeNPE = Util.getSizeOfSurroundingTryBlock(method, "java/lang/NullPointerException", location
@@ -597,8 +605,9 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         if (!location.isFirstInstructionInBasicBlock()) {
             return;
         }
-        if (invDataflow == null)
+        if (invDataflow == null) {
             return;
+        }
         BasicBlock fallThroughPredecessor = cfg.getPredecessorWithEdgeType(location.getBasicBlock(), EdgeTypes.FALL_THROUGH_EDGE);
         if (fallThroughPredecessor == null || !fallThroughPredecessor.isNullCheck()) {
             return;
@@ -610,22 +619,26 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         // Ignore dereferences of this
         if (!methodGen.isStatic()) {
             ValueNumber v = vnaFrame.getValue(0);
-            if (v.equals(vn))
+            if (v.equals(vn)) {
                 return;
+            }
         }
-        if (vn.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
+        if (vn.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) {
             return;
+        }
 
         IsNullValueFrame startFact = null;
 
         startFact = invDataflow.getStartFact(fallThroughPredecessor);
 
-        if (!startFact.isValid())
+        if (!startFact.isValid()) {
             return;
+        }
 
         int slot = startFact.getInstanceSlot(location.getHandle().getInstruction(), methodGen.getConstantPool());
-        if (!reportDereference(startFact, slot))
+        if (!reportDereference(startFact, slot)) {
             return;
+        }
         if (DEBUG) {
             System.out.println("FOUND GUARANTEED DEREFERENCE");
             System.out.println("Load: " + vnaFrame.getLoad(vn));
@@ -646,12 +659,15 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
     }
 
     private static boolean reportDereference(IsNullValue value) {
-        if (value.isDefinitelyNotNull())
+        if (value.isDefinitelyNotNull()) {
             return false;
-        if (value.isDefinitelyNull())
+        }
+        if (value.isDefinitelyNull()) {
             return false;
-        if (IGNORE_DEREF_OF_NCP && value.isNullOnComplicatedPath())
+        }
+        if (IGNORE_DEREF_OF_NCP && value.isNullOnComplicatedPath()) {
             return false;
+        }
         return true;
     }
 
@@ -667,33 +683,16 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#copy(java.lang.Object,
-     * java.lang.Object)
-     */
     @Override
     public void copy(UnconditionalValueDerefSet source, UnconditionalValueDerefSet dest) {
         dest.makeSameAs(source);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#createFact()
-     */
     @Override
     public UnconditionalValueDerefSet createFact() {
         return new UnconditionalValueDerefSet(vnaDataflow.getAnalysis().getNumValuesAllocated());
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.ba.DataflowAnalysis#initEntryFact(java.lang.Object)
-     */
     @Override
     public void initEntryFact(UnconditionalValueDerefSet result) throws DataflowAnalysisException {
         result.clear();
@@ -707,12 +706,6 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
     // result.setIsTop();
     // }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.ba.DataflowAnalysis#makeFactTop(java.lang.Object)
-     */
     @Override
     public void makeFactTop(UnconditionalValueDerefSet fact) {
         fact.setIsTop();
@@ -723,30 +716,17 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         return fact.isTop();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(java.lang.Object,
-     * edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
-     */
     @Override
     public void meetInto(UnconditionalValueDerefSet fact, Edge edge, UnconditionalValueDerefSet result)
             throws DataflowAnalysisException {
         meetInto(fact, edge, result, false);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(java.lang.Object,
-     * edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
-     */
-    public void meetInto(UnconditionalValueDerefSet fact, Edge edge, UnconditionalValueDerefSet result, boolean onlyEdge)
-             {
-
+    public void meetInto(UnconditionalValueDerefSet fact, Edge edge, UnconditionalValueDerefSet result, boolean onlyEdge) {
         if (isExceptionEdge(edge) && !onlyEdge) {
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Skipping exception edge");
+            }
             return;
         }
 
@@ -766,8 +746,10 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         Set<Integer> loopExitBranches = ClassContext.getLoopExitBranches(method, methodGen);
         assert loopExitBranches != null;
         boolean sourceIsTopOfLoop = edge.sourceIsTopOfLoop(loopExitBranches);
-        if (sourceIsTopOfLoop && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)
+        if (sourceIsTopOfLoop && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE) {
             isBackEdge = true;
+        }
+        /*
         if (false && (edge.getType() == EdgeTypes.IFCMP_EDGE || sourceIsTopOfLoop)) {
             System.out.println("Meet into " + edge);
             System.out.println("  foo2: " + sourceIsTopOfLoop);
@@ -777,11 +759,13 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
             System.out.println("  Initial fact: " + result);
             System.out.println("  Edge fact: " + fact);
         }
+         */
         if (result.isTop() || fact.isBottom()) {
             // Make result identical to other fact
             copy(fact, result);
-            if (ASSUME_NONZERO_TRIP_LOOPS && isBackEdge && !fact.isTop())
+            if (ASSUME_NONZERO_TRIP_LOOPS && isBackEdge && !fact.isTop()) {
                 result.resultsFromBackEdge = true;
+            }
         } else if (ASSUME_NONZERO_TRIP_LOOPS && isBackEdge && !fact.isTop()) {
             result.unionWith(fact, vnaDataflow.getAnalysis().getFactory());
             result.resultsFromBackEdge = true;
@@ -798,8 +782,9 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
             if (ASSUME_NONZERO_TRIP_LOOPS && result.resultsFromBackEdge) {
                 result.backEdgeUpdateCount++;
                 if (result.backEdgeUpdateCount < 10) {
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("\n Union update of " + System.identityHashCode(result) + " due to backedge info");
+                    }
                     result.unionWith(fact, vnaDataflow.getAnalysis().getFactory());
                     return;
                 }
@@ -814,7 +799,6 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         if (DEBUG && isBackEdge && edge.getType() == EdgeTypes.IFCMP_EDGE) {
             System.out.println("  result: " + result);
         }
-
     }
 
     /**
@@ -839,10 +823,11 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
         if (blockValueNumberFrame.isValid() && targetValueNumberFrame.isValid()) {
             int slots = 0;
-            if (targetValueNumberFrame.getNumSlots() == blockValueNumberFrame.getNumSlots())
+            if (targetValueNumberFrame.getNumSlots() == blockValueNumberFrame.getNumSlots()) {
                 slots = targetValueNumberFrame.getNumSlots();
-            else if (targetValueNumberFrame.getNumLocals() == blockValueNumberFrame.getNumLocals())
+            } else if (targetValueNumberFrame.getNumLocals() == blockValueNumberFrame.getNumLocals()) {
                 slots = targetValueNumberFrame.getNumLocals();
+            }
 
             if (slots > 0) {
                 if (DEBUG) {
@@ -854,28 +839,32 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
                 for (int i = 0; i < slots; i++) {
                     ValueNumber blockVN = blockValueNumberFrame.getValue(i);
                     ValueNumber targetVN = targetValueNumberFrame.getValue(i);
-                    if (blockVN.equals(targetVN))
+                    if (blockVN.equals(targetVN)) {
                         continue;
+                    }
                     fact.clearDerefSet(blockVN);
-                    if (originalFact.isUnconditionallyDereferenced(targetVN))
+                    if (originalFact.isUnconditionallyDereferenced(targetVN)) {
                         fact.setDerefSet(blockVN, originalFact.getUnconditionalDerefLocationSet(targetVN));
+                    }
 
                 } // for all slots
 
                 for (ValueNumber blockVN : blockValueNumberFrame.valueNumbersForLoads()) {
                     AvailableLoad load = blockValueNumberFrame.getLoad(blockVN);
-                    if (load == null)
+                    if (load == null) {
                         continue;
+                    }
                     ValueNumber[] targetVNs = targetValueNumberFrame.getAvailableLoad(load);
-                    if (targetVNs != null)
-                        for (ValueNumber targetVN : targetVNs)
+                    if (targetVNs != null) {
+                        for (ValueNumber targetVN : targetVNs) {
                             if (targetVN.hasFlag(ValueNumber.PHI_NODE) && fact.isUnconditionallyDereferenced(targetVN)
                                     && !fact.isUnconditionallyDereferenced(blockVN)) {
                                 // Block VN is also dereferenced
                                 // unconditionally.
                                 AvailableLoad targetLoad = targetValueNumberFrame.getLoad(targetVN);
-                                if (!load.equals(targetLoad))
+                                if (!load.equals(targetLoad)) {
                                     continue;
+                                }
                                 if (DEBUG) {
                                     System.out.println("** Copy vn derefs for " + load + " from " + targetVN + " --> " + blockVN);
                                     System.out.println("** block phi for " + System.identityHashCode(blockValueNumberFrame)
@@ -886,6 +875,8 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
                                 fact.setDerefSet(blockVN, fact.getUnconditionalDerefLocationSet(targetVN));
 
                             }
+                        }
+                    }
                 }
 
             }
@@ -958,26 +949,23 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
     private boolean isExceptionEdge(Edge edge) {
         boolean isExceptionEdge = edge.isExceptionEdge();
         if (isExceptionEdge) {
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("NOT Ignoring " + edge);
+            }
             return true; // false
         }
-        if (edge.getType() != EdgeTypes.FALL_THROUGH_EDGE)
+        if (edge.getType() != EdgeTypes.FALL_THROUGH_EDGE) {
             return false;
+        }
         InstructionHandle h = edge.getSource().getLastInstruction();
-        if (h != null && h.getInstruction() instanceof IFNONNULL && isNullCheck(h, methodGen.getConstantPool()))
+        if (h != null && h.getInstruction() instanceof IFNONNULL && isNullCheck(h, methodGen.getConstantPool())) {
             return true;
+        }
 
         return false;
 
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#same(java.lang.Object,
-     * java.lang.Object)
-     */
     @Override
     public boolean same(UnconditionalValueDerefSet fact1, UnconditionalValueDerefSet fact2) {
         return fact1.resultsFromBackEdge || fact1.isSameAs(fact2);

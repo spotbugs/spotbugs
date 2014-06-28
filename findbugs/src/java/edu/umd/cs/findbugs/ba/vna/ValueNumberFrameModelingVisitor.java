@@ -62,14 +62,14 @@ import edu.umd.cs.findbugs.ba.XMethod;
 /**
  * Visitor which models the effects of bytecode instructions on value numbers of
  * values in the operand stack frames.
- * 
+ *
  * @see ValueNumber
  * @see ValueNumberFrame
  * @see ValueNumberAnalysis
  * @author David Hovemeyer
  */
 public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisitor<ValueNumber, ValueNumberFrame> implements
-        Debug, ValueNumberAnalysisFeatures {
+Debug, ValueNumberAnalysisFeatures {
 
     /*
      * ----------------------------------------------------------------------
@@ -77,19 +77,21 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
      * ----------------------------------------------------------------------
      */
 
-    private MethodGen methodGen;
+    private final MethodGen methodGen;
 
     ValueNumberFactory factory;
 
-    private ValueNumberCache cache;
+    private final ValueNumberCache cache;
 
-    private LoadedFieldSet loadedFieldSet;
+    private final LoadedFieldSet loadedFieldSet;
 
-    private HashMap<Object, ValueNumber> constantValueMap;
+    private final HashMap<Object, ValueNumber> constantValueMap;
 
-    private HashMap<ValueNumber, String> stringConstantMap;
+    private final HashMap<ValueNumber, String> stringConstantMap;
 
     private InstructionHandle handle;
+
+    private static final ValueNumber[] EMPTY_INPUT_VALUE_LIST = new ValueNumber[0];
 
     /*
      * ----------------------------------------------------------------------
@@ -99,7 +101,7 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 
     /**
      * Constructor.
-     * 
+     *
      * @param methodGen
      *            the method being analyzed
      * @param factory
@@ -145,51 +147,60 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
     /**
      * Determine whether redundant load elimination should be performed for the
      * heap location referenced by the current instruction.
-     * 
+     *
      * @return true if we should do redundant load elimination for the current
      *         instruction, false if not
      */
     private boolean doRedundantLoadElimination() {
-        if (!REDUNDANT_LOAD_ELIMINATION)
+        if (!REDUNDANT_LOAD_ELIMINATION) {
             return false;
+        }
 
         XField xfield = loadedFieldSet.getField(handle);
-        if (xfield == null)
+        if (xfield == null) {
             return false;
+        }
 
-        if (!xfield.isReferenceType())
+        if (!xfield.isReferenceType()) {
             return false;
+        }
 
         // Don't do redundant load elimination for fields that
         // are loaded in only one place.
-        if (false && loadedFieldSet.getLoadStoreCount(xfield).getLoadCount() <= 1)
+        /*
+        if (false && loadedFieldSet.getLoadStoreCount(xfield).getLoadCount() <= 1){
             return false;
-
+        }
+         */
         return true;
     }
 
     /**
      * Determine whether forward substitution should be performed for the heap
      * location referenced by the current instruction.
-     * 
+     *
      * @return true if we should do forward substitution for the current
      *         instruction, false if not
      */
     private boolean doForwardSubstitution() {
-        if (!REDUNDANT_LOAD_ELIMINATION)
+        if (!REDUNDANT_LOAD_ELIMINATION) {
             return false;
+        }
 
         XField xfield = loadedFieldSet.getField(handle);
-        if (xfield == null)
+        if (xfield == null) {
             return false;
+        }
 
-        if (!xfield.isReferenceType())
+        if (!xfield.isReferenceType()) {
             return false;
+        }
 
         // Don't do forward substitution for fields that
         // are never read.
-        if (!loadedFieldSet.isLoaded(xfield))
+        if (!loadedFieldSet.isLoaded(xfield)) {
             return false;
+        }
 
         return true;
     }
@@ -198,10 +209,12 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
         int numConsumed = ins.consumeStack(getCPG());
         int numProduced = ins.produceStack(getCPG());
 
-        if (numConsumed == Constants.UNPREDICTABLE)
+        if (numConsumed == Constants.UNPREDICTABLE) {
             throw new InvalidBytecodeException("Unpredictable stack consumption for " + ins);
-        if (numProduced == Constants.UNPREDICTABLE)
+        }
+        if (numProduced == Constants.UNPREDICTABLE) {
             throw new InvalidBytecodeException("Unpredictable stack production for " + ins);
+        }
 
         if (consumedValueList.length != numConsumed) {
             throw new IllegalStateException("Wrong number of values consumed for " + ins + ": expected " + numConsumed + ", got "
@@ -221,12 +234,13 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
     public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
 
         int flags = 0;
-        if (ins instanceof InvokeInstruction)
+        if (ins instanceof InvokeInstruction) {
             flags = ValueNumber.RETURN_VALUE;
-        else if (ins instanceof ArrayInstruction)
+        } else if (ins instanceof ArrayInstruction) {
             flags = ValueNumber.ARRAY_VALUE;
-        else if (ins instanceof ConstantPushInstruction)
+        } else if (ins instanceof ConstantPushInstruction) {
             flags = ValueNumber.CONSTANT_VALUE;
+        }
 
         // Get the input operands to this instruction.
         ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
@@ -248,8 +262,9 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
     public void visitGETFIELD(GETFIELD obj) {
         XField xfield = Hierarchy.findXField(obj, getCPG());
         if (xfield != null) {
-            if (xfield.isVolatile())
+            if (xfield.isVolatile()) {
                 getFrame().killAllLoads();
+            }
 
             if (doRedundantLoadElimination()) {
                 loadInstanceField(xfield, obj);
@@ -263,17 +278,15 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
     @Override
     public void visitPUTFIELD(PUTFIELD obj) {
         if (doForwardSubstitution()) {
-                XField xfield = Hierarchy.findXField(obj, getCPG());
-                if (xfield != null) {
-                    storeInstanceField(xfield, obj, false);
-                    return;
-                }
-           
+            XField xfield = Hierarchy.findXField(obj, getCPG());
+            if (xfield != null) {
+                storeInstanceField(xfield, obj, false);
+                return;
+            }
+
         }
         handleNormalInstruction(obj);
     }
-
-    private static final ValueNumber[] EMPTY_INPUT_VALUE_LIST = new ValueNumber[0];
 
     @Override
     public void visitGETSTATIC(GETSTATIC obj) {
@@ -289,8 +302,9 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
         // Is this an access of a Class object?
         if (fieldName.startsWith("class$") && fieldSig.equals("Ljava/lang/Class;")) {
             String className = fieldName.substring("class$".length()).replace('$', '.');
-            if (RLE_DEBUG)
+            if (RLE_DEBUG) {
                 System.out.println("[found load of class object " + className + "]");
+            }
             ValueNumber value = factory.getClassObjectValue(className);
             frame.pushValue(value);
             return;
@@ -298,8 +312,9 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 
         XField xfield = Hierarchy.findXField(obj, getCPG());
         if (xfield != null) {
-            if (xfield.isVolatile())
+            if (xfield.isVolatile()) {
                 getFrame().killAllLoads();
+            }
             if (doRedundantLoadElimination()) {
                 loadStaticField(xfield, obj);
                 return;
@@ -341,8 +356,9 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
                     String className = stringConstantMap.get(arg);
                     if (className != null) {
                         frame.popValue();
-                        if (RLE_DEBUG)
+                        if (RLE_DEBUG) {
                             System.out.println("[found access of class object " + className + "]");
+                        }
                         frame.pushValue(factory.getClassObjectValue(className));
                         return;
                     }
@@ -356,10 +372,11 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
                     if (loadedFieldSet.instructionIsLoad(handle)) {
                         // Load via inner-class accessor
                         if (doRedundantLoadElimination()) {
-                            if (xfield.isStatic())
+                            if (xfield.isStatic()) {
                                 loadStaticField(xfield, obj);
-                            else
+                            } else {
                                 loadInstanceField(xfield, obj);
+                            }
                             return;
                         }
                     } else {
@@ -369,10 +386,11 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
                             // return the value stored.
                             boolean pushValue = !methodSig.endsWith(")V");
 
-                            if (xfield.isStatic())
+                            if (xfield.isStatic()) {
                                 storeStaticField(xfield, obj, pushValue);
-                            else
+                            } else {
                                 storeInstanceField(xfield, obj, pushValue);
+                            }
 
                             return;
                         }
@@ -400,13 +418,15 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
             int passed = getNumWordsConsumed(ins);
             ValueNumber[] arguments = allocateValueNumberArray(passed);
             getFrame().getTopStackWords(arguments);
-            for (ValueNumber v : arguments)
+            for (ValueNumber v : arguments) {
                 getFrame().killAllLoadsOf(v);
+            }
 
         } catch (DataflowAnalysisException e) {
             AnalysisContext.logError("Error in killLoadsOfObjectsPassed", e);
         }
     }
+
     private void killLoadsOfObjectsPassed(InvokeInstruction ins) {
         try {
 
@@ -422,8 +442,9 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
             ValueNumber[] arguments = allocateValueNumberArray(passed);
             getFrame().killLoadsWithSimilarName(ins.getClassName(cpg), ins.getMethodName(cpg));
             getFrame().getTopStackWords(arguments);
-            for (ValueNumber v : arguments)
+            for (ValueNumber v : arguments) {
                 getFrame().killAllLoadsOf(v);
+            }
 
         } catch (DataflowAnalysisException e) {
             AnalysisContext.logError("Error in killLoadsOfObjectsPassed", e);
@@ -451,6 +472,7 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
         killLoadsOfObjectsPassed(obj);
         handleNormalInstruction(obj);
     }
+
     @Override
     public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
         // Don't know what this method invocation is doing.
@@ -458,14 +480,16 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
         killLoadsOfObjectsPassed(obj);
         handleNormalInstruction(obj);
     }
+
     @Override
     public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
         // Don't know what this method invocation is doing.
         // Kill all loads.
-        if (obj.getMethodName(cpg).equals("lock"))
+        if (obj.getMethodName(cpg).equals("lock")) {
             getFrame().killAllLoads();
-        else
+        } else {
             killLoadsOfObjectsPassed(obj);
+        }
         handleNormalInstruction(obj);
     }
 
@@ -486,10 +510,11 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
         }
         // Don't know what this method invocation is doing.
         // Kill all loads.
-        if (obj.getMethodName(cpg).toLowerCase().indexOf("lock") >= 0)
+        if (obj.getMethodName(cpg).toLowerCase().indexOf("lock") >= 0) {
             getFrame().killAllLoads();
-        else
+        } else {
             killLoadsOfObjectsPassed(obj);
+        }
         handleNormalInstruction(obj);
     }
 
@@ -601,8 +626,9 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
      */
     private void pushOutputValues(ValueNumber[] outputValueList) {
         ValueNumberFrame frame = getFrame();
-        for (ValueNumber aOutputValueList : outputValueList)
+        for (ValueNumber aOutputValueList : outputValueList) {
             frame.pushValue(aOutputValueList);
+        }
     }
 
     /**
@@ -621,21 +647,23 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
                 ValueNumber freshValue = factory.createFreshValue(flags);
                 outputValueList[i] = freshValue;
             }
+            /*
             if (false && RLE_DEBUG) {
                 System.out.println("<<cache fill for " + handle.getPosition() + ": " + vlts(inputValueList) + " ==> "
                         + vlts(outputValueList) + ">>");
             }
+             */
             cache.addOutputValues(entry, outputValueList);
-        } else if (false && RLE_DEBUG) {
+        } /* else if (false && RLE_DEBUG) {
             System.out.println("<<cache hit for " + handle.getPosition() + ": " + vlts(inputValueList) + " ==> "
                     + vlts(outputValueList) + ">>");
-        }
+        } */
         return outputValueList;
     }
 
     /**
      * Creates a new empty array (if needed) with given size.
-     * 
+     *
      * @param size
      *            array size
      * @return if size is zero, returns {@link #EMPTY_INPUT_VALUE_LIST}
@@ -650,8 +678,9 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
     private static String vlts(ValueNumber[] vl) {
         StringBuilder buf = new StringBuilder();
         for (ValueNumber aVl : vl) {
-            if (buf.length() > 0)
+            if (buf.length() > 0) {
                 buf.append(',');
+            }
             buf.append(aVl.getNumber());
         }
         return buf.toString();
@@ -659,7 +688,7 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 
     /**
      * Load an instance field.
-     * 
+     *
      * @param instanceField
      *            the field
      * @param obj
@@ -676,8 +705,9 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
             ValueNumber reference = frame.popValue();
 
             AvailableLoad availableLoad = new AvailableLoad(reference, instanceField);
-            if (RLE_DEBUG)
+            if (RLE_DEBUG) {
                 System.out.println("[getfield of " + availableLoad + "]");
+            }
             ValueNumber[] loadedValue = frame.getAvailableLoad(availableLoad);
 
             if (loadedValue == null) {
@@ -709,7 +739,7 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 
     /**
      * Load a static field.
-     * 
+     *
      * @param staticField
      *            the field
      * @param obj
@@ -732,11 +762,13 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 
             frame.addAvailableLoad(availableLoad, loadedValue);
 
-            if (RLE_DEBUG)
+            if (RLE_DEBUG) {
                 System.out.println("[making load of " + staticField + " available]");
+            }
         } else {
-            if (RLE_DEBUG)
+            if (RLE_DEBUG) {
                 System.out.println("[found available load of " + staticField + "]");
+            }
         }
 
         if (VERIFY_INTEGRITY) {
@@ -748,7 +780,7 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 
     /**
      * Store an instance field.
-     * 
+     *
      * @param instanceField
      *            the field
      * @param obj
@@ -774,8 +806,9 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
         ValueNumber[] storedValue = allocateValueNumberArray(inputValueList.length - 1);
         System.arraycopy(inputValueList, 1, storedValue, 0, inputValueList.length - 1);
 
-        if (pushStoredValue)
+        if (pushStoredValue) {
             pushOutputValues(storedValue);
+        }
 
         // Kill all previous loads of the same field,
         // in case there is aliasing we don't know about
@@ -784,8 +817,9 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
         // Forward substitution
         frame.addAvailableLoad(new AvailableLoad(reference, instanceField), storedValue);
 
-        if (RLE_DEBUG)
+        if (RLE_DEBUG) {
             System.out.println("[making store of " + instanceField + " available]");
+        }
 
         if (VERIFY_INTEGRITY) {
             /*
@@ -797,7 +831,7 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 
     /**
      * Store a static field.
-     * 
+     *
      * @param staticField
      *            the static field
      * @param obj
@@ -818,8 +852,9 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
         int numWordsConsumed = getNumWordsConsumed(obj);
         ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
 
-        if (pushStoredValue)
+        if (pushStoredValue) {
             pushOutputValues(inputValueList);
+        }
 
         // Kill loads of this field
         frame.killLoadsOfField(staticField);
@@ -827,8 +862,9 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
         // Make load available
         frame.addAvailableLoad(availableLoad, inputValueList);
 
-        if (RLE_DEBUG)
+        if (RLE_DEBUG) {
             System.out.println("[making store of " + staticField + " available]");
+        }
 
         if (VERIFY_INTEGRITY) {
             checkConsumedAndProducedValues(obj, inputValueList, pushStoredValue ? inputValueList : EMPTY_INPUT_VALUE_LIST);
@@ -837,4 +873,3 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 
 }
 
-// vim:ts=4

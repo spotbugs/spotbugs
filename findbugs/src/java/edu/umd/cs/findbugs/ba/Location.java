@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.Objects;
+
 import javax.annotation.Nonnull;
 
 import org.apache.bcel.generic.InstructionHandle;
@@ -35,7 +37,7 @@ import org.apache.bcel.generic.InstructionHandle;
  * Location objects may be compared with each other using the equals() method,
  * and may be used as keys in tree and hash maps and sets. Note that
  * <em>it is only valid to compare Locations produced from the same CFG</em>.
- * 
+ *
  * @author David Hovemeyer
  * @see CFG
  */
@@ -48,25 +50,24 @@ public class Location implements Comparable<Location> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param handle
      *            the instruction
      * @param basicBlock
      *            the basic block containing the instruction
      */
     public Location(@Nonnull InstructionHandle handle, @Nonnull BasicBlock basicBlock) {
-        if (handle == null)
-            throw new NullPointerException("handle cannot be null");
-        if (basicBlock == null)
-            throw new NullPointerException("basicBlock cannot be null");
+        Objects.requireNonNull(handle, "handle cannot be null");
+        Objects.requireNonNull(basicBlock, "basicBlock cannot be null");
         this.handle = handle;
         this.basicBlock = basicBlock;
     }
 
     public static Location getFirstLocation(@Nonnull BasicBlock basicBlock) {
         InstructionHandle location = basicBlock.getFirstInstruction();
-        if (location == null)
+        if (location == null) {
             return null;
+        }
         return new Location(location, basicBlock);
     }
 
@@ -77,8 +78,9 @@ public class Location implements Comparable<Location> {
          * basicBlock.getExceptionThrower(); if (lastInstruction == null)
          * lastInstruction = basicBlock.getFirstInstruction();
          */
-        if (lastInstruction == null)
+        if (lastInstruction == null) {
             return null;
+        }
         return new Location(lastInstruction, basicBlock);
     }
 
@@ -130,8 +132,9 @@ public class Location implements Comparable<Location> {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Location))
+        if (!(o instanceof Location)) {
             return false;
+        }
         Location other = (Location) o;
         return basicBlock == other.basicBlock && handle == other.handle;
     }
@@ -150,4 +153,3 @@ public class Location implements Comparable<Location> {
     }
 }
 
-// vim:ts=4
