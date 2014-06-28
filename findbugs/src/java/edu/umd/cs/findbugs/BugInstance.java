@@ -115,6 +115,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * @see BugAnnotation
  */
 public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Serializable, Cloneable {
+
     private static final long serialVersionUID = 1L;
 
     private final String type;
@@ -141,16 +142,16 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     @CheckForNull
     private DetectorFactory detectorFactory;
 
-    private final AtomicReference<XmlProps> xmlProps = new AtomicReference<XmlProps>();
+    private final AtomicReference<XmlProps> xmlProps;
 
     /*
      * The following fields are used for tracking Bug instances across multiple
      * versions of software. They are meaningless in a BugCollection for just
      * one version of software.
      */
-    private long firstVersion = 0;
+    private long firstVersion;
 
-    private long lastVersion = -1;
+    private long lastVersion;
 
     private boolean introducedByChangeOfExistingClass;
 
@@ -162,23 +163,15 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
      */
     private static final int INVALID_HASH_CODE = 0;
 
+    private static final String ELEMENT_NAME = "BugInstance";
+
     /**
      * This value is used to indicate whether BugInstances should be
      * reprioritized very low, when the BugPattern is marked as experimental
      */
-    private static boolean adjustExperimental = false;
+    private static boolean adjustExperimental;
 
     private static Set<String> missingBugTypes = Collections.synchronizedSet(new HashSet<String>());
-
-    public static DateFormat firstSeenXMLFormat() {
-        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.ENGLISH);
-    }
-
-    /*
-    private boolean isFakeBugType(String type) {
-        return "MISSING".equals(type) || "FOUND".equals(type);
-    }
-     */
 
     public static class NoSuchBugPattern extends IllegalArgumentException {
         public final String type;
@@ -187,6 +180,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             this.type = type;
         }
     }
+
     /**
      * Constructor.
      *
@@ -198,6 +192,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     public BugInstance(String type, int priority) {
         this.type = type.intern();
         this.priority = priority;
+        lastVersion = -1;
+        xmlProps = new AtomicReference<XmlProps>();
         annotationList = new ArrayList<BugAnnotation>(4);
         cachedHashCode = INVALID_HASH_CODE;
 
@@ -216,6 +212,16 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         boundPriority();
     }
 
+    public static DateFormat firstSeenXMLFormat() {
+        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.ENGLISH);
+    }
+
+    /*
+    private boolean isFakeBugType(String type) {
+        return "MISSING".equals(type) || "FOUND".equals(type);
+    }
+     */
+
     private void boundPriority() {
         priority = boundedPriority(priority);
     }
@@ -223,7 +229,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     @Override
     public Object clone() {
         BugInstance dup;
-
         try {
             dup = (BugInstance) super.clone();
 
@@ -541,6 +546,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         throw new IllegalStateException("BugInstance for " + getType()
                 + " must contain at least one class, method, or field annotation");
     }
+
     public Collection<? extends SourceLineAnnotation> getAnotherInstanceSourceLineAnnotations() {
         // Highest priority: return the first top level source line annotation
         Collection<SourceLineAnnotation> result = new ArrayList<SourceLineAnnotation>();
@@ -1651,6 +1657,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     public BugInstance addCalledMethod(XMethod m) {
         return addMethod(m).describe(MethodAnnotation.METHOD_CALLED);
     }
+
     /**
      * Add a method annotation.
      *
@@ -1731,6 +1738,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         addMethod(MethodAnnotation.fromMethodDescriptor(method));
         return this;
     }
+
     /**
      * Add a method annotation. If this is the first method annotation added, it
      * becomes the primary method annotation.
@@ -1764,7 +1772,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         return this;
     }
 
-    /*
+    /**
      * Add an annotation about a parameter
      *
      * @param index parameter index, starting from 0
@@ -2364,8 +2372,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         int ageInDays = (int) (age / 1000 / 3600 / 24);
         return ageInDays;
     }
-
-    private static final String ELEMENT_NAME = "BugInstance";
 
     /*
      * ----------------------------------------------------------------------
