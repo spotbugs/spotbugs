@@ -579,10 +579,10 @@
     <target name="test" depends="runjunit,foundFindbugsTestCases" description="Run tests"/>
 
     <target name="runjunit" depends="junittests,jars,compileFindbugsTestCases">
-        <echo>Running JUnit test cases for FindBugs...</echo>
+        <echo>Running JUnit test cases for FindBugs, results will be in: ${junit.dir}</echo>
         <delete dir="${junit.dir}"/>
         <mkdir dir="${junit.dir}"/>
-        <junit fork="yes" printsummary="true">
+        <junit fork="yes" printsummary="true" haltonfailure="true" haltonerror="true">
             <jvmarg value="-ea"/>
             <jvmarg value="-Dfindbugs.home=."/>
             <jvmarg value="-DfindbugsTestCases.home=${findbugsTestCases.dir}"/>
