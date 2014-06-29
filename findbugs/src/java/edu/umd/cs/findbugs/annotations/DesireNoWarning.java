@@ -9,8 +9,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Annotation indicating that <em>no</em> FindBugs warning of the specified type
- * is not desired.
+ * Annotation indicating that <em>no</em> FindBugs warnings of the specified type
+ * is desired.
  *
  * See http://code.google.com/p/findbugs/wiki/FindbugsTestCases
  *
