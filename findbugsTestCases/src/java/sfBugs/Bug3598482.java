@@ -1,5 +1,7 @@
 package sfBugs;
 
+import edu.umd.cs.findbugs.annotations.DesireWarning;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3598482 {
@@ -26,8 +28,9 @@ public class Bug3598482 {
         }
     }
 
-    /*
-     * TODO    @ExpectWarning("BC_IMPOSSIBLE_INSTANCEOF")
+
+    @DesireWarning("BC_IMPOSSIBLE_INSTANCEOF")
+    @ExpectWarning("NP_NULL_INSTANCEOF")
     public static void main2(String[] args) {
 
         byte[] msg = null;
@@ -41,5 +44,5 @@ public class Bug3598482 {
         }
     }
 
-    */
+
 }
