@@ -1,5 +1,6 @@
-*.class
-.DS_Store
+**/local.properties
+**/*.class
+**/.DS_Store
 JSR305-testCases/build/
 NullPointerBenchmark/build/
 bluej/bin/
