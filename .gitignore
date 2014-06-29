@@ -27,6 +27,8 @@ findbugs/local.properties
 findbugs/optionalPlugin/
 findbugs/plugin/findbugsCommunalCloud.jar
 findbugs/plugin/webCloudClient.jar
+findbugs/plugin/googlecode.jar
+findbugs/plugin/jira.jar
 findbugs/src/doc/allBugDescriptions.html
 findbugs/src/doc/bugDescriptions.html
 findbugs/web/
