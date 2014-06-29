@@ -584,6 +584,7 @@
         <mkdir dir="${junit.dir}"/>
         <junit fork="yes" printsummary="true" haltonfailure="true" haltonerror="true">
             <jvmarg value="-ea"/>
+            <jvmarg value="-Xmx1200m"/>
             <jvmarg value="-Dfindbugs.home=."/>
             <jvmarg value="-DfindbugsTestCases.home=${findbugsTestCases.dir}"/>
             <formatter type="xml"/>   <!-- Hudson reads generated xml -->
