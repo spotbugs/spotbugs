@@ -19,6 +19,8 @@
     <property name="fb-baseline-ant.jar" value="${findbugs-baseline.home}/lib/findbugs-ant.jar" />
     <property name="history.dir" value="history"/>
     <property name="enabledExtraVisitors" value="+CheckExpectedWarnings,+InefficientMemberAccess,+EmptyZipFileEntry"/>
+    <property name="maxHeap" value="-Xmx900m"/>
+
 
     <path id="build.classpath">
         <pathelement location="${findbugs.home}/lib/annotations.jar" />
@@ -106,7 +108,7 @@
         <echo>Home is ${findbugs-baseline.home}</echo>
         <echo>fb-ant jar is ${fb-baseline-ant.jar}</echo>
         <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${fb-baseline-ant.jar}"/>
-        <findbugs home="${findbugs-baseline.home}"  jvmargs="-ea -Xmx900m"
+        <findbugs home="${findbugs-baseline.home}"  jvmargs="-ea ${maxHeap}"
              output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="${enabledExtraVisitors}" outputFile="build/baseline.xml">
             <sourcePath path="${basedir}/src/java" />
             <auxclasspath refid="build.classpath"/>
@@ -116,7 +118,7 @@
 
     <target name="runEffort" depends="classes">
         <echo>Test expected warnings with *min* effort</echo>
-        <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
+        <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
         	   output="xml:withMessages" timestampNow="true" reportLevel="low" effort="min"
         	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/minEffort.xml">
             <sourcePath path="${basedir}/src/java" />
@@ -137,7 +139,7 @@
          </printBugs>
 
         <echo>Test expected warnings with *less* effort</echo>
-        <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
+        <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
         	   output="xml:withMessages" timestampNow="true" reportLevel="low" effort="less"
         	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/lessEffort.xml">
             <sourcePath path="${basedir}/src/java" />
@@ -158,7 +160,7 @@
          </printBugs>
 
         <echo>Test expected warnings with *more* effort</echo>
-        <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
+        <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
         	   output="xml:withMessages" timestampNow="true" reportLevel="low" effort="more"
         	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/moreEffort.xml">
             <sourcePath path="${basedir}/src/java" />
@@ -180,7 +182,7 @@
          </printBugs>
 
         <echo>Test expected warnings with *max* effort</echo>
-        <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
+        <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
         	   output="xml:withMessages" timestampNow="true" reportLevel="low" effort="max"
         	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/maxEffort.xml">
             <sourcePath path="${basedir}/src/java" />
@@ -211,7 +213,7 @@
 
     <target name="runNormal" depends="classes">
         <echo>Test expected warnings with javac bytecode</echo>
-        <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m -Dfindbugs.sf.comment=false"
+        <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap} -Dfindbugs.sf.comment=false"
                output="xml:withMessages" timestampNow="true" reportLevel="low"
         	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/normal.xml">
             <sourcePath path="${basedir}/src/java" />
@@ -233,7 +235,7 @@
         </printBugs>
 
         <echo>Test expected warnings with javac bytecode and source</echo>
-        <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m -Dfindbugs.sf.comment=true"
+        <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap} -Dfindbugs.sf.comment=true"
                output="xml:withMessages" timestampNow="true" reportLevel="low"
         	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/analyzeSource.xml">
             <sourcePath path="${basedir}/src/java" />
@@ -255,7 +257,7 @@
         </printBugs>
 
         <echo>Test expected warnings with ecj bytecode</echo>
-        <findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx900m"
+        <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
                output="xml:withMessages" timestampNow="true" reportLevel="low"
         	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/normalEclipse.xml"
             noClassOk="true">
