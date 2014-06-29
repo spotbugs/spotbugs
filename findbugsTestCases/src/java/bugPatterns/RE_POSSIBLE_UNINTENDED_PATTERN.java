@@ -45,12 +45,14 @@ public class RE_POSSIBLE_UNINTENDED_PATTERN {
     }
 
     @NoWarning("RE_POSSIBLE_UNINTENDED_PATTERN")
+    @ExpectWarning("IIO_INEFFICIENT_INDEX_OF")
     int notBug2(String any) {
         return any.indexOf(".");
     }
 
 
     @NoWarning("RE_POSSIBLE_UNINTENDED_PATTERN")
+    @ExpectWarning("IIO_INEFFICIENT_INDEX_OF")
     int notBug22(String any) {
         return any.indexOf("|");
     }
