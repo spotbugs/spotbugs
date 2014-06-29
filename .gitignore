@@ -47,6 +47,7 @@ plugins/poweruser/build/
 plugins/webCloudClient/build/
 plugins/webCloudClient/build/
 plugins/webCloudClient/lib/
+sandbox/detectorTutorial/build/
 sandbox/localCloud/build/
 sandbox/localCloud/classes/
 server/appengine/war/WEB-INF/classes/
