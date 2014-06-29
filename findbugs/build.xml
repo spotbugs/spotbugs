@@ -122,6 +122,12 @@
                 </javac>
     </target>
     <target name="classes" depends="init">
+        <echo>Requires JDK 7.x (not 8!), using: ${ant.java.version}</echo>
+        <fail message="Requires JDK 7.x (not 8!), using: ${ant.java.version}">
+             <condition>
+                 <equals arg1="1.8" arg2="${ant.java.version}"/>
+             </condition>
+         </fail>
 
         <!-- Compile Java source files. -->
         <echo level="info" message="compiling findbugs"/>

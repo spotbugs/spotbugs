@@ -67,6 +67,12 @@
     </target>
 
     <target name="classes">
+        <echo>Requires JDK 7.x (not 8!), using: ${ant.java.version}</echo>
+        <fail message="Requires JDK 7.x (not 8!), using: ${ant.java.version}">
+             <condition>
+                 <equals arg1="1.8" arg2="${ant.java.version}"/>
+             </condition>
+         </fail>
         <mkdir dir="build/classes"/>
         <javac destdir="build/classes" source="1.7" target="1.7" debug="on" encoding="UTF-8" includeantruntime="false">
             <src path="src/java"/>
