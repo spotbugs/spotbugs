@@ -11,7 +11,7 @@
     <property name="junitsrc.dir" value="src/junit"/>
     <property name="junit.dir" value="build/junit"/>
     <property name="fb-ant.jar" value="${findbugs.home}/lib/findbugs-ant.jar" />
-       
+
 
     <target name="classes" >
         <mkdir dir="${classes.dir}"/>
@@ -54,7 +54,13 @@
         </filterBugs>
         <printBugs home="${findbugs.home}"
                 inputFile="build/unexpected.xml"
+                errorProperty="bugsReported"
                 format="text">
         </printBugs>
+    	<fail message="Unexpected bug warning(s) found, check the 'printBugs' output!">
+    	            <condition>
+    	                <isset property="bugsReported"/>
+    	            </condition>
+    	</fail>
     </target>
 </project>
