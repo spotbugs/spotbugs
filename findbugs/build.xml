@@ -363,7 +363,7 @@
 
 
   <target name="applystylesheets" depends="jars,runanttask">
-   <property name="findbugs.home" value="." />
+   <property name="findbugs.home" value="${basedir}" />
    <java classname="edu.umd.cs.findbugs.PrintingBugReporter"
            fork="true"
            failonerror="true"
@@ -372,8 +372,8 @@
         <classpath>
            <pathelement location="${jar.dir}/findbugs.jar"/>
         </classpath>
-    <jvmarg value="-ea"/>
-    <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
+        <jvmarg value="-ea"/>
+        <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
         <arg value="-html:fancy.xsl"/>
         <arg value="${sampleoutput.dir}/bcel.xml"/>
     </java>
@@ -385,8 +385,8 @@
         <classpath>
            <pathelement location="${jar.dir}/findbugs.jar"/>
         </classpath>
-    <jvmarg value="-ea"/>
-    <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
+        <jvmarg value="-ea"/>
+        <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
         <arg value="-html:default.xsl"/>
         <arg value="${sampleoutput.dir}/bcel.xml"/>
     </java>
@@ -398,8 +398,8 @@
         <classpath>
            <pathelement location="${jar.dir}/findbugs.jar"/>
         </classpath>
-    <jvmarg value="-ea"/>
-    <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
+        <jvmarg value="-ea"/>
+        <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
         <arg value="-html:plain.xsl"/>
         <arg value="${sampleoutput.dir}/bcel.xml"/>
     </java>
@@ -411,20 +411,17 @@
         <classpath>
            <pathelement location="${jar.dir}/findbugs.jar"/>
         </classpath>
-    <jvmarg value="-ea"/>
-    <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
+        <jvmarg value="-ea"/>
+        <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
         <arg value="-html:summary.xsl"/>
         <arg value="${sampleoutput.dir}/bcel.xml"/>
     </java>
-
-
-
-
   </target>
+
   <target name="runanttask" depends="anttask,jars">
-   <property name="findbugs.home" value="." />
+   <property name="findbugs.home" value="${basedir}" />
     <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
-    <findbugs home="."
+    <findbugs home="${basedir}"
               output="xml:withMessages"
               jvmargs="-ea -Xmx1200m"
               projectName="Byte code Engineering Library (BCEL)"
@@ -432,7 +429,7 @@
             >
       <class location="${jar.dir}/bcel-6.0-SNAPSHOT.jar" />
     </findbugs>
-    <findbugs home="."
+    <findbugs home="${basedir}"
               output="xml:withMessages"
               cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
               jvmargs="-ea -Xmx1200m"
@@ -442,7 +439,7 @@
     </findbugs>
 
 
-<setBugDatabaseInfo home="."
+<setBugDatabaseInfo home="${basedir}"
     withMessages="true"
     name="Set name test"
     input="${sampleoutput.dir}/bcel.xml"
@@ -469,10 +466,10 @@
 
 
   <target name="findbugscheck" depends="anttask,junittests,jars">
-    <property name="findbugs.home" value="." />
+    <property name="findbugs.home" value="${basedir}" />
     <ant dir="${pluginsSrc.dir}/findbugsCommunalCloud" target="install" inheritAll="false" />
     <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
-    <findbugs home="."
+    <findbugs home="${basedir}"
               output="xml:withMessages"
               cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
               jvmargs="-ea -Xmx1200m -Dfindbugs.failOnCloudError=true -Dfindbugs.cloud.token=238b6fc80cec17ec"
@@ -486,7 +483,7 @@
       <auxClasspath refid="tools.classpath"/>
       <auxClasspath path="lib/ant.jar"/>
     </findbugs>
-    <filterBugs home="."
+    <filterBugs home="${basedir}"
               withMessages="true"
               notAProblem="false"
               jvmargs="-ea -Xmx1200m"
@@ -496,10 +493,10 @@
   </target>
 
   <target name="findbugscheck-cloud-fails" depends="anttask,junittests,jars">
-    <property name="findbugs.home" value="." />
+    <property name="findbugs.home" value="${basedir}" />
     <ant dir="${pluginsSrc.dir}/findbugsCommunalCloud" target="install" inheritAll="false" />
     <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
-    <findbugs home="."
+    <findbugs home="${basedir}"
               output="xml:withMessages"
               cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
               jvmargs="-ea -Xmx1200m -Dfindbugs.failOnCloudError=true -Dwebcloud.host=example.com"
@@ -521,9 +518,9 @@
   </target>
 
   <target name="findbugsTestCases" depends="anttask,junittests,jars,findbugsTestCases.check" if="findbugsTestCases.exists">
-   <property name="findbugs.home" value="." />
+   <property name="findbugs.home" value="${basedir}" />
     <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
-    <findbugs home="."
+    <findbugs home="${basedir}"
               output="xml"
               jvmargs="-ea -Xmx1200m"
               projectName="FindBugsTestCases"
@@ -538,7 +535,7 @@
          interface with plugins.  Note that the generated .xml file is
          kept in the ${sampleoutput.dir} for later perusal. -->
     <target name="plugincheck" depends="anttask">
-        <property name="findbugs.home" value="." />
+        <property name="findbugs.home" value="${basedir}" />
         <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
         <!-- download the plugin -->
         <echo message="curl ${plugincheck.jar} -o ${plugin.dir}/${plugincheck.jar}"/>
@@ -582,10 +579,10 @@
         <echo>Running JUnit test cases for FindBugs, results will be in: ${junit.dir}</echo>
         <delete dir="${junit.dir}"/>
         <mkdir dir="${junit.dir}"/>
-        <junit fork="yes" printsummary="true" haltonfailure="true" haltonerror="true">
+        <junit fork="yes" printsummary="true" haltonfailure="true" haltonerror="true" dir="${basedir}">
             <jvmarg value="-ea"/>
             <jvmarg value="-Xmx1200m"/>
-            <jvmarg value="-Dfindbugs.home=."/>
+            <jvmarg value="-Dfindbugs.home=${basedir}"/>
             <jvmarg value="-DfindbugsTestCases.home=${findbugsTestCases.dir}"/>
             <formatter type="xml"/>   <!-- Hudson reads generated xml -->
             <classpath refid="tools.classpath"/>
@@ -756,7 +753,7 @@
             logError="true"
             output="${bugdesc.output}">
             <jvmarg value="-ea"/>
-            <jvmarg value="-Dfindbugs.home=."/>
+            <jvmarg value="-Dfindbugs.home=${basedir}"/>
             <jvmarg value="-Dfindbugs.bugdesc.unabridged=${bugdesc.unabridged}"/>
             <classpath refid="tools.classpath"/>
             <arg value="${bugdesc.title}"/>
@@ -1045,13 +1042,13 @@
         </patternset>
 
         <zip destfile="${build.dir}/findbugs-${release.number}.zip" compress="true">
-            <zipfileset prefix="findbugs-${release.number}" dir=".">
+            <zipfileset prefix="findbugs-${release.number}" dir="${basedir}">
                 <patternset refid="bindist.miscfile.pats"/>
             </zipfileset>
-            <zipfileset prefix="findbugs-${release.number}" dir="." filemode="555">
+            <zipfileset prefix="findbugs-${release.number}" dir="${basedir}" filemode="555">
                 <patternset refid="bindist.unixscript.pats"/>
             </zipfileset>
-            <zipfileset prefix="findbugs-${release.number}" dir=".">
+            <zipfileset prefix="findbugs-${release.number}" dir="${basedir}">
                 <patternset refid="bindist.jar.pats"/>
             </zipfileset>
             <zipfileset prefix="findbugs-${release.number}/doc" dir="${doc.dir}">
@@ -1061,13 +1058,13 @@
         </zip>
 
         <tar destfile="${build.dir}/findbugs-${release.number}.tar.gz" compression="gzip">
-            <tarfileset prefix="findbugs-${release.number}" dir=".">
+            <tarfileset prefix="findbugs-${release.number}" dir="${basedir}">
                 <patternset refid="bindist.miscfile.pats"/>
             </tarfileset>
-            <tarfileset prefix="findbugs-${release.number}" dir="." mode="555">
+            <tarfileset prefix="findbugs-${release.number}" dir="${basedir}" mode="555">
                 <patternset refid="bindist.unixscript.pats"/>
             </tarfileset>
-            <tarfileset prefix="findbugs-${release.number}" dir=".">
+            <tarfileset prefix="findbugs-${release.number}" dir="${basedir}">
                 <patternset refid="bindist.jar.pats"/>
             </tarfileset>
             <tarfileset prefix="findbugs-${release.number}/doc" dir="${doc.dir}">
@@ -1079,13 +1076,13 @@
         <move file="optionalPlugin/noUpdateChecks.jar" todir="plugin"/>
 
         <zip destfile="${build.dir}/findbugs-noUpdateChecks-${release.number}.zip" compress="true">
-            <zipfileset prefix="findbugs-${release.number}" dir=".">
+            <zipfileset prefix="findbugs-${release.number}" dir="${basedir}">
                 <patternset refid="bindist.miscfile.pats"/>
             </zipfileset>
-            <zipfileset prefix="findbugs-${release.number}" dir="." filemode="555">
+            <zipfileset prefix="findbugs-${release.number}" dir="${basedir}" filemode="555">
                 <patternset refid="bindist.unixscript.pats"/>
             </zipfileset>
-            <zipfileset prefix="findbugs-${release.number}" dir=".">
+            <zipfileset prefix="findbugs-${release.number}" dir="${basedir}">
                 <patternset refid="bindist2.jar.pats"/>
             </zipfileset>
             <zipfileset prefix="findbugs-${release.number}/doc" dir="${doc.dir}">
@@ -1095,13 +1092,13 @@
         </zip>
 
         <tar destfile="${build.dir}/findbugs-noUpdateChecks-${release.number}.tar.gz" compression="gzip">
-            <tarfileset prefix="findbugs-${release.number}" dir=".">
+            <tarfileset prefix="findbugs-${release.number}" dir="${basedir}">
                 <patternset refid="bindist.miscfile.pats"/>
             </tarfileset>
-            <tarfileset prefix="findbugs-${release.number}" dir="." mode="555">
+            <tarfileset prefix="findbugs-${release.number}" dir="${basedir}" mode="555">
                 <patternset refid="bindist.unixscript.pats"/>
             </tarfileset>
-            <tarfileset prefix="findbugs-${release.number}" dir=".">
+            <tarfileset prefix="findbugs-${release.number}" dir="${basedir}">
                 <patternset refid="bindist2.jar.pats"/>
             </tarfileset>
             <tarfileset prefix="findbugs-${release.number}/doc" dir="${doc.dir}">
@@ -1238,7 +1235,7 @@
     <fileset dir="${toolsrc.dir}"/>
     <fileset dir="${anttasksrc.dir}"/>
     <fileset dir="${junitsrc.dir}"/>
-    <fileset dir=".">
+    <fileset dir="${basedir}">
       <include name="LICENSE*.txt"/>
     </fileset>
   </jar>
