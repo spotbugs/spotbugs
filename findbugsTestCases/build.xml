@@ -32,9 +32,11 @@
         </fileset>
     </path>
 
-    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${fb-ant.jar}"/>
-    <taskdef name="filterBugs" classname="edu.umd.cs.findbugs.anttask.FilterBugsTask" classpath="${fb-ant.jar}"/>
-    <taskdef name="printBugs" classname="edu.umd.cs.findbugs.anttask.ConvertXmlToTextTask" classpath="${fb-ant.jar}"/>
+	<target name="defineTasks">
+        <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${fb-ant.jar}" />
+        <taskdef name="filterBugs" classname="edu.umd.cs.findbugs.anttask.FilterBugsTask" classpath="${fb-ant.jar}"/>
+        <taskdef name="printBugs" classname="edu.umd.cs.findbugs.anttask.ConvertXmlToTextTask" classpath="${fb-ant.jar}"/>
+	</target>
 
     <target name="build" depends="classes,runfindbugs,runEffort" />
 
@@ -52,7 +54,7 @@
 
     <target name="errorprone" depends="clean">
         <mkdir dir="build/classes"/>
-        <javac destdir="build/classes" source="1.7" debug="on" includeantruntime="false"
+        <javac destdir="build/classes" source="1.7" target="1.7" debug="on" includeantruntime="false"
         	   compiler="com.google.errorprone.ErrorProneAntCompilerAdapter">
             <src path="src/java"/>
             <src path="src/fakeAnnotations"/>
@@ -66,7 +68,7 @@
 
     <target name="classes">
         <mkdir dir="build/classes"/>
-        <javac destdir="build/classes" source="1.7" debug="on" encoding="UTF-8" includeantruntime="false">
+        <javac destdir="build/classes" source="1.7" target="1.7" debug="on" encoding="UTF-8" includeantruntime="false">
             <src path="src/java"/>
             <src path="src/fakeAnnotations"/>
             <src path="src/fakeLibraries"/>
@@ -116,7 +118,7 @@
         </findbugs>
     </target>
 
-    <target name="runEffort" depends="classes">
+    <target name="runEffort" depends="classes,defineTasks">
         <echo>Test expected warnings with *min* effort</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
         	   output="xml:withMessages" timestampNow="true" reportLevel="low" effort="min"
@@ -211,7 +213,7 @@
     </target>
 
 
-    <target name="runNormal" depends="classes">
+    <target name="runNormal" depends="classes,defineTasks">
         <echo>Test expected warnings with javac bytecode</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap} -Dfindbugs.sf.comment=false"
                output="xml:withMessages" timestampNow="true" reportLevel="low"
