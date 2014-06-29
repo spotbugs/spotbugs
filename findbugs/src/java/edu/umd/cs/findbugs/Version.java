@@ -65,11 +65,11 @@ public class Version {
      * Release candidate number. "0" indicates that the version is not a release
      * candidate.
      */
-    public static final int RELEASE_CANDIDATE = 0;
+    public static final int RELEASE_CANDIDATE = 2;
 
 
     public static final String GIT_REVISION  = System.getProperty("git.revision", "UNKNOWN");
-    
+
     /**
      * Release date.
      */
@@ -107,14 +107,15 @@ public class Version {
     private static final String RELEASE_SUFFIX_WORD;
     static {
         String suffix;
-        if (RELEASE_CANDIDATE > 0)
+        if (RELEASE_CANDIDATE > 0) {
             suffix = "rc" + RELEASE_CANDIDATE;
-        else if (PREVIEW > 0)
+        } else if (PREVIEW > 0) {
             suffix = "preview" + PREVIEW;
-        else {
+        } else {
             suffix = "dev-" + COMPUTED_ECLIPSE_DATE;
-            if (!GIT_REVISION.equals("Unknown"))
+            if (!GIT_REVISION.equals("Unknown")) {
                 suffix += "-" + GIT_REVISION;
+            }
         }
         RELEASE_SUFFIX_WORD = suffix;
     }
@@ -144,7 +145,7 @@ public class Version {
         String release = null;
         String date = null;
         String plugin_release_date = null;
-        if (!fromFile)
+        if (!fromFile) {
             try {
                 Properties versionProperties = new Properties();
                 in = Version.class.getResourceAsStream("version.properties");
@@ -159,12 +160,16 @@ public class Version {
             } finally {
                 Util.closeSilently(in);
             }
-        if (release == null)
+        }
+        if (release == null) {
             release = COMPUTED_RELEASE;
-        if (date == null)
+        }
+        if (date == null) {
             date = COMPUTED_DATE;
-        if (plugin_release_date == null)
+        }
+        if (plugin_release_date == null) {
             plugin_release_date = COMPUTED_PLUGIN_RELEASE_DATE;
+        }
 
         RELEASE = release;
         DATE = date;
@@ -175,8 +180,9 @@ public class Version {
 
             parsedDate = fmt.parse(CORE_PLUGIN_RELEASE_DATE);
         } catch (ParseException e) {
-            if (SystemProperties.ASSERTIONS_ENABLED)
+            if (SystemProperties.ASSERTIONS_ENABLED) {
                 e.printStackTrace();
+            }
             parsedDate = null;
         }
         releaseDate = parsedDate;
@@ -223,11 +229,11 @@ public class Version {
 
         String arg = argv[0];
 
-        if (arg.equals("-release"))
+        if (arg.equals("-release")) {
             System.out.println(RELEASE);
-        else if (arg.equals("-date"))
+        } else if (arg.equals("-date")) {
             System.out.println(DATE);
-        else if (arg.equals("-props")) {
+        } else if (arg.equals("-props")) {
             System.out.println("release.base=" + RELEASE_BASE);
             System.out.println("release.number=" + COMPUTED_RELEASE);
             System.out.println("release.date=" + COMPUTED_DATE);
@@ -243,11 +249,13 @@ public class Version {
                 System.out.println("  description: " + p.getShortDescription());
                 System.out.println("     provider: " + p.getProvider());
                 String version = p.getVersion();
-                if (version != null && version.length() > 0)
+                if (version != null && version.length() > 0) {
                     System.out.println("      version: " + version);
+                }
                 String website = p.getWebsite();
-                if (website != null && website.length() > 0)
-                  System.out.println("      website: " + website);
+                if (website != null && website.length() > 0) {
+                    System.out.println("      website: " + website);
+                }
                 System.out.println();
             }
         } else if (arg.equals("-configuration")){
@@ -264,8 +272,9 @@ public class Version {
     }
 
     public static String getReleaseWithDateIfDev() {
-        if (IS_DEVELOPMENT)
+        if (IS_DEVELOPMENT) {
             return RELEASE + " (" + DATE + ")";
+        }
         return RELEASE;
     }
 
@@ -283,14 +292,18 @@ public class Version {
             for (Plugin plugin : Plugin.getAllPlugins()) {
                 System.out.printf("Plugin %s, version %s, loaded from %s%n", plugin.getPluginId(), plugin.getVersion(),
                         plugin.getPluginLoader().getURL());
-                if (plugin.isCorePlugin())
+                if (plugin.isCorePlugin()) {
                     System.out.println("  is core plugin");
-                if (plugin.isInitialPlugin())
+                }
+                if (plugin.isInitialPlugin()) {
                     System.out.println("  is initial plugin");
-                if (plugin.isEnabledByDefault())
+                }
+                if (plugin.isEnabledByDefault()) {
                     System.out.println("  is enabled by default");
-                if (plugin.isGloballyEnabled())
+                }
+                if (plugin.isGloballyEnabled()) {
                     System.out.println("  is globally enabled");
+                }
                 Plugin parent = plugin.getParentPlugin();
                 if (parent != null) {
                     System.out.println("  has parent plugin " + parent.getPluginId());
@@ -306,8 +319,9 @@ public class Version {
                 System.out.println();
             }
             printPluginUpdates(true, 10);
-        } else
+        } else {
             printPluginUpdates(false, 3);
+        }
     }
 
     private static void printPluginUpdates(boolean verbose, int secondsToWait) throws InterruptedException {
@@ -330,8 +344,9 @@ public class Version {
         try {
             Collection<UpdateChecker.PluginUpdate> updates = updateHolder.get(secondsToWait, TimeUnit.SECONDS);
             if (updates.isEmpty()) {
-                if (verbose)
+                if (verbose) {
                     System.out.println("none!");
+                }
             } else {
                 System.out.println();
                 for (UpdateChecker.PluginUpdate update : updates) {
@@ -341,8 +356,9 @@ public class Version {
                 }
             }
         } catch (TimeoutException e) {
-            if (verbose)
+            if (verbose) {
                 System.out.println("Timeout while trying to get updates");
+            }
         }
 
     }
