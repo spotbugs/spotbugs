@@ -114,8 +114,14 @@
 
     <target name="classes" depends="init,fbjars" description="Compile java source files">
         <echo message="Compiling FindBugs Eclipse plugin"/>
+        <echo>Requires JDK 7.x (not 8!), using: ${ant.java.version}</echo>
+        <fail message="Requires JDK 7.x (not 8!), using: ${ant.java.version}">
+             <condition>
+                 <equals arg1="1.8" arg2="${ant.java.version}"/>
+             </condition>
+         </fail>
         <fail unless="eclipsePlugin.dir"
-            message="Please specify path to the Eclipse 3.3+ plugins folder in local.properties file, like: eclipsePlugin.dir=F:\\java\\eclipse33\\plugins"/>
+            message="Please specify path to the Eclipse 3.6+ plugins folder in local.properties file, like: eclipsePlugin.dir=F:\\java\\eclipse33\\plugins"/>
         <!-- Compile Java source files. -->
         <javac srcdir="${src.dir}"
                   includeantruntime="false"
