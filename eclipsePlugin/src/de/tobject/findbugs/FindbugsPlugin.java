@@ -247,11 +247,11 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             System.setProperty("findbugs.cloud.default", defCloud);
         }
 
-        // enable source searching for "fall" (ignore case) in switch statements
-        SystemProperties.setProperty("findbugs.sf.comment", "true");
-
         /** Don't load main classes */
         FindBugs.setNoMains();
+
+        // enable source searching for "fall" (ignore case) in switch statements
+        SystemProperties.setProperty("findbugs.sf.comment", "true");
 
         // Register our save participant
         FindbugsSaveParticipant saveParticipant = new FindbugsSaveParticipant();
