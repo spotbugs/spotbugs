@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "http://findbugs.googlecode.com/git/findbugs/etc/docbook/docbookx.dtd"
-[
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                    "../../etc/docbook/docbookx.dtd" [
 <!ENTITY FindBugs "<application>FindBugs</application>">
 <!ENTITY Ant "<application>Ant</application>">
 <!ENTITY Saxon "<application>Saxon</application>">
@@ -13,7 +13,7 @@
 <bookinfo>
 <title>&FindBugs;&trade; マニュアル</title>
 
-<authorgroup>
+<authorgroup lang="en">
   <author>
     <firstname>David</firstname>
     <othername>H.</othername>
@@ -26,12 +26,8 @@
     </author>
 </authorgroup>
 
-<copyright>
-  <year>2003</year>
-  <year>2004</year>
-  <year>2005</year>
-  <year>2006</year>
-  <year>2008</year>
+<copyright lang="en">
+  <year>2003 - 2012</year>
   <holder>University of Maryland</holder>
 </copyright>
 
@@ -42,7 +38,7 @@
 
 <edition>@VERSION@</edition>
 
-<pubdate>@RELEASE_DATE@</pubdate>
+<pubdate>@RELEASE_DATE@ (翻訳 2014年7月)</pubdate>
 
 </bookinfo>
 
@@ -120,7 +116,7 @@
   </listitem>
   <listitem>
     <para>
-      <ulink url="http://java.sun.com/j2se/">JDK 1.5.0 ベータ またはそれ以降</ulink>
+      <ulink url="http://java.sun.com/j2se/">JDK 1.5.0 またはそれ以降</ulink>
     </para>
   </listitem>
   <listitem>
@@ -636,6 +632,37 @@ The second invokes the Command Line Interface (Text UI):
   </listitem>
   </varlistentry>
 
+  <varlistentry>
+  <term><command>-auxclasspathFromInput</command> </term>
+  <listitem>
+    <para>分析時に使用する補助クラスパスを標準入力から読み込みます。標準入力の各行が分析時に使用する補助クラスパスに追加されます。</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-auxclasspathFromFile</command> <replaceable>ファイルパス</replaceable></term>
+  <listitem>
+    <para>分析時に使用する補助クラスパスをファイルから読み込みます。ファイルの各行が分析時に使用する補助クラスパスに追加されます。</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-analyzeFromFile</command> <replaceable>ファイルパス</replaceable></term>
+  <listitem>
+    <para>分析対象ファイルをファイルから読み込みます。ファイルの各行が分析対象クラスパスに追加されます。</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-userPrefs</command> <replaceable>edu.umd.cs.findbugs.core.prefs</replaceable></term>
+  <listitem>
+    <para>ユーザー設定ファイルのパスを設定します。ユーザー設定ファイルの内容で、他のオプションの一部を上書きすることができます。 
+    <literal>userPrefs</literal> を一番目の引数に指定した場合は、後続のオプションの方がユーザー設定ファイルの内容に優先します。
+    <literal>userPrefs</literal> を最後の引数に指定した場合は、ユーザー設定ファイルの内容の方が前に指定したオプションに優先します。
+    このオプションを設けた背景・理由は、 Eclipse プロジェクトの FindBugs の設定をコマンドライン実行で再利用するためです。</para>
+  </listitem>
+  </varlistentry>
+
 <!--
   <varlistentry>
   <term><command></command> <replaceable></replaceable></term>
@@ -668,7 +695,7 @@ The second invokes the Command Line Interface (Text UI):
 </mediaobject>
 </para>
 
-<para>「Class archives and directories to analyze」テキストフィールドの横にある 「Add」ボタンを押すと、バグを分析する java クラスを含んでいる Java アーカイブファイル (zip, jar, ear, or war file) を選択して指定できます。複数の アーカイブ/ディレクトリーを追加することが可能です。</para>
+<para>「Classpath to analyze」の横にある 「Add」ボタンを押すと、バグを分析する java クラスを含んでいる Java アーカイブファイル (zip, jar, ear, or war file) を選択して指定できます。複数の アーカイブ/ディレクトリーを追加することが可能です。</para>
 
 <para>また、分析を行う Java アーカイブのソースコードを含んだソースディレクトリーを指定することもできます。そうすると、バグの可能性があるソースコードの場所が、&FindBugs; 上でハイライトして表示されます。ソースディレクトリーは、Java パッケージ階層のルートディレクトリーを指定する必要があります。例えば、ユーザのアプリケーションが <varname>org.foobar.myapp</varname> パッケージの中にある場合は、 <filename class="directory">org</filename> ディレクトリーの親ディレクトリーをソースディレクトリーリストに指定する必要があります。</para>
 
@@ -678,7 +705,7 @@ The second invokes the Command Line Interface (Text UI):
 
 <sect1>
 <title>分析の実行</title>
-<para>アーカイブ、ディレクトリーおよびソースディレクトリーの指定ができれば、「Finish」ボタンを押して Jar ファイルに含まれるクラスに対する分析を実行します。巨大なプロジェクトを古いコンピュータ上で実行すると、かなりの時間(数十分)がかかることに注意してください。大容量メモリである最近のコンピュータなら、大きなプログラムであっても数分程度で分析できます。</para>
+<para>アーカイブ、ディレクトリーおよびソースディレクトリーの指定ができれば、「Analyze」ボタンを押して Jar ファイルに含まれるクラスに対する分析を実行します。巨大なプロジェクトを古いコンピュータ上で実行すると、かなりの時間(数十分)がかかることに注意してください。大容量メモリである最近のコンピュータなら、大きなプログラムであっても数分程度で分析できます。</para>
 </sect1>
 
 <sect1>
@@ -803,9 +830,22 @@ Command Line Interface.
 <sect1>
 <title>パラメーター</title>
 
-<para>このセクションでは、 &FindBugs; タスクを使用する際に、指定することができるパラメーターについて説明します。<variablelist> <varlistentry> <term><literal>class</literal></term>
+<para>このセクションでは、 &FindBugs; タスクを使用する際に、指定することができるパラメーターについて説明します。
+
+<variablelist>
+
+  <varlistentry>
+    <term><literal>class</literal></term>
     <listitem>
-       <para>分析の対象となるクラス群を指定するためのネストされる要素です。<literal>class</literal> 要素には <literal>location</literal> 属性の指定が必須です。分析対象となるアーカイブファイル (jar, zip, 他)、ディレクトリーまたはクラスファイルの名前を記述します。1 つの <literal>findbugs</literal> 要素に対して、複数の <literal>class</literal> 子要素を指定することができます。</para>
+       <para>任意指定のネストされる要素です。分析の対象となるクラス群を指定します。
+       <literal>class</literal> 要素には <literal>location</literal> 属性の指定が必須です。
+       分析対象となるアーカイブファイル (jar, zip, 他)、ディレクトリーまたはクラスファイルの名前を記述します。
+       1 つの <literal>findbugs</literal> 要素に対して、複数の <literal>class</literal> 子要素を指定することができます。
+       </para>
+       <para><literal>class</literal> 要素の指定を置き換えるまたは追加する形で、 &FindBugs; タスクに1個以上の <literal>fileset</literal> 要素を記述することで
+       分析するファイル群を指定することができます。
+       例えば、 fileset において特定のディレクトリにある全ての jar ファイルを分析対象に指定することができます。
+       </para>
     </listitem>
   </varlistentry>
 
@@ -840,7 +880,12 @@ Command Line Interface.
   <varlistentry>
     <term><literal>reportLevel</literal></term>
     <listitem>
-       <para>任意指定の属性です。報告されるバグの優先度のしきい値を指定します。「low」に設定すると、すべてのバグが報告されます。「medium」 (デフォルト) に設定すると、優先度 (中)および優先度 (高)のバグが報告されます。「high」に設定すると、優先度 (高) のバグのみが報告されます。</para>
+       <para>
+       任意指定の属性です。報告される問題の信頼度・優先度のしきい値を指定します。
+       「low」に設定すると、バグ報告が信頼度により除外されることはありません。
+       「medium」 (デフォルト) に設定すると、信頼度(低)の問題が除外されます。
+       「high」に設定すると、信頼度(高) のバグのみが報告されます。
+       </para>
     </listitem>
   </varlistentry>
 
@@ -909,7 +954,22 @@ Command Line Interface.
   <varlistentry>
     <term><literal>omitVisitors</literal></term>
     <listitem>
-       <para>任意指定の属性です。<literal>visitors</literal> 属性と似ていますが、こちらは <emphasis>実行されない</emphasis> ディテクタを指定します。</para>
+       <para>
+       任意指定の属性です。
+       バグディテクタをコンマ区切りのリストで指定します。
+       <literal>visitors</literal> 属性と似ていますが、こちらは <emphasis>実行されない</emphasis> ディテクタを指定します。
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>chooseVisitors</literal></term>
+    <listitem>
+       <para>
+       任意指定の属性です。
+       頭に「+」または「-」を付け加えたバグディテクタをコンマ区切りのリストで指定します。
+       「+」を付け加えたバグディテクタは有効に、「-」を付け加えたバグディテクタは無効になります。
+       </para>
     </listitem>
   </varlistentry>
 
@@ -976,6 +1036,29 @@ Command Line Interface.
       </listitem>
   </varlistentry>
 
+  <varlistentry>
+      <term><literal>userPreferencesFile</literal></term>
+      <listitem>
+          <para>
+              任意指定の属性です。
+              ユーザー設定ファイルのパスを設定します。ユーザー設定ファイルの内容で、他のオプションの一部を上書きすることができます。 
+              <literal>userPreferencesFile</literal> を一番目の引数に指定した場合は、後続のオプションの方がユーザー設定ファイルの内容に優先します。
+              <literal>userPreferencesFile</literal> を最後の引数に指定した場合は、ユーザー設定ファイルの内容の方が前に指定したオプションに優先します。
+              このオプションを設けた背景・理由は、 Eclipse プロジェクトの FindBugs の設定をコマンドライン実行で再利用するためです。
+            </para>
+      </listitem>
+  </varlistentry>
+
+  <varlistentry>
+      <term><literal>nested</literal></term>
+      <listitem>
+          <para>
+              任意指定の属性です。分析対象のファイル・ディレクトリーリストにあるファイル内にネストされた jar および zip ファイルに対する分析を有効化・無効化します。
+              デフォルトでは、ネストされた jar/zip の分析は有効です。
+          </para>
+      </listitem>
+  </varlistentry>
+
 </variablelist>
 
 
@@ -998,7 +1081,11 @@ Command Line Interface.
 <chapter id="eclipse">
 <title>&FindBugs;&trade; Eclipse プラグインの使用方法</title>
 
-<para>FindBugs Eclipse プラグインを使用することによって、 &FindBugs; を <ulink url="http://www.eclipse.org/">Eclipse</ulink> IDE で使用することができるようになります。このFindBugs Eclipse プラグインは、 Peter Friese 氏の多大な貢献によるものです。Phil Crosby 氏 と Andrei Loskutov 氏は、プラグインの重要な改良に貢献しました。</para>
+<para>
+FindBugs Eclipse プラグインを使用することによって、 &FindBugs; を <ulink url="http://www.eclipse.org/">Eclipse</ulink> IDE で使用することができるようになります。
+このFindBugs Eclipse プラグインは、 Peter Friese 氏の多大な貢献によるものです。
+Phil Crosby 氏 と Andrey Loskutov 氏は、プラグインの重要な改良に貢献しました。
+</para>
 
 <sect1>
 <title>必要条件</title>
@@ -1020,7 +1107,7 @@ Command Line Interface.
     </listitem>
     </varlistentry>
 
-    <varlistentry><term><ulink url="http://findbugs.cs.umd.edu/eclipse-candidate/">http://findbugs.cs.umd.edu/eclips-candidate/</ulink></term>
+    <varlistentry><term><ulink url="http://findbugs.cs.umd.edu/eclipse-candidate/">http://findbugs.cs.umd.edu/eclipse-candidate/</ulink></term>
 
       <listitem>
         <para>FindBugsの公式リリース物に加えて、公式リリース候補版を提供します。</para>
@@ -1064,13 +1151,86 @@ Command Line Interface.
 </sect1>
 
 <sect1>
+<title>Eclipse プラグインの拡張方法 (2.0.0 以降)</title>
+<para>
+Eclipse プラグインでは、 独自の &FindBugs; ディテクタを追加することができます。
+(詳しく知りたい方は、
+<ulink url="http://code.google.com/p/findbugs/source/browse/findbugs/src/doc/AddingDetectors.txt">AddingDetectors.txt</ulink>
+もご覧ください)。 
+独自のプラグインを Eclipse に追加するには以下の2通りの方法があります。
+</para>
+<itemizedlist>
+  <listitem>
+    <para>
+    既存の標準 &FindBugs; ディテクタパッケージは以下で設定できます。 
+    <menuchoice>
+        <guimenu>Window</guimenu>
+        <guimenuitem>Preferences</guimenuitem>
+        <guimenuitem>Java</guimenuitem>
+        <guimenuitem>FindBugs</guimenuitem>
+        <guimenuitem>Misc. Settings</guimenuitem>
+        <guimenuitem>Custom Detectors</guimenuitem>
+    </menuchoice>。
+    ここで追加するプラグインライブラリの場所を指定するだけです。
+    </para>
+
+    <para>
+    この方法の利点は、既存のディテクタパッケージは「そのまま」で、サードパーティーディテクタの品質をすばやく検証できることです。
+    欠点としては、この設定は Eclipse ワークスペース毎に適用する必要があり、この設定をチームメンバー間で共有することができないことです。
+    </para>
+  </listitem>
+
+  <listitem>
+    <para>
+    Eclipse 標準の拡張機構を使って独自のディテクタを追加することができます。
+    </para>
+
+    <para>
+    <ulink url="http://code.google.com/p/findbugs/source/browse/eclipsePlugin/schema/detectorPlugins.exsd">
+    findBugsEclipsePlugin/schema/detectorPlugins.exsd</ulink> の documentation で plugin.xml の更新方法を確認してください。
+    既存の &FindBugs; ディテクタプラグイン を簡単に「拡張」して強力な &FindBugs; Eclipse ディテクタプラグイン にすることができます。
+    通常必要なのは、 META-INF/MANIFEST.MF および plugin.xml を jar に追加してかつ、 MANIFEST.MF がビルド時に上書きされないようにビルドスクリプトを更新するだけです。
+    </para>
+
+    <para>
+    この方法の利点は、  Eclipse インストールを共有しさえすれば、チームメンバー同士で正確に同じディテクタ設定を使用できることです。
+    前提条件は現在使用しているディテクタパッケージを Eclipse プラグインに変換しておくことです。
+    これはサードパーティのディテクタパッケージも同様です。
+    もうひとつの主な差別化要因は、 FindBugs のデフォルト実行時クラスパス に当該サードパーティライブラリーを追加することが必要なことです(くわしくは
+    <ulink url="http://code.google.com/p/findbugs/source/browse/findbugs/src/doc/AddingDetectors.txt">AddingDetectors.txt</ulink>
+    をご覧ください)。
+    </para>
+  </listitem>
+
+</itemizedlist>
+
+</sect1>
+
+<sect1>
 <title>トラブルシューティング</title>
 
-<para>&FindBugs; Eclipse プラグインは、まだ実験段階です。このセクションでは、プラグインに関する一般的な問題と (判明していれば) それらの問題の解決方法を記述します。</para>
+<para>
+このセクションでは、プラグインに関する一般的な問題と (判明していれば) それらの問題の解決方法を記述します。
+</para>
 
 <itemizedlist>
   <listitem>
-    <para>&FindBugs; 問題マーカーが (ソース画面および問題ビューに) 表示されない場合は、問題ビューのフィルター設定を変更してください。詳細情報は <ulink url="http://findbugs.sourceforge.net/FAQ.html#q7">http://findbugs.sourceforge.net/FAQ.html#q7</ulink> を参照してください。</para>
+    <para>
+    Eclipse において &FindBugs; の分析開始後に OutOfMemory エラーダイアログが 出た場合は、
+    JVM の使用メモリを増やしてください。すなわち、 eclipse.ini の末尾に以下の記述を追加してください。
+    <programlisting>
+    -vmargs
+    -Xmx1000m
+    </programlisting>
+    重要：「-vmargs」で始まる設定引数は  eclipse.ini ファイルの末尾に記述する必要があります。
+    また、各行には引数を一つだけしか書くことができません！
+    </para>
+  </listitem>
+  <listitem>
+    <para>
+    &FindBugs; 問題マーカーが (ソース画面および問題ビューに) 表示されない場合は、問題ビューのフィルター設定を変更してください。
+    詳細情報は <ulink url="http://findbugs.sourceforge.net/FAQ.html#q7">http://findbugs.sourceforge.net/FAQ.html#q7</ulink> を参照してください。
+    </para>
   </listitem>
 
 </itemizedlist>
@@ -1124,12 +1284,36 @@ Command Line Interface.
  </varlistentry>
 
  <varlistentry>
-    <term><literal>&lt;Priority&gt;</literal></term>
+    <term><literal>&lt;Confidence&gt;</literal></term>
     <listitem>
-        <para>この要素は、特定の優先度をもつ警告を照合します。<literal>value</literal> 属性には、整数値を指定します : 1 は優先度(高)、また、 2  は優先度(中) 、 3 は優先度(低) を示します。</para>
+        <para>
+            この要素は、特定のバグ信頼度をもつ警告を照合します。
+            <literal>value</literal> 属性には、整数値を指定します。すなわち 1 は信頼度(高) 、また、 2 は信頼度(中) 、 3 は信頼度(低) を示します。
+            &lt;Confidence&gt; は 2.0.0 リリースから &lt;Priority&gt; の後継として取って代わりました。
+        </para>
     </listitem>
  </varlistentry>
 
+ <varlistentry>
+    <term><literal>&lt;Priority&gt;</literal></term>
+    <listitem>
+        <para>
+            <literal>&lt;Confidence&gt;</literal> と同一です。下位互換性を保つため残されています。
+        </para>
+    </listitem>
+ </varlistentry>
+
+ <varlistentry>
+    <term><literal>&lt;Rank&gt;</literal></term>
+    <listitem>
+        <para>
+            この要素は、特定のバグランクをもつ警告を照合します。
+            <literal>value</literal> 属性には、 1 から 20 の整数値を指定します。
+            1 から 4 は最も恐ろしいバグ、 5 から 9 は恐ろしいバグ、 10 から 14 は厄介なバグ,
+            そして 15 から 20 は不安なバグを示します。
+        </para>
+    </listitem>
+ </varlistentry>
 
  <varlistentry>
    <term><literal>&lt;Package&gt;</literal></term>
@@ -1146,6 +1330,16 @@ Command Line Interface.
         <para>下位互換性を持たせたい場合は、この要素の代わりに <literal>Match</literal> 要素を使用してください。クラス名そのものの指定は <literal>class</literal> 属性を、クラス名を正規表現で指定する場合は <literal>classregex</literal> 属性をそれぞれ使用してください</para>
 
         <para>もし <literal>Match</literal> 要素に <literal>Class</literal> 要素が無かったり、 <literal>class</literal> / <literal>classregex</literal> 属性が無かったりした場合は、すべてのクラスに適用されます。その場合、想定外に多くのバグ検索結果が一致してしまうことがあり得ます。その場合は、適当なメソッドやフィールドで絞り込んでください。</para>
+    </listitem>
+ </varlistentry>
+
+ <varlistentry>
+   <term><literal>&lt;Source&gt;</literal></term>
+    <listitem>
+        <para>
+            この要素は、特定のソースファイルに関連した警告を照合します。
+            <literal>name</literal> 属性を使用して、照合するソースファイル名をソースファイル名そのものか、または、正規表現で指定します。
+        </para>
     </listitem>
  </varlistentry>
 
@@ -1171,6 +1365,21 @@ Command Line Interface.
    <term><literal>&lt;Or&gt;</literal></term>
     <listitem><para>この要素は、論理和として <literal>Match</literal> 条項を結合します。すなわち、2つの <literal>Method</literal> 要素を <literal>Or</literal> 条項に入れることで、どちらか一方のメソッドでマッチさせることができます。</para></listitem>
  </varlistentry>
+ <varlistentry>
+   <term><literal>&lt;And&gt;</literal></term>
+    <listitem><para>
+   この要素は、論理積として <literal>Match</literal> 条項を結合します。 
+   すなわち、  <literal>Bug</literal> および <literal>Confidence</literal> 要素を <literal>And</literal> 条項内に指定することで
+   特定の信頼度の特定のバグのみ照合することができます。
+   </para></listitem>
+ </varlistentry>
+ <varlistentry>
+   <term><literal>&lt;Not&gt;</literal></term>
+    <listitem><para>
+   この要素は、内包する子 <literal>Match</literal> を反転します。
+   すなわち、 <literal>Bug</literal> 要素を <literal>Not</literal> 条項内に指定することで指定したバグ以外のすべてのバグと照合します。
+   </para></listitem>
+ </varlistentry>
 </variablelist>
 
 </sect1>
@@ -1178,7 +1387,11 @@ Command Line Interface.
 <sect1>
 <title>Java 要素名マッチング</title>
 
-<para><literal>Class</literal> 、 <literal>Method</literal> または <literal>Field</literal> の <literal>name</literal> 属性が文字 ~ で始まっている場合は、属性値の残りの部分を Java の正規表現として解釈します。そうして、当該 Java 要素の名前に対しての照合が行われます。</para>
+<para>
+<literal>Class</literal> 、 <literal>Source</literal> 、 <literal>Method</literal> または <literal>Field</literal> の <literal>name</literal> 属性が文字 ~ で始まっている場合は、
+属性値の残りの部分を Java の正規表現として解釈します。
+そうして、当該 Java 要素の名前に対しての照合が行われます。
+</para>
 
 <para>パターンの照合は要素の名前全体に対して行われることに注意してください。そのため、部分一致照合を行いたい場合はパターン文字列の前後に .* を付加して使用する必要があります。</para>
 
@@ -1337,7 +1550,42 @@ Command Line Interface.
     </Match>
 ]]>
 </programlisting>
+</para>
 
+
+<para>
+    11. Not フィルター演算子を使用してバグに一致させます。
+<programlisting>
+<![CDATA[
+<!-- テストクラスのバグは無視する。ただし、 JUnit テスト特有のバグは例外とする。 -->
+<!-- i.e. filter bug if ( classIsJUnitTest && ! bugIsRelatedToJUnit ) -->
+<Match>
+  <!-- Match フィルタは論理和と同等 -->
+
+  <Class name="~.*\.*Test" />
+  <!-- テストクラスは末尾に「Test」 -->
+
+  <Not>
+      <Bug code="IJU" /> <!-- 「IJU」は JUnit テストコード関連のバグコード -->
+  </Not>
+</Match>
+]]>
+</programlisting>
+</para>
+
+<para>
+  12. 完全な除外フィルター。 Groovy ソースファイルから生成された全クラスを除外します。
+
+<programlisting>
+<![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+<Match>
+    <Source name="~.*\.groovy" />
+</Match>
+</FindBugsFilter>
+]]>
+</programlisting>
 </para>
 
 </sect1>
@@ -1380,6 +1628,15 @@ Command Line Interface.
        <Bug pattern="DLS_DEAD_LOCAL_STORE" />
        <Priority value="2" />
      </Match>
+
+     <!-- テストクラスのバグすべて。 JUnit 特有のバグは除く。 -->
+     <Match>
+      <Class name="~.*\.*Test" />
+      <Not>
+          <Bug code="IJU" />
+      </Not>
+     </Match>
+
 </FindBugsFilter>
 ]]>
 </programlisting>
@@ -1549,11 +1806,10 @@ Command Line Interface.
     </listitem>
     <listitem>
       <para>
-Indicates that all members of the class or package should be annotated with the default
-value of the supplied annotation classes. This would be used for behavior annotations
-such as @NonNull, @CheckForNull, or @CheckReturnValue. In particular, you can use
-@DefaultAnnotation(NonNull.class) on a class or package, and then use @Nullable only
-on those parameters, methods or fields that you want to allow to be null.
+クラスまたはパッケージのすべてのメンバーが指定されたアノテーションクラスのデフォルト値でアノテートされることを指定することができます。
+この指定は @NonNull 、 @CheckForNull 、または @CheckReturnValueなどに使用する想定です。
+具体的には、 クラスまたはパッケージに @DefaultAnnotation(NonNull.class) を指定した上で、 
+null を許容したいパラメーター、メソッドまたはフィールドにのみ @Nullable を指定するという使用方法があります。
       </para>
     </listitem>
   </varlistentry>
@@ -1582,7 +1838,7 @@ on those parameters, methods or fields that you want to allow to be null.
     </listitem>
     <listitem>
       <para>
-This is same as the DefaultAnnotation except it only applys to fields.
+フィールドのみに適用されること以外は DefaultAnnotation と同様です。
       </para>
     </listitem>
   </varlistentry>
@@ -1611,7 +1867,7 @@ This is same as the DefaultAnnotation except it only applys to fields.
     </listitem>
     <listitem>
       <para>
-This is same as the DefaultAnnotation except it only applys to methods.
+メソッドのみに適用されること以外は DefaultAnnotation と同様です。
       </para>
     </listitem>
   </varlistentry>
@@ -1640,7 +1896,7 @@ This is same as the DefaultAnnotation except it only applys to methods.
     </listitem>
     <listitem>
       <para>
-This is same as the DefaultAnnotation except it only applys to method parameters.
+パラメーターのみに適用されること以外は DefaultAnnotation と同様です。
       </para>
     </listitem>
   </varlistentry>
@@ -1665,10 +1921,13 @@ This is same as the DefaultAnnotation except it only applys to method parameters
     </para>
     </listitem>
     <listitem>
-      <para>アノテーションをつけた要素は、 null であってはいけません。In general, this means developers will have to read the documentation to determine when a null value is acceptable and whether it is neccessary to check for a null value. FindBugs will treat the annotated items as though they had no annotation.</para>
       <para>
-In practice this annotation is useful only for overriding an overarching NonNull
-annotation.
+アノテーションをつけた要素は、 条件により null である可能性があります。
+一般に、開発者はドキュメントを読んで null 値を許容するかどうかまたは null 値をチェックするかどうかを決定する必要があります。
+FindBugs はこのアノテーションをつけた要素を、アノテーションがついていないものと同様に扱います。
+      </para>
+      <para>
+実際には、このアノテーションは NonNull をつけた要素をオーバーライドする場合に有用です。
       </para>
     </listitem>
   </varlistentry>
@@ -1686,8 +1945,7 @@ annotation.
           <term><command>[Parameter]</command></term>
           <listitem>
             <para>
-              <command>value:</command>Specify when the super invocation should be
-              performed (FIRST, ANYTIME, LAST). Default value:ANYTIME.
+              <command>value:</command>super の呼び出し箇所を指定します (FIRST, ANYTIME, LAST)。 デフォルト値 :ANYTIME。
             </para>
           </listitem>
         </varlistentry>
@@ -1695,11 +1953,9 @@ annotation.
     </listitem>
     <listitem>
       <para>
-Used to annotate a method that, if overridden, must (or should) be invoke super
-in the overriding method. Examples of such methods include finalize() and clone().
-The argument to the method indicates when the super invocation should occur:
-at any time, at the beginning of the overriding method, or at the end of the overriding method.
-(This anotation is not implmemented in FindBugs as of September 8, 2006).
+オーバーライドされた場合にオーバーライドメソッド内で super を呼び出すべきメソッドにアノテートします。
+例えば、 finalize() や clone() がそのようなメソッドに該当します。
+引数は、 super の呼び出し箇所を指定します。すなわち、随時、メソッドの最初またはメソッドの最後です。
       </para>
     </listitem>
   </varlistentry>
@@ -1708,7 +1964,7 @@ at any time, at the beginning of the overriding method, or at the end of the ove
     <term><command>edu.umd.cs.findbugs.annotations.PossiblyNull</command></term>
     <listitem>
       <para>
-This annotation is deprecated. Use CheckForNull instead.
+非推奨です。 CheckForNull を使用してください。
       </para>
     </listitem>
   </varlistentry>
@@ -1726,12 +1982,12 @@ This annotation is deprecated. Use CheckForNull instead.
           <term><command>[Parameter]</command></term>
           <listitem>
             <para>
-              <command>value:</command>The name of the warning. More than one name can be specified.
+              <command>value:</command>警告の名称。複数の名称を指定することができます。
             </para>
           </listitem>
           <listitem>
             <para>
-              <command>justification:</command>Reason why the warning should be ignored. デフォルト値 :&quot;&quot;。</para>
+              <command>justification:</command>警告を無視する理由。 デフォルト値 :&quot;&quot;。</para>
           </listitem>
         </varlistentry>
       </variablelist>
@@ -2040,6 +2296,7 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
 <row><entry>-newCode[:truth]</entry>            <entry>newCode=&quot;[true|false]&quot;</entry>           <entry>新クラスの追加によってもたらされた警告のみ出力されます。</entry></row>
 <row><entry>-removedCode[:truth]</entry>        <entry>removedCode=&quot;[true|false]&quot;</entry>       <entry>クラスの削除によって除去された警告のみ出力されます。</entry></row>
 <row><entry>-priority &lt;level&gt;</entry>     <entry>priority=&quot;&lt;level&gt;&quot;</entry>         <entry>指定した優先度以上の優先度をもつ警告のみ出力されます。</entry></row>
+<row><entry>-maxRank &lt;rank&gt;</entry>       <entry>rank="[1..20]"</entry>                   <entry>allow only warnings with this rank or lower</entry></row>
 <row><entry>-class &lt;pattern&gt;</entry>      <entry>class=&quot;&lt;class&gt;&quot;</entry>            <entry>指定したパターンに一致する主クラスをもつ警告のみ出力されます。</entry></row>
 <row><entry>-bugPattern &lt;pattern&gt;</entry> <entry>bugPattern=&quot;&lt;pattern&gt;&quot;</entry>     <entry>指定したパターンに一致するバグ種別をもつ警告のみ出力されます。</entry></row>
 <row><entry>-category &lt;category&gt;</entry>  <entry>category=&quot;&lt;category&gt;&quot;</entry>      <entry>指定した文字列で始まるカテゴリーの警告のみ出力されます。</entry></row>
@@ -2607,8 +2864,8 @@ contributed the string concatenation detector.</para>
 <para>Thomas Klaeger contributed a number of bug fixes and
 bug detector improvements.</para>
 
-<para>Andrei Loskutov made a number of improvements to the
-Eclipse plugin.</para>
+<para>Andrey Loskutov made a number of bug fixes and
+bug detector improvements. He is maintainer of the Eclipse plugin.</para>
 
 <para>Brian Goetz contributed a major refactoring of the
 visitor classes to improve readability and understandability.</para>
