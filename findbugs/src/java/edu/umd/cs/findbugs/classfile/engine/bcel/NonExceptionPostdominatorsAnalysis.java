@@ -26,13 +26,13 @@ import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
 
 /**
  * PostDominatorsAnalysis variant in which all exception edges are ignored.
- * 
+ *
  * @author David Hovemeyer
  */
 public class NonExceptionPostdominatorsAnalysis extends PostDominatorsAnalysis {
     /**
      * Constructor.
-     * 
+     *
      * @param cfg
      *            the CFG to compute dominator relationships for
      * @param rdfs

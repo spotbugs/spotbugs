@@ -31,9 +31,9 @@ import java.util.Set;
  */
 public class SearchTree<VertexType extends GraphVertex<VertexType>> {
 
-    private VertexType m_vertex;
+    private final VertexType m_vertex;
 
-    private ArrayList<SearchTree<VertexType>> m_childList;
+    private final ArrayList<SearchTree<VertexType>> m_childList;
 
     /**
      * Create a new search tree.
@@ -82,4 +82,3 @@ public class SearchTree<VertexType extends GraphVertex<VertexType>> {
 
 }
 
-// vim:ts=4

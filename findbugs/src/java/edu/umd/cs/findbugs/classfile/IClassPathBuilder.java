@@ -29,13 +29,13 @@ import java.util.List;
  * <li>Builds a list of application class descriptors</li>
  * <li>Adds system codebases</li>
  * </ul>
- * 
+ *
  * @author David Hovemeyer
  */
 public interface IClassPathBuilder {
     /**
      * Add a project codebase.
-     * 
+     *
      * @param locator
      *            locator for project codebase
      * @param isApplication
@@ -47,7 +47,7 @@ public interface IClassPathBuilder {
     /**
      * Set whether or not nested archives should be scanned. This should be
      * called before the build() method is called.
-     * 
+     *
      * @param scanNestedArchives
      *            true if nested archives should be scanned, false otherwise
      */
@@ -55,7 +55,7 @@ public interface IClassPathBuilder {
 
     /**
      * Build the classpath.
-     * 
+     *
      * @param classPath
      *            IClassPath object to build
      * @param progress
@@ -65,12 +65,12 @@ public interface IClassPathBuilder {
      * @throws InterruptedException
      */
     public void build(IClassPath classPath, IClassPathBuilderProgress progress) throws CheckedAnalysisException, IOException,
-            InterruptedException;
+    InterruptedException;
 
     /**
      * Get the list of application classes discovered while scanning the
      * classpath.
-     * 
+     *
      * @return list of application classes
      */
     public List<ClassDescriptor> getAppClassList();

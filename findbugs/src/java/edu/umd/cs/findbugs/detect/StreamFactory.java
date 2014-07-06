@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 public interface StreamFactory {
     /**
      * Determine if a Stream is created at given location.
-     * 
+     *
      * @param location
      *            the Location
      * @param type
@@ -52,4 +52,3 @@ public interface StreamFactory {
             RepositoryLookupFailureCallback lookupFailureCallback);
 }
 
-// vim:ts=3

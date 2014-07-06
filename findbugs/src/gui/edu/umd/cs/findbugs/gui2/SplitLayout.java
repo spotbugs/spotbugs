@@ -66,7 +66,7 @@ public class SplitLayout implements FindBugsLayoutManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#createWindowMenu()
      */
     @Override
@@ -85,7 +85,7 @@ public class SplitLayout implements FindBugsLayoutManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#initialize()
      */
     @Override
@@ -157,7 +157,7 @@ public class SplitLayout implements FindBugsLayoutManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#makeCommentsVisible()
      */
     @Override
@@ -167,7 +167,7 @@ public class SplitLayout implements FindBugsLayoutManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#makeSourceVisible()
      */
     @Override
@@ -177,7 +177,7 @@ public class SplitLayout implements FindBugsLayoutManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#saveState()
      */
     @Override
@@ -190,7 +190,7 @@ public class SplitLayout implements FindBugsLayoutManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#setSourceTitle(java.lang
      * .String)
@@ -203,7 +203,7 @@ public class SplitLayout implements FindBugsLayoutManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#getSourceTitleComponent()
      */

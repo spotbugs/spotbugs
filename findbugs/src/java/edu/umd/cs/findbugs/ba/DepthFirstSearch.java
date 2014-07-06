@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 /**
  * Algorithm to perform a depth first search on a CFG.
- * 
+ *
  * @see CFG
  * @author David Hovemeyer
  */
@@ -30,7 +30,7 @@ public class DepthFirstSearch extends edu.umd.cs.findbugs.graph.DepthFirstSearch
 
     /**
      * Constructor.
-     * 
+     *
      * @param cfg
      *            the CFG to perform the depth first search on
      */
@@ -47,4 +47,3 @@ public class DepthFirstSearch extends edu.umd.cs.findbugs.graph.DepthFirstSearch
     }
 }
 
-// vim:ts=4

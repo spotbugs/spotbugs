@@ -24,7 +24,7 @@ import java.util.Iterator;
 /**
  * Method property recording which parameters are have some property
  * (originally, which were required to be nonnull, now made more generic)
- * 
+ *
  * @author David Hovemeyer
  */
 public class ParameterProperty {
@@ -52,7 +52,7 @@ public class ParameterProperty {
 
     /**
      * Get the non-null param bitset.
-     * 
+     *
      * @return the non-null param bitset
      */
     public int getParamsWithProperty() {
@@ -71,10 +71,12 @@ public class ParameterProperty {
                     }
 
                     private void advanceNextInt() {
-                        while (!hasProperty(nextInt) && nextInt < 32)
+                        while (!hasProperty(nextInt) && nextInt < 32) {
                             nextInt++;
-                        if (nextInt >= 32)
+                        }
+                        if (nextInt >= 32) {
                             nextInt = -1;
+                        }
                     }
 
                     @Override
@@ -103,7 +105,7 @@ public class ParameterProperty {
 
     /**
      * Set the non-null param bitset.
-     * 
+     *
      * @param nonNullParamSet
      *            the non-null param bitset
      */
@@ -113,7 +115,7 @@ public class ParameterProperty {
 
     /**
      * Set the non-null param set from given BitSet.
-     * 
+     *
      * @param nonNullSet
      *            BitSet indicating which parameters are non-null
      */
@@ -125,15 +127,16 @@ public class ParameterProperty {
 
     /**
      * Set whether or not a parameter might be non-null.
-     * 
+     *
      * @param param
      *            the parameter index
      * @param hasProperty
      *            true if the parameter might be non-null, false otherwise
      */
     public void setParamWithProperty(int param, boolean hasProperty) {
-        if (param < 0 || param > 31)
+        if (param < 0 || param > 31) {
             return;
+        }
         if (hasProperty) {
             bits |= (1 << param);
         } else {
@@ -143,23 +146,24 @@ public class ParameterProperty {
 
     /**
      * Return whether or not a parameter might be non-null.
-     * 
+     *
      * @param param
      *            the parameter index
      * @return true if the parameter might be non-null, false otherwise
      */
     public boolean hasProperty(int param) {
-        if (param < 0 || param > 31)
+        if (param < 0 || param > 31) {
             return false;
-        else
+        } else {
             return (bits & (1 << param)) != 0;
+        }
     }
 
     /**
      * Given a bitset of null arguments passed to the method represented by this
      * property, return a bitset indicating which null arguments correspond to
      * an non-null param.
-     * 
+     *
      * @param nullArgSet
      *            bitset of null arguments
      * @return bitset intersecting null arguments and non-null params
@@ -174,8 +178,9 @@ public class ParameterProperty {
 
     public BitSet getAsBitSet() {
         BitSet result = new BitSet();
-        if (isEmpty())
+        if (isEmpty()) {
             return result;
+        }
         for (int i = 0; i < 32; ++i) {
             result.set(i, hasProperty(i));
         }
@@ -184,7 +189,7 @@ public class ParameterProperty {
 
     /**
      * Return whether or not the set of non-null parameters is empty.
-     * 
+     *
      * @return true if the set is empty, false if it contains at least one
      *         parameter
      */
@@ -199,8 +204,9 @@ public class ParameterProperty {
         buf.append('{');
         for (int i = 0; i < 32; ++i) {
             if (hasProperty(i)) {
-                if (buf.length() > 1)
+                if (buf.length() > 1) {
                     buf.append(',');
+                }
                 buf.append(i);
             }
         }
@@ -212,7 +218,7 @@ public class ParameterProperty {
     /**
      * Intersect this set with the given set. Useful for summarizing the
      * properties of multiple methods.
-     * 
+     *
      * @param targetDerefParamSet
      *            another set
      */
@@ -222,7 +228,7 @@ public class ParameterProperty {
 
     /**
      * Make this object the same as the given one.
-     * 
+     *
      * @param other
      *            another ParameterNullnessProperty
      */

@@ -32,14 +32,14 @@ import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Interprocedural field property database.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class FieldPropertyDatabase<Property> extends PropertyDatabase<FieldDescriptor, Property> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.interproc.PropertyDatabase#parseKey(java.lang.
      * String)
@@ -67,7 +67,7 @@ public abstract class FieldPropertyDatabase<Property> extends PropertyDatabase<F
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.interproc.PropertyDatabase#writeKey(java.io.Writer
      * , KeyType)

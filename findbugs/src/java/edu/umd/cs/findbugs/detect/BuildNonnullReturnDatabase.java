@@ -43,7 +43,7 @@ import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 
 /**
  * Build database of methods that return values guaranteed to be nonnull
- * 
+ *
  */
 public class BuildNonnullReturnDatabase {
     public static final boolean VERBOSE_DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg.verbose");
@@ -54,21 +54,25 @@ public class BuildNonnullReturnDatabase {
         boolean fullAnalysis = AnalysisContext.currentAnalysisContext().getBoolProperty(
                 FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES);
         if (!fullAnalysis && !AnalysisContext.currentAnalysisContext()./*
-                                                                        * getSubtypes
-                                                                        * ().
-                                                                        */isApplicationClass(classContext.getJavaClass()))
+         * getSubtypes
+         * ().
+         */isApplicationClass(classContext.getJavaClass())) {
             return;
-        if (VERBOSE_DEBUG)
+        }
+        if (VERBOSE_DEBUG) {
             System.out.println("Visiting class " + classContext.getJavaClass().getClassName());
+        }
 
-        for (Method m : classContext.getMethodsInCallOrder())
+        for (Method m : classContext.getMethodsInCallOrder()) {
             considerMethod(classContext, m);
+        }
     }
 
     private void considerMethod(ClassContext classContext, Method method) {
         if ((method.getReturnType() instanceof ReferenceType) && classContext.getMethodGen(method) != null) {
-            if (VERBOSE_DEBUG)
+            if (VERBOSE_DEBUG) {
                 System.out.println("Check " + method);
+            }
             analyzeMethod(classContext, method);
         }
     }
@@ -89,11 +93,13 @@ public class BuildNonnullReturnDatabase {
                 InstructionHandle handle = location.getHandle();
                 Instruction ins = handle.getInstruction();
 
-                if (!(ins instanceof ARETURN))
+                if (!(ins instanceof ARETURN)) {
                     continue;
+                }
                 IsNullValueFrame frame = inv.getFactAtLocation(location);
-                if (!frame.isValid())
+                if (!frame.isValid()) {
                     continue;
+                }
                 IsNullValue value = frame.getTopValue();
                 if (!value.isDefinitelyNotNull()) {
                     guaranteedNonNull = false;
@@ -106,9 +112,10 @@ public class BuildNonnullReturnDatabase {
             if (guaranteedNonNull) {
                 returnsNonNull++;
                 AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase()
-                        .setProperty(xmethod.getMethodDescriptor(), guaranteedNonNull);
-                if (DEBUG)
+                .setProperty(xmethod.getMethodDescriptor(), guaranteedNonNull);
+                if (DEBUG) {
                     System.out.println("Unconditional deref: " + xmethod + "=" + guaranteedNonNull);
+                }
 
             }
 
@@ -116,11 +123,11 @@ public class BuildNonnullReturnDatabase {
             XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
 
             AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
-                    .logError("Error analyzing " + xmethod + " for unconditional deref training", e);
+            .logError("Error analyzing " + xmethod + " for unconditional deref training", e);
         } catch (DataflowAnalysisException e) {
             XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
             AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
-                    .logError("Error analyzing " + xmethod + " for unconditional deref training", e);
+            .logError("Error analyzing " + xmethod + " for unconditional deref training", e);
         }
     }
 

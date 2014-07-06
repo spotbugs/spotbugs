@@ -46,8 +46,9 @@ public class ObfuscateBugs {
     public ObfuscateBugs execute() {
         ProjectPackagePrefixes foo = new ProjectPackagePrefixes();
 
-        for (BugInstance b : bugCollection.getCollection())
+        for (BugInstance b : bugCollection.getCollection()) {
             foo.countBug(b);
+        }
         foo.report();
 
         return this;
@@ -62,7 +63,7 @@ public class ObfuscateBugs {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java
          * .lang.String, java.lang.String)
@@ -81,10 +82,11 @@ public class ObfuscateBugs {
         int argCount = commandLine.parse(args, 0, 2, "Usage: " + ObfuscateBugs.class.getName() + " [options] [<xml results>] ");
 
         SortedBugCollection bugCollection = new SortedBugCollection();
-        if (argCount < args.length)
+        if (argCount < args.length) {
             bugCollection.readXML(args[argCount++]);
-        else
+        } else {
             bugCollection.readXML(System.in);
+        }
 
         SortedBugCollection results = bugCollection.createEmptyCollectionWithMetadata();
         Project project = results.getProject();

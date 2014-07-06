@@ -26,9 +26,9 @@ import edu.umd.cs.findbugs.filter.Matcher;
 public class FilterBugReporter extends DelegatingBugReporter {
     private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
 
-    private Matcher filter;
+    private final Matcher filter;
 
-    private boolean include;
+    private final boolean include;
 
     public FilterBugReporter(BugReporter realBugReporter, Matcher filter, boolean include) {
         super(realBugReporter);
@@ -38,14 +38,16 @@ public class FilterBugReporter extends DelegatingBugReporter {
 
     @Override
     public void reportBug(@Nonnull BugInstance bugInstance) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.print("Match ==> ");
+        }
         boolean match = filter.match(bugInstance);
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println(match ? "YES" : "NO");
-        if (include == match)
+        }
+        if (include == match) {
             getDelegate().reportBug(bugInstance);
+        }
     }
 }
 
-// vim:ts=4

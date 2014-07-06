@@ -50,8 +50,9 @@ public class JavaScanner {
                 "synchronized", "this", "throw", "throws", "transient", "true", "try", "void", "volatile", "while" };
         int max = 0;
         for (String s : keywordList) {
-            if (max < s.length())
+            if (max < s.length()) {
                 max = s.length();
+            }
             KEYWORDS.add(s);
         }
         MAX_KEYWORD_LENGTH = max;
@@ -96,19 +97,22 @@ public class JavaScanner {
             boolean couldBeKeyword = Character.isLowerCase(c);
             while (true) {
                 c = iterator.current();
-                if (!Character.isJavaIdentifierPart(c))
+                if (!Character.isJavaIdentifierPart(c)) {
                     break;
+                }
                 buf.append(c);
                 if (couldBeKeyword) {
-                    if (!Character.isLowerCase(c) || buf.length() > MAX_KEYWORD_LENGTH)
+                    if (!Character.isLowerCase(c) || buf.length() > MAX_KEYWORD_LENGTH) {
                         couldBeKeyword = false;
+                    }
                 }
                 c = iterator.next();
             }
             kind = NORMAL_TEXT;
             if (couldBeKeyword) {
-                if (KEYWORDS.contains(buf.toString()))
+                if (KEYWORDS.contains(buf.toString())) {
                     kind = KEYWORD;
+                }
             }
             buf.setLength(0);
         } else if (c == '/') {
@@ -116,8 +120,9 @@ public class JavaScanner {
             if (c2 == '/') {
                 while (true) {
                     c2 = iterator.next();
-                    if (c2 == '\n' || c2 == '\r' || c2 == CharacterIterator.DONE)
+                    if (c2 == '\n' || c2 == '\r' || c2 == CharacterIterator.DONE) {
                         break;
+                    }
                 }
                 kind = COMMENT;
                 return kind;
@@ -127,13 +132,14 @@ public class JavaScanner {
                     if (c2 == '*') {
                         do {
                             c2 = iterator.next();
-                            if (c2 == '/')
+                            if (c2 == '/') {
                                 break scanComment;
+                            }
                         } while (c2 == '*');
                     }
                 }
-                kind = JAVADOC;
-                return kind;
+            kind = JAVADOC;
+            return kind;
             }
         } else if (c == '"') {
             kind = QUOTE;
@@ -141,8 +147,9 @@ public class JavaScanner {
             while (c2 != '"' && c2 != '\n' && c2 != '\r' && c2 != CharacterIterator.DONE) {
                 if (c2 == '\\') {
                     c2 = iterator.next();
-                    if (c2 == '\n' || c2 == '\r')
+                    if (c2 == '\n' || c2 == '\r') {
                         break;
+                    }
                 }
                 c2 = iterator.next();
             }
@@ -152,14 +159,21 @@ public class JavaScanner {
             kind = QUOTE; // or NORMAL_TEXT ?
             char c2 = iterator.current();
             if (c2 == '\\')
+            {
                 c2 = iterator.next(); // advance past the escape char
+            }
             if (c2 != '\n' && c2 != '\r' && c2 != CharacterIterator.DONE)
+            {
                 c2 = iterator.next(); // advance past the content char
+            }
             if (c2 != '\n' && c2 != '\r' && c2 != CharacterIterator.DONE)
+            {
                 iterator.next(); // advance past closing char
+            }
 
-        } else
+        } else {
             kind = NORMAL_TEXT;
+        }
         // System.out.println(kind + " " + startPosition + "-" +
         // iterator.getIndex());
         return kind;

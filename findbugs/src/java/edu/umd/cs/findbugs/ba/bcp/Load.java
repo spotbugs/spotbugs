@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 /**
  * A PatternElement representing a load from a field. Variables represent the
  * field and the result of the load.
- * 
+ *
  * @author David Hovemeyer
  * @see PatternElement
  */
@@ -41,7 +41,7 @@ public class Load extends FieldAccess {
 
     /**
      * Constructor.
-     * 
+     *
      * @param fieldVarName
      *            the name of the field variable
      * @param resultVarName
@@ -67,8 +67,9 @@ public class Load extends FieldAccess {
         } else if (ins instanceof GETSTATIC) {
             fieldIns = (GETSTATIC) ins;
             field = new FieldVariable(fieldIns.getClassName(cpg), fieldIns.getFieldName(cpg), fieldIns.getSignature(cpg));
-        } else
+        } else {
             return null;
+        }
 
         Variable result = snarfFieldValue(fieldIns, cpg, after);
 
@@ -76,4 +77,3 @@ public class Load extends FieldAccess {
     }
 }
 
-// vim:ts=4

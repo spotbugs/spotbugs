@@ -29,19 +29,19 @@ import edu.umd.cs.findbugs.SystemProperties;
 /**
  * Data structure to keep track of which input ValueNumbers were combined to
  * produce which other output ValueNumbers.
- * 
+ *
  * @author David Hovemeyer
  */
 public class MergeTree {
     public static final boolean DEBUG = SystemProperties.getBoolean("vna.merge.debug");
 
-    private ValueNumberFactory factory;
+    private final ValueNumberFactory factory;
 
-    private Map<ValueNumber, BitSet> outputToInputMap;
+    private final Map<ValueNumber, BitSet> outputToInputMap;
 
     /**
      * Constructor.
-     * 
+     *
      * @param factory
      *            the ValueNumberFactory
      */
@@ -52,7 +52,7 @@ public class MergeTree {
 
     /**
      * Map an input ValueNumber to an output ValueNumber.
-     * 
+     *
      * @param input
      *            the input ValueNumber
      * @param output
@@ -70,7 +70,7 @@ public class MergeTree {
     /**
      * Get the set of input ValueNumbers which directly contributed to the given
      * output ValueNumber.
-     * 
+     *
      * @param output
      *            the output ValueNumber
      * @return the set of direct input ValueNumbers
@@ -90,7 +90,7 @@ public class MergeTree {
     /**
      * Get the transitive set of input ValueNumbers which contributed (directly
      * or indirectly) to the given output ValueNumber.
-     * 
+     *
      * @param output
      *            the output ValueNumber
      * @return the transitive set of input ValueNumbers

@@ -68,19 +68,22 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
         boolean weird = superclassName2.equals("java.lang.Object") && obj.getInterfaceIndices().length == 0;
         boolean hasAnonymousName = ClassName.isAnonymous(obj.getClassName());
         boolean isAnonymousInnerClass = hasAnonymousName && !weird;
-        if (isAnonymousInnerClass)
+        if (isAnonymousInnerClass) {
             super.visitJavaClass(obj);
+        }
     }
 
     boolean definedInThisClassOrSuper(JavaClass clazz, String method) throws ClassNotFoundException {
-        if (clazz == null)
+        if (clazz == null) {
             return false;
+        }
         // System.out.println("Checking to see if " + method + " is defined in "
         // + clazz.getClassName());
         for (Method m : clazz.getMethods()) {
             String key = m.getName() + ":" + m.getSignature();
-            if (!m.isStatic() && method.equals(key))
+            if (!m.isStatic() && method.equals(key)) {
                 return true;
+            }
         }
 
         return definedInSuperClassOrInterface(clazz, method);
@@ -91,71 +94,90 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         if (seen == INVOKESPECIAL) {
             XMethod m = getXMethodOperand();
-            if (m == null)
+            if (m == null) {
                 return;
+            }
             XClass c = getXClass();
             int nameDistance = EditDistance.editDistance(m.getName(), getMethodName());
-            if (nameDistance < 4 && c.findMatchingMethod(m.getMethodDescriptor()) == null && !m.isFinal())
+            if (nameDistance < 4 && c.findMatchingMethod(m.getMethodDescriptor()) == null && !m.isFinal()) {
                 potentialSuperCall = m;
+            }
         }
     }
 
     boolean definedInSuperClassOrInterface(JavaClass clazz, String method) throws ClassNotFoundException {
-        if (clazz == null)
+        if (clazz == null) {
             return false;
+        }
         JavaClass superClass = clazz.getSuperClass();
-        if (superClass == null)
+        if (superClass == null) {
             return false;
+        }
         try {
             XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class,
                     DescriptorFactory.createClassDescriptorFromDottedClassName(superClass.getClassName()));
-            if (xClass.hasStubs())
+            if (xClass.hasStubs()) {
                 return true;
+            }
         } catch (CheckedAnalysisException e) {
             return true;
         }
-        
-        if (definedInThisClassOrSuper(superClass, method))
+
+        if (definedInThisClassOrSuper(superClass, method)) {
             return true;
-        for (JavaClass i : clazz.getInterfaces())
-            if (definedInThisClassOrSuper(i, method))
+        }
+        for (JavaClass i : clazz.getInterfaces()) {
+            if (definedInThisClassOrSuper(i, method)) {
                 return true;
+            }
+        }
         return false;
     }
 
     Set<String> definedInClass(JavaClass clazz) {
         HashSet<String> result = new HashSet<String>();
         for (Method m : clazz.getMethods()) {
-            if (!skip(m))
+            if (!skip(m)) {
                 result.add(m.getName() + m.getSignature());
+            }
         }
         return result;
     }
 
     private boolean skip(Method obj) {
-        if (BCELUtil.isSynthetic(obj))
+        if (BCELUtil.isSynthetic(obj)) {
             return true;
-        if (obj.isPrivate())
+        }
+        if (obj.isPrivate()) {
             return true;
-        if (obj.isAbstract())
+        }
+        if (obj.isAbstract()) {
             return true;
+        }
 
         String methodName = obj.getName();
         String sig = obj.getSignature();
-        if (methodName.equals("<init>"))
+        if (methodName.equals("<init>")) {
             return true;
-        if (methodName.equals("<clinit>"))
+        }
+        if (methodName.equals("<clinit>")) {
             return true;
-        if (sig.equals("()Ljava/lang/Object;") && (methodName.equals("readResolve") || methodName.equals("writeReplace")))
+        }
+        if (sig.equals("()Ljava/lang/Object;") && (methodName.equals("readResolve") || methodName.equals("writeReplace"))) {
             return true;
-        if (methodName.startsWith("access$"))
+        }
+        if (methodName.startsWith("access$")) {
             return true;
-        if (methodName.length() < 2 || methodName.indexOf('$') >= 0)
+        }
+        if (methodName.length() < 2 || methodName.indexOf('$') >= 0) {
             return true;
+        }
         XMethod m = getXMethod();
-        for (ClassDescriptor c : m.getAnnotationDescriptors())
-            if (c.getClassName().indexOf("inject") >= 0)
+        for (ClassDescriptor c : m.getAnnotationDescriptors()) {
+            if (c.getClassName().indexOf("inject") >= 0) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -186,19 +208,21 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                     XClass from = Global.getAnalysisCache().getClassAnalysis(XClass.class,
                             DescriptorFactory.createClassDescriptorFromDottedClassName(superclassName));
                     XMethod  potentialMatch = null;
-                    for(XMethod m : from.getXMethods())
+                    for(XMethod m : from.getXMethods()) {
                         if (!m.isStatic() && !m.isPrivate() && m.getName().toLowerCase().equals(obj.getName().toLowerCase())) {
-                            if (potentialMatch == null)
+                            if (potentialMatch == null) {
                                 potentialMatch = m;
-                            else {
+                            } else {
                                 // multiple matches; ignore all
                                 potentialMatch = null;
                                 break;
                             }
+                        }
                     }
-                     if (potentialMatch != null)
-                         pendingBug.addMethod(potentialMatch)
-                         .describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
+                    if (potentialMatch != null) {
+                        pendingBug.addMethod(potentialMatch)
+                        .describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
+                    }
 
                 } catch (CheckedAnalysisException e) {
                     AnalysisContext.logError("Error: ", e);
@@ -216,16 +240,18 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 
     @Override
     public void visit(Code obj) {
-        if (pendingBug != null)
+        if (pendingBug != null) {
             super.visit(obj);
+        }
     }
 
     @Override
     public void visit(Method obj) {
         try {
 
-            if (skip(obj))
+            if (skip(obj)) {
                 return;
+            }
 
             JavaClass clazz = getThisClass();
             XMethod xmethod = XFactory.createXMethod(clazz, obj);
@@ -238,18 +264,21 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                 if (superClassName.equals("java.lang.Object")) {
                     priority = NORMAL_PRIORITY;
 
-                } else if (definedInClass(superClass).containsAll(definedInClass(clazz)))
+                } else if (definedInClass(superClass).containsAll(definedInClass(clazz))) {
                     priority = NORMAL_PRIORITY;
-                else
+                } else {
                     priority = HIGH_PRIORITY;
+                }
                 Code code = null;
-                for (Attribute a : obj.getAttributes())
+                for (Attribute a : obj.getAttributes()) {
                     if (a instanceof Code) {
                         code = (Code) a;
                         break;
                     }
-                if (code != null && code.getLength() == 1)
+                }
+                if (code != null && code.getLength() == 1) {
                     priority++;
+                }
 
                 pendingBug = new BugInstance(this, "UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS", priority).addClassAndMethod(this);
                 potentialSuperCall = null;

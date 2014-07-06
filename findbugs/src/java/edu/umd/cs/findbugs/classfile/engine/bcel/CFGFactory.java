@@ -59,7 +59,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 /**
  * Analysis engine to produce CFG (control flow graph) objects for an analyzed
  * method.
- * 
+ *
  * @author David Hovemeyer
  */
 public class CFGFactory extends AnalysisFactory<CFG> {
@@ -74,7 +74,7 @@ public class CFGFactory extends AnalysisFactory<CFG> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
@@ -134,8 +134,9 @@ public class CFGFactory extends AnalysisFactory<CFG> {
                             GETSTATIC getStatic = (GETSTATIC) prevInstruction;
 
                             if (getStatic.getFieldName(methodGen.getConstantPool()).equals("$assertionsDisabled")
-                                    && getStatic.getSignature(methodGen.getConstantPool()).equals("Z"))
+                                    && getStatic.getSignature(methodGen.getConstantPool()).equals("Z")) {
                                 edgesToRemove.add(e);
+                            }
                         }
                     } catch (RuntimeException exception) {
                         assert true; // ignore it
@@ -164,10 +165,10 @@ public class CFGFactory extends AnalysisFactory<CFG> {
                 changed = changed || pruner.wasCFGModified();
             } catch (MissingClassException e) {
                 AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
-                        .reportMissingClass(e.getClassNotFoundException());
+                .reportMissingClass(e.getClassNotFoundException());
             } catch (DataflowAnalysisException e) {
                 AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
-                        .logError("unable to extract type analysis", e);
+                .logError("unable to extract type analysis", e);
             } catch (ClassNotFoundException e) {
                 AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
             }
@@ -210,11 +211,13 @@ public class CFGFactory extends AnalysisFactory<CFG> {
             dfs.search();
             Collection<BasicBlock> unreachable = dfs.unvisitedVertices();
             if (!unreachable.isEmpty()) {
-                if (DEBUG_CFG)
+                if (DEBUG_CFG) {
                     System.out.println("Unreachable blocks");
+                }
                 for (BasicBlock b : unreachable) {
-                    if (DEBUG_CFG)
+                    if (DEBUG_CFG) {
                         System.out.println(" removing " + b);
+                    }
                     cfg.removeVertex(b);
                 }
             }
@@ -226,7 +229,7 @@ public class CFGFactory extends AnalysisFactory<CFG> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)

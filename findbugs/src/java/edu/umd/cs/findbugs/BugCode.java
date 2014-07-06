@@ -23,7 +23,7 @@ package edu.umd.cs.findbugs;
  * A BugCode is an abbreviation that is shared among some number of BugPatterns.
  * For example, the code "HE" is shared by all of the BugPatterns that represent
  * hashcode/equals violations.
- * 
+ *
  * @author David Hovemeyer
  * @see BugPattern
  */
@@ -36,7 +36,7 @@ public class BugCode implements Comparable<BugCode> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param abbrev
      *            the abbreviation for the bug code
      * @param description

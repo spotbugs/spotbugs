@@ -36,29 +36,29 @@ import edu.umd.cs.findbugs.workflow.UnionResults;
 /**
  * An ant task that is wraps the behavior of the UnionResults executable into an
  * ant task.
- * 
+ *
  * <taskdef name="UnionBugs" classname="edu.umd.cs.findbugs.anttask.UnionBugs"
  * classpath="...">
- * 
+ *
  * <UnionBugs to="${basedir}/findbugs.xml" > <fileset dir="plugins"> <include
  * name="*_findbugs_partial.xml" /> </fileset> </UnionBugs>
- * 
+ *
  * @author Peter Franza <a href="mailto:pfranza@gmail.com">pfranza@gmail.com</a>
  * @version 1.0
- * 
+ *
  * @ant.task category="utility"
- * 
+ *
  */
 @Deprecated
 public class UnionBugs extends Task {
 
-    private List<FileSet> fileSets = new ArrayList<FileSet>();
+    private final List<FileSet> fileSets = new ArrayList<FileSet>();
 
     private String into;
 
     /**
      * The fileset containing all the findbugs xml files that need to be merged
-     * 
+     *
      * @param arg
      */
     public void addFileset(FileSet arg) {
@@ -67,7 +67,7 @@ public class UnionBugs extends Task {
 
     /**
      * The File everything should get merged into
-     * 
+     *
      * @param file
      */
     public void setTo(String file) {
@@ -137,7 +137,7 @@ public class UnionBugs extends Task {
 
     /**
      * Copy a File
-     * 
+     *
      * @param in
      *            to Copy From
      * @param out

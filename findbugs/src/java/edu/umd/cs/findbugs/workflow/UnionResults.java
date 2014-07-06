@@ -57,10 +57,11 @@ public class UnionResults {
          */
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
-            if (option.equals("-withMessages"))
+            if (option.equals("-withMessages")) {
                 withMessages = true;
-            else
+            } else {
                 throw new IllegalArgumentException("Unknown option : " + option);
+            }
         }
 
         /*
@@ -72,17 +73,18 @@ public class UnionResults {
          */
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
-            if (option.equals("-output"))
+            if (option.equals("-output")) {
                 outputFile = argument;
-            else
+            } else {
                 throw new IllegalArgumentException("Unknown option : " + option);
+            }
         }
 
     }
 
     static {
         DetectorFactoryCollection.instance(); // as a side effect, loads
-                                              // detector plugins
+        // detector plugins
     }
 
     static public SortedBugCollection union(SortedBugCollection origCollection, SortedBugCollection newCollection) {
@@ -93,8 +95,9 @@ public class UnionResults {
     static public void merge(HashSet<String> hashes, SortedBugCollection into, SortedBugCollection from) {
 
         for (BugInstance bugInstance : from.getCollection()) {
-            if (hashes == null || hashes.add(bugInstance.getInstanceHash()))
+            if (hashes == null || hashes.add(bugInstance.getInstanceHash())) {
                 into.add(bugInstance);
+            }
         }
         ProjectStats stats = into.getProjectStats();
         ProjectStats stats2 = from.getProjectStats();
@@ -104,8 +107,9 @@ public class UnionResults {
         Project project2 = from.getProject();
         project.add(project2);
 
-        for(AnalysisError error : from.getErrors())
+        for(AnalysisError error : from.getErrors()) {
             into.addError(error);
+        }
 
         return;
     }
@@ -126,8 +130,9 @@ public class UnionResults {
                 SortedBugCollection more = new SortedBugCollection();
 
                 more.readXML(argv[i]);
-                if (results == null)
+                if (results == null) {
                     results = more.createEmptyCollectionWithMetadata();
+                }
 
                 merge(hashes, results, more);
 
@@ -144,12 +149,12 @@ public class UnionResults {
             return;
         }
         results.setWithMessages(commandLine.withMessages);
-        if (commandLine.outputFile == null)
+        if (commandLine.outputFile == null) {
             results.writeXML(System.out);
-        else
+        } else {
             results.writeXML(commandLine.outputFile);
+        }
     }
 
 }
 
-// vim:ts=3

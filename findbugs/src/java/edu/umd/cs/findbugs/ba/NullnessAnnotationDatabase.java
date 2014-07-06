@@ -45,18 +45,20 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
     @Override
     public boolean parameterMustBeNonNull(XMethod m, int param) {
         if (param == 0) {
-            if (m.getName().equals("equals") && m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic())
+            if (m.getName().equals("equals") && m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic()) {
                 return false;
-            else if (m.getName().equals("main") && m.getSignature().equals("([Ljava/lang/String;)V") && m.isStatic()
-                    && m.isPublic())
+            } else if (m.getName().equals("main") && m.getSignature().equals("([Ljava/lang/String;)V") && m.isStatic()
+                    && m.isPublic()) {
                 return true;
-            else if (TypeQualifierNullnessAnnotationDatabase.assertsFirstParameterIsNonnull(m))
+            } else if (TypeQualifierNullnessAnnotationDatabase.assertsFirstParameterIsNonnull(m)) {
                 return true;
-            else if (m.getName().equals("compareTo") && m.getSignature().endsWith(";)Z") && !m.isStatic())
+            } else if (m.getName().equals("compareTo") && m.getSignature().endsWith(";)Z") && !m.isStatic()) {
                 return true;
+            }
         }
-        if (!anyAnnotations(NullnessAnnotation.NONNULL))
+        if (!anyAnnotations(NullnessAnnotation.NONNULL)) {
             return false;
+        }
         XMethodParameter xmp = new XMethodParameter(m, param);
         NullnessAnnotation resolvedAnnotation = getResolvedAnnotation(xmp, true);
 
@@ -78,15 +80,16 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
                 // bug code for it
                 int parameterNumber = mp.getParameterNumber();
                 if (parameterNumber == 0) {
-                    if (m.getName().equals("equals") && m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic())
+                    if (m.getName().equals("equals") && m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic()) {
                         return NullnessAnnotation.CHECK_FOR_NULL;
-                    else if (m.getName().equals("main") && m.getSignature().equals("([Ljava/lang/String;)V") && m.isStatic()
-                            && m.isPublic())
+                    } else if (m.getName().equals("main") && m.getSignature().equals("([Ljava/lang/String;)V") && m.isStatic()
+                            && m.isPublic()) {
                         return NullnessAnnotation.NONNULL;
-                    else if (TypeQualifierNullnessAnnotationDatabase.assertsFirstParameterIsNonnull(m))
+                    } else if (TypeQualifierNullnessAnnotationDatabase.assertsFirstParameterIsNonnull(m)) {
                         return NullnessAnnotation.NONNULL;
-                    else if (m.getName().equals("compareTo") && m.getSignature().endsWith(";)Z") && !m.isStatic())
+                    } else if (m.getName().equals("compareTo") && m.getSignature().endsWith(";)Z") && !m.isStatic()) {
                         return NullnessAnnotation.NONNULL;
+                    }
                 }
             } else if (o instanceof XMethod) {
                 XMethod m = (XMethod) o;
@@ -97,15 +100,17 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
                                 && signature.equals("()Ljava/lang/String;") || m.isPrivate() && name.equals("readResolve")
                                 && signature.equals("()Ljava/lang/Object;"))) {
                     NullnessAnnotation result = super.getDirectAnnotation(m);
-                    if (result != null)
+                    if (result != null) {
                         return result;
+                    }
                     return NullnessAnnotation.NONNULL;
                 }
 
             } else if (o instanceof XField) {
                 XField f = (XField) o;
-                if (f.getName().startsWith("this$"))
+                if (f.getName().startsWith("this$")) {
                     return NullnessAnnotation.NONNULL;
+                }
             }
             NullnessAnnotation result = super.getResolvedAnnotation(o, getMinimal);
             return result;
@@ -114,7 +119,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
         }
     }
 
-    
+
 
     @Override
     public void addDefaultMethodAnnotation(String name, NullnessAnnotation annotation) {

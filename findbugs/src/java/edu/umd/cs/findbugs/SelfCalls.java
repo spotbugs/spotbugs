@@ -44,17 +44,17 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class SelfCalls {
     private static final boolean DEBUG = SystemProperties.getBoolean("selfcalls.debug");
 
-    private ClassContext classContext;
+    private final ClassContext classContext;
 
-    private CallGraph callGraph;
+    private final CallGraph callGraph;
 
-    private HashSet<Method> calledMethodSet;
+    private final HashSet<Method> calledMethodSet;
 
     private boolean hasSynchronization;
 
     /**
      * Constructor.
-     * 
+     *
      * @param classContext
      *            the ClassContext for the class
      */
@@ -72,27 +72,31 @@ public class SelfCalls {
         JavaClass jclass = classContext.getJavaClass();
         Method[] methods = jclass.getMethods();
 
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Class has " + methods.length + " methods");
+        }
 
         // Add call graph nodes for all methods
         for (Method method : methods) {
             callGraph.addNode(method);
         }
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Added " + callGraph.getNumVertices() + " nodes to graph");
+        }
 
         // Scan methods for self calls
         for (Method method : methods) {
             MethodGen mg = classContext.getMethodGen(method);
-            if (mg == null)
+            if (mg == null) {
                 continue;
+            }
 
             scan(callGraph.getNodeForMethod(method));
         }
 
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Found " + callGraph.getNumEdges() + " self calls");
+        }
     }
 
     /**
@@ -113,7 +117,7 @@ public class SelfCalls {
      * Determine whether we are interested in calls for the given method.
      * Subclasses may override. The default version returns true for every
      * method.
-     * 
+     *
      * @param method
      *            the method
      * @return true if we want call sites for the method, false if not
@@ -127,7 +131,7 @@ public class SelfCalls {
      */
     public Iterator<CallSite> callSiteIterator() {
         return new Iterator<CallSite>() {
-            private Iterator<CallGraphEdge> iter = callGraph.edgeIterator();
+            private final Iterator<CallGraphEdge> iter = callGraph.edgeIterator();
 
             @Override
             public boolean hasNext() {
@@ -155,7 +159,7 @@ public class SelfCalls {
 
     /**
      * Scan a method for self call sites.
-     * 
+     *
      * @param node
      *            the CallGraphNode for the method to be scanned
      */
@@ -163,8 +167,9 @@ public class SelfCalls {
         Method method = node.getMethod();
         CFG cfg = classContext.getCFG(method);
 
-        if (method.isSynchronized())
+        if (method.isSynchronized()) {
             hasSynchronization = true;
+        }
 
         Iterator<BasicBlock> i = cfg.blockIterator();
         while (i.hasNext()) {
@@ -205,8 +210,9 @@ public class SelfCalls {
         // Not a big deal for now, as we are mostly just interested in calls
         // to private methods, for which we will definitely see the right
         // called class name.
-        if (!calledClassName.equals(jclass.getClassName()))
+        if (!calledClassName.equals(jclass.getClassName())) {
             return null;
+        }
 
         String calledMethodName = inv.getMethodName(cpg);
         String calledMethodSignature = inv.getSignature(cpg);
@@ -228,10 +234,10 @@ public class SelfCalls {
         // Hmm...no matching method found.
         // This is almost certainly because the named method
         // was inherited from a superclass.
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("No method found for " + calledClassName + "." + calledMethodName + " : " + calledMethodSignature);
+        }
         return null;
     }
 }
 
-// vim:ts=4

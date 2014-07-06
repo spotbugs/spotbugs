@@ -28,7 +28,7 @@ public abstract class FBMethodVisitor extends MethodVisitor {
     public FBMethodVisitor() {
         super(FindBugsASM.ASM_VERSION);
     }
-    
+
     public FBMethodVisitor(MethodVisitor mv) {
         super(FindBugsASM.ASM_VERSION, mv);
     }

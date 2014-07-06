@@ -25,4 +25,3 @@ public class ReturnPathDataflow extends Dataflow<ReturnPath, ReturnPathAnalysis>
     }
 }
 
-// vim:ts=4

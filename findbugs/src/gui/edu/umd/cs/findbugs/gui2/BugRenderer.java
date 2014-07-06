@@ -43,9 +43,9 @@ public class BugRenderer extends DefaultTreeCellRenderer {
             int row, boolean hasFocus) {
         Component toReturn = super.getTreeCellRendererComponent(tree, node, selected, expanded, leaf, row, hasFocus);
 
-        if (!(node instanceof BugLeafNode))
+        if (!(node instanceof BugLeafNode)) {
             return toReturn;
-        else {
+        } else {
             BugInstance bug = ((BugLeafNode) node).getBug();
             final Color c;
             switch (bug.getPriority()) {
@@ -53,16 +53,18 @@ public class BugRenderer extends DefaultTreeCellRenderer {
                 c = new Color(0.4f, 0.4f, 0.6f);
                 break;
             case Priorities.NORMAL_PRIORITY:
-                if (bug.isDead())
+                if (bug.isDead()) {
                     c = new Color(0.2f, 0.2f, 0.2f);
-                else
+                } else {
                     c = new Color(255, 204, 0);
+                }
                 break;
             case Priorities.HIGH_PRIORITY:
-                if (bug.isDead())
+                if (bug.isDead()) {
                     c = new Color(.65f, 0.2f, 0.2f);
-                else
+                } else {
                     c = new Color(.85f, 0, 0);
+                }
                 break;
             case Priorities.EXP_PRIORITY:
             case Priorities.IGNORE_PRIORITY:

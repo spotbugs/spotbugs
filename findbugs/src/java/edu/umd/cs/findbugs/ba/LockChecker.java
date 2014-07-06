@@ -35,20 +35,20 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * Front-end for LockDataflow that can avoid doing unnecessary work (e.g.,
  * actually performing the lock dataflow) if the method analyzed does not
  * contain explicit monitorenter/monitorexit instructions.
- * 
+ *
  * <p>
  * Note that because LockSets use value numbers, ValueNumberAnalysis must be
  * performed for all methods that are synchronized or contain explicit
  * monitorenter/monitorexit instructions.
  * </p>
- * 
+ *
  * @see LockSet
  * @see LockDataflow
  * @see LockAnalysis
  * @author David Hovemeyer
  */
 public class LockChecker {
-    private MethodDescriptor methodDescriptor;
+    private final MethodDescriptor methodDescriptor;
 
     private Method method;
 
@@ -56,7 +56,7 @@ public class LockChecker {
 
     private ValueNumberDataflow vnaDataflow;
 
-    private HashMap<Location, LockSet> cache;
+    private final HashMap<Location, LockSet> cache;
 
     /**
      * Constructor.
@@ -68,7 +68,7 @@ public class LockChecker {
 
     /**
      * Execute dataflow analyses (only if required).
-     * 
+     *
      * @throws CheckedAnalysisException
      */
     public void execute() throws CheckedAnalysisException {
@@ -77,30 +77,31 @@ public class LockChecker {
                 methodDescriptor.getClassDescriptor());
 
         BitSet bytecodeSet = classContext.getBytecodeSet(method);
-        if (bytecodeSet == null)
+        if (bytecodeSet == null) {
             return;
+        }
         if (bytecodeSet.get(Constants.MONITORENTER) || bytecodeSet.get(Constants.MONITOREXIT)) {
             this.lockDataflow = classContext.getLockDataflow(method);
         } else if (method.isSynchronized()) {
             this.vnaDataflow = classContext.getValueNumberDataflow(method); // will
-                                                                            // need
-                                                                            // this
-                                                                            // later
+            // need
+            // this
+            // later
         }
     }
 
     /**
      * Get LockSet at given Location.
-     * 
+     *
      * @param location
      *            the Location
      * @return the LockSet at that Location
      * @throws DataflowAnalysisException
      */
     public LockSet getFactAtLocation(Location location) throws DataflowAnalysisException {
-        if (lockDataflow != null)
+        if (lockDataflow != null) {
             return lockDataflow.getFactAtLocation(location);
-        else {
+        } else {
             LockSet lockSet = cache.get(location);
             if (lockSet == null) {
                 lockSet = new LockSet();

@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * A cache mapping instructions and input values to the output values they
  * produce. We must always produce the same output given identical input, or
  * else value number analysis will not terminate.
- * 
+ *
  * @author David Hovemeyer
  * @see ValueNumberAnalysis
  */
@@ -58,18 +58,23 @@ public class ValueNumberCache {
 
         @Override
         public boolean equals(Object o) {
-            if (!(o instanceof Entry))
+            if (!(o instanceof Entry)) {
                 return false;
+            }
             Entry other = (Entry) o;
-            if (handle.getPosition() != other.handle.getPosition())
+            if (handle.getPosition() != other.handle.getPosition()) {
                 return false;
+            }
             ValueNumber[] myList = inputValueList;
             ValueNumber[] otherList = other.inputValueList;
-            if (myList.length != otherList.length)
+            if (myList.length != otherList.length) {
                 return false;
-            for (int i = 0; i < myList.length; ++i)
-                if (!myList[i].equals(otherList[i]))
+            }
+            for (int i = 0; i < myList.length; ++i) {
+                if (!myList[i].equals(otherList[i])) {
                     return false;
+                }
+            }
             return true;
         }
 
@@ -102,29 +107,31 @@ public class ValueNumberCache {
     /**
      * Map of entries to output values.
      */
-    private HashMap<Entry, ValueNumber[]> entryToOutputMap = new HashMap<Entry, ValueNumber[]>();
+    private final HashMap<Entry, ValueNumber[]> entryToOutputMap = new HashMap<Entry, ValueNumber[]>();
 
     /**
      * Look up cached output values for given entry.
-     * 
+     *
      * @param entry
      *            the entry
      * @return the list of output values, or null if there is no matching entry
      *         in the cache
      */
     public ValueNumber[] lookupOutputValues(Entry entry) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("VN cache lookup: " + entry);
+        }
         ValueNumber[] result = entryToOutputMap.get(entry);
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("   result ==> " + Arrays.toString(result));
+        }
         return result;
     }
 
     /**
      * Add output values for given entry. Assumes that lookupOutputValues() has
      * determined that the entry is not in the cache.
-     * 
+     *
      * @param entry
      *            the entry
      * @param outputValueList
@@ -133,10 +140,10 @@ public class ValueNumberCache {
      */
     public void addOutputValues(Entry entry, ValueNumber[] outputValueList) {
         ValueNumber[] old = entryToOutputMap.put(entry, outputValueList);
-        if (old != null)
+        if (old != null) {
             throw new IllegalStateException("overwriting output values for entry!");
+        }
     }
 
 }
 
-// vim:ts=4

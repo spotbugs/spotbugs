@@ -69,15 +69,17 @@ public class ExceptionSet implements Serializable {
 
         @Override
         public boolean hasNext() {
-            if (last == next)
+            if (last == next) {
                 findNext();
+            }
             return next < factory.getNumTypes();
         }
 
         @Override
         public ObjectType next() {
-            if (!hasNext())
+            if (!hasNext()) {
                 throw new NoSuchElementException();
+            }
             ObjectType result = factory.getType(next);
             last = next;
             return result;
@@ -98,8 +100,9 @@ public class ExceptionSet implements Serializable {
         private void findNext() {
             ++next;
             while (next < factory.getNumTypes()) {
-                if (exceptionSet.get(next))
+                if (exceptionSet.get(next)) {
                     break;
+                }
                 ++next;
             }
         }
@@ -139,10 +142,12 @@ public class ExceptionSet implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null)
+        if (o == null) {
             return false;
-        if (o.getClass() != this.getClass())
+        }
+        if (o.getClass() != this.getClass()) {
             return false;
+        }
 
         ExceptionSet other = (ExceptionSet) o;
         return exceptionSet.equals(other.exceptionSet) && explicitSet.equals(other.explicitSet)
@@ -154,8 +159,9 @@ public class ExceptionSet implements Serializable {
      * in the set. Returns the special TOP type if the set is empty.
      */
     public Type getCommonSupertype() throws ClassNotFoundException {
-        if (commonSupertype != null)
+        if (commonSupertype != null) {
             return commonSupertype;
+        }
 
         if (isEmpty()) {
             // This probably means that we're looking at an
@@ -208,8 +214,9 @@ public class ExceptionSet implements Serializable {
      * @return true if it is
      */
     public boolean isSingleton(String exceptionName) {
-        if (size != 1)
+        if (size != 1) {
             return false;
+        }
         ObjectType e = iterator().next();
         return e.toString().equals(exceptionName);
 
@@ -246,11 +253,13 @@ public class ExceptionSet implements Serializable {
      */
     public void add(ObjectType type, boolean explicit) {
         int index = factory.getIndexOfType(type);
-        if (!exceptionSet.get(index))
+        if (!exceptionSet.get(index)) {
             ++size;
+        }
         exceptionSet.set(index);
-        if (explicit)
+        if (explicit) {
             explicitSet.set(index);
+        }
 
         commonSupertype = null;
     }
@@ -272,8 +281,9 @@ public class ExceptionSet implements Serializable {
     private int countBits(BitSet bitSet) {
         int count = 0;
         for (int i = 0; i < factory.getNumTypes(); ++i) {
-            if (bitSet.get(i))
+            if (bitSet.get(i)) {
                 ++count;
+            }
         }
         return count;
     }
@@ -311,8 +321,9 @@ public class ExceptionSet implements Serializable {
     public boolean containsCheckedExceptions() throws ClassNotFoundException {
         for (ThrownExceptionIterator i = iterator(); i.hasNext();) {
             ObjectType type = i.next();
-            if (!Hierarchy.isUncheckedException(type))
+            if (!Hierarchy.isUncheckedException(type)) {
                 return true;
+            }
         }
         return false;
     }
@@ -323,8 +334,9 @@ public class ExceptionSet implements Serializable {
     public boolean containsExplicitExceptions() {
         for (ThrownExceptionIterator i = iterator(); i.hasNext();) {
             i.next();
-            if (i.isExplicit())
+            if (i.isExplicit()) {
                 return true;
+            }
         }
         return false;
     }
@@ -336,16 +348,19 @@ public class ExceptionSet implements Serializable {
         boolean first = true;
         for (ThrownExceptionIterator i = iterator(); i.hasNext();) {
             ObjectType type = i.next();
-            if (first)
+            if (first) {
                 first = false;
-            else
+            } else {
                 buf.append(',');
+            }
             boolean implicit = !i.isExplicit();
-            if (implicit)
+            if (implicit) {
                 buf.append('[');
+            }
             buf.append(type.toString());
-            if (implicit)
+            if (implicit) {
                 buf.append(']');
+            }
         }
         buf.append('}');
         return buf.toString();
@@ -356,4 +371,3 @@ public class ExceptionSet implements Serializable {
     }
 }
 
-// vim:ts=4

@@ -29,15 +29,15 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
  * the
  * {@link Subtypes2#traverseSupertypes(ClassDescriptor, InheritanceGraphVisitor)}
  * method.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class OverriddenMethodsVisitor implements SupertypeTraversalVisitor {
-    private XMethod xmethod;
+    private final XMethod xmethod;
 
     /**
      * Constructor.
-     * 
+     *
      * @param xmethod
      *            a derived method
      */
@@ -55,7 +55,7 @@ public abstract class OverriddenMethodsVisitor implements SupertypeTraversalVisi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor#visitClass(edu.umd.
      * cs.findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass)
@@ -93,7 +93,7 @@ public abstract class OverriddenMethodsVisitor implements SupertypeTraversalVisi
      * method object passed to the constructor. Note that this method will be
      * called <em>for</em> the original derived method, since this is useful for
      * some applications.
-     * 
+     *
      * @param xmethod
      *            a method which is overridden by the original derived method,
      *            or is the original derived method

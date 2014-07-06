@@ -39,9 +39,9 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
  */
 public class EmacsBugReporter extends TextUIBugReporter {
 
-    private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
+    private final HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
 
-    private HashMap<String, String> sourceFileNameCache = new HashMap<String, String>();
+    private final HashMap<String, String> sourceFileNameCache = new HashMap<String, String>();
 
     @Override
     public void observeClass(ClassDescriptor classDescriptor) {
@@ -80,10 +80,11 @@ public class EmacsBugReporter extends TextUIBugReporter {
         try {
             fullPath = sourceFinder.findSourceFile(pkgName, line.getSourceFile()).getFullFileName();
         } catch (IOException e) {
-            if (pkgName.equals(""))
+            if (pkgName.equals("")) {
                 fullPath = line.getSourceFile();
-            else
+            } else {
                 fullPath = pkgName.replace('.', '/') + "/" + line.getSourceFile();
+            }
         }
         outputStream.print(fullPath + ":" + lineStart + ":" + lineEnd + " " + bugInstance.getMessage());
 

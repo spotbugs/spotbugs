@@ -34,36 +34,42 @@ final class ValidationSecurityManager extends SecurityManager {
 
 
     static {
-        if (TypeQualifierValue.DEBUG_CLASSLOADING)
+        if (TypeQualifierValue.DEBUG_CLASSLOADING) {
             new RuntimeException("Creating ValidationSecurityManager #").printStackTrace();
+        }
 
     }
     public static <A extends Annotation> When sandboxedValidation(A proxy, TypeQualifierValidator<A> v, @CheckForNull
-    Object constantValue) {
-        if (performingValidation.get())
+            Object constantValue) {
+        if (performingValidation.get()) {
             throw new IllegalStateException("recursive validation");
+        }
 
         try {
             performingValidation.set(Boolean.TRUE);
-            if (TypeQualifierValue.DEBUG_CLASSLOADING)
+            if (TypeQualifierValue.DEBUG_CLASSLOADING) {
                 System.out.println("Performing validation in thread " + Thread.currentThread().getName());
+            }
             try {
                 When result = v.forConstantValue(proxy, constantValue);
-                if (!performingValidation.get())
+                if (!performingValidation.get()) {
                     throw new IllegalStateException("performingValidation not set when validation completes");
+                }
                 return result;
             } catch (ClassCastException e) {
                 Class<? extends Annotation> c = proxy.getClass();
                 System.out.println(c.getName() + " extends " + c.getSuperclass().getName());
-                for(Class<?> i : c.getInterfaces())
-                        System.out.println("  " + i.getName());
+                for(Class<?> i : c.getInterfaces()) {
+                    System.out.println("  " + i.getName());
+                }
                 throw e;
             }
 
         } finally {
             performingValidation.set(Boolean.FALSE);
-            if (TypeQualifierValue.DEBUG_CLASSLOADING)
+            if (TypeQualifierValue.DEBUG_CLASSLOADING) {
                 System.out.println("Validation finished in thread " + Thread.currentThread().getName());
+            }
 
         }
     }
@@ -71,12 +77,14 @@ final class ValidationSecurityManager extends SecurityManager {
 
     @Override
     public void checkPermission(Permission perm) {
-        if (TypeQualifierValue.DEBUG_CLASSLOADING)
+        if (TypeQualifierValue.DEBUG_CLASSLOADING) {
             System.out.println("Checking for " + perm + " permission in thread " + Thread.currentThread().getName());
+        }
         if (performingValidation.get() && inValidation()) {
             SecurityException e = new SecurityException("No permissions granted while performing JSR-305 validation");
-            if (TypeQualifierValue.DEBUG_CLASSLOADING)
+            if (TypeQualifierValue.DEBUG_CLASSLOADING) {
                 e.printStackTrace(System.out);
+            }
             throw e;
         }
 
@@ -84,13 +92,15 @@ final class ValidationSecurityManager extends SecurityManager {
 
     @Override
     public void checkPermission(Permission perm, Object context) {
-        if (TypeQualifierValue.DEBUG_CLASSLOADING)
+        if (TypeQualifierValue.DEBUG_CLASSLOADING) {
             System.out.println("Checking for " + perm + " permission with content in thread " + Thread.currentThread().getName());
+        }
 
         if (performingValidation.get() && inValidation()) {
             SecurityException e = new SecurityException("No permissions granted while performing JSR-305 validation");
-            if (TypeQualifierValue.DEBUG_CLASSLOADING)
+            if (TypeQualifierValue.DEBUG_CLASSLOADING) {
                 e.printStackTrace(System.out);
+            }
             throw e;
         }
     }
@@ -100,8 +110,9 @@ final class ValidationSecurityManager extends SecurityManager {
     private boolean inValidation() {
         for (Class<?> c : getClassContext()) {
             if (TypeQualifierValidator.class.isAssignableFrom(c)
-                    || c.getClassLoader() == VALIDATOR_LOADER)
+                    || c.getClassLoader() == VALIDATOR_LOADER) {
                 return true;
+            }
         }
         return false;
     }

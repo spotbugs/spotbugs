@@ -27,14 +27,14 @@ public interface GraphToolkit<GraphType extends Graph<EdgeType, VertexType>, Edg
 
     /**
      * Create a new empty graph (no vertices or edges).
-     * 
+     *
      * @return the new graph
      */
     public GraphType createGraph();
 
     /**
      * Make a copy of given vertex.
-     * 
+     *
      * @param original
      *            the vertex to copy
      * @return an exact duplicate of the vertex
@@ -43,7 +43,7 @@ public interface GraphToolkit<GraphType extends Graph<EdgeType, VertexType>, Edg
 
     /**
      * Copy auxiliary information from one edge to another.
-     * 
+     *
      * @param source
      *            the source edge
      * @param dest
@@ -53,4 +53,3 @@ public interface GraphToolkit<GraphType extends Graph<EdgeType, VertexType>, Edg
 
 }
 
-// vim:ts=4

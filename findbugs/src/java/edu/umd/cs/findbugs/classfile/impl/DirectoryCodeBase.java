@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 /**
  * IScannableCodeBase implementation to read resources from a filesystem
  * directory.
- * 
+ *
  * @author David Hovemeyer
  */
 public class DirectoryCodeBase extends AbstractScannableCodeBase {
@@ -47,7 +47,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#hasNext()
          */
         @Override
@@ -57,7 +57,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
          */
         @Override
@@ -69,8 +69,8 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
 
             // Update last modified time
             File file = new File(fileName);
-           long modTime = file.lastModified();
-           addLastModifiedTime(modTime);
+            long modTime = file.lastModified();
+            addLastModifiedTime(modTime);
 
             return new DirectoryCodeBaseEntry(DirectoryCodeBase.this, resourceName);
         }
@@ -84,7 +84,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
 
     /**
      * Constructor.
-     * 
+     *
      * @param codeBaseLocator
      *            the codebase locator for this codebase
      * @param directory
@@ -99,7 +99,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
         this.rfs = new RecursiveFileSearch(directory.getPath(), new FileFilter() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see java.io.FileFilter#accept(java.io.File)
              */
             @Override
@@ -112,7 +112,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#iterator()
      */
     @Override
@@ -127,7 +127,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
      */
     @Override
@@ -137,7 +137,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
      */
     @Override
@@ -147,7 +147,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
      */
@@ -179,7 +179,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
 
     /**
      * Get the resource name given a full filename.
-     * 
+     *
      * @param fileName
      *            the full filename (which must be inside the directory)
      * @return the resource name (i.e., the filename with the directory stripped
@@ -221,7 +221,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override

@@ -60,10 +60,12 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (!(obj instanceof PointerEqualityInfo))
+            }
+            if (!(obj instanceof PointerEqualityInfo)) {
                 return false;
+            }
             PointerEqualityInfo other = (PointerEqualityInfo) obj;
             return this.addr1.equals(other.addr1) && this.addr2.equals(other.addr2) && this.areEqual == other.areEqual;
         }
@@ -89,17 +91,21 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
     }
 
     public void cleanStaleKnowledge(ValueNumberFrame vnaFrameAfter) {
-        if (vnaFrameAfter.isTop() && !isTop())
+        if (vnaFrameAfter.isTop() && !isTop()) {
             throw new IllegalArgumentException("VNA frame is top");
-        if (!trackValueNumbers)
+        }
+        if (!trackValueNumbers) {
             return;
-        if (!ValueNumberAnalysisFeatures.REDUNDANT_LOAD_ELIMINATION)
+        }
+        if (!ValueNumberAnalysisFeatures.REDUNDANT_LOAD_ELIMINATION) {
             return;
+        }
         for (Iterator<ValueNumber> i = knownValueMap.keySet().iterator(); i.hasNext();) {
             ValueNumber v = i.next();
             if (vnaFrameAfter.getLoad(v) == null) {
-                if (IsNullValueAnalysis.DEBUG)
+                if (IsNullValueAnalysis.DEBUG) {
                     System.out.println("PURGING " + v);
+                }
                 i.remove();
             }
         }
@@ -116,8 +122,9 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
     }
 
     public void toExceptionValues() {
-        for (int i = 0; i < getNumSlots(); ++i)
+        for (int i = 0; i < getNumSlots(); ++i) {
             setValue(i, getValue(i).toExceptionValue());
+        }
 
         if (trackValueNumbers) {
             Map<ValueNumber, IsNullValue> replaceMap = new HashMap<ValueNumber, IsNullValue>();
@@ -139,8 +146,9 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 
     public void setKnownValue(@Nonnull ValueNumber valueNumber, @Nonnull IsNullValue knownValue) {
         assert trackValueNumbers;
-        if (valueNumber == null || knownValue == null)
+        if (valueNumber == null || knownValue == null) {
             throw new NullPointerException();
+        }
         knownValueMap.put(valueNumber, knownValue);
         if (IsNullValueAnalysis.DEBUG) {
             System.out.println("Updated information for " + valueNumber);
@@ -149,10 +157,12 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
     }
 
     public void useNewValueNumberForLoad(ValueNumber oldValueNumber, ValueNumber newValueNumber) {
-        if (oldValueNumber == null || newValueNumber == null)
+        if (oldValueNumber == null || newValueNumber == null) {
             throw new NullPointerException();
-        if (newValueNumber.equals(oldValueNumber) || !trackValueNumbers)
+        }
+        if (newValueNumber.equals(oldValueNumber) || !trackValueNumbers) {
             return;
+        }
         IsNullValue isNullValue = knownValueMap.get(oldValueNumber);
         if (isNullValue != null) {
             knownValueMap.put(newValueNumber, isNullValue);
@@ -232,15 +242,19 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 
     @Override
     public boolean sameAs(Frame<IsNullValue> other) {
-        if (!(other instanceof IsNullValueFrame))
+        if (!(other instanceof IsNullValueFrame)) {
             return false;
-        if (!super.sameAs(other))
+        }
+        if (!super.sameAs(other)) {
             return false;
+        }
         IsNullValueFrame o2 = (IsNullValueFrame) other;
-        if (!Util.nullSafeEquals(decision, o2.decision))
+        if (!Util.nullSafeEquals(decision, o2.decision)) {
             return false;
-        if (trackValueNumbers && !Util.nullSafeEquals(knownValueMap, o2.knownValueMap))
+        }
+        if (trackValueNumbers && !Util.nullSafeEquals(knownValueMap, o2.knownValueMap)) {
             return false;
+        }
 
         return true;
     }
@@ -292,4 +306,3 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
     }
 }
 
-// vim:ts=4

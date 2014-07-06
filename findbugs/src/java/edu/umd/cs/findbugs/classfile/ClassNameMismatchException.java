@@ -22,15 +22,15 @@ package edu.umd.cs.findbugs.classfile;
 /**
  * Exception to indicate that the class name defined in a class file does not
  * match its expected class name (as indicated by its resource name).
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassNameMismatchException extends InvalidClassFileFormatException {
-    private ClassDescriptor loadedClassDescriptor;
+    private final ClassDescriptor loadedClassDescriptor;
 
     /**
      * Constructor.
-     * 
+     *
      * @param expectedClassDescriptor
      *            class descriptor we were expected based on the resource name
      * @param loadedClassDescriptor

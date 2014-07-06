@@ -42,7 +42,7 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
 
     int waitAt = 0;
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     public WaitInLoop(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -59,11 +59,12 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
         if ((sawWait || sawAwait) && waitAt < earliestJump) {
             String bugType = sawWait ? "WA_NOT_IN_LOOP" : "WA_AWAIT_NOT_IN_LOOP";
             bugReporter.reportBug(new BugInstance(this, bugType, waitHasTimeout ? LOW_PRIORITY : NORMAL_PRIORITY)
-                    .addClassAndMethod(this).addSourceLine(this, waitAt));
+            .addClassAndMethod(this).addSourceLine(this, waitAt));
         }
-        if (sawNotify)
+        if (sawNotify) {
             bugReporter.reportBug(new BugInstance(this, "NO_NOTIFY_NOT_NOTIFYALL", LOW_PRIORITY).addClassAndMethod(this)
                     .addSourceLine(this, notifyPC));
+        }
     }
 
     @Override
@@ -87,8 +88,9 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
             earliestJump = getPC() + 1;
             return;
         }
-        if (seen >= IFEQ && seen <= GOTO || seen >= IFNULL && seen <= GOTO_W)
+        if (seen >= IFEQ && seen <= GOTO || seen >= IFNULL && seen <= GOTO_W) {
             earliestJump = Math.min(earliestJump, getBranchTarget());
+        }
     }
 
     private boolean isConditionAwait() {
@@ -96,20 +98,26 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
         String name = getNameConstantOperand();
         String sig = getSigConstantOperand();
 
-        if (!className.equals("java/util/concurrent/locks/Condition"))
+        if (!className.equals("java/util/concurrent/locks/Condition")) {
             return false;
+        }
 
-        if (!name.startsWith("await"))
+        if (!name.startsWith("await")) {
             return false;
+        }
 
-        if (name.equals("await") && (sig.equals("()V") || sig.equals("(JLjava/util/concurrent/TimeUnit;)V")))
+        if (name.equals("await") && (sig.equals("()V") || sig.equals("(JLjava/util/concurrent/TimeUnit;)V"))) {
             return true;
-        if (name.equals("awaitNanos") && sig.equals("(J)V"))
+        }
+        if (name.equals("awaitNanos") && sig.equals("(J)V")) {
             return true;
-        if (name.equals("awaitUninterruptibly") && sig.equals("()V"))
+        }
+        if (name.equals("awaitUninterruptibly") && sig.equals("()V")) {
             return true;
-        if (name.equals("awaitUntil") && sig.equals("(Ljava/util/Date;)V"))
+        }
+        if (name.equals("awaitUntil") && sig.equals("(Ljava/util/Date;)V")) {
             return true;
+        }
 
         return false;
     }

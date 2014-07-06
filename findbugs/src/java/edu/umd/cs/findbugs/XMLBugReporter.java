@@ -40,8 +40,9 @@ public class XMLBugReporter extends BugCollectionBugReporter {
     public void finish() {
         try {
             Project project = getProject();
-            if (project == null)
+            if (project == null) {
                 throw new NullPointerException("No project");
+            }
             getBugCollection().bugsPopulated();
             getBugCollection().writeXML(outputStream);
             outputStream.close();
@@ -61,4 +62,3 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 
 }
 
-// vim:ts=4

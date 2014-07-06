@@ -73,32 +73,37 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
     abstract protected void reportBug(BugInstance bug);
 
     public BuildUnconditionalParamDerefDatabase() {
-       this.nonnullTypeQualifierValue =  TypeQualifierValue.getValue(javax.annotation.Nonnull.class, null);
+        this.nonnullTypeQualifierValue =  TypeQualifierValue.getValue(javax.annotation.Nonnull.class, null);
     }
 
     @Override
     public void visitClassContext(ClassContext classContext) {
         boolean fullAnalysis = AnalysisContext.currentAnalysisContext().getBoolProperty(
                 FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES);
-        if (!fullAnalysis && !AnalysisContext.currentAnalysisContext().isApplicationClass(classContext.getJavaClass()))
+        if (!fullAnalysis && !AnalysisContext.currentAnalysisContext().isApplicationClass(classContext.getJavaClass())) {
             return;
-        if (VERBOSE_DEBUG)
+        }
+        if (VERBOSE_DEBUG) {
             System.out.println("Visiting class " + classContext.getJavaClass().getClassName());
+        }
 
-        for (Method m : classContext.getMethodsInCallOrder())
+        for (Method m : classContext.getMethodsInCallOrder()) {
             considerMethod(classContext, m);
+        }
     }
 
     private void considerMethod(ClassContext classContext, Method method) {
         boolean hasReferenceParameters = false;
-        for (Type argument : method.getArgumentTypes())
+        for (Type argument : method.getArgumentTypes()) {
             if (argument instanceof ReferenceType) {
                 hasReferenceParameters = true;
             }
+        }
 
         if (hasReferenceParameters && classContext.getMethodGen(method) != null) {
-            if (VERBOSE_DEBUG)
+            if (VERBOSE_DEBUG) {
                 System.out.println("Check " + method);
+            }
             analyzeMethod(classContext, method);
         }
     }
@@ -153,22 +158,25 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
                         typeQualifierAnnotation = TypeQualifierAnnotation.getValue(nonnullTypeQualifierValue, When.MAYBE);
                     }
 
-                    if (typeQualifierAnnotation != null && typeQualifierAnnotation.when == When.ALWAYS)
+                    if (typeQualifierAnnotation != null && typeQualifierAnnotation.when == When.ALWAYS) {
                         unconditionalDerefSet.set(i);
-                    else if (isCaught(classContext, method, entryFact, paramVN)) {
+                    } else if (isCaught(classContext, method, entryFact, paramVN)) {
                         // ignore
-                    } else if (typeQualifierAnnotation == null)
+                    } else if (typeQualifierAnnotation == null) {
                         unconditionalDerefSet.set(i);
-                    else {
+                    } else {
                         int paramLocal = xmethod.isStatic() ? i : i + 1;
                         int priority = Priorities.NORMAL_PRIORITY;
-                        if (typeQualifierAnnotation.when != When.UNKNOWN)
+                        if (typeQualifierAnnotation.when != When.UNKNOWN) {
                             priority--;
+                        }
                         if (xmethod.isStatic() || xmethod.isFinal() || xmethod.isPrivate() || xmethod.getName().equals("<init>")
-                                || jclass.isFinal())
+                                || jclass.isFinal()) {
                             priority--;
-                        if (directTypeQualifierAnnotation == null)
+                        }
+                        if (directTypeQualifierAnnotation == null) {
                             priority++;
+                        }
                         String bugPattern = implicitNullCheckForEquals ? "NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT"
                                 : "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE";
                         reportBug(new BugInstance(this, bugPattern, priority).addClassAndMethod(jclass, method).add(
@@ -176,10 +184,11 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
                     }
                 }
                 i++;
-                if (paramSig.equals("D") || paramSig.equals("J"))
+                if (paramSig.equals("D") || paramSig.equals("J")) {
                     paramLocalOffset += 2;
-                else
+                } else {
                     paramLocalOffset += 1;
+                }
             }
 
             // No need to add properties if there are no unconditionally
@@ -199,13 +208,13 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
             property.setParamsWithProperty(unconditionalDerefSet);
 
             AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase()
-                    .setProperty(xmethod.getMethodDescriptor(), property);
+            .setProperty(xmethod.getMethodDescriptor(), property);
             if (DEBUG) {
                 System.out.println("Unconditional deref: " + xmethod + "=" + property);
             }
         } catch (CheckedAnalysisException e) {
             AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
-                    .logError("Error analyzing " + xmethod + " for unconditional deref training", e);
+            .logError("Error analyzing " + xmethod + " for unconditional deref training", e);
         }
     }
 
@@ -213,13 +222,14 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
         boolean caught = true;
 
         Set<Location> dereferenceSites
-          = entryFact.getDerefLocationSet(paramVN);
+        = entryFact.getDerefLocationSet(paramVN);
         if (dereferenceSites != null && !dereferenceSites.isEmpty()) {
             ConstantPool cp = classContext.getJavaClass().getConstantPool();
 
             for(Location loc : dereferenceSites) {
-                if (!FindNullDeref.catchesNull(cp, method.getCode(), loc))
+                if (!FindNullDeref.catchesNull(cp, method.getCode(), loc)) {
                     caught = false;
+                }
             }
 
         }

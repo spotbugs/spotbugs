@@ -31,9 +31,9 @@ public class ExceptionSetFactory implements Serializable {
      */
     private static final long serialVersionUID = 1L;
 
-    private HashMap<ObjectType, Integer> typeIndexMap;
+    private final HashMap<ObjectType, Integer> typeIndexMap;
 
-    private ArrayList<ObjectType> typeList;
+    private final ArrayList<ObjectType> typeList;
 
     public ExceptionSetFactory() {
         this.typeIndexMap = new HashMap<ObjectType, Integer>();
@@ -63,4 +63,3 @@ public class ExceptionSetFactory implements Serializable {
     }
 }
 
-// vim:ts=3

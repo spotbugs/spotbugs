@@ -39,7 +39,7 @@ public class MergeVertices<GraphType extends Graph<EdgeType, VertexType>, EdgeTy
 
     /**
      * Merge the specified set of vertices into a single vertex.
-     * 
+     *
      * @param vertexSet
      *            the set of vertices to be merged
      * @param g
@@ -54,8 +54,9 @@ public class MergeVertices<GraphType extends Graph<EdgeType, VertexType>, EdgeTy
 
         // Special case: if the vertex set contains a single vertex
         // or is empty, there is nothing to do
-        if (vertexSet.size() <= 1)
+        if (vertexSet.size() <= 1) {
             return;
+        }
 
         // Get all vertices to which we have outgoing edges
         // or from which we have incoming edges, since they'll need
@@ -63,8 +64,9 @@ public class MergeVertices<GraphType extends Graph<EdgeType, VertexType>, EdgeTy
         TreeSet<EdgeType> edgeSet = new TreeSet<EdgeType>();
         for (Iterator<EdgeType> i = g.edgeIterator(); i.hasNext();) {
             EdgeType e = i.next();
-            if (vertexSet.contains(e.getSource()) || vertexSet.contains(e.getTarget()))
+            if (vertexSet.contains(e.getSource()) || vertexSet.contains(e.getTarget())) {
                 edgeSet.add(e);
+            }
         }
 
         // Combine all of the vertices into a single composite vertex
@@ -83,12 +85,14 @@ public class MergeVertices<GraphType extends Graph<EdgeType, VertexType>, EdgeTy
             // Don't create a self edge for the composite vertex
             // unless one of the vertices in the vertex set
             // had a self edge
-            if (source == compositeVertex && target == compositeVertex && e.getSource() != e.getTarget())
+            if (source == compositeVertex && target == compositeVertex && e.getSource() != e.getTarget()) {
                 continue;
+            }
 
             // Don't create duplicate edges.
-            if (g.lookupEdge(source, target) != null)
+            if (g.lookupEdge(source, target) != null) {
                 continue;
+            }
 
             EdgeType compositeEdge = g.createEdge(source, target);
             // FIXME: we really should have an EdgeCombinator here
@@ -106,4 +110,3 @@ public class MergeVertices<GraphType extends Graph<EdgeType, VertexType>, EdgeTy
 
 }
 
-// vim:ts=4

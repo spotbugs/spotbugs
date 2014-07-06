@@ -143,7 +143,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
@@ -161,7 +161,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getAccessFlags()
      */
     @Override
@@ -171,7 +171,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isFinal()
      */
     @Override
@@ -181,7 +181,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPrivate()
      */
     @Override
@@ -191,7 +191,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isProtected()
      */
     @Override
@@ -201,7 +201,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPublic()
      */
     @Override
@@ -211,7 +211,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isResolved()
      */
     @Override
@@ -221,7 +221,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XField#isReferenceType()
      */
     @Override
@@ -231,7 +231,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XField#isVolatile()
      */
     @Override
@@ -264,7 +264,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
      * that might not be directly evident in the code. It's not a great idea in
      * general, but we can get away with it as long as it's done early enough
      * (i.e., before anyone asks what annotations this field has.)
-     * 
+     *
      * @param annotationValue
      *            an AnnotationValue representing a field annotation
      */
@@ -278,7 +278,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XField#getFieldDescriptor()
      */
     @Override
@@ -289,7 +289,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
     /**
      * Create a FieldInfo object to represent an unresolved field.
      * <em>Don't call this directly - use XFactory instead.</em>
-     * 
+     *
      * @param className
      *            name of class containing the field
      * @param name
@@ -303,10 +303,10 @@ public class FieldInfo extends FieldDescriptor implements XField {
     public static FieldInfo createUnresolvedFieldInfo(String className, String name, String signature, boolean isStatic) {
         className = ClassName.toSlashedClassName(className);
         return new FieldInfo(className, name, signature, null, // without seeing
-                                                               // the definition
-                                                               // we don't know
-                                                               // if it has a
-                                                               // generic type
+                // the definition
+                // we don't know
+                // if it has a
+                // generic type
                 isStatic ? Constants.ACC_STATIC : 0, new HashMap<ClassDescriptor, AnnotationValue>(), false);
     }
 

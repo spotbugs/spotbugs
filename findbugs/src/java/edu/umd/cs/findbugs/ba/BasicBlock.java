@@ -93,10 +93,10 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     private InstructionHandle lastInstruction;
 
     private InstructionHandle exceptionThrower; // instruction for which this
-                                                // block is the ETB
+    // block is the ETB
 
     private CodeExceptionGen exceptionGen; // set if this block is the entry
-                                           // point of an exception handler
+    // point of an exception handler
 
     private boolean inJSRSubroutine;
 
@@ -178,8 +178,9 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
         // Null check blocks must be exception throwers,
         // and are always empty. (The only kind of non-empty
         // exception throwing block is one terminated by an ATHROW).
-        if (!isExceptionThrower() || getFirstInstruction() != null)
+        if (!isExceptionThrower() || getFirstInstruction() != null) {
             return false;
+        }
         short opcode = exceptionThrower.getInstruction().getOpcode();
         return nullCheckInstructionSet.get(opcode);
     }
@@ -209,8 +210,9 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     public @CheckForNull
     InstructionHandle getSuccessorOf(InstructionHandle handle) {
         if (VERIFY_INTEGRITY) {
-            if (!containsInstruction(handle))
+            if (!containsInstruction(handle)) {
                 throw new IllegalStateException();
+            }
         }
         return handle == lastInstruction ? null : handle.getNext();
     }
@@ -225,8 +227,9 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
      */
     public InstructionHandle getPredecessorOf(InstructionHandle handle) {
         if (VERIFY_INTEGRITY) {
-            if (!containsInstruction(handle))
+            if (!containsInstruction(handle)) {
                 throw new IllegalStateException();
+            }
         }
         return handle == firstInstruction ? null : handle.getPrev();
     }
@@ -241,8 +244,9 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
         if (firstInstruction == null) {
             firstInstruction = lastInstruction = handle;
         } else {
-            if (VERIFY_INTEGRITY && handle != lastInstruction.getNext())
+            if (VERIFY_INTEGRITY && handle != lastInstruction.getNext()) {
                 throw new IllegalStateException("Adding non-consecutive instruction");
+            }
             lastInstruction = handle;
         }
     }
@@ -254,7 +258,8 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
      * versa.
      */
     public class InstructionIterator implements Iterator<InstructionHandle> {
-        private InstructionHandle next, last;
+        private InstructionHandle next;
+        private final InstructionHandle last;
 
         public InstructionIterator(InstructionHandle first, InstructionHandle last) {
             this.next = first;
@@ -268,8 +273,9 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 
         @Override
         public InstructionHandle next() {
-            if (!hasNext())
+            if (!hasNext()) {
                 throw new NoSuchElementException();
+            }
             InstructionHandle result = next;
             next = (result == last) ? null : next.getNext();
             return result;
@@ -286,8 +292,9 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 
         @Override
         public boolean equals(Object o) {
-            if (!(o instanceof InstructionIterator))
+            if (!(o instanceof InstructionIterator)) {
                 return false;
+            }
             InstructionIterator other = (InstructionIterator) o;
             return this.next == other.next && this.last == other.last;
         }
@@ -295,8 +302,9 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
         @Override
         public int hashCode() {
             int code = getBasicBlock().hashCode() * 227;
-            if (next != null)
+            if (next != null) {
                 code += next.getPosition() + 1;
+            }
             return code;
         }
 
@@ -332,7 +340,8 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
      * A reverse Iterator over the instructions in a basic block.
      */
     private static class InstructionReverseIterator implements Iterator<InstructionHandle> {
-        private InstructionHandle next, first;
+        private InstructionHandle next;
+        private final InstructionHandle first;
 
         public InstructionReverseIterator(InstructionHandle last, InstructionHandle first) {
             this.next = last;
@@ -346,8 +355,9 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 
         @Override
         public InstructionHandle next() throws NoSuchElementException {
-            if (!hasNext())
+            if (!hasNext()) {
                 throw new NoSuchElementException();
+            }
             InstructionHandle result = next;
             next = (result == first) ? null : next.getPrev();
             return result;
@@ -376,8 +386,9 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 
     public int pos() {
 
-        if (isEmpty())
+        if (isEmpty()) {
             return getExceptionThrower().getPosition();
+        }
         return firstInstruction.getPosition();
     }
 
@@ -410,10 +421,10 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
             AnalysisContext.logError("Multiple exception handlers");
         }
 
-       this.exceptionGen = exceptionGen;
+        this.exceptionGen = exceptionGen;
     }
 
-      /**
+    /**
      * Return whether or not the basic block contains the given instruction.
      *
      * @param handle
@@ -423,8 +434,9 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     public boolean containsInstruction(InstructionHandle handle) {
         Iterator<InstructionHandle> i = instructionIterator();
         while (i.hasNext()) {
-            if (i.next() == handle)
+            if (i.next() == handle) {
                 return true;
+            }
         }
         return false;
     }
@@ -441,8 +453,9 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     public boolean containsInstructionWithOffset(int offset) {
         Iterator<InstructionHandle> i = instructionIterator();
         while (i.hasNext()) {
-            if (i.next().getPosition() == offset)
+            if (i.next().getPosition() == offset) {
                 return true;
+            }
         }
         return false;
     }
@@ -463,4 +476,3 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     }
 }
 
-// vim:ts=4

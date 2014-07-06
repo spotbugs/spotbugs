@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.annotations.DischargesObligation;
 /**
  * Interface to generate an XML document in some form. E.g., writing it to a
  * stream, generating SAX events, etc.
- * 
+ *
  * @author David Hovemeyer
  */
 @CleanupObligation
@@ -39,7 +39,7 @@ public interface XMLOutput {
 
     /**
      * Open a tag with given name.
-     * 
+     *
      * @param tagName
      *            the tag name
      */
@@ -47,7 +47,7 @@ public interface XMLOutput {
 
     /**
      * Open a tag with given name and given attributes.
-     * 
+     *
      * @param tagName
      *            the tag name
      * @param attributeList
@@ -58,7 +58,7 @@ public interface XMLOutput {
     /**
      * Start a tag, with the intention of adding attributes. Must be followed by
      * stopTag after zero or more addAttribute calls.
-     * 
+     *
      * @param tagName
      *            the tag name
      */
@@ -66,7 +66,7 @@ public interface XMLOutput {
 
     /**
      * Add an attribute to a started tag. Must follow a call to startTag.
-     * 
+     *
      * @param name
      *            the attribute name.
      * @param value
@@ -76,7 +76,7 @@ public interface XMLOutput {
 
     /**
      * End a started tag. Must follow a call to startTag.
-     * 
+     *
      * @param close
      *            true if the element has no content.
      */
@@ -84,7 +84,7 @@ public interface XMLOutput {
 
     /**
      * Open and close tag with given name.
-     * 
+     *
      * @param tagName
      *            the tag name
      */
@@ -92,7 +92,7 @@ public interface XMLOutput {
 
     /**
      * Open and close tag with given name and given attributes.
-     * 
+     *
      * @param tagName
      *            the tag name
      * @param attributeList
@@ -102,7 +102,7 @@ public interface XMLOutput {
 
     /**
      * Close tag with given name.
-     * 
+     *
      * @param tagName
      *            the tag name
      */
@@ -111,7 +111,7 @@ public interface XMLOutput {
     /**
      * Write text to the XML document. XML metacharacters are automatically
      * escaped.
-     * 
+     *
      * @param text
      *            the text to write
      */
@@ -120,7 +120,7 @@ public interface XMLOutput {
     /**
      * Write a CDATA section to the XML document. The characters are not escaped
      * in any way.
-     * 
+     *
      * @param cdata
      *            the character data to write
      */
@@ -136,4 +136,3 @@ public interface XMLOutput {
     public void finish() throws IOException;
 }
 
-// vim:ts=4

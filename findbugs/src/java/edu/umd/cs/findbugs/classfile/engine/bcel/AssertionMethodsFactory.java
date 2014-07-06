@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 
 /**
  * Class analysis engine for creating AssertionMethods objects.
- * 
+ *
  * @author David Hovemeyer
  */
 public class AssertionMethodsFactory extends RecomputableClassAnalysisEngine<AssertionMethods> {
@@ -42,7 +42,7 @@ public class AssertionMethodsFactory extends RecomputableClassAnalysisEngine<Ass
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)

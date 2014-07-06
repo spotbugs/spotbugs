@@ -25,7 +25,7 @@ import java.util.Comparator;
  * A BlockOrder for visiting the blocks of a CFG in the order they would be
  * visited in a depth first search of the reversed CFG. This is the most
  * efficient visitation order for backwards dataflow analyses.
- * 
+ *
  * @see BlockOrder
  * @see ReverseDepthFirstSearch
  * @see CFG
@@ -37,8 +37,9 @@ public class ReverseDFSOrder extends AbstractBlockOrder {
         private final DepthFirstSearch dfs;
 
         public ReverseDFSComparator(ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
-            if (dfs == null)
+            if (dfs == null) {
                 throw new IllegalArgumentException();
+            }
             this.dfs = dfs;
         }
 
@@ -54,7 +55,7 @@ public class ReverseDFSOrder extends AbstractBlockOrder {
 
     /**
      * Constructor.
-     * 
+     *
      * @param cfg
      *            the CFG
      * @param rdfs
@@ -69,4 +70,3 @@ public class ReverseDFSOrder extends AbstractBlockOrder {
     }
 }
 
-// vim:ts=4

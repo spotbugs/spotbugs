@@ -51,85 +51,88 @@ public class Driver {
     public static void main(String[] args) throws Exception {
         try {
 
-       String name = "FindBugs GUI";
-       if (JavaWebStart.isRunningViaJavaWebstart())
-           name = "FindBugs webstart GUI";
-       Version.registerApplication(name, Version.RELEASE);
-
-        if (SystemProperties.getProperty("os.name").startsWith("Mac")) {
-            System.setProperty("apple.laf.useScreenMenuBar", "true");
-            System.setProperty("com.apple.mrj.application.apple.menu.about.name", "FindBugs");
-            Debug.println("Mac OS detected");
-        }
-        splash = new SplashFrame();
-        splash.setVisible(true);
-
-        int numParsed = commandLine.parse(args, 0, 1, USAGE);
-
-        //
-        // See if an argument filename was specified after the parsed
-        // options/switches.
-        //
-        if (numParsed < args.length) {
-            String arg = args[numParsed];
-            String argLowerCase = arg.toLowerCase(Locale.ENGLISH);
-            if (argLowerCase.endsWith(".fbp") || argLowerCase.endsWith(".fb")) {
-                // Project file specified
-                commandLine.loadProject(arg);
-            } else if (argLowerCase.endsWith(".xml") || argLowerCase.endsWith(".xml.gz") || argLowerCase.endsWith(".fba")) {
-                // Saved analysis results specified
-                commandLine.setSaveFile(new File(arg));
-            } else {
-                System.out.println("Unknown argument: " + arg);
-                commandLine.printUsage(System.out);
-                System.exit(1);
+            String name = "FindBugs GUI";
+            if (JavaWebStart.isRunningViaJavaWebstart()) {
+                name = "FindBugs webstart GUI";
             }
-        }
+            Version.registerApplication(name, Version.RELEASE);
 
-        if (commandLine.getDocking()) {
-            // make sure docking runtime support is available
+            if (SystemProperties.getProperty("os.name").startsWith("Mac")) {
+                System.setProperty("apple.laf.useScreenMenuBar", "true");
+                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "FindBugs");
+                Debug.println("Mac OS detected");
+            }
+            splash = new SplashFrame();
+            splash.setVisible(true);
+
+            int numParsed = commandLine.parse(args, 0, 1, USAGE);
+
+            //
+            // See if an argument filename was specified after the parsed
+            // options/switches.
+            //
+            if (numParsed < args.length) {
+                String arg = args[numParsed];
+                String argLowerCase = arg.toLowerCase(Locale.ENGLISH);
+                if (argLowerCase.endsWith(".fbp") || argLowerCase.endsWith(".fb")) {
+                    // Project file specified
+                    commandLine.loadProject(arg);
+                } else if (argLowerCase.endsWith(".xml") || argLowerCase.endsWith(".xml.gz") || argLowerCase.endsWith(".fba")) {
+                    // Saved analysis results specified
+                    commandLine.setSaveFile(new File(arg));
+                } else {
+                    System.out.println("Unknown argument: " + arg);
+                    commandLine.printUsage(System.out);
+                    System.exit(1);
+                }
+            }
+
+            if (commandLine.getDocking()) {
+                // make sure docking runtime support is available
+                try {
+                    Class.forName("net.infonode.docking.DockingWindow");
+                    Class.forName("edu.umd.cs.findbugs.gui2.DockLayout");
+                } catch (Exception e) {
+                    commandLine.setDocking(false);
+                }
+            }
+
             try {
-                Class.forName("net.infonode.docking.DockingWindow");
-                Class.forName("edu.umd.cs.findbugs.gui2.DockLayout");
-            } catch (Exception e) {
-                commandLine.setDocking(false);
+                GUISaveState.loadInstance();
+            } catch (RuntimeException e) {
+                GUISaveState.clear();
+                e.printStackTrace();
             }
-        }
 
-        try {
-            GUISaveState.loadInstance();
-        } catch (RuntimeException e) {
-            GUISaveState.clear();
-            e.printStackTrace();
-        }
+            GUISaveState guiSavedPreferences = GUISaveState.getInstance();
+            if (commandLine.isFontSizeSpecified()) {
+                guiSavedPreferences.setFontSize(commandLine.getFontSize());
+            }
 
-        GUISaveState guiSavedPreferences = GUISaveState.getInstance();
-        if (commandLine.isFontSizeSpecified())
-            guiSavedPreferences.setFontSize(commandLine.getFontSize());
+            // System.setProperty("findbugs.home",".."+File.separator+"findbugs");
 
-        // System.setProperty("findbugs.home",".."+File.separator+"findbugs");
+            enablePlugins(guiSavedPreferences.getEnabledPlugins(), true);
+            enablePlugins(guiSavedPreferences.getDisabledPlugins(), false);
 
-        enablePlugins(guiSavedPreferences.getEnabledPlugins(), true);
-        enablePlugins(guiSavedPreferences.getDisabledPlugins(), false);
+            // The bug with serializable idiom detection has been fixed on the
+            // findbugs end.
+            // DetectorFactory
+            // serializableIdiomDetector=DetectorFactoryCollection.instance().getFactory("SerializableIdiom");
+            // System.out.println(serializableIdiomDetector.getFullName());
+            // UserPreferences.getUserPreferences().enableDetector(serializableIdiomDetector,false);
 
-        // The bug with serializable idiom detection has been fixed on the
-        // findbugs end.
-        // DetectorFactory
-        // serializableIdiomDetector=DetectorFactoryCollection.instance().getFactory("SerializableIdiom");
-        // System.out.println(serializableIdiomDetector.getFullName());
-        // UserPreferences.getUserPreferences().enableDetector(serializableIdiomDetector,false);
+            FindBugsLayoutManagerFactory factory;
 
-        FindBugsLayoutManagerFactory factory;
-
-        if (isDocking())
-            factory = new FindBugsLayoutManagerFactory("edu.umd.cs.findbugs.gui2.DockLayout");
-        else
-            factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
-        MainFrame.makeInstance(factory);
+            if (isDocking()) {
+                factory = new FindBugsLayoutManagerFactory("edu.umd.cs.findbugs.gui2.DockLayout");
+            } else {
+                factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
+            }
+            MainFrame.makeInstance(factory);
 
 
-        splash.setVisible(false);
-        splash.dispose();
+            splash.setVisible(false);
+            splash.dispose();
         } catch (Throwable t) {
             JOptionPane.showMessageDialog(null, t.toString(), "Fatal Error during FindBugs startup", JOptionPane.ERROR_MESSAGE);
             t.printStackTrace(System.err);
@@ -141,19 +144,21 @@ public class Driver {
         for (String pid : plugins) {
             Plugin plugin = Plugin.getByPluginId(pid);
             if (plugin != null) {
-                if (!enabled && plugin.cannotDisable())
+                if (!enabled && plugin.cannotDisable()) {
                     JOptionPane.showMessageDialog(null,
                             "Cannot disable plugin: " + plugin.getPluginId() + "\n" + plugin.getShortDescription(),
                             "Cannot disable plugin", JOptionPane.ERROR_MESSAGE);
-                else
+                } else {
                     plugin.setGloballyEnabled(enabled);
+                }
             }
         }
     }
 
     public static void removeSplashScreen() {
-        if (splash == null)
+        if (splash == null) {
             return;
+        }
         splash.setVisible(false);
         splash.dispose();
 

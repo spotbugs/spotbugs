@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.FindBugsCommandLine;
 
 /**
  * Command line switches/options for GUI2.
- * 
+ *
  * @author David Hovemeyer
  */
 public class GUI2CommandLine extends FindBugsCommandLine {

@@ -26,7 +26,7 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.graph.AbstractGraph;
 
 public class CallGraph extends AbstractGraph<CallGraphEdge, CallGraphNode> {
-    private IdentityHashMap<Method, CallGraphNode> methodToNodeMap;
+    private final IdentityHashMap<Method, CallGraphNode> methodToNodeMap;
 
     public CallGraph() {
         this.methodToNodeMap = new IdentityHashMap<Method, CallGraphNode>();
@@ -56,4 +56,3 @@ public class CallGraph extends AbstractGraph<CallGraphEdge, CallGraphNode> {
     }
 }
 
-// vim:ts=4

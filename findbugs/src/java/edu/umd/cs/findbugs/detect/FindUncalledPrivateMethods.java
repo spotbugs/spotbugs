@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * Detector to find private methods that are never called.
  */
 public class FindUncalledPrivateMethods extends BytecodeScanningDetector implements StatelessDetector {
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private String className;
 
@@ -63,8 +63,9 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
             for(AnnotationEntry a : obj.getAnnotationEntries()) {
                 String typeName =  a.getAnnotationType();
                 if (typeName.equals("Ljavax/annotation/PostConstruct;")
-                        || typeName.equals("Ljavax/annotation/PreDestroy;"))
+                        || typeName.equals("Ljavax/annotation/PreDestroy;")) {
                     return;
+                }
             }
             definedPrivateMethods.add(MethodAnnotation.fromVisitedMethod(this));
         }
@@ -107,10 +108,12 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
             // System.out.println("Checking " + m);
             int priority = LOW_PRIORITY;
             String methodName = m.getMethodName();
-            if (methodName.equals(simpleClassName) && m.getMethodSignature().equals("()V"))
+            if (methodName.equals(simpleClassName) && m.getMethodSignature().equals("()V")) {
                 continue;
-            if (methodName.length() > 1 && calledMethodNames.contains(methodName.toLowerCase()))
+            }
+            if (methodName.length() > 1 && calledMethodNames.contains(methodName.toLowerCase())) {
                 priority = NORMAL_PRIORITY;
+            }
             BugInstance bugInstance = new BugInstance(this, "UPM_UNCALLED_PRIVATE_METHOD", priority).addClass(this).addMethod(m);
             bugReporter.reportBug(bugInstance);
         }
@@ -120,4 +123,3 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
     }
 }
 
-// vim:ts=4

@@ -37,8 +37,9 @@ public abstract class PrintBugDescriptions {
         Collection<BugPattern> enabledPatternSet = new HashSet<BugPattern>();
         for (Iterator<DetectorFactory> i = factories.factoryIterator(); i.hasNext();) {
             DetectorFactory factory = i.next();
-            if (isEnabled(factory))
+            if (isEnabled(factory)) {
                 enabledPatternSet.addAll(factory.getReportedBugPatterns());
+            }
         }
 
         prologue();
@@ -46,8 +47,9 @@ public abstract class PrintBugDescriptions {
         Iterator<BugPattern> i = DetectorFactoryCollection.instance().bugPatternIterator();
         while (i.hasNext()) {
             BugPattern bugPattern = i.next();
-            if (!enabledPatternSet.contains(bugPattern))
+            if (!enabledPatternSet.contains(bugPattern)) {
                 continue;
+            }
             emit(bugPattern);
         }
 
@@ -65,4 +67,3 @@ public abstract class PrintBugDescriptions {
     protected abstract void epilogue() throws IOException;
 }
 
-// vim:ts=3

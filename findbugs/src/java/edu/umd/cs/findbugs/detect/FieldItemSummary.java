@@ -71,8 +71,9 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 
                         for (XMethod called : targets) {
                             if (!called.isAbstract() && !called.equals(m)
-                                    && subtypes2.isSubtype(called.getClassDescriptor(), getClassDescriptor()))
+                                    && subtypes2.isSubtype(called.getClassDescriptor(), getClassDescriptor())) {
                                 fieldSummary.setCalledFromSuperConstructor(new ProgramPoint(this), called);
+                            }
                         }
                     } catch (ClassNotFoundException e) {
                         AnalysisContext.reportMissingClass(e);
@@ -91,27 +92,31 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
             if (invokedOn.getRegisterNumber() == 0 && !classOperand.equals(getClassName())) {
                 sawInitializeSuper = true;
                 XMethod invoked = getXMethodOperand();
-                if (invoked != null)
+                if (invoked != null) {
                     fieldSummary.sawSuperCall(getXMethod(), invoked);
+                }
             }
 
         }
 
         if (seen == PUTFIELD || seen == PUTSTATIC) {
             XField fieldOperand = getXFieldOperand();
-            if (fieldOperand == null)
+            if (fieldOperand == null) {
                 return;
+            }
             touched.add(fieldOperand);
-            if (!fieldOperand.getClassDescriptor().getClassName().equals(getClassName()))
+            if (!fieldOperand.getClassDescriptor().getClassName().equals(getClassName())) {
                 fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
-            else if (seen == PUTFIELD) {
+            } else if (seen == PUTFIELD) {
                 OpcodeStack.Item addr = stack.getStackItem(1);
                 {
-                    if (addr.getRegisterNumber() != 0 || !getMethodName().equals("<init>"))
+                    if (addr.getRegisterNumber() != 0 || !getMethodName().equals("<init>")) {
                         fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
+                    }
                 }
-            } else if (seen == PUTSTATIC && !getMethodName().equals("<clinit>"))
+            } else if (seen == PUTSTATIC && !getMethodName().equals("<clinit>")) {
                 fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
+            }
             OpcodeStack.Item top = stack.getStackItem(0);
             fieldSummary.mergeSummary(fieldOperand, top);
         }
@@ -125,20 +130,22 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
         fieldSummary.setFieldsWritten(getXMethod(), touched);
         if (getMethodName().equals("<init>") && sawInitializeSuper) {
             XClass thisClass = getXClass();
-            for (XField f : thisClass.getXFields())
+            for (XField f : thisClass.getXFields()) {
                 if (!f.isStatic() && !f.isFinal() && !touched.contains(f)) {
                     OpcodeStack.Item item;
                     char firstChar = f.getSignature().charAt(0);
-                    if (firstChar == 'L' || firstChar == '[')
+                    if (firstChar == 'L' || firstChar == '[') {
                         item = OpcodeStack.Item.nullItem(f.getSignature());
-                    else if (firstChar == 'I')
+                    } else if (firstChar == 'I') {
                         item = new OpcodeStack.Item("I", (Integer) 0);
-                    else if (firstChar == 'J')
+                    } else if (firstChar == 'J') {
                         item = new OpcodeStack.Item("J", 0L);
-                    else
+                    } else {
                         item = new OpcodeStack.Item(f.getSignature());
+                    }
                     fieldSummary.mergeSummary(f, item);
                 }
+            }
         }
         touched.clear();
     }

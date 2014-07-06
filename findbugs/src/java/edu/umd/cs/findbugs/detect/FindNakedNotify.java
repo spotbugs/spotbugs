@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 public class FindNakedNotify extends BytecodeScanningDetector implements StatelessDetector {
     int stage = 0;
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     boolean synchronizedMethod;
 
@@ -57,29 +57,32 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
     public void visit(Code obj) {
         stage = synchronizedMethod ? 1 : 0;
         super.visit(obj);
-        if (synchronizedMethod && stage == 4)
+        if (synchronizedMethod && stage == 4) {
             bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY).addClassAndMethod(this)
                     .addSourceLine(this, notifyPC));
+        }
     }
 
     @Override
     public void sawOpcode(int seen) {
         switch (stage) {
         case 0:
-            if (seen == MONITORENTER)
+            if (seen == MONITORENTER) {
                 stage = 1;
+            }
             break;
         case 1:
             stage = 2;
             break;
         case 2:
             if (seen == INVOKEVIRTUAL
-                    && (getNameConstantOperand().equals("notify") || getNameConstantOperand().equals("notifyAll"))
-                    && getSigConstantOperand().equals("()V")) {
+            && (getNameConstantOperand().equals("notify") || getNameConstantOperand().equals("notifyAll"))
+            && getSigConstantOperand().equals("()V")) {
                 stage = 3;
                 notifyPC = getPC();
-            } else
+            } else {
                 stage = 0;
+            }
             break;
         case 3:
             stage = 4;
@@ -89,8 +92,9 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
                 bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY).addClassAndMethod(this)
                         .addSourceLine(this, notifyPC));
                 stage = 5;
-            } else
+            } else {
                 stage = 0;
+            }
             break;
         case 5:
             break;

@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 
 /**
  * The data (bytes) of a class.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassData {
@@ -39,7 +39,7 @@ public class ClassData {
 
     /**
      * Constructor.
-     * 
+     *
      * @param classDescriptor
      *            descriptor for the class
      * @param data
@@ -74,14 +74,14 @@ public class ClassData {
 
     /**
      * Open an InputStream on the class data.
-     * 
+     *
      * @return InputStream reading from the class data
      */
     public InputStream getInputStream() {
         return new ByteArrayInputStream(data);
     }
 
-    
+
     @Override
     public String toString() {
         return codeBaseEntry + ":" + classDescriptor;

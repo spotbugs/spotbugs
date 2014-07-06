@@ -30,14 +30,14 @@ import edu.umd.cs.findbugs.util.Strings;
 
 /**
  * Helper class to format attributes in an XML tag.
- * 
+ *
  * @author David Hovemeyer
  */
 public class XMLAttributeList {
     public static class NameValuePair {
-        private String name;
+        private final String name;
 
-        private String value;
+        private final String value;
 
         public NameValuePair(String name, String value) {
             this.name = name;
@@ -54,7 +54,7 @@ public class XMLAttributeList {
     }
 
     // Fields
-    private List<NameValuePair> nameValuePairList;
+    private final List<NameValuePair> nameValuePairList;
 
     /**
      * Constructor. Creates an empty object.
@@ -65,7 +65,7 @@ public class XMLAttributeList {
 
     /**
      * Add a single attribute name and value.
-     * 
+     *
      * @param name
      *            the attribute name
      * @param value
@@ -73,17 +73,19 @@ public class XMLAttributeList {
      * @return this object (so calls to addAttribute() can be chained)
      */
     public XMLAttributeList addAttribute(@Nonnull String name, @Nonnull String value) {
-        if (name == null)
+        if (name == null) {
             throw new NullPointerException("name must be nonnull");
-        if (value == null)
+        }
+        if (value == null) {
             throw new NullPointerException("value must be nonnull");
+        }
         nameValuePairList.add(new NameValuePair(name, value));
         return this;
     }
 
     /**
      * Add a single attribute name and value.
-     * 
+     *
      * @param name
      *            the attribute name
      * @param value
@@ -91,8 +93,9 @@ public class XMLAttributeList {
      * @return this object (so calls to addAttribute() can be chained)
      */
     public XMLAttributeList addOptionalAttribute(@Nonnull String name, @CheckForNull String value) {
-        if (value == null)
+        if (value == null) {
             return this;
+        }
         return addAttribute(name, value);
     }
 
@@ -123,7 +126,7 @@ public class XMLAttributeList {
 
     /**
      * Return a properly quoted form for an attribute value.
-     * 
+     *
      * @param rawValue
      *            the raw value of the attribute
      * @return a properly quoted representation of the value
@@ -133,4 +136,3 @@ public class XMLAttributeList {
     }
 }
 
-// vim:ts=4

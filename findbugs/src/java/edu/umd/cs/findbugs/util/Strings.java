@@ -28,7 +28,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 /**
  * A class for static String utility methods.
- * 
+ *
  * @author Brian Cole
  */
 public class Strings {
@@ -36,7 +36,7 @@ public class Strings {
     /**
      * This is intended to be semantically equivalent to
      * <code>source.replace(find, repl)</code> but also compatible with JDK 1.4.
-     * 
+     *
      * @param source
      *            The String on which to operate
      * @param find
@@ -61,7 +61,7 @@ public class Strings {
      * also compatible with JDK 1.4. This concatenates the results of calling
      * String.valueOf() on each element of the array, so this won't work well
      * for multi-dimensional arrays.
-     * 
+     *
      * @see java.lang.String#valueOf(Object)
      * @see java.util.Arrays#toString(Object[])
      * @see java.util.Arrays#deepToString(Object[])
@@ -73,7 +73,7 @@ public class Strings {
 
     /**
      * Trim trailing comma from given string.
-     * 
+     *
      * @param s
      *            a string
      * @return the same string with trailing comma trimmed (if any)
@@ -95,9 +95,10 @@ public class Strings {
 
     private static boolean isInvalidXMLCharacter(int c) {
         if (c < xmlAllowedLowCharacterBound && c >= 0x0 &&
-        // low-value characters allowed by XML 1.0 spec
-                c != 0x9 && c != 0xA && c != 0xD)
+                // low-value characters allowed by XML 1.0 spec
+                c != 0x9 && c != 0xA && c != 0xD) {
             return true;
+        }
         return false;
     }
 
@@ -111,13 +112,14 @@ public class Strings {
      * Initializes the map of characters to be escaped and their corresponding
      * escape sequences. This method will be invoked automatically the first
      * time a string is escaped/unescaped.
-     * 
+     *
      * @see <a href="http://www.w3.org/TR/REC-xml/#charsets">Extensible Markup
      *      Language (XML) 1.0 (Fifth Edition)</a>
      */
     public static void initializeEscapeMap() {
-        if (xmlLowValueEscapeStringsInitialized == true)
+        if (xmlLowValueEscapeStringsInitialized == true) {
             return;
+        }
 
         /*
          * synchronize the lazy initialization so things don't break if FindBugs
@@ -125,8 +127,9 @@ public class Strings {
          * warning about the thread safety of this operation)
          */
         synchronized (escapeInitLockObject) {
-            if (xmlLowValueEscapeStringsInitialized == true)
+            if (xmlLowValueEscapeStringsInitialized == true) {
                 return;
+            }
 
             for (int i = 0; i < xmlAllowedLowCharacterBound; i++) {
                 if (isInvalidXMLCharacter(i)) {
@@ -146,7 +149,7 @@ public class Strings {
      * org.apache.commons.lang.StringEscapeUtils.escapeXml by escaping
      * low-valued unprintable characters, which are not permitted by the W3C XML
      * 1.0 specification.
-     * 
+     *
      * @param s
      *            a string
      * @return the same string with characters not permitted by the XML
@@ -160,8 +163,9 @@ public class Strings {
     public static String escapeXml(String s) {
         initializeEscapeMap();
 
-        if (s == null || s.length() == 0)
+        if (s == null || s.length() == 0) {
             return s;
+        }
 
         char[] sChars = s.toCharArray();
         StringBuilder sb = new StringBuilder();
@@ -176,8 +180,9 @@ public class Strings {
                 lastReplacement = i + 1;
             }
         }
-        if (lastReplacement < sChars.length)
+        if (lastReplacement < sChars.length) {
             sb.append(sChars, lastReplacement, sChars.length - lastReplacement);
+        }
 
         return StringEscapeUtils.escapeXml(sb.toString());
     }
@@ -195,12 +200,14 @@ public class Strings {
      * invoked automatically the first time a string is unescaped.
      */
     public static boolean initializeUnescapePattern() {
-        if (paternIsInitialized == true)
+        if (paternIsInitialized == true) {
             return true;
+        }
 
         synchronized (unescapeInitLockObject) {
-            if (paternIsInitialized == true)
+            if (paternIsInitialized == true) {
                 return true;
+            }
 
             try {
                 unescapePattern = Pattern.compile(unicodeUnescapeMatchExpression);
@@ -224,7 +231,7 @@ public class Strings {
      * org.apache.commons.lang.StringEscapeUtils.unescapeXml by unescaping
      * low-valued unprintable characters, which are not permitted by the W3C XML
      * 1.0 specification.
-     * 
+     *
      * @param s
      *            a string
      * @return the same string with XML entities/escape sequences unescaped
@@ -242,11 +249,13 @@ public class Strings {
          * we can't escape the string if the pattern doesn't compile! (but that
          * should never happen since the pattern is static)
          */
-        if (!initializeUnescapePattern())
+        if (!initializeUnescapePattern()) {
             return s;
+        }
 
-        if (s == null || s.length() == 0)
+        if (s == null || s.length() == 0) {
             return s;
+        }
 
         /*
          * skip this expensive check entirely if there are no substrings

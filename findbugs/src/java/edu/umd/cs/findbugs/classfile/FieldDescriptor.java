@@ -24,14 +24,14 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * Descriptor uniquely identifying a field in a class.
- * 
+ *
  * @author David Hovemeyer
  */
 public class FieldDescriptor extends FieldOrMethodDescriptor implements ComparableField {
 
     /**
      * Constructor.
-     * 
+     *
      * @param className
      *            the name of the class the field belongs to
      * @param fieldName
@@ -62,5 +62,5 @@ public class FieldDescriptor extends FieldOrMethodDescriptor implements Comparab
         }
         return false;
     }
-    
+
 }

@@ -27,12 +27,12 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 /**
  * An obligation that must be cleaned up by error handling code. Examples
  * include open streams and database connections.
- * 
+ *
  * <p>
  * See Weimer and Necula, <a href="http://doi.acm.org/10.1145/1028976.1029011"
  * >Finding and preventing run-time error handling mistakes</a>, OOPSLA 2004.
  * </p>
- * 
+ *
  * @author David Hovemeyer
  */
 public class Obligation {
@@ -78,4 +78,3 @@ public class Obligation {
     }
 }
 
-// vim:ts=4

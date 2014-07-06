@@ -70,7 +70,7 @@ public class SAXBugCollectionHandlerTest extends TestCase {
                         + "</BugCollection>"));
         assertEquals(1, bc.getCollection().size());
         BugInstance bug = bc.getCollection().iterator().next();
-        assertEquals("MS_MUTABLE_ARRAY", bug.getBugPattern().getType());        
+        assertEquals("MS_MUTABLE_ARRAY", bug.getBugPattern().getType());
         assertEquals("1acc5c5b9b7ab9efacede805afe1e53a", bug.getInstanceHash());
         assertEquals(16, bug.getBugRank());
         assertEquals("4/11/10 11:24 AM", BugInstance.firstSeenXMLFormat().format(bug.getXmlProps().getFirstSeen()));

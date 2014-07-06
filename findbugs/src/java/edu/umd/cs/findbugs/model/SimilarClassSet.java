@@ -24,11 +24,11 @@ import java.util.List;
 
 /**
  * A set of classes considered similar because of their features.
- * 
+ *
  * @author David Hovemeyer
  */
 public class SimilarClassSet {
-    private List<ClassFeatureSet> memberList;
+    private final List<ClassFeatureSet> memberList;
 
     public SimilarClassSet() {
         this.memberList = new LinkedList<ClassFeatureSet>();
@@ -36,8 +36,9 @@ public class SimilarClassSet {
 
     public boolean shouldContain(ClassFeatureSet candidate) {
         for (ClassFeatureSet member : memberList) {
-            if (candidate.similarTo(member))
+            if (candidate.similarTo(member)) {
                 return true;
+            }
         }
         return false;
     }
@@ -47,8 +48,9 @@ public class SimilarClassSet {
     }
 
     public String getRepresentativeClassName() {
-        if (memberList.isEmpty())
+        if (memberList.isEmpty()) {
             throw new IllegalStateException();
+        }
         return memberList.get(0).getClassName();
     }
 

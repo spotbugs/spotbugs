@@ -13,7 +13,7 @@ import java.util.Set;
 public final class SortedProperties extends Properties {
     /**
      * Overriden to be able to write properties sorted by keys to the disk
-     * 
+     *
      * @see java.util.Hashtable#keys()
      */
     @SuppressWarnings("unchecked")
@@ -29,7 +29,7 @@ public final class SortedProperties extends Properties {
      * before storing them to disk. Otherwise each change may lead to problems
      * by diff against previous version - because Property entries are randomly
      * distributed (it's a map).
-     * 
+     *
      * @param keySet
      *            non null set instance to sort
      * @return non null list wich contains all given keys, sorted

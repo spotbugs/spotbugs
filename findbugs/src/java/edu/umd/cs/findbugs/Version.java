@@ -365,4 +365,3 @@ public class Version {
 
 }
 
-// vim:ts=4

@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 /**
  * Base class for Detectors which want to perform a preorder traversal of the
  * classfile.
- * 
+ *
  * @see PreorderVisitor
  */
 abstract public class PreorderDetector extends PreorderVisitor implements Detector {
@@ -40,7 +40,7 @@ abstract public class PreorderDetector extends PreorderVisitor implements Detect
 
     /**
      * Get the ClassContext of the class currently being visited.
-     * 
+     *
      * @return the current ClassContext
      */
     public ClassContext getClassContext() {
@@ -52,4 +52,3 @@ abstract public class PreorderDetector extends PreorderVisitor implements Detect
     }
 }
 
-// vim:ts=4

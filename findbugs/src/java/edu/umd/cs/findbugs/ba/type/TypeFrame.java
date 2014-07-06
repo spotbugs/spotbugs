@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.ba.Frame;
  * @see TypeAnalysis
  */
 public class TypeFrame extends Frame<Type> {
-    private BitSet exactTypeSet;
+    private final BitSet exactTypeSet;
 
     /**
      * Constructor.
@@ -164,10 +164,12 @@ public class TypeFrame extends Frame<Type> {
 
     @Override
     public String toString() {
-        if (isTop())
+        if (isTop()) {
             return "[TOP]";
-        if (isBottom())
+        }
+        if (isBottom()) {
             return "[BOTTOM]";
+        }
         StringBuilder buf = new StringBuilder();
         buf.append('[');
         int numSlots = getNumSlots();
@@ -179,16 +181,19 @@ public class TypeFrame extends Frame<Type> {
                 // the operand stack.
                 int last = buf.length() - 1;
                 if (last >= 0) {
-                    if (buf.charAt(last) == ',')
+                    if (buf.charAt(last) == ',') {
                         buf.deleteCharAt(last);
+                    }
                 }
                 buf.append(" | ");
             }
-            if (isExact(i))
+            if (isExact(i)) {
                 buf.append("!");
+            }
             String value = valueToString(getValue(i));
-            if (i == numSlots - 1 && value.endsWith(","))
+            if (i == numSlots - 1 && value.endsWith(",")) {
                 value = value.substring(0, value.length() - 1);
+            }
             buf.append(value);
             // buf.append(' ');
         }
@@ -198,4 +203,3 @@ public class TypeFrame extends Frame<Type> {
 
 }
 
-// vim:ts=4

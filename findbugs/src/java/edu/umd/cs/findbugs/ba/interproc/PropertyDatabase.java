@@ -53,7 +53,7 @@ import edu.umd.cs.findbugs.util.Util;
  * @author David Hovemeyer
  */
 public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, ValueType> {
-    private Map<KeyType, ValueType> propertyMap;
+    private final Map<KeyType, ValueType> propertyMap;
 
     /**
      * Constructor. Creates an empty property database.
@@ -144,8 +144,9 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
-                if (line.equals(""))
+                if (line.equals("")) {
                     continue;
+                }
                 int bar = line.indexOf('|');
                 if (bar < 0) {
                     throw new PropertyDatabaseFormatException("Invalid property database: missing separator");
@@ -157,8 +158,9 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
             }
         } finally {
             try {
-                if (reader != null)
+                if (reader != null) {
                     reader.close();
+                }
             } catch (IOException e) {
                 // Ignore
             }
@@ -222,8 +224,9 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
             AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(missingClassWarningsSuppressed);
 
             try {
-                if (writer != null)
+                if (writer != null) {
                     writer.close();
+                }
             } catch (IOException e) {
                 // Ignore
             }

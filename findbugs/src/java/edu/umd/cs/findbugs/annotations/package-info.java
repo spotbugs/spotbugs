@@ -1,6 +1,6 @@
 /**
  * Annotations for FindBugs (mostly deprecated except for {@link edu.umd.cs.findbugs.annotations.SuppressFBWarnings}).
- * 
+ *
  * This annotations are mostly deprecated and replaced by JSR 305 annotations
  * defined in javax.annotation. The annotations still actively supported are:
  * <ul>
@@ -12,7 +12,7 @@
  *  <li>  {@link edu.umd.cs.findbugs.annotations.DesireWarning} Warnings we wish to generated
  *  <li>  {@link edu.umd.cs.findbugs.annotations.DesireNoWarning} Warnings we wish to not generate generated
  *  </ul></ul>
- * 
+ *
  *  There are another set of annotations used by an experimental detector for unclosed resources:
  *  <ul>
  *  <li>{@link edu.umd.cs.findbugs.annotations.CleanupObligation}

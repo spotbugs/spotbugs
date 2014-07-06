@@ -34,13 +34,13 @@ import edu.umd.cs.findbugs.StatelessDetector;
 
 /**
  * A Detector to look for useless control flow. For example,
- * 
+ *
  * <pre>
  * if (argv.length == 1)
  *     ;
  * System.out.println(&quot;Hello, &quot; + argv[0]);
  * </pre>
- * 
+ *
  * In this kind of bug, we'll see an ifcmp instruction where the IF target is
  * the same as the fall-through target.
  * <p/>
@@ -48,7 +48,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
  * The idea for this detector came from Richard P. King, and the idea of looking
  * for if instructions with identical branch and fall-through targets is from
  * Mike Fagan.
- * 
+ *
  * @author David Hovemeyer
  */
 public class FindUselessControlFlow extends BytecodeScanningDetector implements StatelessDetector {
@@ -73,7 +73,7 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
         ifInstructionSet.set(Constants.IFNONNULL);
     }
 
-    private BugAccumulator bugAccumulator;
+    private final BugAccumulator bugAccumulator;
 
     public FindUselessControlFlow(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
@@ -98,15 +98,17 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
                     int nextLine = getNextSourceLine(lineNumbers, branchLineNumber);
 
                     if (branchLineNumber + 1 == targetLineNumber || branchLineNumber == targetLineNumber
-                            && nextLine == branchLineNumber + 1)
+                            && nextLine == branchLineNumber + 1) {
                         priority = HIGH_PRIORITY;
-                    else if (branchLineNumber + 2 < Math.max(targetLineNumber, nextLine))
+                    } else if (branchLineNumber + 2 < Math.max(targetLineNumber, nextLine)) {
                         priority = LOW_PRIORITY;
-                } else
+                    }
+                } else {
                     priority = LOW_PRIORITY;
+                }
                 bugAccumulator.accumulateBug(new BugInstance(this,
                         priority == HIGH_PRIORITY ? "UCF_USELESS_CONTROL_FLOW_NEXT_LINE" : "UCF_USELESS_CONTROL_FLOW", priority)
-                        .addClassAndMethod(this), this);
+                .addClassAndMethod(this), this);
             }
         }
     }
@@ -116,12 +118,12 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
         for (LineNumber ln : lineNumbers.getLineNumberTable()) {
 
             int thisLine = ln.getLineNumber();
-            if (sourceLine < thisLine && thisLine < result)
+            if (sourceLine < thisLine && thisLine < result) {
                 result = thisLine;
+            }
         }
         return result;
 
     }
 }
 
-// vim:ts=4

@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.graph;
 
 /**
  * Edge types in a depth first search.
- * 
+ *
  * @see DepthFirstSearch
  */
 public interface DFSEdgeTypes {
@@ -53,4 +53,3 @@ public interface DFSEdgeTypes {
     public static final int CROSS_EDGE = 3;
 }
 
-// vim:ts=4

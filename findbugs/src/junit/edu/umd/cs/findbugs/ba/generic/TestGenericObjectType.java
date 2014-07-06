@@ -70,8 +70,9 @@ public class TestGenericObjectType extends TestCase {
         if (typeCategory == TypeCategory.PARAMETERIZED) {
             assertTrue(obj.hasParameters());
             assertTrue(obj.getNumParameters() == parameters.size());
-            for (int i = 0; i < obj.getNumParameters(); i++)
+            for (int i = 0; i < obj.getNumParameters(); i++) {
                 compareTypes(obj.getParameterAt(i), parameters.get(i));
+            }
             assertNull(obj.getVariable());
             assertNull(obj.getExtension());
         } else if (typeCategory == TypeCategory.TYPE_VARIABLE) {

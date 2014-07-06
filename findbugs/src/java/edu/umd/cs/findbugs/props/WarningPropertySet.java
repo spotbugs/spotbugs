@@ -191,13 +191,13 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
                 } else if (adj == PriorityAdjustment.FALSE_POSITIVE) {
                     falsePositive = true;
                     atMostLow = true;
-                } else if (adj == PriorityAdjustment.A_LITTLE_BIT_LOWER_PRIORITY)
+                } else if (adj == PriorityAdjustment.A_LITTLE_BIT_LOWER_PRIORITY) {
                     aLittleBitLower++;
-                else if (adj == PriorityAdjustment.A_LITTLE_BIT_HIGHER_PRIORITY)
+                } else if (adj == PriorityAdjustment.A_LITTLE_BIT_HIGHER_PRIORITY) {
                     aLittleBitLower--;
-                else if (adj == PriorityAdjustment.RAISE_PRIORITY)
+                } else if (adj == PriorityAdjustment.RAISE_PRIORITY) {
                     --priority;
-                else if (adj == PriorityAdjustment.RAISE_PRIORITY_TO_AT_LEAST_NORMAL) {
+                } else if (adj == PriorityAdjustment.RAISE_PRIORITY_TO_AT_LEAST_NORMAL) {
                     --priority;
                     atLeastMedium = true;
                 } else if (adj == PriorityAdjustment.LOWER_PRIORITY_TO_AT_MOST_NORMAL) {
@@ -215,31 +215,38 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
                     atMostMedium = true;
                 } else if (adj == PriorityAdjustment.NO_ADJUSTMENT) {
                     assert true; // do nothing
-                } else
+                } else {
                     throw new IllegalStateException("Unknown priority " + adj);
+                }
 
             }
 
-            if (peggedHigh && !falsePositive)
+            if (peggedHigh && !falsePositive) {
                 return Priorities.HIGH_PRIORITY;
-            if (aLittleBitLower >= 3 || priority == 1 && aLittleBitLower == 2)
+            }
+            if (aLittleBitLower >= 3 || priority == 1 && aLittleBitLower == 2) {
                 priority++;
-            else if (aLittleBitLower <= -2)
+            } else if (aLittleBitLower <= -2) {
                 priority--;
-            if (atMostMedium)
+            }
+            if (atMostMedium) {
                 priority = Math.max(Priorities.NORMAL_PRIORITY, priority);
+            }
 
-            if (falsePositive && !atLeastMedium)
+            if (falsePositive && !atLeastMedium) {
                 return Priorities.EXP_PRIORITY + 1;
-            else if (atMostLow)
+            } else if (atMostLow) {
                 return Math.min(Math.max(Priorities.LOW_PRIORITY, priority), Priorities.EXP_PRIORITY);
-            if (atLeastMedium && priority > Priorities.NORMAL_PRIORITY)
+            }
+            if (atLeastMedium && priority > Priorities.NORMAL_PRIORITY) {
                 priority = Priorities.NORMAL_PRIORITY;
+            }
 
-            if (priority < Priorities.HIGH_PRIORITY)
+            if (priority < Priorities.HIGH_PRIORITY) {
                 priority = Priorities.HIGH_PRIORITY;
-            else if (priority > Priorities.EXP_PRIORITY)
+            } else if (priority > Priorities.EXP_PRIORITY) {
                 priority = Priorities.EXP_PRIORITY;
+            }
         }
 
         return priority;
@@ -270,8 +277,9 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
         for (Map.Entry<T, Object> entry : map.entrySet()) {
             WarningProperty prop = entry.getKey();
             Object attribute = entry.getValue();
-            if (attribute == null)
+            if (attribute == null) {
                 attribute = "";
+            }
             bugInstance.setProperty(prop.getName(), attribute.toString());
         }
     }

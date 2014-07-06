@@ -34,7 +34,7 @@ public class FieldVariable implements Variable {
 
     /**
      * Constructor for static fields.
-     * 
+     *
      * @param className
      *            the class name
      * @param fieldName
@@ -48,7 +48,7 @@ public class FieldVariable implements Variable {
 
     /**
      * Constructor for instance fields.
-     * 
+     *
      * @param ref
      *            ValueNumber of the object reference
      * @param className
@@ -95,11 +95,13 @@ public class FieldVariable implements Variable {
 
     @Override
     public boolean sameAs(Variable other) {
-        if (!(other instanceof FieldVariable))
+        if (!(other instanceof FieldVariable)) {
             return false;
+        }
         FieldVariable otherField = (FieldVariable) other;
-        if (isStatic() != otherField.isStatic())
+        if (isStatic() != otherField.isStatic()) {
             return false;
+        }
         return (ref == null || ref.equals(otherField.ref)) && className.equals(otherField.className)
                 && fieldName.equals(otherField.fieldName) && fieldSig.equals(otherField.fieldSig);
     }
@@ -114,4 +116,3 @@ public class FieldVariable implements Variable {
     }
 }
 
-// vim:ts=4

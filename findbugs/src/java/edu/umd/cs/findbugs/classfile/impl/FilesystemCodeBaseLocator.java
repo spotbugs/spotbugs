@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 
 /**
  * Codebase locator for files and directories in the filesystem.
- * 
+ *
  * @author David Hovemeyer
  */
 public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
@@ -52,7 +52,7 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBaseLocator#createRelativeCodeBaseLocator
      * (java.lang.String)
@@ -69,7 +69,7 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseLocator#openCodeBase()
      */
     @Override
@@ -79,7 +79,7 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -89,7 +89,7 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -103,7 +103,7 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override

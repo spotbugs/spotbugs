@@ -47,4 +47,3 @@ public class CallGraphEdge extends AbstractEdge<CallGraphEdge, CallGraphNode> {
     }
 }
 
-// vim:ts=4

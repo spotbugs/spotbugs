@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.util.MapCache;
 
 /**
  * Implementation of ICodeBase to read from a zip file or jar file.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
@@ -50,7 +50,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 
     /**
      * Constructor.
-     * 
+     *
      * @param codeBaseLocator
      *            the codebase locator for this codebase
      * @param file
@@ -93,7 +93,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
      */
@@ -183,7 +183,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#hasNext()
          */
         @Override
@@ -197,7 +197,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
          */
         @Override
@@ -224,7 +224,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
      */
     @Override
@@ -234,7 +234,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
      */
     @Override
@@ -244,7 +244,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override

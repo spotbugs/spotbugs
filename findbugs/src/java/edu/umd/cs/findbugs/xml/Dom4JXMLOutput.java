@@ -28,16 +28,16 @@ import org.dom4j.Element;
 
 /**
  * XMLOutput class to build all or part of a dom4j tree.
- * 
+ *
  * @see XMLOutput
  * @author David Hovemeyer
  */
 public class Dom4JXMLOutput implements XMLOutput {
-    private LinkedList<Branch> stack;
+    private final LinkedList<Branch> stack;
 
     /**
      * Constructor.
-     * 
+     *
      * @param topLevel
      *            the Document or Element that is the root of the tree to be
      *            built
@@ -122,7 +122,7 @@ public class Dom4JXMLOutput implements XMLOutput {
     /**
      * Add a list of Strings to document as elements with given tag name to the
      * tree.
-     * 
+     *
      * @param tagName
      *            the tag name
      * @param listValues
@@ -138,7 +138,7 @@ public class Dom4JXMLOutput implements XMLOutput {
 
     /**
      * Add given object to the tree.
-     * 
+     *
      * @param obj
      *            the object
      */
@@ -152,7 +152,7 @@ public class Dom4JXMLOutput implements XMLOutput {
 
     /**
      * Add a Collection of XMLWriteable objects to the tree.
-     * 
+     *
      * @param collection
      *            Collection of XMLWriteable objects
      */
@@ -167,4 +167,3 @@ public class Dom4JXMLOutput implements XMLOutput {
     }
 }
 
-// vim:ts=4

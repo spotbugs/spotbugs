@@ -27,14 +27,14 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 
 /**
  * Utility methods for using a ClassNameRewriter.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class ClassNameRewriterUtil {
 
     /**
      * Rewrite a method signature.
-     * 
+     *
      * @param classNameRewriter
      *            a ClassNameRewriter
      * @param methodSignature
@@ -63,7 +63,7 @@ public abstract class ClassNameRewriterUtil {
 
     /**
      * Rewrite a signature.
-     * 
+     *
      * @param classNameRewriter
      *            a ClassNameRewriter
      * @param signature
@@ -85,7 +85,7 @@ public abstract class ClassNameRewriterUtil {
     /**
      * Rewrite a MethodAnnotation to update the class name, and any class names
      * mentioned in the method signature.
-     * 
+     *
      * @param classNameRewriter
      *            a ClassNameRewriter
      * @param annotation
@@ -105,7 +105,7 @@ public abstract class ClassNameRewriterUtil {
     /**
      * Rewrite a FieldAnnotation to update the class name and field signature,
      * if needed.
-     * 
+     *
      * @param classNameRewriter
      *            a ClassNameRewriter
      * @param annotation

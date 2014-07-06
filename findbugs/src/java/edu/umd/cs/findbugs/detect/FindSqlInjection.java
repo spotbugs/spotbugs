@@ -152,7 +152,7 @@ public class FindSqlInjection implements Detector {
 
     BugAccumulator bugAccumulator;
 
-    private boolean testingEnabled;
+    private final boolean testingEnabled;
 
     public FindSqlInjection(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -167,8 +167,9 @@ public class FindSqlInjection implements Detector {
 
         for (Method method : methodList) {
             MethodGen methodGen = classContext.getMethodGen(method);
-            if (methodGen == null)
+            if (methodGen == null) {
                 continue;
+            }
 
             try {
                 analyzeMethod(classContext, method);
@@ -228,7 +229,7 @@ public class FindSqlInjection implements Detector {
     }
 
     private StringAppendState updateStringAppendState(Location location, ConstantPoolGen cpg, StringAppendState stringAppendState)
-            {
+    {
         InstructionHandle handle = location.getHandle();
         Instruction ins = handle.getInstruction();
         if (!isConstantStringLoad(location, cpg)) {
@@ -238,12 +239,15 @@ public class FindSqlInjection implements Detector {
         LDC load = (LDC) ins;
         Object value = load.getValue(cpg);
         String stringValue = ((String) value).trim();
-        if (stringValue.startsWith(",") || stringValue.endsWith(","))
+        if (stringValue.startsWith(",") || stringValue.endsWith(",")) {
             stringAppendState.setSawComma(handle);
-        if (isCloseQuote(stringValue) && stringAppendState.getSawOpenQuote(handle))
+        }
+        if (isCloseQuote(stringValue) && stringAppendState.getSawOpenQuote(handle)) {
             stringAppendState.setSawCloseQuote(handle);
-        if (isOpenQuote(stringValue))
+        }
+        if (isOpenQuote(stringValue)) {
             stringAppendState.setSawOpenQuote(handle);
+        }
 
         return stringAppendState;
     }
@@ -293,8 +297,9 @@ public class FindSqlInjection implements Detector {
         String sig = method.getSignature();
         sig = sig.substring(0, sig.indexOf(')'));
 
-        if (sig.indexOf("java/lang/String") >= 0)
+        if (sig.indexOf("java/lang/String") >= 0) {
             stringAppendState.setSawInitialTaint();
+        }
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
             InstructionHandle handle = location.getHandle();
@@ -305,8 +310,9 @@ public class FindSqlInjection implements Detector {
                 stringAppendState.setSawAppend(handle);
 
                 Location prevLocation = getPreviousLocation(cfg, location, true);
-                if (prevLocation != null && !isSafeValue(prevLocation, cpg))
+                if (prevLocation != null && !isSafeValue(prevLocation, cpg)) {
                     stringAppendState.setSawUnsafeAppend(handle);
+                }
 
             } else if (ins instanceof InvokeInstruction) {
                 InvokeInstruction inv = (InvokeInstruction) ins;
@@ -331,8 +337,9 @@ public class FindSqlInjection implements Detector {
                                 continue;
                             }
                             String sig3 = operandType.getSignature();
-                            if (!sig3.equals("Ljava/lang/String;"))
+                            if (!sig3.equals("Ljava/lang/String;")) {
                                 stringAppendState.setSawTaint(handle);
+                            }
                         } catch (CheckedAnalysisException e) {
                             stringAppendState.setSawTaint(handle);
                         }
@@ -348,15 +355,17 @@ public class FindSqlInjection implements Detector {
                     } else if (className.startsWith("javax.servlet") && methodName.startsWith("get")) {
                         stringAppendState.setSawTaint(handle);
                         stringAppendState.setSawSeriousTaint(handle);
-                    } else
+                    } else {
                         stringAppendState.setSawTaint(handle);
+                    }
 
                 }
             } else if (ins instanceof GETFIELD) {
                 GETFIELD getfield = (GETFIELD) ins;
                 String sig2 = getfield.getSignature(cpg);
-                if (sig2.indexOf("java/lang/String") >= 0)
+                if (sig2.indexOf("java/lang/String") >= 0) {
                     stringAppendState.setSawTaint(handle);
+                }
             }
         }
 
@@ -365,12 +374,14 @@ public class FindSqlInjection implements Detector {
 
     private boolean isSafeValue(Location location, ConstantPoolGen cpg) throws CFGBuilderException {
         Instruction prevIns = location.getHandle().getInstruction();
-        if (prevIns instanceof LDC || prevIns instanceof GETSTATIC)
+        if (prevIns instanceof LDC || prevIns instanceof GETSTATIC) {
             return true;
+        }
         if (prevIns instanceof InvokeInstruction) {
             String methodName = ((InvokeInstruction) prevIns).getMethodName(cpg);
-            if (methodName.startsWith("to") && methodName.endsWith("String") && methodName.length() > 8)
+            if (methodName.startsWith("to") && methodName.endsWith("String") && methodName.length() > 8) {
                 return true;
+            }
         }
         if (prevIns instanceof AALOAD) {
             CFG cfg = classContext.getCFG(method);
@@ -380,8 +391,9 @@ public class FindSqlInjection implements Detector {
                 Location prev2 = getPreviousLocation(cfg, prev, true);
                 if (prev2 != null && prev2.getHandle().getInstruction() instanceof GETSTATIC) {
                     GETSTATIC getStatic = (GETSTATIC) prev2.getHandle().getInstruction();
-                    if (getStatic.getSignature(cpg).equals("[Ljava/lang/String;"))
+                    if (getStatic.getSignature(cpg).equals("[Ljava/lang/String;")) {
                         return true;
+                    }
                 }
             }
         }
@@ -404,16 +416,19 @@ public class FindSqlInjection implements Detector {
     Location getPreviousLocation(CFG cfg, Location startLocation, boolean skipNops) {
         Location loc = startLocation;
         InstructionHandle prev = getPreviousInstruction(loc.getHandle(), skipNops);
-        if (prev != null)
+        if (prev != null) {
             return new Location(prev, loc.getBasicBlock());
+        }
         BasicBlock block = loc.getBasicBlock();
         while (true) {
             block = cfg.getPredecessorWithEdgeType(block, EdgeTypes.FALL_THROUGH_EDGE);
-            if (block == null)
+            if (block == null) {
                 return null;
+            }
             InstructionHandle lastInstruction = block.getLastInstruction();
-            if (lastInstruction != null)
+            if (lastInstruction != null) {
                 return new Location(lastInstruction, block);
+            }
         }
     }
 
@@ -449,10 +464,12 @@ public class FindSqlInjection implements Detector {
 
         BugInstance bug = new BugInstance(this, description, priority);
         bug.addClassAndMethod(methodGen, javaClass.getSourceFileName());
-        if (description.equals("TESTING"))
+        if (description.equals("TESTING")) {
             bug.addString("Incomplete report invoking non-constant SQL string");
-        if (sawSeriousTaint)
+        }
+        if (sawSeriousTaint) {
             bug.addString("non-constant SQL string involving HTTP taint");
+        }
 
         return bug;
     }
@@ -466,8 +483,9 @@ public class FindSqlInjection implements Detector {
         this.method = method;
         this.classContext = classContext;
         MethodGen methodGen = classContext.getMethodGen(method);
-        if (methodGen == null)
+        if (methodGen == null) {
             return;
+        }
 
         ConstantPoolGen cpg = methodGen.getConstantPool();
         CFG cfg = classContext.getCFG(method);
@@ -478,8 +496,9 @@ public class FindSqlInjection implements Detector {
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
             Instruction ins = location.getHandle().getInstruction();
-            if (!(ins instanceof InvokeInstruction))
+            if (!(ins instanceof InvokeInstruction)) {
                 continue;
+            }
             InvokeInstruction invoke = (InvokeInstruction) ins;
             if (isDatabaseSink(invoke, cpg)) {
                 ConstantFrame frame = dataflow.getFactAtLocation(location);
@@ -513,4 +532,3 @@ public class FindSqlInjection implements Detector {
     }
 }
 
-// vim:ts=4

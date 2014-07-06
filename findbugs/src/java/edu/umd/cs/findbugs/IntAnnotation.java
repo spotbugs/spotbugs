@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Bug annotation class for integer values.
- * 
+ *
  * @author David Hovemeyer
  * @see BugAnnotation
  */
@@ -37,7 +37,7 @@ public class IntAnnotation implements BugAnnotation {
 
     private static final String DEFAULT_ROLE = "INT_DEFAULT";
 
-    private int value;
+    private final int value;
 
     private String description;
 
@@ -60,7 +60,7 @@ public class IntAnnotation implements BugAnnotation {
 
     /**
      * Constructor.
-     * 
+     *
      * @param value
      *            the integer value
      */
@@ -80,7 +80,7 @@ public class IntAnnotation implements BugAnnotation {
 
     /**
      * Get the integer value.
-     * 
+     *
      * @return the integer value
      */
     public int getValue() {
@@ -95,36 +95,40 @@ public class IntAnnotation implements BugAnnotation {
     @Override
     public String format(String key, ClassAnnotation primaryClass) {
         if (key.equals("hash")) {
-            if (isSignificant())
+            if (isSignificant()) {
                 return Integer.toString(value);
-            else
+            } else {
                 return "";
+            }
         }
         return getShortInteger(value);
     }
-    
+
     public static String getShortInteger(int value) {
         String base16 = Integer.toHexString(value);
         int unique = uniqueDigits(base16);
         String base10 = Integer.toString(value);
-        
-        if (unique <= 3 && base16.length() - unique >= 3 && base10.length() > base16.length())
+
+        if (unique <= 3 && base16.length() - unique >= 3 && base10.length() > base16.length()) {
             return "0x"+base16;
+        }
         return base10;
     }
     public static String getShortInteger(long value) {
         String base16 = Long.toHexString(value);
         int unique = uniqueDigits(base16);
         String base10 = Long.toString(value);
-        
-        if (unique <= 3 && base16.length() - unique >= 3 && base10.length() > base16.length())
+
+        if (unique <= 3 && base16.length() - unique >= 3 && base10.length() > base16.length()) {
             return "0x"+base16;
+        }
         return base10;
     }
     private static int uniqueDigits(String value) {
         Set<Character> used = new HashSet<Character>();
-        for(int i = 0; i < value.length(); i++)
+        for(int i = 0; i < value.length(); i++) {
             used.add(value.charAt(i));
+        }
         return used.size();
     }
 
@@ -145,16 +149,18 @@ public class IntAnnotation implements BugAnnotation {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof IntAnnotation))
+        if (!(o instanceof IntAnnotation)) {
             return false;
+        }
         return value == ((IntAnnotation) o).value;
     }
 
     @Override
     public int compareTo(BugAnnotation o) {
-        if (!(o instanceof IntAnnotation)) // BugAnnotations must be Comparable
-                                           // with any type of BugAnnotation
+        if (!(o instanceof IntAnnotation)) {
+            // with any type of BugAnnotation
             return this.getClass().getName().compareTo(o.getClass().getName());
+        }
         return value - ((IntAnnotation) o).value;
     }
 
@@ -183,8 +189,9 @@ public class IntAnnotation implements BugAnnotation {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("value", String.valueOf(value));
 
         String role = getDescription();
-        if (!role.equals(DEFAULT_ROLE))
+        if (!role.equals(DEFAULT_ROLE)) {
             attributeList.addAttribute("role", role);
+        }
 
         BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
     }
@@ -200,4 +207,3 @@ public class IntAnnotation implements BugAnnotation {
     }
 }
 
-// vim:ts=4

@@ -68,15 +68,17 @@ public class DescriptorFactory {
         this.fieldDescriptorMap = new HashMap<FieldDescriptor, FieldDescriptor>();
     }
 
-    private MapCache<String, String> stringCache = new MapCache<String, String>(10000);
+    private final MapCache<String, String> stringCache = new MapCache<String, String>(10000);
 
     public static String canonicalizeString(@CheckForNull String s) {
-        if (s == null)
+        if (s == null) {
             return s;
+        }
         DescriptorFactory df =  instanceThreadLocal.get();
         String cached = df.stringCache.get(s);
-        if (cached != null)
+        if (cached != null) {
             return cached;
+        }
         df.stringCache.put(s, s);
         return s;
     }
@@ -167,8 +169,9 @@ public class DescriptorFactory {
      */
     public MethodDescriptor getMethodDescriptor(@SlashedClassName String className, String name, String signature,
             boolean isStatic) {
-        if (className == null)
+        if (className == null) {
             throw new NullPointerException("className must be nonnull");
+        }
         MethodDescriptor methodDescriptor = new MethodDescriptor(className, name, signature, isStatic);
         MethodDescriptor existing = methodDescriptorMap.get(methodDescriptor);
         if (existing == null) {
@@ -185,10 +188,12 @@ public class DescriptorFactory {
         int bad = 0;
         for (Map.Entry<MethodDescriptor, MethodDescriptor> e : methodDescriptorMap.entrySet()) {
             total++;
-            if (e.getKey() instanceof MethodInfo)
+            if (e.getKey() instanceof MethodInfo) {
                 keys++;
-            if (e.getValue() instanceof MethodInfo)
+            }
+            if (e.getValue() instanceof MethodInfo) {
                 values++;
+            }
         }
         System.out.printf("Descriptor factory: %d/%d/%d%n", keys, values, total);
 
@@ -309,16 +314,19 @@ public class DescriptorFactory {
 
     public static ClassDescriptor createClassDescriptorFromSignature(String signature) {
         int length = signature.length();
-        if (length == 0)
+        if (length == 0) {
             throw new IllegalArgumentException("Empty signature");
-       if (signature.charAt(0) == 'L' && signature.endsWith(";"))
+        }
+        if (signature.charAt(0) == 'L' && signature.endsWith(";")) {
             signature = signature.substring(1, signature.length() - 1);
+        }
         return createClassDescriptor(signature);
     }
 
     public static ClassDescriptor createClassOrObjectDescriptorFromSignature(String signature) {
-        if (signature.charAt(0) == '[')
+        if (signature.charAt(0) == '[') {
             return createClassDescriptor("java/lang/Object");
+        }
         return createClassDescriptorFromSignature(signature);
     }
 
@@ -331,11 +339,13 @@ public class DescriptorFactory {
     }
 
     public static ClassDescriptor[] createClassDescriptor(String[] classNames) {
-        if (classNames.length == 0)
+        if (classNames.length == 0) {
             return ClassDescriptor.EMPTY_ARRAY;
+        }
         ClassDescriptor[] result = new ClassDescriptor[classNames.length];
-        for (int i = 0; i < classNames.length; i++)
+        for (int i = 0; i < classNames.length; i++) {
             result[i] = createClassDescriptor(classNames[i]);
+        }
         return result;
     }
 

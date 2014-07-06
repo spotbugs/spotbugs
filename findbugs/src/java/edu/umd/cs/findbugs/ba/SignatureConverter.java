@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  * For a method signature, parseNext() must be called multiple times, and the
  * parens around the arguments must be skipped manually (by calling the skip()
  * method).
- * 
+ *
  * @author David Hovemeyer
  */
 
@@ -44,7 +44,7 @@ public class SignatureConverter {
 
     /**
      * Constructor.
-     * 
+     *
      * @param signature
      *            the field or method signature to convert
      */
@@ -72,7 +72,7 @@ public class SignatureConverter {
      * of the remaining part is "I", then this method will return "int", and the
      * "I" will be consumed. Arrays, reference types, and basic types are all
      * handled.
-     * 
+     *
      * @return the parsed type string
      */
     public String parseNext() {
@@ -91,8 +91,9 @@ public class SignatureConverter {
             }
         } else if (signature.startsWith("L")) {
             int semi = signature.indexOf(';');
-            if (semi < 0)
+            if (semi < 0) {
                 throw new IllegalStateException("missing semicolon in signature " + signature);
+            }
             result.append(signature.substring(1, semi).replace('/', '.'));
             signature = signature.substring(semi + 1);
         } else {
@@ -136,7 +137,7 @@ public class SignatureConverter {
     /**
      * Convenience method for generating a method signature in human readable
      * form.
-     * 
+     *
      * @param javaClass
      *            the class
      * @param method
@@ -149,7 +150,7 @@ public class SignatureConverter {
     /**
      * Convenience method for generating a method signature in human readable
      * form.
-     * 
+     *
      * @param methodGen
      *            the method to produce a method signature for
      */
@@ -160,7 +161,7 @@ public class SignatureConverter {
     /**
      * Convenience method for generating a method signature in human readable
      * form.
-     * 
+     *
      * @param inv
      *            an InvokeInstruction
      * @param cpg
@@ -173,7 +174,7 @@ public class SignatureConverter {
     /**
      * Convenience method for generating a method signature in human readable
      * form.
-     * 
+     *
      * @param className
      *            name of the class containing the method
      * @param methodName
@@ -188,7 +189,7 @@ public class SignatureConverter {
     /**
      * Convenience method for generating a method signature in human readable
      * form.
-     * 
+     *
      * @param xmethod
      *            an XMethod
      * @return the formatted version of that signature
@@ -203,7 +204,7 @@ public class SignatureConverter {
     /**
      * Convenience method for generating a method signature in human readable
      * form.
-     * 
+     *
      * @param methodDescriptor
      *            a MethodDescriptor
      * @return the formatted version of that signature
@@ -216,7 +217,7 @@ public class SignatureConverter {
     /**
      * Convenience method for generating a method signature in human readable
      * form.
-     * 
+     *
      * @param className
      *            name of the class containing the method
      * @param methodName
@@ -235,8 +236,9 @@ public class SignatureConverter {
         args.append('(');
 
         while (converter.getFirst() != ')') {
-            if (args.length() > 1)
+            if (args.length() > 1) {
                 args.append(", ");
+            }
             args.append(shorten(pkgName, converter.parseNext()));
         }
         converter.skip();
@@ -256,7 +258,7 @@ public class SignatureConverter {
     /**
      * Convenience method for converting a single signature component to
      * human-readable form.
-     * 
+     *
      * @param signature
      *            the signature
      */
@@ -268,11 +270,11 @@ public class SignatureConverter {
         int index = typeName.lastIndexOf('.');
         if (index >= 0) {
             String otherPkg = typeName.substring(0, index);
-            if (otherPkg.equals(pkgName) || otherPkg.equals("java.lang"))
+            if (otherPkg.equals(pkgName) || otherPkg.equals("java.lang")) {
                 typeName = typeName.substring(index + 1);
+            }
         }
         return typeName;
     }
 }
 
-// vim:ts=4

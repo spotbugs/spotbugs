@@ -33,15 +33,15 @@ import edu.umd.cs.findbugs.ba.Edge;
  * and edge is fed to all scanners so created.
  */
 public class InstructionScannerDriver {
-    private Iterator<Edge> edgeIter;
+    private final Iterator<Edge> edgeIter;
 
-    private LinkedList<InstructionScanner> scannerList;
+    private final LinkedList<InstructionScanner> scannerList;
 
     private static final boolean DEBUG = SystemProperties.getBoolean("isd.debug");
 
     /**
      * Constructor.
-     * 
+     *
      * @param edgeIter
      *            iterator over Edges specifying path to be scanned
      */
@@ -54,7 +54,7 @@ public class InstructionScannerDriver {
      * Execute by driving the InstructionScannerGenerator over all instructions.
      * Each generated InstructionScanner is driven over all instructions and
      * edges.
-     * 
+     *
      * @param generator
      *            the InstructionScannerGenerator
      */
@@ -64,8 +64,9 @@ public class InstructionScannerDriver {
         while (edgeIter.hasNext()) {
             Edge edge = edgeIter.next();
             BasicBlock source = edge.getSource();
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("ISD: scanning instructions in block " + source.getLabel());
+            }
 
             // Traverse all instructions in the source block
             Iterator<InstructionHandle> i = source.instructionIterator();
@@ -74,8 +75,9 @@ public class InstructionScannerDriver {
                 InstructionHandle handle = i.next();
 
                 // Check if the generator wants to create a new scanner
-                if (generator.start(handle))
+                if (generator.start(handle)) {
                     scannerList.add(generator.createScanner());
+                }
 
                 // Pump the instruction into all scanners
                 for (InstructionScanner scanner : scannerList) {
@@ -85,8 +87,9 @@ public class InstructionScannerDriver {
                 ++count;
             }
 
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("ISD: scanned " + count + " instructions");
+            }
 
             // Now that we've finished the source block, pump the edge
             // into all scanners
@@ -97,4 +100,3 @@ public class InstructionScannerDriver {
     }
 }
 
-// vim:ts=4

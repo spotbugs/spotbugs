@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.jaif;
 public enum JAIFTokenKind {
     NEWLINE("<newline>"), COLON(":"), DOT("."), IDENTIFIER_OR_KEYWORD("<identifier or keyword>"), LPAREN("("), RPAREN(")"), COMMA(
             ","), EQUALS("="), OCTAL_LITERAL("<octal literal>"), DECIMAL_LITERAL("<decimal literal>"), HEX_LITERAL(
-            "<hex literal>"), FLOATING_POINT_LITERAL("<floating point literal>"), STRING_LITERAL("<string literal>");
+                    "<hex literal>"), FLOATING_POINT_LITERAL("<floating point literal>"), STRING_LITERAL("<string literal>");
 
     private String stringRep;
 
@@ -32,7 +32,7 @@ public enum JAIFTokenKind {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Enum#toString()
      */
     @Override

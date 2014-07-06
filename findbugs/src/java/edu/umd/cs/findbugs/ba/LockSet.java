@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * Lock counts for values (as produced by ValueNumberAnalysis). A LockSet tells
  * us the lock counts for all values in a method, insofar as we can accurately
  * determine them.
- * 
+ *
  * @author David Hovemeyer
  * @see edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis
  */
@@ -74,17 +74,18 @@ public final class LockSet {
 
     /**
      * Get the lock count for given lock object.
-     * 
+     *
      * @param valueNumber
      *            value number of the lock object
      * @return the lock count for the lock object
      */
     public int getLockCount(int valueNumber) {
         int index = findIndex(valueNumber);
-        if (index < 0)
+        if (index < 0) {
             return defaultLockCount;
-        else
+        } else {
             return array[index + 1];
+        }
     }
 
     public boolean isTop() {
@@ -93,7 +94,7 @@ public final class LockSet {
 
     /**
      * Set the lock count for a lock object.
-     * 
+     *
      * @param valueNumber
      *            value number of the lock object
      * @param lockCount
@@ -110,7 +111,7 @@ public final class LockSet {
 
     /**
      * Set the default lock count to return for nonexistent lock entries.
-     * 
+     *
      * @param defaultLockCount
      *            the default lock count value
      */
@@ -124,17 +125,19 @@ public final class LockSet {
     public int getNumLockedObjects() {
         int result = 0;
         for (int i = 0; i < array.length; i += 2) {
-            if (array[i] == INVALID)
+            if (array[i] == INVALID) {
                 break;
-            if (array[i + 1] > 0)
+            }
+            if (array[i + 1] > 0) {
                 ++result;
+            }
         }
         return result;
     }
 
     /**
      * Make this LockSet the same as the given one.
-     * 
+     *
      * @param other
      *            the LockSet to copy
      */
@@ -158,15 +161,16 @@ public final class LockSet {
     /**
      * Meet this LockSet with another LockSet, storing the result in this
      * object.
-     * 
+     *
      * @param other
      *            the other LockSet
      */
     public void meetWith(LockSet other) {
         for (int i = 0; i < array.length; i += 2) {
             int valueNumber = array[i];
-            if (valueNumber < 0)
+            if (valueNumber < 0) {
                 break;
+            }
 
             int mine = array[i + 1];
             int his = other.getLockCount(valueNumber);
@@ -175,8 +179,9 @@ public final class LockSet {
 
         for (int i = 0; i < other.array.length; i += 2) {
             int valueNumber = other.array[i];
-            if (valueNumber < 0)
+            if (valueNumber < 0) {
                 break;
+            }
 
             int mine = getLockCount(valueNumber);
             int his = other.array[i + 1];
@@ -188,7 +193,7 @@ public final class LockSet {
 
     /**
      * Return whether or not this LockSet is the same as the one given.
-     * 
+     *
      * @param other
      *            the other LockSet
      */
@@ -199,18 +204,20 @@ public final class LockSet {
     /**
      * Determine whether or not this lock set contains any locked values which
      * are method return values.
-     * 
+     *
      * @param factory
      *            the ValueNumberFactory that produced the lock values
      */
     public boolean containsReturnValue(ValueNumberFactory factory) {
         for (int i = 0; i < array.length; i += 2) {
             int valueNumber = array[i];
-            if (valueNumber < 0)
+            if (valueNumber < 0) {
                 break;
+            }
             int lockCount = array[i + 1];
-            if (lockCount > 0 && factory.forNumber(valueNumber).hasFlag(ValueNumber.RETURN_VALUE))
+            if (lockCount > 0 && factory.forNumber(valueNumber).hasFlag(ValueNumber.RETURN_VALUE)) {
                 return true;
+            }
         }
         return false;
     }
@@ -219,18 +226,20 @@ public final class LockSet {
      * Destructively intersect this lock set with another. Note that this is
      * <em>not</em> a dataflow merge: we are interested in finding out which
      * locks are held in both sets, not in the exact lock counts.
-     * 
+     *
      * @param other
      *            the other LockSet
      */
     public void intersectWith(LockSet other) {
         for (int i = 0; i < array.length; i += 2) {
             int valueNumber = array[i];
-            if (valueNumber < 0)
+            if (valueNumber < 0) {
                 break;
+            }
             int myLockCount = array[i + 1];
-            if (myLockCount <= 0)
+            if (myLockCount <= 0) {
                 continue;
+            }
             int otherLockCount = other.getLockCount(valueNumber);
             if (otherLockCount <= 0) {
                 /* This set holds the lock, but the other one doesn't. */
@@ -242,17 +251,19 @@ public final class LockSet {
     /**
      * Return whether or not this lock set is empty, meaning that no locks have
      * a positive lock count.
-     * 
+     *
      * @return true if no locks are held, false if at least one lock is held
      */
     public boolean isEmpty() {
         for (int i = 0; i < array.length; i += 2) {
             int valueNumber = array[i];
-            if (valueNumber < 0)
+            if (valueNumber < 0) {
                 return true;
+            }
             int myLockCount = array[i + 1];
-            if (myLockCount > 0)
+            if (myLockCount > 0) {
                 return false;
+            }
         }
         return true;
     }
@@ -260,42 +271,47 @@ public final class LockSet {
     private boolean identicalSubset(LockSet other) {
         for (int i = 0; i < array.length; i += 2) {
             int valueNumber = array[i];
-            if (valueNumber < 0)
+            if (valueNumber < 0) {
                 break;
+            }
             int mine = array[i + 1];
             int his = other.getLockCount(valueNumber);
             if (mine != his)
+            {
                 return false;
-            // System.out.println("For value " + valueNumber + ", " + mine +
-            // "==" + his);
+                // System.out.println("For value " + valueNumber + ", " + mine +
+                // "==" + his);
+            }
         }
         return true;
     }
 
     private static int mergeValues(int a, int b) {
-        if (a == TOP)
+        if (a == TOP) {
             return b;
-        else if (b == TOP)
+        } else if (b == TOP) {
             return a;
-        else if (a == BOTTOM || b == BOTTOM)
+        } else if (a == BOTTOM || b == BOTTOM) {
             return BOTTOM;
-        else if (a == b)
+        } else if (a == b) {
             return a;
-        else
+        } else {
             return BOTTOM;
+        }
     }
 
     private int findIndex(int valueNumber) {
         for (int i = 0; i < array.length; i += 2) {
             int value = array[i];
-            if (value < 0)
+            if (value < 0) {
                 return -(i + 1); // didn't find requested valueNumber - return
-                                 // first available slot
-            else if (value == valueNumber)
+            } else if (value == valueNumber)
+            {
                 return i; // found requested valueNumber
+            }
         }
         return -(array.length + 1); // didn't find requested valueNumber, and
-                                    // array is full
+        // array is full
     }
 
     private void addEntry(int negatedIndex, int valueNumber, int lockCount) {
@@ -336,23 +352,27 @@ public final class LockSet {
         }
         for (int i = 0; i < array.length; i += 2) {
             int valueNumber = array[i];
-            if (valueNumber < 0)
+            if (valueNumber < 0) {
                 continue;
+            }
             int lockCount = array[i + 1];
-            if (lockCount == 0)
+            if (lockCount == 0) {
                 continue;
-            if (first)
+            }
+            if (first) {
                 first = false;
-            else
+            } else {
                 buf.append(',');
+            }
             buf.append(valueNumber);
             buf.append('=');
-            if (lockCount == TOP)
+            if (lockCount == TOP) {
                 buf.append("TOP");
-            else if (lockCount == BOTTOM)
+            } else if (lockCount == BOTTOM) {
                 buf.append("BOTTOM");
-            else
+            } else {
                 buf.append(lockCount);
+            }
         }
         buf.append(']');
         return buf.toString();
@@ -363,12 +383,15 @@ public final class LockSet {
      * @return a set of the locked value numbers
      */
     public Collection<ValueNumber> getLockedValueNumbers(ValueNumberFrame frame) {
-        if (frame == null)
+        if (frame == null) {
             throw new IllegalArgumentException("Null Frame");
+        }
         HashSet<ValueNumber> result = new HashSet<ValueNumber>();
-        for (ValueNumber v : frame.allSlots())
-            if (v != null && getLockCount(v.getNumber()) > 0)
+        for (ValueNumber v : frame.allSlots()) {
+            if (v != null && getLockCount(v.getNumber()) > 0) {
                 result.add(v);
+            }
+        }
         return result;
     }
 
@@ -380,11 +403,10 @@ public final class LockSet {
      * 1); ll.setLockCount(69, 3); LockSet tmp = new LockSet();
      * tmp.copyFrom(ll); ll.meetWith(l); System.out.println(l + " merge with " +
      * tmp + " ==> " + ll);
-     * 
+     *
      * LockSet dup = new LockSet(); dup.copyFrom(ll); System.out.println(ll +
      * " == " + dup + " ==> " + ll.sameAs(dup)); System.out.println(ll + " == "
      * + l + " ==> " + ll.sameAs(l)); }
      */
 }
 
-// vim:ts=4

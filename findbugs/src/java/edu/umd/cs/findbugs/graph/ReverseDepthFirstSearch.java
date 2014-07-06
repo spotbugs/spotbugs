@@ -24,17 +24,17 @@ import java.util.Iterator;
 /**
  * Perform a reverse depth first search of a graph. (I.e., depth first search of
  * reversed graph.)
- * 
+ *
  * @author David Hovemeyer
  * @see Graph
  * @see AbstractDepthFirstSearch
  */
 public class ReverseDepthFirstSearch<GraphType extends Graph<EdgeType, VertexType>, EdgeType extends GraphEdge<EdgeType, VertexType>, VertexType extends GraphVertex<VertexType>>
-        extends AbstractDepthFirstSearch<GraphType, EdgeType, VertexType> {
+extends AbstractDepthFirstSearch<GraphType, EdgeType, VertexType> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param graph
      *            the graph to perform a reverse depth first search of
      */
@@ -59,4 +59,3 @@ public class ReverseDepthFirstSearch<GraphType extends Graph<EdgeType, VertexTyp
 
 }
 
-// vim:ts=4

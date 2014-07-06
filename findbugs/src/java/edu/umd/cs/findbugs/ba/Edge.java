@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.graph.AbstractEdge;
 
 /**
  * An edge of a control flow graph.
- * 
+ *
  * @author David Hovemeyer
  * @see BasicBlock
  * @see CFG
@@ -66,7 +66,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 
     /**
      * Constructor.
-     * 
+     *
      * @param source
      *            source basic block
      * @param dest
@@ -111,7 +111,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 
     /**
      * Return if given edge flag is set.
-     * 
+     *
      * @param flag
      *            the edge flag
      * @return true if the flag is set, false otherwise
@@ -129,8 +129,9 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || this.getClass() != o.getClass())
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
+        }
         Edge other = (Edge) o;
         return this.getSource() == other.getSource() && this.getTarget() == other.getTarget()
                 && this.getType() == other.getType();
@@ -147,8 +148,9 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
     @Override
     public int compareTo(Edge other) {
         int cmp = super.compareTo(other);
-        if (cmp != 0)
+        if (cmp != 0) {
             return cmp;
+        }
         return type - other.type;
     }
 
@@ -164,8 +166,9 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
         InstructionHandle sourceInstruction = source.getLastInstruction();
         InstructionHandle targetInstruction = target.getFirstInstruction();
 
-        if (targetInstruction == null || sourceInstruction == null)
+        if (targetInstruction == null || sourceInstruction == null) {
             return false;
+        }
         return targetInstruction.getPosition() < sourceInstruction.getPosition();
 
     }
@@ -179,8 +182,9 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 
         InstructionHandle sourceInstruction = source.getLastInstruction();
 
-        if (sourceInstruction == null)
+        if (sourceInstruction == null) {
             return false;
+        }
         return positions.contains(sourceInstruction.getPosition());
 
     }
@@ -215,9 +219,9 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
             buf.append(targetInstruction.getPosition());
             buf.append(']');
         } else if (source.isExceptionThrower()) {
-            if (type == FALL_THROUGH_EDGE)
+            if (type == FALL_THROUGH_EDGE) {
                 buf.append(" [successful check]");
-            else {
+            } else {
                 buf.append(" [failed check for ");
                 buf.append(source.getExceptionThrower().getPosition());
                 if (targetInstruction != null) {
@@ -274,37 +278,37 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
     int stringToEdgeType(String s) {
         s = s.toUpperCase(Locale.ENGLISH);
 
-        if (s.equals("FALL_THROUGH"))
+        if (s.equals("FALL_THROUGH")) {
             return FALL_THROUGH_EDGE;
-        else if (s.equals("IFCMP"))
+        } else if (s.equals("IFCMP")) {
             return IFCMP_EDGE;
-        else if (s.equals("SWITCH"))
+        } else if (s.equals("SWITCH")) {
             return SWITCH_EDGE;
-        else if (s.equals("SWITCH_DEFAULT"))
+        } else if (s.equals("SWITCH_DEFAULT")) {
             return SWITCH_DEFAULT_EDGE;
-        else if (s.equals("JSR"))
+        } else if (s.equals("JSR")) {
             return JSR_EDGE;
-        else if (s.equals("RET"))
+        } else if (s.equals("RET")) {
             return RET_EDGE;
-        else if (s.equals("GOTO"))
+        } else if (s.equals("GOTO")) {
             return GOTO_EDGE;
-        else if (s.equals("RETURN"))
+        } else if (s.equals("RETURN")) {
             return RETURN_EDGE;
-        else if (s.equals("UNHANDLED_EXCEPTION"))
+        } else if (s.equals("UNHANDLED_EXCEPTION")) {
             return UNHANDLED_EXCEPTION_EDGE;
-        else if (s.equals("HANDLED_EXCEPTION"))
+        } else if (s.equals("HANDLED_EXCEPTION")) {
             return HANDLED_EXCEPTION_EDGE;
-        else if (s.equals("START"))
+        } else if (s.equals("START")) {
             return START_EDGE;
-        else if (s.equals("BACKEDGE_TARGET_EDGE"))
+        } else if (s.equals("BACKEDGE_TARGET_EDGE")) {
             return BACKEDGE_TARGET_EDGE;
-        else if (s.equals("BACKEDGE_SOURCE_EDGE"))
+        } else if (s.equals("BACKEDGE_SOURCE_EDGE")) {
             return BACKEDGE_SOURCE_EDGE;
-        else if (s.equals("EXIT_EDGE"))
+        } else if (s.equals("EXIT_EDGE")) {
             return EXIT_EDGE;
-        else
+        } else {
             throw new IllegalArgumentException("Unknown edge type: " + s);
+        }
     }
 }
 
-// vim:ts=4

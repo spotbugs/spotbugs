@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba.bcp;
 
 /**
  * A Binding binds a name to a Variable.
- * 
+ *
  * @author David Hovemeyer
  * @see Variable
  */
@@ -32,15 +32,16 @@ public class Binding {
 
     /**
      * Constructor.
-     * 
+     *
      * @param varName
      *            the name of the variable
      * @param variable
      *            the variable
      */
     public Binding(String varName, Variable variable) {
-        if (variable == null)
+        if (variable == null) {
             throw new IllegalArgumentException("No variable!");
+        }
         this.varName = varName;
         this.variable = variable;
     }
@@ -69,4 +70,3 @@ public class Binding {
     }
 }
 
-// vim:ts=4

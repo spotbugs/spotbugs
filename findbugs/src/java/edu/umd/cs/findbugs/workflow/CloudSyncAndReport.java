@@ -93,8 +93,9 @@ public class CloudSyncAndReport {
                 options.ageInHours = Integer.parseInt(argument);
             } else if (option.equals("-cloudSummary")) {
                 options.cloudSummary = argument;
-            } else
+            } else {
                 throw new IllegalArgumentException("Unknown option : " + option);
+            }
         }
     }
 
@@ -106,8 +107,9 @@ public class CloudSyncAndReport {
         int argCount = commandLine.parse(argv, 0, 1, "Usage: " + CloudSyncAndReport.class.getName()
                 + " [options] [<results1> <results2> ... <resultsn>] ");
 
-        if (argCount < argv.length)
+        if (argCount < argv.length) {
             options.analysisFile = argv[argCount];
+        }
 
         CloudSyncAndReport csr = new CloudSyncAndReport(options);
         csr.load();
@@ -133,10 +135,11 @@ public class CloudSyncAndReport {
     }
 
     public void load() throws IOException, DocumentException {
-        if (options.analysisFile == null)
+        if (options.analysisFile == null) {
             bugCollection.readXML(UTF8.bufferedReader(System.in));
-        else
+        } else {
             bugCollection.readXML(options.analysisFile);
+        }
         if (options.cloudId != null && !options.cloudId.equals(bugCollection.getProject().getCloudId())) {
             bugCollection.getProject().setCloudId(options.cloudId);
             bugCollection.reinitializeCloud();
@@ -193,8 +196,9 @@ public class CloudSyncAndReport {
                 cs.printf("%6s %6s %s%n", "recent", "total", "Rank category");
                 for (Entry<BugRankCategory, Stats> e : stats.entrySet()) {
                     Stats s = e.getValue();
-                    if (s.total > 0)
+                    if (s.total > 0) {
                         cs.printf("%6d %6d %s%n", s.recent, s.total, e.getKey());
+                    }
                 }
                 cs.println();
                 cloud.printCloudSummary(cs, bugs, null);

@@ -36,22 +36,22 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * Analysis to determine where particular values are locked in a method. The
  * dataflow values are maps of value numbers to the number of times those values
  * are locked.
- * 
+ *
  * @author David Hovemeyer
  * @see ValueNumberAnalysis
  */
 public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
     private static final boolean DEBUG = SystemProperties.getBoolean("la.debug");
 
-    private MethodGen methodGen;
+    private final MethodGen methodGen;
 
-    private ValueNumberDataflow vnaDataflow;
+    private final ValueNumberDataflow vnaDataflow;
 
-    private ValueNumberAnalysis vna;
+    private final ValueNumberAnalysis vna;
 
-    private boolean isSynchronized;
+    private final boolean isSynchronized;
 
-    private boolean isStatic;
+    private final boolean isStatic;
 
     public LockAnalysis(MethodGen methodGen, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs) {
         super(dfs);
@@ -60,8 +60,9 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
         this.vna = vnaDataflow.getAnalysis();
         this.isSynchronized = methodGen.isSynchronized();
         this.isStatic = methodGen.isStatic();
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Analyzing Locks in " + methodGen.getClassName() + "." + methodGen.getName());
+        }
     }
 
     @Override
@@ -127,10 +128,11 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
             String sig = inv.getSignature(methodGen.getConstantPool());
             ValueNumberFrame frame = vnaDataflow.getFactAtLocation(new Location(handle, basicBlock));
 
-            if (sig.equals("()V") && (name.equals("lock") || name.equals("lockInterruptibly")))
+            if (sig.equals("()V") && (name.equals("lock") || name.equals("lockInterruptibly"))) {
                 modifyLock(frame, fact, 1);
-            else if (sig.equals("()V") && (name.equals("unlock")))
+            } else if (sig.equals("()V") && (name.equals("unlock"))) {
                 modifyLock(frame, fact, -1);
+            }
 
         } else if ((ins instanceof ReturnInstruction) && isSynchronized && !isStatic) {
 
@@ -147,14 +149,17 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 
     private void lockOp(LockSet fact, int lockNumber, int delta) {
         int value = fact.getLockCount(lockNumber);
-        if (value < 0) // can't modify TOP or BOTTOM value
+        if (value < 0) {
             return;
+        }
         value += delta;
-        if (value < 0)
+        if (value < 0) {
             value = LockSet.BOTTOM;
-        if (DEBUG)
+        }
+        if (DEBUG) {
             System.out.println("Setting " + lockNumber + " to " + value + " in " + methodGen.getClassName() + "."
                     + methodGen.getName());
+        }
         fact.setLockCount(lockNumber, value);
     }
 
@@ -184,4 +189,3 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
     // }
 }
 
-// vim:ts=4

@@ -26,14 +26,14 @@ import java.util.Iterator;
 
 /**
  * Utility routines for writing to XMLOutput.
- * 
+ *
  * @see XMLOutput
  * @author David Hovemeyer
  */
 public abstract class XMLOutputUtil {
     /**
      * Write a list of Strings to document as elements with given tag name.
-     * 
+     *
      * @param xmlOutput
      *            the XMLOutput object to write to
      * @param tagName
@@ -47,7 +47,7 @@ public abstract class XMLOutputUtil {
 
     /**
      * Write a list of Strings to document as elements with given tag name.
-     * 
+     *
      * @param xmlOutput
      *            the XMLOutput object to write to
      * @param tagName
@@ -66,7 +66,7 @@ public abstract class XMLOutputUtil {
 
     /**
      * Write a list of Strings to document as elements with given tag name.
-     * 
+     *
      * @param xmlOutput
      *            the XMLOutput object to write to
      * @param tagName
@@ -75,13 +75,14 @@ public abstract class XMLOutputUtil {
      *            Collection of String values to write
      */
     public static void writeFileList(XMLOutput xmlOutput, String tagName, Iterable<File> listValues) throws IOException {
-        if (listValues != null)
+        if (listValues != null) {
             writeFileList(xmlOutput, tagName, listValues.iterator());
+        }
     }
 
     /**
      * Write a list of Strings to document as elements with given tag name.
-     * 
+     *
      * @param xmlOutput
      *            the XMLOutput object to write to
      * @param tagName
@@ -99,7 +100,7 @@ public abstract class XMLOutputUtil {
 
     /**
      * Write a Collection of XMLWriteable objects.
-     * 
+     *
      * @param xmlOutput
      *            the XMLOutput object to write to
      * @param collection
@@ -112,4 +113,3 @@ public abstract class XMLOutputUtil {
     }
 }
 
-// vim:ts=4

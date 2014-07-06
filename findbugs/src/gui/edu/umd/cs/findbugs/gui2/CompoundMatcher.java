@@ -36,9 +36,11 @@ public class CompoundMatcher extends HashSet<Matcher> implements Matcher {
 
     @Override
     public boolean match(BugInstance bugInstance) {
-        for (Matcher i : this)
-            if (!i.match(bugInstance))
+        for (Matcher i : this) {
+            if (!i.match(bugInstance)) {
                 return false;
+            }
+        }
         return true;
     }
 

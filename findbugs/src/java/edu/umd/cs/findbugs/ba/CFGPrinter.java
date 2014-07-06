@@ -27,12 +27,12 @@ import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * Print out a representation of a control-flow graph. For debugging.
- * 
+ *
  * @see CFG
  * @see CFGBuilder
  */
 public class CFGPrinter {
-    private CFG cfg;
+    private final CFG cfg;
 
     private boolean isForwards;
 
@@ -97,10 +97,11 @@ public class CFGPrinter {
     }
 
     protected Iterator<InstructionHandle> instructionIterator(BasicBlock bb) {
-        if (isForwards)
+        if (isForwards) {
             return bb.instructionIterator();
-        else
+        } else {
             return bb.instructionReverseIterator();
+        }
     }
 
     // public static void main(String[] argv) throws Exception {
@@ -147,4 +148,3 @@ public class CFGPrinter {
     // }
 }
 
-// vim:ts=4

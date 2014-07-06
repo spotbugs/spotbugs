@@ -21,9 +21,7 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
 import java.io.ByteArrayOutputStream;
@@ -76,15 +74,15 @@ public class NotMatcherTest {
         Matcher wrappedMatcher = new TestMatcher(true);
         NotMatcher notMatcher = new NotMatcher();
         notMatcher.addChild(wrappedMatcher);
-        
+
         assertSame("Should return child matcher.", wrappedMatcher, notMatcher.originalMatcher());
     }
-    
+
     @Test(expected=IllegalStateException.class)
     public void throwsExceptionWhenTryingToGetNonExistentChildMatcher() {
         new NotMatcher().originalMatcher();
     }
-    
+
     private String writeXMLAndGetStringOutput(NotMatcher notMatcher) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         XMLOutput xmlOutput = new OutputStreamXMLOutput(outputStream);

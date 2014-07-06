@@ -44,7 +44,7 @@ public class AppendingToAnObjectOutputStream extends OpcodeStackDetector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
      */
     @Override
@@ -59,9 +59,10 @@ public class AppendingToAnObjectOutputStream extends OpcodeStackDetector {
         if (!sawOpenInAppendMode) {
             if (calledClassName.equals("java/io/ObjectOutputStream") && calledMethodName.equals("<init>")
                     && calledMethodSig.equals("(Ljava/io/OutputStream;)V")
-                    && stack.getStackItem(0).getSpecialKind() == OpcodeStack.Item.FILE_OPENED_IN_APPEND_MODE)
+                    && stack.getStackItem(0).getSpecialKind() == OpcodeStack.Item.FILE_OPENED_IN_APPEND_MODE) {
                 bugReporter.reportBug(new BugInstance(this, "IO_APPENDING_TO_OBJECT_OUTPUT_STREAM", Priorities.HIGH_PRIORITY)
-                        .addClassAndMethod(this).addSourceLine(this));
+                .addClassAndMethod(this).addSourceLine(this));
+            }
             return;
         }
         if (calledClassName.equals("java/io/FileOutputStream") && calledMethodName.equals("<init>")
@@ -78,10 +79,11 @@ public class AppendingToAnObjectOutputStream extends OpcodeStackDetector {
         } else if (calledClassName.equals("java/io/ObjectOutputStream") && calledMethodName.equals("<init>")
                 && calledMethodSig.equals("(Ljava/io/OutputStream;)V")) {
             bugReporter.reportBug(new BugInstance(this, "IO_APPENDING_TO_OBJECT_OUTPUT_STREAM", Priorities.HIGH_PRIORITY)
-                    .addClassAndMethod(this).addSourceLine(this));
+            .addClassAndMethod(this).addSourceLine(this));
             sawOpenInAppendMode = false;
-        } else
+        } else {
             sawOpenInAppendMode = false;
+        }
 
     }
 

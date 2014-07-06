@@ -75,12 +75,14 @@ public class CommentsArea {
                 if (frame.getCurrentSelectedBugLeaf() == null) {
                     return;
                 }
-                if (!canNavigateAway())
+                if (!canNavigateAway()) {
                     return;
+                }
                 BugInstance bug = frame.getCurrentSelectedBugLeaf().getBug();
                 Cloud cloud1 = MainFrame.getInstance().getBugCollection().getCloud();
-                if (!cloud1.supportsBugLinks())
+                if (!cloud1.supportsBugLinks()) {
                     return;
+                }
                 try {
                     URL u = cloud1.getBugLink(bug);
                     if (u != null) {
@@ -119,8 +121,9 @@ public class CommentsArea {
     }
 
     void updateCommentsFromLeafInformation(final BugLeafNode node) {
-        if (node == null)
+        if (node == null) {
             return;
+        }
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -171,8 +174,9 @@ public class CommentsArea {
     private @CheckForNull Cloud getCloud() {
         MainFrame instance = MainFrame.getInstance();
         BugCollection bugCollection = instance.getBugCollection();
-        if (bugCollection == null)
+        if (bugCollection == null) {
             return null;
+        }
         return bugCollection.getCloud();
     }
 

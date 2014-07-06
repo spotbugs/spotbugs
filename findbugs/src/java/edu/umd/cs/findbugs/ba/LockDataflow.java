@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 /**
  * Dataflow class for LockAnalysis.
- * 
+ *
  * @author David Hovemeyer
  */
 public class LockDataflow extends Dataflow<LockSet, LockAnalysis> {
@@ -30,4 +30,3 @@ public class LockDataflow extends Dataflow<LockSet, LockAnalysis> {
     }
 }
 
-// vim:ts=4

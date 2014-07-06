@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 
 /**
  * Mark a class or interface as a resource type requiring cleanup.
- * 
+ *
  * @author David Hovemeyer
  */
 @Documented

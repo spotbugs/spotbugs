@@ -63,18 +63,20 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 
     private boolean isInputStream() {
 
-        if (lastCallClass.startsWith("["))
+        if (lastCallClass.startsWith("[")) {
             return false;
+        }
         return (Subtypes2.instanceOf(lastCallClass, "java.io.InputStream")
                 || Subtypes2.instanceOf(lastCallClass, "java.io.DataInput") || Subtypes2.instanceOf(lastCallClass,
-                "java.io.Reader")) && !Subtypes2.instanceOf(lastCallClass, "java.io.ByteArrayInputStream");
+                        "java.io.Reader")) && !Subtypes2.instanceOf(lastCallClass, "java.io.ByteArrayInputStream");
 
     }
 
     private boolean isBufferedInputStream() {
         try {
-            if (lastCallClass.startsWith("["))
+            if (lastCallClass.startsWith("[")) {
                 return false;
+            }
             return Repository.instanceOf(lastCallClass, "java.io.BufferedInputStream");
         } catch (ClassNotFoundException e) {
             return false;
@@ -83,8 +85,9 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 
     private boolean isImageIOInputStream() {
         try {
-            if (lastCallClass.startsWith("["))
+            if (lastCallClass.startsWith("[")) {
                 return false;
+            }
             return Repository.instanceOf(lastCallClass, "javax.imageio.stream.ImageInputStream");
         } catch (ClassNotFoundException e) {
             return false;
@@ -100,7 +103,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
             lastCallSig = getSigConstantOperand();
         }
 
-        if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
+        if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
             if (getNameConstantOperand().equals("available") && getSigConstantOperand().equals("()I")
                     || getNameConstantOperand().startsWith("get") && getNameConstantOperand().endsWith("Length")
                     && getSigConstantOperand().equals("()I") || getClassConstantOperand().equals("java/io/File")
@@ -108,13 +111,14 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
                 sawAvailable = 70;
                 return;
             }
+        }
         sawAvailable--;
         if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
                 && getNameConstantOperand().equals("read")
 
                 && (getSigConstantOperand().equals("([B)I") || getSigConstantOperand().equals("([BII)I")
                         || getSigConstantOperand().equals("([C)I") || getSigConstantOperand().equals("([CII)I"))
-                && isInputStream()) {
+                        && isInputStream()) {
             sawRead = true;
             recentCallToAvailable = sawAvailable > 0;
             locationOfCall = getPC();
@@ -123,7 +127,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
         if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
                 && (getNameConstantOperand().equals("skip") && getSigConstantOperand().equals("(J)J") || getNameConstantOperand()
                         .equals("skipBytes") && getSigConstantOperand().equals("(I)I")) && isInputStream()
-                && !isImageIOInputStream()) {
+                        && !isImageIOInputStream()) {
             // if not ByteArrayInput Stream
             // and either no recent calls to length
             // or it is a BufferedInputStream
@@ -141,7 +145,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
             if (sawRead) {
                 accumulator.accumulateBug(
                         new BugInstance(this, "RR_NOT_CHECKED", recentCallToAvailable ? LOW_PRIORITY : NORMAL_PRIORITY)
-                                .addClassAndMethod(this).addCalledMethod(lastCallClass, lastCallMethod, lastCallSig, false),
+                        .addClassAndMethod(this).addCalledMethod(lastCallClass, lastCallMethod, lastCallSig, false),
                         SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, locationOfCall));
 
             } else if (sawSkip) {

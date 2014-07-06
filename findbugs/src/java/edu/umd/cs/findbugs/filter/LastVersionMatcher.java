@@ -52,17 +52,19 @@ public class LastVersionMatcher extends VersionMatcher implements Matcher {
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Long.toString(version)).addAttribute("relOp",
                 relOp.getName());
-        if (disabled)
+        if (disabled) {
             attributes.addAttribute("disabled", "true");
+        }
         xmlOutput.openCloseTag("LastVersion", attributes);
     }
 
     @Override
     public String toString() {
-        if (version == -1 && relOp == RelationalOp.EQ)
+        if (version == -1 && relOp == RelationalOp.EQ) {
             return "ActiveBugs";
-        else if (version == -1 && relOp == RelationalOp.NEQ)
+        } else if (version == -1 && relOp == RelationalOp.NEQ) {
             return "DeadBugs";
+        }
         return "LastVersion(version " + relOp + version + ")";
     }
 }

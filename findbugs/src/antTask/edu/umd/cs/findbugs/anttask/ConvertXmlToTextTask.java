@@ -144,10 +144,11 @@ public class ConvertXmlToTextTask extends AbstractFindBugsTask {
 
     @Override
     protected void beforeExecuteJavaProcess() {
-        if (output != null)
+        if (output != null) {
             log("Converting " + input + " to " + output + " using format " + format);
-        else
+        } else {
             log("Converting " + input + " using format " + format);
+        }
     }
 
     @Override

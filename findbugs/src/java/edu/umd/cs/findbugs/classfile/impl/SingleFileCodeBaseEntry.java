@@ -11,7 +11,7 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
  * Codebase entry for a single-file codebase.
- * 
+ *
  * @author David Hovemeyer
  */
 public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
@@ -21,7 +21,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 
     /**
      * Constructor.
-     * 
+     *
      * @param codeBase
      *            parent codebase
      */
@@ -31,7 +31,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
      */
     @Override
@@ -41,19 +41,20 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
      */
     @Override
     public String getResourceName() {
-        if (overriddenResourceName != null)
+        if (overriddenResourceName != null) {
             return overriddenResourceName;
+        }
         return codeBase.getResourceName();
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
      */
     @Override
@@ -63,7 +64,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getCodeBase()
      */
     @Override
@@ -73,7 +74,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
      */
     @Override
@@ -83,7 +84,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java
      * .lang.String)
@@ -95,7 +96,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -109,7 +110,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -119,7 +120,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override

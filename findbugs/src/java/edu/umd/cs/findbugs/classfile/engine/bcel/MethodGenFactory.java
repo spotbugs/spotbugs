@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Analysis engine to produce MethodGen objects for analyzed methods.
- * 
+ *
  * @author David Hovemeyer
  * @author Bill Pugh
  */
@@ -48,7 +48,7 @@ public class MethodGenFactory extends AnalysisFactory<MethodGen> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
@@ -57,14 +57,15 @@ public class MethodGenFactory extends AnalysisFactory<MethodGen> {
     public MethodGen analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         Method method = getMethod(analysisCache, descriptor);
 
-        if (method.getCode() == null)
+        if (method.getCode() == null) {
             return null;
+        }
         XMethod xmethod =  XFactory.createXMethod(descriptor);
         if (xmethod.usesInvokeDynamic() && false) {
             AnalysisContext.currentAnalysisContext().analysisSkippedDueToInvokeDynamic(xmethod);
             return null;
         }
-            
+
         try {
             AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
             JavaClass jclass = getJavaClass(analysisCache, descriptor.getClassDescriptor());

@@ -25,19 +25,19 @@ package edu.umd.cs.findbugs.ba.bcp;
  * reason we need this class is because some kinds of PatternElements, such as
  * MatchAny, may use it to indicate that a child PatternElement was the one that
  * actually matched the instruction.
- * 
+ *
  * @author David Hovemeyer
  * @see PatternElement
  * @see BindingSet
  */
 public class MatchResult {
-    private PatternElement patternElement;
+    private final PatternElement patternElement;
 
-    private BindingSet bindingSet;
+    private final BindingSet bindingSet;
 
     /**
      * Constructor.
-     * 
+     *
      * @param patternElement
      *            the PatternElement that matched the instruction
      * @param bindingSet
@@ -64,4 +64,3 @@ public class MatchResult {
 
 }
 
-// vim:ts=4

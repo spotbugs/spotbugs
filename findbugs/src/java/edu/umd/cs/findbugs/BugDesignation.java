@@ -52,10 +52,12 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
     @Override
     public String toString() {
         String result = designation;
-        if (user != null)
+        if (user != null) {
             result += " by " + user;
-        if (annotationText != null && annotationText.length() > 0)
+        }
+        if (annotationText != null && annotationText.length() > 0) {
             result += " : " + annotationText;
+        }
         return result;
     }
 
@@ -69,16 +71,17 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
         setDirty(false);
     }
     public void setDirty(boolean dirty) {
-        if (this.dirty == dirty)
+        if (this.dirty == dirty) {
             return;
+        }
         this.dirty = dirty;
-//        if (dirty) {
-//            System.out.println("Setting dirty bit");
-//            new RuntimeException("Setting dirty bit").printStackTrace(System.out);
-//        } else {
-//            System.out.println("Clearing dirty bit");
-//            new RuntimeException("Clearing dirty bit").printStackTrace(System.out);
-//        }
+        //        if (dirty) {
+        //            System.out.println("Setting dirty bit");
+        //            new RuntimeException("Setting dirty bit").printStackTrace(System.out);
+        //        } else {
+        //            System.out.println("Clearing dirty bit");
+        //            new RuntimeException("Clearing dirty bit").printStackTrace(System.out);
+        //        }
     }
 
     private @javax.annotation.CheckForNull
@@ -144,8 +147,9 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
             assert false;
             designationKey = null;
         }
-        if (designation.equals(designationKey))
+        if (designation.equals(designationKey)) {
             return;
+        }
         setDirty(true);
         timestamp = System.currentTimeMillis();
         designation = (designationKey != null ? designationKey : UNCLASSIFIED);
@@ -167,8 +171,9 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
     public void setTimestamp(long ts) {
         if (timestamp != ts) {
             timestamp = ts;
-            if (false && !hasAnnotationText() && !hasDesignationKey())
+            if (false && !hasAnnotationText() && !hasDesignationKey()) {
                 new RuntimeException("Setting timestamp on bug designation without annotation or designation").printStackTrace(System.out);
+            }
             setDirty(true);
         }
     }
@@ -184,14 +189,16 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
 
     @Nonnull
     public String getNonnullAnnotationText() {
-        if (annotationText == null)
+        if (annotationText == null) {
             return "";
+        }
         return annotationText;
     }
 
     public void setAnnotationText(String s) {
-        if (s.equals(annotationText))
+        if (s.equals(annotationText)) {
             return;
+        }
         setDirty(true);
         annotationText = s;
         timestamp = System.currentTimeMillis();
@@ -201,14 +208,18 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList();
         // all three of these xml attributes are optional
-        if (hasDesignationKey())
+        if (hasDesignationKey()) {
             attributeList.addAttribute("designation", designation);
-        if (user != null && !"".equals(user))
+        }
+        if (user != null && !"".equals(user)) {
             attributeList.addAttribute("user", user);
-        if (dirty)
+        }
+        if (dirty) {
             attributeList.addAttribute("needsSync", "true");
-        if (timestamp > 0)
+        }
+        if (timestamp > 0) {
             attributeList.addAttribute("timestamp", String.valueOf(timestamp));
+        }
 
         if ((annotationText != null && !"".equals(annotationText))) {
             xmlOutput.openTag("UserAnnotation", attributeList);
@@ -224,8 +235,9 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
      * other
      */
     public void merge(@CheckForNull BugDesignation other) {
-        if (other == null)
+        if (other == null) {
             return;
+        }
         boolean changed = false;
         if ((annotationText == null || annotationText.length() == 0) && other.annotationText != null
                 && other.annotationText.length() > 0) {
@@ -239,7 +251,9 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
             changed = true;
         }
         if (!changed)
+        {
             return; // if no changes don't even try to copy user or timestamp
+        }
 
         if ((user == null || user.length() == 0) && other.user != null && other.user.length() > 0) {
             user = other.user;
@@ -252,39 +266,47 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
     @Override
     public int hashCode() {
         int hash = (int) this.timestamp;
-        if (user != null)
+        if (user != null) {
             hash += user.hashCode();
+        }
         hash += designation.hashCode();
-        if (annotationText != null)
+        if (annotationText != null) {
             hash += annotationText.hashCode();
+        }
         return hash;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof BugDesignation))
+        if (!(o instanceof BugDesignation)) {
             return false;
+        }
         return this.compareTo((BugDesignation) o) == 0;
     }
 
     @Override
     public int compareTo(BugDesignation o) {
-        if (this == o)
+        if (this == o) {
             return 0;
+        }
         int result = Util.compare(o.timestamp, this.timestamp);
-        if (result != 0)
+        if (result != 0) {
             return result;
+        }
 
         result = Util.nullSafeCompareTo(this.user, o.user);
-        if (result != 0)
+        if (result != 0) {
             return result;
+        }
 
         result = this.designation.compareTo(o.designation);
-        if (result != 0)
+        if (result != 0) {
             return result;
+        }
         result = Util.nullSafeCompareTo(this.annotationText, o.annotationText);
-        if (result != 0)
+        if (result != 0) {
             return result;
+        }
 
         return 0;
 

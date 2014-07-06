@@ -37,19 +37,20 @@ import javax.swing.WindowConstants;
  * This is the properties dialog of the GUI. It allows the user to set the size
  * of the tabs and font size. If the user changes the font size they will be
  * told to restart the computer before the new size takes affect.
- * 
+ *
  * @author Kristin Stephens
  */
 public class PropertiesDialog extends FBDialog {
     private static PropertiesDialog instance;
 
-    private JTextField tabTextField;
+    private final JTextField tabTextField;
 
-    private JTextField fontTextField;
+    private final JTextField fontTextField;
 
     public static PropertiesDialog getInstance() {
-        if (instance == null)
+        if (instance == null) {
             instance = new PropertiesDialog();
+        }
         return instance;
     }
 
@@ -75,10 +76,10 @@ public class PropertiesDialog extends FBDialog {
                     GUISaveState.getInstance().setTabSize(Integer.decode(tabTextField.getText()).intValue());
                     MainFrame.getInstance().getSourceCodeDisplayer().clearCache();
                     MainFrame.getInstance().syncBugInformation(); // This causes
-                                                                  // the GUI to
-                                                                  // redisplay
-                                                                  // the current
-                                                                  // code
+                    // the GUI to
+                    // redisplay
+                    // the current
+                    // code
                 }
 
                 if (Float.parseFloat(fontTextField.getText()) != GUISaveState.getInstance().getFontSize()) {
@@ -107,8 +108,9 @@ public class PropertiesDialog extends FBDialog {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowDeactivated(WindowEvent e) {
-                if (Integer.decode(tabTextField.getText()).intValue() != GUISaveState.getInstance().getTabSize())
+                if (Integer.decode(tabTextField.getText()).intValue() != GUISaveState.getInstance().getTabSize()) {
                     tabTextField.setText(Integer.toString(GUISaveState.getInstance().getTabSize()));
+                }
 
                 if (Float.parseFloat(fontTextField.getText()) != GUISaveState.getInstance().getFontSize()) {
                     fontTextField.setText(Float.toString(GUISaveState.getInstance().getFontSize()));

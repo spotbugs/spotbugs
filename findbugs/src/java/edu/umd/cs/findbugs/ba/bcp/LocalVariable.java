@@ -30,8 +30,9 @@ public class LocalVariable implements Variable {
 
     @Override
     public boolean sameAs(Variable other) {
-        if (!(other instanceof LocalVariable))
+        if (!(other instanceof LocalVariable)) {
             return false;
+        }
         LocalVariable otherLocal = (LocalVariable) other;
         return valueNumber.equals(otherLocal.valueNumber);
     }
@@ -42,4 +43,3 @@ public class LocalVariable implements Variable {
     }
 }
 
-// vim:ts=4

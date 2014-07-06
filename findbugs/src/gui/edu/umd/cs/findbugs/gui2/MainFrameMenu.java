@@ -1,8 +1,6 @@
 package edu.umd.cs.findbugs.gui2;
 
-import static edu.umd.cs.findbugs.gui2.MainFrameHelper.attachAcceleratorKey;
-import static edu.umd.cs.findbugs.gui2.MainFrameHelper.newJMenu;
-import static edu.umd.cs.findbugs.gui2.MainFrameHelper.newJMenuItem;
+import static edu.umd.cs.findbugs.gui2.MainFrameHelper.*;
 
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
@@ -69,8 +67,9 @@ public class MainFrameMenu implements Serializable {
     }
 
     JMenuItem createRecentItem(final File f, final SaveType localSaveType) {
-        if (MainFrame.GUI2_DEBUG)
+        if (MainFrame.GUI2_DEBUG) {
             System.out.println("createRecentItem(" + f + ", " + localSaveType + ")");
+        }
         String name = f.getName();
 
         final JMenuItem item = new JMenuItem(name);
@@ -87,16 +86,17 @@ public class MainFrameMenu implements Serializable {
                         return;
                     }
                     GUISaveState.getInstance().fileReused(f);// Move to front in
-                                                             // GUISaveState, so
-                                                             // it will be last
-                                                             // thing to be
-                                                             // removed from the
-                                                             // list
+                    // GUISaveState, so
+                    // it will be last
+                    // thing to be
+                    // removed from the
+                    // list
 
                     recentMenuCache.addRecentFile(f);
 
-                    if (!f.exists())
+                    if (!f.exists()) {
                         throw new IllegalStateException("User used a recent projects menu item that didn't exist.");
+                    }
 
                     // Moved this outside of the thread, and above the line
                     // saveFile=f.getParentFile()
@@ -106,17 +106,20 @@ public class MainFrameMenu implements Serializable {
                     if (mainFrame.getCurProject() != null && mainFrame.isProjectChanged()) {
                         int response = JOptionPane.showConfirmDialog(mainFrame, L10N.getLocalString("dlg.save_current_changes",
                                 "The current project has been changed, Save current changes?"), L10N.getLocalString(
-                                "dlg.save_changes", "Save Changes?"), JOptionPane.YES_NO_CANCEL_OPTION,
-                                JOptionPane.WARNING_MESSAGE);
+                                        "dlg.save_changes", "Save Changes?"), JOptionPane.YES_NO_CANCEL_OPTION,
+                                        JOptionPane.WARNING_MESSAGE);
 
                         if (response == JOptionPane.YES_OPTION) {
-                            if (mainFrame.getSaveFile() != null)
+                            if (mainFrame.getSaveFile() != null) {
                                 mainFrame.getMainFrameLoadSaveHelper().save();
-                            else
+                            } else {
                                 mainFrame.getMainFrameLoadSaveHelper().saveAs();
+                            }
                         } else if (response == JOptionPane.CANCEL_OPTION)
+                        {
                             return;
-                        // IF no, do nothing.
+                            // IF no, do nothing.
+                        }
                     }
 
                     SaveType st = SaveType.forFile(f);
@@ -151,7 +154,7 @@ public class MainFrameMenu implements Serializable {
 
     /**
      * Creates the MainFrame's menu bar.
-     * 
+     *
      * @return the menu bar for the MainFrame
      */
     JMenuBar createMainMenuBar() {
@@ -202,8 +205,9 @@ public class MainFrameMenu implements Serializable {
         reconfigMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (!mainFrame.canNavigateAway())
+                if (!mainFrame.canNavigateAway()) {
                     return;
+                }
                 new NewProjectWizard(mainFrame.getCurProject());
             }
         });
@@ -277,8 +281,9 @@ public class MainFrameMenu implements Serializable {
             }
         });
 
-        if (!FindBugs.isNoAnalysis())
+        if (!FindBugs.isNoAnalysis()) {
             fileMenu.add(newProjectMenuItem);
+        }
 
         fileMenu.add(openMenuItem);
         fileMenu.add(recentMenu);
@@ -327,8 +332,9 @@ public class MainFrameMenu implements Serializable {
         groupByMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (!mainFrame.canNavigateAway())
+                if (!mainFrame.canNavigateAway()) {
                     return;
+                }
                 SorterDialog.getInstance().setLocationRelativeTo(mainFrame);
                 SorterDialog.getInstance().setVisible(true);
             }
@@ -363,8 +369,9 @@ public class MainFrameMenu implements Serializable {
 
         menuBar.add(editMenu);
 
-        if (windowMenu != null)
+        if (windowMenu != null) {
             menuBar.add(windowMenu);
+        }
 
         viewMenu = newJMenu("menu.view_menu", "View");
         setViewMenu();
@@ -409,9 +416,10 @@ public class MainFrameMenu implements Serializable {
             UpdateChecker checker = DetectorFactoryCollection.instance().getUpdateChecker();
             boolean disabled = checker.updateChecksGloballyDisabled();
             updateItem.setEnabled(!disabled);
-            if (disabled)
+            if (disabled) {
                 updateItem.setToolTipText("Update checks disabled by plugin: "
                         + checker.getPluginThatDisabledUpdateChecks());
+            }
             helpMenu.add(updateItem);
 
             updateItem.addActionListener(new ActionListener() {
@@ -454,15 +462,17 @@ public class MainFrameMenu implements Serializable {
             viewMenu.add(selectPackagePrefixMenu);
 
         }
-        if (viewMenu.getItemCount() > 0)
+        if (viewMenu.getItemCount() > 0) {
             viewMenu.addSeparator();
+        }
 
         ButtonGroup rankButtonGroup = new ButtonGroup();
         for (final ViewFilter.RankFilter r : ViewFilter.RankFilter.values()) {
             JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
             rankButtonGroup.add(rbMenuItem);
-            if (r == ViewFilter.RankFilter.ALL)
+            if (r == ViewFilter.RankFilter.ALL) {
                 rbMenuItem.setSelected(true);
+            }
             rbMenuItem.addActionListener(new ActionListener() {
 
                 @Override
@@ -479,12 +489,14 @@ public class MainFrameMenu implements Serializable {
         if (cloud != null && cloud.getMode() == Cloud.Mode.COMMUNAL) {
             ButtonGroup overallClassificationButtonGroup = new ButtonGroup();
             for (final ViewFilter.OverallClassificationFilter r : ViewFilter.OverallClassificationFilter.values()) {
-                if (!r.supported(cloud))
+                if (!r.supported(cloud)) {
                     continue;
+                }
                 JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
                 overallClassificationButtonGroup.add(rbMenuItem);
-                if (r == ViewFilter.OverallClassificationFilter.ALL)
+                if (r == ViewFilter.OverallClassificationFilter.ALL) {
                     rbMenuItem.setSelected(true);
+                }
                 rbMenuItem.addActionListener(new ActionListener() {
 
                     @Override
@@ -500,12 +512,14 @@ public class MainFrameMenu implements Serializable {
 
         ButtonGroup evalButtonGroup = new ButtonGroup();
         for (final ViewFilter.CloudFilter r : ViewFilter.CloudFilter.values()) {
-            if (cloud != null && !r.supported(cloud))
+            if (cloud != null && !r.supported(cloud)) {
                 continue;
+            }
             JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
             evalButtonGroup.add(rbMenuItem);
-            if (r == ViewFilter.CloudFilter.ALL)
+            if (r == ViewFilter.CloudFilter.ALL) {
                 rbMenuItem.setSelected(true);
+            }
             rbMenuItem.addActionListener(new ActionListener() {
 
                 @Override
@@ -521,8 +535,9 @@ public class MainFrameMenu implements Serializable {
         for (final ViewFilter.FirstSeenFilter r : ViewFilter.FirstSeenFilter.values()) {
             JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
             ageButtonGroup.add(rbMenuItem);
-            if (r == ViewFilter.FirstSeenFilter.ALL)
+            if (r == ViewFilter.FirstSeenFilter.ALL) {
                 rbMenuItem.setSelected(true);
+            }
             rbMenuItem.addActionListener(new ActionListener() {
 
                 @Override
@@ -537,35 +552,35 @@ public class MainFrameMenu implements Serializable {
         final Filter suppressionFilter = MainFrame.getInstance().getProject().getSuppressionFilter();
         Collection<Matcher> filters = suppressionFilter.getChildren();
         JMenuItem filterMenu = new JMenuItem(filters.isEmpty() ? "Add Filters..." : "Filters...");
-        
+
         filterMenu.addActionListener(new ActionListener() {
-            
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 PreferencesFrame preferenceFrame = PreferencesFrame.getInstance();
                 preferenceFrame.showFilterPane();
                 preferenceFrame.setLocationRelativeTo(mainFrame);
                 preferenceFrame.setVisible(true);
-                
-                
+
+
             }
         });
         viewMenu.add(filterMenu);
-         for(final Matcher m : filters) {
+        for(final Matcher m : filters) {
             JCheckBoxMenuItem f = new JCheckBoxMenuItem(m.toString(), suppressionFilter.isEnabled(m));
             viewMenu.add(f);
             f.addItemListener(new ItemListener() {
-                
+
                 @Override
                 public void itemStateChanged(ItemEvent e) {
                     boolean enabled = e.getStateChange() == ItemEvent.SELECTED;
                     suppressionFilter.setEnabled(m, enabled);
                     FilterActivity.notifyListeners(enabled ? Action.FILTERING : Action.UNFILTERING, null);
-                    
+
                 }
             });
 
-           
+
         }
 
 
@@ -574,7 +589,7 @@ public class MainFrameMenu implements Serializable {
     /**
      * This checks if the xmlFile is in the GUISaveState. If not adds it. Then
      * adds the file to the recentMenuCache.
-     * 
+     *
      * @param xmlFile
      */
     /*
@@ -664,8 +679,9 @@ public class MainFrameMenu implements Serializable {
         public void actionPerformed(ActionEvent evt) {
             JTextComponent text = getTextComponent(evt);
 
-            if (text == null)
+            if (text == null) {
                 return;
+            }
 
             text.cut();
         }
@@ -693,8 +709,9 @@ public class MainFrameMenu implements Serializable {
         public void actionPerformed(ActionEvent evt) {
             JTextComponent text = getTextComponent(evt);
 
-            if (text == null)
+            if (text == null) {
                 return;
+            }
 
             text.copy();
         }
@@ -710,8 +727,9 @@ public class MainFrameMenu implements Serializable {
         public void actionPerformed(ActionEvent evt) {
             JTextComponent text = getTextComponent(evt);
 
-            if (text == null)
+            if (text == null) {
                 return;
+            }
 
             text.paste();
         }

@@ -101,16 +101,18 @@ class NumberedParagraphView extends ParagraphView {
 
         Element element = this.getElement();
         Integer result = elementLineNumberCache.get(element);
-        if (result != null)
+        if (result != null) {
             return result;
+        }
         Element parent = element.getParentElement();
         int count = parent.getElementCount();
         for (int i = 0; i < count; i++) {
             elementLineNumberCache.put(parent.getElement(i), i + 1);
         }
         result = elementLineNumberCache.get(element);
-        if (result != null)
+        if (result != null) {
             return result;
+        }
         return -1;
 
     }

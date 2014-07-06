@@ -31,7 +31,7 @@ enum SaveType {
             return FindBugsAnalysisFileFilter.INSTANCE;
         case HTML_OUTPUT:
             return FindBugsHtmlFileFilter.INSTANCE;
-       case FBP_FILE:
+        case FBP_FILE:
             return FindBugsFBPFileFilter.INSTANCE;
         case FBA_FILE:
             return FindBugsFBAFileFilter.INSTANCE;
@@ -42,8 +42,9 @@ enum SaveType {
 
     public boolean isValid(File f) {
 
-        if (f.isDirectory())
+        if (f.isDirectory()) {
             return false;
+        }
         FindBugsFileFilter filter = getFilter();
         return filter.accept(f);
     }
@@ -67,18 +68,24 @@ enum SaveType {
     public static SaveType forFile(File f) {
         String extension = Util.getFileExtension(f);
 
-        if (extension.equals("html") || extension.equals("htm"))
+        if (extension.equals("html") || extension.equals("htm")) {
             return HTML_OUTPUT;
-        if (extension.equals("fba"))
+        }
+        if (extension.equals("fba")) {
             return FBA_FILE;
-        if (extension.equals("fbp"))
+        }
+        if (extension.equals("fbp")) {
             return FBP_FILE;
-        if (extension.equals("xml"))
+        }
+        if (extension.equals("xml")) {
             return XML_ANALYSIS;
-        if (extension.equals("html"))
+        }
+        if (extension.equals("html")) {
             return XML_ANALYSIS;
-        if (f.getName().toLowerCase().endsWith("xml.gz"))
+        }
+        if (f.getName().toLowerCase().endsWith("xml.gz")) {
             return XML_ANALYSIS;
+        }
         return NOT_KNOWN;
     }
 }

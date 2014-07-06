@@ -41,7 +41,7 @@ public class SourceFile {
      * file.
      */
     private static class LineNumberMapBuilder {
-        private SourceFile sourceFile;
+        private final SourceFile sourceFile;
 
         private int offset;
 
@@ -91,7 +91,7 @@ public class SourceFile {
 
     private static final int DEFAULT_SIZE = 100;
 
-    private SourceFileDataSource dataSource;
+    private final SourceFileDataSource dataSource;
 
     private byte[] data;
 
@@ -179,14 +179,16 @@ public class SourceFile {
             System.err.println("SourceFile.getLineOffset: " + e.getMessage());
             return -1;
         }
-        if (line < 0 || line >= numLines)
+        if (line < 0 || line >= numLines) {
             return -1;
+        }
         return lineNumberMap[line];
     }
 
     private synchronized void loadFileData() throws IOException {
-        if (data != null)
+        if (data != null) {
             return;
+        }
 
         InputStream in = null;
 
@@ -209,8 +211,9 @@ public class SourceFile {
 
             setData(out.toByteArray());
         } finally {
-            if (in != null)
+            if (in != null) {
                 in.close();
+            }
         }
 
     }
@@ -230,4 +233,3 @@ public class SourceFile {
     }
 }
 
-// vim:ts=4

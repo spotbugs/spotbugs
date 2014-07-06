@@ -35,4 +35,3 @@ public class JavaVersionException extends Exception {
     }
 }
 
-// vim:ts=3

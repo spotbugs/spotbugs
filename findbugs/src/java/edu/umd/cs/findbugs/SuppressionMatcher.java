@@ -29,9 +29,9 @@ import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class SuppressionMatcher implements Matcher {
-    private Map<ClassAnnotation, Collection<WarningSuppressor>> suppressedWarnings = new HashMap<ClassAnnotation, Collection<WarningSuppressor>>();
+    private final Map<ClassAnnotation, Collection<WarningSuppressor>> suppressedWarnings = new HashMap<ClassAnnotation, Collection<WarningSuppressor>>();
 
-    private Map<String, Collection<WarningSuppressor>> suppressedPackageWarnings = new HashMap<String, Collection<WarningSuppressor>>();
+    private final Map<String, Collection<WarningSuppressor>> suppressedPackageWarnings = new HashMap<String, Collection<WarningSuppressor>>();
 
     int count = 0;
 
@@ -64,19 +64,22 @@ public class SuppressionMatcher implements Matcher {
     public boolean match(BugInstance b) {
         ClassAnnotation clazz = b.getPrimaryClass().getTopLevelClass();
         Collection<WarningSuppressor> c = suppressedWarnings.get(clazz);
-        if (c != null)
-            for (WarningSuppressor w : c)
+        if (c != null) {
+            for (WarningSuppressor w : c) {
                 if (w.match(b)) {
                     count++;
                     return true;
                 }
-        for (Collection<WarningSuppressor> c2 : suppressedPackageWarnings.values())
+            }
+        }
+        for (Collection<WarningSuppressor> c2 : suppressedPackageWarnings.values()) {
             for (WarningSuppressor w : c2) {
                 if (w.match(b)) {
                     count++;
                     return true;
                 }
             }
+        }
         return false;
     }
 
@@ -87,4 +90,3 @@ public class SuppressionMatcher implements Matcher {
 
 }
 
-// vim:ts=4

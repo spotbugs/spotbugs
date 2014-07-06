@@ -38,9 +38,9 @@ import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
  * @author David Hovemeyer
  */
 public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAnalysis<Fact> {
-    private IdentityHashMap<BasicBlock, Fact> startFactMap;
+    private final IdentityHashMap<BasicBlock, Fact> startFactMap;
 
-    private IdentityHashMap<BasicBlock, Fact> resultFactMap;
+    private final IdentityHashMap<BasicBlock, Fact> resultFactMap;
 
     /**
      * Constructor.
@@ -135,11 +135,12 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
 
         Fact result = createFact();
         makeFactTop(result);
-        if (this instanceof UnconditionalValueDerefAnalysis)
+        if (this instanceof UnconditionalValueDerefAnalysis) {
             ((UnconditionalValueDerefAnalysis)this).meetInto((UnconditionalValueDerefSet)predFact,
                     edge, (UnconditionalValueDerefSet)result, true);
-        else
+        } else {
             meetInto(predFact, edge, result);
+        }
 
 
         return result;

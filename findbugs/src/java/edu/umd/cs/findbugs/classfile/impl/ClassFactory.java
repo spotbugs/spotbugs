@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
  * Factory to create codebase/classpath/classfile objects.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassFactory implements IClassFactory {
@@ -51,7 +51,7 @@ public class ClassFactory implements IClassFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.impl.IClassFactory#createClassPath()
      */
     @Override
@@ -61,7 +61,7 @@ public class ClassFactory implements IClassFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IClassFactory#createClassPathBuilder(edu
      * .umd.cs.findbugs.classfile.IErrorLogger)
@@ -73,7 +73,7 @@ public class ClassFactory implements IClassFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.impl.IClassFactory#
      * createFilesystemCodeBaseLocator(java.lang.String)
      */
@@ -92,7 +92,7 @@ public class ClassFactory implements IClassFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.IClassFactory#
      * createNestedArchiveCodeBaseLocator
      * (edu.umd.cs.findbugs.classfile.ICodeBase, java.lang.String)
@@ -129,7 +129,7 @@ public class ClassFactory implements IClassFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IClassFactory#createAnalysisCache(edu.umd
      * .cs.findbugs.classfile.IClassPath)

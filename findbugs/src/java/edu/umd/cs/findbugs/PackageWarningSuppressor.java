@@ -16,12 +16,14 @@ public class PackageWarningSuppressor extends WarningSuppressor {
     @Override
     public boolean match(BugInstance bugInstance) {
 
-        if (!super.match(bugInstance))
+        if (!super.match(bugInstance)) {
             return false;
+        }
 
         ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Compare " + primaryClassAnnotation + " with " + packageName);
+        }
 
         String className = primaryClassAnnotation.getClassName();
 

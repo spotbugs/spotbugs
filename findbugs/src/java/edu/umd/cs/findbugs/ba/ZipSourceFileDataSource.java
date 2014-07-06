@@ -29,11 +29,11 @@ import java.util.zip.ZipFile;
  * A source file data source for source files residing in Zip or Jar archives.
  */
 public class ZipSourceFileDataSource implements SourceFileDataSource {
-    private ZipFile zipFile;
+    private final ZipFile zipFile;
 
-    private String entryName;
+    private final String entryName;
 
-    private ZipEntry zipEntry;
+    private final ZipEntry zipEntry;
 
     public ZipSourceFileDataSource(ZipFile zipFile, String entryName) {
         this.zipFile = zipFile;
@@ -43,8 +43,9 @@ public class ZipSourceFileDataSource implements SourceFileDataSource {
 
     @Override
     public InputStream open() throws IOException {
-        if (zipEntry == null)
+        if (zipEntry == null) {
             throw new FileNotFoundException("No zip entry for " + entryName);
+        }
         return zipFile.getInputStream(zipEntry);
     }
 
@@ -59,10 +60,10 @@ public class ZipSourceFileDataSource implements SourceFileDataSource {
     @Override
     public long getLastModified() {
         long time = zipEntry.getTime();
-        if (time < 0)
+        if (time < 0) {
             return 0;
+        }
         return time;
     }
 }
 
-// vim:ts=4

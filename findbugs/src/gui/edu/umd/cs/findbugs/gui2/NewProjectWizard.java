@@ -132,10 +132,11 @@ public class NewProjectWizard extends FBDialog {
                 setBackground(list.getSelectionBackground());
                 setForeground(list.getSelectionForeground());
                 if (-1 < index) {
-                    if (plugin == null)
+                    if (plugin == null) {
                         list.setToolTipText("No cloud plugin specified by project");
-                    else
+                    } else {
                         list.setToolTipText(plugin.getDetails());
+                    }
                 }
             } else {
                 setBackground(list.getBackground());
@@ -165,9 +166,9 @@ public class NewProjectWizard extends FBDialog {
         }
         boolean temp = false;
 
-        if (curProject == null)
+        if (curProject == null) {
             setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.new_item", "New Project"));
-        else {
+        } else {
             setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.reconfig", "Reconfigure"));
             temp = true;
         }
@@ -208,11 +209,13 @@ public class NewProjectWizard extends FBDialog {
         for (CloudPlugin c : DetectorFactoryCollection.instance().getRegisteredClouds().values()) {
             String fbid = c.getFindbugsPluginId();
             Plugin plugin = Plugin.getByPluginId(fbid);
-            if (plugin == null)
+            if (plugin == null) {
                 continue;
+            }
             Boolean fbPluginStatus = project.getPluginStatus(plugin);
-            if ((!c.isHidden() || c.getId().equals(cloudId)) && !Boolean.FALSE.equals(fbPluginStatus))
+            if ((!c.isHidden() || c.getId().equals(cloudId)) && !Boolean.FALSE.equals(fbPluginStatus)) {
                 cloudSelector.addItem(c);
+            }
         }
 
         if (cloudId != null) {
@@ -236,12 +239,14 @@ public class NewProjectWizard extends FBDialog {
             boolean keepGoing = false;
 
             private boolean displayWarningAndAskIfWeShouldContinue(String msg, String title) {
-                if (keepGoing)
+                if (keepGoing) {
                     return true;
+                }
                 boolean result = JOptionPane.showConfirmDialog(NewProjectWizard.this, msg, title, JOptionPane.OK_CANCEL_OPTION,
                         JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION;
-                if (result)
+                if (result) {
                     keepGoing = true;
+                }
                 return result;
 
             }
@@ -249,8 +254,9 @@ public class NewProjectWizard extends FBDialog {
             @Override
             public void actionPerformed(ActionEvent evt) {
 
-                if (displayWarnings())
+                if (displayWarnings()) {
                     return;
+                }
                 Project p;
                 String oldCloudId = null;
                 p = project;
@@ -260,12 +266,15 @@ public class NewProjectWizard extends FBDialog {
 
 
                 // Now that p is cleared, we can add in all the correct files.
-                for (int i = 0; i < analyzeModel.getSize(); i++)
+                for (int i = 0; i < analyzeModel.getSize(); i++) {
                     p.addFile(analyzeModel.get(i));
-                for (int i = 0; i < auxModel.getSize(); i++)
+                }
+                for (int i = 0; i < auxModel.getSize(); i++) {
                     p.addAuxClasspathEntry(auxModel.get(i));
-                for (int i = 0; i < sourceModel.getSize(); i++)
+                }
+                for (int i = 0; i < sourceModel.getSize(); i++) {
                     p.addSourceDir(sourceModel.get(i));
+                }
                 p.setProjectName(projectName.getText());
                 CloudPlugin cloudPlugin = (CloudPlugin) cloudSelector.getSelectedItem();
                 String newCloudId;
@@ -284,8 +293,8 @@ public class NewProjectWizard extends FBDialog {
                         || JOptionPane.showConfirmDialog(NewProjectWizard.this, edu.umd.cs.findbugs.L10N
                                 .getLocalString("dlg.project_settings_changed_lbl",
                                         "Project settings have been changed.  Perform a new analysis with the changed files?"),
-                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.redo_analysis_question_lbl", "Redo analysis?"),
-                                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)) {
+                                        edu.umd.cs.findbugs.L10N.getLocalString("dlg.redo_analysis_question_lbl", "Redo analysis?"),
+                                        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)) {
                     AnalyzingDialog.show(p);
                 } else if (!Util.nullSafeEquals(newCloudId, oldCloudId)) {
                     BugCollection bugs = mainFrame.getBugCollection();
@@ -301,8 +310,9 @@ public class NewProjectWizard extends FBDialog {
                     mainFrame.getComments().updateCommentsFromLeafInformation(mainFrame.getCurrentSelectedBugLeaf());
 
                 }
-                if (reconfig)
+                if (reconfig) {
                     mainFrame.setProjectChanged(true);
+                }
 
                 String name = p.getProjectName();
                 if (name == null) {
@@ -322,8 +332,9 @@ public class NewProjectWizard extends FBDialog {
                     if (!temp.exists() && directoryOrArchive.accept(temp)) {
                         if (!displayWarningAndAskIfWeShouldContinue(
                                 temp.getName() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."),
-                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file")))
+                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file"))) {
                             return true;
+                        }
 
                     }
                 }
@@ -333,8 +344,9 @@ public class NewProjectWizard extends FBDialog {
                     if (!temp.exists() && directoryOrArchive.accept(temp)) {
                         if (!displayWarningAndAskIfWeShouldContinue(
                                 temp.getName() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."),
-                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file")))
+                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file"))) {
                             return true;
+                        }
                     }
                 }
                 for (int i = 0; i < auxModel.getSize(); i++) {
@@ -342,17 +354,19 @@ public class NewProjectWizard extends FBDialog {
                     if (!temp.exists() && directoryOrArchive.accept(temp)) {
                         if (!displayWarningAndAskIfWeShouldContinue(
                                 temp.getName() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."),
-                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file")))
+                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file"))) {
                             return true;
+                        }
                     }
                 }
                 return false;
             }
         });
-        if (curProject == null)
+        if (curProject == null) {
             finishButton.setText(edu.umd.cs.findbugs.L10N.getLocalString("dlg.analyze_btn", "Analyze"));
-        else
+        } else {
             finishButton.setText(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "OK"));
+        }
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -366,16 +380,19 @@ public class NewProjectWizard extends FBDialog {
         south.add(buttons, BorderLayout.EAST);
 
         if (curProject != null) {
-            for (String i : curProject.getFileList())
+            for (String i : curProject.getFileList()) {
                 analyzeModel.addElement(i);
+            }
             // If the project had no classes in it, disable the finish button
             // until classes are added.
             // if (curProject.getFileList().size()==0)
             // this.finishButton.setEnabled(false);
-            for (String i : curProject.getAuxClasspathEntryList())
+            for (String i : curProject.getAuxClasspathEntryList()) {
                 auxModel.addElement(i);
-            for (String i : curProject.getSourceDirList())
+            }
+            for (String i : curProject.getSourceDirList()) {
                 sourceModel.addElement(i);
+            }
             projectName.setText(curProject.getProjectName());
             projectName.addKeyListener(new KeyAdapter() {
                 @Override
@@ -405,16 +422,19 @@ public class NewProjectWizard extends FBDialog {
         // First clear p's old files, otherwise we can't remove a file
         // once an analysis has been performed on it
         int numOldFiles = p.getFileCount();
-        for (int x = 0; x < numOldFiles; x++)
+        for (int x = 0; x < numOldFiles; x++) {
             p.removeFile(0);
+        }
 
         int numOldAuxFiles = p.getNumAuxClasspathEntries();
-        for (int x = 0; x < numOldAuxFiles; x++)
+        for (int x = 0; x < numOldAuxFiles; x++) {
             p.removeAuxClasspathEntry(0);
+        }
 
         int numOldSrc = p.getNumSourceDirs();
-        for (int x = 0; x < numOldSrc; x++)
+        for (int x = 0; x < numOldSrc; x++) {
             p.removeSourceDir(0);
+        }
     }
 
     private JComponent createTextFieldPanel(String label, JTextField textField) {
@@ -428,8 +448,8 @@ public class NewProjectWizard extends FBDialog {
     }
 
     private JPanel createFilePanel(final String label, final JList<String> list, final DefaultListModel<String> listModel,
-                                   final int fileSelectionMode, final FileFilter filter, final String dialogTitle,
-                                   boolean wizard, final String helpUrl) {
+            final int fileSelectionMode, final FileFilter filter, final String dialogTitle,
+            boolean wizard, final String helpUrl) {
         JPanel myPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -500,10 +520,12 @@ public class NewProjectWizard extends FBDialog {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     final Project tempProject = new Project();
-                    for (int i = 0; i < analyzeModel.getSize(); i++)
+                    for (int i = 0; i < analyzeModel.getSize(); i++) {
                         tempProject.addFile(analyzeModel.get(i));
-                    for (int i = 0; i < auxModel.getSize(); i++)
+                    }
+                    for (int i = 0; i < auxModel.getSize(); i++) {
                         tempProject.addAuxClasspathEntry(auxModel.get(i));
+                    }
 
                     java.awt.EventQueue.invokeLater(new Runnable() {
                         @Override
@@ -513,8 +535,9 @@ public class NewProjectWizard extends FBDialog {
                             dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                                 @Override
                                 public void windowClosing(java.awt.event.WindowEvent e) {
-                                    if (dialog.discover != null && dialog.discover.isAlive())
+                                    if (dialog.discover != null && dialog.discover.isAlive()) {
                                         dialog.discover.interrupt();
+                                    }
                                 }
                             });
                             dialog.setVisible(true);
@@ -550,25 +573,29 @@ public class NewProjectWizard extends FBDialog {
                     // If this is the primary class directories add button, set
                     // it to enable the finish button of the main dialog
                     if (label.equals(edu.umd.cs.findbugs.L10N.getLocalString("dlg.class_jars_dirs_lbl",
-                            "Class archives and directories to analyze:")))
+                            "Class archives and directories to analyze:"))) {
                         finishButton.setEnabled(true);
+                    }
                 }
             }
         });
         removeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (list.getSelectedValues().length > 0)
+                if (list.getSelectedValues().length > 0) {
                     projectChanged = true;
+                }
                 for (Object i : list.getSelectedValues())
+                {
                     listModel.removeElement(i);
-                // If this is the primary class directories remove button, set
-                // it to disable finish when there are no class files being
-                // analyzed
-                // if (listModel.size()==0 &&
-                // label.equals(edu.umd.cs.findbugs.L10N.getLocalString("dlg.class_jars_dirs_lbl",
-                // "Class archives and directories to analyze:")))
-                // finishButton.setEnabled(false);
+                    // If this is the primary class directories remove button, set
+                    // it to disable finish when there are no class files being
+                    // analyzed
+                    // if (listModel.size()==0 &&
+                    // label.equals(edu.umd.cs.findbugs.L10N.getLocalString("dlg.class_jars_dirs_lbl",
+                    // "Class archives and directories to analyze:")))
+                    // finishButton.setEnabled(false);
+                }
             }
         });
         return myPanel;
@@ -586,10 +613,12 @@ public class NewProjectWizard extends FBDialog {
             @Override
             public void run() {
                 int numPanels = wizardComponents.length;
-                for (int i = 0; i < numPanels; i++)
+                for (int i = 0; i < numPanels; i++) {
                     mainPanel.remove(wizardComponents[i]);
-                for (int i = 0; i < numPanels; i++)
+                }
+                for (int i = 0; i < numPanels; i++) {
                     mainPanel.add(wizardComponents[i]);
+                }
                 validate();
                 repaint();
             }
@@ -608,8 +637,9 @@ public class NewProjectWizard extends FBDialog {
 
         int width = super.getWidth();
 
-        if (width < 600)
+        if (width < 600) {
             width = 600;
+        }
         setSize(new Dimension(width, 500));
         setLocationRelativeTo(MainFrame.getInstance());
     }

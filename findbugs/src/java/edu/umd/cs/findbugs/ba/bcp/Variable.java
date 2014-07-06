@@ -31,4 +31,3 @@ public interface Variable {
     public boolean sameAs(Variable other);
 }
 
-// vim:ts=4

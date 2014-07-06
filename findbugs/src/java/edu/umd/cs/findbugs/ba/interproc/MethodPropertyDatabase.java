@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 /**
  * A MethodPropertyDatabase keeps track of properties of methods. This is useful
  * for implementing interprocedural analyses.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class MethodPropertyDatabase<Property> extends PropertyDatabase<MethodDescriptor, Property> {
@@ -40,8 +40,9 @@ public abstract class MethodPropertyDatabase<Property> extends PropertyDatabase<
     @Override
     protected MethodDescriptor parseKey(String methodStr) throws PropertyDatabaseFormatException {
         String[] tuple = methodStr.split(",");
-        if (tuple.length != 4)
+        if (tuple.length != 4) {
             throw new PropertyDatabaseFormatException("Invalid method tuple: " + methodStr);
+        }
 
         try {
             int accessFlags = Integer.parseInt(tuple[3]);

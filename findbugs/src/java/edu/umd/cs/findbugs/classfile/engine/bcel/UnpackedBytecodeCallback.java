@@ -23,9 +23,9 @@ import edu.umd.cs.findbugs.ba.BytecodeScanner;
 import edu.umd.cs.findbugs.ba.MethodBytecodeSet;
 
 public class UnpackedBytecodeCallback implements BytecodeScanner.Callback {
-    private MethodBytecodeSet bytecodeSet;
+    private final MethodBytecodeSet bytecodeSet;
 
-    private short[] offsetToOpcodeMap;
+    private final short[] offsetToOpcodeMap;
 
     public UnpackedBytecodeCallback(int codeSize) {
         this.bytecodeSet = new MethodBytecodeSet();
@@ -34,7 +34,7 @@ public class UnpackedBytecodeCallback implements BytecodeScanner.Callback {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.BytecodeScanner.Callback#handleInstruction(int,
      * int)

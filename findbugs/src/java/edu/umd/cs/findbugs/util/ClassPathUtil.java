@@ -28,14 +28,14 @@ import javax.annotation.Nonnull;
 
 /**
  * Some utility methods for working with the Java class path.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassPathUtil {
     /**
      * Try to find a codebase with the given name in the given class path
      * string.
-     * 
+     *
      * @param codeBaseName
      *            name of a codebase (e.g., "findbugs.jar")
      * @param classPath
@@ -63,7 +63,7 @@ public class ClassPathUtil {
     /**
      * Try to find a codebase matching the given pattern in the given class path
      * string.
-     * 
+     *
      * @param codeBaseNamePattern
      *            pattern describing a codebase (e.g., compiled from the regex
      *            "findbugs\\.jar$")

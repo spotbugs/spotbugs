@@ -164,9 +164,11 @@ public class LaunchAppropriateUI {
         String s = System.getProperty("findbugs.launchUI");
 
         if (s == null) {
-            for (String a : args)
-                if (a.equals("-output") || a.equals("-xml") || a.endsWith(".class") || a.endsWith(".jar"))
+            for (String a : args) {
+                if (a.equals("-output") || a.equals("-xml") || a.endsWith(".class") || a.endsWith(".jar")) {
                     return TEXTUI;
+                }
+            }
             s = "gui2";
         }
 

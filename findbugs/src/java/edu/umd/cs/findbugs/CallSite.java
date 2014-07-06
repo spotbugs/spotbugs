@@ -35,7 +35,7 @@ public class CallSite {
 
     /**
      * Constructor.
-     * 
+     *
      * @param method
      *            the method containing the call site
      * @param basicBlock
@@ -84,11 +84,11 @@ public class CallSite {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof CallSite))
+        if (!(o instanceof CallSite)) {
             return false;
+        }
         CallSite other = (CallSite) o;
         return method == other.method && getBasicBlock() == other.getBasicBlock() && getHandle() == other.getHandle();
     }
 }
 
-// vim:ts=4

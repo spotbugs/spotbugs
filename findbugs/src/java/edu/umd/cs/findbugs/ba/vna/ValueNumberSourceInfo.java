@@ -39,7 +39,7 @@ import edu.umd.cs.findbugs.ba.XField;
 /**
  * Helper methods to find out information about the source of the value
  * represented by a given ValueNumber.
- * 
+ *
  * @author Bill Pugh
  * @author David Hovemeyer
  */
@@ -64,21 +64,24 @@ public abstract class ValueNumberSourceInfo {
         }
         LocalVariableAnnotation ann = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, location, valueNumber,
                 vnaFrame);
-        if (ann != null && partialRole != null)
+        if (ann != null && partialRole != null) {
             ann.setDescription("LOCAL_VARIABLE_" + partialRole);
+        }
 
         if (ann != null && ann.isSignificant()) {
             return ann;
         }
         FieldAnnotation field = ValueNumberSourceInfo.findFieldAnnotationFromValueNumber(method, location, valueNumber, vnaFrame);
         if (field != null) {
-            if (partialRole != null)
+            if (partialRole != null) {
                 field.setDescription("FIELD_" + partialRole);
+            }
 
             return field;
         }
-        if (ann != null)
+        if (ann != null) {
             return ann;
+        }
         return null;
     }
 
@@ -95,29 +98,33 @@ public abstract class ValueNumberSourceInfo {
     BugAnnotation findRequiredAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber,
             ValueNumberFrame vnaFrame, @CheckForNull String partialRole) {
         BugAnnotation result = findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame, partialRole);
-        if (result != null)
+        if (result != null) {
             return result;
+        }
         return new LocalVariableAnnotation("?", -1, location.getHandle().getPosition());
     }
 
     public static LocalVariableAnnotation findLocalAnnotationFromValueNumber(Method method, Location location,
             ValueNumber valueNumber, ValueNumberFrame vnaFrame) {
 
-        if (vnaFrame == null || vnaFrame.isBottom() || vnaFrame.isTop())
+        if (vnaFrame == null || vnaFrame.isBottom() || vnaFrame.isTop()) {
             return null;
+        }
 
         LocalVariableAnnotation localAnnotation = null;
         for (int i = 0; i < vnaFrame.getNumLocals(); i++) {
             if (valueNumber.equals(vnaFrame.getValue(i))) {
                 InstructionHandle handle = location.getHandle();
                 InstructionHandle prev = handle.getPrev();
-                if (prev == null) 
+                if (prev == null) {
                     continue;
+                }
                 int position1 = prev.getPosition();
                 int position2 = handle.getPosition();
                 localAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(method, i, position1, position2);
-                if (localAnnotation != null)
+                if (localAnnotation != null) {
                     return localAnnotation;
+                }
             }
         }
         return null;
@@ -126,15 +133,17 @@ public abstract class ValueNumberSourceInfo {
     public static FieldAnnotation findFieldAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber,
             ValueNumberFrame vnaFrame) {
         XField field = ValueNumberSourceInfo.findXFieldFromValueNumber(method, location, valueNumber, vnaFrame);
-        if (field == null)
+        if (field == null) {
             return null;
+        }
         return FieldAnnotation.fromXField(field);
     }
 
     public static XField findXFieldFromValueNumber(Method method, Location location, ValueNumber valueNumber,
             ValueNumberFrame vnaFrame) {
-        if (vnaFrame == null || vnaFrame.isBottom() || vnaFrame.isTop())
+        if (vnaFrame == null || vnaFrame.isBottom() || vnaFrame.isTop()) {
             return null;
+        }
 
         AvailableLoad load = vnaFrame.getLoad(valueNumber);
         if (load != null) {
@@ -155,11 +164,13 @@ public abstract class ValueNumberSourceInfo {
     public BugAnnotation getFromValueNumber(ClassContext classContext, Method method, Location location, int stackPos)
             throws DataflowAnalysisException, CFGBuilderException {
         ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
-        if (!vnaFrame.isValid())
+        if (!vnaFrame.isValid()) {
             return null;
+        }
         ValueNumber valueNumber = vnaFrame.getStackValue(stackPos);
-        if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
+        if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) {
             return null;
+        }
         BugAnnotation variableAnnotation = findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame, "VALUE_OF");
 
         return variableAnnotation;

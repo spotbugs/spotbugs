@@ -21,13 +21,13 @@ package edu.umd.cs.findbugs.classfile;
 
 /**
  * An engine for analyzing classes or methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface IAnalysisEngine<DescriptorType, ResultType> {
     /**
      * Perform an analysis on class or method named by given descriptor.
-     * 
+     *
      * @param analysisCache
      *            the analysis cache
      * @param descriptor
@@ -38,7 +38,7 @@ public interface IAnalysisEngine<DescriptorType, ResultType> {
 
     /**
      * Register the analysis engine with given analysis cache.
-     * 
+     *
      * @param analysisCache
      *            the analysis cache
      */

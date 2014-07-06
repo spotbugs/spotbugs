@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 public class FindFinalizeInvocations extends BytecodeScanningDetector implements StatelessDetector {
     private static final boolean DEBUG = SystemProperties.getBoolean("ffi.debug");
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private final BugAccumulator bugAccumulator;
 
@@ -46,11 +46,13 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 
     @Override
     public void visit(Method obj) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("FFI: visiting " + getFullyQualifiedMethodName());
-        if (getMethodName().equals("finalize") && getMethodSig().equals("()V") && (obj.getAccessFlags() & (ACC_PUBLIC)) != 0)
+        }
+        if (getMethodName().equals("finalize") && getMethodSig().equals("()V") && (obj.getAccessFlags() & (ACC_PUBLIC)) != 0) {
             bugReporter
-                    .reportBug(new BugInstance(this, "FI_PUBLIC_SHOULD_BE_PROTECTED", NORMAL_PRIORITY).addClassAndMethod(this));
+            .reportBug(new BugInstance(this, "FI_PUBLIC_SHOULD_BE_PROTECTED", NORMAL_PRIORITY).addClassAndMethod(this));
+        }
     }
 
     @Override
@@ -58,23 +60,27 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
         sawSuperFinalize = false;
         super.visit(obj);
         bugAccumulator.reportAccumulatedBugs();
-        if (!getMethodName().equals("finalize") || !getMethodSig().equals("()V"))
+        if (!getMethodName().equals("finalize") || !getMethodSig().equals("()V")) {
             return;
+        }
         String overridesFinalizeIn = Lookup.findSuperImplementor(getDottedClassName(), "finalize", "()V", bugReporter);
         boolean superHasNoFinalizer = overridesFinalizeIn.equals("java.lang.Object");
         // System.out.println("superclass: " + superclassName);
         if (obj.getCode().length == 1) {
             if (superHasNoFinalizer) {
-                if (!getMethod().isFinal())
+                if (!getMethod().isFinal()) {
                     bugReporter.reportBug(new BugInstance(this, "FI_EMPTY", NORMAL_PRIORITY).addClassAndMethod(this));
-            } else
+                }
+            } else {
                 bugReporter.reportBug(new BugInstance(this, "FI_NULLIFY_SUPER", NORMAL_PRIORITY).addClassAndMethod(this)
                         .addClass(overridesFinalizeIn));
-        } else if (obj.getCode().length == 5 && sawSuperFinalize)
+            }
+        } else if (obj.getCode().length == 5 && sawSuperFinalize) {
             bugReporter.reportBug(new BugInstance(this, "FI_USELESS", NORMAL_PRIORITY).addClassAndMethod(this));
-        else if (!sawSuperFinalize && !superHasNoFinalizer)
+        } else if (!sawSuperFinalize && !superHasNoFinalizer) {
             bugReporter.reportBug(new BugInstance(this, "FI_MISSING_SUPER_CALL", NORMAL_PRIORITY).addClassAndMethod(this)
                     .addClass(overridesFinalizeIn));
+        }
     }
 
     @Override
@@ -86,7 +92,8 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
                             .addCalledMethod(this), this);
 
         }
-        if (seen == INVOKESPECIAL && getNameConstantOperand().equals("finalize"))
+        if (seen == INVOKESPECIAL && getNameConstantOperand().equals("finalize")) {
             sawSuperFinalize = true;
+        }
     }
 }

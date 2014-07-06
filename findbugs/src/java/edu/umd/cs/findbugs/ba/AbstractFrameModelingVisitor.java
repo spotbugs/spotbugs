@@ -79,13 +79,14 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
      *             analyzed is invalid
      */
     public void analyzeInstruction(Instruction ins) throws DataflowAnalysisException {
-        if (frame.isValid())
+        if (frame.isValid()) {
             try {
                 ins.accept(this);
             } catch (InvalidBytecodeException e) {
                 String message = "Invalid bytecode: could not analyze instr. " + ins + " at frame " + frame;
                 throw new DataflowAnalysisException(message, e);
             }
+        }
     }
 
     /**
@@ -138,8 +139,9 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
      */
     public int getNumWordsConsumed(Instruction ins) {
         int numWordsConsumed = ins.consumeStack(cpg);
-        if (numWordsConsumed == Constants.UNPREDICTABLE)
+        if (numWordsConsumed == Constants.UNPREDICTABLE) {
             throw new InvalidBytecodeException("Unpredictable stack consumption");
+        }
         return numWordsConsumed;
     }
 
@@ -149,8 +151,9 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
     public int getNumWordsProduced(Instruction ins) {
 
         int numWordsProduced = ins.produceStack(cpg);
-        if (numWordsProduced == Constants.UNPREDICTABLE)
+        if (numWordsProduced == Constants.UNPREDICTABLE) {
             throw new InvalidBytecodeException("Unpredictable stack productions");
+        }
         return numWordsProduced;
     }
 
@@ -199,10 +202,11 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
     @Override
     public final void visitConversionInstruction(ConversionInstruction obj) {
         visitConversionInstruction2(obj);
-        if (obj instanceof NULL2Z)
+        if (obj instanceof NULL2Z) {
             visitNULL2Z((NULL2Z) obj);
-        else if (obj instanceof NONNULL2Z)
+        } else if (obj instanceof NONNULL2Z) {
             visitNONNULL2Z((NONNULL2Z) obj);
+        }
     }
 
     public final void visitConversionInstruction2(ConversionInstruction obj) {
@@ -307,8 +311,9 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
     public void handleStoreInstruction(StoreInstruction obj) {
         try {
             int numConsumed = obj.consumeStack(cpg);
-            if (numConsumed == Constants.UNPREDICTABLE)
+            if (numConsumed == Constants.UNPREDICTABLE) {
                 throw new InvalidBytecodeException("Unpredictable stack consumption");
+            }
 
             int index = obj.getIndex();
 
@@ -330,8 +335,9 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
      */
     public void handleLoadInstruction(LoadInstruction obj) {
         int numProduced = obj.produceStack(cpg);
-        if (numProduced == Constants.UNPREDICTABLE)
+        if (numProduced == Constants.UNPREDICTABLE) {
             throw new InvalidBytecodeException("Unpredictable stack production");
+        }
 
         int index = obj.getIndex() + numProduced;
 
@@ -392,14 +398,16 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
             }
         }
         try {
-            while (numWordsConsumed-- > 0)
+            while (numWordsConsumed-- > 0) {
                 frame.popValue();
+            }
         } catch (DataflowAnalysisException e) {
             throw new InvalidBytecodeException("Not enough values on the stack", e);
         }
 
-        while (numWordsProduced-- > 0)
+        while (numWordsProduced-- > 0) {
             frame.pushValue(pushValue);
+        }
     }
 
     /*
@@ -1270,4 +1278,3 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
     }
 }
 
-// vim:ts=4

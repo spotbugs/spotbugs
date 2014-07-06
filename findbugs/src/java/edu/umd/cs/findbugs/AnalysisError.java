@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 /**
  * Object recording a recoverable error that occurred during analysis.
- * 
+ *
  * @author David Hovemeyer
  */
 public class AnalysisError {
@@ -21,7 +21,7 @@ public class AnalysisError {
 
     private final Throwable exception;
 
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -36,38 +36,49 @@ public class AnalysisError {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (!(obj instanceof AnalysisError))
+        }
+        if (!(obj instanceof AnalysisError)) {
             return false;
+        }
         AnalysisError other = (AnalysisError) obj;
         if (exceptionMessage == null) {
-            if (other.exceptionMessage != null)
+            if (other.exceptionMessage != null) {
                 return false;
-        } else if (!exceptionMessage.equals(other.exceptionMessage))
+            }
+        } else if (!exceptionMessage.equals(other.exceptionMessage)) {
             return false;
+        }
         if (message == null) {
-            if (other.message != null)
+            if (other.message != null) {
                 return false;
-        } else if (!message.equals(other.message))
+            }
+        } else if (!message.equals(other.message)) {
             return false;
+        }
         if (nestedExceptionMessage == null) {
-            if (other.nestedExceptionMessage != null)
+            if (other.nestedExceptionMessage != null) {
                 return false;
-        } else if (!nestedExceptionMessage.equals(other.nestedExceptionMessage))
+            }
+        } else if (!nestedExceptionMessage.equals(other.nestedExceptionMessage)) {
             return false;
-        if (!Arrays.equals(nestedStackTrace, other.nestedStackTrace))
+        }
+        if (!Arrays.equals(nestedStackTrace, other.nestedStackTrace)) {
             return false;
-        if (!Arrays.equals(stackTrace, other.stackTrace))
+        }
+        if (!Arrays.equals(stackTrace, other.stackTrace)) {
             return false;
+        }
         return true;
     }
 
     /**
      * Constructor.
-     * 
+     *
      * @param message
      *            message describing the error
      */
@@ -77,7 +88,7 @@ public class AnalysisError {
 
     /**
      * Constructor.
-     * 
+     *
      * @param message
      *            message describing the error
      * @param exception
@@ -110,7 +121,7 @@ public class AnalysisError {
 
     /**
      * Set the message describing the error.
-     * 
+     *
      * @param message
      *            message describing the error
      */
@@ -128,7 +139,7 @@ public class AnalysisError {
     /**
      * Set the exception message. This is the value returned by calling
      * toString() on the original exception object.
-     * 
+     *
      * @param exceptionMessage
      *            the exception message
      */
@@ -155,7 +166,7 @@ public class AnalysisError {
     /**
      * Set the stack trace elements. These are the strings returned by calling
      * toString() on each StackTraceElement in the original exception.
-     * 
+     *
      * @param stackTraceList
      *            the stack trace elements
      */

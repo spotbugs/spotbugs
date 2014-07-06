@@ -30,8 +30,9 @@ public class TripleKeyHashMap<K1, K2, K3, V> {
 
     public V get(K1 k1, K2 k2, K3 k3) {
         DualKeyHashMap<K2, K3, V> m = map.get(k1);
-        if (m == null)
+        if (m == null) {
             return null;
+        }
         return m.get(k2, k3);
     }
 

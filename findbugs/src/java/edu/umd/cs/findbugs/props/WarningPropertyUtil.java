@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
 
 /**
  * Utility methods for creating general warning properties.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class WarningPropertyUtil {
@@ -61,7 +61,7 @@ public abstract class WarningPropertyUtil {
      * Get a Location matching the given PC value. Because of JSR subroutines,
      * there may be multiple Locations referring to the given instruction. This
      * method simply returns one of them arbitrarily.
-     * 
+     *
      * @param classContext
      *            the ClassContext containing the method
      * @param method
@@ -76,8 +76,9 @@ public abstract class WarningPropertyUtil {
         CFG cfg = classContext.getCFG(method);
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
-            if (location.getHandle().getPosition() == pc)
+            if (location.getHandle().getPosition() == pc) {
                 return location;
+            }
         }
         return null;
     }
@@ -85,7 +86,7 @@ public abstract class WarningPropertyUtil {
     /**
      * Add a RECEIVER_OBJECT_TYPE warning property for a particular location in
      * a method to given warning property set.
-     * 
+     *
      * @param propertySet
      *            the property set
      * @param classContext
@@ -100,8 +101,9 @@ public abstract class WarningPropertyUtil {
         try {
             Instruction ins = location.getHandle().getInstruction();
 
-            if (!receiverObjectInstructionSet.get(ins.getOpcode()))
+            if (!receiverObjectInstructionSet.get(ins.getOpcode())) {
                 return;
+            }
 
             TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
             TypeFrame frame = typeDataflow.getFactAtLocation(location);
@@ -121,7 +123,7 @@ public abstract class WarningPropertyUtil {
     /**
      * Add CALLED_METHOD_<i>n</i> warning properties based on methods which have
      * been called and returned normally at given Location.
-     * 
+     *
      * @param propertySet
      *            the WarningPropertySet
      * @param classContext
@@ -136,8 +138,9 @@ public abstract class WarningPropertyUtil {
         try {
             CallListDataflow dataflow = classContext.getCallListDataflow(method);
             CallList callList = dataflow.getFactAtLocation(location);
-            if (!callList.isValid())
+            if (!callList.isValid()) {
                 return;
+            }
             int count = 0;
             for (Iterator<Call> i = callList.callIterator(); count < 4 && i.hasNext(); ++count) {
                 Call call = i.next();
@@ -170,7 +173,7 @@ public abstract class WarningPropertyUtil {
     /**
      * Add all relevant general warning properties to the given property set for
      * the given Location.
-     * 
+     *
      * @param propertySet
      *            the WarningPropertySet
      * @param classContext
@@ -189,7 +192,7 @@ public abstract class WarningPropertyUtil {
     /**
      * Add all relevant general warning properties to the given property set for
      * the given Location.
-     * 
+     *
      * @param propertySet
      *            the WarningPropertySet
      * @param classContext

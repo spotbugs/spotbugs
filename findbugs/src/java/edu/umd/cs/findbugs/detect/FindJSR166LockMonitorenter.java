@@ -58,7 +58,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 /**
  * Find places where ordinary (balanced) synchronization is performed on JSR166
  * Lock objects. Suggested by Doug Lea.
- * 
+ *
  * @author David Hovemeyer
  */
 public final class FindJSR166LockMonitorenter implements Detector, StatelessDetector {
@@ -67,7 +67,7 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
      */
     private static final String UTIL_CONCURRRENT_SIG_PREFIX = "Ljava/util/concurrent/";
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private static final ObjectType LOCK_TYPE = ObjectTypeFactory.getInstance("java.util.concurrent.locks.Lock");
 
@@ -87,20 +87,24 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass jclass = classContext.getJavaClass();
-        if (jclass.getClassName().startsWith("java.util.concurrent."))
+        if (jclass.getClassName().startsWith("java.util.concurrent.")) {
             return;
+        }
         Method[] methodList = jclass.getMethods();
 
         for (Method method : methodList) {
-            if (method.getCode() == null)
+            if (method.getCode() == null) {
                 continue;
+            }
 
             // We can ignore methods that don't contain a monitorenter
             BitSet bytecodeSet = classContext.getBytecodeSet(method);
-            if (bytecodeSet == null)
+            if (bytecodeSet == null) {
                 continue;
-            if (false && !bytecodeSet.get(Constants.MONITORENTER))
+            }
+            if (false && !bytecodeSet.get(Constants.MONITORENTER)) {
                 continue;
+            }
 
             analyzeMethod(classContext, method);
 
@@ -140,8 +144,9 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
                         || (methodName.equals("notify") || methodName.equals("notifyAll")) && methodSig.equals("()V")) {
                     try {
                         TypeFrame frame = typeDataflow.getFactAtLocation(location);
-                        if (!frame.isValid())
+                        if (!frame.isValid()) {
                             continue;
+                        }
                         Type type = frame.getInstance(ins, cpg);
                         if (!(type instanceof ReferenceType)) {
                             // Something is deeply wrong if a non-reference type
@@ -152,10 +157,12 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
                         }
                         ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptorFromSignature(type
                                 .getSignature());
-                        if (classDescriptor.equals(classContext.getClassDescriptor()))
+                        if (classDescriptor.equals(classContext.getClassDescriptor())) {
                             continue;
-                        if (!classDescriptor.getClassName().startsWith("java/util/concurrent"))
+                        }
+                        if (!classDescriptor.getClassName().startsWith("java/util/concurrent")) {
                             continue;
+                        }
                         XClass c = Lookup.getXClass(classDescriptor);
                         XMethod m;
                         int priority = NORMAL_PRIORITY;
@@ -164,21 +171,24 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
                             priority = HIGH_PRIORITY;
                         } else if (methodName.equals("notify")) {
                             m = c.findMethod("signal", "()V", false);
-                            if (m == null)
+                            if (m == null) {
                                 m = c.findMethod("countDown", "()V", false);
+                            }
                         } else if (methodName.equals("notifyAll")) {
                             m = c.findMethod("signalAll", "()V", false);
-                            if (m == null)
+                            if (m == null) {
                                 m = c.findMethod("countDown", "()V", false);
-                        } else
+                            }
+                        } else {
                             throw new IllegalStateException("Unexpected methodName: " + methodName);
+                        }
 
-                        if (m != null && m.isPublic() && c.isPublic())
-
+                        if (m != null && m.isPublic() && c.isPublic()) {
                             bugReporter.reportBug(new BugInstance(this, "JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT", priority)
-                                    .addClassAndMethod(classContext.getJavaClass(), method).addCalledMethod(cpg, iv).addMethod(m)
-                                    .describe(MethodAnnotation.METHOD_ALTERNATIVE_TARGET).addType(classDescriptor)
-                                    .describe(TypeAnnotation.FOUND_ROLE).addSourceLine(classContext, method, location));
+                            .addClassAndMethod(classContext.getJavaClass(), method).addCalledMethod(cpg, iv).addMethod(m)
+                            .describe(MethodAnnotation.METHOD_ALTERNATIVE_TARGET).addType(classDescriptor)
+                            .describe(TypeAnnotation.FOUND_ROLE).addSourceLine(classContext, method, location));
+                        }
 
                     } catch (CheckedAnalysisException e) {
                         AnalysisContext.logError("Coult not get Type dataflow", e);
@@ -189,13 +199,15 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 
             }
 
-            if (ins.getOpcode() != Constants.MONITORENTER)
+            if (ins.getOpcode() != Constants.MONITORENTER) {
                 continue;
+            }
             Type type;
             try {
                 TypeFrame frame = typeDataflow.getFactAtLocation(location);
-                if (!frame.isValid())
+                if (!frame.isValid()) {
                     continue;
+                }
                 type = frame.getInstance(ins, cpg);
             } catch (CheckedAnalysisException e) {
                 AnalysisContext.logError("Coult not get Type dataflow", e);
@@ -226,8 +238,8 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 
                 int priority = "Ljava/util/concurrent/CopyOnWriteArrayList;".equals(sig) ? HIGH_PRIORITY : NORMAL_PRIORITY;
                 bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_UTILCONCURRENT_MONITORENTER", priority)
-                        .addClassAndMethod(classContext.getJavaClass(), method).addType(sig)
-                        .addSourceForTopStackValue(classContext, method, location).addSourceLine(classContext, method, location));
+                .addClassAndMethod(classContext.getJavaClass(), method).addType(sig)
+                .addSourceForTopStackValue(classContext, method, location).addSourceLine(classContext, method, location));
 
             }
         }
@@ -238,4 +250,3 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
     }
 }
 
-// vim:ts=4

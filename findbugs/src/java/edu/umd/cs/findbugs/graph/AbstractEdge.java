@@ -21,18 +21,18 @@ package edu.umd.cs.findbugs.graph;
 
 /**
  * GraphEdge implementation for use with AbstractGraph.
- * 
+ *
  * @see GraphEdge
  * @see AbstractGraph
  * @see AbstractVertex
  * @author David Hovemeyer
  */
 public class AbstractEdge<ActualEdgeType extends AbstractEdge<ActualEdgeType, VertexType>, VertexType extends AbstractVertex<ActualEdgeType, VertexType>>
-        implements GraphEdge<ActualEdgeType, VertexType> {
+implements GraphEdge<ActualEdgeType, VertexType> {
 
-    private VertexType source;
+    private final VertexType source;
 
-    private VertexType target;
+    private final VertexType target;
 
     private int label;
 
@@ -42,7 +42,7 @@ public class AbstractEdge<ActualEdgeType extends AbstractEdge<ActualEdgeType, Ve
 
     /**
      * Constructor.
-     * 
+     *
      * @param source
      *            the source vertex of the edge
      * @param target
@@ -80,8 +80,9 @@ public class AbstractEdge<ActualEdgeType extends AbstractEdge<ActualEdgeType, Ve
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof AbstractEdge))
+        if (!(o instanceof AbstractEdge)) {
             return false;
+        }
         AbstractEdge<?,?> other = (AbstractEdge<?,?>) o;
         return source.equals(other.source) && target.equals(other.target);
     }
@@ -89,8 +90,9 @@ public class AbstractEdge<ActualEdgeType extends AbstractEdge<ActualEdgeType, Ve
     @Override
     public int compareTo(ActualEdgeType other) {
         int cmp = source.compareTo(other.getSource());
-        if (cmp != 0)
+        if (cmp != 0) {
             return cmp;
+        }
         return target.compareTo(other.getTarget());
     }
 
@@ -112,4 +114,3 @@ public class AbstractEdge<ActualEdgeType extends AbstractEdge<ActualEdgeType, Ve
 
 }
 
-// vim:ts=4

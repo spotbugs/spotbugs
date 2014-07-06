@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Analysis engine to produce StoreDataflow objects for analyzed methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public class StoreDataflowFactory extends AnalysisFactory<StoreDataflow> {
@@ -41,7 +41,7 @@ public class StoreDataflowFactory extends AnalysisFactory<StoreDataflow> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
@@ -49,8 +49,9 @@ public class StoreDataflowFactory extends AnalysisFactory<StoreDataflow> {
     @Override
     public StoreDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         MethodGen methodGen = getMethodGen(analysisCache, descriptor);
-        if (methodGen == null)
+        if (methodGen == null) {
             return null;
+        }
         StoreAnalysis analysis = new StoreAnalysis(getDepthFirstSearch(analysisCache, descriptor), getConstantPoolGen(
                 analysisCache, descriptor.getClassDescriptor()));
         StoreDataflow dataflow = new StoreDataflow(getCFG(analysisCache, descriptor), analysis);

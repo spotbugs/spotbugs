@@ -30,7 +30,7 @@ import java.util.Set;
 public interface VertexCombinator<VertexType extends GraphVertex<VertexType>> {
     /**
      * Combine given vertices into a single vertex.
-     * 
+     *
      * @param vertexSet
      *            set of vertices to be combined
      * @return the result of combining the vertices in the set
@@ -38,4 +38,3 @@ public interface VertexCombinator<VertexType extends GraphVertex<VertexType>> {
     public VertexType combineVertices(Set<VertexType> vertexSet);
 }
 
-// vim:ts=4

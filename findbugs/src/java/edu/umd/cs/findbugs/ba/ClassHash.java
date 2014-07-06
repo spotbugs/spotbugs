@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 /**
  * Compute a hash of method names and signatures. This allows us to find out
  * when a class has been renamed, but not changed in any other obvious way.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
@@ -61,7 +61,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 
     private byte[] classHash;
 
-    private Map<XMethod, MethodHash> methodHashMap;
+    private final Map<XMethod, MethodHash> methodHashMap;
 
     /**
      * Constructor.
@@ -72,7 +72,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param classHash
      *            pre-computed class hash
      */
@@ -85,7 +85,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 
     /**
      * Set method hash for given method.
-     * 
+     *
      * @param method
      *            the method
      * @param methodHash
@@ -104,7 +104,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 
     /**
      * Get class hash.
-     * 
+     *
      * @return the class hash
      */
     public byte[] getClassHash() {
@@ -113,7 +113,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 
     /**
      * Set class hash.
-     * 
+     *
      * @param classHash
      *            the class hash value to set
      */
@@ -124,7 +124,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 
     /**
      * Get method hash for given method.
-     * 
+     *
      * @param method
      *            the method
      * @return the MethodHash
@@ -135,7 +135,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 
     /**
      * Compute hash for given class and all of its methods.
-     * 
+     *
      * @param javaClass
      *            the class
      * @return this object
@@ -152,8 +152,9 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
             public int compare(Method o1, Method o2) {
                 // sort by name, then signature
                 int cmp = o1.getName().compareTo(o2.getName());
-                if (cmp != 0)
+                if (cmp != 0) {
                     return cmp;
+                }
                 return o1.getSignature().compareTo(o2.getSignature());
 
             }
@@ -166,14 +167,15 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
         Arrays.sort(fieldList, new Comparator<Field>() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see java.util.Comparator#compare(T, T)
              */
             @Override
             public int compare(Field o1, Field o2) {
                 int cmp = o1.getName().compareTo(o2.getName());
-                if (cmp != 0)
+                if (cmp != 0) {
                     return cmp;
+                }
                 return o1.getSignature().compareTo(o2.getSignature());
             }
         });
@@ -244,7 +246,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 
     /**
      * Convert a hash to a string of hex digits.
-     * 
+     *
      * @param hash
      *            the hash
      * @return a String representation of the hash
@@ -259,26 +261,28 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
     }
 
     private static int hexDigitValue(char c) {
-        if (c >= '0' && c <= '9')
+        if (c >= '0' && c <= '9') {
             return c - '0';
-        else if (c >= 'a' && c <= 'f')
+        } else if (c >= 'a' && c <= 'f') {
             return 10 + (c - 'a');
-        else if (c >= 'A' && c <= 'F')
+        } else if (c >= 'A' && c <= 'F') {
             return 10 + (c - 'A');
-        else
+        } else {
             throw new IllegalArgumentException("Illegal hex character: " + c);
+        }
     }
 
     /**
      * Convert a string of hex digits to a hash.
-     * 
+     *
      * @param s
      *            string of hex digits
      * @return the hash value represented by the string
      */
     public static byte[] stringToHash(String s) {
-        if (s.length() % 2 != 0)
+        if (s.length() % 2 != 0) {
             throw new IllegalArgumentException("Invalid hash string: " + s);
+        }
         byte[] hash = new byte[s.length() / 2];
         for (int i = 0; i < s.length(); i += 2) {
             byte b = (byte) ((hexDigitValue(s.charAt(i)) << 4) + hexDigitValue(s.charAt(i + 1)));
@@ -290,7 +294,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
     /**
      * Return whether or not this class hash has the same hash value as the one
      * given.
-     * 
+     *
      * @param other
      *            another ClassHash
      * @return true if the hash values are the same, false if not
@@ -301,12 +305,14 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 
     @Override
     public int hashCode() {
-        if (classHash == null)
+        if (classHash == null) {
             return 0;
+        }
 
         int result = 1;
-        for (byte element : classHash)
+        for (byte element : classHash) {
             result = 31 * result + element;
+        }
 
         return result;
 
@@ -314,14 +320,15 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof ClassHash))
+        if (!(o instanceof ClassHash)) {
             return false;
+        }
         return isSameHash((ClassHash) o);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Comparable#compareTo(T)
      */
     @Override
@@ -333,7 +340,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
 

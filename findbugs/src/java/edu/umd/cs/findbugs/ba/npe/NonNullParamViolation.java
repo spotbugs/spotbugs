@@ -22,9 +22,9 @@ package edu.umd.cs.findbugs.ba.npe;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 
 public class NonNullParamViolation {
-    private JavaClassAndMethod classAndMethod;
+    private final JavaClassAndMethod classAndMethod;
 
-    private int param;
+    private final int param;
 
     public NonNullParamViolation(JavaClassAndMethod classAndMethod, int param) {
         this.classAndMethod = classAndMethod;

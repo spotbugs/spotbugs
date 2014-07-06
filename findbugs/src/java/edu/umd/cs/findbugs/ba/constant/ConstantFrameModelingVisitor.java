@@ -30,12 +30,12 @@ import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 
 /**
  * Visitor to model the effect of bytecode instructions on ConstantFrames.
- * 
+ *
  * <p>
  * For now, only String constants are modeled. In the future we can add other
  * kinds of constants.
  * </p>
- * 
+ *
  * @see edu.umd.cs.findbugs.ba.constant.ConstantAnalysis
  * @author David Hovemeyer
  */
@@ -57,11 +57,13 @@ public class ConstantFrameModelingVisitor extends AbstractFrameModelingVisitor<C
         int amount = obj.getIncrement();
         ConstantFrame f = getFrame();
         Constant c = f.getValue(v);
-        if (c.isConstantInteger())
+        if (c.isConstantInteger()) {
             f.setValue(v, new Constant(c.getConstantInt() + amount));
-        else
+        }
+        else {
             f.setValue(v, Constant.NOT_CONSTANT);
-        // System.out.println("after iinc: " + getFrame());
+            // System.out.println("after iinc: " + getFrame());
+        }
     }
 
     @Override

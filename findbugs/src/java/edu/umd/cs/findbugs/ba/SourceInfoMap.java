@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.util.Util;
  * (items we don't get line number information for directly in classfiles), and
  * also source line information for methods that don't appear directly in
  * classfiles, such as abstract and native methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public class SourceInfoMap {
@@ -62,20 +62,21 @@ public class SourceInfoMap {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Comparable#compareTo(T)
          */
         @Override
         public int compareTo(FieldDescriptor o) {
             int cmp = className.compareTo(o.className);
-            if (cmp != 0)
+            if (cmp != 0) {
                 return cmp;
+            }
             return fieldName.compareTo(o.fieldName);
         }
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Object#hashCode()
          */
         @Override
@@ -85,24 +86,25 @@ public class SourceInfoMap {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Object#equals(java.lang.Object)
          */
         @Override
         public boolean equals(Object obj) {
-            if (obj == null || obj.getClass() != this.getClass())
+            if (obj == null || obj.getClass() != this.getClass()) {
                 return false;
+            }
             FieldDescriptor other = (FieldDescriptor) obj;
             return className.equals(other.className) && fieldName.equals(other.fieldName);
         }
     }
 
     static class MethodDescriptor implements Comparable<MethodDescriptor> {
-        private String className;
+        private final String className;
 
-        private String methodName;
+        private final String methodName;
 
-        private String methodSignature;
+        private final String methodSignature;
 
         public MethodDescriptor(String className, String methodName, String methodSignature) {
             this.className = className;
@@ -117,22 +119,24 @@ public class SourceInfoMap {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Comparable#compareTo(T)
          */
         @Override
         public int compareTo(MethodDescriptor o) {
             int cmp;
-            if ((cmp = className.compareTo(o.className)) != 0)
+            if ((cmp = className.compareTo(o.className)) != 0) {
                 return cmp;
-            if ((cmp = methodName.compareTo(o.methodName)) != 0)
+            }
+            if ((cmp = methodName.compareTo(o.methodName)) != 0) {
                 return cmp;
+            }
             return methodSignature.compareTo(o.methodSignature);
         }
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Object#hashCode()
          */
         @Override
@@ -142,13 +146,14 @@ public class SourceInfoMap {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Object#equals(java.lang.Object)
          */
         @Override
         public boolean equals(Object obj) {
-            if (obj == null || obj.getClass() != this.getClass())
+            if (obj == null || obj.getClass() != this.getClass()) {
                 return false;
+            }
             MethodDescriptor other = (MethodDescriptor) obj;
             return className.equals(other.className) && methodName.equals(other.methodName)
                     && methodSignature.equals(other.methodSignature);
@@ -170,7 +175,7 @@ public class SourceInfoMap {
 
         /**
          * Constructor for a range of lines.
-         * 
+         *
          * @param start
          *            start line in range
          * @param end
@@ -199,7 +204,7 @@ public class SourceInfoMap {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Object#toString()
          */
         @Override
@@ -210,11 +215,11 @@ public class SourceInfoMap {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("sourceinfo.debug");
 
-    private Map<FieldDescriptor, SourceLineRange> fieldLineMap;
+    private final Map<FieldDescriptor, SourceLineRange> fieldLineMap;
 
-    private Map<MethodDescriptor, SourceLineRange> methodLineMap;
+    private final Map<MethodDescriptor, SourceLineRange> methodLineMap;
 
-    private Map<String, SourceLineRange> classLineMap;
+    private final Map<String, SourceLineRange> classLineMap;
 
     public boolean fallBackToClassfile() {
         return isEmpty();
@@ -235,7 +240,7 @@ public class SourceInfoMap {
 
     /**
      * Add a line number entry for a field.
-     * 
+     *
      * @param className
      *            name of class containing the field
      * @param fieldName
@@ -249,7 +254,7 @@ public class SourceInfoMap {
 
     /**
      * Add a line number entry for a method.
-     * 
+     *
      * @param className
      *            name of class containing the method
      * @param methodName
@@ -265,7 +270,7 @@ public class SourceInfoMap {
 
     /**
      * Add line number entry for a class.
-     * 
+     *
      * @param className
      *            name of class
      * @param range
@@ -277,7 +282,7 @@ public class SourceInfoMap {
 
     /**
      * Look up the line number range for a field.
-     * 
+     *
      * @param className
      *            name of class containing the field
      * @param fieldName
@@ -292,7 +297,7 @@ public class SourceInfoMap {
 
     /**
      * Look up the line number range for a method.
-     * 
+     *
      * @param className
      *            name of class containing the method
      * @param methodName
@@ -309,7 +314,7 @@ public class SourceInfoMap {
 
     /**
      * Look up the line number range for a class.
-     * 
+     *
      * @param className
      *            name of the class
      * @return the line number range, or null if no line number is known for the
@@ -325,7 +330,7 @@ public class SourceInfoMap {
     /**
      * Read source info from given InputStream. The stream is guaranteed to be
      * closed.
-     * 
+     *
      * @param inputStream
      *            the InputStream
      * @throws IOException
@@ -344,8 +349,9 @@ public class SourceInfoMap {
                 ++lineNumber;
 
                 if (lineNumber == 1) {
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("First line: " + line);
+                    }
                     // Try to parse the version number string from the first
                     // line.
                     // null means that the line does not appear to be a version
@@ -354,8 +360,9 @@ public class SourceInfoMap {
                     if (version != null) {
                         // Check to see if version is supported.
                         // Only 1.0 supported for now.
-                        if (!version.equals("1.0"))
+                        if (!version.equals("1.0")) {
                             throw new IOException("Unsupported sourceInfo version " + version);
+                        }
 
                         // Version looks good. Skip to next line of file.
                         continue;
@@ -370,29 +377,33 @@ public class SourceInfoMap {
                     // Line number for class
                     SourceLineRange range = createRange(next, tokenizer.nextToken());
                     classLineMap.put(className, range);
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("class:" + className + "," + range);
+                    }
                 } else if ((lparen = next.indexOf('(')) >= 0) {
                     // Line number for method
                     String methodName = next.substring(0, lparen);
                     String methodSignature = next.substring(lparen);
 
-                    if (methodName.equals("init^"))
+                    if (methodName.equals("init^")) {
                         methodName = "<init>";
-                    else if (methodName.equals("clinit^"))
+                    } else if (methodName.equals("clinit^")) {
                         methodName = "<clinit>";
+                    }
 
                     SourceLineRange range = createRange(tokenizer.nextToken(), tokenizer.nextToken());
                     methodLineMap.put(new MethodDescriptor(className, methodName, methodSignature), range);
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("method:" + methodName + methodSignature + "," + range);
+                    }
                 } else {
                     // Line number for field
                     String fieldName = next;
                     SourceLineRange range = createRange(tokenizer.nextToken(), tokenizer.nextToken());
                     fieldLineMap.put(new FieldDescriptor(className, fieldName), range);
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("field:" + className + "," + fieldName + "," + range);
+                    }
                 }
 
                 // Note: we could complain if there are more tokens,
@@ -413,7 +424,7 @@ public class SourceInfoMap {
 
     /**
      * Parse the sourceInfo version string.
-     * 
+     *
      * @param line
      *            the first line of the sourceInfo file
      * @return the version number constant, or null if the line does not appear
@@ -422,8 +433,9 @@ public class SourceInfoMap {
     private static String parseVersionNumber(String line) {
         StringTokenizer tokenizer = new StringTokenizer(line, " \t");
 
-        if (!expect(tokenizer, "sourceInfo") || !expect(tokenizer, "version") || !tokenizer.hasMoreTokens())
+        if (!expect(tokenizer, "sourceInfo") || !expect(tokenizer, "version") || !tokenizer.hasMoreTokens()) {
             return null;
+        }
 
         return tokenizer.nextToken();
     }
@@ -431,7 +443,7 @@ public class SourceInfoMap {
     /**
      * Expect a particular token string to be returned by the given
      * StringTokenizer.
-     * 
+     *
      * @param tokenizer
      *            the StringTokenizer
      * @param token
@@ -439,11 +451,13 @@ public class SourceInfoMap {
      * @return true if the expected token was returned, false if not
      */
     private static boolean expect(StringTokenizer tokenizer, String token) {
-        if (!tokenizer.hasMoreTokens())
+        if (!tokenizer.hasMoreTokens()) {
             return false;
+        }
         String s = tokenizer.nextToken();
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("token=" + s);
+        }
         return s.equals(token);
     }
 

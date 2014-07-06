@@ -124,15 +124,18 @@ public class CheckTypeQualifiers extends CFGDetector {
             int size = allKnownTypeQualifiers.size();
             if (size == 1) {
                 TypeQualifierValue<?> value = Util.first(allKnownTypeQualifiers);
-                if (!value.typeQualifier.getClassName().equals(NONNULL_ANNOTATION))
+                if (!value.typeQualifier.getClassName().equals(NONNULL_ANNOTATION)) {
                     shouldRunAnalysis = true;
+                }
 
-            } else if (size > 1)
+            } else if (size > 1) {
                 shouldRunAnalysis = true;
+            }
         }
 
-        if (shouldRunAnalysis)
+        if (shouldRunAnalysis) {
             super.visitClass(classDescriptor);
+        }
     }
 
     /*
@@ -148,8 +151,9 @@ public class CheckTypeQualifiers extends CFGDetector {
             return;
         }
 
-        if (methodDescriptor.getName().startsWith("access$"))
+        if (methodDescriptor.getName().startsWith("access$")) {
             return;
+        }
 
         XMethod xMethod = XFactory.createXMethod(methodDescriptor);
         if (DEBUG) {
@@ -158,11 +162,13 @@ public class CheckTypeQualifiers extends CFGDetector {
 
         Collection<TypeQualifierValue<?>> relevantQualifiers = Analysis.getRelevantTypeQualifiers(methodDescriptor, cfg);
         for(Iterator<TypeQualifierValue<?>> i = relevantQualifiers.iterator(); i.hasNext();  ) {
-            if (i.next().getTypeQualifierClassDescriptor().getClassName().equals(NONNULL_ANNOTATION))
+            if (i.next().getTypeQualifierClassDescriptor().getClassName().equals(NONNULL_ANNOTATION)) {
                 i.remove();
+            }
         }
-        if (relevantQualifiers.isEmpty())
+        if (relevantQualifiers.isEmpty()) {
             return;
+        }
         if (DEBUG) {
             System.out.println("  Relevant type qualifiers are " + relevantQualifiers);
         }
@@ -210,7 +216,7 @@ public class CheckTypeQualifiers extends CFGDetector {
     private void checkQualifier(XMethod xmethod, CFG cfg, TypeQualifierValue<?> typeQualifierValue,
             ForwardTypeQualifierDataflowFactory forwardDataflowFactory,
             BackwardTypeQualifierDataflowFactory backwardDataflowFactory, ValueNumberDataflow vnaDataflow)
-            throws CheckedAnalysisException {
+                    throws CheckedAnalysisException {
 
         if (DEBUG) {
             System.out.println("----------------------------------------------------------------------");
@@ -227,7 +233,7 @@ public class CheckTypeQualifiers extends CFGDetector {
             DataflowCFGPrinter<ValueNumberFrame, ValueNumberAnalysis> p = new DataflowCFGPrinter<ValueNumberFrame, ValueNumberAnalysis>(vnaDataflow);
             p.print(System.out);
         }
-        
+
         ForwardTypeQualifierDataflow forwardDataflow = forwardDataflowFactory.getDataflow(typeQualifierValue);
 
         if (DEBUG_DATAFLOW && (DEBUG_DATAFLOW_MODE.startsWith("forward") || DEBUG_DATAFLOW_MODE.equals("both"))) {
@@ -326,25 +332,31 @@ public class CheckTypeQualifiers extends CFGDetector {
         }
         if (isTest) {
             ValueNumber top = factAtLocation.getStackValue(0);
-            if (top.hasFlag(ValueNumber.CONSTANT_VALUE))
+            if (top.hasFlag(ValueNumber.CONSTANT_VALUE)) {
                 return;
+            }
             ValueNumber next = factAtLocation.getStackValue(1);
-            if (next.hasFlag(ValueNumber.CONSTANT_VALUE))
+            if (next.hasFlag(ValueNumber.CONSTANT_VALUE)) {
                 return;
+            }
             FlowValue topTQ = forwardsFact.getValue(top);
             FlowValue nextTQ = forwardsFact.getValue(next);
             if (DEBUG) {
                 System.out.println("Comparing values at " + loc.toCompactString());
                 System.out.println(" Comparing " + topTQ + " and " + nextTQ);
             }
-            if (topTQ.equals(nextTQ)) return;
+            if (topTQ.equals(nextTQ)) {
+                return;
+            }
             if (FlowValue.valuesConflict(typeQualifierValue.isStrictQualifier() && !xmethod.isIdentity(), topTQ, nextTQ)) {
                 BugInstance warning = new BugInstance(this,"TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS", HIGH_PRIORITY).addClassAndMethod(xmethod);
                 annotateWarningWithTypeQualifier(warning, typeQualifierValue);
-                for(SourceSinkInfo s : forwardsFact.getWhere(top))
-                   annotateWarningWithSourceSinkInfo(warning, xmethod, top, s);
-                for(SourceSinkInfo s : forwardsFact.getWhere(next))
+                for(SourceSinkInfo s : forwardsFact.getWhere(top)) {
+                    annotateWarningWithSourceSinkInfo(warning, xmethod, top, s);
+                }
+                for(SourceSinkInfo s : forwardsFact.getWhere(next)) {
                     annotateWarningWithSourceSinkInfo(warning, xmethod, next, s);
+                }
                 SourceLineAnnotation observedLocation = SourceLineAnnotation.fromVisitedInstruction(xmethod.getMethodDescriptor(),
                         loc);
                 warning.add(observedLocation);
@@ -401,7 +413,7 @@ public class CheckTypeQualifiers extends CFGDetector {
                             vn, location);
                 } else if (source.getWhen() == When.UNKNOWN && source.getType() == SourceSinkType.PARAMETER) {
 
-                   int p = source.getParameter();
+                    int p = source.getParameter();
                     TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications
                             .getDirectTypeQualifierAnnotation(xMethod, p, typeQualifierValue);
                     if (directTypeQualifierAnnotation != null && directTypeQualifierAnnotation.when == When.UNKNOWN) {
@@ -466,8 +478,9 @@ public class CheckTypeQualifiers extends CFGDetector {
         for (ValueNumber vn : valueNumberSet) {
             FlowValue forward = forwardsFact.getValue(vn);
             FlowValue backward = backwardsFact.getValue(vn);
-            if (!FlowValue.valuesConflict(typeQualifierValue.isStrictQualifier() && !xMethod.isIdentity(), forward, backward))
+            if (!FlowValue.valuesConflict(typeQualifierValue.isStrictQualifier() && !xMethod.isIdentity(), forward, backward)) {
                 continue;
+            }
 
             if (DEBUG) {
                 System.out.println("Check " + vn + ": forward=" + forward + ", backward=" + backward + " at " + checkLocation);
@@ -484,14 +497,15 @@ public class CheckTypeQualifiers extends CFGDetector {
     private void emitDataflowWarning(XMethod xMethod, TypeQualifierValue<?> typeQualifierValue,
             TypeQualifierValueSet forwardsFact, TypeQualifierValueSet backwardsFact, ValueNumber vn, FlowValue forward,
             FlowValue backward, Location locationToReport, @CheckForNull Location locationWhereDoomedValueIsObserved, ValueNumberFrame vnaFrame)
-            throws CheckedAnalysisException {
+                    throws CheckedAnalysisException {
         String bugType;
-        if (typeQualifierValue.isStrictQualifier() && forward == FlowValue.UNKNOWN)
+        if (typeQualifierValue.isStrictQualifier() && forward == FlowValue.UNKNOWN) {
             bugType = "TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED";
-        else if (backward == FlowValue.NEVER)
+        } else if (backward == FlowValue.NEVER) {
             bugType = "TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED";
-        else
+        } else {
             bugType = "TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED";
+        }
 
         // Issue warning
         BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY).addClassAndMethod(xMethod);
@@ -566,10 +580,10 @@ public class CheckTypeQualifiers extends CFGDetector {
     }
 
     private void annotateWarningWithTypeQualifier(BugInstance warning, TypeQualifierValue<?> typeQualifierValue) {
-         if (TypeQualifierValue.hasMultipleVariants(typeQualifierValue)) {
-             StringBuilder buf = new StringBuilder();
-             buf.append("@");
-             buf.append(typeQualifierValue.typeQualifier.getDottedClassName());
+        if (TypeQualifierValue.hasMultipleVariants(typeQualifierValue)) {
+            StringBuilder buf = new StringBuilder();
+            buf.append("@");
+            buf.append(typeQualifierValue.typeQualifier.getDottedClassName());
 
             // When there are multiple variants, qualify the type
             // qualifier with the value indicating which variant.
@@ -594,7 +608,7 @@ public class CheckTypeQualifiers extends CFGDetector {
                         sourceSinkInfo.getLocal());
                 lva.setDescription(lva.isSignificant() ? LocalVariableAnnotation.PARAMETER_VALUE_SOURCE_NAMED_ROLE
                         : LocalVariableAnnotation.PARAMETER_VALUE_SOURCE_ROLE);
-                
+
                 warning.add(lva);
             } catch (CheckedAnalysisException e) {
                 warning.addSourceLine(methodDescriptor, sourceSinkInfo.getLocation()).describe("SOURCE_LINE_VALUE_SOURCE");
@@ -607,10 +621,11 @@ public class CheckTypeQualifiers extends CFGDetector {
                 warning.addString((String) constantValue).describe(StringAnnotation.STRING_CONSTANT_ROLE);
             } else if (constantValue instanceof Integer) {
                 warning.addInt((Integer) constantValue).describe(IntAnnotation.INT_VALUE);
-            } else if (constantValue == null)
+            } else if (constantValue == null) {
                 warning.addString("null").describe(StringAnnotation.STRING_NONSTRING_CONSTANT_ROLE);
-            else
+            } else {
                 warning.addString(constantValue.toString()).describe(StringAnnotation.STRING_NONSTRING_CONSTANT_ROLE);
+            }
             break;
 
         case RETURN_VALUE_OF_CALLED_METHOD:
@@ -647,8 +662,9 @@ public class CheckTypeQualifiers extends CFGDetector {
     Location getSinkLocation(Iterable<? extends SourceSinkInfo> info) {
         for (SourceSinkInfo s : info) {
             Location l = getSinkLocation(s);
-            if (l != null)
+            if (l != null) {
                 return l;
+            }
 
         }
         return null;

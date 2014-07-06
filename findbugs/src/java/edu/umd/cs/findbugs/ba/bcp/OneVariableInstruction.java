@@ -22,15 +22,15 @@ package edu.umd.cs.findbugs.ba.bcp;
 /**
  * Abstract PatternElement subclass for matching single instructions which have
  * a single Variable.
- * 
+ *
  * @see PatternElement
  */
 public abstract class OneVariableInstruction extends SingleInstruction {
-    private String varName;
+    private final String varName;
 
     /**
      * Constructor.
-     * 
+     *
      * @param varName
      *            the name of the Variable used in this instruction
      */
@@ -41,7 +41,7 @@ public abstract class OneVariableInstruction extends SingleInstruction {
     /**
      * Add a variable definition to the given BindingSet, or if there is an
      * existing definition, make sure it is consistent with the new definition.
-     * 
+     *
      * @param variable
      *            the Variable which should be added or checked for consistency
      * @param bindingSet
@@ -57,4 +57,3 @@ public abstract class OneVariableInstruction extends SingleInstruction {
 
 }
 
-// vim:ts=4

@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class ResolveAllReferences extends PreorderVisitor implements Detector {
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     public ResolveAllReferences(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -82,16 +82,18 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
         String className2 = obj.getClassName();
 
         defined.add(className2);
-        for (Method m : obj.getMethods())
+        for (Method m : obj.getMethods()) {
             if (!m.isPrivate()) {
                 String name = getMemberName(obj, className2, m.getNameIndex(), m.getSignatureIndex());
                 defined.add(name);
             }
-        for (Field f : obj.getFields())
+        }
+        for (Field f : obj.getFields()) {
             if (!f.isPrivate()) {
                 String name = getMemberName(obj, className2, f.getNameIndex(), f.getSignatureIndex());
                 defined.add(name);
             }
+        }
     }
 
     private String getClassName(JavaClass c, int classIndex) {
@@ -109,16 +111,21 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
     }
 
     private boolean find(JavaClass target, String name, String signature) throws ClassNotFoundException {
-        if (target == null)
+        if (target == null) {
             return false;
+        }
         String ref = getMemberName(target.getClassName(), name, signature);
-        if (defined.contains(ref))
+        if (defined.contains(ref)) {
             return true;
-        if (find(target.getSuperClass(), name, signature))
+        }
+        if (find(target.getSuperClass(), name, signature)) {
             return true;
-        for (JavaClass i : target.getInterfaces())
-            if (find(i, name, signature))
+        }
+        for (JavaClass i : target.getInterfaces()) {
+            if (find(i, name, signature)) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -129,13 +136,15 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
         Constant[] constants = cp.getConstantPool();
         checkConstant: for (int i = 0; i < constants.length; i++) {
             Constant co = constants[i];
-            if (co instanceof ConstantDouble || co instanceof ConstantLong)
+            if (co instanceof ConstantDouble || co instanceof ConstantLong) {
                 i++;
+            }
             if (co instanceof ConstantClass) {
                 String ref = getClassName(obj, i);
-                if ((ref.startsWith("java") || ref.startsWith("org.w3c.dom")) && !defined.contains(ref))
+                if ((ref.startsWith("java") || ref.startsWith("org.w3c.dom")) && !defined.contains(ref)) {
                     bugReporter.reportBug(new BugInstance(this, "VR_UNRESOLVABLE_REFERENCE", NORMAL_PRIORITY).addClass(obj)
                             .addString(ref));
+                }
 
             } else if (co instanceof ConstantFieldref) {
                 // do nothing until we handle static fields defined in
@@ -156,9 +165,10 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 
                 try {
                     JavaClass target = Repository.lookupClass(className);
-                    if (!find(target, name, signature))
+                    if (!find(target, name, signature)) {
                         bugReporter.reportBug(new BugInstance(this, "VR_UNRESOLVABLE_REFERENCE", NORMAL_PRIORITY).addClass(obj)
                                 .addString(getMemberName(target.getClassName(), name, signature)));
+                    }
 
                 } catch (ClassNotFoundException e) {
                     bugReporter.reportMissingClass(e);

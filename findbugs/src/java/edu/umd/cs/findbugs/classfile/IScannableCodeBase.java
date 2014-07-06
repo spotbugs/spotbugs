@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.classfile;
 /**
  * A scannable code base: in addition to looking up a named resource, scannable
  * code bases can also enumerate the names of the resources they contain.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface IScannableCodeBase extends ICodeBase {
@@ -32,7 +32,7 @@ public interface IScannableCodeBase extends ICodeBase {
 
     /**
      * Get an iterator over the resources in the this code base.
-     * 
+     *
      * @return ICodeBaseIterator over the resources in the code base
      */
     public ICodeBaseIterator iterator() throws InterruptedException;

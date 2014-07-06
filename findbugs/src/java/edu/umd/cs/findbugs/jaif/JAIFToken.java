@@ -31,12 +31,12 @@ class JAIFToken {
 
     String lexeme;
 
-//    int lineNum;
+    //    int lineNum;
 
     public JAIFToken(JAIFTokenKind kind, String lexeme, int lineNum) {
         this.kind = kind;
         this.lexeme = lexeme;
-//        this.lineNum = lineNum;
+        //        this.lineNum = lineNum;
         // System.out.println("token: " + this);
     }
 

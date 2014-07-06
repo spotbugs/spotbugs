@@ -61,8 +61,9 @@ public class ViewFilter {
 
         @Override
         public String toString() {
-            if (maxRank < Integer.MAX_VALUE)
+            if (maxRank < Integer.MAX_VALUE) {
                 return displayName + " (Ranks 1 - " + maxRank + ")";
+            }
             return displayName;
         }
 
@@ -73,14 +74,16 @@ public class ViewFilter {
             @Override
             boolean show(Cloud cloud, BugInstance b) {
                 double score = cloud.getClassificationScore(b);
-                if (score <= UserDesignation.MOSTLY_HARMLESS.score())
+                if (score <= UserDesignation.MOSTLY_HARMLESS.score()) {
                     return false;
+                }
 
                 score = cloud.getPortionObsoleteClassifications(b);
-                if (score >= 0.5)
+                if (score >= 0.5) {
                     return false;
+                }
 
-                 return true;
+                return true;
             }
         },
         SHOULD_FIX("Overall classification is should fix") {
@@ -107,14 +110,16 @@ public class ViewFilter {
         UNCERTAIN("Overall classification is uncertain") {
             @Override
             boolean show(Cloud cloud, BugInstance b) {
-                if (SHOULD_FIX.show(cloud, b) || DONT_FIX.show(cloud, b) || OBSOLETE.show(cloud, b))
+                if (SHOULD_FIX.show(cloud, b) || DONT_FIX.show(cloud, b) || OBSOLETE.show(cloud, b)) {
                     return false;
-                if (cloud.getNumberReviewers(b) >= 2)
+                }
+                if (cloud.getNumberReviewers(b) >= 2) {
                     return true;
+                }
                 return false;
             }
         },
-      HIGH_VARIANCE("Controversial") {
+        HIGH_VARIANCE("Controversial") {
             @Override
             boolean show(Cloud cloud, BugInstance b) {
                 double variance = cloud.getClassificationDisagreement(b);
@@ -123,10 +128,10 @@ public class ViewFilter {
 
         },
         ALL("All issues") {
-            
+
             @Override
             public boolean show(MainFrame mf, BugInstance b) {
-                    return true;
+                return true;
             }
 
             @Override
@@ -269,7 +274,7 @@ public class ViewFilter {
 
             @Override
             public boolean show(MainFrame mf, BugInstance b) {
-                     return true;
+                return true;
             }
         };
 
@@ -322,8 +327,9 @@ public class ViewFilter {
         @Override
         public boolean show(MainFrame mf, BugInstance b) {
             Cloud cloud = mf.getBugCollection().getCloud();
-            if (!cloud.isInCloud(b))
+            if (!cloud.isInCloud(b)) {
                 return false;
+            }
             long firstSeen = cloud.getFirstSeen(b);
             long time = System.currentTimeMillis() - firstSeen;
             long days = TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS) / 3600 / 24;
@@ -352,13 +358,15 @@ public class ViewFilter {
 
     void setPackagesToDisplay(String value) {
         value = value.replace('/', '.').trim();
-        if (value.length() == 0)
+        if (value.length() == 0) {
             classSearchStrings = new String[0];
-        else {
+        } else {
             String[] parts = value.split("[ ,:]+");
-            for (String p : parts)
-                if (!legalClassSearchString.matcher(p).matches())
+            for (String p : parts) {
+                if (!legalClassSearchString.matcher(p).matches()) {
                     throw new IllegalArgumentException("Classname filter must be legal Java identifier: " + p);
+                }
+            }
 
             classSearchStrings = parts;
         }
@@ -380,16 +388,18 @@ public class ViewFilter {
     }
 
     public void setEvaluation(CloudFilter eval) {
-        if (this.eval == eval)
+        if (this.eval == eval) {
             return;
+        }
         this.eval = eval;
         FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
 
     }
 
     public void setClassification(OverallClassificationFilter classificationFilter) {
-        if (this.classificationFilter == classificationFilter)
+        if (this.classificationFilter == classificationFilter) {
             return;
+        }
         this.classificationFilter = classificationFilter;
         FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
 

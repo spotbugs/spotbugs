@@ -35,18 +35,18 @@ import edu.umd.cs.findbugs.SystemProperties;
 /**
  * Build a map of added class names to removed class names. Serves as a
  * ClassNameRewriter that can match up renamed classes in two BugCollections.
- * 
+ *
  * @author David Hovemeyer
  */
 public class MovedClassMap implements ClassNameRewriter {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("movedClasses.debug");
 
-    private BugCollection before;
+    private final BugCollection before;
 
-    private BugCollection after;
+    private final BugCollection after;
 
-    private Map<String, String> rewriteMap;
+    private final Map<String, String> rewriteMap;
 
     public MovedClassMap(BugCollection before, BugCollection after) {
         this.before = before;
@@ -76,8 +76,9 @@ public class MovedClassMap implements ClassNameRewriter {
             String shortAddedName = getShortClassName(fullAddedName);
             String fullRemovedName = removedShortNameToFullNameMap.get(shortAddedName);
             if (fullRemovedName != null) {
-                if (DEBUG)
+                if (DEBUG) {
                     System.err.println(fullAddedName + " --> " + fullRemovedName);
+                }
                 rewriteMap.put(fullAddedName, fullRemovedName);
             }
 
@@ -101,7 +102,7 @@ public class MovedClassMap implements ClassNameRewriter {
 
     /**
      * Find set of classes referenced in given BugCollection.
-     * 
+     *
      * @param bugCollection
      * @return set of classes referenced in the BugCollection
      */
@@ -112,8 +113,9 @@ public class MovedClassMap implements ClassNameRewriter {
             BugInstance warning = i.next();
             for (Iterator<BugAnnotation> j = warning.annotationIterator(); j.hasNext();) {
                 BugAnnotation annotation = j.next();
-                if (!(annotation instanceof ClassAnnotation))
+                if (!(annotation instanceof ClassAnnotation)) {
                     continue;
+                }
                 classSet.add(((ClassAnnotation) annotation).getClassName());
             }
         }
@@ -123,7 +125,7 @@ public class MovedClassMap implements ClassNameRewriter {
 
     /**
      * Build a map of short class names (without package) to full class names.
-     * 
+     *
      * @param classSet
      *            set of fully-qualified class names
      * @return map of short class names to fully-qualified class names
@@ -139,7 +141,7 @@ public class MovedClassMap implements ClassNameRewriter {
 
     /**
      * Get a short class name (no package part).
-     * 
+     *
      * @param className
      *            a class name
      * @return short class name

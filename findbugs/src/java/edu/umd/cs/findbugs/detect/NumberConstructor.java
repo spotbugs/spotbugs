@@ -116,25 +116,28 @@ public class NumberConstructor extends OpcodeStackDetector {
         String args = sig1.substring(0, lastParen+1);
         return sig2.startsWith(args);
     }
-    
+
     private @CheckForNull XMethod  getShouldCall() {
         String cls = getClassConstantOperand();
         Pair pair =  boxClasses.get(cls);
-        if (pair == null)
+        if (pair == null) {
             return null;
+        }
         XMethod shouldCall ;
-        if (getSigConstantOperand().startsWith("(Ljava/lang/String;)"))
+        if (getSigConstantOperand().startsWith("(Ljava/lang/String;)")) {
             shouldCall = pair.parsingMethod;
-        else
+        } else {
             shouldCall = pair.boxingMethod;
-        
+        }
+
         if (shouldCall == null) {
             return null;
         }
 
-        if (matchArguments(getSigConstantOperand(), shouldCall.getSignature()))
+        if (matchArguments(getSigConstantOperand(), shouldCall.getSignature())) {
             return shouldCall;
-        
+        }
+
         return null;
     }
     @Override
@@ -149,8 +152,9 @@ public class NumberConstructor extends OpcodeStackDetector {
         }
         @SlashedClassName String cls = getClassConstantOperand();
         XMethod shouldCall = getShouldCall();
-        if (shouldCall == null)
+        if (shouldCall == null) {
             return;
+        }
 
         int prio;
         String type;
@@ -162,8 +166,9 @@ public class NumberConstructor extends OpcodeStackDetector {
             Object constantValue = stack.getStackItem(0).getConstant();
             if (constantValue instanceof Number) {
                 long value = ((Number) constantValue).longValue();
-                if (value < -128 || value > 127)
+                if (value < -128 || value > 127) {
                     prio = LOW_PRIORITY;
+                }
             }
             type = "DM_NUMBER_CTOR";
         }

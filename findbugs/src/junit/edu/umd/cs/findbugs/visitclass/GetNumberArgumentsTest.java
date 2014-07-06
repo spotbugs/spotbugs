@@ -30,13 +30,15 @@ public class GetNumberArgumentsTest extends TestCase {
     static String[] simpleTypes = "I J B C D F I S Z".split(" ");
 
     public void testSimpleWithVoidReturnType() {
-        for (String s : simpleTypes)
+        for (String s : simpleTypes) {
             assertEquals(1, PreorderVisitor.getNumberArguments("(" + s + ")V"));
+        }
     }
 
     public void testSimpleWithVoidIntegerType() {
-        for (String s : simpleTypes)
+        for (String s : simpleTypes) {
             assertEquals(1, PreorderVisitor.getNumberArguments("(" + s + ")I"));
+        }
     }
 
     public void testArrays() {

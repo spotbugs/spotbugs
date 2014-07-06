@@ -24,17 +24,17 @@ import edu.umd.cs.findbugs.ba.XMethod;
 /**
  * Accumulate relevant return type annotations for a given method by traversing
  * its supertypes.
- * 
+ *
  * @author David Hovemeyer
  */
 class ReturnTypeAnnotationAccumulator extends AbstractMethodAnnotationAccumulator {
-    private TypeQualifierAnnotationLookupResult result;
+    private final TypeQualifierAnnotationLookupResult result;
 
     private boolean overrides = false;
 
     /**
      * Constructor.
-     * 
+     *
      * @param typeQualifierValue
      *            TypeQualifierValue specifying the kind of annotation we want
      *            to look up

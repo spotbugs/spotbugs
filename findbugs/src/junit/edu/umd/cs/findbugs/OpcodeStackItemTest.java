@@ -30,11 +30,11 @@ public class OpcodeStackItemTest extends TestCase {
         OpcodeStack.Item m2 = OpcodeStack.Item.merge(zeroItem, intItem);
         assertNull(m2.getConstant());
     }
-    
+
     public void testMergeTypeOnly() {
         OpcodeStack.Item intOnly =  OpcodeStack.Item.typeOnly("I");
         OpcodeStack.Item zeroItem = new OpcodeStack.Item("I", 0);
- 
+
         OpcodeStack.Item m1 = OpcodeStack.Item.merge(intOnly, zeroItem);
         assertEquals(0,m1.getConstant());
         OpcodeStack.Item m2 = OpcodeStack.Item.merge(zeroItem, intOnly);

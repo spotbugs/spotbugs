@@ -561,4 +561,3 @@ public class ProjectFilterSettings implements Cloneable {
     }
 }
 
-// vim:ts=4

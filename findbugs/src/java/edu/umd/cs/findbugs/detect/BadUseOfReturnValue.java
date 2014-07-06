@@ -50,23 +50,25 @@ public class BadUseOfReturnValue extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("indexOf")
                 && getClassConstantOperand().equals("java/lang/String")
-                && getSigConstantOperand().equals("(Ljava/lang/String;)I"))
+                && getSigConstantOperand().equals("(Ljava/lang/String;)I")) {
             stringIndexOfOnTOS = true;
-        else if (stringIndexOfOnTOS) {
-            if (seen == IFLE || seen == IFGT)
+        } else if (stringIndexOfOnTOS) {
+            if (seen == IFLE || seen == IFGT) {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "RV_CHECK_FOR_POSITIVE_INDEXOF", LOW_PRIORITY).addClassAndMethod(this), this);
+            }
             stringIndexOfOnTOS = false;
         }
 
         if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("readLine")
                 && getSigConstantOperand().equals("()Ljava/lang/String;") && getClassConstantOperand().startsWith("java/io")
-                && !getClassConstantOperand().equals("java/io/LineNumberReader"))
+                && !getClassConstantOperand().equals("java/io/LineNumberReader")) {
             readLineOnTOS = true;
-        else if (readLineOnTOS) {
-            if (seen == IFNULL || seen == IFNONNULL)
+        } else if (readLineOnTOS) {
+            if (seen == IFNULL || seen == IFNONNULL) {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "RV_DONT_JUST_NULL_CHECK_READLINE", NORMAL_PRIORITY).addClassAndMethod(this), this);
+            }
 
             readLineOnTOS = false;
         }

@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Method analysis engine to produce BCEL Method objects.
- * 
+ *
  * @author David Hovemeyer
  */
 public class MethodFactory extends AnalysisFactory<Method> {
@@ -40,7 +40,7 @@ public class MethodFactory extends AnalysisFactory<Method> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
@@ -70,7 +70,7 @@ public class MethodFactory extends AnalysisFactory<Method> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)

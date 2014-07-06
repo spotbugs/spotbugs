@@ -31,11 +31,11 @@ import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
  * Abstract base class for implementations of IScannableCodeBase. Provides an
  * implementation of the getCodeBaseLocator(), containsSourceFiles(),
  * setApplicationCodeBase(), and isApplicationCodeBase() methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
-    private ICodeBaseLocator codeBaseLocator;
+    private final ICodeBaseLocator codeBaseLocator;
 
     private boolean isAppCodeBase;
 
@@ -43,7 +43,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 
     private long lastModifiedTime;
 
-    private Map<String, String> resourceNameTranslationMap;
+    private final Map<String, String> resourceNameTranslationMap;
 
     public AbstractScannableCodeBase(ICodeBaseLocator codeBaseLocator) {
         this.codeBaseLocator = codeBaseLocator;
@@ -53,7 +53,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getCodeBaseLocator()
      */
     @Override
@@ -63,7 +63,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IScannableCodeBase#containsSourceFiles()
      */
@@ -75,7 +75,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBase#setApplicationCodeBase(boolean)
      */
@@ -86,7 +86,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#isApplicationCodeBase()
      */
     @Override
@@ -96,7 +96,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#setHowDiscovered(int)
      */
     @Override
@@ -106,7 +106,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getHowDiscovered()
      */
     @Override
@@ -116,7 +116,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#setLastModifiedTime(long)
      */
     @Override
@@ -133,7 +133,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getLastModifiedTime()
      */
     @Override
@@ -142,8 +142,9 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
     }
 
     public void addResourceNameTranslation(String origResourceName, String newResourceName) {
-        if (!origResourceName.equals(newResourceName))
+        if (!origResourceName.equals(newResourceName)) {
             resourceNameTranslationMap.put(origResourceName, newResourceName);
+        }
     }
 
     public String translateResourceName(String resourceName) {

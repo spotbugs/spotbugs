@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
  * @author Reto Merz
  */
 public class InefficientIndexOf extends OpcodeStackDetector {
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     public InefficientIndexOf(BugReporter bugReporter) {
         this.bugReporter = bugReporter;

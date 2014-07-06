@@ -40,13 +40,13 @@ import edu.umd.cs.findbugs.config.CommandLine;
  * Mine historical information from a BugCollection. The BugCollection should be
  * built using UpdateBugCollection to record the history of analyzing all
  * versions over time.
- * 
+ *
  * @author David Hovemeyer
  * @author William Pugh
  */
 public class MineBugHistory {
     /**
-     * 
+     *
      */
     private static final int WIDTH = 12;
 
@@ -86,8 +86,9 @@ public class MineBugHistory {
 
         void increment(int key) {
             tuple[key]++;
-            if (key == ADDED || key == RETAINED || key == NEWCODE)
+            if (key == ADDED || key == RETAINED || key == NEWCODE) {
                 tuple[ACTIVE_NOW]++;
+            }
         }
 
         int get(int key) {
@@ -163,17 +164,19 @@ public class MineBugHistory {
             BugInstance bugInstance = j.next();
 
             for (int i = 0; i <= maxSequence; ++i) {
-                if (bugInstance.getFirstVersion() > i)
+                if (bugInstance.getFirstVersion() > i) {
                     continue;
+                }
                 boolean activePrevious = bugInstance.getFirstVersion() < i
                         && (!bugInstance.isDead() || bugInstance.getLastVersion() >= i - 1);
                 boolean activeCurrent = !bugInstance.isDead() || bugInstance.getLastVersion() >= i;
 
                 int key = getKey(activePrevious, activeCurrent);
-                if (key == REMOVED && !bugInstance.isRemovedByChangeOfPersistingClass())
+                if (key == REMOVED && !bugInstance.isRemovedByChangeOfPersistingClass()) {
                     key = REMOVEDCODE;
-                else if (key == ADDED && !bugInstance.isIntroducedByChangeOfExistingClass())
+                } else if (key == ADDED && !bugInstance.isIntroducedByChangeOfExistingClass()) {
                     key = NEWCODE;
+                }
                 versionList[i].increment(key);
             }
         }
@@ -182,14 +185,15 @@ public class MineBugHistory {
     }
 
     public void dump(PrintStream out) {
-        if (xml)
+        if (xml) {
             dumpXml(out);
-        else if (noTabs)
+        } else if (noTabs) {
             dumpNoTabs(out);
-        else if (summary)
+        } else if (summary) {
             dumpSummary(out);
-        else
+        } else {
             dumpOriginal(out);
+        }
     }
 
     public void dumpSummary(PrintStream out) {
@@ -209,16 +213,19 @@ public class MineBugHistory {
                 b.append('-');
                 b.append(removed);
             }
-            if (added == 0 && removed == 0)
+            if (added == 0 && removed == 0) {
                 b.append('0');
+            }
 
             int paddingNeeded = WIDTH - b.length() % WIDTH;
-            if (paddingNeeded > 0)
+            if (paddingNeeded > 0) {
                 b.append("                                                     ".substring(0, paddingNeeded));
+            }
         }
         int errors = bugCollection.getErrors().size();
-        if (errors > 0)
+        if (errors > 0) {
             b.append("     ").append(errors).append(" errors");
+        }
 
         out.println(b.toString());
     }
@@ -233,18 +240,20 @@ public class MineBugHistory {
             out.print('\t');
             out.print(appVersion != null ? appVersion.getReleaseName() : "");
             out.print('\t');
-            if (formatDates)
+            if (formatDates) {
                 out.print("\"" + (appVersion != null ? dateFormat.format(new Date(appVersion.getTimestamp())) : "") + "\"");
-            else
+            } else {
                 out.print(appVersion != null ? appVersion.getTimestamp() / 1000 : 0L);
+            }
             out.print('\t');
             if (appVersion != null) {
                 out.print(appVersion.getNumClasses());
                 out.print('\t');
                 out.print(appVersion.getCodeSize());
 
-            } else
+            } else {
                 out.print("\t0\t0");
+            }
 
             for (int j = 0; j < TUPLE_SIZE; ++j) {
                 out.print('\t');
@@ -256,13 +265,14 @@ public class MineBugHistory {
 
     /** emit <code>width</code> space characters to <code>out</code> */
     private static void pad(int width, PrintStream out) {
-        while (width-- > 0)
+        while (width-- > 0) {
             out.print(' ');
+        }
     }
 
     /**
      * equivalent to out.print(obj) except it may be padded on the left or right
-     * 
+     *
      * @param width
      *            padding will occur if the stringified oxj is shorter than this
      * @param alignRight
@@ -275,11 +285,13 @@ public class MineBugHistory {
     private static void print(int width, boolean alignRight, PrintStream out, Object obj) {
         String s = String.valueOf(obj);
         int padLen = width - s.length();
-        if (alignRight)
+        if (alignRight) {
             pad(padLen, out);
+        }
         out.print(s); // doesn't truncate if (s.length() > width)
-        if (!alignRight)
+        if (!alignRight) {
             pad(padLen, out);
+        }
     }
 
     /**
@@ -287,7 +299,7 @@ public class MineBugHistory {
      * with a fixed-width font) by padding with spaces instead of using tabs.
      * Also, timestamps are formatted more tersely (-formatDates option). The
      * bad news is that it requires a minimum of 112 columns.
-     * 
+     *
      * @see #dumpOriginal(PrintStream)
      */
     public void dumpNoTabs(PrintStream out) {
@@ -323,10 +335,11 @@ public class MineBugHistory {
             out.print(' ');
 
             long ts = (appVersion != null ? appVersion.getTimestamp() : 0L);
-            if (formatDates)
+            if (formatDates) {
                 print(12, false, out, dateFormat.format(ts));
-            else
+            } else {
                 print(10, false, out, ts / 1000);
+            }
             out.print(' ');
 
             print(7, true, out, appVersion != null ? appVersion.getNumClasses() : 0);
@@ -358,10 +371,11 @@ public class MineBugHistory {
             out.print(appVersion != null ? appVersion.getReleaseName() : "");
             out.print("\" ");
             out.print("time=\"");
-            if (formatDates)
+            if (formatDates) {
                 out.print((appVersion != null ? new Date(appVersion.getTimestamp()).toString() : ""));
-            else
+            } else {
                 out.print(appVersion != null ? appVersion.getTimestamp() : 0L);
+            }
             out.print("\"");
             out.println(">");
 
@@ -392,7 +406,7 @@ public class MineBugHistory {
     /**
      * Get key used to classify the presence and/or abscence of a BugInstance in
      * successive versions in the history.
-     * 
+     *
      * @param activePrevious
      *            true if the bug was active in the previous version, false if
      *            not
@@ -401,11 +415,12 @@ public class MineBugHistory {
      * @return the key: one of ADDED, RETAINED, REMOVED, and DEAD
      */
     private int getKey(boolean activePrevious, boolean activeCurrent) {
-        if (activePrevious)
+        if (activePrevious) {
             return activeCurrent ? RETAINED : REMOVED;
-        else
+        } else {
             // !activePrevious
             return activeCurrent ? ADDED : DEAD;
+        }
     }
 
     class MineBugHistoryCommandLine extends CommandLine {
@@ -419,16 +434,17 @@ public class MineBugHistory {
 
         @Override
         public void handleOption(String option, String optionalExtraPart) {
-            if (option.equals("-formatDates"))
+            if (option.equals("-formatDates")) {
                 setFormatDates(true);
-            else if (option.equals("-noTabs"))
+            } else if (option.equals("-noTabs")) {
                 setNoTabs();
-            else if (option.equals("-xml"))
+            } else if (option.equals("-xml")) {
                 setXml();
-            else if (option.equals("-summary"))
+            } else if (option.equals("-summary")) {
                 setSummary();
-            else
+            } else {
                 throw new IllegalArgumentException("unknown option: " + option);
+            }
         }
 
         @Override
@@ -448,10 +464,11 @@ public class MineBugHistory {
                 + " [options] [<xml results> [<history]] ");
 
         SortedBugCollection bugCollection = new SortedBugCollection();
-        if (argCount < args.length)
+        if (argCount < args.length) {
             bugCollection.readXML(args[argCount++]);
-        else
+        } else {
             bugCollection.readXML(System.in);
+        }
         mineBugHistory.setBugCollection(bugCollection);
 
         mineBugHistory.execute();

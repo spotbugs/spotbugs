@@ -46,31 +46,31 @@ import edu.umd.cs.findbugs.ba.ResourceValueFrameModelingVisitor;
 /**
  * Resource tracker which determines where streams are created, and how they are
  * used within the method.
- * 
+ *
  * @author David Hovemeyer
  */
 public class StreamResourceTracker implements ResourceTracker<Stream> {
-    private StreamFactory[] streamFactoryList;
+    private final StreamFactory[] streamFactoryList;
 
-    private RepositoryLookupFailureCallback lookupFailureCallback;
+    private final RepositoryLookupFailureCallback lookupFailureCallback;
 
     private ResourceCollection<Stream> resourceCollection;
 
     /**
      * Map of locations where streams are opened to the actual Stream objects.
      */
-    private Map<Location, Stream> streamOpenLocationMap;
+    private final Map<Location, Stream> streamOpenLocationMap;
 
     /**
      * Set of all open locations and escapes of uninteresting streams.
      */
     // private HashSet<Location> uninterestingStreamEscapeSet;
-    private HashSet<Stream> uninterestingStreamEscapeSet;
+    private final HashSet<Stream> uninterestingStreamEscapeSet;
 
     /**
      * Set of all (potential) stream escapes.
      */
-    private TreeSet<StreamEscape> streamEscapeSet;
+    private final TreeSet<StreamEscape> streamEscapeSet;
 
     /**
      * Map of individual streams to equivalence classes. Any time a stream "A"
@@ -78,11 +78,11 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
      * class. If any stream in an equivalence class is closed, then we consider
      * all of the streams in the equivalence class as having been closed.
      */
-    private Map<Stream, StreamEquivalenceClass> streamEquivalenceMap;
+    private final Map<Stream, StreamEquivalenceClass> streamEquivalenceMap;
 
     /**
      * Constructor.
-     * 
+     *
      * @param streamFactoryList
      *            array of StreamFactory objects which determine where streams
      *            are created
@@ -109,7 +109,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
     /**
      * Indicate that a stream escapes at the given target Location.
-     * 
+     *
      * @param source
      *            the Stream that is escaping
      * @param target
@@ -118,8 +118,9 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
     public void addStreamEscape(Stream source, Location target) {
         StreamEscape streamEscape = new StreamEscape(source, target);
         streamEscapeSet.add(streamEscape);
-        if (FindOpenStream.DEBUG)
+        if (FindOpenStream.DEBUG) {
             System.out.println("Adding potential stream escape " + streamEscape);
+        }
     }
 
     /**
@@ -133,8 +134,9 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
         for (Iterator<StreamEscape> i = streamEscapeSet.iterator(); i.hasNext();) {
             StreamEscape streamEscape = i.next();
             if (!isStreamOpenLocation(streamEscape.target)) {
-                if (FindOpenStream.DEBUG)
+                if (FindOpenStream.DEBUG) {
                     System.out.println("Eliminating false stream escape " + streamEscape);
+                }
                 i.remove();
             }
         }
@@ -159,11 +161,13 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
             for (StreamEscape streamEscape : streamEscapeSet) {
                 if (isUninterestingStreamEscape(streamEscape.source)) {
-                    if (FindOpenStream.DEBUG)
+                    if (FindOpenStream.DEBUG) {
                         System.out.println("Propagating stream escape " + streamEscape);
+                    }
                     Stream target = streamOpenLocationMap.get(streamEscape.target);
-                    if (target == null)
+                    if (target == null) {
                         throw new IllegalStateException();
+                    }
                     uninterestingStreamEscapeSet.add(target);
 
                     // Combine equivalence classes for source and target
@@ -184,7 +188,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
     /**
      * Determine if an uninteresting stream escapes at given location.
      * markTransitiveUninterestingStreamEscapes() should be called first.
-     * 
+     *
      * @param stream
      *            the stream
      * @return true if an uninteresting stream escapes at the location
@@ -195,24 +199,26 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
     /**
      * Indicate that a stream is constructed at this Location.
-     * 
+     *
      * @param streamOpenLocation
      *            the Location
      * @param stream
      *            the Stream opened at this Location
      */
     public void addStreamOpenLocation(Location streamOpenLocation, Stream stream) {
-        if (FindOpenStream.DEBUG)
+        if (FindOpenStream.DEBUG) {
             System.out.println("Stream open location at " + streamOpenLocation);
+        }
         streamOpenLocationMap.put(streamOpenLocation, stream);
-        if (stream.isUninteresting())
+        if (stream.isUninteresting()) {
             uninterestingStreamEscapeSet.add(stream);
+        }
     }
 
     /**
      * Get the equivalence class for given stream. May only be called if
      * markTransitiveUninterestingStreamEscapes() has been called.
-     * 
+     *
      * @param stream
      *            the stream
      * @return the set containing the equivalence class for the given stream
@@ -223,7 +229,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
     /**
      * Determine if given Location is a stream open location point.
-     * 
+     *
      * @param location
      *            the Location
      */
@@ -237,16 +243,19 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
         // Use precomputed map of Locations to Stream creations,
         // if present. Note that we don't care about preexisting
         // resources here.
-        if (resourceCollection != null)
+        if (resourceCollection != null) {
             return resourceCollection.getCreatedResource(new Location(handle, basicBlock));
+        }
 
         Instruction ins = handle.getInstruction();
-        if (!(ins instanceof TypedInstruction))
+        if (!(ins instanceof TypedInstruction)) {
             return null;
+        }
 
         Type type = ((TypedInstruction) ins).getType(cpg);
-        if (!(type instanceof ObjectType))
+        if (!(type instanceof ObjectType)) {
             return null;
+        }
 
         Location location = new Location(handle, basicBlock);
 
@@ -254,8 +263,9 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
         // look at the location and possibly identify a created stream.
         for (StreamFactory aStreamFactoryList : streamFactoryList) {
             Stream stream = aStreamFactoryList.createStream(location, (ObjectType) type, cpg, lookupFailureCallback);
-            if (stream != null)
+            if (stream != null) {
                 return stream;
+            }
         }
 
         return null;
@@ -300,4 +310,3 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
 }
 
-// vim:ts=3

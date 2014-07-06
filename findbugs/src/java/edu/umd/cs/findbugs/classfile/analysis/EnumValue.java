@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /**
  * Represents an enumeration value used with an application of an annotation.
- * 
+ *
  * @author William Pugh
  * @author David Hovemeyer
  */

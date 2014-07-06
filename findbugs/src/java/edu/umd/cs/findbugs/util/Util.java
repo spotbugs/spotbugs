@@ -86,20 +86,24 @@ public class Util {
     }
 
     public static int sign(int x) {
-        if (x < 0)
+        if (x < 0) {
             return -1;
-        if (x > 0)
+        }
+        if (x > 0) {
             return 1;
+        }
         return 0;
     }
     /**
      * return sign of x - y
      */
     public static int compare(int x, int y) {
-        if (x > y)
+        if (x > y) {
             return 1;
-        if (x < y)
+        }
+        if (x < y) {
             return -1;
+        }
         return 0;
     }
 
@@ -107,10 +111,12 @@ public class Util {
      * return sign of x - y
      */
     public static int compare(long x, long y) {
-        if (x > y)
+        if (x > y) {
             return 1;
-        if (x < y)
+        }
+        if (x < y) {
             return -1;
+        }
         return 0;
     }
 
@@ -148,8 +154,9 @@ public class Util {
 
     public static String repeat(String s, int number) {
         StringBuilder b = new StringBuilder(s.length() * number);
-        for (int i = 0; i < number; i++)
+        for (int i = 0; i < number; i++) {
             b.append(s);
+        }
         return b.toString();
     }
 
@@ -157,12 +164,13 @@ public class Util {
 
     public static String getNetworkErrorMessage(Throwable e) {
         if (e.getClass().getSimpleName().equals("InvalidProtocolBufferException")) {
-             return "Your Internet provider may require you to log in via your web browser.";
+            return "Your Internet provider may require you to log in via your web browser.";
         }
         if (e instanceof UnknownHostException) {
             return "You may not be connected to the Internet.";
-        } else
+        } else {
             return e.getClass().getSimpleName() + ": " + e.getMessage();
+        }
     }
 
     static class ShutdownLogging {
@@ -192,38 +200,46 @@ public class Util {
     }
 
     public static <T> Set<T> emptyOrNonnullSingleton(T t) {
-        if (t == null)
+        if (t == null) {
             return Collections.<T> emptySet();
+        }
         return Collections.<T> singleton(t);
     }
 
     public static <K, V> Map<K, V> immutableMap(Map<K, V> map) {
-        if (map.size() == 0)
+        if (map.size() == 0) {
             return Collections.<K, V> emptyMap();
+        }
         return Collections.<K, V> unmodifiableMap(map);
     }
 
     public static int nullSafeHashcode(@CheckForNull Object o) {
-        if (o == null)
+        if (o == null) {
             return 0;
+        }
         return o.hashCode();
     }
 
     public static <T> boolean nullSafeEquals(@CheckForNull T o1, @CheckForNull T o2) {
-        if (o1 == o2)
+        if (o1 == o2) {
             return true;
-        if (o1 == null || o2 == null)
+        }
+        if (o1 == null || o2 == null) {
             return false;
+        }
         return o1.equals(o2);
     }
 
     public static <T extends Comparable<? super T>> int nullSafeCompareTo(@CheckForNull T o1, @CheckForNull T o2) {
-        if (o1 == o2)
+        if (o1 == o2) {
             return 0;
-        if (o1 == null)
+        }
+        if (o1 == null) {
             return -1;
-        if (o2 == null)
+        }
+        if (o2 == null) {
             return 1;
+        }
         return o1.compareTo(o2);
     }
 
@@ -249,8 +265,9 @@ public class Util {
 
     public static void closeSilently(@WillClose Connection c) {
         try {
-            if (c != null)
+            if (c != null) {
                 c.close();
+            }
         } catch (SQLException e) {
             assert true;
         }
@@ -258,8 +275,9 @@ public class Util {
 
     public static void closeSilently(@WillClose PreparedStatement c) {
         try {
-            if (c != null)
+            if (c != null) {
                 c.close();
+            }
         } catch (SQLException e) {
             assert true;
         }
@@ -267,8 +285,9 @@ public class Util {
 
     public static void closeSilently(@WillClose ResultSet c) {
         try {
-            if (c != null)
+            if (c != null) {
                 c.close();
+            }
         } catch (SQLException e) {
             assert true;
         }
@@ -276,8 +295,9 @@ public class Util {
 
     public static void closeSilently(@WillClose InputStream in) {
         try {
-            if (in != null)
+            if (in != null) {
                 in.close();
+            }
         } catch (IOException e) {
             assert true;
         }
@@ -285,8 +305,9 @@ public class Util {
 
     public static void closeSilently(@WillClose Reader in) {
         try {
-            if (in != null)
+            if (in != null) {
                 in.close();
+            }
         } catch (IOException e) {
             assert true;
         }
@@ -294,8 +315,9 @@ public class Util {
 
     public static void closeSilently(@WillClose OutputStream out) {
         try {
-            if (out != null)
+            if (out != null) {
                 out.close();
+            }
         } catch (IOException e) {
             assert true;
         }
@@ -303,8 +325,9 @@ public class Util {
 
     public static void closeSilently(@WillClose Closeable out) {
         try {
-            if (out != null)
+            if (out != null) {
                 out.close();
+            }
         } catch (IOException e) {
             assert true;
         }
@@ -312,8 +335,9 @@ public class Util {
 
     public static void closeSilently(@WillClose ZipFile zip) {
         try {
-            if (zip != null)
+            if (zip != null) {
                 zip.close();
+            }
         } catch (IOException e) {
             assert true;
         }
@@ -323,8 +347,9 @@ public class Util {
 
     @SuppressFBWarnings("OS_OPEN_STREAM")
     public static String getXMLType(@WillNotClose InputStream in) throws IOException {
-        if (!in.markSupported())
+        if (!in.markSupported()) {
             throw new IllegalArgumentException("Input stream does not support mark");
+        }
 
         in.mark(5000);
         BufferedReader r = null;
@@ -335,11 +360,13 @@ public class Util {
             int count = 0;
             while (count < 4) {
                 s = r.readLine();
-                if (s == null)
+                if (s == null) {
                     break;
+                }
                 Matcher m = tag.matcher(s);
-                if (m.find())
+                if (m.find()) {
                     return m.group(1);
+                }
             }
             throw new IOException("Didn't find xml tag");
         } finally {
@@ -355,8 +382,9 @@ public class Util {
     }
     private static String getFileExtension(String name) {
         int lastDot = name.lastIndexOf('.');
-        if (lastDot == -1)
+        if (lastDot == -1) {
             return "";
+        }
         return name.substring(lastDot + 1);
     }
 
@@ -366,9 +394,10 @@ public class Util {
     public static String getFileExtensionIgnoringGz(File f) {
 
         String name = f.getName().toLowerCase();
-        if (name.endsWith(".gz"))
+        if (name.endsWith(".gz")) {
             name = name.substring(0,name.length()-3);
-       return getFileExtension(name);
+        }
+        return getFileExtension(name);
     }
 
     public static void throwIOException(String msg, Throwable cause) throws IOException {
@@ -384,22 +413,28 @@ public class Util {
      */
     public static <E> E first(Iterable<E> i) {
         Iterator<E> iterator = i.iterator();
-        if (!iterator.hasNext())
+        if (!iterator.hasNext()) {
             throw new IllegalArgumentException("iterator has no elements");
+        }
         return iterator.next();
     }
 
     public static String commonPrefix(String s1, String s2) {
-        if (s1 == null)
+        if (s1 == null) {
             return s2;
-        if (s2 == null)
+        }
+        if (s2 == null) {
             return s1;
+        }
         int minLength = Math.min(s1.length(), s2.length());
-        for (int i = 0; i < minLength; i++)
-            if (s1.charAt(i) != s2.charAt(i))
+        for (int i = 0; i < minLength; i++) {
+            if (s1.charAt(i) != s2.charAt(i)) {
                 return s1.substring(0, i);
-        if (s1.length() == minLength)
+            }
+        }
+        if (s1.length() == minLength) {
             return s1;
+        }
         assert s2.length() == minLength;
         return s2;
 
@@ -521,10 +556,12 @@ public class Util {
     }
 
     public static <K> Set<K> addTo(Set<K> s, K k) {
-        if (s.isEmpty())
+        if (s.isEmpty()) {
             return Collections.singleton(k);
-        if (s.contains(k))
+        }
+        if (s.contains(k)) {
             return s;
+        }
         if (s instanceof HashSet) {
             s.add(k);
             return s;
@@ -536,10 +573,12 @@ public class Util {
     }
 
     public static <K> List<K> addTo(List<K> s, K k) {
-        if (s.isEmpty())
+        if (s.isEmpty()) {
             return Collections.singletonList(k);
-        if (!(s instanceof ArrayList))
+        }
+        if (!(s instanceof ArrayList)) {
             s = makeSmallArrayList(s);
+        }
         s.add(k);
         return s;
     }

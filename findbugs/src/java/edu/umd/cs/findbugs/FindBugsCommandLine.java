@@ -118,8 +118,9 @@ public abstract class FindBugsCommandLine extends CommandLine {
                 throw new IllegalArgumentException("-effort:<value> must be one of min,default,more,max");
             }
         } else if (option.equals("-workHard")) {
-            if (settingList != FindBugs.MAX_EFFORT)
+            if (settingList != FindBugs.MAX_EFFORT) {
                 settingList = FindBugs.MORE_EFFORT;
+            }
 
         } else if (option.equals("-conserveSpace")) {
             settingList = FindBugs.MIN_EFFORT;

@@ -71,28 +71,34 @@ public class XMLFactoryBypass extends BytecodeScanningDetector {
         try {
             if (seen == INVOKESPECIAL) {
                 String newClsName = getClassConstantOperand();
-                if (rejectedXMLClasses.contains(newClsName))
+                if (rejectedXMLClasses.contains(newClsName)) {
                     return;
+                }
                 rejectedXMLClasses.add(newClsName);
 
-                if (newClsName.startsWith("java/") || newClsName.startsWith("javax/"))
+                if (newClsName.startsWith("java/") || newClsName.startsWith("javax/")) {
                     return;
+                }
 
-                if (newClsName.endsWith("Adapter"))
+                if (newClsName.endsWith("Adapter")) {
                     return;
+                }
 
-                if (!getNameConstantOperand().equals("<init>"))
+                if (!getNameConstantOperand().equals("<init>")) {
                     return;
+                }
 
                 String invokerClsName = this.getClassName();
-                if (samePackageBase(invokerClsName, newClsName))
+                if (samePackageBase(invokerClsName, newClsName)) {
                     return;
+                }
 
                 JavaClass newCls = Repository.lookupClass(getDottedClassConstantOperand());
 
                 JavaClass superCls = curClass.getSuperClass();
-                if (superCls.getClassName().equals(newClsName.replace('/', '.')))
+                if (superCls.getClassName().equals(newClsName.replace('/', '.'))) {
                     return;
+                }
 
                 JavaClass[] infs = newCls.getAllInterfaces();
                 for (JavaClass inf : infs) {
@@ -112,13 +118,16 @@ public class XMLFactoryBypass extends BytecodeScanningDetector {
         String[] invokerParts = invokerClsName.split("/");
         String[] newClsParts = newClsName.split("/");
 
-        if (newClsParts.length < 3)
+        if (newClsParts.length < 3) {
             return false;
-        if (invokerParts.length < 3)
+        }
+        if (invokerParts.length < 3) {
             return false;
+        }
 
-        if (!invokerParts[0].equals(newClsParts[0]))
+        if (!invokerParts[0].equals(newClsParts[0])) {
             return false;
+        }
 
         return invokerParts[1].equals(newClsParts[1]);
     }

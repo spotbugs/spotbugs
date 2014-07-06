@@ -25,14 +25,14 @@ import java.util.StringTokenizer;
 
 /**
  * Matches a string against a set of predefined values.
- * 
+ *
  * Value set is defined using a String containing a comma separated value list.
  * Heading an trailing whitespace on the values is ignored in matching.
- * 
+ *
  * @author rak
  */
 public class StringSetMatch {
-    private Set<String> strings = new HashSet<String>();
+    private final Set<String> strings = new HashSet<String>();
 
     @Override
     public int hashCode() {
@@ -41,14 +41,15 @@ public class StringSetMatch {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof StringSetMatch))
+        if (!(o instanceof StringSetMatch)) {
             return false;
+        }
         return strings.equals(((StringSetMatch) o).strings);
     }
 
     /**
      * Constructor.
-     * 
+     *
      * @param strings
      *            comma-separated list of Strings
      */
@@ -67,7 +68,7 @@ public class StringSetMatch {
 
     /**
      * Returns true if the given string is contained in the value set.
-     * 
+     *
      * @param string
      * @return true if the given string is contained in the value set
      */
@@ -77,11 +78,13 @@ public class StringSetMatch {
 
     @Override
     public String toString() {
-        if (strings.isEmpty())
+        if (strings.isEmpty()) {
             return "";
+        }
         StringBuilder result = new StringBuilder();
-        for (String s : strings)
+        for (String s : strings) {
             result.append(s).append(",");
+        }
         return result.substring(0, result.length() - 1);
     }
 }

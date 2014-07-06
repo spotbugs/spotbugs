@@ -44,12 +44,14 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements Detect
     @Override
     public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
 
-        if (!annotationClass.equals("java.lang.annotation.Retention"))
+        if (!annotationClass.equals("java.lang.annotation.Retention")) {
             return;
+        }
         EnumElementValue v = (EnumElementValue) map.get("value");
 
-        if ("RUNTIME".equals(v.getEnumValueString()))
+        if ("RUNTIME".equals(v.getEnumValueString())) {
             runtimeRetention = true;
+        }
     }
 
     @Override
@@ -59,18 +61,21 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements Detect
 
     @Override
     public void visitAfter(JavaClass obj) {
-        for (String i : obj.getInterfaceNames())
-            if (i.equals("java.lang.annotation.Annotation"))
+        for (String i : obj.getInterfaceNames()) {
+            if (i.equals("java.lang.annotation.Annotation")) {
                 AnalysisContext.currentAnalysisContext().getAnnotationRetentionDatabase()
-                        .setRuntimeRetention(getDottedClassName(), runtimeRetention);
+                .setRuntimeRetention(getDottedClassName(), runtimeRetention);
+            }
+        }
 
     }
 
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
-        if (!BCELUtil.preTiger(javaClass))
+        if (!BCELUtil.preTiger(javaClass)) {
             javaClass.accept(this);
+        }
 
     }
 

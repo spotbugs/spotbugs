@@ -22,17 +22,18 @@ package edu.umd.cs.findbugs.ba;
 /**
  * Abstract base class for forward dataflow analyses. Provides convenient
  * implementations for isForwards() and getBlockOrder() methods.
- * 
+ *
  * @author David Hovemeyer
  * @see Dataflow
  * @see DataflowAnalysis
  */
 public abstract class ForwardDataflowAnalysis<Fact> extends AbstractDataflowAnalysis<Fact> {
-    private DepthFirstSearch dfs;
+    private final DepthFirstSearch dfs;
 
     public ForwardDataflowAnalysis(DepthFirstSearch dfs) {
-        if (dfs == null)
+        if (dfs == null) {
             throw new IllegalArgumentException();
+        }
         this.dfs = dfs;
     }
 
@@ -51,4 +52,3 @@ public abstract class ForwardDataflowAnalysis<Fact> extends AbstractDataflowAnal
     }
 }
 
-// vim:ts=4

@@ -26,15 +26,15 @@ import java.util.LinkedList;
 /**
  * A search tree callback implementation that builds a list of SearchTrees
  * recording a graph search.
- * 
+ *
  * @see SearchTreeCallback
  * @author David Hovemeyer
  */
 public class SearchTreeBuilder<VertexType extends GraphVertex<VertexType>> implements SearchTreeCallback<VertexType> {
 
-    private HashMap<VertexType, SearchTree<VertexType>> searchTreeMap = new HashMap<VertexType, SearchTree<VertexType>>();
+    private final HashMap<VertexType, SearchTree<VertexType>> searchTreeMap = new HashMap<VertexType, SearchTree<VertexType>>();
 
-    private LinkedList<SearchTree<VertexType>> searchTreeList = new LinkedList<SearchTree<VertexType>>();
+    private final LinkedList<SearchTree<VertexType>> searchTreeList = new LinkedList<SearchTree<VertexType>>();
 
     @Override
     public void startSearchTree(VertexType vertex) {
@@ -44,8 +44,9 @@ public class SearchTreeBuilder<VertexType extends GraphVertex<VertexType>> imple
     @Override
     public void addToSearchTree(VertexType parent, VertexType child) {
         SearchTree<VertexType> parentTree = searchTreeMap.get(parent);
-        if (parentTree == null)
+        if (parentTree == null) {
             throw new IllegalStateException();
+        }
         SearchTree<VertexType> childTree = createSearchTree(child);
         parentTree.addChild(childTree);
     }
@@ -64,4 +65,3 @@ public class SearchTreeBuilder<VertexType extends GraphVertex<VertexType>> imple
     }
 }
 
-// vim:ts=4

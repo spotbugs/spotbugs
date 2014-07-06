@@ -32,8 +32,9 @@ public abstract class MergeMap<K, V> {
         @Override
         protected V mergeValues(V oldValue, V newValue) {
 
-            if (oldValue.compareTo(newValue) > 0)
+            if (oldValue.compareTo(newValue) > 0) {
                 return newValue;
+            }
             return oldValue;
         }
     }
@@ -43,8 +44,9 @@ public abstract class MergeMap<K, V> {
         @Override
         protected V mergeValues(V oldValue, V newValue) {
 
-            if (oldValue.compareTo(newValue) < 0)
+            if (oldValue.compareTo(newValue) < 0) {
                 return newValue;
+            }
             return oldValue;
         }
     }
@@ -68,8 +70,9 @@ public abstract class MergeMap<K, V> {
             return v;
         }
         V result = mergeValues(currentValue, v);
-        if (currentValue != result)
+        if (currentValue != result) {
             map.put(k, v);
+        }
 
         return result;
     }

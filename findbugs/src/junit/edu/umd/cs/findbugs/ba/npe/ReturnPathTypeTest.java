@@ -25,7 +25,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 
 /**
  * Test cases for ReturnPathType class.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ReturnPathTypeTest extends TestCase {
@@ -37,7 +37,7 @@ public class ReturnPathTypeTest extends TestCase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see junit.framework.TestCase#setUp()
      */
     @Override

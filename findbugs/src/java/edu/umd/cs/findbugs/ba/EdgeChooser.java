@@ -21,13 +21,13 @@ package edu.umd.cs.findbugs.ba;
 
 /**
  * Interface for choosing CFG Edges.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface EdgeChooser {
     /**
      * Return whether or not given Edge should be chosen.
-     * 
+     *
      * @param edge
      *            the Edge
      * @return true if the Edge should be chosen, false otherwise

@@ -29,21 +29,21 @@ import java.lang.annotation.Target;
 /**
  * Indicates that all members of the class or package should be annotated with
  * the default value of the supplied annotation class.
- * 
+ *
  * This would be used for behavior annotations such as @NonNull, @CheckForNull,
  * or @CheckReturnValue.
- * 
+ *
  * In particular, you can use @DefaultAnnotation(NonNull.class) on a class or
  * package, and then use @Nullable only on those parameters, methods or fields
  * that you want to allow to be null.
- * 
+ *
  * @deprecated -  use the JSR305 annotations instead,
  * For example, you can use {@link javax.annotation.ParametersAreNonnullByDefault} instead
  * of @DefaultAnnotation(NonNull.class), and {@link javax.annotation.meta.TypeQualifierDefault}
  * in general to define a type qualifier default. The JSR305 {@link javax.annotation.CheckReturnValue}
  * annotation can be applied to a type or package, and it will act as a default for all methods
  * in that class or package unless otherwise overridden.
- * 
+ *
  * @author William Pugh
  */
 
@@ -56,6 +56,6 @@ public @interface DefaultAnnotationForParameters {
 
     @Deprecated
     Priority priority() default Priority.MEDIUM;
-    
+
     Confidence confidence() default Confidence.MEDIUM;
 }

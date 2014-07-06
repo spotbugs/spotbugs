@@ -43,7 +43,7 @@ public class MethodBytecodeSetFactory extends AnalysisFactory<MethodBytecodeSet>
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
@@ -76,7 +76,7 @@ public class MethodBytecodeSetFactory extends AnalysisFactory<MethodBytecodeSet>
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)

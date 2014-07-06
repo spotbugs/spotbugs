@@ -24,16 +24,16 @@ import java.util.regex.Pattern;
 
 /**
  * StringMatcher that matches based on a regular expression.
- * 
+ *
  * @author David Hovemeyer
  */
 public class RegexStringMatcher implements StringMatcher {
 
-    private Pattern pattern;
+    private final Pattern pattern;
 
     /**
      * Constructor.
-     * 
+     *
      * @param patStr
      *            a String defining the regular expression pattern to match
      */

@@ -5,7 +5,7 @@ import edu.umd.cs.findbugs.props.PriorityAdjustment;
 
 /**
  * Warning property for FindDeadLocalStores.
- * 
+ *
  * @author David Hovemeyer
  */
 public class DeadLocalStoreProperty extends AbstractWarningProperty {

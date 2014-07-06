@@ -30,4 +30,3 @@ public interface Debug {
     public static final boolean VERIFY_INTEGRITY = SystemProperties.getBoolean("ba.verifyIntegrity");
 }
 
-// vim:ts=4

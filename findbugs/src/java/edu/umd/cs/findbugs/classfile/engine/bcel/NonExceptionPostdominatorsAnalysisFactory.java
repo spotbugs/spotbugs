@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 /**
  * Analysis engine to produce NonExceptionPostDominatorsAnalysis objects for
  * analyzed methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public class NonExceptionPostdominatorsAnalysisFactory extends AnalysisFactory<NonExceptionPostdominatorsAnalysis> {
@@ -39,7 +39,7 @@ public class NonExceptionPostdominatorsAnalysisFactory extends AnalysisFactory<N
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)

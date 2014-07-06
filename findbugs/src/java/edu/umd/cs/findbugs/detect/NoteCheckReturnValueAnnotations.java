@@ -39,8 +39,9 @@ public class NoteCheckReturnValueAnnotations extends BuildCheckReturnAnnotationD
     public void visitClassContext(ClassContext classContext) {
 
         JavaClass javaClass = classContext.getJavaClass();
-        if (!BCELUtil.preTiger(javaClass))
+        if (!BCELUtil.preTiger(javaClass)) {
             javaClass.accept(this);
+        }
     }
 
     @Override

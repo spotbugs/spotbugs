@@ -43,7 +43,7 @@ public abstract class AbstractField extends AbstractClassMember implements XFiel
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XField#getFieldDescriptor()
      */
     @Override
@@ -53,4 +53,3 @@ public abstract class AbstractField extends AbstractClassMember implements XFiel
     }
 }
 
-// vim:ts=4

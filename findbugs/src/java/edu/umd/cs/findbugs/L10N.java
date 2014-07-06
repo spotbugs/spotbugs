@@ -46,12 +46,13 @@ public class L10N {
     private static PrintWriter extraProperties;
     static {
         try {
-            if (GENERATE_MISSING_KEYS)
+            if (GENERATE_MISSING_KEYS) {
                 try {
                     extraProperties = UserTextFile.printWriter("/tmp/extra.properties");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
 
             bundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.gui.bundle.findbugs");
             bundle_en = ResourceBundle.getBundle("edu.umd.cs.findbugs.gui.bundle.findbugs", Locale.ENGLISH);
@@ -64,24 +65,27 @@ public class L10N {
     }
 
     private static String lookup(ResourceBundle b, String key) {
-        if (b == null || key == null)
+        if (b == null || key == null) {
             throw new MissingResourceException(null, null, null);
+        }
 
         return b.getString(key);
     }
 
     public static String getLocalString(String key, String defaultString) {
-        if (key == null)
+        if (key == null) {
             return "TRANSLATE(" + defaultString + ")";
+        }
         try {
             return lookup(bundle, key);
         } catch (MissingResourceException mre) {
             try {
                 String en = lookup(bundle_en, key);
-                if (DEBUG)
+                if (DEBUG) {
                     return "TRANSLATE(" + en + ")";
-                else
+                } else {
                     return en;
+                }
             } catch (MissingResourceException mre2) {
                 if (extraProperties != null) {
                     extraProperties.println(key + "=" + defaultString);
@@ -89,10 +93,11 @@ public class L10N {
                 }
                 // String en = "Default("+defaultString+")";
                 String en = defaultString;
-                if (DEBUG)
+                if (DEBUG) {
                     return "TRANSLATE(" + en + ")";
-                else
+                } else {
                     return en;
+                }
             }
         }
     }

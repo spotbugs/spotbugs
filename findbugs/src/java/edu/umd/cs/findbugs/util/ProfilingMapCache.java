@@ -36,8 +36,9 @@ public class ProfilingMapCache<K, V> extends MapCache<K, V> {
             @Override
             public void run() {
                 System.out.println("Profile for map cache " + ProfilingMapCache.this.name);
-                for (int i = 0; i < count.length; i++)
+                for (int i = 0; i < count.length; i++) {
                     System.out.printf("%4d %5d%n", i, count[i]);
+                }
             }
         });
     }
@@ -63,8 +64,9 @@ public class ProfilingMapCache<K, V> extends MapCache<K, V> {
 
     public String getStatistics() {
         StringBuilder b = new StringBuilder();
-        for (int c : count)
+        for (int c : count) {
             b.append(c).append(" ");
+        }
         return b.toString();
     }
 }

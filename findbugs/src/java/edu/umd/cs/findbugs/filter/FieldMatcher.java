@@ -48,33 +48,38 @@ public class FieldMatcher extends MemberMatcher implements Matcher {
     @Override
     public boolean match(BugInstance bugInstance) {
         FieldAnnotation fieldAnnotation = null;
-        if (role == null || role.equals(""))
+        if (role == null || role.equals("")) {
             fieldAnnotation = bugInstance.getPrimaryField();
-        else
-            for (BugAnnotation a : bugInstance.getAnnotations())
+        } else {
+            for (BugAnnotation a : bugInstance.getAnnotations()) {
                 if (a instanceof FieldAnnotation && role.equals(a.getDescription())) {
                     fieldAnnotation = (FieldAnnotation) a;
                     break;
                 }
+            }
+        }
         if (fieldAnnotation == null) {
             return false;
         }
         if (!name.match(fieldAnnotation.getFieldName())) {
             return false;
         }
-        if (signature != null && !signature.match(fieldAnnotation.getFieldSignature()))
+        if (signature != null && !signature.match(fieldAnnotation.getFieldSignature())) {
             return false;
+        }
         return true;
     }
 
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec());
-        if (signature != null)
+        if (signature != null) {
             attributes.addOptionalAttribute(
-                "signature", signature.getSpec());
-        if (disabled)
+                    "signature", signature.getSpec());
+        }
+        if (disabled) {
             attributes.addAttribute("disabled", "true");
+        }
         xmlOutput.openCloseTag("Field", attributes);
     }
 }

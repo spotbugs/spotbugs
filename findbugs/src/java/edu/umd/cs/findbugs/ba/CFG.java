@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.util.NullIterator;
 
 /**
  * Simple control flow graph abstraction for BCEL.
- * 
+ *
  * @see BasicBlock
  * @see Edge
  */
@@ -87,7 +87,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
      * both the instruction and the basic block.
      */
     private class LocationIterator implements Iterator<Location> {
-        private Iterator<BasicBlock> blockIter;
+        private final Iterator<BasicBlock> blockIter;
 
         private BasicBlock curBlock;
 
@@ -109,8 +109,9 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
         @Override
         public Location next() {
             findNext();
-            if (next == null)
+            if (next == null) {
                 throw new NoSuchElementException();
+            }
             Location result = next;
             next = null;
             return result;
@@ -126,15 +127,19 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
                 // Make sure we have an instruction iterator
                 if (instructionIter == null) {
                     if (!blockIter.hasNext())
+                    {
                         return; // At end
+                    }
                     curBlock = blockIter.next();
                     instructionIter = curBlock.instructionIterator();
                 }
 
-                if (instructionIter.hasNext())
+                if (instructionIter.hasNext()) {
                     next = new Location(instructionIter.next(), curBlock);
-                else
+                }
+                else {
                     instructionIter = null; // Go to next block
+                }
             }
         }
     }
@@ -238,7 +243,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
     /**
      * Add a unique edge to the graph. There must be no other edge already in
      * the CFG with the same source and destination blocks.
-     * 
+     *
      * @param source
      *            the source basic block
      * @param dest
@@ -258,7 +263,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
     /**
      * Look up an Edge by its id.
-     * 
+     *
      * @param id
      *            the id of the edge to look up
      * @return the Edge, or null if no matching Edge was found
@@ -267,15 +272,16 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
         Iterator<Edge> i = edgeIterator();
         while (i.hasNext()) {
             Edge edge = i.next();
-            if (edge.getId() == id)
+            if (edge.getId() == id) {
                 return edge;
+            }
         }
         return null;
     }
 
     /**
      * Look up a BasicBlock by its unique label.
-     * 
+     *
      * @param blockLabel
      *            the label of a BasicBlock
      * @return the BasicBlock with the given label, or null if there is no such
@@ -329,7 +335,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
      * Returns a collection of locations, ordered according to the compareTo
      * ordering over locations. If you want to list all the locations in a CFG
      * for debugging purposes, this is a good order to do so in.
-     * 
+     *
      * @return collection of locations
      */
     public Collection<Location> orderedLocations() {
@@ -343,7 +349,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
     /**
      * Get Collection of basic blocks whose IDs are specified by given BitSet.
-     * 
+     *
      * @param labelSet
      *            BitSet of block labels
      * @return a Collection containing the blocks whose IDs are given
@@ -352,8 +358,9 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
         LinkedList<BasicBlock> result = new LinkedList<BasicBlock>();
         for (Iterator<BasicBlock> i = blockIterator(); i.hasNext();) {
             BasicBlock block = i.next();
-            if (labelSet.get(block.getLabel()))
+            if (labelSet.get(block.getLabel())) {
                 result.add(block);
+            }
         }
         return result;
     }
@@ -361,7 +368,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
     /**
      * Get a Collection of basic blocks which contain the bytecode instruction
      * with given offset.
-     * 
+     *
      * @param offset
      *            the bytecode offset of an instruction
      * @return Collection of BasicBlock objects which contain the instruction
@@ -371,8 +378,9 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
         LinkedList<BasicBlock> result = new LinkedList<BasicBlock>();
         for (Iterator<BasicBlock> i = blockIterator(); i.hasNext();) {
             BasicBlock block = i.next();
-            if (block.containsInstructionWithOffset(offset))
+            if (block.containsInstructionWithOffset(offset)) {
                 result.add(block);
+            }
         }
         return result;
     }
@@ -380,7 +388,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
     /**
      * Get a Collection of Locations which specify the instruction at given
      * bytecode offset.
-     * 
+     *
      * @param offset
      *            the bytecode offset
      * @return all Locations referring to the instruction at that offset
@@ -398,7 +406,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
     /**
      * Get the first predecessor reachable from given edge type.
-     * 
+     *
      * @param target
      *            the target block
      * @param edgeType
@@ -413,7 +421,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
     /**
      * Get the first successor reachable from given edge type.
-     * 
+     *
      * @param source
      *            the source block
      * @param edgeType
@@ -429,18 +437,20 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
     /**
      * Get the Location where exception(s) thrown on given exception edge are
      * thrown.
-     * 
+     *
      * @param exceptionEdge
      *            the exception Edge
      * @return Location where exception(s) are thrown from
      */
     public Location getExceptionThrowerLocation(Edge exceptionEdge) {
-        if (!exceptionEdge.isExceptionEdge())
+        if (!exceptionEdge.isExceptionEdge()) {
             throw new IllegalArgumentException();
+        }
 
         InstructionHandle handle = exceptionEdge.getSource().getExceptionThrower();
-        if (handle == null)
+        if (handle == null) {
             throw new IllegalStateException();
+        }
 
         BasicBlock basicBlock = (handle.getInstruction() instanceof ATHROW) ? exceptionEdge.getSource()
                 : getSuccessorWithEdgeType(exceptionEdge.getSource(), EdgeTypes.FALL_THROUGH_EDGE);
@@ -469,7 +479,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
     /**
      * Get an Iterator over Edges removed from this CFG.
-     * 
+     *
      * @return Iterator over Edges removed from this CFG
      */
     public Iterator<Edge> removedEdgeIterator() {
@@ -478,7 +488,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
     /**
      * Get the first incoming edge in basic block with given type.
-     * 
+     *
      * @param basicBlock
      *            the basic block
      * @param edgeType
@@ -491,7 +501,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
     /**
      * Get the first outgoing edge in basic block with given type.
-     * 
+     *
      * @param basicBlock
      *            the basic block
      * @param edgeType
@@ -505,8 +515,9 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
     private Edge getEdgeWithType(Iterator<Edge> iter,  @Type int edgeType) {
         while (iter.hasNext()) {
             Edge edge = iter.next();
-            if (edge.getType() == edgeType)
+            if (edge.getType() == edgeType) {
                 return edge;
+            }
         }
         return null;
     }
@@ -544,9 +555,10 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
             InstructionHandle prev = null;
             for (Iterator<InstructionHandle> j = basicBlock.instructionIterator(); j.hasNext();) {
                 InstructionHandle handle = j.next();
-                if (prev != null && prev.getNext() != handle)
+                if (prev != null && prev.getNext() != handle) {
                     throw new IllegalStateException("Non-consecutive instructions in block " + basicBlock.getLabel() + ": prev="
                             + prev + ", handle=" + handle);
+                }
                 prev = handle;
             }
         }
@@ -559,7 +571,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.graph.AbstractGraph#removeEdge(edu.umd.cs.findbugs
      * .graph.AbstractEdge)
@@ -577,7 +589,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
     /**
      * Get number of non-exception control successors of given basic block.
-     * 
+     *
      * @param block
      *            a BasicBlock
      * @return number of non-exception control successors of the basic block
@@ -601,7 +613,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
      * Get the Location representing the entry to the CFG. Note that this is a
      * "fake" Location, and shouldn't be relied on to yield source line
      * information.
-     * 
+     *
      * @return Location at entry to CFG
      */
     public Location getLocationAtEntry() {
@@ -619,12 +631,14 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
             while (true) {
                 prevBlock = getPredecessorWithEdgeType(prevBlock, EdgeTypes.FALL_THROUGH_EDGE);
-                if (prevBlock == null)
+                if (prevBlock == null) {
                     return loc;
+                }
 
                 handle = prevBlock.getLastInstruction();
-                if (handle != null)
+                if (handle != null) {
                     return new Location(handle, prevBlock);
+                }
             }
 
         } else {
@@ -637,4 +651,3 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
 }
 
-// vim:ts=4

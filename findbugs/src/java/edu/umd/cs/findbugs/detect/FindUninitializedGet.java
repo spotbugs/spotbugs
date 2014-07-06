@@ -58,7 +58,7 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 
     boolean thisOnTOS = false;
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     public FindUninitializedGet(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -82,8 +82,9 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 
     @Override
     public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
-        if (!visitingField())
+        if (!visitingField()) {
             return;
+        }
         if (UnreadFields.isInjectionAttribute(annotationClass)) {
             containerFields.add(FieldAnnotation.fromVisitedField(this));
         }
@@ -102,8 +103,9 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 
     @Override
     public void visit(Code obj) {
-        if (!inConstructor)
+        if (!inConstructor) {
             return;
+        }
         uninitializedFieldReadAndCheckedForNonnull = null;
         super.visit(obj);
         for (BugInstance bug : pendingBugs) {
@@ -117,18 +119,21 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
         Iterator<BugInstance> i = pendingBugs.iterator();
         while (i.hasNext()) {
             BugInstance bug = i.next();
-            if (bug.getPrimarySourceLineAnnotation().getStartBytecode() >= target)
+            if (bug.getPrimarySourceLineAnnotation().getStartBytecode() >= target) {
                 i.remove();
+            }
         }
     }
 
     @Override
     public void sawOpcode(int seen) {
-        if (!inConstructor)
+        if (!inConstructor) {
             return;
+        }
         if (uninitializedFieldReadAndCheckedForNonnull != null) {
-            if (seen == NEW && getClassConstantOperand().endsWith("Exception"))
+            if (seen == NEW && getClassConstantOperand().endsWith("Exception")) {
                 uninitializedFieldReadAndCheckedForNonnull.raisePriority();
+            }
             uninitializedFieldReadAndCheckedForNonnull = null;
         }
 
@@ -137,10 +142,9 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
             return;
         }
 
-        if (seen == PUTFIELD && getClassConstantOperand().equals(getClassName()))
+        if (seen == PUTFIELD && getClassConstantOperand().equals(getClassName())) {
             initializedFields.add(FieldAnnotation.fromReferencedField(this));
-
-        else if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName())) {
+        } else if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName())) {
             UnreadFieldsData unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFieldsData();
             XField xField = XFactory.createReferencedXField(this);
             FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
@@ -151,18 +155,19 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
                 // OPCODE_NAMES[nextOpcode]);
                 LocalVariableAnnotation possibleTarget = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(),
                         getMethod(), getNameConstantOperand(), xField.getSignature());
-                if (possibleTarget == null)
+                if (possibleTarget == null) {
                     possibleTarget = LocalVariableAnnotation.findUniqueBestMatchingParameter(getClassContext(), getMethod(),
                             getNameConstantOperand(), getSigConstantOperand());
+                }
                 int priority = unreadFields.getReadFields().contains(xField) ? NORMAL_PRIORITY : LOW_PRIORITY;
                 boolean priorityLoweredBecauseOfIfNonnullTest = false;
-                if (possibleTarget != null)
+                if (possibleTarget != null) {
                     priority--;
-                else {
+                } else {
                     FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
-                    if (fieldSummary.callsOverriddenMethodsFromSuperConstructor(getClassDescriptor()))
+                    if (fieldSummary.callsOverriddenMethodsFromSuperConstructor(getClassDescriptor())) {
                         priority++;
-                    else if (nextOpcode == IFNONNULL) {
+                    } else if (nextOpcode == IFNONNULL) {
                         priority++;
                         priorityLoweredBecauseOfIfNonnullTest = true;
                     }
@@ -180,8 +185,8 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
                 getClassName())))
                 || (seen == INVOKESTATIC && getNameConstantOperand().equals("doPrivileged") && getClassConstantOperand().equals(
                         "java/security/AccessController"))
-                || (seen == INVOKEVIRTUAL && getClassConstantOperand().equals(getClassName()))
-                || (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("start"))) {
+                        || (seen == INVOKEVIRTUAL && getClassConstantOperand().equals(getClassName()))
+                        || (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("start"))) {
 
             inConstructor = false;
         }

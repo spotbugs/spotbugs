@@ -23,7 +23,7 @@ import org.apache.tools.ant.BuildException;
 
 /**
  * Ant task to invoke the SetBugDatabaseInfo program in the workflow package
- * 
+ *
  * @author David Hovemeyer
  * @author Ben Langmead
  */
@@ -100,7 +100,7 @@ public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#checkParameters()
      */
     @Override
@@ -134,7 +134,7 @@ public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#configureFindbugsEngine
      * ()
@@ -158,7 +158,7 @@ public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#beforeExecuteJavaProcess
      * ()
@@ -170,7 +170,7 @@ public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#afterExecuteJavaProcess
      * (int)

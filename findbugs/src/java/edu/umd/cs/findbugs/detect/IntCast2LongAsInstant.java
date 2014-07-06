@@ -81,7 +81,7 @@ public class IntCast2LongAsInstant extends OpcodeStackDetector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.Detector#report()
      */
     @Override

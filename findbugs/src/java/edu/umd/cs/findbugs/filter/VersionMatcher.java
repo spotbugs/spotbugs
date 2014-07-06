@@ -37,15 +37,17 @@ public class VersionMatcher {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || this.getClass() != o.getClass())
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
+        }
         VersionMatcher m = (VersionMatcher) o;
         return version == m.version && relOp.equals(m.relOp);
     }
 
     public VersionMatcher(long version, @Nonnull RelationalOp relOp) {
-        if (relOp == null)
+        if (relOp == null) {
             throw new NullPointerException("relOp must be nonnull");
+        }
         this.version = version;
         this.relOp = relOp;
     }

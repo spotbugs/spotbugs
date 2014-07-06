@@ -259,10 +259,11 @@ public class TextUICommandLine extends FindBugsCommandLine {
     protected void handleOption(String option, String optionExtraPart) {
         parsedOptions.put(option, optionExtraPart);
         if (DEBUG) {
-            if (optionExtraPart != null)
+            if (optionExtraPart != null) {
                 System.out.println("option " + option + ":" + optionExtraPart);
-            else
+            } else {
                 System.out.println("option " + option);
+            }
         }
         if (option.equals("-showPlugins")) {
             System.out.println("Available plugins:");
@@ -271,49 +272,53 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 Plugin plugin = i.next();
                 System.out.println("  " + plugin.getPluginId() + " (default: " + (plugin.isEnabledByDefault() ? "enabled" : "disabled")
                         + ")");
-                if (plugin.getShortDescription() != null)
+                if (plugin.getShortDescription() != null) {
                     System.out.println("    Description: " + plugin.getShortDescription());
-                if (plugin.getProvider() != null)
+                }
+                if (plugin.getProvider() != null) {
                     System.out.println("    Provider: " + plugin.getProvider());
-                if (plugin.getWebsite() != null)
+                }
+                if (plugin.getWebsite() != null) {
                     System.out.println("    Website: " + plugin.getWebsite());
+                }
                 ++count;
             }
             if (count == 0) {
                 System.out.println("  No plugins are available (FindBugs installed incorrectly?)");
             }
             System.exit(0);
-        } else if (option.equals("-experimental"))
-            priorityThreshold = Detector.EXP_PRIORITY;
-        else if (option.equals("-longBugCodes"))
+        } else if (option.equals("-experimental")) {
+            priorityThreshold = Priorities.EXP_PRIORITY;
+        } else if (option.equals("-longBugCodes")) {
             useLongBugCodes = true;
-        else if (option.equals("-progress")) {
+        } else if (option.equals("-progress")) {
             showProgress = true;
-        } else if (option.equals("-timestampNow"))
+        } else if (option.equals("-timestampNow")) {
             project.setTimestamp(System.currentTimeMillis());
-        else if (option.equals("-low"))
-            priorityThreshold = Detector.LOW_PRIORITY;
-        else if (option.equals("-medium"))
-            priorityThreshold = Detector.NORMAL_PRIORITY;
-        else if (option.equals("-high"))
-            priorityThreshold = Detector.HIGH_PRIORITY;
-        else if (option.equals("-dontCombineWarnings"))
+        } else if (option.equals("-low")) {
+            priorityThreshold = Priorities.LOW_PRIORITY;
+        } else if (option.equals("-medium")) {
+            priorityThreshold = Priorities.NORMAL_PRIORITY;
+        } else if (option.equals("-high")) {
+            priorityThreshold = Priorities.HIGH_PRIORITY;
+        } else if (option.equals("-dontCombineWarnings")) {
             mergeSimilarWarnings = false;
-        else if (option.equals("-sortByClass"))
+        } else if (option.equals("-sortByClass")) {
             bugReporterType = SORTING_REPORTER;
-        else if (option.equals("-xml")) {
+        } else if (option.equals("-xml")) {
             bugReporterType = XML_REPORTER;
             if (!optionExtraPart.equals("")) {
-                if (optionExtraPart.equals("withMessages"))
+                if (optionExtraPart.equals("withMessages")) {
                     xmlWithMessages = true;
-                else if (optionExtraPart.equals("withAbridgedMessages")) {
+                } else if (optionExtraPart.equals("withAbridgedMessages")) {
                     xmlWithMessages = true;
                     xmlWithAbridgedMessages = true;
                 } else if (optionExtraPart.equals("minimal")) {
                     xmlWithMessages = false;
                     xmlMinimal = true;
-                } else
+                } else {
                     throw new IllegalArgumentException("Unknown option: -xml:" + optionExtraPart);
+                }
             }
         } else if (option.equals("-emacs")) {
             bugReporterType = EMACS_REPORTER;
@@ -345,8 +350,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 BufferedReader in = UTF8.bufferedReader(System.in);
                 while (true) {
                     String s = in.readLine();
-                    if (s == null)
+                    if (s == null) {
                         break;
+                    }
                     addAuxClassPathEntries(s);
                 }
                 in.close();
@@ -381,42 +387,47 @@ public class TextUICommandLine extends FindBugsCommandLine {
             System.out.println("option " + option + " is " + argument);
         }
         if (option.equals("-outputFile") || option.equals("-output")) {
-            if (outputFile != null)
+            if (outputFile != null) {
                 throw new IllegalArgumentException("output set twice; to " + outputFile + " and to " + argument);
+            }
             outputFile = new File(argument);
 
             String fileName = outputFile.getName();
             String extension = Util.getFileExtensionIgnoringGz(outputFile);
-            if (bugReporterType == PRINTING_REPORTER && (extension.equals("xml") || extension.equals("fba")))
+            if (bugReporterType == PRINTING_REPORTER && (extension.equals("xml") || extension.equals("fba"))) {
                 bugReporterType = XML_REPORTER;
+            }
 
             try {
                 OutputStream oStream = new BufferedOutputStream(new FileOutputStream(outputFile));
-                if (fileName.endsWith(".gz"))
+                if (fileName.endsWith(".gz")) {
                     oStream = new GZIPOutputStream(oStream);
+                }
                 outputStream = UTF8.printStream(oStream);
             } catch (IOException e) {
                 System.err.println("Couldn't open " + outputFile + " for output: " + e.toString());
                 System.exit(1);
             }
-        } else if (option.equals("-cloud"))
+        } else if (option.equals("-cloud")) {
             project.setCloudId(argument);
-        else if (option.equals("-cloudProperty")) {
+        } else if (option.equals("-cloudProperty")) {
             int e = argument.indexOf('=');
-            if (e == -1)
+            if (e == -1) {
                 throw new IllegalArgumentException("Bad cloud property: " + argument);
+            }
             String key = argument.substring(0, e);
             String value = argument.substring(e + 1);
             project.getCloudProperties().setProperty(key, value);
 
         } else if (option.equals("-bugReporters")) {
             for (String s : argument.split(",")) {
-                if (s.charAt(0) == '-')
+                if (s.charAt(0) == '-') {
                     disabledBugReporterDecorators.add(s.substring(1));
-                else if (s.charAt(0) == '+')
+                } else if (s.charAt(0) == '+') {
                     enabledBugReporterDecorators.add(s.substring(1));
-                else
+                } else {
                     enabledBugReporterDecorators.add(s);
+                }
             }
 
         } else if (option.equals("-maxRank")) {
@@ -444,8 +455,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
             while (tok.hasMoreTokens()) {
                 String visitorName = tok.nextToken().trim();
                 DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(visitorName);
-                if (factory == null)
+                if (factory == null) {
                     throw new IllegalArgumentException("Unknown detector: " + visitorName);
+                }
                 getUserPreferences().enableDetector(factory, !omit);
             }
         } else if (option.equals("-chooseVisitors")) {
@@ -457,8 +469,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 @Override
                 public void choose(boolean enabled, String what) {
                     DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(what);
-                    if (factory == null)
+                    if (factory == null) {
                         throw new IllegalArgumentException("Unknown detector: " + what);
+                    }
                     if (FindBugs.DEBUG) {
                         System.err.println("Detector " + factory.getShortName() + " " + (enabled ? "enabled" : "disabled")
                                 + ", userPreferences=" + System.identityHashCode(getUserPreferences()));
@@ -472,8 +485,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 @Override
                 public void choose(boolean enabled, String what) {
                     Plugin plugin = DetectorFactoryCollection.instance().getPluginById(what);
-                    if (plugin == null)
+                    if (plugin == null) {
                         throw new IllegalArgumentException("Unknown plugin: " + what);
+                    }
                     plugin.setGloballyEnabled(enabled);
                 }
             });
@@ -485,31 +499,34 @@ public class TextUICommandLine extends FindBugsCommandLine {
             while (tok.hasMoreTokens()) {
                 String token = tok.nextToken();
                 int eq = token.indexOf('=');
-                if (eq < 0)
+                if (eq < 0) {
                     throw new IllegalArgumentException("Illegal priority adjustment: " + token);
+                }
 
                 String adjustmentTarget = token.substring(0, eq);
                 String adjustment = token.substring(eq + 1);
 
                 int adjustmentAmount;
-                if (adjustment.equals("raise"))
+                if (adjustment.equals("raise")) {
                     adjustmentAmount = -1;
-                else if (adjustment.equals("lower"))
+                } else if (adjustment.equals("lower")) {
                     adjustmentAmount = +1;
-                else if (adjustment.equals("suppress"))
+                } else if (adjustment.equals("suppress")) {
                     adjustmentAmount = +100;
-                else
+                } else {
                     throw new IllegalArgumentException("Illegal priority adjustment value: " + adjustment);
+                }
 
                 DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(adjustmentTarget);
-                if (factory != null)
+                if (factory != null) {
                     factory.setPriorityAdjustment(adjustmentAmount);
-                else {
+                } else {
                     //
                     DetectorFactoryCollection i18n = DetectorFactoryCollection.instance();
                     BugPattern pattern = i18n.lookupBugPattern(adjustmentTarget);
-                    if (pattern == null)
+                    if (pattern == null) {
                         throw new IllegalArgumentException("Unknown detector: " + adjustmentTarget);
+                    }
                     pattern.adjustPriority(adjustmentAmount);
                 }
 
@@ -523,12 +540,13 @@ public class TextUICommandLine extends FindBugsCommandLine {
             StringTokenizer tok = new StringTokenizer(argument, ",");
             while (tok.hasMoreTokens()) {
                 String item = tok.nextToken();
-                if (item.endsWith(".-"))
+                if (item.endsWith(".-")) {
                     classScreener.addAllowedPrefix(item.substring(0, item.length() - 1));
-                else if (item.endsWith(".*"))
+                } else if (item.endsWith(".*")) {
                     classScreener.addAllowedPackage(item.substring(0, item.length() - 1));
-                else
+                } else {
                     classScreener.addAllowedClass(item);
+                }
             }
         } else if (option.equals("-exclude")) {
             project.getConfiguration().getExcludeFilterFiles().put(argument, true);
@@ -544,8 +562,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
             addAuxClassPathEntries(argument);
         } else if (option.equals("-sourcepath")) {
             StringTokenizer tok = new StringTokenizer(argument, File.pathSeparator);
-            while (tok.hasMoreTokens())
+            while (tok.hasMoreTokens()) {
                 project.addSourceDir(new File(tok.nextToken()).getAbsolutePath());
+            }
         } else if(option.equals("-userPrefs")){
             UserPreferences prefs = UserPreferences.createDefaultUserPreferences();
             prefs.read(new FileInputStream(argument));
@@ -562,8 +581,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
      */
     private void addAuxClassPathEntries(String argument) {
         StringTokenizer tok = new StringTokenizer(argument, File.pathSeparator);
-        while (tok.hasMoreTokens())
+        while (tok.hasMoreTokens()) {
             project.addAuxClasspathEntry(tok.nextToken());
+        }
     }
 
     /**
@@ -580,8 +600,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
         StringTokenizer tok = new StringTokenizer(argument, ",");
         while (tok.hasMoreTokens()) {
             String what = tok.nextToken().trim();
-            if (!what.startsWith("+") && !what.startsWith("-"))
+            if (!what.startsWith("+") && !what.startsWith("-")) {
                 throw new IllegalArgumentException(desc + " must start with " + "\"+\" or \"-\" (saw " + what + ")");
+            }
             boolean enabled = what.startsWith("+");
             chooser.choose(enabled, what.substring(1));
         }
@@ -621,7 +642,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
             textuiBugReporter = xmlBugReporter;
         }
-            break;
+        break;
         case EMACS_REPORTER:
             textuiBugReporter = new EmacsBugReporter();
             break;
@@ -635,16 +656,18 @@ public class TextUICommandLine extends FindBugsCommandLine {
             throw new IllegalStateException();
         }
 
-        if (quiet)
+        if (quiet) {
             textuiBugReporter.setErrorVerbosity(BugReporter.SILENT);
+        }
 
         textuiBugReporter.setPriorityThreshold(priorityThreshold);
         textuiBugReporter.setRankThreshold(rankThreshold);
         textuiBugReporter.setUseLongBugCodes(useLongBugCodes);
 
         findBugs.setRankThreshold(rankThreshold);
-        if (outputStream != null)
+        if (outputStream != null) {
             textuiBugReporter.setOutputStream(outputStream);
+        }
 
         BugReporter bugReporter = textuiBugReporter;
 

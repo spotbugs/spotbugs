@@ -21,17 +21,17 @@ package edu.umd.cs.findbugs.ba;
 
 /**
  * Dataflow analysis to compute dominator sets for a CFG.
- * 
+ *
  * @author David Hovemeyer
  * @see CFG
  * @see AbstractDominatorsAnalysis
  */
 public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
-    private DepthFirstSearch dfs;
+    private final DepthFirstSearch dfs;
 
     /**
      * Constructor.
-     * 
+     *
      * @param cfg
      *            the CFG to compute dominator relationships for
      * @param dfs
@@ -94,4 +94,3 @@ public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
     // }
 }
 
-// vim:ts=4

@@ -21,17 +21,17 @@ package edu.umd.cs.findbugs.classfile;
 
 /**
  * Exception to indicate that a resource was not found.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ResourceNotFoundException extends CheckedAnalysisException {
-    private String resourceName;
+    private final String resourceName;
 
     public static final String MESSAGE_PREFIX = "Resource not found: ";
 
     /**
      * Constructor.
-     * 
+     *
      * @param resourceName
      *            name of the missing resource
      */
@@ -42,7 +42,7 @@ public class ResourceNotFoundException extends CheckedAnalysisException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param resourceName
      *            name of the missing resource
      * @param cause
@@ -55,7 +55,7 @@ public class ResourceNotFoundException extends CheckedAnalysisException {
 
     /**
      * Get the name of the resource that was not found.
-     * 
+     *
      * @return the name of the resource that was not found
      */
     public String getResourceName() {

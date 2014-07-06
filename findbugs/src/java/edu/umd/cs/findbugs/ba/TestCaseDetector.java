@@ -33,16 +33,18 @@ public class TestCaseDetector {
     private static final ClassDescriptor JUNIT3TESTCASE = DescriptorFactory.createClassDescriptor("junit/framework/TestCase");
 
     public static boolean likelyTestCase(XMethod m) {
-        if (m.getAnnotation(JUNIT4TEST) != null)
+        if (m.getAnnotation(JUNIT4TEST) != null) {
             return true;
+        }
 
         ClassDescriptor c = m.getClassDescriptor();
         if (m.getName().startsWith("test") || m.getName().startsWith("assert")) {
             Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 
             try {
-                if (subtypes2.isSubtype(c, JUNIT3TESTCASE))
+                if (subtypes2.isSubtype(c, JUNIT3TESTCASE)) {
                     return true;
+                }
             } catch (ClassNotFoundException e) {
                 AnalysisContext.reportMissingClass(e);
             }

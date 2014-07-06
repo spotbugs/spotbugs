@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class ConfusedInheritance extends PreorderVisitor implements Detector {
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private JavaClass cls;
 

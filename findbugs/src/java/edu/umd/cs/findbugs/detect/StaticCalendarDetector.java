@@ -56,7 +56,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  * {@link java.util.Calendar} is unsafe for multithreaded use, static fields
  * look suspicous. To work correctly, all access would need to be synchronized
  * by the client which cannot be guaranteed.
- * 
+ *
  * @author Daniel Schneller
  */
 public class StaticCalendarDetector extends OpcodeStackDetector {
@@ -102,11 +102,11 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
     /** Stores current LDF */
     private LockDataflow currentLockDataFlow;
 
-    private Map<XField, BugInstance> pendingBugs = new HashMap<XField, BugInstance>();
+    private final Map<XField, BugInstance> pendingBugs = new HashMap<XField, BugInstance>();
 
     /**
      * Creates a new instance of this Detector.
-     * 
+     *
      * @param aReporter
      *            {@link BugReporter} instance to report found problems to.
      */
@@ -144,16 +144,16 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
                 }
                 try {
                     ClassDescriptor cDesc = DescriptorFactory.createClassDescriptor(className);
-                    
+
                     if (subtypes2.isSubtype(cDesc, calendarType) || subtypes2.isSubtype(cDesc, dateFormatType)) {
                         sawDateClass = true;
                         break;
                     }
                 } catch (ClassNotFoundException e) {
-                  reporter.reportMissingClass(e);
+                    reporter.reportMissingClass(e);
                 }
-              
-                  
+
+
             }
         }
     }
@@ -175,15 +175,17 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
             return;
         }
         String superclassName = getSuperclassName();
-        if (!aField.isStatic() && !superclassName.equals("java/lang/Enum"))
+        if (!aField.isStatic() && !superclassName.equals("java/lang/Enum")) {
             return;
-        if (!aField.isPublic() && !aField.isProtected())
+        }
+        if (!aField.isPublic() && !aField.isProtected()) {
             return;
+        }
         ClassDescriptor classOfField = DescriptorFactory.createClassDescriptorFromFieldSignature(aField.getSignature());
         String tBugType = null;
         int priority = aField.isPublic() && aField.isFinal() && aField.getName().equals(aField.getName().toUpperCase())
                 && getThisClass().isPublic() ? HIGH_PRIORITY : NORMAL_PRIORITY;
-        if (classOfField != null)
+        if (classOfField != null) {
             try {
                 if (subtypes2.isSubtype(classOfField, calendarType)) {
                     tBugType = "STCAL_STATIC_CALENDAR_INSTANCE";
@@ -191,8 +193,9 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
                 } else if (subtypes2.isSubtype(classOfField, dateFormatType)) {
                     tBugType = "STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE";
                 }
-                if (getClassContext().getXClass().usesConcurrency())
+                if (getClassContext().getXClass().usesConcurrency()) {
                     priority--;
+                }
                 if (tBugType != null) {
 
                     pendingBugs.put(getXField(), new BugInstance(this, tBugType, priority).addClass(currentClass).addField(this));
@@ -200,19 +203,20 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
             } catch (ClassNotFoundException e) {
                 AnalysisContext.reportMissingClass(e);
             }
+        }
 
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.visitclass.BetterVisitor#visitMethod(org.apache.bcel
      * .classfile.Method)
      */
     @Override
     public void visitMethod(Method obj) {
-        if (sawDateClass)
+        if (sawDateClass) {
             try {
                 super.visitMethod(obj);
                 currentMethod = obj;
@@ -223,6 +227,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
             } catch (DataflowAnalysisException e) {
                 reporter.logError("Synchronization check in Static Calendar Detector caught an error.", e);
             }
+        }
     }
 
     @Override
@@ -239,7 +244,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
      * {@link java.util.Calendar} or {@link java.text.DateFormat} fields. The
      * {@link OpcodeStack} is used to determine if an invocation is done on such
      * a static field.
-     * 
+     *
      * @param seen
      *            An opcode to be analyzed
      * @see edu.umd.cs.findbugs.visitclass.DismantleBytecode#sawOpcode(int)
@@ -290,11 +295,13 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
                 return;
             }
 
-            if (getMethodName().equals("<clinit>") && field.getClassName().equals(getDottedClassName()))
+            if (getMethodName().equals("<clinit>") && field.getClassName().equals(getDottedClassName())) {
                 return;
+            }
             String invokedName = getNameConstantOperand();
-            if (invokedName.startsWith("get"))
+            if (invokedName.startsWith("get")) {
                 return;
+            }
             if (invokedName.equals("equals") && numArguments == 1) {
                 OpcodeStack.Item passedAsArgument = stack.getStackItem(0);
                 field = passedAsArgument.getXField();
@@ -305,8 +312,9 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 
             if (!SystemProperties.getBoolean(PROP_SKIP_SYNCHRONIZED_CHECK)) {
                 // check synchronization
-                if (isLocked())
+                if (isLocked()) {
                     return;
+                }
             }
 
             // if we get here, we want to generate a report, depending on the
@@ -316,19 +324,22 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
                 tBugType = "STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE";
             } else if (isDateFormat) {
                 tBugType = "STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE";
-            } else
+            } else {
                 throw new IllegalStateException("Not possible");
+            }
             int priority;
-            if (amVisitingMainMethod())
+            if (amVisitingMainMethod()) {
                 priority = LOW_PRIORITY;
-            else {
-                if (getClassContext().getXClass().usesConcurrency())
+            } else {
+                if (getClassContext().getXClass().usesConcurrency()) {
                     priority = NORMAL_PRIORITY;
-                else
+                } else {
                     priority = LOW_PRIORITY;
+                }
                 if (invokedName.startsWith("set") || invokedName.equals("format") || invokedName.equals("add")
-                        || invokedName.equals("clear") || invokedName.equals("parse") || invokedName.equals("applyPattern"))
+                        || invokedName.equals("clear") || invokedName.equals("parse") || invokedName.equals("applyPattern")) {
                     priority--;
+                }
             }
             bugAccumulator.accumulateBug(new BugInstance(this, tBugType, priority).addClassAndMethod(this).addCalledMethod(this)
                     .addOptionalField(field), this);

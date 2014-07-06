@@ -74,7 +74,7 @@ public class InconsistentAnnotations implements Detector, UseAnnotationDatabase 
 
                         reporter.reportBug(new BugInstance(this, "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE",
                                 NORMAL_PRIORITY).addClassAndMethod(jclass, method).add(
-                                LocalVariableAnnotation.getParameterLocalVariableAnnotation(method, paramLocal)));
+                                        LocalVariableAnnotation.getParameterLocalVariableAnnotation(method, paramLocal)));
 
                     }
 

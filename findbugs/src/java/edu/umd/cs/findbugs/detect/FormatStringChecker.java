@@ -120,35 +120,37 @@ public class FormatStringChecker extends OpcodeStackDetector {
                             && "format".equals(nm) || "java/io/PrintStream".equals(cl) && "format".equals(nm)
                             || "java/io/PrintStream".equals(cl) && "printf".equals(nm) || cl.endsWith("Writer")
                             && "format".equals(nm) || cl.endsWith("Writer") && "printf".equals(nm)) || cl.endsWith("Logger")
-                    && nm.endsWith("fmt")) {
+                            && nm.endsWith("fmt")) {
 
-                if (formatString.indexOf('\n') >= 0)
+                if (formatString.indexOf('\n') >= 0) {
                     bugReporter.reportBug(new BugInstance(this, "VA_FORMAT_STRING_USES_NEWLINE", NORMAL_PRIORITY)
-                            .addClassAndMethod(this).addCalledMethod(this).addString(formatString)
-                            .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
+                    .addClassAndMethod(this).addCalledMethod(this).addString(formatString)
+                    .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
+                }
                 try {
                     String[] signatures = new String[arguments.length];
-                    for (int i = 0; i < signatures.length; i++)
+                    for (int i = 0; i < signatures.length; i++) {
                         signatures[i] = arguments[i].getSignature();
+                    }
                     Formatter.check(formatString, signatures);
 
                 } catch (IllegalFormatConversionException e) {
 
-                    if (e.getConversion() == 'b')
+                    if (e.getConversion() == 'b') {
                         bugReporter.reportBug(new BugInstance(this, "VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN", HIGH_PRIORITY)
-                                .addClassAndMethod(this).addCalledMethod(this).addType(e.getArgumentSignature())
-                                .describe(TypeAnnotation.FOUND_ROLE).addString(e.getFormatSpecifier())
-                                .describe(StringAnnotation.FORMAT_SPECIFIER_ROLE).addString(formatString)
-                                .describe(StringAnnotation.FORMAT_STRING_ROLE)
-                                .addValueSource(arguments[e.getArgIndex()], getMethod(), getPC()).addSourceLine(this));
-                    else if (e.getArgumentSignature().charAt(0) == '[' && e.getConversion() == 's')
+                        .addClassAndMethod(this).addCalledMethod(this).addType(e.getArgumentSignature())
+                        .describe(TypeAnnotation.FOUND_ROLE).addString(e.getFormatSpecifier())
+                        .describe(StringAnnotation.FORMAT_SPECIFIER_ROLE).addString(formatString)
+                        .describe(StringAnnotation.FORMAT_STRING_ROLE)
+                        .addValueSource(arguments[e.getArgIndex()], getMethod(), getPC()).addSourceLine(this));
+                    } else if (e.getArgumentSignature().charAt(0) == '[' && e.getConversion() == 's') {
                         bugReporter.reportBug(new BugInstance(this, "VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY", HIGH_PRIORITY)
-                                .addClassAndMethod(this).addCalledMethod(this).addType(e.getArgumentSignature())
-                                .describe(TypeAnnotation.FOUND_ROLE).addString(e.getFormatSpecifier())
-                                .describe(StringAnnotation.FORMAT_SPECIFIER_ROLE).addString(formatString)
-                                .describe(StringAnnotation.FORMAT_STRING_ROLE)
-                                .addValueSource(arguments[e.getArgIndex()], getMethod(), getPC()).addSourceLine(this));
-                    else {
+                        .addClassAndMethod(this).addCalledMethod(this).addType(e.getArgumentSignature())
+                        .describe(TypeAnnotation.FOUND_ROLE).addString(e.getFormatSpecifier())
+                        .describe(StringAnnotation.FORMAT_SPECIFIER_ROLE).addString(formatString)
+                        .describe(StringAnnotation.FORMAT_STRING_ROLE)
+                        .addValueSource(arguments[e.getArgIndex()], getMethod(), getPC()).addSourceLine(this));
+                    } else {
                         String aSig = e.getArgumentSignature();
                         char conversion = e.getConversion();
                         if ((conversion == 't' || conversion == 'T') && aSig.charAt(0) == 'L') {
@@ -161,35 +163,35 @@ public class FormatStringChecker extends OpcodeStackDetector {
                                     return;
                                 }
                             } catch (ClassNotFoundException e1) {
-                               AnalysisContext.reportMissingClass(e1);
+                                AnalysisContext.reportMissingClass(e1);
                             }
 
                         }
                         bugReporter.reportBug(new BugInstance(this, "VA_FORMAT_STRING_BAD_CONVERSION", HIGH_PRIORITY)
-                                .addClassAndMethod(this).addCalledMethod(this).addType(aSig)
-                                .describe(TypeAnnotation.FOUND_ROLE).addString(e.getFormatSpecifier())
-                                .describe(StringAnnotation.FORMAT_SPECIFIER_ROLE).addString(formatString)
-                                .describe(StringAnnotation.FORMAT_STRING_ROLE)
-                                .addValueSource(arguments[e.getArgIndex()], getMethod(), getPC()).addSourceLine(this));
+                        .addClassAndMethod(this).addCalledMethod(this).addType(aSig)
+                        .describe(TypeAnnotation.FOUND_ROLE).addString(e.getFormatSpecifier())
+                        .describe(StringAnnotation.FORMAT_SPECIFIER_ROLE).addString(formatString)
+                        .describe(StringAnnotation.FORMAT_STRING_ROLE)
+                        .addValueSource(arguments[e.getArgIndex()], getMethod(), getPC()).addSourceLine(this));
                     }
                 } catch (IllegalArgumentException e) {
                     bugReporter.reportBug(new BugInstance(this, "VA_FORMAT_STRING_ILLEGAL", HIGH_PRIORITY)
-                            .addClassAndMethod(this).addCalledMethod(this).addString(formatString)
-                            .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
+                    .addClassAndMethod(this).addCalledMethod(this).addString(formatString)
+                    .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
                 } catch (MissingFormatArgumentException e) {
 
                     if (e.pos < 0) {
                         bugReporter.reportBug(new BugInstance(this, "VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT", HIGH_PRIORITY)
-                                .addClassAndMethod(this).addCalledMethod(this).addString(e.formatSpecifier)
-                                .describe(StringAnnotation.FORMAT_SPECIFIER_ROLE).addString(formatString)
-                                .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
+                        .addClassAndMethod(this).addCalledMethod(this).addString(e.formatSpecifier)
+                        .describe(StringAnnotation.FORMAT_SPECIFIER_ROLE).addString(formatString)
+                        .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
                     } else {
                         bugReporter.reportBug(new BugInstance(this, "VA_FORMAT_STRING_MISSING_ARGUMENT", HIGH_PRIORITY)
-                                .addClassAndMethod(this).addCalledMethod(this).addString(e.formatSpecifier)
-                                .describe(StringAnnotation.FORMAT_SPECIFIER_ROLE).addString(formatString)
-                                .describe(StringAnnotation.FORMAT_STRING_ROLE).addInt(e.pos + 1)
-                                .describe(IntAnnotation.INT_EXPECTED_ARGUMENTS).addInt(arguments.length)
-                                .describe(IntAnnotation.INT_ACTUAL_ARGUMENTS).addSourceLine(this));
+                        .addClassAndMethod(this).addCalledMethod(this).addString(e.formatSpecifier)
+                        .describe(StringAnnotation.FORMAT_SPECIFIER_ROLE).addString(formatString)
+                        .describe(StringAnnotation.FORMAT_STRING_ROLE).addInt(e.pos + 1)
+                        .describe(IntAnnotation.INT_EXPECTED_ARGUMENTS).addInt(arguments.length)
+                        .describe(IntAnnotation.INT_ACTUAL_ARGUMENTS).addSourceLine(this));
                     }
 
                 } catch (ExtraFormatArgumentsException e) {
@@ -197,8 +199,9 @@ public class FormatStringChecker extends OpcodeStackDetector {
                     String pattern = "VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED";
                     if (e.used == 0) {
                         priority = HIGH_PRIORITY;
-                        if (formatString.indexOf("{0") >= 0 || formatString.indexOf("{1") >= 0)
+                        if (formatString.indexOf("{0") >= 0 || formatString.indexOf("{1") >= 0) {
                             pattern = "VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED";
+                        }
                     }
 
                     bugReporter.reportBug(new BugInstance(this, pattern, priority).addClassAndMethod(this).addCalledMethod(this)

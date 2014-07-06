@@ -41,18 +41,20 @@ public class PluginUpdateDialog implements Serializable {
         UpdateChecker.PluginUpdate core = sortUpdates(updates, sortedUpdates);
 
         if (DetectorFactoryCollection.instance().getUpdateChecker()
-                .updatesHaveBeenSeenBefore(sortedUpdates) && !force)
+                .updatesHaveBeenSeenBefore(sortedUpdates) && !force) {
             return;
+        }
 
         String headline;
-        if (core != null && updates.size() >= 2)
+        if (core != null && updates.size() >= 2) {
             headline = "FindBugs and some plugins have updates";
-        else if (updates.isEmpty())
+        } else if (updates.isEmpty()) {
             headline = "FindBugs and all plugins are up to date!";
-        else if (core == null)
+        } else if (core == null) {
             headline = "Some FindBugs plugins have updates";
-        else
+        } else {
             headline = null;
+        }
 
         final JPanel comp = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -106,10 +108,11 @@ public class PluginUpdateDialog implements Serializable {
 
     private JLabel createPluginLabel(UpdateChecker.PluginUpdate update) {
         String name;
-        if (update.getPlugin().isCorePlugin())
+        if (update.getPlugin().isCorePlugin()) {
             name = "FindBugs";
-        else
+        } else {
             name = update.getPlugin().getShortDescription();
+        }
         JLabel label = new JLabel(MessageFormat.format(
                 "<html><b>{0} {2}</b> is available<br><i><small>(currently installed: {1})",
                 name, update.getPlugin().getVersion(), update.getVersion()));
@@ -117,12 +120,12 @@ public class PluginUpdateDialog implements Serializable {
         return label;
     }
 
-   
+
     public PluginUpdateListener createListener() {
         return new MyPluginUpdateListener();
     }
 
- 
+
 
     private JButton createPluginUpdateButton(final JPanel comp, final UpdateChecker.PluginUpdate update) {
         JButton button = new JButton("<html><u><font color=#0000ff>More info...");
@@ -142,21 +145,23 @@ public class PluginUpdateDialog implements Serializable {
                 } catch (MalformedURLException e1) {
                     failed = true;
                 }
-                if (failed)
+                if (failed) {
                     JOptionPane.showMessageDialog(comp, "Could not open URL " + url);
+                }
             }
         });
         return button;
     }
 
     private UpdateChecker.PluginUpdate sortUpdates(Collection<UpdateChecker.PluginUpdate> updates,
-                                                   List<UpdateChecker.PluginUpdate> sorted) {
+            List<UpdateChecker.PluginUpdate> sorted) {
         UpdateChecker.PluginUpdate core = null;
         for (UpdateChecker.PluginUpdate update : updates) {
-            if (update.getPlugin().isCorePlugin())
+            if (update.getPlugin().isCorePlugin()) {
                 core = update;
-            else
+            } else {
                 sorted.add(update);
+            }
         }
         // sort by name
         Collections.sort(sorted, new Comparator<UpdateChecker.PluginUpdate>() {
@@ -166,20 +171,22 @@ public class PluginUpdateDialog implements Serializable {
             }
         });
         // place core plugin first, if present
-        if (core != null)
+        if (core != null) {
             sorted.add(0, core);
+        }
         return core;
     }
 
     private class MyPluginUpdateListener implements PluginUpdateListener {
         @Override
         public void pluginUpdateCheckComplete(final Collection<UpdateChecker.PluginUpdate> updates, final boolean force) {
-            if (updates.isEmpty() && !force)
+            if (updates.isEmpty() && !force) {
                 return;
+            }
 
-            if (force)
+            if (force) {
                 showUpdateDialogInSwingThread(updates, force);
-            else
+            } else {
                 // wait 5 seconds before showing dialog
                 edu.umd.cs.findbugs.util.Util.runInDameonThread(new Runnable() {
                     @Override
@@ -192,6 +199,7 @@ public class PluginUpdateDialog implements Serializable {
                         }
                     }
                 }, "Software Update Dialog");
+            }
         }
 
         private void showUpdateDialogInSwingThread(final Collection<UpdateChecker.PluginUpdate> updates, final boolean force) {

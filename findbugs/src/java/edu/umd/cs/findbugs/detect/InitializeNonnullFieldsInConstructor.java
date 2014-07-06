@@ -69,16 +69,18 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
         super.visit(obj);
         XField f = XFactory.createXField(this);
         if (checkForInitialization(f) && !f.isSynthetic()) {
-            if (f.isStatic())
+            if (f.isStatic()) {
                 nonnullStaticFields.add(f);
-            else
+            } else {
                 nonnullFields.add(f);
+            }
         }
     }
 
     public boolean checkForInitialization(XField f) {
-        if (!f.isReferenceType() || f.isFinal())
+        if (!f.isReferenceType() || f.isFinal()) {
             return false;
+        }
         NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase()
                 .getResolvedAnnotation(f, false);
         boolean isNonnull = annotation == NullnessAnnotation.NONNULL;
@@ -88,26 +90,30 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
     @Override
     public void visit(Code code) {
         boolean interesting = getMethodName().equals("<init>") || getMethodName().equals("<clinit>");
-        if (!interesting)
+        if (!interesting) {
             return;
+        }
 
         secondaryConstructor = false;
         HashSet<XField> needToInitialize = getMethod().isStatic() ? nonnullStaticFields : nonnullFields;
-        if (needToInitialize.isEmpty())
+        if (needToInitialize.isEmpty()) {
             return;
+        }
         // initialize any variables we want to initialize for the method
         super.visit(code); // make callbacks to sawOpcode for all opcodes
         if (!secondaryConstructor && !initializedFields.containsAll(needToInitialize)) {
             int priority = Priorities.NORMAL_PRIORITY;
-            if (needToInitialize.size() - initializedFields.size() == 1 && needToInitialize.size() > 1)
+            if (needToInitialize.size() - initializedFields.size() == 1 && needToInitialize.size() > 1) {
                 priority = Priorities.HIGH_PRIORITY;
+            }
 
             for (XField f : needToInitialize) {
-                if (initializedFields.contains(f))
+                if (initializedFields.contains(f)) {
                     continue;
+                }
 
                 BugInstance b = new BugInstance(this, "NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", priority)
-                        .addClassAndMethod(this).addField(f);
+                .addClassAndMethod(this).addField(f);
                 bugReporter.reportBug(b);
             }
 
@@ -121,8 +127,9 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
 
-        if (secondaryConstructor)
+        if (secondaryConstructor) {
             return;
+        }
 
         switch (seen) {
         case Constants.INVOKESPECIAL:
@@ -135,28 +142,34 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
             }
             break;
         case Constants.PUTFIELD:
-            if (getMethod().isStatic())
+            if (getMethod().isStatic()) {
                 return;
+            }
             OpcodeStack.Item left = stack.getStackItem(1);
             if (left.isInitialParameter() && left.getRegisterNumber() == 0 && isSelfOperation()) {
                 XField f = getXFieldOperand();
-                if (f == null)
+                if (f == null) {
                     break;
-                if (checkForInitialization(f))
+                }
+                if (checkForInitialization(f)) {
                     initializedFields.add(f);
+                }
             }
             break;
         case Constants.PUTSTATIC:
-            if (!getMethod().isStatic())
+            if (!getMethod().isStatic()) {
                 break;
+            }
 
             if (isSelfOperation()) {
                 XField f = getXFieldOperand();
-                if (f == null)
+                if (f == null) {
                     break;
+                }
 
-                if (checkForInitialization(f))
+                if (checkForInitialization(f)) {
                     initializedFields.add(f);
+                }
             }
             break;
         default:

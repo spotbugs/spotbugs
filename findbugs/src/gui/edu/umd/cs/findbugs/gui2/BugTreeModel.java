@@ -86,7 +86,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeExpansionListener {
     private BugAspects root = new BugAspects();
 
-    private SorterTableColumnModel st;
+    private final SorterTableColumnModel st;
 
     private BugSet bugSet;
 
@@ -115,7 +115,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         BugSet.setAsRootAndCache(this.bugSet);
         root.setCount(data.size());
         FilterActivity.addFilterListener(bugTreeFilterListener);
-        if (DEBUG)
+        if (DEBUG) {
             this.addTreeModelListener(new TreeModelListener() {
 
                 @Override
@@ -142,6 +142,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
                     System.out.println("  " + arg0.getTreePath());
                 }
             });
+        }
     }
 
     public BugTreeModel(BugTreeModel other) {
@@ -215,24 +216,27 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
     @Override
     public int getChildCount(Object o) {
 
-        if (!(o instanceof BugAspects))
+        if (!(o instanceof BugAspects)) {
             return 0;
+        }
 
         BugAspects a = (BugAspects) o;
 
-        if (st.getOrderBeforeDivider().size() == 0 && a.size() == 0)// If its
-                                                                    // the root
-                                                                    // and we
-                                                                    // aren't
-                                                                    // sorting
-                                                                    // by
-                                                                    // anything
+        if (st.getOrderBeforeDivider().size() == 0 && a.size() == 0) {
+            // the root
+            // and we
+            // aren't
+            // sorting
+            // by
+            // anything
             return bugSet.size();
+        }
 
-        if ((a.size() == 0) || (a.last().key != st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().size() - 1)))
+        if ((a.size() == 0) || (a.last().key != st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().size() - 1))) {
             return enumsThatExist(a).size();
-        else
+        } else {
             return bugSet.query(a).size();
+        }
     }
 
     /*
@@ -250,21 +254,23 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         }
 
         Sortables key;
-        if (a.size() == 0)
+        if (a.size() == 0) {
             key = orderBeforeDivider.get(0);
-        else {
+        } else {
             Sortables lastKey = a.last().key;
             int index = orderBeforeDivider.indexOf(lastKey);
-            if (index + 1 < orderBeforeDivider.size())
+            if (index + 1 < orderBeforeDivider.size()) {
                 key = orderBeforeDivider.get(index + 1);
-            else
+            } else {
                 key = lastKey;
+            }
         }
 
         String[] all = key.getAll(bugSet.query(a));
         ArrayList<SortableValue> result = new ArrayList<SortableValue>(all.length);
-        for (String i : all)
+        for (String i : all) {
             result.add(new SortableValue(key, i));
+        }
         return result;
 
     }
@@ -280,8 +286,9 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
 
     @Override
     public int getIndexOfChild(Object parent, Object child) {
-        if (parent == null || child == null || isLeaf(parent))
+        if (parent == null || child == null || isLeaf(parent)) {
             return -1;
+        }
 
         if (isLeaf(child)) {
             return bugSet.query((BugAspects) parent).indexOf((BugLeafNode) child);
@@ -316,8 +323,9 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
 
     @Override
     public void columnMoved(final TableColumnModelEvent evt) {
-        if (evt.getFromIndex() == evt.getToIndex())
+        if (evt.getFromIndex() == evt.getToIndex()) {
             return;
+        }
         sortOrderChanged = true;
         // rebuild();
     }
@@ -338,8 +346,9 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
      *
      */
     public void rebuild() {
-        if (TRACE)
+        if (TRACE) {
             System.out.println("rebuilding bug tree model");
+        }
 
         NewFilterFromBug.closeAll();
 
@@ -351,8 +360,9 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         // As of now, it should be impossible to interrupt a rebuilding thread,
         // in another version this may change, so this if statement check is
         // left in, even though it should always be true.
-        if (rebuildingThread == null)
+        if (rebuildingThread == null) {
             setOldSelectedBugs();
+        }
 
         Debug.println("Please Wait called right before starting rebuild thread");
         mainFrame.acquireDisplayWait();
@@ -387,15 +397,17 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
     }
 
     public void crawl(final ArrayList<BugAspects> path, final int depth) {
-        for (int i = 0; i < getChildCount(path.get(path.size() - 1)); i++)
+        for (int i = 0; i < getChildCount(path.get(path.size() - 1)); i++) {
             if (depth > 0) {
                 ArrayList<BugAspects> newPath = new ArrayList<BugAspects>(path);
                 newPath.add((BugAspects) getChild(path.get(path.size() - 1), i));
                 crawl(newPath, depth - 1);
             } else {
-                for (TreeModelListener l : listeners)
+                for (TreeModelListener l : listeners) {
                     l.treeStructureChanged(new TreeModelEvent(this, path.toArray()));
+                }
             }
+        }
     }
 
     void openPreviouslySelected(List<BugLeafNode> selected) {
@@ -405,8 +417,9 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
             try {
                 BugInstance bug = b.getBug();
                 TreePath path = getPathToBug(bug);
-                if (path == null)
+                if (path == null) {
                     continue;
+                }
                 Debug.printf("Opening %s\n", path);
                 mainFrame.getTree().expandPath(path.getParentPath());
                 mainFrame.getTree().addSelectionPath(path);
@@ -426,7 +439,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
 
     public void crawlToOpen(TreePath path, ArrayList<BugLeafNode> bugLeafNodes, ArrayList<TreePath> treePaths) {
         for (int i = 0; i < getChildCount(path.getLastPathComponent()); i++) {
-            if (!isLeaf(getChild(path.getLastPathComponent(), i)))
+            if (!isLeaf(getChild(path.getLastPathComponent(), i))) {
                 for (BugLeafNode p : bugLeafNodes) {
                     if (p.matches((BugAspects) getChild(path.getLastPathComponent(), i))) {
                         tree.expandPath(path);
@@ -434,7 +447,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
                         break;
                     }
                 }
-            else {
+            } else {
                 for (BugLeafNode b : bugLeafNodes) {
                     if (getChild(path.getLastPathComponent(), i).equals(b)) {
                         tree.expandPath(path);
@@ -448,10 +461,11 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
     public static boolean TRACE = false;
 
     public void resetData()// FIXME: Does this need a setAsRootAndCache() on the
-                           // new BugSet?
+    // new BugSet?
     {
-        if (TRACE)
+        if (TRACE) {
             System.out.println("Reseting data in bug tree model");
+        }
         bugSet = new BugSet(bugSet);
     }
 
@@ -460,19 +474,20 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
     class MyFilterListener implements FilterListener {
         @Override
         public void clearCache() {
-            if (TRACE)
+            if (TRACE) {
                 System.out.println("clearing cache in bug tree model");
+            }
             resetData();
             BugSet.setAsRootAndCache(bugSet);// FIXME: Should this be in
-                                             // resetData? Does this allow our
-                                             // main list to not be the same as
-                                             // the data in our tree?
+            // resetData? Does this allow our
+            // main list to not be the same as
+            // the data in our tree?
             root.setCount(bugSet.size());
 
             rebuild();
         }
 
-           }
+    }
 
     void treeNodeChanged(TreePath path) {
         Debug.println("Tree Node Changed: " + path);
@@ -498,8 +513,9 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         // Create an array of BugAspects of lengths from one to the full
         // BugAspect list of the bugInstance
         BugAspects[] toBug = new BugAspects[order.size()];
-        for (int i = 0; i < order.size(); i++)
+        for (int i = 0; i < order.size(); i++) {
             toBug[i] = new BugAspects();
+        }
 
         for (int x = 0; x < order.size(); x++) {
             for (int y = 0; y <= x; y++) {
@@ -514,26 +530,28 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
 
             if (index == -1) {
                 if (MainFrame.GUI2_DEBUG)
+                {
                     System.err.println("Node does not exist in the tree");// For
-                                                                          // example,
-                                                                          // not
-                                                                          // a
-                                                                          // bug
-                                                                          // bugs
-                                                                          // are
-                                                                          // filtered,
-                                                                          // they
-                                                                          // set
-                                                                          // a
-                                                                          // bug
-                                                                          // to
-                                                                          // be
-                                                                          // not
-                                                                          // a
-                                                                          // bug
-                                                                          // it
-                                                                          // filters
-                                                                          // out
+                }
+                // example,
+                // not
+                // a
+                // bug
+                // bugs
+                // are
+                // filtered,
+                // they
+                // set
+                // a
+                // bug
+                // to
+                // be
+                // not
+                // a
+                // bug
+                // it
+                // filters
+                // out
                 return null;
             }
 
@@ -542,8 +560,9 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         // Using a hashlist to store bugs in BugSet will make getIndexOfChild
         // Waaaaaay faster, thus making this O(1) (avg case)
         int index = getIndexOfChild(pathToBug.getLastPathComponent(), new BugLeafNode(b));
-        if (index == -1)
+        if (index == -1) {
             return null;
+        }
         pathToBug = pathToBug.pathByAddingChild(getChild(pathToBug.getLastPathComponent(), index));
         return pathToBug;
 
@@ -582,11 +601,14 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
 
     private void setOldSelectedBugs() {
         selectedBugLeafNodes.clear();
-        if (tree.getSelectionPaths() != null) // Who the cussword wrote this API
-                                              // anyway?
-            for (TreePath path : tree.getSelectionPaths())
-                if (isLeaf(path.getLastPathComponent()))
+        if (tree.getSelectionPaths() != null) {
+            // anyway?
+            for (TreePath path : tree.getSelectionPaths()) {
+                if (isLeaf(path.getLastPathComponent())) {
                     selectedBugLeafNodes.add((BugLeafNode) path.getLastPathComponent());
+                }
+            }
+        }
     }
 
     ArrayList<BugLeafNode> getOldSelectedBugs() {
@@ -602,10 +624,11 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
     }
 
     public TreeModelEvent restructureBranch(ArrayList<String> stringsToBranch, boolean removing) throws BranchOperationException {
-        if (removing)
+        if (removing) {
             return branchOperations(stringsToBranch, TreeModification.REMOVERESTRUCTURE);
-        else
+        } else {
             return branchOperations(stringsToBranch, TreeModification.INSERTRESTRUCTURE);
+        }
     }
 
     public TreeModelEvent insertBranch(ArrayList<String> stringsToBranch) throws BranchOperationException {
@@ -652,14 +675,15 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
             throws BranchOperationException {
         TreeModelEvent event = null;
 
-        if (whatToDo == TreeModification.REMOVE)
+        if (whatToDo == TreeModification.REMOVE) {
             Debug.println("Removing a branch......");
-        else if (whatToDo == TreeModification.INSERT)
+        } else if (whatToDo == TreeModification.INSERT) {
             Debug.println("Inserting a branch......");
-        else if (whatToDo == TreeModification.REMOVERESTRUCTURE)
+        } else if (whatToDo == TreeModification.REMOVERESTRUCTURE) {
             Debug.println("Restructuring from branch to remove......");
-        else if (whatToDo == TreeModification.INSERTRESTRUCTURE)
+        } else if (whatToDo == TreeModification.INSERTRESTRUCTURE) {
             Debug.println("Restructuring from branch to insert......");
+        }
         Debug.println(stringsToBranch);
 
         if (whatToDo == TreeModification.INSERT || whatToDo == TreeModification.INSERTRESTRUCTURE) {
@@ -693,12 +717,14 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
                 // break;
             }
         }
-        if (pathToBranch.getParentPath() != null)
+        if (pathToBranch.getParentPath() != null) {
             while (getChildCount(pathToBranch.getParentPath().getLastPathComponent()) == 1) {
-                if (pathToBranch.getParentPath().getLastPathComponent().equals(root))
+                if (pathToBranch.getParentPath().getLastPathComponent().equals(root)) {
                     break;
+                }
                 pathToBranch = pathToBranch.getParentPath();
             }
+        }
         Debug.println(pathToBranch);
 
         if (whatToDo == TreeModification.INSERT) {
@@ -718,8 +744,9 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
             event = new TreeModelEvent(this, pathToBranch);
         }
 
-        if (whatToDo == TreeModification.REMOVE || whatToDo == TreeModification.REMOVERESTRUCTURE)
+        if (whatToDo == TreeModification.REMOVE || whatToDo == TreeModification.REMOVERESTRUCTURE) {
             resetData();
+        }
 
         return event;
     }
@@ -731,9 +758,9 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         }
         resetData();
         for (TreeModelListener l : listeners) {
-            if (whatToDo == TreeModification.REMOVE)
+            if (whatToDo == TreeModification.REMOVE) {
                 l.treeNodesRemoved(event);
-            else if (whatToDo == TreeModification.INSERT) {
+            } else if (whatToDo == TreeModification.INSERT) {
                 l.treeNodesInserted(event);
                 l.treeStructureChanged(new TreeModelEvent(this, new TreePath(event.getPath()).pathByAddingChild(event
                         .getChildren()[0])));

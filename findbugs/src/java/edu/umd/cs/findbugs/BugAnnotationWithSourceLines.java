@@ -63,7 +63,7 @@ public abstract class BugAnnotationWithSourceLines implements BugAnnotation {
     /**
      * Get the SourceLineAnnotation describing the source lines where the method
      * is defined.
-     * 
+     *
      * @return the SourceLineAnnotation, or null if there is no source
      *         information for this package element
      */

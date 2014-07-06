@@ -104,4 +104,3 @@ public class ReturnPathAnalysis extends ForwardDataflowAnalysis<ReturnPath> impl
     // }
 }
 
-// vim:ts=4

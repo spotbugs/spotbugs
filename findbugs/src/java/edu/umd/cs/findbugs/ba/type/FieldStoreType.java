@@ -34,11 +34,11 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
  * Field property storing the types of values stored in a field. The idea is
  * that we may be able to determine a more precise type for values loaded from
  * the field than the field type alone would indicate.
- * 
+ *
  * @author David Hovemeyer
  */
 public class FieldStoreType {
-    private HashSet<String> typeSignatureSet;
+    private final HashSet<String> typeSignatureSet;
 
     private ReferenceType loadType;
 
@@ -70,8 +70,9 @@ public class FieldStoreType {
             try {
                 String signature = i.next();
                 Type type = Type.getType(signature);
-                if (!(type instanceof ReferenceType))
+                if (!(type instanceof ReferenceType)) {
                     continue;
+                }
 
                 // FIXME: this will mangle interface types, since
                 // getFirstCommonSuperclass() ignores interfaces.
@@ -100,13 +101,15 @@ public class FieldStoreType {
         }
 
         try {
-            if (leastSupertype != null && Hierarchy.isSubtype(leastSupertype, fieldType))
+            if (leastSupertype != null && Hierarchy.isSubtype(leastSupertype, fieldType)) {
                 loadType = leastSupertype;
+            }
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
         }
 
-        if (loadType == null)
+        if (loadType == null) {
             loadType = fieldType;
+        }
     }
 }

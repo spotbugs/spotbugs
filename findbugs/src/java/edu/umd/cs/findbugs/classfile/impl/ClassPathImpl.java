@@ -38,11 +38,11 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  * @author David Hovemeyer
  */
 public class ClassPathImpl implements IClassPath {
-    private List<IScannableCodeBase> appCodeBaseList;
+    private final List<IScannableCodeBase> appCodeBaseList;
 
-    private List<ICodeBase> auxCodeBaseList;
+    private final List<ICodeBase> auxCodeBaseList;
 
-    private Map<String, ICodeBaseEntry> codeBaseEntryMap;
+    private final Map<String, ICodeBaseEntry> codeBaseEntryMap;
 
     public ClassPathImpl() {
         this.appCodeBaseList = new LinkedList<IScannableCodeBase>();

@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 /**
  * Analysis engine to produce IsNullValueDataflow objects for an analyzed
  * method.
- * 
+ *
  * @author David Hovemeyer
  */
 public class IsNullValueDataflowFactory extends AnalysisFactory<IsNullValueDataflow> {
@@ -51,7 +51,7 @@ public class IsNullValueDataflowFactory extends AnalysisFactory<IsNullValueDataf
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)

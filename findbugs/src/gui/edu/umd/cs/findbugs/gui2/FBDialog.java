@@ -28,9 +28,9 @@ import javax.swing.JDialog;
 
 /**
  * All Dialogs are FBDialogs so font size will work.
- * 
+ *
  * @author Kristin
- * 
+ *
  */
 @SuppressWarnings("serial")
 public class FBDialog extends JDialog {
@@ -49,7 +49,7 @@ public class FBDialog extends JDialog {
 
     /**
      * Sets size of font
-     * 
+     *
      * @param size
      */
     protected void setFontSize(float size) {
@@ -62,13 +62,15 @@ public class FBDialog extends JDialog {
      * Helps above method, runs through all components recursively.
      */
     protected void setFontSizeHelper(Component[] comps, float size) {
-        if (comps.length <= 0)
+        if (comps.length <= 0) {
             return;
+        }
 
         for (Component comp : comps) {
             comp.setFont(comp.getFont().deriveFont(size));
-            if (comp instanceof Container)
+            if (comp instanceof Container) {
                 setFontSizeHelper(((Container) comp).getComponents(), size);
+            }
         }
     }
 

@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 /**
  * Predicate for dataflow values.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface DataflowValueChooser<Value> {

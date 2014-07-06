@@ -48,8 +48,9 @@ public class FindNonSerializableStoreIntoSession implements Detector {
         Method[] methodList = classContext.getJavaClass().getMethods();
 
         for (Method method : methodList) {
-            if (method.getCode() == null)
+            if (method.getCode() == null) {
                 continue;
+            }
 
             try {
                 analyzeMethod(classContext, method);
@@ -65,14 +66,17 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
         MethodGen methodGen = classContext.getMethodGen(method);
-        if (methodGen == null)
+        if (methodGen == null) {
             return;
+        }
         BitSet bytecodeSet = classContext.getBytecodeSet(method);
-        if (bytecodeSet == null)
+        if (bytecodeSet == null) {
             return;
+        }
         // We don't adequately model instanceof interfaces yet
-        if (bytecodeSet.get(Constants.INSTANCEOF) || bytecodeSet.get(Constants.CHECKCAST))
+        if (bytecodeSet.get(Constants.INSTANCEOF) || bytecodeSet.get(Constants.CHECKCAST)) {
             return;
+        }
         CFG cfg = classContext.getCFG(method);
         TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
@@ -88,16 +92,19 @@ public class FindNonSerializableStoreIntoSession implements Detector {
             InstructionHandle handle = location.getHandle();
             Instruction ins = handle.getInstruction();
 
-            if (!(ins instanceof INVOKEINTERFACE))
+            if (!(ins instanceof INVOKEINTERFACE)) {
                 continue;
+            }
 
             INVOKEINTERFACE invoke = (INVOKEINTERFACE) ins;
             String mName = invoke.getMethodName(cpg);
-            if (!mName.equals("setAttribute"))
+            if (!mName.equals("setAttribute")) {
                 continue;
+            }
             String cName = invoke.getClassName(cpg);
-            if (!cName.equals("javax.servlet.http.HttpSession"))
+            if (!cName.equals("javax.servlet.http.HttpSession")) {
                 continue;
+            }
 
             TypeFrame frame = typeDataflow.getFactAtLocation(location);
             if (!frame.isValid()) {
@@ -131,8 +138,8 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 
                     bugAccumulator.accumulateBug(new BugInstance(this, "J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION",
                             isSerializable < 0.15 ? HIGH_PRIORITY : isSerializable > 0.5 ? LOW_PRIORITY : NORMAL_PRIORITY)
-                            .addClassAndMethod(methodGen, sourceFile).addType(problem).describe(TypeAnnotation.FOUND_ROLE),
-                            sourceLineAnnotation);
+                    .addClassAndMethod(methodGen, sourceFile).addType(problem).describe(TypeAnnotation.FOUND_ROLE),
+                    sourceLineAnnotation);
 
                 }
             } catch (ClassNotFoundException e) {

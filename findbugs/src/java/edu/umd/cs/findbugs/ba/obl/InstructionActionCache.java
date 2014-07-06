@@ -85,7 +85,7 @@ public class InstructionActionCache {
 
     static final ClassDescriptor WILL_CLOSE = DescriptorFactory.createClassDescriptor(WillClose.class);
     public Collection<ObligationPolicyDatabaseAction> getActions(BasicBlock block, InstructionHandle handle) {
-         Collection<ObligationPolicyDatabaseAction> actionList = actionCache.get(handle);
+        Collection<ObligationPolicyDatabaseAction> actionList = actionCache.get(handle);
         if (actionList == null) {
             Instruction ins = handle.getInstruction();
             actionList = Collections.emptyList();
@@ -114,31 +114,33 @@ public class InstructionActionCache {
                     if (actionList.isEmpty()) {
 
                         try {
-                        TypeFrame factAtLocation = null;
-                        SignatureParser sigParser = new SignatureParser(signature);
-//                        int startIndex = 0;
-//                        if (!xmethod.isStatic())
-//                            startIndex = 1;
-                        Iterator<String> signatureIterator = sigParser.parameterSignatureIterator();
-                        int parameters = sigParser.getNumParameters();
-                        for (int i = 0; i < parameters; i++) {
-                            String sig = signatureIterator.next();
-                            Collection<ClassDescriptor> annotations = invokedMethod.getParameterAnnotationDescriptors(i);
-                            if (annotations.contains(WILL_CLOSE) || sig.equals("Ljava/io/Closeable;") || methodName.startsWith("close")) {
-                                // closing this value
-                                if (factAtLocation == null)
-                                    factAtLocation = typeDataflow.getFactAtLocation( new Location(handle, block));
+                            TypeFrame factAtLocation = null;
+                            SignatureParser sigParser = new SignatureParser(signature);
+                            //                        int startIndex = 0;
+                            //                        if (!xmethod.isStatic())
+                            //                            startIndex = 1;
+                            Iterator<String> signatureIterator = sigParser.parameterSignatureIterator();
+                            int parameters = sigParser.getNumParameters();
+                            for (int i = 0; i < parameters; i++) {
+                                String sig = signatureIterator.next();
+                                Collection<ClassDescriptor> annotations = invokedMethod.getParameterAnnotationDescriptors(i);
+                                if (annotations.contains(WILL_CLOSE) || sig.equals("Ljava/io/Closeable;") || methodName.startsWith("close")) {
+                                    // closing this value
+                                    if (factAtLocation == null) {
+                                        factAtLocation = typeDataflow.getFactAtLocation( new Location(handle, block));
+                                    }
 
-                                Type argumentType = factAtLocation.getArgument(inv, cpg, i, sigParser);
-                                if (argumentType instanceof ObjectType) {
-                                    Obligation obligation = database.getFactory().getObligationByType((ObjectType) argumentType);
-                                    if (obligation != null)
-                                        actionList.add(new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.DEL, obligation));
+                                    Type argumentType = factAtLocation.getArgument(inv, cpg, i, sigParser);
+                                    if (argumentType instanceof ObjectType) {
+                                        Obligation obligation = database.getFactory().getObligationByType((ObjectType) argumentType);
+                                        if (obligation != null) {
+                                            actionList.add(new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.DEL, obligation));
+                                        }
+
+                                    }
 
                                 }
-
                             }
-                        }
 
                         } catch (CheckedAnalysisException e) {
                             AnalysisContext.logError("Error checking " + invokedMethod, e);
@@ -168,9 +170,10 @@ public class InstructionActionCache {
                                     actionList = Arrays.asList(
                                             new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.DEL, obligation),
                                             new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.DEL, sObligation));
-                                } else
-                                  actionList = Collections.singleton(new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.DEL,
-                                        obligation));
+                                } else {
+                                    actionList = Collections.singleton(new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.DEL,
+                                            obligation));
+                                }
 
                             }
                         }

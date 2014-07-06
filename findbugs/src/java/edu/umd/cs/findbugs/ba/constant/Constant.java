@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 /**
  * Abstract dataflow value representing a value which may or may not be a
  * constant.
- * 
+ *
  * @see edu.umd.cs.findbugs.ba.constant.ConstantAnalysis
  * @author David Hovemeyer
  */
@@ -37,7 +37,7 @@ public class Constant {
 
     /**
      * Constructor for a constant value.
-     * 
+     *
      * @param value
      *            the constant value; must be a String, Integer, etc.
      */
@@ -50,7 +50,7 @@ public class Constant {
     }
     /**
      * Return whether or not this value is a constant.
-     * 
+     *
      * @return true if the value is a constant, false if not
      */
     public boolean isConstant() {
@@ -59,7 +59,7 @@ public class Constant {
 
     /**
      * Return whether or not this value is a constant String.
-     * 
+     *
      * @return true if the value is a constant String, false if not
      */
     public boolean isConstantString() {
@@ -68,7 +68,7 @@ public class Constant {
 
     /**
      * Get the constant String value of this value.
-     * 
+     *
      * @return the constant String value
      */
     public String getConstantString() {
@@ -77,7 +77,7 @@ public class Constant {
 
     /**
      * Return whether or not this value is a constant int/Integer.
-     * 
+     *
      * @return true if the value is a constant int/Integer, false if not
      */
     public boolean isConstantInteger() {
@@ -86,7 +86,7 @@ public class Constant {
 
     /**
      * Get the constant int value of this value.
-     * 
+     *
      * @return the constant int value
      */
     public int getConstantInt() {
@@ -95,7 +95,7 @@ public class Constant {
 
     /**
      * Merge two Constants.
-     * 
+     *
      * @param a
      *            a StaticConstant
      * @param b
@@ -103,24 +103,28 @@ public class Constant {
      * @return the merge (dataflow meet) of the two Constants
      */
     public static Constant merge(Constant a, Constant b) {
-        if (!a.isConstant() || !b.isConstant())
+        if (!a.isConstant() || !b.isConstant()) {
             return NOT_CONSTANT;
-        if (a.value.getClass() != b.value.getClass() || !a.value.equals(b.value))
+        }
+        if (a.value.getClass() != b.value.getClass() || !a.value.equals(b.value)) {
             return NOT_CONSTANT;
+        }
         return a;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || obj.getClass() != this.getClass())
+        if (obj == null || obj.getClass() != this.getClass()) {
             return false;
+        }
         Constant other = (Constant) obj;
-        if (other.value == this.value)
+        if (other.value == this.value) {
             return true;
-        else if (other.value == null || this.value == null)
+        } else if (other.value == null || this.value == null) {
             return false;
-        else
+        } else {
             return this.value.equals(other.value);
+        }
     }
 
     @Override

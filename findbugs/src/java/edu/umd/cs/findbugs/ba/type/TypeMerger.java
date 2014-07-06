@@ -26,14 +26,14 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 /**
  * Interface for object which merges types for TypeAnalysis. By allowing
  * multiple implementations, we allow creation of specialized type systems.
- * 
+ *
  * @author David Hovemeyer
  * @see TypeAnalysis
  */
 public interface TypeMerger {
     /**
      * Merge type Types.
-     * 
+     *
      * @param a
      *            a Type
      * @param b
@@ -43,4 +43,3 @@ public interface TypeMerger {
     public Type mergeTypes(Type a, Type b) throws DataflowAnalysisException;
 }
 
-// vim:ts=4

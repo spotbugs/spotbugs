@@ -215,8 +215,9 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
         XMethod calledMethod = XFactory.createXMethod(inv, cpg);
 
         SignatureParser sigParser = new SignatureParser(calledMethod.getSignature());
-        if (sigParser.getNumParameters() == 0)
+        if (sigParser.getNumParameters() == 0) {
             return;
+        }
         ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(location);
 
         if (!vnaFrame.isValid()) {
@@ -226,8 +227,9 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
             return;
         }
 
-        if (TypeQualifierDataflowAnalysis.isIdentifyFunctionForTypeQualifiers(calledMethod))
+        if (TypeQualifierDataflowAnalysis.isIdentifyFunctionForTypeQualifiers(calledMethod)) {
             return;
+        }
 
         for (int param = 0; param < calledMethod.getNumParams(); param++) {
             TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(calledMethod, param,

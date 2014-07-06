@@ -58,11 +58,11 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
  */
 public class BugSet implements Iterable<BugLeafNode> {
 
-    private ArrayList<BugLeafNode> mainList;
+    private final ArrayList<BugLeafNode> mainList;
 
-    private HashMap<SortableValue, BugSet> doneMap;
+    private final HashMap<SortableValue, BugSet> doneMap;
 
-    private HashMap<SortableValue, Boolean> doneContainsMap;
+    private final HashMap<SortableValue, Boolean> doneContainsMap;
 
     private HashMap<Sortables, String[]> sortablesToStrings;
 
@@ -108,8 +108,9 @@ public class BugSet implements Iterable<BugLeafNode> {
 
     BugSet(BugCollection bugCollection) {
         this(Collections.<BugLeafNode> emptyList());
-        for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();)
+        for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
             mainList.add(new BugLeafNode(i.next()));
+        }
 
     }
 
@@ -152,14 +153,16 @@ public class BugSet implements Iterable<BugLeafNode> {
 
     String[] computeDistinctValues(Sortables key) {
 
-        if (key == Sortables.DIVIDER)
+        if (key == Sortables.DIVIDER) {
             return EMPTY_STRING_ARRAY;
+        }
 
         Collection<String> list = new HashSet<String>();
 
         for (BugLeafNode p : mainList) {
-            if (suppress(p))
+            if (suppress(p)) {
                 continue;
+            }
             BugInstance bug = p.getBug();
 
             String value = key.getFrom(bug);
@@ -178,9 +181,11 @@ public class BugSet implements Iterable<BugLeafNode> {
      */
     static int countFilteredBugs() {
         int result = 0;
-        for (BugLeafNode bug : getMainBugSet().mainList)
-            if (suppress(bug))
+        for (BugLeafNode bug : getMainBugSet().mainList) {
+            if (suppress(bug)) {
                 result++;
+            }
+        }
 
         return result;
     }
@@ -211,13 +216,15 @@ public class BugSet implements Iterable<BugLeafNode> {
      * is used again.
      */
     BugSet query(SortableValue keyValuePair) {
-        if (doneMap.containsKey(keyValuePair))
+        if (doneMap.containsKey(keyValuePair)) {
             return doneMap.get(keyValuePair);
+        }
         ArrayList<BugLeafNode> bugs = new ArrayList<BugLeafNode>();
 
         for (BugLeafNode b : mainList) {
-            if (b.matches(keyValuePair))
+            if (b.matches(keyValuePair)) {
                 bugs.add(b);
+            }
         }
 
         BugSet temp = new BugSet(bugs);
@@ -235,42 +242,50 @@ public class BugSet implements Iterable<BugLeafNode> {
 
         Comparator<BugLeafNode> comparator = new Comparator<BugLeafNode>() {
             int compare(int one, int two) {
-                if (one > two)
+                if (one > two) {
                     return 1;
-                else if (one < two)
+                } else if (one < two) {
                     return -1;
+                }
                 return 0;
             }
 
             @Override
             public int compare(BugLeafNode one, BugLeafNode two) {
-                if (one == two)
+                if (one == two) {
                     return 0;
+                }
                 int result;
                 for (Sortables i : order) {
                     result = i.getBugLeafNodeComparator().compare(one, two);
-                    if (result != 0)
+                    if (result != 0) {
                         return result;
+                    }
                 }
                 BugInstance bugOne = one.getBug();
                 BugInstance bugTwo = two.getBug();
                 result = bugOne.getPrimaryClass().getClassName().compareTo(bugTwo.getPrimaryClass().getClassName());
-                if (result != 0)
+                if (result != 0) {
                     return result;
+                }
                 SourceLineAnnotation oneSource = bugOne.getPrimarySourceLineAnnotation();
                 SourceLineAnnotation twoSource = bugTwo.getPrimarySourceLineAnnotation();
                 result = oneSource.getClassName().compareTo(twoSource.getClassName());
-                if (result != 0)
+                if (result != 0) {
                     return result;
+                }
                 result = compare(oneSource.getStartLine(), twoSource.getStartLine());
-                if (result != 0)
+                if (result != 0) {
                     return result;
+                }
                 result = compare(oneSource.getEndLine(), twoSource.getEndLine());
-                if (result != 0)
+                if (result != 0) {
                     return result;
+                }
                 result = compare(oneSource.getStartBytecode(), twoSource.getStartBytecode());
-                if (result != 0)
+                if (result != 0) {
                     return result;
+                }
                 result = compare(oneSource.getEndBytecode(), twoSource.getEndBytecode());
                 return result;
 
@@ -278,17 +293,19 @@ public class BugSet implements Iterable<BugLeafNode> {
         };
         Collections.sort(mainList, comparator);
 
-        if (SystemProperties.ASSERTIONS_ENABLED)
-          for(int i = 0; i < mainList.size(); i++) {
-              BugLeafNode nodeI = mainList.get(i);
+        if (SystemProperties.ASSERTIONS_ENABLED) {
+            for(int i = 0; i < mainList.size(); i++) {
+                BugLeafNode nodeI = mainList.get(i);
 
-              for(int j = i+1; j < mainList.size(); j++) {
-                BugLeafNode nodeJ = mainList.get(j);
-                if (comparator.compare(nodeI, nodeJ) > 0)
-                    throw new AssertionError(
-                            String.format("bug list isn't consistently sorted (%d:%s) vs. (%d:%s)",
-                                    i, nodeI.getBug().getInstanceHash(), j, nodeJ.getBug().getInstanceHash()));
-              }}
+                for(int j = i+1; j < mainList.size(); j++) {
+                    BugLeafNode nodeJ = mainList.get(j);
+                    if (comparator.compare(nodeI, nodeJ) > 0) {
+                        throw new AssertionError(
+                                String.format("bug list isn't consistently sorted (%d:%s) vs. (%d:%s)",
+                                        i, nodeI.getBug().getInstanceHash(), j, nodeJ.getBug().getInstanceHash()));
+                    }
+                }}
+        }
 
 
 
@@ -302,8 +319,9 @@ public class BugSet implements Iterable<BugLeafNode> {
      * @return true if a bug leaf from filterNoCache() matches the pair
      */
     public boolean contains(SortableValue keyValuePair) {
-        if (doneContainsMap.containsKey(keyValuePair))
+        if (doneContainsMap.containsKey(keyValuePair)) {
             return doneContainsMap.get(keyValuePair);
+        }
 
         for (BugLeafNode p : filteredBugsCached().mainList) {
             if (p.matches(keyValuePair)) {
@@ -350,16 +368,18 @@ public class BugSet implements Iterable<BugLeafNode> {
         this.mainList = new ArrayList<BugLeafNode>(filteredSet);
         doneMap = new HashMap<SortableValue, BugSet>();
         doneContainsMap = new HashMap<SortableValue, Boolean>();
-        if (cacheSortables)
+        if (cacheSortables) {
             cacheSortables();
+        }
     }
 
     private BugSet filteredBugsNoCache() {
 
         ArrayList<BugLeafNode> people = new ArrayList<BugLeafNode>();
         for (BugLeafNode p : mainList) {
-            if (!suppress(p))
+            if (!suppress(p)) {
                 people.add(p);
+            }
         }
         return new BugSet(people, false);
     }
@@ -371,16 +391,18 @@ public class BugSet implements Iterable<BugLeafNode> {
     }
 
     private BugSet filteredBugsCached() {
-        if (cache == null)
+        if (cache == null) {
             cache = filteredBugsNoCache();
+        }
         return cache;
     }
 
     public BugSet getBugsMatchingFilter(Matcher m) {
         ArrayList<BugLeafNode> people = new ArrayList<BugLeafNode>();
         for (BugLeafNode p : mainList) {
-            if (!(m.match(p.getBug())))
+            if (!(m.match(p.getBug()))) {
                 people.add(p);
+            }
         }
         return new BugSet(people, false);
     }

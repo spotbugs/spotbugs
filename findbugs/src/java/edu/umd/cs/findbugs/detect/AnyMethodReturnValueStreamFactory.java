@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
  * class.
  */
 public class AnyMethodReturnValueStreamFactory implements StreamFactory {
-    private ObjectType baseClassType;
+    private final ObjectType baseClassType;
 
     private String bugType;
 
@@ -59,13 +59,15 @@ public class AnyMethodReturnValueStreamFactory implements StreamFactory {
 
         try {
             if (ins instanceof InvokeInstruction) {
-                if (!Hierarchy.isSubtype(type, baseClassType))
+                if (!Hierarchy.isSubtype(type, baseClassType)) {
                     return null;
+                }
 
                 Stream stream = new Stream(location, type.getClassName(), baseClassType.getClassName()).setIsOpenOnCreation(true)
                         .setIgnoreImplicitExceptions(true);
-                if (bugType != null)
+                if (bugType != null) {
                     stream.setInteresting(bugType);
+                }
 
                 return stream;
             }
@@ -77,4 +79,3 @@ public class AnyMethodReturnValueStreamFactory implements StreamFactory {
     }
 }
 
-// vim:ts=4

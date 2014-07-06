@@ -60,7 +60,7 @@ import org.apache.bcel.classfile.Visitor;
 
 /**
  * Fixedup of from org.apache.bcel.classfile.Visitor
- * 
+ *
  * @author <A HREF="http://www.cs.umd.edu/~pugh">William Pugh</A>
  * @version 980818
  */

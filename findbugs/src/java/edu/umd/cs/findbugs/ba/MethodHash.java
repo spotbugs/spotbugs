@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.util.Util;
 /**
  * Compute a hash of the bytecode for given method. This can find methods which
  * have not been changed other than accessing different constant pool entries.
- * 
+ *
  * @author David Hovemeyer
  */
 public class MethodHash implements Comparable<MethodHash> {
@@ -51,7 +51,7 @@ public class MethodHash implements Comparable<MethodHash> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param methodName
      *            method name
      * @param methodSig
@@ -92,7 +92,7 @@ public class MethodHash implements Comparable<MethodHash> {
 
     /**
      * Get the computed method hash.
-     * 
+     *
      * @return the method hash
      */
     public byte[] getMethodHash() {
@@ -101,7 +101,7 @@ public class MethodHash implements Comparable<MethodHash> {
 
     /**
      * Compute hash on given method.
-     * 
+     *
      * @param method
      *            the method
      * @return this object
@@ -134,7 +134,7 @@ public class MethodHash implements Comparable<MethodHash> {
     /**
      * Return whether or not this method hash has the same value as the one
      * given.
-     * 
+     *
      * @param other
      *            another MethodHash
      * @return true if the hash values are the same, false if not
@@ -145,7 +145,7 @@ public class MethodHash implements Comparable<MethodHash> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Comparable#compareTo(T)
      */
     @Override
@@ -155,16 +155,18 @@ public class MethodHash implements Comparable<MethodHash> {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof MethodHash)
+        if (o instanceof MethodHash) {
             return isSameHash((MethodHash) o);
+        }
         return false;
     }
 
     @Override
     public int hashCode() {
         int result = 0;
-        for (byte b : hash)
+        for (byte b : hash) {
             result = result * 17 + b;
+        }
         return result;
     }
 
@@ -172,15 +174,16 @@ public class MethodHash implements Comparable<MethodHash> {
         int pfxlen = Math.min(a.length, b.length);
         for (int i = 0; i < pfxlen; ++i) {
             int cmp = toUnsigned(a[i]) - toUnsigned(b[i]);
-            if (cmp != 0)
+            if (cmp != 0) {
                 return cmp;
+            }
         }
         return a.length - b.length;
     }
 
     /**
      * Convert a byte to an unsigned int.
-     * 
+     *
      * @param b
      *            a byte value
      * @return the unsigned integer value of the byte

@@ -31,19 +31,19 @@ import org.apache.bcel.generic.ObjectType;
  * <li>which exceptions are explicit (declared or explicitly thrown) and which
  * are implicit (result of failed runtime checks)
  * </ul>
- * 
+ *
  * @author David Hovemeyer
  * @see ExceptionSet
  * @see TypeAnalysis
  */
 public class ThrownException {
-    private ObjectType type;
+    private final ObjectType type;
 
     private boolean explicit;
 
     /**
      * Constructor.
-     * 
+     *
      * @param type
      *            type of exception
      * @param explicit
@@ -89,14 +89,15 @@ public class ThrownException {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null)
+        if (o == null) {
             return false;
-        if (o.getClass() != this.getClass())
+        }
+        if (o.getClass() != this.getClass()) {
             return false;
+        }
 
         ThrownException other = (ThrownException) o;
         return this.type.equals(other.type) && this.explicit == other.explicit;
     }
 }
 
-// vim:ts=4

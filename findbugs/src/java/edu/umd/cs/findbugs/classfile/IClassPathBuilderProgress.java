@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.classfile;
 
 /**
  * Progress callback interface for classpath construction.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface IClassPathBuilderProgress {

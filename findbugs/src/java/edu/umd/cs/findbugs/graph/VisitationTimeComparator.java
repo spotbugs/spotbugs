@@ -44,13 +44,13 @@ public class VisitationTimeComparator<VertexType extends GraphVertex<VertexType>
      */
     public static final int DESCENDING = 1;
 
-    private int[] m_visitationTimeList;
+    private final int[] m_visitationTimeList;
 
-    private int m_direction;
+    private final int m_direction;
 
     /**
      * Constructor.
-     * 
+     *
      * @param visitationTimeList
      *            array of visitation times indexed by vertex label
      * @param direction
@@ -61,8 +61,9 @@ public class VisitationTimeComparator<VertexType extends GraphVertex<VertexType>
         m_visitationTimeList = visitationTimeList;
         m_direction = direction;
 
-        if (direction != ASCENDING && direction != DESCENDING)
+        if (direction != ASCENDING && direction != DESCENDING) {
             throw new IllegalArgumentException();
+        }
     }
 
     @Override
@@ -70,12 +71,12 @@ public class VisitationTimeComparator<VertexType extends GraphVertex<VertexType>
         int f1 = m_visitationTimeList[v1.getLabel()];
         int f2 = m_visitationTimeList[v2.getLabel()];
 
-        if (m_direction == ASCENDING)
+        if (m_direction == ASCENDING) {
             return f1 - f2;
-        else
+        } else {
             return f2 - f1;
+        }
     }
 
 }
 
-// vim:ts=4

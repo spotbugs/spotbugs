@@ -36,4 +36,3 @@ public interface VertexChooser<VertexType extends GraphVertex<VertexType>> {
 
 }
 
-// vim:ts=4

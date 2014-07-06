@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs;
 
 /**
  * A marker interface for detectors which use an AnnotationDatabase.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface UseAnnotationDatabase {

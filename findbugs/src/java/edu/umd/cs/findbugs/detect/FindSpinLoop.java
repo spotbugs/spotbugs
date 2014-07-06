@@ -35,7 +35,7 @@ public class FindSpinLoop extends BytecodeScanningDetector implements StatelessD
 
     int start;
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private FieldAnnotation lastFieldSeen;
 
@@ -45,8 +45,9 @@ public class FindSpinLoop extends BytecodeScanningDetector implements StatelessD
 
     @Override
     public void visit(Method obj) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Saw " + getFullyQualifiedMethodName());
+        }
         stage = 0;
     }
 
@@ -60,40 +61,46 @@ public class FindSpinLoop extends BytecodeScanningDetector implements StatelessD
         case ALOAD_2:
         case ALOAD_3:
         case ALOAD:
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("   ALOAD at PC " + getPC());
+            }
             start = getPC();
             stage = 1;
             break;
         case GETSTATIC:
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("   getfield in stage " + stage);
+            }
             lastFieldSeen = FieldAnnotation.fromReferencedField(this);
             start = getPC();
             stage = 2;
             break;
         case GETFIELD:
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("   getfield in stage " + stage);
+            }
             lastFieldSeen = FieldAnnotation.fromReferencedField(this);
             if (stage == 1 || stage == 2) {
                 stage = 2;
-            } else
+            } else {
                 stage = 0;
+            }
             break;
         case GOTO:
         case IFNE:
         case IFEQ:
         case IFNULL:
         case IFNONNULL:
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("   conditional branch in stage " + stage + " to " + getBranchTarget());
+            }
             if (stage == 2 && getBranchTarget() == start) {
                 bugReporter.reportBug(new BugInstance(this, "SP_SPIN_ON_FIELD", NORMAL_PRIORITY).addClassAndMethod(this)
                         .addReferencedField(lastFieldSeen).addSourceLine(this, start));
                 stage = 0;
-            } else if (getBranchTarget() < getPC())
+            } else if (getBranchTarget() < getPC()) {
                 stage = 0;
+            }
             break;
         default:
             stage = 0;

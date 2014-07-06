@@ -26,15 +26,15 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Match bug instances having one of given codes or patterns.
- * 
+ *
  * @author rafal@caltha.pl
  */
 public class DesignationMatcher implements Matcher {
-    private StringSetMatch designations;
+    private final StringSetMatch designations;
 
     /**
      * Constructor.
-     * 
+     *
      * @param designations
      *            comma-separated list of designations
      */
@@ -59,8 +59,9 @@ public class DesignationMatcher implements Matcher {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof DesignationMatcher))
+        if (!(o instanceof DesignationMatcher)) {
             return false;
+        }
         DesignationMatcher other = (DesignationMatcher) o;
         return designations.equals(other.designations);
     }
@@ -68,16 +69,18 @@ public class DesignationMatcher implements Matcher {
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         xmlOutput.startTag("Designation");
-        if (disabled)
+        if (disabled) {
             xmlOutput.addAttribute("disabled", "true");
+        }
         addAttribute(xmlOutput, "designation", designations);
         xmlOutput.stopTag(true);
     }
 
     public void addAttribute(XMLOutput xmlOutput, String name, StringSetMatch matches) throws IOException {
         String value = matches.toString();
-        if (value.length() != 0)
+        if (value.length() != 0) {
             xmlOutput.addAttribute(name, value);
+        }
     }
 
 }

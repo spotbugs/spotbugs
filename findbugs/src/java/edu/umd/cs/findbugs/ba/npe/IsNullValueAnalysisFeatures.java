@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 
 /**
  * Knobs for null value analysis.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface IsNullValueAnalysisFeatures {

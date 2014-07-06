@@ -23,9 +23,9 @@ package edu.umd.cs.findbugs.classfile;
  * @author David Hovemeyer
  */
 public class InvalidClassFileFormatException extends CheckedAnalysisException {
-    private ClassDescriptor classDescriptor;
+    private final ClassDescriptor classDescriptor;
 
-    private ICodeBaseEntry codeBaseEntry;
+    private final ICodeBaseEntry codeBaseEntry;
 
     public InvalidClassFileFormatException(ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry) {
         super("Invalid classfile format");
@@ -62,7 +62,7 @@ public class InvalidClassFileFormatException extends CheckedAnalysisException {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Throwable#getMessage()
      */
     @Override

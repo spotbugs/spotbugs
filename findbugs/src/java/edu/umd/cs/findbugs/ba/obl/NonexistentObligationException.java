@@ -27,4 +27,3 @@ public class NonexistentObligationException extends Exception {
     }
 }
 
-// vim:ts=4

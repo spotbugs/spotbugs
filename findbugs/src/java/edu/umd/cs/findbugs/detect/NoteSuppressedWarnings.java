@@ -64,8 +64,9 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
             int i = name.lastIndexOf('.');
             String packageName = i < 0 ? "" : name.substring(0, i);
             if (name.endsWith(".package-info")) {
-                if (!packages.add(packageName))
+                if (!packages.add(packageName)) {
                     return;
+                }
             } else if (packages.add(packageName)) {
                 JavaClass packageInfoClass;
                 try {
@@ -81,14 +82,17 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
 
     @Override
     public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
-        if (!isSuppressWarnings(annotationClass))
+        if (!isSuppressWarnings(annotationClass)) {
             return;
+        }
         String[] suppressed = getAnnotationParameterAsStringArray(map, "value");
-        if (suppressed == null || suppressed.length == 0)
+        if (suppressed == null || suppressed.length == 0) {
             suppressWarning(null);
-        else
-            for (String s : suppressed)
+        } else {
+            for (String s : suppressed) {
                 suppressWarning(s);
+            }
+        }
     }
 
     public boolean isSuppressWarnings(String annotationClass) {
@@ -98,17 +102,21 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
 
     @Override
     public void visitParameterAnnotation(int p, String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
-        if (!isSuppressWarnings(annotationClass))
+        if (!isSuppressWarnings(annotationClass)) {
             return;
-        if (!getMethod().isStatic())
+        }
+        if (!getMethod().isStatic()) {
             p++;
+        }
 
         String[] suppressed = getAnnotationParameterAsStringArray(map, "value");
-        if (suppressed == null || suppressed.length == 0)
+        if (suppressed == null || suppressed.length == 0) {
             suppressWarning(p, null);
-        else
-            for (String s : suppressed)
+        } else {
+            for (String s : suppressed) {
                 suppressWarning(p, s);
+            }
+        }
     }
 
     private void suppressWarning(int parameter, String pattern) {
@@ -122,15 +130,16 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
     private void suppressWarning(String pattern) {
         String className = getDottedClassName();
         ClassAnnotation clazz = new ClassAnnotation(className);
-        if (className.endsWith(".package-info"))
+        if (className.endsWith(".package-info")) {
             suppressionMatcher.addPackageSuppressor(new PackageWarningSuppressor(pattern, getPackageName().replace('/', '.')));
-        else if (visitingMethod())
+        } else if (visitingMethod()) {
             suppressionMatcher
-                    .addSuppressor(new MethodWarningSuppressor(pattern, clazz, MethodAnnotation.fromVisitedMethod(this)));
-        else if (visitingField())
+            .addSuppressor(new MethodWarningSuppressor(pattern, clazz, MethodAnnotation.fromVisitedMethod(this)));
+        } else if (visitingField()) {
             suppressionMatcher.addSuppressor(new FieldWarningSuppressor(pattern, clazz, FieldAnnotation.fromVisitedField(this)));
-        else
+        } else {
             suppressionMatcher.addSuppressor(new ClassWarningSuppressor(pattern, clazz));
+        }
     }
 
     @Override

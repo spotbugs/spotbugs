@@ -23,12 +23,12 @@ import java.util.Arrays;
 
 /**
  * A multiset of obligations that must be cleaned up by error-handling code.
- * 
+ *
  * <p>
  * See Weimer and Necula, <a href="http://doi.acm.org/10.1145/1028976.1029011"
  * >Finding and preventing run-time error handling mistakes</a>, OOPSLA 2004.
  * </p>
- * 
+ *
  * @author David Hovemeyer
  */
 public class ObligationSet {
@@ -48,11 +48,13 @@ public class ObligationSet {
         invalidate();
     }
 
-    
+
     public boolean isEmpty() {
-        for(short s : countList) 
-            if (s > 0)
+        for(short s : countList) {
+            if (s > 0) {
                 return false;
+            }
+        }
         return true;
     }
     public void add(Obligation obligation) {
@@ -64,7 +66,9 @@ public class ObligationSet {
         invalidate();
         int count = countList[obligation.getId()];
         if (count > 0)
+        {
             countList[obligation.getId()]--; // = (short)(count - 1);
+        }
     }
 
     public int getCount(int id) {
@@ -107,13 +111,14 @@ public class ObligationSet {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || o.getClass() != this.getClass())
+        if (o == null || o.getClass() != this.getClass()) {
             return false;
+        }
 
         ObligationSet other = (ObligationSet) o;
 
         if (!Arrays.equals(this.countList, other.countList)
-        /* || !Arrays.equals(this.whereCreated, other.whereCreated) */) {
+                /* || !Arrays.equals(this.whereCreated, other.whereCreated) */) {
             return false;
         }
 
@@ -130,10 +135,12 @@ public class ObligationSet {
         buf.append("{");
         int count = 0;
         for (int i = 0; i < countList.length; ++i) {
-            if (countList[i] == 0)
+            if (countList[i] == 0) {
                 continue;
-            if (count > 0)
+            }
+            if (count > 0) {
                 buf.append(",");
+            }
             buf.append(factory.getObligationById(i).toString());
             buf.append(" x ");
             buf.append(countList[i]);
@@ -174,4 +181,3 @@ public class ObligationSet {
     }
 }
 
-// vim:ts=4

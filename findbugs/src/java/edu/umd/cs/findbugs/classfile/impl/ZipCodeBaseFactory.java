@@ -38,14 +38,14 @@ public class ZipCodeBaseFactory {
         try {
             return new ZipFileCodeBase(codeBaseLocator, file);
         } catch (ZipException e) {
-           // May be too many zip entries
-           return new ZipInputStreamCodeBase(codeBaseLocator, file);
+            // May be too many zip entries
+            return new ZipInputStreamCodeBase(codeBaseLocator, file);
         } finally {
             profiler.end(ZipCodeBaseFactory.class);
         }
     }
 
 
-  
+
 
 }

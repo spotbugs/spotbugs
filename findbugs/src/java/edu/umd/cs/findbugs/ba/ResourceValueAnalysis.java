@@ -32,21 +32,21 @@ import edu.umd.cs.findbugs.SystemProperties;
 
 @javax.annotation.ParametersAreNonnullByDefault
 public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame> implements
-        EdgeTypes {
+EdgeTypes {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("dataflow.debug");
 
-    private MethodGen methodGen;
+    private final MethodGen methodGen;
 
-    private CFG cfg;
+    private final CFG cfg;
 
-    private ResourceTracker<Resource> resourceTracker;
+    private final ResourceTracker<Resource> resourceTracker;
 
-    private Resource resource;
+    private final Resource resource;
 
-    private ResourceValueFrameModelingVisitor visitor;
+    private final ResourceValueFrameModelingVisitor visitor;
 
-    private boolean ignoreImplicitExceptions;
+    private final boolean ignoreImplicitExceptions;
 
     public ResourceValueAnalysis(MethodGen methodGen, CFG cfg, DepthFirstSearch dfs, ResourceTracker<Resource> resourceTracker,
             Resource resource) {
@@ -93,12 +93,14 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
             // and the resource tracker says to ignore implicit exceptions
             // for this resource, ignore it.
             if (AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS)
-                    && ignoreImplicitExceptions && !edge.isFlagSet(EXPLICIT_EXCEPTIONS_FLAG))
+                    && ignoreImplicitExceptions && !edge.isFlagSet(EXPLICIT_EXCEPTIONS_FLAG)) {
                 return;
+            }
 
             // The ResourceTracker may veto the exception edge
-            if (resourceTracker.ignoreExceptionEdge(edge, resource, methodGen.getConstantPool()))
+            if (resourceTracker.ignoreExceptionEdge(edge, resource, methodGen.getConstantPool())) {
                 return;
+            }
 
             if (fact.getStatus() == ResourceValueFrame.OPEN) {
                 // If status is OPEN, downgrade to OPEN_ON_EXCEPTION_PATH
@@ -113,15 +115,17 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
                 // closed anyway.
                 InstructionHandle exceptionThrower = source.getExceptionThrower();
                 BasicBlock fallThroughSuccessor = cfg.getSuccessorWithEdgeType(source, FALL_THROUGH_EDGE);
-                if (DEBUG && fallThroughSuccessor == null)
+                if (DEBUG && fallThroughSuccessor == null) {
                     System.out.println("Null fall through successor!");
+                }
                 if (fallThroughSuccessor != null
                         && resourceTracker.isResourceClose(fallThroughSuccessor, exceptionThrower, methodGen.getConstantPool(),
                                 resource, fact)) {
                     tmpFact = modifyFrame(fact, tmpFact);
                     tmpFact.setStatus(ResourceValueFrame.CLOSED);
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.print("(failed attempt to close)");
+                    }
                 }
             }
 
@@ -196,8 +200,9 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
             }
         }
 
-        if (tmpFact != null)
+        if (tmpFact != null) {
             fact = tmpFact;
+        }
 
         mergeInto(fact, result);
     }
@@ -229,4 +234,3 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 
 }
 
-// vim:ts=4

@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class BadAppletConstructor extends BytecodeScanningDetector {
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private final JavaClass appletClass;
 
@@ -50,13 +50,15 @@ public class BadAppletConstructor extends BytecodeScanningDetector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if (appletClass == null)
+        if (appletClass == null) {
             return;
+        }
 
         JavaClass cls = classContext.getJavaClass();
         try {
-            if (cls.instanceOf(appletClass))
+            if (cls.instanceOf(appletClass)) {
                 cls.accept(this);
+            }
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         }
@@ -69,8 +71,9 @@ public class BadAppletConstructor extends BytecodeScanningDetector {
 
     @Override
     public void visit(Code obj) {
-        if (inConstructor)
+        if (inConstructor) {
             super.visit(obj);
+        }
     }
 
     @Override
@@ -80,11 +83,11 @@ public class BadAppletConstructor extends BytecodeScanningDetector {
             String signature = getSigConstantOperand();
             if (((method.equals("getDocumentBase") || method.equals("getCodeBase")) && signature.equals("()Ljava/net/URL;"))
                     || (method.equals("getAppletContext") && signature.equals("()Ljava/applet/AppletContext;"))
-                    || (method.equals("getParameter") && signature.equals("(Ljava/lang/String;)Ljava/lang/String;")))
+                    || (method.equals("getParameter") && signature.equals("(Ljava/lang/String;)Ljava/lang/String;"))) {
                 bugReporter.reportBug(new BugInstance(this, "BAC_BAD_APPLET_CONSTRUCTOR", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addSourceLine(this));
+                .addClassAndMethod(this).addSourceLine(this));
+            }
         }
     }
 }
 
-// vim:ts=4

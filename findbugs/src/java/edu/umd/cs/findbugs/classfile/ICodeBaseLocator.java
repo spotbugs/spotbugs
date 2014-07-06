@@ -23,13 +23,13 @@ import java.io.IOException;
 
 /**
  * Specify the location of a codebase.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface ICodeBaseLocator {
     /**
      * Get the codebase object.
-     * 
+     *
      * @return the codebase object
      */
     public ICodeBase openCodeBase() throws IOException, ResourceNotFoundException;
@@ -38,7 +38,7 @@ public interface ICodeBaseLocator {
      * Get the codebase locator describing the location of a relative codebase.
      * This method is useful for getting the location of a codebase referred to
      * in the Class-Path attribute of a Jar manifest.
-     * 
+     *
      * @param relativePath
      *            the path of a relative codebase
      * @return codebase locator of the relative codebase whose path is given
@@ -50,7 +50,7 @@ public interface ICodeBaseLocator {
      * codebase locators that refer to the same codebase should produce the same
      * string representation. So, this string can serve as a key identifying the
      * codebase in a map.
-     * 
+     *
      * @return a string representation of the codebase
      */
     @Override

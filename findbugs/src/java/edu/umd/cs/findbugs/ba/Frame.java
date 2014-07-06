@@ -111,8 +111,9 @@ public abstract class Frame<ValueType> {
     public Frame(int numLocals) {
         this.numLocals = numLocals;
         this.slotList = new ArrayList<ValueType>(numLocals + DEFAULT_STACK_CAPACITY);
-        for (int i = 0; i < numLocals; ++i)
+        for (int i = 0; i < numLocals; ++i) {
             slotList.add(null);
+        }
     }
 
     /**
@@ -171,10 +172,12 @@ public abstract class Frame<ValueType> {
      *            the ValueType to push
      */
     public void pushValue(ValueType value) {
-        if (VERIFY_INTEGRITY && value == null)
+        if (VERIFY_INTEGRITY && value == null) {
             throw new IllegalArgumentException();
-        if (!isValid())
+        }
+        if (!isValid()) {
             throw new IllegalStateException("accessing top or bottom frame");
+        }
         slotList.add(value);
     }
 
@@ -186,10 +189,12 @@ public abstract class Frame<ValueType> {
      *             if the Java operand stack is empty
      */
     public ValueType popValue() throws DataflowAnalysisException {
-        if (!isValid())
+        if (!isValid()) {
             throw new DataflowAnalysisException("accessing top or bottom frame");
-        if (slotList.size() == numLocals)
+        }
+        if (slotList.size() == numLocals) {
             throw new DataflowAnalysisException("operand stack empty");
+        }
         return slotList.remove(slotList.size() - 1);
     }
 
@@ -200,11 +205,13 @@ public abstract class Frame<ValueType> {
      *             if the Java operand stack is empty
      */
     public ValueType getTopValue() throws DataflowAnalysisException {
-        if (!isValid())
+        if (!isValid()) {
             throw new DataflowAnalysisException("accessing top or bottom frame");
+        }
         assert slotList.size() >= numLocals;
-        if (slotList.size() == numLocals)
+        if (slotList.size() == numLocals) {
             throw new DataflowAnalysisException("operand stack is empty");
+        }
         return slotList.get(slotList.size() - 1);
     }
 
@@ -215,8 +222,9 @@ public abstract class Frame<ValueType> {
      */
     public void getTopStackWords(ValueType[] valueList) throws DataflowAnalysisException {
         int stackDepth = getStackDepth();
-        if (valueList.length > stackDepth)
+        if (valueList.length > stackDepth) {
             throw new DataflowAnalysisException("not enough values on stack");
+        }
         int numSlots = slotList.size();
         for (int i = numSlots - valueList.length, j = 0; i < numSlots; ++i, ++j) {
             valueList[j] = slotList.get(i);
@@ -231,13 +239,16 @@ public abstract class Frame<ValueType> {
      *            0)
      */
     public ValueType getStackValue(int loc) throws DataflowAnalysisException {
-        if (!isValid())
+        if (!isValid()) {
             throw new DataflowAnalysisException("Accessing TOP or BOTTOM frame!");
+        }
         int stackDepth = getStackDepth();
-        if (loc >= stackDepth)
+        if (loc >= stackDepth) {
             throw new DataflowAnalysisException("not enough values on stack: access=" + loc + ", avail=" + stackDepth);
-        if (loc < 0)
+        }
+        if (loc < 0) {
             throw new DataflowAnalysisException("can't get position " + loc + " of stack");
+        }
         int pos = slotList.size() - (loc + 1);
         return slotList.get(pos);
     }
@@ -251,8 +262,9 @@ public abstract class Frame<ValueType> {
      */
     public int getStackLocation(int loc) throws DataflowAnalysisException {
         int stackDepth = getStackDepth();
-        if (loc >= stackDepth)
+        if (loc >= stackDepth) {
             throw new DataflowAnalysisException("not enough values on stack: access=" + loc + ", avail=" + stackDepth);
+        }
         return slotList.size() - (loc + 1);
     }
 
@@ -292,8 +304,9 @@ public abstract class Frame<ValueType> {
      */
     public int getInstanceStackLocation(Instruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
         int numConsumed = ins.consumeStack(cpg);
-        if (numConsumed == Constants.UNPREDICTABLE)
+        if (numConsumed == Constants.UNPREDICTABLE) {
             throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
+        }
         return numConsumed - 1;
     }
 
@@ -313,10 +326,12 @@ public abstract class Frame<ValueType> {
             throw new DataflowAnalysisException("Accessing invalid frame at " + ins);
         }
         int numConsumed = ins.consumeStack(cpg);
-        if (numConsumed == Constants.UNPREDICTABLE)
+        if (numConsumed == Constants.UNPREDICTABLE) {
             throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
-        if (numConsumed > getStackDepth())
+        }
+        if (numConsumed > getStackDepth()) {
             throw new DataflowAnalysisException("Stack underflow " + ins);
+        }
         return getNumSlots() - numConsumed;
     }
 
@@ -349,8 +364,9 @@ public abstract class Frame<ValueType> {
     public int getNumArgumentsIncludingObjectInstance(InvokeInstruction ins, ConstantPoolGen cpg)
             throws DataflowAnalysisException {
         int numConsumed = ins.consumeStack(cpg);
-        if (numConsumed == Constants.UNPREDICTABLE)
+        if (numConsumed == Constants.UNPREDICTABLE) {
             throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
+        }
         return numConsumed;
     }
 
@@ -389,8 +405,9 @@ public abstract class Frame<ValueType> {
      */
     public ValueType getArgument(InvokeInstruction ins, ConstantPoolGen cpg, int i, SignatureParser sigParser)
             throws DataflowAnalysisException {
-        if (i >= sigParser.getNumParameters())
+        if (i >= sigParser.getNumParameters()) {
             throw new IllegalArgumentException("requesting parameter # " + i + " of " + sigParser);
+        }
         return getStackValue(sigParser.getSlotsFromTopOfStackForParameter(i));
     }
 
@@ -406,8 +423,9 @@ public abstract class Frame<ValueType> {
      * @return slot containing the argument value
      */
     public int getArgumentSlot(int i, int numArguments) {
-        if (i >= numArguments)
+        if (i >= numArguments) {
             throw new IllegalArgumentException();
+        }
 
         return (slotList.size() - numArguments) + i;
     }
@@ -426,8 +444,9 @@ public abstract class Frame<ValueType> {
      */
     public ValueType getOperand(StackConsumer ins, ConstantPoolGen cpg, int i) throws DataflowAnalysisException {
         int numOperands = ins.consumeStack(cpg);
-        if (numOperands == Constants.UNPREDICTABLE)
+        if (numOperands == Constants.UNPREDICTABLE) {
             throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
+        }
         return getStackValue((numOperands - 1) - i);
     }
 
@@ -453,8 +472,9 @@ public abstract class Frame<ValueType> {
 
         for (int i = 0; i < sigParser.getNumParameters(); ++i) {
             ValueType value = getArgument(invokeInstruction, cpg, i, sigParser);
-            if (chooser.choose(value))
+            if (chooser.choose(value)) {
                 chosenArgSet.set(i);
+            }
         }
 
         return chosenArgSet;
@@ -465,11 +485,13 @@ public abstract class Frame<ValueType> {
      * the frame.
      */
     public void clearStack() {
-        if (!isValid())
+        if (!isValid()) {
             throw new IllegalStateException("accessing top or bottom frame");
+        }
         assert slotList.size() >= numLocals;
-        if (slotList.size() > numLocals)
+        if (slotList.size() > numLocals) {
             slotList.subList(numLocals, slotList.size()).clear();
+        }
     }
 
     /**
@@ -494,11 +516,14 @@ public abstract class Frame<ValueType> {
     }
 
     public boolean contains(ValueType value) {
-        if (!isValid())
+        if (!isValid()) {
             throw new IllegalStateException("accessing top or bottom frame");
-        for (ValueType v : slotList)
-            if (v.equals(value))
+        }
+        for (ValueType v : slotList) {
+            if (v.equals(value)) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -510,8 +535,9 @@ public abstract class Frame<ValueType> {
      * @return the value in the slot
      */
     public ValueType getValue(int n) {
-        if (!isValid())
+        if (!isValid()) {
             throw new IllegalStateException("accessing top or bottom frame");
+        }
         return slotList.get(n);
     }
 
@@ -524,10 +550,12 @@ public abstract class Frame<ValueType> {
      *            the value to set
      */
     public void setValue(int n, ValueType value) {
-        if (VERIFY_INTEGRITY && value == null)
+        if (VERIFY_INTEGRITY && value == null) {
             throw new IllegalArgumentException();
-        if (!isValid())
+        }
+        if (!isValid()) {
             throw new IllegalStateException("accessing top or bottom frame");
+        }
         slotList.set(n, value);
     }
 
@@ -540,24 +568,31 @@ public abstract class Frame<ValueType> {
      * @return true if the frames are the same, false otherwise
      */
     public boolean sameAs(Frame<ValueType> other) {
-        if (isTop != other.isTop)
+        if (isTop != other.isTop) {
             return false;
+        }
 
-        if (isTop && other.isTop)
+        if (isTop && other.isTop) {
             return true;
+        }
 
-        if (isBottom != other.isBottom)
+        if (isBottom != other.isBottom) {
             return false;
+        }
 
-        if (isBottom && other.isBottom)
+        if (isBottom && other.isBottom) {
             return true;
+        }
 
-        if (getNumSlots() != other.getNumSlots())
+        if (getNumSlots() != other.getNumSlots()) {
             return false;
+        }
 
-        for (int i = 0; i < getNumSlots(); ++i)
-            if (!getValue(i).equals(other.getValue(i)))
+        for (int i = 0; i < getNumSlots(); ++i) {
+            if (!getValue(i).equals(other.getValue(i))) {
                 return false;
+            }
+        }
 
         return true;
     }
@@ -573,12 +608,14 @@ public abstract class Frame<ValueType> {
         if (true) {
             int size = slotList.size();
             if (size == other.slotList.size()) {
-                for (int i = 0; i < size; i++)
+                for (int i = 0; i < size; i++) {
                     slotList.set(i, other.slotList.get(i));
+                }
             } else {
                 slotList.clear();
-                for (ValueType v : other.slotList)
+                for (ValueType v : other.slotList) {
                     slotList.add(v);
+                }
             }
         } else {
             slotList.clear();
@@ -603,10 +640,12 @@ public abstract class Frame<ValueType> {
      */
     @Override
     public String toString() {
-        if (isTop())
+        if (isTop()) {
             return "[TOP]";
-        if (isBottom())
+        }
+        if (isBottom()) {
             return "[BOTTOM]";
+        }
         StringBuilder buf = new StringBuilder();
         buf.append('[');
         int numSlots = getNumSlots();
@@ -617,14 +656,16 @@ public abstract class Frame<ValueType> {
                 // the operand stack.
                 int last = buf.length() - 1;
                 if (last >= 0) {
-                    if (buf.charAt(last) == ',')
+                    if (buf.charAt(last) == ',') {
                         buf.deleteCharAt(last);
+                    }
                 }
                 buf.append('|');
             }
             String value = valueToString(getValue(i));
-            if (i == numSlots - 1 && value.endsWith(","))
+            if (i == numSlots - 1 && value.endsWith(",")) {
                 value = value.substring(0, value.length() - 1);
+            }
             buf.append(value);
             // buf.append(' ');
         }
@@ -638,8 +679,9 @@ public abstract class Frame<ValueType> {
      * the values.
      */
     protected String valueToString(ValueType value) {
-        if (value == null)
+        if (value == null) {
             return "null";
+        }
         return value.toString();
     }
 
@@ -648,8 +690,9 @@ public abstract class Frame<ValueType> {
      *         stack slots
      */
     public Collection<ValueType> allSlots() {
-        if (slotList == null)
+        if (slotList == null) {
             return Collections.<ValueType> emptyList();
+        }
         return Collections.<ValueType> unmodifiableCollection(slotList);
     }
 
@@ -670,4 +713,3 @@ public abstract class Frame<ValueType> {
 
 }
 
-// vim:ts=4

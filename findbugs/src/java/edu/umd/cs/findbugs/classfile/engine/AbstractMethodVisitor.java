@@ -41,7 +41,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.objectweb.asm.MethodVisitor#visitAnnotationDefault()
      */
     @Override
@@ -52,7 +52,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.objectweb.asm.MethodVisitor#visitAttribute(org.objectweb.asm.Attribute
      * )
@@ -64,7 +64,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.objectweb.asm.MethodVisitor#visitCode()
      */
     @Override
@@ -75,7 +75,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.objectweb.asm.MethodVisitor#visitFieldInsn(int,
      * java.lang.String, java.lang.String, java.lang.String)
      */
@@ -87,7 +87,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.objectweb.asm.MethodVisitor#visitFrame(int, int,
      * java.lang.Object[], int, java.lang.Object[])
      */
@@ -99,7 +99,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.objectweb.asm.MethodVisitor#visitIincInsn(int, int)
      */
     @Override
@@ -110,7 +110,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.objectweb.asm.MethodVisitor#visitInsn(int)
      */
     @Override
@@ -121,7 +121,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.objectweb.asm.MethodVisitor#visitIntInsn(int, int)
      */
     @Override
@@ -132,7 +132,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.objectweb.asm.MethodVisitor#visitJumpInsn(int,
      * org.objectweb.asm.Label)
      */
@@ -144,7 +144,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.objectweb.asm.MethodVisitor#visitLabel(org.objectweb.asm.Label)
      */
     @Override
@@ -155,7 +155,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.objectweb.asm.MethodVisitor#visitLdcInsn(java.lang.Object)
      */
     @Override
@@ -166,7 +166,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.objectweb.asm.MethodVisitor#visitLineNumber(int,
      * org.objectweb.asm.Label)
      */
@@ -178,7 +178,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.objectweb.asm.MethodVisitor#visitLocalVariable(java.lang.String,
      * java.lang.String, java.lang.String, org.objectweb.asm.Label,
      * org.objectweb.asm.Label, int)
@@ -191,7 +191,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.objectweb.asm.MethodVisitor#visitLookupSwitchInsn(org.objectweb.asm
      * .Label, int[], org.objectweb.asm.Label[])
@@ -204,7 +204,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.objectweb.asm.MethodVisitor#visitMaxs(int, int)
      */
     @Override
@@ -215,7 +215,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.objectweb.asm.MethodVisitor#visitMethodInsn(int,
      * java.lang.String, java.lang.String, java.lang.String)
      */
@@ -227,7 +227,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.objectweb.asm.MethodVisitor#visitMultiANewArrayInsn(java.lang.String,
      * int)
@@ -240,7 +240,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.objectweb.asm.MethodVisitor#visitTableSwitchInsn(int, int,
      * org.objectweb.asm.Label, org.objectweb.asm.Label[])
      */
@@ -252,7 +252,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.objectweb.asm.MethodVisitor#visitTryCatchBlock(org.objectweb.asm.
      * Label, org.objectweb.asm.Label, org.objectweb.asm.Label,
@@ -266,7 +266,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.objectweb.asm.MethodVisitor#visitTypeInsn(int, java.lang.String)
      */
     @Override
@@ -277,7 +277,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.objectweb.asm.MethodVisitor#visitVarInsn(int, int)
      */
     @Override

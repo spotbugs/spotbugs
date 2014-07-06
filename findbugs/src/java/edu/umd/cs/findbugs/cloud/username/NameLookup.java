@@ -37,11 +37,11 @@ public interface NameLookup {
     /**
      * tries to obtain a user name. May prompt the user and/or perform network
      * activity.
-     * 
+     *
      * @param plugin
      *            TODO
      * @param bugCollection
-     * 
+     *
      * @return true if successful
      */
     boolean signIn(CloudPlugin plugin, BugCollection bugCollection) throws IOException;

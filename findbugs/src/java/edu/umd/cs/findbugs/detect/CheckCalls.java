@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.ba.SignatureConverter;
 
 /**
  * This is just for debugging method call resolution.
- * 
+ *
  * @author David Hovemeyer
  */
 public class CheckCalls implements Detector, NonReportingDetector {
@@ -58,7 +58,7 @@ public class CheckCalls implements Detector, NonReportingDetector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba
      * .ClassContext)
@@ -67,12 +67,14 @@ public class CheckCalls implements Detector, NonReportingDetector {
     public void visitClassContext(ClassContext classContext) {
         Method[] methodList = classContext.getJavaClass().getMethods();
         for (Method method : methodList) {
-            if (method.getCode() == null)
+            if (method.getCode() == null) {
                 continue;
+            }
 
             // System.out.println("--> " + method.getName());
-            if (METHOD != null && !method.getName().equals(METHOD))
+            if (METHOD != null && !method.getName().equals(METHOD)) {
                 continue;
+            }
 
             try {
                 System.out.println("Analyzing " + SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method));
@@ -88,7 +90,7 @@ public class CheckCalls implements Detector, NonReportingDetector {
     }
 
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, ClassNotFoundException,
-            DataflowAnalysisException {
+    DataflowAnalysisException {
         CFG cfg = classContext.getCFG(method);
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
@@ -96,8 +98,9 @@ public class CheckCalls implements Detector, NonReportingDetector {
 
             if (ins instanceof InvokeInstruction) {
                 if (TARGET_METHOD != null
-                        && !((InvokeInstruction) ins).getMethodName(classContext.getConstantPoolGen()).equals(TARGET_METHOD))
+                        && !((InvokeInstruction) ins).getMethodName(classContext.getConstantPoolGen()).equals(TARGET_METHOD)) {
                     continue;
+                }
 
                 System.out.println("\n*******************************************************\n");
 
@@ -122,7 +125,7 @@ public class CheckCalls implements Detector, NonReportingDetector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.Detector#report()
      */
     @Override

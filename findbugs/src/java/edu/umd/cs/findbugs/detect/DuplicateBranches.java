@@ -56,9 +56,9 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class DuplicateBranches extends PreorderVisitor implements Detector {
     private ClassContext classContext;
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
-    private Collection<BugInstance> pendingBugs = new LinkedList<BugInstance>();
+    private final Collection<BugInstance> pendingBugs = new LinkedList<BugInstance>();
 
     public DuplicateBranches(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -73,8 +73,9 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
     @Override
     public void visitMethod(Method method) {
         try {
-            if (method.getCode() == null)
+            if (method.getCode() == null) {
                 return;
+            }
 
             CFG cfg = classContext.getCFG(method);
 
@@ -83,22 +84,26 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
                 BasicBlock bb = bbi.next();
 
                 int numOutgoing = cfg.getNumOutgoingEdges(bb);
-                if (numOutgoing == 2)
+                if (numOutgoing == 2) {
                     findIfElseDuplicates(cfg, method, bb);
-                else if (numOutgoing > 2)
+                } else if (numOutgoing > 2) {
                     findSwitchDuplicates(cfg, method, bb);
+                }
             }
         } catch (MethodUnprofitableException mue) {
-            if (SystemProperties.getBoolean("unprofitable.debug")) // otherwise
-                                                                   // don't
-                                                                   // report
+            if (SystemProperties.getBoolean("unprofitable.debug")) {
+                // don't
+                // report
                 bugReporter.logError("skipping unprofitable method in " + getClass().getName());
+            }
         } catch (Exception e) {
             bugReporter.logError("Failure examining basic blocks in Duplicate Branches detector", e);
         }
-        if (pendingBugs.size() <= 2)
-            for (BugInstance b : pendingBugs)
+        if (pendingBugs.size() <= 2) {
+            for (BugInstance b : pendingBugs) {
                 bugReporter.reportBug(b);
+            }
+        }
         pendingBugs.clear();
 
     }
@@ -116,12 +121,14 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
             }
         }
 
-        if ((thenBB == null) || (elseBB == null))
+        if ((thenBB == null) || (elseBB == null)) {
             return;
+        }
         InstructionHandle thenStartHandle = getDeepFirstInstruction(cfg, thenBB);
         InstructionHandle elseStartHandle = getDeepFirstInstruction(cfg, elseBB);
-        if ((thenStartHandle == null) || (elseStartHandle == null))
+        if ((thenStartHandle == null) || (elseStartHandle == null)) {
             return;
+        }
 
         int thenStartPos = thenStartHandle.getPosition();
         int elseStartPos = elseStartHandle.getPosition();
@@ -129,36 +136,42 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
         InstructionHandle thenFinishIns = findThenFinish(cfg, thenBB, elseStartPos);
         int thenFinishPos = thenFinishIns.getPosition();
 
-        if (!(thenFinishIns.getInstruction() instanceof GotoInstruction))
+        if (!(thenFinishIns.getInstruction() instanceof GotoInstruction)) {
             return;
+        }
 
         InstructionHandle elseFinishHandle = ((GotoInstruction) thenFinishIns.getInstruction()).getTarget();
         int elseFinishPos = elseFinishHandle.getPosition();
 
-        if (thenFinishPos >= elseStartPos)
+        if (thenFinishPos >= elseStartPos) {
             return;
+        }
 
-        if ((thenFinishPos - thenStartPos) != (elseFinishPos - elseStartPos))
+        if ((thenFinishPos - thenStartPos) != (elseFinishPos - elseStartPos)) {
             return;
+        }
 
-        if (thenFinishPos <= thenStartPos)
+        if (thenFinishPos <= thenStartPos) {
             return;
+        }
 
         byte[] thenBytes = getCodeBytes(method, thenStartPos, thenFinishPos);
         byte[] elseBytes = getCodeBytes(method, elseStartPos, elseFinishPos);
 
-        if (!Arrays.equals(thenBytes, elseBytes))
+        if (!Arrays.equals(thenBytes, elseBytes)) {
             return;
+        }
 
         // adjust elseFinishPos to be inclusive (for source line attribution)
         InstructionHandle elseLastIns = elseFinishHandle.getPrev();
-        if (elseLastIns != null)
+        if (elseLastIns != null) {
             elseFinishPos = elseLastIns.getPosition();
+        }
 
         pendingBugs.add(new BugInstance(this, "DB_DUPLICATE_BRANCHES", NORMAL_PRIORITY)
-                .addClassAndMethod(classContext.getJavaClass(), method)
-                .addSourceLineRange(classContext, this, thenStartPos, thenFinishPos)
-                .addSourceLineRange(classContext, this, elseStartPos, elseFinishPos));
+        .addClassAndMethod(classContext.getJavaClass(), method)
+        .addSourceLineRange(classContext, this, thenStartPos, thenFinishPos)
+        .addSourceLineRange(classContext, this, elseStartPos, elseFinishPos));
     }
 
     /**
@@ -167,14 +180,16 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
      */
     private static InstructionHandle getDeepFirstInstruction(CFG cfg, BasicBlock bb) {
         InstructionHandle ih = bb.getFirstInstruction();
-        if (ih != null)
+        if (ih != null) {
             return ih;
+        }
         Iterator<Edge> iei = cfg.outgoingEdgeIterator(bb);
         while (iei.hasNext()) {
             Edge e = iei.next();
             String edgeString = e.toString();
-            if (EdgeTypes.FALL_THROUGH_EDGE == e.getType())
+            if (EdgeTypes.FALL_THROUGH_EDGE == e.getType()) {
                 return getDeepFirstInstruction(cfg, e.getTarget());
+            }
         }
         return null;
     }
@@ -194,22 +209,26 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
                 BasicBlock target = e.getTarget();
                 InstructionHandle firstIns = getDeepFirstInstruction(cfg, target);
                 if (firstIns == null)
+                {
                     continue; // give up on this edge
+                }
                 int firstInsPosition = firstIns.getPosition();
                 switchPos[idx++] = firstInsPosition;
                 InstructionHandle prevIns = firstIns.getPrev(); // prev in
-                                                                // bytecode, not
-                                                                // flow
-                if (prevIns != null)
+                // bytecode, not
+                // flow
+                if (prevIns != null) {
                     prevHandle.put(firstInsPosition, prevIns);
+                }
             } else {
                 // hmm, this must not be a switch statement, so give up
                 return;
             }
         }
 
-        if (idx < 2) // need at least two edges to tango
+        if (idx < 2) {
             return;
+        }
 
         Arrays.sort(switchPos, 0, idx); // sort the 'idx' switch positions
 
@@ -220,7 +239,9 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
         HashMap<BigInteger, Collection<Integer>> map = new HashMap<BigInteger, Collection<Integer>>();
         for (int i = 0; i < idx; i++) {
             if (switchPos[i] + 7 >= switchPos[i + 1])
+            {
                 continue; // ignore small switch clauses
+            }
 
             int endPos = switchPos[i + 1];
             InstructionHandle last = prevHandle.get(switchPos[i + 1]);
@@ -235,11 +256,15 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
                 // Don't do this since many cases may throw "not implemented".
             } else {
                 if (i + 2 < idx)
+                {
                     continue; // falls through to next case, so don't store it
-                              // at all
+                }
+                // at all
                 if (i + 1 < idx && switchPos[idx] != switchPos[idx - 1])
+                {
                     continue; // also falls through unless switch has no default
-                              // case
+                    // case
+                }
             }
 
             BigInteger clauseAsInt = getCodeBytesAsBigInt(method, switchPos, i, endPos);
@@ -251,11 +276,13 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
                 BugInstance bug = new BugInstance(this, "DB_DUPLICATE_SWITCH_CLAUSES", LOW_PRIORITY).addClassAndMethod(
                         classContext.getJavaClass(), method);
                 for (int i : clauses)
+                {
                     bug.addSourceLineRange(this.classContext, this, switchPos[i], switchPos[i + 1] - 1); // not
-                                                                                                         // endPos,
-                                                                                                         // but
-                                                                                                         // that's
-                                                                                                         // ok
+                }
+                // endPos,
+                // but
+                // that's
+                // ok
                 pendingBugs.add(bug);
             }
         }
@@ -275,10 +302,11 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
         byte[] clause = getCodeBytes(method, switchPos[i], endPos);
 
         BigInteger clauseAsInt;
-        if (clause.length == 0)
+        if (clause.length == 0) {
             clauseAsInt = BigInteger.ZERO;
-        else
+        } else {
             clauseAsInt = new BigInteger(clause);
+        }
         return clauseAsInt;
     }
 
@@ -306,8 +334,9 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
                         InstructionHandle targetFirst = getDeepFirstInstruction(cfg, target);
                         if (targetFirst != null) {
                             int targetPos = targetFirst.getPosition();
-                            if (targetPos > maxGoto)
+                            if (targetPos > maxGoto) {
                                 maxGoto = targetPos;
+                            }
                         }
                     }
                 }

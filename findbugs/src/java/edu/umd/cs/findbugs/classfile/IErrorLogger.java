@@ -21,13 +21,13 @@ package edu.umd.cs.findbugs.classfile;
 
 /**
  * Interface for objects that log various kinds of analysis errors.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface IErrorLogger {
     /**
      * Called to report a class lookup failure.
-     * 
+     *
      * @param ex
      *            a ClassNotFoundException resulting from the class lookup
      *            failure
@@ -36,7 +36,7 @@ public interface IErrorLogger {
 
     /**
      * Called to report a class lookup failure.
-     * 
+     *
      * @param classDescriptor
      *            ClassDescriptor of a missing class
      */
@@ -44,7 +44,7 @@ public interface IErrorLogger {
 
     /**
      * Log an error that occurs while performing analysis.
-     * 
+     *
      * @param message
      *            the error message
      */
@@ -52,7 +52,7 @@ public interface IErrorLogger {
 
     /**
      * Log an error that occurs while performing analysis.
-     * 
+     *
      * @param message
      *            the error message
      * @param e
@@ -62,7 +62,7 @@ public interface IErrorLogger {
 
     /**
      * Report that we skipped some analysis of a method
-     * 
+     *
      * @param method
      *            the method we skipped
      */

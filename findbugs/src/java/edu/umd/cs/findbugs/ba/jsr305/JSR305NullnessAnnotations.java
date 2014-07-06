@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /**
  * ClassDescriptors for JSR-305 nullness annotations.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class JSR305NullnessAnnotations {

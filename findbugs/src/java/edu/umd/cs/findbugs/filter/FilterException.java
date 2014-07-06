@@ -31,4 +31,3 @@ public class FilterException extends RuntimeException {
     }
 }
 
-// vim:ts=4

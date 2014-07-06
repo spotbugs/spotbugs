@@ -152,7 +152,7 @@ public abstract class AbstractBugReporter implements BugReporter {
     public void setRankThreshold(int threshold) {
         this.rankThreshold = threshold;
     }
-    
+
     public void setIsRelaxed(boolean relaxed) {
         this.relaxed = relaxed;
         this.relaxedSet = true;
@@ -192,11 +192,12 @@ public abstract class AbstractBugReporter implements BugReporter {
             doReportBug(bugInstance);
         } else {
             if (DEBUG) {
-                if (priority <= priorityThreshold)
+                if (priority <= priorityThreshold) {
                     System.out.println("AbstractBugReporter: Filtering due to priorityThreshold " + priority + " > "
                             + priorityThreshold);
-                else
+                } else {
                     System.out.println("AbstractBugReporter: Filtering due to rankThreshold " + bugRank + " > " + rankThreshold);
+                }
             }
         }
     }
@@ -264,8 +265,9 @@ public abstract class AbstractBugReporter implements BugReporter {
             // we ignore all "package-info" issues
             return false;
         }
-        if (message.equals("java.lang.Synthetic"))
+        if (message.equals("java.lang.Synthetic")) {
             return false;
+        }
         return true;
     }
 
@@ -436,4 +438,3 @@ public abstract class AbstractBugReporter implements BugReporter {
     public abstract void reportMissingClass(String string);
 }
 
-// vim:ts=4

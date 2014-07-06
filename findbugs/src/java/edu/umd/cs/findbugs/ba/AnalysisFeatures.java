@@ -122,4 +122,3 @@ public interface AnalysisFeatures {
 
 }
 
-// vim:ts=4

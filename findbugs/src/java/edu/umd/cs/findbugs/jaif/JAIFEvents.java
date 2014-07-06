@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.jaif;
 
 /**
  * Callbacks for parsing an extenal annotation file.
- * 
+ *
  * @author David Hovemeyer
  * @see <a
  *      href="http://groups.csail.mit.edu/pag/jsr308/annotation-file-utilities/">Annotation
@@ -31,7 +31,7 @@ public interface JAIFEvents {
 
     /**
      * Called to indicate the start of a package definition.
-     * 
+     *
      * @param pkgName
      *            package name
      */
@@ -39,14 +39,14 @@ public interface JAIFEvents {
 
     /**
      * Called to indicate the end of a package definition.
-     * 
+     *
      * @param pkgName
      */
     void endPackageDefinition(String pkgName);
 
     /**
      * Called to indicate the start of an annotation.
-     * 
+     *
      * @param annotationName
      *            annotation name
      */
@@ -54,7 +54,7 @@ public interface JAIFEvents {
 
     /**
      * Called to indicate the end of an annotation.
-     * 
+     *
      * @param annotationName
      *            annotation name
      */
@@ -62,7 +62,7 @@ public interface JAIFEvents {
 
     /**
      * Called to visit an annotation field.
-     * 
+     *
      * @param fieldName
      *            annotation field name
      * @param constant
@@ -73,7 +73,7 @@ public interface JAIFEvents {
 
     /**
      * Called to indicate the start of an annotation definition.
-     * 
+     *
      * @param annotationName
      *            name of the annotation
      * @param retention
@@ -83,7 +83,7 @@ public interface JAIFEvents {
 
     /**
      * Called to indicate the end of an annotation definition.
-     * 
+     *
      * @param annotationName
      *            name of the annotation
      */
@@ -91,7 +91,7 @@ public interface JAIFEvents {
 
     /**
      * Called to visit an annotation field definition.
-     * 
+     *
      * @param type
      *            type of the annotation field (in JVM signature format)
      * @param fieldName

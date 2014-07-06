@@ -21,17 +21,17 @@ package edu.umd.cs.findbugs.props;
 
 /**
  * Abstract base class for implementing warning properties.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class AbstractWarningProperty implements WarningProperty {
-    private String shortName;
+    private final String shortName;
 
-    private PriorityAdjustment priorityAdjustment;
+    private final PriorityAdjustment priorityAdjustment;
 
     /**
      * Constructor.
-     * 
+     *
      * @param shortName
      *            the short name of the property; will be qualified with the
      *            full name of the warning property class
@@ -45,7 +45,7 @@ public abstract class AbstractWarningProperty implements WarningProperty {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.props.WarningProperty#getPriorityAdjustment()
      */
     @Override
@@ -55,7 +55,7 @@ public abstract class AbstractWarningProperty implements WarningProperty {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.props.WarningProperty#getName()
      */
     @Override

@@ -36,10 +36,11 @@ public class ResourceValue {
     }
 
     public static ResourceValue merge(ResourceValue a, ResourceValue b) {
-        if (a == notInstance && b == notInstance)
+        if (a == notInstance && b == notInstance) {
             return notInstance;
-        else
+        } else {
             return instance;
+        }
     }
 
     public boolean isInstance() {
@@ -52,4 +53,3 @@ public class ResourceValue {
     }
 }
 
-// vim:ts=4

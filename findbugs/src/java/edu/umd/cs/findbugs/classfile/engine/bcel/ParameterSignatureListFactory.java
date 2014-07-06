@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Analysis engine to produce parameter signature lists for analyzed methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ParameterSignatureListFactory extends AnalysisFactory<String[]> {
@@ -42,7 +42,7 @@ public class ParameterSignatureListFactory extends AnalysisFactory<String[]> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)

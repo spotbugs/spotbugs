@@ -37,8 +37,9 @@ public class FutureValue<V> implements Future<V> {
 
     @Override
     public synchronized boolean cancel(boolean arg0) {
-        if (latch.getCount() == 0)
+        if (latch.getCount() == 0) {
             return false;
+        }
         canceled = true;
         latch.countDown();
         return true;
@@ -47,26 +48,31 @@ public class FutureValue<V> implements Future<V> {
     @Override
     public synchronized V get() throws InterruptedException {
         latch.await();
-        if (canceled)
+        if (canceled) {
             throw new RuntimeException("Canceled");
+        }
         return value;
     }
 
     @Override
     public synchronized V get(long arg0, TimeUnit arg1) throws InterruptedException, TimeoutException {
-        if (!latch.await(arg0, arg1))
+        if (!latch.await(arg0, arg1)) {
             throw new TimeoutException();
-        if (canceled)
+        }
+        if (canceled) {
             throw new RuntimeException("Canceled");
+        }
         return value;
     }
 
     public synchronized V get(long arg0, TimeUnit arg1, V valueOnTimeout) throws InterruptedException {
-        if (!latch.await(arg0, arg1))
+        if (!latch.await(arg0, arg1)) {
             return valueOnTimeout;
+        }
 
-        if (canceled)
+        if (canceled) {
             throw new RuntimeException("Canceled");
+        }
         return value;
     }
 
@@ -81,10 +87,12 @@ public class FutureValue<V> implements Future<V> {
     }
 
     public synchronized void set(V value) {
-        if (canceled)
+        if (canceled) {
             throw new IllegalStateException("Already cancelled");
-        if (latch.getCount() == 0)
+        }
+        if (latch.getCount() == 0) {
             throw new IllegalStateException("Already set");
+        }
         this.value = value;
         latch.countDown();
     }

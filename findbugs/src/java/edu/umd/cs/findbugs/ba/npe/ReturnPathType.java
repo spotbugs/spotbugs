@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
  * <li>It is not possible to return normally (i.e., an exception is guaranteed
  * to be thrown)</li>
  * </ul>
- * 
+ *
  * @author David Hovemeyer
  */
 public class ReturnPathType {
@@ -61,7 +61,7 @@ public class ReturnPathType {
 
     /**
      * Make this dataflow fact an exact copy of the other one.
-     * 
+     *
      * @param other
      *            another dataflow fact
      */
@@ -85,7 +85,7 @@ public class ReturnPathType {
 
     /**
      * Set whether or not it is possible to return normally.
-     * 
+     *
      * @param canReturnNormally
      *            true if the method can return normally at this location, false
      *            otherwise
@@ -96,7 +96,7 @@ public class ReturnPathType {
 
     /**
      * Merge this fact with given fact.
-     * 
+     *
      * @param fact
      *            another dataflow fact
      */
@@ -119,7 +119,7 @@ public class ReturnPathType {
 
     /**
      * Determine whether this dataflow fact is identical to another one.
-     * 
+     *
      * @param other
      *            another dataflow fact
      * @return true if the two dataflow facts are identical, false if they are
@@ -139,7 +139,7 @@ public class ReturnPathType {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override

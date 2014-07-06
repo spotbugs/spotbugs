@@ -62,8 +62,9 @@ public class HugeSharedStringConstants extends BytecodeScanningDetector {
     @Override
     public void visit(ConstantString s) {
         String value = s.getBytes(getConstantPool());
-        if (value.length() < SIZE_OF_HUGE_CONSTANT)
+        if (value.length() < SIZE_OF_HUGE_CONSTANT) {
             return;
+        }
         String key = getStringKey(value);
         SortedSet<String> set = map.get(key);
         if (set == null) {
@@ -75,14 +76,16 @@ public class HugeSharedStringConstants extends BytecodeScanningDetector {
 
     @Override
     public void visit(ConstantValue s) {
-        if (!visitingField())
+        if (!visitingField()) {
             return;
+        }
         int i = s.getConstantValueIndex();
         Constant c = getConstantPool().getConstant(i);
         if (c instanceof ConstantString) {
             String value = ((ConstantString) c).getBytes(getConstantPool());
-            if (value.length() < SIZE_OF_HUGE_CONSTANT)
+            if (value.length() < SIZE_OF_HUGE_CONSTANT) {
                 return;
+            }
             String key = getStringKey(value);
             definition.put(key, XFactory.createXField(this));
             stringSize.put(key, value.length());
@@ -94,24 +97,29 @@ public class HugeSharedStringConstants extends BytecodeScanningDetector {
     public void report() {
         for (Map.Entry<String, SortedSet<String>> e : map.entrySet()) {
             Set<String> occursIn = e.getValue();
-            if (occursIn.size() == 1)
+            if (occursIn.size() == 1) {
                 continue;
+            }
             XField field = definition.get(e.getKey());
-            if (field == null)
+            if (field == null) {
                 continue;
+            }
             Integer length = stringSize.get(e.getKey());
             int overhead = length * (occursIn.size() - 1);
-            if (overhead < 3 * SIZE_OF_HUGE_CONSTANT)
+            if (overhead < 3 * SIZE_OF_HUGE_CONSTANT) {
                 continue;
+            }
             String className = field.getClassName();
 
             BugInstance bug = new BugInstance(this, "HSC_HUGE_SHARED_STRING_CONSTANT",
                     overhead > 20 * SIZE_OF_HUGE_CONSTANT ? HIGH_PRIORITY
                             : (overhead > 8 * SIZE_OF_HUGE_CONSTANT ? NORMAL_PRIORITY : LOW_PRIORITY)).addClass(className)
-                    .addField(field).addInt(length).addInt(occursIn.size()).describe(IntAnnotation.INT_OCCURRENCES);
-            for (String c : occursIn)
-                if (!c.equals(className))
+                            .addField(field).addInt(length).addInt(occursIn.size()).describe(IntAnnotation.INT_OCCURRENCES);
+            for (String c : occursIn) {
+                if (!c.equals(className)) {
                     bug.addClass(c);
+                }
+            }
 
             bugReporter.reportBug(bug);
 

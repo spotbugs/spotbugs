@@ -26,14 +26,14 @@ import java.util.regex.Pattern;
 /**
  * Class to pre-screen class files, so that only a subset are analyzed. This
  * supports the -onlyAnalyze command line option.
- * 
+ *
  * Modified February 2006 in four ways: a) don't break windows platform by
  * hard-coding '/' as the directory separator b) store list of Matchers, not
  * Patterns, so we don't keep instantiating Matchers c) fix suffix bug, so
  * FooBar and Foo$Bar no longer match Bar d) addAllowedPackage() can now handle
  * unicode chars in filenames, though we still may not be handling every case
  * mentioned in section 7.2.1 of the JLS
- * 
+ *
  * @see FindBugs
  * @author David Hovemeyer
  */
@@ -46,11 +46,11 @@ public class ClassScreener implements IClassScreener {
      * general enough
      */
     private static final String SEP = "[/\\\\]"; // could include ':' for
-                                                 // classic macOS
+    // classic macOS
 
     private static final String START = "(?:^|" + SEP + ")"; // (?:) is a
-                                                             // non-capturing
-                                                             // group
+    // non-capturing
+    // group
 
     /**
      * regular expression fragment to match a char of a class or package name.
@@ -58,7 +58,7 @@ public class ClassScreener implements IClassScreener {
      */
     private static final String JAVA_IDENTIFIER_PART = "[^./\\\\]";
 
-    private LinkedList<Matcher> patternList;
+    private final LinkedList<Matcher> patternList;
 
     /**
      * Constructor. By default, the ClassScreener will match <em>all</em> class
@@ -73,7 +73,7 @@ public class ClassScreener implements IClassScreener {
     /**
      * replace the dots in a fully-qualified class/package name to a regular
      * expression fragment that will match file names.
-     * 
+     *
      * @param dotsName
      *            such as "java.io" or "java.io.File"
      * @return regex fragment such as "java[/\\\\]io" (single backslash escaped
@@ -96,21 +96,22 @@ public class ClassScreener implements IClassScreener {
 
     /**
      * Add the name of a class to be matched by the screener.
-     * 
+     *
      * @param className
      *            name of a class to be matched
      */
     public void addAllowedClass(String className) {
         String classRegex = START + dotsToRegex(className) + ".class$";
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Class regex: " + classRegex);
+        }
         patternList.add(Pattern.compile(classRegex).matcher(""));
     }
 
     /**
      * Add the name of a package to be matched by the screener. All class files
      * that appear to be in the package should be matched.
-     * 
+     *
      * @param packageName
      *            name of the package to be matched
      */
@@ -120,8 +121,9 @@ public class ClassScreener implements IClassScreener {
         }
 
         String packageRegex = START + dotsToRegex(packageName) + SEP + JAVA_IDENTIFIER_PART + "+.class$";
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Package regex: " + packageRegex);
+        }
         patternList.add(Pattern.compile(packageRegex).matcher(""));
     }
 
@@ -129,7 +131,7 @@ public class ClassScreener implements IClassScreener {
      * Add the name of a prefix to be matched by the screener. All class files
      * that appear to be in the package specified by the prefix, or a more
      * deeply nested package, should be matched.
-     * 
+     *
      * @param prefix
      *            name of the prefix to be matched
      */
@@ -137,48 +139,55 @@ public class ClassScreener implements IClassScreener {
         if (prefix.endsWith(".")) {
             prefix = prefix.substring(0, prefix.length() - 1);
         }
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Allowed prefix: " + prefix);
+        }
         String packageRegex = START + dotsToRegex(prefix) + SEP;
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Prefix regex: " + packageRegex);
+        }
         patternList.add(Pattern.compile(packageRegex).matcher(""));
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IClassScreener#matches(java.lang.String)
      */
     @Override
     public boolean matches(String fileName) {
         // Special case: if no classes or packages have been defined,
         // then the screener matches all class files.
-        if (patternList.isEmpty())
+        if (patternList.isEmpty()) {
             return true;
+        }
 
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Matching: " + fileName);
+        }
 
         // Scan through list of regexes
         for (Matcher matcher : patternList) {
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.print("\tTrying [" + matcher.pattern());
+            }
             matcher.reset(fileName);
             if (matcher.find()) {
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("]: yes!");
+                }
                 return true;
             }
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("]: no");
+            }
         }
         return false;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.IClassScreener#vacuous()
      */
     @Override
@@ -187,4 +196,3 @@ public class ClassScreener implements IClassScreener {
     }
 }
 
-// vim:ts=4

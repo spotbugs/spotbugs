@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.graph.AbstractEdge;
 /**
  * Edge in a ConstraintGraph. Edges flow from earlier detectors to later
  * detectors.
- * 
+ *
  * @see ConstraintGraph
  * @see DetectorNode
  * @see ExecutionPlan
@@ -35,7 +35,7 @@ public class ConstraintEdge extends AbstractEdge<ConstraintEdge, DetectorNode> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param source
      *            the source vertex (earlier Detector)
      * @param target
@@ -47,7 +47,7 @@ public class ConstraintEdge extends AbstractEdge<ConstraintEdge, DetectorNode> {
 
     /**
      * Set the DetectorOrderingConstraint that created this edge.
-     * 
+     *
      * @param constraint
      *            the DetectorOrderingConstraint that created this edge
      */
@@ -60,7 +60,7 @@ public class ConstraintEdge extends AbstractEdge<ConstraintEdge, DetectorNode> {
      * constraint having a single detector as its source (ealier detector). Such
      * constraints automatically enable the source (earlier) detector if the
      * target (later) detector is enabled.
-     * 
+     *
      * @return true if this edge has a single detector as its source (earlier
      *         detector)
      */
@@ -69,4 +69,3 @@ public class ConstraintEdge extends AbstractEdge<ConstraintEdge, DetectorNode> {
     }
 }
 
-// vim:ts=4

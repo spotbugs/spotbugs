@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 /**
  * Java main application to compute defect density for a bug collection (stored
  * as an XML collection)
- * 
+ *
  * @author William Pugh
  */
 public class DefectDensity {
@@ -41,8 +41,9 @@ public class DefectDensity {
     }
 
     public static double density(int bugs, int ncss) {
-        if (ncss == 0)
+        if (ncss == 0) {
             return Double.NaN;
+        }
         long bugsPer10KNCSS = Math.round(10000.0 * bugs / ncss);
         return bugsPer10KNCSS / 10.0;
     }
@@ -56,30 +57,35 @@ public class DefectDensity {
         FindBugs.setNoAnalysis();
         BugCollection origCollection = new SortedBugCollection();
         int argCount = 0;
-        if (argCount == args.length)
+        if (argCount == args.length) {
             origCollection.readXML(System.in);
-        else
+        } else {
             origCollection.readXML(args[argCount]);
+        }
         ProjectStats stats = origCollection.getProjectStats();
         printRow("kind", "name", "density/KNCSS", "bugs", "NCSS");
         double projectDensity = density(stats.getTotalBugs(), stats.getCodeSize());
         printRow("project", origCollection.getCurrentAppVersion().getReleaseName(), projectDensity, stats.getTotalBugs(),
                 stats.getCodeSize());
-        for (PackageStats p : stats.getPackageStats())
+        for (PackageStats p : stats.getPackageStats()) {
             if (p.getTotalBugs() > 4) {
 
                 double packageDensity = density(p.getTotalBugs(), p.size());
-                if (Double.isNaN(packageDensity) || packageDensity < projectDensity)
+                if (Double.isNaN(packageDensity) || packageDensity < projectDensity) {
                     continue;
+                }
                 printRow("package", p.getPackageName(), packageDensity, p.getTotalBugs(), p.size());
-                for (ClassStats c : p.getSortedClassStats())
+                for (ClassStats c : p.getSortedClassStats()) {
                     if (c.getTotalBugs() > 4) {
                         double density = density(c.getTotalBugs(), c.size());
-                        if (Double.isNaN(density) || density < packageDensity)
+                        if (Double.isNaN(density) || density < packageDensity) {
                             continue;
+                        }
                         printRow("class", c.getName(), density, c.getTotalBugs(), c.size());
                     }
+                }
             }
+        }
 
     }
 

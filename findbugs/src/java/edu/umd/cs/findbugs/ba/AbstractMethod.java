@@ -54,7 +54,7 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.XMethod#getMethodDescriptor()
      */
     @Override
@@ -62,12 +62,13 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
         return DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(getClassName()), getName(),
                 getSignature(), isStatic());
     }
-    
+
     @Override
     public XMethod resolveAccessMethodForMethod() {
         MethodDescriptor access = getAccessMethodForMethod();
-        if (access != null) 
+        if (access != null) {
             return XFactory.createXMethod(access);
+        }
         return this;
 
     }

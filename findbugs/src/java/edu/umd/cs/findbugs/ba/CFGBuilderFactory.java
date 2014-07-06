@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * is preferable to direct instantiation of CFGBuilders, because it gives us an
  * easy hook for plugging in new CFGBuilder implementations. (CFGs for Java are
  * a little tricky to get right.)
- * 
+ *
  * @author David Hovemeyer
  * @see CFG
  * @see CFGBuilder
@@ -40,7 +40,7 @@ public class CFGBuilderFactory {
 
     /**
      * Create a CFGBuilder to build a CFG for given method.
-     * 
+     *
      * @param methodGen
      *            the method
      * @return a CFGBuilder for the method
@@ -50,4 +50,3 @@ public class CFGBuilderFactory {
     }
 }
 
-// vim:ts=4

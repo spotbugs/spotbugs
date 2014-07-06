@@ -93,10 +93,12 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 
     @Override
     public void doReportBug(BugInstance bugInstance) {
-        if (VERIFY_INTEGRITY)
+        if (VERIFY_INTEGRITY) {
             checkBugInstance(bugInstance);
-        if (bugCollection.add(bugInstance))
+        }
+        if (bugCollection.add(bugInstance)) {
             notifyObservers(bugInstance);
+        }
     }
 
     /*
@@ -116,9 +118,10 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
      */
     @Override
     public void finish() {
-       bugCollection.bugsPopulated();
-       if (writer != null)
+        bugCollection.bugsPopulated();
+        if (writer != null) {
             writer.flush();
+        }
     }
 
     /**
@@ -141,4 +144,3 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 
 }
 
-// vim:ts=4

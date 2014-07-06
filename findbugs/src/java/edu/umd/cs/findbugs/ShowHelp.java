@@ -22,36 +22,39 @@ import java.util.TreeSet;
 
 /**
  * Show command line help.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ShowHelp {
- 
+
     public static void main(String[] args) {
 
         System.out.println("FindBugs version " + Version.RELEASE + ", " + Version.WEBSITE);
-        
+
         DetectorFactoryCollection.instance();
         System.out.println("Command line options");
-        
+
         TreeSet<FindBugsMain> cmds = new TreeSet<FindBugsMain>();
-        for(Plugin p : Plugin.getAllPlugins()) 
-            for(FindBugsMain m : p.getAllFindBugsMain()) 
+        for(Plugin p : Plugin.getAllPlugins()) {
+            for(FindBugsMain m : p.getAllFindBugsMain()) {
                 cmds.add(m);
-        for(FindBugsMain m : cmds) 
-                System.out.printf("fb %-12s %-12s %s%n", m.cmd, m.kind, m.description); 
-        
-//        System.out.println();
-//        System.out.println("GUI Options:");
-//        FindBugsCommandLine guiCmd = new FindBugsCommandLine(true) {
-//        };
-//        guiCmd.printUsage(System.out);
-//        System.out.println();
-//        System.out.println("TextUI Options:");
-//        FindBugs.showCommandLineOptions();
+            }
+        }
+        for(FindBugsMain m : cmds) {
+            System.out.printf("fb %-12s %-12s %s%n", m.cmd, m.kind, m.description);
+        }
+
+        //        System.out.println();
+        //        System.out.println("GUI Options:");
+        //        FindBugsCommandLine guiCmd = new FindBugsCommandLine(true) {
+        //        };
+        //        guiCmd.printUsage(System.out);
+        //        System.out.println();
+        //        System.out.println("TextUI Options:");
+        //        FindBugs.showCommandLineOptions();
         System.out.println();
         showGeneralOptions();
-        
+
     }
 
     public static void showSynopsis() {
@@ -59,11 +62,11 @@ public class ShowHelp {
     }
 
     public static void showGeneralOptions() {
-      
+
         System.out.println("General options:");
         System.out.println("  -jvmArgs args    Pass args to JVM");
         System.out.println("  -maxHeap size    Maximum Java heap size in megabytes (default=768)");
         System.out.println("  -javahome <dir>  Specify location of JRE");
-       
+
     }
 }

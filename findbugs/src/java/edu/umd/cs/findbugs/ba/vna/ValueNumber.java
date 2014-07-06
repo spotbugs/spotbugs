@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.util.Util;
  * ValueNumberFactory} are unique, so reference equality may be used to
  * determine whether or not two value numbers are the same. In general,
  * ValueNumbers from different factories cannot be compared.
- * 
+ *
  * @author David Hovemeyer
  * @see ValueNumberAnalysis
  */
@@ -42,10 +42,14 @@ public class ValueNumber implements Comparable<ValueNumber> {
     static int valueNumbersCreated = 0;
 
     static int valueNumbersReused = 0;
-    
+
     public static int mergeFlags(int flags1, int flags2) {
-        if (flags1 == -1) return flags2;
-        if (flags2 == -1) return flags1;
+        if (flags1 == -1) {
+            return flags2;
+        }
+        if (flags2 == -1) {
+            return flags1;
+        }
         return flags1 & flags2;
     }
 
@@ -83,7 +87,7 @@ public class ValueNumber implements Comparable<ValueNumber> {
     final int number;
 
     /**
-     * Flags representing meta information about the value. When value numbers are merged, 
+     * Flags representing meta information about the value. When value numbers are merged,
      * their flags should be the flags common to both.
      */
     final int flags;
@@ -103,7 +107,7 @@ public class ValueNumber implements Comparable<ValueNumber> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param number
      *            the value number
      */
@@ -131,8 +135,9 @@ public class ValueNumber implements Comparable<ValueNumber> {
 
     @Override
     public String toString() {
-        if (flags != 0)
+        if (flags != 0) {
             return number + "(" + flags + "),";
+        }
         return number + ",";
     }
 
@@ -152,11 +157,11 @@ public class ValueNumber implements Comparable<ValueNumber> {
     @Override
     public int compareTo(ValueNumber other) {
         int result = number - other.number;
-        if (result != 0)
+        if (result != 0) {
             return result;
+        }
         return flags - other.flags;
 
     }
 }
 
-// vim:ts=4

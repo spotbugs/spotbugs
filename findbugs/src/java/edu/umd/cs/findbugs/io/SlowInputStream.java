@@ -24,11 +24,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class SlowInputStream extends FilterInputStream {
-    private long started = System.currentTimeMillis();
+    private final long started = System.currentTimeMillis();
 
     private long length = 0;
 
-    private int bytesPerSecond;
+    private final int bytesPerSecond;
 
     public SlowInputStream(InputStream in, int baudRate) {
         super(in);
@@ -49,8 +49,9 @@ public class SlowInputStream extends FilterInputStream {
     @Override
     public int read() throws IOException {
         int b = in.read();
-        if (b >= 0)
+        if (b >= 0) {
             length++;
+        }
         delay();
         return b;
     }
@@ -62,8 +63,9 @@ public class SlowInputStream extends FilterInputStream {
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        if (len > bytesPerSecond / 10)
+        if (len > bytesPerSecond / 10) {
             len = bytesPerSecond / 10;
+        }
         int tmp = in.read(b, off, len);
         if (tmp >= 0) {
             length += tmp;
@@ -75,8 +77,9 @@ public class SlowInputStream extends FilterInputStream {
     @Override
     public long skip(long n) throws IOException {
         n = in.skip(n);
-        if (n >= 0)
+        if (n >= 0) {
             length += n;
+        }
         delay();
         return n;
     }

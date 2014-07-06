@@ -43,19 +43,19 @@ import javax.swing.table.JTableHeader;
 /**
  * This is the window that pops up when the user double clicks on the sorting
  * table Its also available from the menu if they remove all Sortables.
- * 
+ *
  * The user can choose what Sortables he wants to sort by, sort them into the
  * order he wants to see and then click apply to move his choices onto the
  * sorting table
- * 
+ *
  * @author Dan
- * 
+ *
  */
 public class SorterDialog extends FBDialog {
 
     private JTableHeader preview;
 
-    private ArrayList<SortableCheckBox> checkBoxSortList = new ArrayList<SortableCheckBox>();
+    private final ArrayList<SortableCheckBox> checkBoxSortList = new ArrayList<SortableCheckBox>();
 
     JButton sortApply;
 
@@ -109,10 +109,11 @@ public class SorterDialog extends FBDialog {
         Sortables[] sortables = MainFrame.getInstance().getAvailableSortables();
         preview.setColumnModel(new SorterTableColumnModel(sortables));
 
-        for (Sortables s : sortables)
+        for (Sortables s : sortables) {
             if (s != Sortables.DIVIDER) {
                 checkBoxSortList.add(new SortableCheckBox(s));
             }
+        }
 
         setSorterCheckBoxes();
 
@@ -167,8 +168,9 @@ public class SorterDialog extends FBDialog {
 
         SorterTableColumnModel sorter = MainFrame.getInstance().getSorter();
 
-        for (SortableCheckBox c : checkBoxSortList)
+        for (SortableCheckBox c : checkBoxSortList) {
             c.setSelected(sorter.isShown(c.sortable));
+        }
     }
 
     void freeze() {

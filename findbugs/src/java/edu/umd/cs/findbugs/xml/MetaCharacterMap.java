@@ -25,14 +25,14 @@ import java.util.Map;
 
 /**
  * Map of metacharacters that need to be escaped, and what to replace them with.
- * 
+ *
  * @see QuoteMetaCharacters
  * @author David Hovemeyer
  */
 public class MetaCharacterMap {
-    private BitSet metaCharacterSet;
+    private final BitSet metaCharacterSet;
 
-    private Map<String, String> replacementMap;
+    private final Map<String, String> replacementMap;
 
     /**
      * Constructor. Creates an empty object.
@@ -44,7 +44,7 @@ public class MetaCharacterMap {
 
     /**
      * Add a metacharacter and its replacement.
-     * 
+     *
      * @param meta
      *            the metacharacter
      * @param replacement
@@ -64,7 +64,7 @@ public class MetaCharacterMap {
 
     /**
      * Get the replacement for a metacharacter.
-     * 
+     *
      * @param c
      *            a String containing the metacharacter
      */
@@ -73,4 +73,3 @@ public class MetaCharacterMap {
     }
 }
 
-// vim:ts=4

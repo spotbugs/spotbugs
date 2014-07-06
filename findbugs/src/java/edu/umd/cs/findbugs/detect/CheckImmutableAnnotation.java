@@ -41,15 +41,17 @@ public class CheckImmutableAnnotation extends PreorderVisitor implements Detecto
     @Override
     public void visitJavaClass(JavaClass obj) {
         JCIPAnnotationDatabase jcipAnotationDatabase = AnalysisContext.currentAnalysisContext().getJCIPAnnotationDatabase();
-        if (jcipAnotationDatabase.hasClassAnnotation(obj.getClassName().replace('/', '.'), "Immutable"))
+        if (jcipAnotationDatabase.hasClassAnnotation(obj.getClassName().replace('/', '.'), "Immutable")) {
             super.visitJavaClass(obj);
+        }
     }
 
     @Override
     public void visit(Field obj) {
-        if (!obj.isFinal() && !obj.isTransient() && !obj.isVolatile())
+        if (!obj.isFinal() && !obj.isTransient() && !obj.isVolatile()) {
             bugReporter.reportBug(new BugInstance(this, "JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS", NORMAL_PRIORITY).addClass(
                     this).addVisitedField(this));
+        }
     }
 
     @Override

@@ -28,14 +28,14 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /**
  * FindBugs-specific default-annotation annotations. I.e.:
- * 
+ *
  * <pre>
  *   {@literal @DefaultAnnotationForParameters(Nonnull.class)}
  *   public class MyClass {
  *      ...
  *   }
  * </pre>
- * 
+ *
  * @author David Hovemeyer
  */
 @Deprecated
@@ -44,7 +44,7 @@ public abstract class FindBugsDefaultAnnotations {
     /** Default annotation for all element types. */
     public static final ClassDescriptor DEFAULT_ANNOTATION = DescriptorFactory.instance().getClassDescriptor(
             DefaultAnnotation.class);
-     
+
 
     /** Default annotation for fields. */
     public static final ClassDescriptor DEFAULT_ANNOTATION_FOR_FIELDS = DescriptorFactory.instance()
@@ -57,6 +57,6 @@ public abstract class FindBugsDefaultAnnotations {
     /** Default annotation for parameters. */
     public static final ClassDescriptor DEFAULT_ANNOTATION_FOR_PARAMETERS = DescriptorFactory.instance()
             .getClassDescriptor(DefaultAnnotationForParameters.class);
-          
+
 
 }

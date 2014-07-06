@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.ba.XField;
  * <p>
  * AvailableLoad objects may be used as keys in both hash and tree sets and
  * maps.
- * 
+ *
  * @author David Hovemeyer
  * @see ValueNumberAnalysis
  */
@@ -43,7 +43,7 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
 
     /**
      * Constructor from static field.
-     * 
+     *
      * @param staticField
      *            the StaticField
      */
@@ -54,22 +54,23 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
 
     /**
      * Constructor from object reference and instance field.
-     * 
+     *
      * @param reference
      *            the ValueNumber of the object reference
      * @param field
      *            the InstanceField
      */
     public AvailableLoad(ValueNumber reference, XField field) {
-        if (reference == null)
+        if (reference == null) {
             throw new IllegalArgumentException();
+        }
         this.reference = reference;
         this.field = field;
     }
 
     /**
      * Get the ValueNumber of the object reference.
-     * 
+     *
      * @return the ValueNumber, or null if this is a an available static field
      *         load
      */
@@ -78,16 +79,18 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
     }
 
     public boolean matchesReference(ValueNumber v) {
-        if (v == reference)
+        if (v == reference) {
             return true;
-        if (reference == null)
+        }
+        if (reference == null) {
             return false;
+        }
         return reference.equals(v);
     }
 
     /**
      * Get the field for which a load is available.
-     * 
+     *
      * @return the XField
      */
     public XField getField() {
@@ -98,16 +101,17 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
     @SuppressWarnings("unchecked")
     public int compareTo(AvailableLoad other) {
         int cmp = field.compareTo(other.field);
-        if (cmp != 0)
+        if (cmp != 0) {
             return cmp;
-        else if (reference == other.reference)
+        } else if (reference == other.reference) {
             return 0;
-        else if (reference == null)
+        } else if (reference == null) {
             return -1;
-        else if (other.reference == null)
+        } else if (other.reference == null) {
             return 1;
-        else
+        } else {
             return reference.compareTo(other.reference);
+        }
     }
 
     @Override
@@ -117,8 +121,9 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || this.getClass() != o.getClass())
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
+        }
         AvailableLoad other = (AvailableLoad) o;
         return (reference == other.reference || (reference != null && other.reference != null && reference
                 .equals(other.reference))) && field.equals(other.field);
@@ -130,4 +135,3 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
     }
 }
 
-// vim:ts=4

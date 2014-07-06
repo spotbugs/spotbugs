@@ -151,8 +151,9 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
      * @return current code attribute
      */
     public Code getCode() {
-        if (code == null)
+        if (code == null) {
             throw new IllegalStateException("Not visiting Code");
+        }
         return code;
     }
 
@@ -162,11 +163,13 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
     public Set<String> getSurroundingCaughtExceptions(int pc, int maxTryBlockSize) {
         HashSet<String> result = new HashSet<String>();
-        if (code == null)
+        if (code == null) {
             throw new IllegalStateException("Not visiting Code");
+        }
         int size = maxTryBlockSize;
-        if (code.getExceptionTable() == null)
+        if (code.getExceptionTable() == null) {
             return result;
+        }
         for (CodeException catchBlock : code.getExceptionTable()) {
             int startPC = catchBlock.getStartPC();
             int endPC = catchBlock.getEndPC();
@@ -177,8 +180,9 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
                     size = thisSize;
                     Constant kind = constantPool.getConstant(catchBlock.getCatchType());
                     result.add("C" + catchBlock.getCatchType());
-                } else if (size == thisSize)
+                } else if (size == thisSize) {
                     result.add("C" + catchBlock.getCatchType());
+                }
             }
         }
         return result;
@@ -201,8 +205,9 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
      * @return number of lines of code in try block
      */
     public int getSizeOfSurroundingTryBlock(String vmNameOfExceptionClass, int pc) {
-        if (code == null)
+        if (code == null) {
             throw new IllegalStateException("Not visiting Code");
+        }
         return Util.getSizeOfSurroundingTryBlock(constantPool, code, vmNameOfExceptionClass, pc);
     }
 
@@ -211,8 +216,9 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
     }
 
     public CodeException getSurroundingTryBlock(String vmNameOfExceptionClass, int pc) {
-        if (code == null)
+        if (code == null) {
             throw new IllegalStateException("Not visiting Code");
+        }
         return Util.getSurroundingTryBlock(constantPool, code, vmNameOfExceptionClass, pc);
     }
 
@@ -222,11 +228,13 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
         code = obj;
         super.visitCode(obj);
         CodeException[] exceptions = obj.getExceptionTable();
-        for (CodeException exception : exceptions)
+        for (CodeException exception : exceptions) {
             exception.accept(this);
+        }
         Attribute[] attributes = obj.getAttributes();
-        for (Attribute attribute : attributes)
+        for (Attribute attribute : attributes) {
             attribute.accept(this);
+        }
         visitAfter(obj);
         code = null;
     }
@@ -248,14 +256,16 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
         for (int i = 1; i < constant_pool.length; i++) {
             constant_pool[i].accept(this);
             byte tag = constant_pool[i].getTag();
-            if ((tag == CONSTANT_Double) || (tag == CONSTANT_Long))
+            if ((tag == CONSTANT_Double) || (tag == CONSTANT_Long)) {
                 i++;
+            }
         }
     }
 
     private void doVisitField(Field field) {
-        if (visitingField)
+        if (visitingField) {
             throw new IllegalStateException("visitField called when already visiting a field");
+        }
         visitingField = true;
         this.field = field;
         try {
@@ -265,8 +275,9 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
             fieldIsStatic = field.isStatic();
             field.accept(this);
             Attribute[] attributes = field.getAttributes();
-            for (Attribute attribute : attributes)
+            for (Attribute attribute : attributes) {
                 attribute.accept(this);
+            }
         } finally {
             visitingField = false;
             this.field = null;
@@ -275,8 +286,9 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
     }
 
     public void doVisitMethod(Method method) {
-        if (visitingMethod)
+        if (visitingMethod) {
             throw new IllegalStateException("doVisitMethod called when already visiting a method");
+        }
         visitingMethod = true;
         try {
             this.method = method;
@@ -285,8 +297,9 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
             assert thisMethodInfo != null : "Can't get method info for " + getFullyQualifiedMethodName();
             this.method.accept(this);
             Attribute[] attributes = method.getAttributes();
-            for (Attribute attribute : attributes)
+            for (Attribute attribute : attributes) {
                 attribute.accept(this);
+            }
         } finally {
             visitingMethod = false;
             this.method = null;
@@ -295,14 +308,18 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
     }
 
     public boolean amVisitingMainMethod() {
-        if (!visitingMethod)
+        if (!visitingMethod) {
             throw new IllegalStateException("Not visiting a method");
-        if (!method.isStatic())
+        }
+        if (!method.isStatic()) {
             return false;
-        if (!getMethodName().equals("main"))
+        }
+        if (!getMethodName().equals("main")) {
             return false;
-        if (!getMethodSig().equals("([Ljava/lang/String;)V"))
+        }
+        if (!getMethodSig().equals("([Ljava/lang/String;)V")) {
             return false;
+        }
         return true;
 
     }
@@ -312,8 +329,9 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
     public void visitInnerClasses(InnerClasses obj) {
         super.visitInnerClasses(obj);
         InnerClass[] inner_classes = obj.getInnerClasses();
-        for (InnerClass inner_class : inner_classes)
+        for (InnerClass inner_class : inner_classes) {
             inner_class.accept(this);
+        }
     }
 
     public void visitAfter(JavaClass obj) {
@@ -326,7 +344,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
     boolean visitMethodsInCallOrder;
 
 
-   protected boolean isVisitMethodsInCallOrder() {
+    protected boolean isVisitMethodsInCallOrder() {
         return visitMethodsInCallOrder;
     }
 
@@ -345,8 +363,9 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
             constantPool.accept(this);
             Field[] fields = obj.getFields();
             Attribute[] attributes = obj.getAttributes();
-            for (Field field : fields)
+            for (Field field : fields) {
                 doVisitField(field);
+            }
             boolean didInCallOrder = false;
 
             if (visitMethodsInCallOrder) {
@@ -357,18 +376,22 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
                     ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, c);
                     didInCallOrder = true;
-                    for (Method m : classContext.getMethodsInCallOrder())
+                    for (Method m : classContext.getMethodsInCallOrder()) {
                         doVisitMethod(m);
+                    }
 
                 } catch (CheckedAnalysisException e) {
-                   AnalysisContext.logError("Error trying to visit methods in order", e);
+                    AnalysisContext.logError("Error trying to visit methods in order", e);
                 }
             }
-            if (!didInCallOrder)
-                for (Method m : getMethodVisitOrder(obj))
+            if (!didInCallOrder) {
+                for (Method m : getMethodVisitOrder(obj)) {
                     doVisitMethod(m);
-            for (Attribute attribute : attributes)
+                }
+            }
+            for (Attribute attribute : attributes) {
                 attribute.accept(this);
+            }
             visitAfter(obj);
         }
     }
@@ -385,11 +408,12 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
         superclassName = dottedSuperclassName.replace('.', '/');
 
         ClassDescriptor cDesc = DescriptorFactory.createClassDescriptor(className);
-        if (!FindBugs.isNoAnalysis())
-        try {
-            thisClassInfo = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, cDesc);
-        } catch (CheckedAnalysisException e) {
-            throw new AssertionError("Can't find ClassInfo for " + cDesc);
+        if (!FindBugs.isNoAnalysis()) {
+            try {
+                thisClassInfo = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, cDesc);
+            } catch (CheckedAnalysisException e) {
+                throw new AssertionError("Can't find ClassInfo for " + cDesc);
+            }
         }
 
         super.visitJavaClass(obj);
@@ -399,23 +423,26 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
     public void visitLineNumberTable(LineNumberTable obj) {
         super.visitLineNumberTable(obj);
         LineNumber[] line_number_table = obj.getLineNumberTable();
-        for (LineNumber aLine_number_table : line_number_table)
+        for (LineNumber aLine_number_table : line_number_table) {
             aLine_number_table.accept(this);
+        }
     }
 
     @Override
     public void visitLocalVariableTable(LocalVariableTable obj) {
         super.visitLocalVariableTable(obj);
         LocalVariable[] local_variable_table = obj.getLocalVariableTable();
-        for (LocalVariable aLocal_variable_table : local_variable_table)
+        for (LocalVariable aLocal_variable_table : local_variable_table) {
             aLocal_variable_table.accept(this);
+        }
     }
 
     // Accessors
 
     public XClass getXClass() {
-        if (thisClassInfo == null)
+        if (thisClassInfo == null) {
             throw new AssertionError("XClass information not set");
+        }
         return thisClassInfo;
     }
 
@@ -497,8 +524,9 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
     /** If currently visiting a method, get the method's fully qualified name */
     public String getFullyQualifiedMethodName() {
-        if (!visitingMethod)
+        if (!visitingMethod) {
             throw new IllegalStateException("getFullyQualifiedMethodName called while not visiting method");
+        }
         if (fullyQualifiedMethodName == null) {
             getDottedSuperclassName();
             getMethodName();
@@ -527,24 +555,28 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
     /** If currently visiting a field, get the field's Field object */
     public Field getField() {
-        if (!visitingField)
+        if (!visitingField) {
             throw new IllegalStateException("getField called while not visiting field");
+        }
         return field;
     }
 
     /** If currently visiting a method, get the method's Method object */
     public Method getMethod() {
-        if (!visitingMethod)
+        if (!visitingMethod) {
             throw new IllegalStateException("getMethod called while not visiting method");
+        }
         return method;
     }
 
     /** If currently visiting a method, get the method's name */
     public String getMethodName() {
-        if (!visitingMethod)
+        if (!visitingMethod) {
             throw new IllegalStateException("getMethodName called while not visiting method");
-        if (methodName == null)
+        }
+        if (methodName == null) {
             methodName = getStringFromIndex(method.getNameIndex());
+        }
 
         return methodName;
     }
@@ -561,21 +593,25 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
             case ')':
                 return count;
             case '[':
-                if (!inArray)
+                if (!inArray) {
                     count++;
+                }
                 inArray = true;
                 break;
             case 'L':
-                if (!inArray)
+                if (!inArray) {
                     count++;
-                while (signature.charAt(pos) != ';')
+                }
+                while (signature.charAt(pos) != ';') {
                     pos++;
+                }
                 pos++;
                 inArray = false;
                 break;
             default:
-                if (!inArray)
+                if (!inArray) {
                     count++;
+                }
                 inArray = false;
                 break;
             }
@@ -592,73 +628,87 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
      * signature
      */
     public String getMethodSig() {
-        if (!visitingMethod)
+        if (!visitingMethod) {
             throw new IllegalStateException("getMethodSig called while not visiting method");
-        if (methodSig == null)
+        }
+        if (methodSig == null) {
             methodSig = getStringFromIndex(method.getSignatureIndex());
+        }
         return methodSig;
     }
 
     /** If currently visiting a method, get the method's dotted method signature */
     public String getDottedMethodSig() {
-        if (!visitingMethod)
+        if (!visitingMethod) {
             throw new IllegalStateException("getDottedMethodSig called while not visiting method");
-        if (dottedMethodSig == null)
+        }
+        if (dottedMethodSig == null) {
             dottedMethodSig = getMethodSig().replace('/', '.');
+        }
         return dottedMethodSig;
     }
 
     /** If currently visiting a field, get the field's name */
     public String getFieldName() {
-        if (!visitingField)
+        if (!visitingField) {
             throw new IllegalStateException("getFieldName called while not visiting field");
-        if (fieldName == null)
+        }
+        if (fieldName == null) {
             fieldName = getStringFromIndex(field.getNameIndex());
+        }
 
         return fieldName;
     }
 
     /** If currently visiting a field, get the field's slash-formatted signature */
     public String getFieldSig() {
-        if (!visitingField)
+        if (!visitingField) {
             throw new IllegalStateException("getFieldSig called while not visiting field");
-        if (fieldSig == null)
+        }
+        if (fieldSig == null) {
             fieldSig = getStringFromIndex(field.getSignatureIndex());
+        }
         return fieldSig;
     }
 
     /** If currently visiting a field, return whether or not the field is static */
     public boolean getFieldIsStatic() {
-        if (!visitingField)
+        if (!visitingField) {
             throw new IllegalStateException("getFieldIsStatic called while not visiting field");
+        }
         return fieldIsStatic;
     }
 
     /** If currently visiting a field, get the field's fully qualified name */
     public String getFullyQualifiedFieldName() {
-        if (!visitingField)
+        if (!visitingField) {
             throw new IllegalStateException("getFullyQualifiedFieldName called while not visiting field");
-        if (fullyQualifiedFieldName == null)
+        }
+        if (fullyQualifiedFieldName == null) {
             fullyQualifiedFieldName = getDottedClassName() + "." + getFieldName() + " : " + getFieldSig();
+        }
         return fullyQualifiedFieldName;
     }
 
     /** If currently visiting a field, get the field's dot-formatted signature */
     @Deprecated
     public String getDottedFieldSig() {
-        if (!visitingField)
+        if (!visitingField) {
             throw new IllegalStateException("getDottedFieldSig called while not visiting field");
-        if (dottedFieldSig == null)
+        }
+        if (dottedFieldSig == null) {
             dottedFieldSig = fieldSig.replace('/', '.');
+        }
         return dottedFieldSig;
     }
 
     @Override
     public String toString() {
-        if (visitingMethod)
+        if (visitingMethod) {
             return this.getClass().getSimpleName() + " analyzing " + getClassName() + "." + getMethodName() + getMethodSig();
-        else if (visitingField)
+        } else if (visitingField) {
             return this.getClass().getSimpleName() + " analyzing " + getClassName() + "." + getFieldName();
+        }
         return this.getClass().getSimpleName() + " analyzing " + getClassName();
     }
 

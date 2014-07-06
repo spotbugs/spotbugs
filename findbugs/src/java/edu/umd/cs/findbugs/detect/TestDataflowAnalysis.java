@@ -122,8 +122,8 @@ public class TestDataflowAnalysis<Fact,AnalysisType extends DataflowAnalysis<Fac
             System.out.println("Dataflow finished after " + dataflow.getNumIterations());
 
             if (SystemProperties.getBoolean("dataflow.printcfg")) {
-                DataflowCFGPrinter<Fact,AnalysisType> cfgPrinter 
-                    = new DataflowCFGPrinter<Fact,AnalysisType>(dataflow);
+                DataflowCFGPrinter<Fact,AnalysisType> cfgPrinter
+                = new DataflowCFGPrinter<Fact,AnalysisType>(dataflow);
                 cfgPrinter.print(System.out);
             }
 
@@ -141,7 +141,7 @@ public class TestDataflowAnalysis<Fact,AnalysisType extends DataflowAnalysis<Fac
         try {
             Class<?> c = getClass().getClassLoader().loadClass(dataflowClassName);
             cls = asDataflowClass(c);
-            
+
         } catch (ClassNotFoundException e) {
             assert true;
         }
@@ -168,7 +168,7 @@ public class TestDataflowAnalysis<Fact,AnalysisType extends DataflowAnalysis<Fac
             return;
         }
 
-      
+
         dataflowClass = cls;
     }
 

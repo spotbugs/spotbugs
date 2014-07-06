@@ -95,7 +95,7 @@ public interface Cloud {
      * Waits until all new issues have been uploaded
      */
     public void waitUntilNewIssuesUploaded();
-    
+
     public boolean waitUntilNewIssuesUploaded(long timeout, TimeUnit unit)
             throws InterruptedException;
 
@@ -221,7 +221,7 @@ public interface Cloud {
     URL fileBug(BugInstance b);
 
     void setBugLinkOnCloudAndStoreIssueDetails(BugInstance b, String viewUrl, String linkType) throws IOException,
-            SignInCancelledException;
+    SignInCancelledException;
 
     /** Updates the local cache of bug reporting status. Does not modify server code. */
     void updateBugStatusCache(BugInstance b, String status);

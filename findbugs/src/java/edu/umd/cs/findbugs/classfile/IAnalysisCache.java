@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.log.Profiler;
 /**
  * The analysis cache performs analyses on classes and methods and caches the
  * results.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface IAnalysisCache {
@@ -36,7 +36,7 @@ public interface IAnalysisCache {
     /**
      * Register the given class analysis engine as producing the analysis result
      * type whose Class is given.
-     * 
+     *
      * @param <E>
      *            analysis result type
      * @param analysisResultType
@@ -49,7 +49,7 @@ public interface IAnalysisCache {
     /**
      * Register the given method analysis engine as producing the analysis
      * result type whose Class is given.
-     * 
+     *
      * @param <E>
      *            analysis result type
      * @param analysisResultType
@@ -61,7 +61,7 @@ public interface IAnalysisCache {
 
     /**
      * Get an analysis of the given class.
-     * 
+     *
      * @param <E>
      *            the type of the analysis (e.g., FoobarAnalysis)
      * @param analysisClass
@@ -79,7 +79,7 @@ public interface IAnalysisCache {
     /**
      * See if the cache contains a cached class analysis result for given class
      * descriptor.
-     * 
+     *
      * @param analysisClass
      *            analysis result class
      * @param classDescriptor
@@ -91,7 +91,7 @@ public interface IAnalysisCache {
 
     /**
      * Get an analysis of the given method.
-     * 
+     *
      * @param <E>
      *            the type of the analysis (e.g., FoobarAnalysis)
      * @param analysisClass
@@ -110,7 +110,7 @@ public interface IAnalysisCache {
      * Eagerly put a method analysis object in the cache. This can be necessary
      * if an method analysis engine invokes other analysis engines that might
      * recursively require the analysis being produced.
-     * 
+     *
      * @param <E>
      *            the type of the analysis (e.g., FoobarAnalysis)
      * @param analysisClass
@@ -126,7 +126,7 @@ public interface IAnalysisCache {
      * Purge all analysis results for given method. This can be called when a
      * CFG is pruned and we want to compute more accurate analysis results on
      * the new CFG.
-     * 
+     *
      * @param methodDescriptor
      *            method whose analysis results should be purged
      */
@@ -144,7 +144,7 @@ public interface IAnalysisCache {
 
     /**
      * Register a database factory.
-     * 
+     *
      * @param <E>
      *            type of database
      * @param databaseClass
@@ -156,14 +156,14 @@ public interface IAnalysisCache {
 
     /**
      * Get a database.
-     * 
+     *
      * <em>Note</em>: an unchecked analysis exception will be thrown if the
      * database cannot be instantiated. Since instantiation of most kinds of
      * databases simply involves creating an object (and not opening a file or
      * other failure-prone operation), throwing a CheckedAnalysisException
      * creates too great of an exception-handling burden on analyses and
      * detectors which use databases.
-     * 
+     *
      * @param <E>
      *            type of database
      * @param databaseClass
@@ -177,7 +177,7 @@ public interface IAnalysisCache {
     /**
      * Eagerly install a database. This avoids the need to register a database
      * factory.
-     * 
+     *
      * @param <E>
      *            type of database
      * @param databaseClass
@@ -189,14 +189,14 @@ public interface IAnalysisCache {
 
     /**
      * Get the classpath from which classes are loaded.
-     * 
+     *
      * @return the classpath
      */
     public IClassPath getClassPath();
 
     /**
      * Get the error logger.
-     * 
+     *
      * @return the error logger
      */
     public IErrorLogger getErrorLogger();

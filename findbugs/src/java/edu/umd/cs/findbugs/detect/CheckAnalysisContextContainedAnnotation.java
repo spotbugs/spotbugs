@@ -45,7 +45,7 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
 
     final BugAccumulator accumulator;
 
-    private boolean testingEnabled;
+    private final boolean testingEnabled;
 
     public CheckAnalysisContextContainedAnnotation(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -60,8 +60,9 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
     private boolean analysisContextContained(XClass xclass) {
         AnnotatedObject ao = xclass;
         do {
-            if (ao.getAnnotation(AnalysisContextContainedAnnotation) != null)
+            if (ao.getAnnotation(AnalysisContextContainedAnnotation) != null) {
                 return true;
+            }
             ao = ao.getContainingScope();
 
         } while (ao != null);
@@ -70,19 +71,20 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
     }
     @Override
     public void visit(Field field) {
-       if (!field.isStatic())
-           return;
-       String signature = field.getSignature();
-       if (signature.startsWith("Ljava/util/") && !signature.equals("Ljava/util/regex/Pattern;")
-               && !signature.equals("Ljava/util/logging/Logger;") && !signature.equals("Ljava/util/BitSet;")
-               && !signature.equals("Ljava/util/ResourceBundle;")
-               && !signature.equals("Ljava/util/Comparator;")
-               && getXField().getAnnotation(ConstantAnnotation) == null) {
-           boolean flagged = analysisContextContained(getXClass());
+        if (!field.isStatic()) {
+            return;
+        }
+        String signature = field.getSignature();
+        if (signature.startsWith("Ljava/util/") && !signature.equals("Ljava/util/regex/Pattern;")
+                && !signature.equals("Ljava/util/logging/Logger;") && !signature.equals("Ljava/util/BitSet;")
+                && !signature.equals("Ljava/util/ResourceBundle;")
+                && !signature.equals("Ljava/util/Comparator;")
+                && getXField().getAnnotation(ConstantAnnotation) == null) {
+            boolean flagged = analysisContextContained(getXClass());
 
-           bugReporter.reportBug(new BugInstance(this, "TESTING", flagged ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addField(this).addType(signature));
+            bugReporter.reportBug(new BugInstance(this, "TESTING", flagged ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addField(this).addType(signature));
 
-       }
+        }
     }
     @Override
     public void visit(Code code) {
@@ -103,10 +105,11 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
         case Constants.IF_ICMPNE:
             OpcodeStack.Item left = stack.getStackItem(1);
             OpcodeStack.Item right = stack.getStackItem(0);
-            if (bad(left, right) || bad(right, left))
+            if (bad(left, right) || bad(right, left)) {
                 accumulator.accumulateBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this)
                         .addValueSource(left, this).addValueSource(right, this)
                         .addString("Just check the sign of the result of compare or compareTo, not specific values such as 1 or -1"), this);
+            }
             break;
         }
 
@@ -115,18 +118,23 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
     private boolean bad(Item left, Item right) {
         XMethod m = left.getReturnValueOf();
 
-        if (m == null)
+        if (m == null) {
             return false;
+        }
         Object value = right.getConstant();
-        if (!(value instanceof Integer) || ((Integer) value).intValue() == 0)
+        if (!(value instanceof Integer) || ((Integer) value).intValue() == 0) {
             return false;
-        if (m.isStatic() || !m.isPublic())
+        }
+        if (m.isStatic() || !m.isPublic()) {
             return false;
+        }
 
-        if (m.getName().equals("compareTo") && m.getSignature().equals("(Ljava/lang/Object;)I"))
+        if (m.getName().equals("compareTo") && m.getSignature().equals("(Ljava/lang/Object;)I")) {
             return true;
-        if (m.getName().equals("compare") && m.getSignature().equals("(Ljava/lang/Object;Ljava/lang/Object;)I"))
+        }
+        if (m.getName().equals("compare") && m.getSignature().equals("(Ljava/lang/Object;Ljava/lang/Object;)I")) {
             return true;
+        }
 
         return false;
 

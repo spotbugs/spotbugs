@@ -109,7 +109,7 @@ public class Noise extends OpcodeStackDetector {
         }
     }
 
-//    final BugReporter bugReporter;
+    //    final BugReporter bugReporter;
 
     final BugAccumulator accumulator;
 
@@ -118,7 +118,7 @@ public class Noise extends OpcodeStackDetector {
     byte[] primer;
 
     public Noise(BugReporter bugReporter) throws NoSuchAlgorithmException {
-//        this.bugReporter = bugReporter;
+        //        this.bugReporter = bugReporter;
         this.accumulator = new BugAccumulator(bugReporter);
         hq = new HashQueue(24);
     }

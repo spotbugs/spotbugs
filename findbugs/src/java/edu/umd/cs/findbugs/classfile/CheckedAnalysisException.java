@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.classfile;
 /**
  * Common superclass for all checked exceptions that can be thrown while
  * performing some kind of analysis.
- * 
+ *
  * @author David Hovemeyer
  */
 public class CheckedAnalysisException extends Exception {
@@ -38,7 +38,7 @@ public class CheckedAnalysisException extends Exception {
 
     /**
      * Constructor.
-     * 
+     *
      * @param msg
      *            message
      */
@@ -48,7 +48,7 @@ public class CheckedAnalysisException extends Exception {
 
     /**
      * Constructor.
-     * 
+     *
      * @param msg
      *            message
      * @param cause

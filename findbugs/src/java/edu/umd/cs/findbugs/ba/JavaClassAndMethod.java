@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * A JavaClass and a Method belonging to the class. This is useful for answering
  * a method lookup query which must concretely identify both the class and the
  * method.
- * 
+ *
  * @author David Hovemeyer
  */
 public class JavaClassAndMethod {
@@ -41,7 +41,7 @@ public class JavaClassAndMethod {
 
     /**
      * Constructor.
-     * 
+     *
      * @param javaClass
      *            the JavaClass
      * @param method
@@ -54,7 +54,7 @@ public class JavaClassAndMethod {
 
     /**
      * Constructor.
-     * 
+     *
      * @param method
      *            an XMethod specifying a specific method in a specific class
      * @throws ClassNotFoundException
@@ -62,12 +62,13 @@ public class JavaClassAndMethod {
     public JavaClassAndMethod(XMethod method) throws ClassNotFoundException {
 
         this.javaClass = Repository.lookupClass(method.getClassName());
-        for (Method m : javaClass.getMethods())
+        for (Method m : javaClass.getMethods()) {
             if (m.getName().equals(method.getName()) && m.getSignature().equals(method.getSignature())
                     && m.isStatic() == method.isStatic()) {
                 this.method = m;
                 return;
             }
+        }
         throw new IllegalArgumentException("Can't find " + method);
     }
 
@@ -94,7 +95,7 @@ public class JavaClassAndMethod {
 
     /**
      * Get the MethodDescriptor that (hopefully) uniqely names this method.
-     * 
+     *
      * @return the MethodDescriptor uniquely naming this method
      */
     public MethodDescriptor toMethodDescriptor() {
@@ -113,8 +114,9 @@ public class JavaClassAndMethod {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || obj.getClass() != this.getClass())
+        if (obj == null || obj.getClass() != this.getClass()) {
             return false;
+        }
         JavaClassAndMethod other = (JavaClassAndMethod) obj;
         return javaClass.equals(other.javaClass) && method.equals(other.method);
     }

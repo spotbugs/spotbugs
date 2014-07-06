@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.util.Archive;
 /**
  * A work-alike class to use instead of BCEL's ClassPath class. The main
  * difference is that URLClassPath can load classfiles from URLs.
- * 
+ *
  * @author David Hovemeyer
  */
 public class URLClassPath implements Serializable {
@@ -55,7 +55,7 @@ public class URLClassPath implements Serializable {
         /**
          * Open an input stream to read a resource in the codebase described by
          * this classpath entry.
-         * 
+         *
          * @param resourceName
          *            name of resource to load: e.g., "java/lang/Object.class"
          * @return an InputStream, or null if the resource wasn't found
@@ -94,21 +94,22 @@ public class URLClassPath implements Serializable {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.URLClassPath.Entry#openStream(java.lang.String)
          */
         @Override
         public InputStream openStream(String resourceName) throws IOException {
             ZipEntry zipEntry = zipFile.getEntry(resourceName);
-            if (zipEntry == null)
+            if (zipEntry == null) {
                 return null;
+            }
             return zipFile.getInputStream(zipEntry);
         }
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see edu.umd.cs.findbugs.URLClassPath.Entry#getURL()
          */
         @Override
@@ -131,11 +132,11 @@ public class URLClassPath implements Serializable {
      * filesystem.
      */
     private static class LocalDirectoryEntry implements Entry {
-        private String dirName;
+        private final String dirName;
 
         /**
          * Constructor.
-         * 
+         *
          * @param dirName
          *            name of the local directory
          * @throws IOException
@@ -143,27 +144,29 @@ public class URLClassPath implements Serializable {
          */
         public LocalDirectoryEntry(String dirName) throws IOException {
             this.dirName = dirName;
-            if (!(new File(dirName).isDirectory()))
+            if (!(new File(dirName).isDirectory())) {
                 throw new IOException(dirName + " is not a directory");
+            }
         }
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.URLClassPath.Entry#openStream(java.lang.String)
          */
         @Override
         public InputStream openStream(String resourceName) throws IOException {
             File file = new File(dirName, resourceName);
-            if (!file.exists())
+            if (!file.exists()) {
                 return null;
+            }
             return new BufferedInputStream(new FileInputStream(file));
         }
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see edu.umd.cs.findbugs.URLClassPath.Entry#getURL()
          */
         @Override
@@ -183,11 +186,11 @@ public class URLClassPath implements Serializable {
      * jar URLs to specify individual files within the remote archive.
      */
     private static class RemoteArchiveEntry implements Entry {
-        private URL remoteArchiveURL;
+        private final URL remoteArchiveURL;
 
         /**
          * Constructor.
-         * 
+         *
          * @param remoteArchiveURL
          *            the remote zip/jar file URL
          */
@@ -197,7 +200,7 @@ public class URLClassPath implements Serializable {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.URLClassPath.Entry#openStream(java.lang.String)
          */
@@ -213,7 +216,7 @@ public class URLClassPath implements Serializable {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see edu.umd.cs.findbugs.URLClassPath.Entry#getURL()
          */
         @Override
@@ -232,11 +235,11 @@ public class URLClassPath implements Serializable {
      * Classpath entry class to load files from a remote directory URL.
      */
     private static class RemoteDirectoryEntry implements Entry {
-        private URL remoteDirURL;
+        private final URL remoteDirURL;
 
         /**
          * Constructor.
-         * 
+         *
          * @param remoteDirURL
          *            URL of the remote directory; must end in "/"
          */
@@ -246,7 +249,7 @@ public class URLClassPath implements Serializable {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.URLClassPath.Entry#openStream(java.lang.String)
          */
@@ -262,7 +265,7 @@ public class URLClassPath implements Serializable {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see edu.umd.cs.findbugs.URLClassPath.Entry#getURL()
          */
         @Override
@@ -277,7 +280,7 @@ public class URLClassPath implements Serializable {
     }
 
     // Fields
-    private List<Entry> entryList;
+    private final List<Entry> entryList;
 
     /**
      * Constructor. Creates a classpath with no elements.
@@ -290,7 +293,7 @@ public class URLClassPath implements Serializable {
      * Add given filename/URL to the classpath. If no URL protocol is given, the
      * filename is assumed to be a local file or directory. Remote directories
      * must be specified with a "/" character at the end of the URL.
-     * 
+     *
      * @param fileName
      *            filename or URL of codebase (directory or archive file)
      * @throws IOException
@@ -310,19 +313,21 @@ public class URLClassPath implements Serializable {
         if (protocol.equals("file")) {
             String localFileName = fileName.substring("file:".length());
 
-            if (fileName.endsWith("/") || new File(localFileName).isDirectory())
+            if (fileName.endsWith("/") || new File(localFileName).isDirectory()) {
                 entry = new LocalDirectoryEntry(localFileName);
-            else if (isArchive)
+            } else if (isArchive) {
                 entry = new LocalArchiveEntry(localFileName);
-            else
+            } else {
                 throw new IOException("Classpath entry " + fileName + " is not a directory or archive file");
+            }
         } else {
-            if (fileName.endsWith("/"))
+            if (fileName.endsWith("/")) {
                 entry = new RemoteDirectoryEntry(new URL(fileName));
-            else if (isArchive)
+            } else if (isArchive) {
                 entry = new RemoteArchiveEntry(new URL(fileName));
-            else
+            } else {
                 throw new IOException("Classpath entry " + fileName + "  is not a remote directory or archive file");
+            }
         }
 
         entryList.add(entry);
@@ -330,14 +335,15 @@ public class URLClassPath implements Serializable {
 
     /**
      * Return the classpath string.
-     * 
+     *
      * @return the classpath string
      */
     public String getClassPath() {
         StringBuilder buf = new StringBuilder();
         for (Entry entry : entryList) {
-            if (buf.length() > 0)
+            if (buf.length() > 0) {
                 buf.append(File.pathSeparator);
+            }
             buf.append(entry.getURL());
         }
         return buf.toString();
@@ -345,7 +351,7 @@ public class URLClassPath implements Serializable {
 
     /**
      * Open a stream to read given resource.
-     * 
+     *
      * @param resourceName
      *            name of resource to load, e.g. "java/lang/Object.class"
      * @return input stream to read resource, or null if resource could not be
@@ -391,11 +397,11 @@ public class URLClassPath implements Serializable {
         return null;
     }
 
-    private Set<String> classesThatCantBeFound = new HashSet<String>();
+    private final Set<String> classesThatCantBeFound = new HashSet<String>();
 
     /**
      * Look up a class from the classpath.
-     * 
+     *
      * @param className
      *            name of class to look up
      * @return the JavaClass object for the class
@@ -449,7 +455,7 @@ public class URLClassPath implements Serializable {
 
     /**
      * Get the URL protocol of given URL string.
-     * 
+     *
      * @param urlString
      *            the URL string
      * @return the protocol name ("http", "file", etc.), or null if there is no
@@ -460,15 +466,16 @@ public class URLClassPath implements Serializable {
         int firstColon = urlString.indexOf(':');
         if (firstColon >= 0) {
             String specifiedProtocol = urlString.substring(0, firstColon);
-            if (FindBugs.knownURLProtocolSet.contains(specifiedProtocol))
+            if (FindBugs.knownURLProtocolSet.contains(specifiedProtocol)) {
                 protocol = specifiedProtocol;
+            }
         }
         return protocol;
     }
 
     /**
      * Get the file extension of given fileName.
-     * 
+     *
      * @return the file extension, or null if there is no file extension
      */
     public static String getFileExtension(String fileName) {
@@ -478,7 +485,7 @@ public class URLClassPath implements Serializable {
 
     /**
      * Determine if given file extension indicates an archive file.
-     * 
+     *
      * @param fileExtension
      *            the file extension (e.g., ".jar")
      * @return true if the file extension indicates an archive, false otherwise
@@ -488,4 +495,3 @@ public class URLClassPath implements Serializable {
     }
 }
 
-// vim:ts=4

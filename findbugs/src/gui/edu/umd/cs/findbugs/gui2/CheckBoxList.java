@@ -33,9 +33,9 @@ import javax.swing.border.EmptyBorder;
 
 /**
  * A list of JCheckBoxes! How convenient!
- * 
+ *
  * Adapted from: http://www.devx.com/tips/Tip/5342
- * 
+ *
  * @author Trevor Harmon
  */
 @SuppressWarnings("serial")
@@ -70,8 +70,9 @@ public class CheckBoxList<E> extends JList<E> {
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
 
-        for (int i = 0; i < getModel().getSize(); i++)
+        for (int i = 0; i < getModel().getSize(); i++) {
             ((JCheckBox) getModel().getElementAt(i)).setEnabled(enabled);
+        }
     }
 
     protected class CellRenderer implements ListCellRenderer<E> {
@@ -89,7 +90,7 @@ public class CheckBoxList<E> extends JList<E> {
             return checkbox;
         }
 
-     
-      
+
+
     }
 }

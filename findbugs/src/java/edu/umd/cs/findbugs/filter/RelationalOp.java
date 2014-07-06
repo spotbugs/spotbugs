@@ -41,8 +41,9 @@ public abstract class RelationalOp {
 
     public static RelationalOp byName(String s) {
         RelationalOp relationalOp = map.get(s);
-        if (relationalOp == null)
+        if (relationalOp == null) {
             throw new IllegalArgumentException("Could not find relOp named " + s + " in " + map.keySet());
+        }
         return relationalOp;
     }
 

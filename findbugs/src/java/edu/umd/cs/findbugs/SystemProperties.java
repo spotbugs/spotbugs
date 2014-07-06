@@ -43,8 +43,8 @@ public class SystemProperties {
     public final static boolean ASSERTIONS_ENABLED;
 
     public static boolean RUNNING_IN_ECLIPSE = SystemProperties.class.getClassLoader().getClass().getCanonicalName()
-                          .startsWith("org.eclipse.osgi");
-            
+            .startsWith("org.eclipse.osgi");
+
     final static String OS_NAME;
     static {
         boolean tmp = false;
@@ -77,7 +77,7 @@ public class SystemProperties {
         URL systemProperties = DetectorFactoryCollection.getCoreResource("systemProperties.properties");
         loadPropertiesFromURL(systemProperties);
         String u = System.getProperty("findbugs.loadPropertiesFrom");
-        if (u != null)
+        if (u != null) {
             try {
                 URL configURL = new URL(u);
                 loadPropertiesFromURL(configURL);
@@ -85,6 +85,7 @@ public class SystemProperties {
                 AnalysisContext.logError("Unable to load properties from " + u, e);
 
             }
+        }
     }
 
     public static Properties getLocalProperties() {
@@ -140,8 +141,9 @@ public class SystemProperties {
         boolean result = defaultValue;
         try {
             String value = getProperty(name);
-            if (value == null)
+            if (value == null) {
                 return defaultValue;
+            }
             result = toBoolean(value);
         } catch (IllegalArgumentException e) {
         } catch (NullPointerException e) {
@@ -176,8 +178,9 @@ public class SystemProperties {
     public static int getInt(String name, int defaultValue) {
         try {
             String value = getProperty(name);
-            if (value != null)
+            if (value != null) {
                 return Integer.decode(value);
+            }
         } catch (Exception e) {
             assert true;
         }
@@ -192,8 +195,9 @@ public class SystemProperties {
     public static String getOSDependentProperty(String name) {
         String osDependentName = name + OS_NAME;
         String value = getProperty(osDependentName);
-        if (value != null)
+        if (value != null) {
             return value;
+        }
         return getProperty(name);
     }
 
@@ -205,8 +209,9 @@ public class SystemProperties {
     public static String getProperty(String name) {
         try {
             String value = properties.getProperty(name);
-            if (value != null)
+            if (value != null) {
                 return value;
+            }
             return System.getProperty(name);
         } catch (Exception e) {
             return null;
@@ -228,8 +233,9 @@ public class SystemProperties {
     public static String getProperty(String name, String defaultValue) {
         try {
             String value = properties.getProperty(name);
-            if (value != null)
+            if (value != null) {
                 return value;
+            }
             return System.getProperty(name, defaultValue);
         } catch (Exception e) {
             return defaultValue;
@@ -241,7 +247,7 @@ public class SystemProperties {
     private static final String URL_REWRITE_FORMAT = getOSDependentProperty("findbugs.urlRewriteFormat");
 
     private static final Pattern URL_REWRITE_PATTERN;
-    
+
     static {
         Pattern p = null;
         if (URL_REWRITE_PATTERN_STRING != null && URL_REWRITE_FORMAT != null) {
@@ -264,11 +270,13 @@ public class SystemProperties {
     }
 
     public static String rewriteURLAccordingToProperties(String u) {
-        if (URL_REWRITE_PATTERN == null || URL_REWRITE_FORMAT == null)
+        if (URL_REWRITE_PATTERN == null || URL_REWRITE_FORMAT == null) {
             return u;
+        }
         Matcher m = URL_REWRITE_PATTERN.matcher(u);
-        if (!m.matches() || m.groupCount() == 0)
+        if (!m.matches() || m.groupCount() == 0) {
             return u;
+        }
         String result = String.format(URL_REWRITE_FORMAT, m.group(1));
         return result;
     }

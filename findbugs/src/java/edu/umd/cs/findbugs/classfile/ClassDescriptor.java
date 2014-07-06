@@ -114,7 +114,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
         return ClassName.toDottedClassName(className);
     }
 
-     public XClass getXClass() throws CheckedAnalysisException {
+    public XClass getXClass() throws CheckedAnalysisException {
         return Global.getAnalysisCache().getClassAnalysis(XClass.class, this);
     }
     /**
@@ -137,8 +137,9 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
     }
 
     public String getSignature() {
-        if (isArray())
+        if (isArray()) {
             return className;
+        }
         return "L" + className + ";";
     }
 

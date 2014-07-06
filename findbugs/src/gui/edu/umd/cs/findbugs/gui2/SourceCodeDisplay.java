@@ -79,7 +79,7 @@ public final class SourceCodeDisplay implements Runnable {
     }
 
     final BlockingQueue<DisplayMe> queue = new   LinkedBlockingQueue<DisplayMe>();
-  
+
     public  void displaySource(BugInstance bug, SourceLineAnnotation source) {
         queue.add(new DisplayMe(bug, source));
     }
@@ -95,10 +95,12 @@ public final class SourceCodeDisplay implements Runnable {
             String fullFileName = sourceFile.getFullFileName();
             SoftReference<JavaSourceDocument> resultReference = map.get(fullFileName);
             JavaSourceDocument result = null;
-            if (resultReference != null)
+            if (resultReference != null) {
                 result = resultReference.get();
-            if (result != null)
+            }
+            if (result != null) {
                 return result;
+            }
             try {
                 InputStream in = sourceFile.getInputStream();
                 result = new JavaSourceDocument(source.getClassName(), SourceCharset.bufferedReader(in), sourceFile);
@@ -128,7 +130,7 @@ public final class SourceCodeDisplay implements Runnable {
             }
             BugInstance myBug = display.bug;
             SourceLineAnnotation mySourceLine = display.source;
-         
+
             if (myBug == null || mySourceLine == null) {
                 frame.clearSourcePane();
                 continue;
@@ -144,12 +146,14 @@ public final class SourceCodeDisplay implements Runnable {
                     BugAnnotation annotation = i.next();
                     if (annotation instanceof SourceLineAnnotation) {
                         SourceLineAnnotation sourceAnnotation = (SourceLineAnnotation) annotation;
-                        if (sourceAnnotation == mySourceLine)
+                        if (sourceAnnotation == mySourceLine) {
                             continue;
-                        if (sourceAnnotation.getDescription().equals(primaryKind))
+                        }
+                        if (sourceAnnotation.getDescription().equals(primaryKind)) {
                             highlight(src, sourceAnnotation, MAIN_HIGHLIGHT_MORE);
-                        else
+                        } else {
                             highlight(src, sourceAnnotation, ALTERNATIVE_HIGHLIGHT);
+                        }
                     }
                 }
                 highlight(src, mySourceLine, MAIN_HIGHLIGHT);
@@ -199,15 +203,17 @@ public final class SourceCodeDisplay implements Runnable {
                         // show(frame.getSourceCodeTextPane(),
                         // document, sourceAnnotation);
                         int otherLine = sourceAnnotation.getStartLine();
-                        if (otherLine > originLine)
+                        if (otherLine > originLine) {
                             otherLine = sourceAnnotation.getEndLine();
+                        }
                         otherLines.add(otherLine);
                     }
                 }
             }
-                       
-            if (startLine >= 0 && endLine >= 0)
+
+            if (startLine >= 0 && endLine >= 0) {
                 frame.getSourceCodeTextPane().scrollLinesToVisible(startLine, endLine, otherLines);
+            }
         }
     }
 
@@ -218,15 +224,17 @@ public final class SourceCodeDisplay implements Runnable {
     private void highlight(JavaSourceDocument src, SourceLineAnnotation sourceAnnotation, Color color) {
 
         int startLine = sourceAnnotation.getStartLine();
-        if (startLine == -1)
+        if (startLine == -1) {
             return;
+        }
         String sourceFile = sourceAnnotation.getSourcePath();
         String sourceFile2 = src.getSourceFile().getFullFileName();
         if (!java.io.File.separator.equals(String.valueOf(SourceLineAnnotation.CANONICAL_PACKAGE_SEPARATOR))) {
             sourceFile2 = sourceFile2.replace(java.io.File.separatorChar, SourceLineAnnotation.CANONICAL_PACKAGE_SEPARATOR);
         }
-        if (!sourceFile2.endsWith(sourceFile))
+        if (!sourceFile2.endsWith(sourceFile)) {
             return;
+        }
         src.getHighlightInformation().setHighlight(startLine, sourceAnnotation.getEndLine(), color);
     }
 
@@ -238,54 +246,67 @@ public final class SourceCodeDisplay implements Runnable {
     }
 
     private int search(JavaSourceDocument document, String target, int start, Boolean backwards) {
-        if (document == null)
+        if (document == null) {
             return -1;
+        }
 
         String docContent = null;
         try {
             StyledDocument document2 = document.getDocument();
-            if (document2 == null)
+            if (document2 == null) {
                 return -1;
+            }
             docContent = document2.getText(0, document2.getLength());
         } catch (BadLocationException ble) {
             System.out.println("Bad location exception");
         } catch (NullPointerException npe) {
             return -1;
         }
-        if (docContent == null)
+        if (docContent == null) {
             return -1;
+        }
         int targetLen = target.length();
         int sourceLen = docContent.length();
-        if (targetLen > sourceLen)
+        if (targetLen > sourceLen) {
             return -1;
-        else if (backwards) {
-            for (int i = start; i >= 0; i--)
-                if (docContent.substring(i, i + targetLen).equals(target))
+        } else if (backwards) {
+            for (int i = start; i >= 0; i--) {
+                if (docContent.substring(i, i + targetLen).equals(target)) {
                     return i;
-            for (int i = (sourceLen - targetLen); i > start; i--)
-                if (docContent.substring(i, i + targetLen).equals(target))
+                }
+            }
+            for (int i = (sourceLen - targetLen); i > start; i--) {
+                if (docContent.substring(i, i + targetLen).equals(target)) {
                     return i;
+                }
+            }
             return -1;
         } else {
-            for (int i = start; i <= (sourceLen - targetLen); i++)
-                if (docContent.substring(i, i + targetLen).equals(target))
+            for (int i = start; i <= (sourceLen - targetLen); i++) {
+                if (docContent.substring(i, i + targetLen).equals(target)) {
                     return i;
-            for (int i = 0; i < start; i++)
-                if (docContent.substring(i, i + targetLen).equals(target))
+                }
+            }
+            for (int i = 0; i < start; i++) {
+                if (docContent.substring(i, i + targetLen).equals(target)) {
                     return i;
+                }
+            }
             return -1;
         }
     }
 
     private int charToLineNum(int charNum) {
-        if (charNum == -1)
+        if (charNum == -1) {
             return -1;
+        }
         try {
             for (int i = 1; true; i++) {
-                if (frame.getSourceCodeTextPane().getLineOffset(i) > charNum)
+                if (frame.getSourceCodeTextPane().getLineOffset(i) > charNum) {
                     return i - 1;
-                else if (frame.getSourceCodeTextPane().getLineOffset(i) == -1)
+                } else if (frame.getSourceCodeTextPane().getLineOffset(i) == -1) {
                     return -1;
+                }
             }
         } catch (BadLocationException ble) {
             return -1;

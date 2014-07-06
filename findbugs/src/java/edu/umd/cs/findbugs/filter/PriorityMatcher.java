@@ -26,11 +26,11 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Matcher to select BugInstances with a particular priority.
- * 
+ *
  * @author David Hovemeyer
  */
 public class PriorityMatcher implements Matcher {
-    private int priority;
+    private final int priority;
 
     @Override
     public String toString() {
@@ -39,7 +39,7 @@ public class PriorityMatcher implements Matcher {
 
     /**
      * Constructor.
-     * 
+     *
      * @param priorityAsString
      *            the priority, as a String
      * @throws FilterException
@@ -55,8 +55,9 @@ public class PriorityMatcher implements Matcher {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof PriorityMatcher))
+        if (!(o instanceof PriorityMatcher)) {
             return false;
+        }
         PriorityMatcher other = (PriorityMatcher) o;
         return priority == other.priority;
     }
@@ -69,8 +70,9 @@ public class PriorityMatcher implements Matcher {
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Integer.toString(priority));
-        if (disabled)
+        if (disabled) {
             attributes.addAttribute("disabled", "true");
+        }
         xmlOutput.openCloseTag("Priority", attributes);
     }
 }

@@ -30,19 +30,19 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 /**
  * Base class for Load and Store PatternElements. Handles some of the grunt work
  * of representing fields and extracting field values from the stack frame.
- * 
+ *
  * @author David Hovemeyer
  * @see Load
  * @see Store
  */
 public abstract class FieldAccess extends SingleInstruction implements org.apache.bcel.Constants {
-    private String fieldVarName;
+    private final String fieldVarName;
 
-    private String valueVarName;
+    private final String valueVarName;
 
     /**
      * Constructor.
-     * 
+     *
      * @param fieldVarName
      *            name of the variable to bind to the field
      * @param valueVarName
@@ -57,7 +57,7 @@ public abstract class FieldAccess extends SingleInstruction implements org.apach
     /**
      * Check that the Variables determined for the field and the value
      * loaded/stored are consistent with previous variable definitions.
-     * 
+     *
      * @param field
      *            Variable representing the field
      * @param value
@@ -71,18 +71,20 @@ public abstract class FieldAccess extends SingleInstruction implements org.apach
         // Ensure that the field and value variables are consistent with
         // previous definitions (if any)
         bindingSet = addOrCheckDefinition(fieldVarName, field, bindingSet);
-        if (bindingSet == null)
+        if (bindingSet == null) {
             return null;
+        }
         bindingSet = addOrCheckDefinition(valueVarName, value, bindingSet);
-        if (bindingSet == null)
+        if (bindingSet == null) {
             return null;
+        }
         return new MatchResult(this, bindingSet);
     }
 
     /**
      * Return whether the given FieldInstruction accesses a long or double
      * field.
-     * 
+     *
      * @param fieldIns
      *            the FieldInstruction
      * @param cpg
@@ -97,7 +99,7 @@ public abstract class FieldAccess extends SingleInstruction implements org.apach
     /**
      * Get a Variable representing the stack value which will either be stored
      * into or loaded from a field.
-     * 
+     *
      * @param fieldIns
      *            the FieldInstruction accessing the field
      * @param cpg
@@ -121,4 +123,3 @@ public abstract class FieldAccess extends SingleInstruction implements org.apach
     }
 }
 
-// vim:ts=4

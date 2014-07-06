@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 /**
  * Dataflow analysis to compute postdominator sets for a CFG.
- * 
+ *
  * @author David Hovemeyer
  * @see CFG
  * @see AbstractDominatorsAnalysis
@@ -33,7 +33,7 @@ public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
 
     /**
      * Constructor.
-     * 
+     *
      * @param cfg
      *            the CFG to compute dominator relationships for
      * @param rdfs
@@ -51,7 +51,7 @@ public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
 
     /**
      * Constructor.
-     * 
+     *
      * @param cfg
      *            the CFG to compute dominator relationships for
      * @param rdfs
@@ -119,4 +119,3 @@ public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
     // }
 }
 
-// vim:ts=4

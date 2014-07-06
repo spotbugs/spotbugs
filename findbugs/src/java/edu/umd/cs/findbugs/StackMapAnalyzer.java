@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2003-2008 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -52,31 +52,31 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author pugh
  */
 public  class StackMapAnalyzer {
-    
-    
 
-    
+
+
+
     public static class StackMapAnalysisFactory extends edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory<JumpInfoFromStackMap> {
         public StackMapAnalysisFactory() {
             super("Jump info for opcode stack from stack map analysis", JumpInfoFromStackMap.class);
         }
-        
+
         @Override
         public JumpInfoFromStackMap analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) {
-            
+
             return getFromStackMap( analysisCache,  descriptor);
-                
-           
+
+
         }
     }
-    
+
     static class JumpInfoFromStackMap extends JumpInfo {
 
 
         JumpInfoFromStackMap(Map<Integer, List<Item>> jumpEntries, Map<Integer, List<Item>> jumpStackEntries, BitSet jumpEntryLocations) {
             super(jumpEntries, jumpStackEntries, jumpEntryLocations);
         }
-        
+
     }
     static final boolean DEBUG = false;
 
@@ -107,12 +107,14 @@ public  class StackMapAnalyzer {
     }
 
     static @CheckForNull StackMapTable getStackMapTable(Code code) {
-        for(Attribute a : code.getAttributes())
-            if (a instanceof StackMapTable)
+        for(Attribute a : code.getAttributes()) {
+            if (a instanceof StackMapTable) {
                 return (StackMapTable) a;
+            }
+        }
         return null;
     }
-    
+
     static  List<Item>  getInitialLocals(MethodDescriptor descriptor) {
         List<Item> locals = new ArrayList<Item>();
         Type[] argTypes = Type.getArgumentTypes(descriptor.getSignature());
@@ -126,58 +128,62 @@ public  class StackMapAnalyzer {
             Item it = Item.typeOnly(argType.getSignature());
             locals.add(it);
             reg += it.getSize();
-            if (it.usesTwoSlots())
+            if (it.usesTwoSlots()) {
                 locals.add(null);
+            }
         }
         return locals;
     }
-    
+
     static final @CheckForNull Field frame_type_field;
     static {
         Field f;
         try {
-        f = AccessController.doPrivileged(new PrivilegedAction<Field>() {
-            
-            @Override
-            public Field run() {
-                Class<StackMapTableEntry> c = StackMapTableEntry.class;
-                Field result;
-                try {
-                    result = c.getDeclaredField("frame_type");
-                    result.setAccessible(true);
-                    return result;
-                } catch (NoSuchFieldException e) {
-                    throw new AssertionError("frame_type field doesn't exist");
-                } catch (SecurityException e) {
-                    return null;
+            f = AccessController.doPrivileged(new PrivilegedAction<Field>() {
+
+                @Override
+                public Field run() {
+                    Class<StackMapTableEntry> c = StackMapTableEntry.class;
+                    Field result;
+                    try {
+                        result = c.getDeclaredField("frame_type");
+                        result.setAccessible(true);
+                        return result;
+                    } catch (NoSuchFieldException e) {
+                        throw new AssertionError("frame_type field doesn't exist");
+                    } catch (SecurityException e) {
+                        return null;
+                    }
+
                 }
-               
-            }
-           
-        });
+
+            });
         } catch (Exception e) {
             AnalysisContext.logError("Unable to create frame_type accessor",e );
             f = null;
         }
-      if (DEBUG)
-          System.out.println("Frame type field is null:" + (f == null));
-      frame_type_field = f;
+        if (DEBUG) {
+            System.out.println("Frame type field is null:" + (f == null));
+        }
+        frame_type_field = f;
     }
-    
+
     static int getFrameType(StackMapTableEntry e) {
-        if (frame_type_field == null)
+        if (frame_type_field == null) {
             return -1;
+        }
         try {
             return (Integer) frame_type_field.get(e);
         } catch (IllegalArgumentException e1) {
-          return -1;
+            return -1;
         } catch (IllegalAccessException e1) {
-           return -1;
+            return -1;
         }
     }
     static  private  @CheckForNull JumpInfoFromStackMap getFromStackMap(IAnalysisCache analysisCache, MethodDescriptor descriptor)  {
-        if (frame_type_field == null)
+        if (frame_type_field == null) {
             return null;
+        }
 
         Method method;
         try {
@@ -186,86 +192,89 @@ public  class StackMapAnalyzer {
             analysisCache.getErrorLogger().logError("Unable to get method for " + descriptor, e1);
             return null;
         }
-        
+
         Code code = method.getCode();
         if (code == null) {
             return null;
         }
         StackMapTable stackMapTable = getStackMapTable(code);
-        if (stackMapTable == null)
+        if (stackMapTable == null) {
             return null;
-         Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
+        }
+        Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
 
-         Map<Integer, List<Item>> jumpStackEntries = new HashMap<Integer, List<Item>>();
+        Map<Integer, List<Item>> jumpStackEntries = new HashMap<Integer, List<Item>>();
 
-         List<Item> locals = getInitialLocals(descriptor);
-         List<Item> stack = new ArrayList<Item>();
-         BitSet jumpEntryLocations = new BitSet();
-         if (DEBUG) {
-         System.out.println(descriptor);
-         System.out.println(locals);
-         }
-         int pc = 0;
-         for(StackMapTableEntry e : stackMapTable.getStackMapTable()) {
-             pc += e.getByteCodeOffsetDelta();
-             StackFrameType stackFrameType = StackFrameType.get(getFrameType(e));
-             switch (stackFrameType) {
-             case SAME_FRAME:
-                 stack.clear();
-                 break;
-             case SAME_LOCALS_1_STACK_ITEM_FRAME:
-                 stack.clear();
-                 addStack(stack, e.getTypesOfStackItems());
-                 break;
-             case CHOP_FRAME :
-                 stack.clear();
-                 for(int i = 0; i < e.getNumberOfLocals(); i++) {
-                     Item it = locals.remove(locals.size()-1);
-                     if (it == null) {
-                         it = locals.remove(locals.size()-1);
-                         assert it.usesTwoSlots();
-                     }
-                 }
-                 break;
+        List<Item> locals = getInitialLocals(descriptor);
+        List<Item> stack = new ArrayList<Item>();
+        BitSet jumpEntryLocations = new BitSet();
+        if (DEBUG) {
+            System.out.println(descriptor);
+            System.out.println(locals);
+        }
+        int pc = 0;
+        for(StackMapTableEntry e : stackMapTable.getStackMapTable()) {
+            pc += e.getByteCodeOffsetDelta();
+            StackFrameType stackFrameType = StackFrameType.get(getFrameType(e));
+            switch (stackFrameType) {
+            case SAME_FRAME:
+                stack.clear();
+                break;
+            case SAME_LOCALS_1_STACK_ITEM_FRAME:
+                stack.clear();
+                addStack(stack, e.getTypesOfStackItems());
+                break;
+            case CHOP_FRAME :
+                stack.clear();
+                for(int i = 0; i < e.getNumberOfLocals(); i++) {
+                    Item it = locals.remove(locals.size()-1);
+                    if (it == null) {
+                        it = locals.remove(locals.size()-1);
+                        assert it.usesTwoSlots();
+                    }
+                }
+                break;
 
-             case APPEND_FRAME:
+            case APPEND_FRAME:
 
-                 stack.clear();
-                 addLocals(locals, e.getTypesOfLocals());
-                 
-                 break;
-             case FULL_FRAME:
-                 stack.clear();
-                 locals.clear();
-                 addLocals(locals, e.getTypesOfLocals());
-                 addStack(stack, e.getTypesOfStackItems());
-                 break;
-                 
-             }
-             if (DEBUG) {
-             System.out.printf("%4d %2d %2d  %12s %s%n",
-                   
-                     pc,   e.getNumberOfLocals(), e.getNumberOfStackItems(), stackFrameType, e);
-             System.out.printf("     %s :: %s%n", stack, locals);
-             }
-             if (pc > 0) {
-             jumpEntries.put(pc, new ArrayList<Item>(locals));
-             if (!stack.isEmpty())
-                 jumpStackEntries.put(pc, new ArrayList<Item>(stack));
-             jumpEntryLocations.set(pc);
-             }
-             pc++;
-         }
-         if (DEBUG)
-             System.out.println("\n");
-         return new JumpInfoFromStackMap(jumpEntries, jumpStackEntries, jumpEntryLocations);
-      
+                stack.clear();
+                addLocals(locals, e.getTypesOfLocals());
+
+                break;
+            case FULL_FRAME:
+                stack.clear();
+                locals.clear();
+                addLocals(locals, e.getTypesOfLocals());
+                addStack(stack, e.getTypesOfStackItems());
+                break;
+
+            }
+            if (DEBUG) {
+                System.out.printf("%4d %2d %2d  %12s %s%n",
+
+                        pc,   e.getNumberOfLocals(), e.getNumberOfStackItems(), stackFrameType, e);
+                System.out.printf("     %s :: %s%n", stack, locals);
+            }
+            if (pc > 0) {
+                jumpEntries.put(pc, new ArrayList<Item>(locals));
+                if (!stack.isEmpty()) {
+                    jumpStackEntries.put(pc, new ArrayList<Item>(stack));
+                }
+                jumpEntryLocations.set(pc);
+            }
+            pc++;
+        }
+        if (DEBUG) {
+            System.out.println("\n");
+        }
+        return new JumpInfoFromStackMap(jumpEntries, jumpStackEntries, jumpEntryLocations);
+
     }
-    
+
     static  private Item getItem(StackMapType t) {
 
         switch (t.getType()) {
-       
+
         case Constants.ITEM_Double:
             return Item.typeOnly("D");
         case Constants.ITEM_Float:
@@ -287,7 +296,9 @@ public  class StackMapAnalyzer {
             int index = t.getIndex();
             ConstantClass c = (ConstantClass) t.getConstantPool().getConstant(index);
             String name = c.getBytes(t.getConstantPool());
-            if (name.charAt(0) != '[') name = "L" + name + ";";
+            if (name.charAt(0) != '[') {
+                name = "L" + name + ";";
+            }
             return Item.typeOnly(name);
         default:
             throw new IllegalArgumentException("Bad item type: " + t.getType());
@@ -298,17 +309,18 @@ public  class StackMapAnalyzer {
         for(StackMapType t : typesOfStackItems) {
             Item item = getItem(t);
             lst.add(item);
-            if (item.usesTwoSlots())
+            if (item.usesTwoSlots()) {
                 lst.add(null);
+            }
         }
-        
+
     }
     static private void addStack(List<Item> lst, StackMapType[] typesOfStackItems) {
         for(StackMapType t : typesOfStackItems) {
             Item item = getItem(t);
             lst.add(item);
         }
-        
+
     }
 
 }

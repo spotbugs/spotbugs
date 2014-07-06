@@ -67,9 +67,9 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 
     private static final boolean OMIT_PACKAGE_STATS = SystemProperties.getBoolean("findbugs.packagestats.omit");
 
-    private SortedMap<String, PackageStats> packageStatsMap;
+    private final SortedMap<String, PackageStats> packageStatsMap;
 
-    private int[] totalErrors = new int[] { 0, 0, 0, 0, 0 };
+    private final int[] totalErrors = new int[] { 0, 0, 0, 0, 0 };
 
     private int totalClasses;
 
@@ -87,9 +87,9 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 
     private boolean hasPackageStats;
 
-    private Footprint baseFootprint;
+    private final Footprint baseFootprint;
 
-    private String java_version = SystemProperties.getProperty("java.version");
+    private final String java_version = SystemProperties.getProperty("java.version");
     private String java_vm_version = SystemProperties.getProperty("java.vm.version");
 
     private final Profiler profiler;
@@ -98,9 +98,11 @@ public class ProjectStats implements XMLWriteable, Cloneable {
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append(getNumClasses()).append(" classes: ");
-        for (PackageStats pStats : getPackageStats())
-            for (ClassStats cStats : pStats.getSortedClassStats())
+        for (PackageStats pStats : getPackageStats()) {
+            for (ClassStats cStats : pStats.getSortedClassStats()) {
                 buf.append(cStats.getName()).append(" ");
+            }
+        }
         return buf.toString();
     }
 
@@ -134,8 +136,9 @@ public class ProjectStats implements XMLWriteable, Cloneable {
     }
 
     public int getCodeSize() {
-        if (totalSizeFromPackageStats > 0)
+        if (totalSizeFromPackageStats > 0) {
             return totalSizeFromPackageStats;
+        }
         return totalSize;
 
     }
@@ -150,7 +153,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 
     /**
      * Set the timestamp for this analysis run.
-     * 
+     *
      * @param timestamp
      *            the time of the analysis run this ProjectStats represents, as
      *            previously reported by writeXML.
@@ -171,8 +174,9 @@ public class ProjectStats implements XMLWriteable, Cloneable {
      * Get the number of classes analyzed.
      */
     public int getNumClasses() {
-        if (totalClassesFromPackageStats > 0)
+        if (totalClassesFromPackageStats > 0) {
             return totalClassesFromPackageStats;
+        }
         return totalClasses;
     }
 
@@ -185,7 +189,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 
     /**
      * Report that a class has been analyzed.
-     * 
+     *
      * @param className
      *            the full name of the class
      * @param sourceFile
@@ -202,7 +206,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 
     /**
      * Report that a class has been analyzed.
-     * 
+     *
      * @param className
      *            the full name of the class
      * @param sourceFile
@@ -218,10 +222,11 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         hasClassStats = true;
         String packageName;
         int lastDot = className.lastIndexOf('.');
-        if (lastDot < 0)
+        if (lastDot < 0) {
             packageName = "";
-        else
+        } else {
             packageName = className.substring(0, lastDot);
+        }
         PackageStats stat = getPackageStats(packageName);
         stat.addClass(className, sourceFile, isInterface, size, updatePackageStats);
         totalClasses++;
@@ -232,20 +237,22 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 
     /**
      * Report that a class has been analyzed.
-     * 
+     *
      * @param className
      *            the full name of the class
      */
     public @CheckForNull
     ClassStats getClassStats(@DottedClassName String className) {
-        if (hasClassStats)
+        if (hasClassStats) {
             return null;
+        }
         String packageName;
         int lastDot = className.lastIndexOf('.');
-        if (lastDot < 0)
+        if (lastDot < 0) {
             packageName = "";
-        else
+        } else {
             packageName = className.substring(0, lastDot);
+        }
         PackageStats stat = getPackageStats(packageName);
         return stat.getClassStatsOrNull(className);
     }
@@ -269,23 +276,25 @@ public class ProjectStats implements XMLWriteable, Cloneable {
      * Clear bug counts
      */
     public void clearBugCounts() {
-        for (int i = 0; i < totalErrors.length; i++)
+        for (int i = 0; i < totalErrors.length; i++) {
             totalErrors[i] = 0;
+        }
         for (PackageStats stats : packageStatsMap.values()) {
             stats.clearBugCounts();
         }
     }
 
     public void purgeClassesThatDontMatch(Pattern classPattern) {
-        if (hasClassStats)
+        if (hasClassStats) {
             for (Iterator<Map.Entry<String, PackageStats>> i = packageStatsMap.entrySet().iterator(); i.hasNext();) {
                 Map.Entry<String, PackageStats> e = i.next();
                 PackageStats stats = e.getValue();
                 stats.purgeClassesThatDontMatch(classPattern);
-                if (stats.getClassStats().isEmpty())
+                if (stats.getClassStats().isEmpty()) {
                     i.remove();
+                }
             }
-        else if (hasPackageStats) {
+        } else if (hasPackageStats) {
             boolean matchAny = false;
             for (String packageName : packageStatsMap.keySet()) {
                 Matcher m = classPattern.matcher(packageName);
@@ -294,7 +303,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
                     break;
                 }
             }
-            if (matchAny)
+            if (matchAny) {
                 for (Iterator<String> i = packageStatsMap.keySet().iterator(); i.hasNext();) {
                     String packageName = i.next();
                     Matcher m = classPattern.matcher(packageName);
@@ -303,15 +312,18 @@ public class ProjectStats implements XMLWriteable, Cloneable {
                     }
 
                 }
+            }
         }
     }
 
     public void purgeClassStats() {
         hasClassStats = false;
-        if (totalClassesFromPackageStats == 0)
+        if (totalClassesFromPackageStats == 0) {
             totalClassesFromPackageStats = totalClasses;
-        if (totalSizeFromPackageStats == 0)
+        }
+        if (totalSizeFromPackageStats == 0) {
             totalSizeFromPackageStats = totalSize;
+        }
 
         for (PackageStats ps : getPackageStats()) {
             ps.getClassStats().clear();
@@ -320,39 +332,46 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 
     public void purgePackageStats() {
         hasPackageStats = false;
-        if (totalClassesFromPackageStats == 0)
+        if (totalClassesFromPackageStats == 0) {
             totalClassesFromPackageStats = totalClasses;
-        if (totalSizeFromPackageStats == 0)
+        }
+        if (totalSizeFromPackageStats == 0) {
             totalSizeFromPackageStats = totalSize;
+        }
 
         getPackageStats().clear();
     }
 
     public void recomputeFromComponents() {
-        if (!hasClassStats && !hasPackageStats)
+        if (!hasClassStats && !hasPackageStats) {
             return;
-        for (int i = 0; i < totalErrors.length; i++)
+        }
+        for (int i = 0; i < totalErrors.length; i++) {
             totalErrors[i] = 0;
+        }
         totalSize = 0;
         totalClasses = 0;
         totalSizeFromPackageStats = 0;
         totalClassesFromPackageStats = 0;
 
         for (PackageStats stats : packageStatsMap.values()) {
-            if (hasClassStats)
+            if (hasClassStats) {
                 stats.recomputeFromClassStats();
+            }
             totalSize += stats.size();
             totalClasses += stats.getNumClasses();
-            for (int i = 0; i < totalErrors.length; i++)
+            for (int i = 0; i < totalErrors.length; i++) {
                 totalErrors[i] += stats.getBugsAtPriority(i);
+            }
         }
     }
 
     FileBugHash fileBugHashes;
 
     public void computeFileStats(BugCollection bugs) {
-        if (bugs.getProjectStats() != this)
+        if (bugs.getProjectStats() != this) {
             throw new IllegalArgumentException("Collection doesn't own stats");
+        }
         fileBugHashes = FileBugHash.compute(bugs);
     }
 
@@ -378,10 +397,12 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         xmlOutput.addAttribute("total_size", String.valueOf(getCodeSize()));
         xmlOutput.addAttribute("num_packages", String.valueOf(packageStatsMap.size()));
 
-        if (java_version != null)
+        if (java_version != null) {
             xmlOutput.addAttribute("java_version", java_version);
-        if (java_vm_version != null)
+        }
+        if (java_vm_version != null) {
             xmlOutput.addAttribute("vm_version", java_vm_version);
+        }
         Footprint delta = new Footprint(baseFootprint);
         NumberFormat twoPlaces = NumberFormat.getInstance(Locale.ENGLISH);
         twoPlaces.setMinimumFractionDigits(2);
@@ -405,7 +426,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
             xmlOutput.addAttribute("gc_seconds", twoPlaces.format(gcTime / 1000.0));
         }
 
-        PackageStats.writeBugPriorities(xmlOutput, totalErrors);
+        BugCounts.writeBugPriorities(xmlOutput, totalErrors);
 
         xmlOutput.stopTag(false);
 
@@ -417,28 +438,32 @@ public class ProjectStats implements XMLWriteable, Cloneable {
                 xmlOutput.addAttribute("size", String.valueOf(fileBugHashes.getSize(sourceFile)));
 
                 String hash = fileBugHashes.getHash(sourceFile);
-                if (hash != null)
+                if (hash != null) {
                     xmlOutput.addAttribute("bugHash", hash);
+                }
                 xmlOutput.stopTag(true);
 
             }
         }
 
-        if (!OMIT_PACKAGE_STATS)
+        if (!OMIT_PACKAGE_STATS) {
             for (PackageStats stats : packageStatsMap.values()) {
                 stats.writeXML(xmlOutput);
             }
+        }
 
         getProfiler().writeXML(xmlOutput);
         xmlOutput.closeTag("FindBugsSummary");
     }
 
     public Map<String, String> getFileHashes(BugCollection bugs) {
-        if (bugs.getProjectStats() != this)
+        if (bugs.getProjectStats() != this) {
             throw new IllegalArgumentException("Collection doesn't own stats");
+        }
 
-        if (fileBugHashes == null)
+        if (fileBugHashes == null) {
             computeFileStats(bugs);
+        }
 
         HashMap<String, String> result = new HashMap<String, String>();
         for (String sourceFile : fileBugHashes.getSourceFiles()) {
@@ -462,7 +487,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 
     /**
      * Transform summary information to HTML.
-     * 
+     *
      * @param htmlWriter
      *            the Writer to write the HTML output to
      */
@@ -474,8 +499,9 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         StreamSource in = new StreamSource(new ByteArrayInputStream(summaryOut.toByteArray()));
         StreamResult out = new StreamResult(htmlWriter);
         InputStream xslInputStream = this.getClass().getClassLoader().getResourceAsStream("summary.xsl");
-        if (xslInputStream == null)
+        if (xslInputStream == null) {
             throw new IOException("Could not load summary stylesheet");
+        }
         StreamSource xsl = new StreamSource(xslInputStream);
 
         TransformerFactory tf = TransformerFactory.newInstance();
@@ -483,12 +509,14 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         transformer.transform(in, out);
 
         Reader rdr = in.getReader();
-        if (rdr != null)
+        if (rdr != null) {
             rdr.close();
+        }
         htmlWriter.close();
         InputStream is = xsl.getInputStream();
-        if (is != null)
+        if (is != null) {
             is.close();
+        }
     }
 
     public Collection<PackageStats> getPackageStats() {
@@ -526,19 +554,24 @@ public class ProjectStats implements XMLWriteable, Cloneable {
      * @param stats2
      */
     public void addStats(ProjectStats stats2) {
-        if (totalSize == totalSizeFromPackageStats)
+        if (totalSize == totalSizeFromPackageStats) {
             totalSizeFromPackageStats += stats2.getCodeSize();
+        }
         totalSize += stats2.getCodeSize();
-        if (totalClasses == totalClassesFromPackageStats)
+        if (totalClasses == totalClassesFromPackageStats) {
             totalClassesFromPackageStats += stats2.getNumClasses();
+        }
         totalClasses += stats2.getNumClasses();
-        for (int i = 0; i < totalErrors.length; i++)
+        for (int i = 0; i < totalErrors.length; i++) {
             totalErrors[i] += stats2.totalErrors[i];
+        }
 
-        if (stats2.hasPackageStats)
+        if (stats2.hasPackageStats) {
             hasPackageStats = true;
-        if (stats2.hasClassStats)
+        }
+        if (stats2.hasClassStats) {
             hasClassStats = true;
+        }
 
         for (Map.Entry<String, PackageStats> entry : stats2.packageStatsMap.entrySet()) {
             String key = entry.getKey();

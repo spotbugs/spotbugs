@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Analysis engine to produce LockDataflow objects for analyzed methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public class LockDataflowFactory extends AnalysisFactory<LockDataflow> {
@@ -45,7 +45,7 @@ public class LockDataflowFactory extends AnalysisFactory<LockDataflow> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)

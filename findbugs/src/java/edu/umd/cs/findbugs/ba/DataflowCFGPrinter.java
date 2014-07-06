@@ -28,11 +28,11 @@ import org.apache.bcel.generic.InstructionHandle;
  * instruction.
  */
 public class DataflowCFGPrinter<Fact, AnalysisType extends DataflowAnalysis<Fact>> extends CFGPrinter {
-    private Dataflow<Fact, AnalysisType> dataflow;
+    private final Dataflow<Fact, AnalysisType> dataflow;
 
     /**
      * Constructor.
-     * 
+     *
      * @param dataflow
      *            the Dataflow object whose values should be used to annotate
      *            the printed CFG
@@ -46,7 +46,7 @@ public class DataflowCFGPrinter<Fact, AnalysisType extends DataflowAnalysis<Fact
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.CFGPrinter#edgeAnnotate(edu.umd.cs.findbugs.ba
      * .Edge)
@@ -94,7 +94,7 @@ public class DataflowCFGPrinter<Fact, AnalysisType extends DataflowAnalysis<Fact
 
     /**
      * Print CFG annotated with results from given dataflow analysis.
-     * 
+     *
      * @param <Fact>
      *            Dataflow fact type
      * @param <AnalysisType>
@@ -112,4 +112,3 @@ public class DataflowCFGPrinter<Fact, AnalysisType extends DataflowAnalysis<Fact
 
 }
 
-// vim:ts=4

@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs;
 
 /**
  * Screen class files to decide which subset of them to analyze.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface IClassScreener {

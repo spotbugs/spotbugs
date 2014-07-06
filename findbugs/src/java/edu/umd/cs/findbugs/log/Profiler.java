@@ -48,8 +48,9 @@ public class Profiler implements XMLWriteable {
     public Profiler() {
         startTimes = new Stack<Clock>();
         profile = new ConcurrentHashMap<Class<?>, Profile>();
-        if (REPORT)
+        if (REPORT) {
             System.err.println("Profiling activated");
+        }
     }
 
     public static interface Filter {
@@ -120,7 +121,7 @@ public class Profiler implements XMLWriteable {
         final AtomicLong totalSquareMicroseconds = new AtomicLong();
 
         private final String className;
-        
+
         Object maxContext;
 
         /**
@@ -137,8 +138,9 @@ public class Profiler implements XMLWriteable {
             long oldMax = maxTime.get();
             if (nanoTime > oldMax) {
                 maxTime.compareAndSet(oldMax, nanoTime);
-                if (MAX_CONTEXT)
+                if (MAX_CONTEXT) {
                     maxContext = context;
+                }
             }
             long microseconds = TimeUnit.MICROSECONDS.convert(nanoTime, TimeUnit.NANOSECONDS);
             totalSquareMicroseconds.addAndGet(microseconds * microseconds);
@@ -174,8 +176,9 @@ public class Profiler implements XMLWriteable {
                 xmlOutput.addAttribute("invocations", String.valueOf(callCount));
                 xmlOutput.addAttribute("avgMicrosecondsPerInvocation", String.valueOf(averageTimeMicros));
                 xmlOutput.addAttribute("maxMicrosecondsPerInvocation", String.valueOf(maxTimeMicros));
-                if (maxContext != null)
-                  xmlOutput.addAttribute("maxContext", String.valueOf(maxContext));
+                if (maxContext != null) {
+                    xmlOutput.addAttribute("maxContext", String.valueOf(maxContext));
+                }
                 xmlOutput.addAttribute("standardDeviationMircosecondsPerInvocation", String.valueOf(timeStandardDeviation));
                 xmlOutput.stopTag(true);
             }
@@ -207,21 +210,22 @@ public class Profiler implements XMLWriteable {
     final Stack<Clock> startTimes;
 
     final ConcurrentHashMap<Class<?>, Profile> profile;
-    
+
     final Stack<Object> context = new Stack<Object>();
-    
+
     public void startContext(Object context) {
         this.context.push(context);
     }
-    
+
     public void endContext(Object context) {
         Object o = this.context.pop();
         assert o == context;
     }
 
     private Object getContext() {
-        if (context.size() == 0)
+        if (context.size() == 0) {
             return "";
+        }
         try {
             return context.peek();
         } catch (EmptyStackException e) {
@@ -286,10 +290,12 @@ public class Profiler implements XMLWriteable {
                 AnalysisContext.logError("Error comparing " + c1 + " and " + c2, e);
                 int i1 = System.identityHashCode(c1);
                 int i2 = System.identityHashCode(c2);
-                if (i1 < i2)
+                if (i1 < i2) {
                     return -1;
-                if (i1 > i2)
+                }
+                if (i1 > i2) {
                     return 1;
+                }
                 return 0;
             }
         }
@@ -419,8 +425,9 @@ public class Profiler implements XMLWriteable {
             AnalysisContext.logError("Unexpected null profile for " + c.getName(), new NullPointerException());
             result = new Profile(c.getName());
             Profile tmp = profile.putIfAbsent(c, result);
-            if (tmp != null)
+            if (tmp != null) {
                 return tmp;
+            }
         }
         return result;
     }
@@ -439,19 +446,22 @@ public class Profiler implements XMLWriteable {
         TreeSet<Class<?>> treeSet = new TreeSet<Class<?>>(new TotalTimeComparator(this));
         treeSet.addAll(profile.keySet());
         long totalTime = 0;
-        for (Profile p : profile.values())
+        for (Profile p : profile.values()) {
             totalTime += p.totalTime.get();
+        }
 
         long accumulatedTime = 0;
 
         for (Class<?> c : treeSet) {
             Profile p = getProfile(c);
-            if (p == null)
+            if (p == null) {
                 continue;
+            }
             p.writeXML(xmlOutput);
             accumulatedTime += p.totalTime.get();
-            if (accumulatedTime > 3 * totalTime / 4)
+            if (accumulatedTime > 3 * totalTime / 4) {
                 break;
+            }
         }
         xmlOutput.closeTag("FindBugsProfile");
     }

@@ -19,8 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -45,7 +44,7 @@ public class ValidationSecurityManagerTest {
         @Override
         public @Nonnull
         When forConstantValue(@Nonnull
-        SlashedClassName annotation, Object value) {
+                SlashedClassName annotation, Object value) {
             Thread  t = new Thread() {
                 @Override
                 public void run() {
@@ -74,8 +73,9 @@ public class ValidationSecurityManagerTest {
         t.start();
         t.join();
         assertEquals(true, b.get());
-        for (File f :  File.listRoots())
+        for (File f :  File.listRoots()) {
             f.listFiles();
+        }
     }
 
     @SlashedClassName static class AnnotationTemplate {}

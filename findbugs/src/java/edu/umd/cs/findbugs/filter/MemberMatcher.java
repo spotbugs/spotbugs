@@ -47,10 +47,12 @@ public class MemberMatcher {
     public MemberMatcher(String name, String signature, String role) {
 
         if (name == null) {
-            if (signature == null)
+            if (signature == null) {
                 throw new FilterException(this.getClass().getName() + " must have eiter name or signature attributes");
-            else
+            }
+            else {
                 name = "~.*"; // any name
+            }
         }
 
         this.name = new NameMatch(name);
@@ -68,8 +70,9 @@ public class MemberMatcher {
             buf.append("\"");
         }
         if (signature != null) {
-            if (buf.length() > 0)
+            if (buf.length() > 0) {
                 buf.append(" ");
+            }
             buf.append("signature=\"");
             buf.append(signature);
             buf.append("\"");
@@ -84,8 +87,9 @@ public class MemberMatcher {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || this.getClass() != o.getClass())
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
+        }
 
         MemberMatcher other = (MemberMatcher) o;
         return name.equals(other.name) && Util.nullSafeEquals(signature, other.signature);

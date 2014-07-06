@@ -36,9 +36,9 @@ import org.apache.bcel.generic.Type;
 /**
  * A simple class to parse method signatures that include generic information.
  * <p>
- * 
+ *
  * Modified from edu.umd.cs.findbugs.ba.SignatureParser
- * 
+ *
  * @author Nat Ayewah
  */
 public class GenericSignatureParser {
@@ -52,8 +52,9 @@ public class GenericSignatureParser {
 
         @Override
         public String next() {
-            if (!hasNext())
+            if (!hasNext()) {
                 throw new NoSuchElementException();
+            }
             StringBuilder result = new StringBuilder();
             boolean done;
             do {
@@ -83,8 +84,9 @@ public class GenericSignatureParser {
                         char c = signature.charAt(i);
                         switch (c) {
                         case ';':
-                            if (leftCount == 0)
+                            if (leftCount == 0) {
                                 break loop;
+                            }
                             break;
                         case '<':
                             leftCount++;
@@ -132,7 +134,7 @@ public class GenericSignatureParser {
     /**
      * Parses a generic method signature of the form:
      * <code>(argument_signature)return_type_signature</code>
-     * 
+     *
      * @param signature
      *            the method signature to be parsed
      */
@@ -141,16 +143,17 @@ public class GenericSignatureParser {
         // method definitions
         int s = signature.indexOf('(');
         String sig = signature;
-        if (s > 0)
+        if (s > 0) {
             sig = sig.substring(s);
-        else if (s < 0 || sig.indexOf(':') >= 0 || sig.startsWith("(V)"))
+        } else if (s < 0 || sig.indexOf(':') >= 0 || sig.startsWith("(V)")) {
             throw new IllegalArgumentException("Bad method signature: " + signature);
+        }
         this.signature = sig;
     }
 
     /**
      * Get an Iterator over signatures of the method parameters.
-     * 
+     *
      * @return Iterator which returns the parameter type signatures in order
      */
     public Iterator<String> parameterSignatureIterator() {
@@ -159,19 +162,20 @@ public class GenericSignatureParser {
 
     /**
      * Get the method return type signature.
-     * 
+     *
      * @return the method return type signature
      */
     public String getReturnTypeSignature() {
         int endOfParams = signature.lastIndexOf(')');
-        if (endOfParams < 0)
+        if (endOfParams < 0) {
             throw new IllegalArgumentException("Bad method signature: " + signature);
+        }
         return signature.substring(endOfParams + 1);
     }
 
     /**
      * Get the number of parameters in the signature.
-     * 
+     *
      * @return the number of parameters
      */
     public int getNumParameters() {
@@ -185,7 +189,7 @@ public class GenericSignatureParser {
 
     /**
      * Get the number of parameters passed to method invocation.
-     * 
+     *
      * @param inv
      * @param cpg
      * @return int number of parameters
@@ -218,14 +222,15 @@ public class GenericSignatureParser {
                                 System.out.println(sig.getSignature());
                             }
                             return null; // we've seen two inconsistent
-                                         // signatures
+                            // signatures
                         }
                         continue;
                     }
 
                     genericSignature = sig.getSignature();
-                    if (compareSignatures(target.getSignature(), genericSignature))
+                    if (compareSignatures(target.getSignature(), genericSignature)) {
                         parser = new GenericSignatureParser(genericSignature);
+                    }
                 }
             }
             Iterator<String> iter = parser == null ? null : parser.parameterSignatureIterator();
@@ -243,8 +248,9 @@ public class GenericSignatureParser {
         GenericSignatureParser plainParser = new GenericSignatureParser(plainSignature);
         GenericSignatureParser genericParser = new GenericSignatureParser(genericSignature);
 
-        if (plainParser.getNumParameters() != genericParser.getNumParameters())
+        if (plainParser.getNumParameters() != genericParser.getNumParameters()) {
             return false;
+        }
 
         return true;
     }
@@ -260,10 +266,12 @@ public class GenericSignatureParser {
             System.out.println(s);
             Type t = GenericUtilities.getType(s);
             System.out.println("-~- " + t);
-            if (t instanceof ObjectType)
+            if (t instanceof ObjectType) {
                 System.out.println("-~- " + ((ObjectType) t).toString());
-            if (t != null)
+            }
+            if (t != null) {
                 System.out.println("-~- " + t.getClass());
+            }
         }
         System.out.println(parser.getNumParameters() + " parameter(s)");
 

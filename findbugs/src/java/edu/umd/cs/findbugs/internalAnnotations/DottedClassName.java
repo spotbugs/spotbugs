@@ -29,7 +29,7 @@ import javax.annotation.meta.When;
 /**
  * Denotes a class name or package name where the . character is used to
  * separate package/class name components.
- * 
+ *
  * @author pugh
  */
 @Documented

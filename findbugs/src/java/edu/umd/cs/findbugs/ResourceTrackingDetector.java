@@ -46,11 +46,11 @@ import edu.umd.cs.findbugs.log.Profiler;
  * of created resource is not cleaned up or closed properly. Subclasses should
  * override the abstract methods to determine what kinds of resources are
  * tracked by the detector.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType extends ResourceTracker<Resource>> implements
-        Detector {
+Detector {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("rtd.debug");
 
@@ -79,15 +79,18 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
         final JavaClass jclass = classContext.getJavaClass();
         Method[] methodList = jclass.getMethods();
         for (Method method : methodList) {
-            if (method.isAbstract() || method.isNative())
+            if (method.isAbstract() || method.isNative()) {
                 continue;
+            }
 
             MethodGen methodGen = classContext.getMethodGen(method);
-            if (methodGen == null)
+            if (methodGen == null) {
                 continue;
+            }
 
-            if (DEBUG_METHOD_NAME != null && !DEBUG_METHOD_NAME.equals(method.getName()))
+            if (DEBUG_METHOD_NAME != null && !DEBUG_METHOD_NAME.equals(method.getName())) {
                 continue;
+            }
 
             if (DEBUG) {
                 System.out.println("----------------------------------------------------------------------");
@@ -99,12 +102,14 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
                 ResourceTrackerType resourceTracker = getResourceTracker(classContext, method);
                 boolean mightClose = mightCloseResource(classContext, method, resourceTracker);
 
-                if (!prescreen(classContext, method, mightClose))
+                if (!prescreen(classContext, method, mightClose)) {
                     continue;
+                }
 
                 ResourceCollection<Resource> resourceCollection = buildResourceCollection(classContext, method, resourceTracker);
-                if (resourceCollection.isEmpty())
+                if (resourceCollection.isEmpty()) {
                     continue;
+                }
 
                 analyzeMethod(classContext, method, resourceTracker, resourceCollection);
             } catch (CFGBuilderException e) {
@@ -128,8 +133,9 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
             Resource resource = resourceTracker.isResourceCreation(location.getBasicBlock(), location.getHandle(), cpg);
-            if (resource != null)
+            if (resource != null) {
                 resourceCollection.addCreatedResource(location, resource);
+            }
         }
 
         return resourceCollection;
@@ -143,8 +149,9 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
-            if (resourceTracker.mightCloseResource(location.getBasicBlock(), location.getHandle(), cpg))
+            if (resourceTracker.mightCloseResource(location.getBasicBlock(), location.getHandle(), cpg)) {
                 return true;
+            }
 
         }
 
@@ -155,14 +162,16 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
             ResourceCollection<Resource> resourceCollection) throws CFGBuilderException, DataflowAnalysisException {
 
         MethodGen methodGen = classContext.getMethodGen(method);
-        if (methodGen == null)
+        if (methodGen == null) {
             return;
+        }
         try {
             CFG cfg = classContext.getCFG(method);
             DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println(SignatureConverter.convertMethodSignature(methodGen));
+            }
 
             for (Iterator<Resource> i = resourceCollection.resourceIterator(); i.hasNext();) {
                 Resource resource = i.next();
@@ -193,4 +202,3 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 
 }
 
-// vim:ts=3

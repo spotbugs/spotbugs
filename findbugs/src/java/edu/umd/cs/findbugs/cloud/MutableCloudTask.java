@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MutableCloudTask implements Cloud.CloudTask {
-    private String name;
+    private final String name;
 
-    private CopyOnWriteArrayList<Cloud.CloudTaskListener> listeners = new CopyOnWriteArrayList<Cloud.CloudTaskListener>();
+    private final CopyOnWriteArrayList<Cloud.CloudTaskListener> listeners = new CopyOnWriteArrayList<Cloud.CloudTaskListener>();
 
     private String substatus = "";
 

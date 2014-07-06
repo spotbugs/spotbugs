@@ -34,11 +34,11 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
      */
     private static final long serialVersionUID = 1L;
 
-    private ExceptionSet exceptionSet;
+    private final ExceptionSet exceptionSet;
 
     /**
      * Constructor.
-     * 
+     *
      * @param className
      *            the class name
      * @param exceptionSet
@@ -51,7 +51,7 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
 
     /**
      * Initialize object from an exception set.
-     * 
+     *
      * @param exceptionSet
      *            the exception set
      * @return a Type that is a supertype of all of the exceptions in the
@@ -59,14 +59,16 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
      */
     public static Type fromExceptionSet(ExceptionSet exceptionSet) throws ClassNotFoundException {
         Type commonSupertype = exceptionSet.getCommonSupertype();
-        if (commonSupertype.getType() != T_OBJECT)
+        if (commonSupertype.getType() != T_OBJECT) {
             return commonSupertype;
+        }
 
         ObjectType exceptionSupertype = (ObjectType) commonSupertype;
 
         String className = exceptionSupertype.getClassName();
-        if (className.equals("java.lang.Throwable"))
+        if (className.equals("java.lang.Throwable")) {
             return exceptionSupertype;
+        }
         return new ExceptionObjectType(className, exceptionSet);
     }
 
@@ -82,10 +84,12 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
 
     @Override
     public boolean equals(Object o) {
-        if (o == null)
+        if (o == null) {
             return false;
-        if (o.getClass() != this.getClass())
+        }
+        if (o.getClass() != this.getClass()) {
             return false;
+        }
 
         ExceptionObjectType other = (ExceptionObjectType) o;
         return getSignature().equals(other.getSignature()) && exceptionSet.equals(other.exceptionSet);
@@ -93,7 +97,7 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
 
     /**
      * Return the exception set.
-     * 
+     *
      * @return the ExceptionSet
      */
     public ExceptionSet getExceptionSet() {
@@ -106,10 +110,11 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
         buf.append("<exception:");
         boolean first = true;
         for (ExceptionSet.ThrownExceptionIterator i = exceptionSet.iterator(); i.hasNext();) {
-            if (first)
+            if (first) {
                 first = false;
-            else
+            } else {
                 buf.append(',');
+            }
             buf.append(i.next().toString());
         }
         buf.append(">");
@@ -117,4 +122,3 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
     }
 }
 
-// vim:ts=4

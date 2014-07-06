@@ -10,7 +10,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Analysis engine to produce DominatorsAnalysis objects for analyzed methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public class DominatorsAnalysisFactory extends AnalysisFactory<DominatorsAnalysis> {
@@ -23,7 +23,7 @@ public class DominatorsAnalysisFactory extends AnalysisFactory<DominatorsAnalysi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)

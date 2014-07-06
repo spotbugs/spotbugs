@@ -33,14 +33,14 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 /**
  * Analysis engine to produce the ClassInfo for a loaded class. We parse just
  * enough information from the classfile to get the needed information.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassNameAndSuperclassInfoAnalysisEngine implements IClassAnalysisEngine<ClassNameAndSuperclassInfo> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
@@ -66,7 +66,7 @@ public class ClassNameAndSuperclassInfoAnalysisEngine implements IClassAnalysisE
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)
@@ -78,7 +78,7 @@ public class ClassNameAndSuperclassInfoAnalysisEngine implements IClassAnalysisE
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#canRecompute()
      */
     @Override

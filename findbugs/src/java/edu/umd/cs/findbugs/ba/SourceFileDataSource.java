@@ -39,4 +39,3 @@ public interface SourceFileDataSource {
     public long getLastModified();
 }
 
-// vim:ts=4

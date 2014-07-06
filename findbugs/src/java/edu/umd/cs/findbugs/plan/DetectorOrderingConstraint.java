@@ -22,15 +22,15 @@ package edu.umd.cs.findbugs.plan;
 /**
  * An ordering constraint which must be taken into account when Detectors are
  * run.
- * 
+ *
  * @see edu.umd.cs.findbugs.Plugin
  * @see edu.umd.cs.findbugs.plan.ExecutionPlan
  * @author David Hovemeyer
  */
 public class DetectorOrderingConstraint {
-    private DetectorFactorySelector earlier;
+    private final DetectorFactorySelector earlier;
 
-    private DetectorFactorySelector later;
+    private final DetectorFactorySelector later;
 
     private boolean singleSource;
 
@@ -54,7 +54,7 @@ public class DetectorOrderingConstraint {
      * ordering constraint having a single detector as its source (ealier
      * detector). Such constraints automatically enable the source (earlier)
      * detector if the target (later) detector is enabled.
-     * 
+     *
      * @return true if this edge has a single detector as its source (earlier
      *         detector)
      */
@@ -76,4 +76,3 @@ public class DetectorOrderingConstraint {
     }
 }
 
-// vim:ts=4

@@ -32,9 +32,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public class AddAnnotation {
     private static final Logger LOGGER = Logger.getLogger(AddAnnotation.class.getName());
 
-    private BugCollection bugCollection;
+    private final BugCollection bugCollection;
 
-    private String annotation;
+    private final String annotation;
 
     public AddAnnotation(BugCollection bugCollection, String annotation) {
         this.bugCollection = bugCollection;
@@ -57,8 +57,9 @@ public class AddAnnotation {
     public void execute() {
         for (BugInstance bugInstance : bugCollection) {
             // Don't add the annotation if it is already present
-            if (bugInstance.annotationTextContainsWord(this.annotation))
+            if (bugInstance.annotationTextContainsWord(this.annotation)) {
                 continue;
+            }
 
             String annotation = bugInstance.getAnnotationText();
             StringBuilder buf = new StringBuilder();
@@ -88,4 +89,3 @@ public class AddAnnotation {
     }
 }
 
-// vim:ts=3

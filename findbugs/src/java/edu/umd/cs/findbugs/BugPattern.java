@@ -135,7 +135,7 @@ public class BugPattern implements Comparable<BugPattern> {
      */
     public @Nonnull BugCode getBugCode() {
         return DetectorFactoryCollection.instance().getBugCode(abbrev);
-        
+
     }
     /**
      * Get the BugCategory
@@ -155,10 +155,12 @@ public class BugPattern implements Comparable<BugPattern> {
     public String getCategoryAbbrev() {
         String categoryAbbrev = null;
         BugCategory bcat = DetectorFactoryCollection.instance().getBugCategory(getCategory());
-        if (bcat != null)
+        if (bcat != null) {
             categoryAbbrev = bcat.getAbbrev();
-        if (categoryAbbrev == null)
+        }
+        if (categoryAbbrev == null) {
             categoryAbbrev = TextUIBugReporter.OTHER_CATEGORY_ABBREV;
+        }
         return categoryAbbrev;
     }
 
@@ -208,34 +210,35 @@ public class BugPattern implements Comparable<BugPattern> {
     public String getDetailHTML() {
         return getDetailHTML(getDetailText());
     }
-    
+
     public String getDetailHTML(String detailText) {
 
-            StringBuilder buf = new StringBuilder();
-            buf.append("<!DOCTYPE HTML\">\n");
-            buf.append("<HTML><HEAD><TITLE>");
-            buf.append(getShortDescription());
-            buf.append("</TITLE></HEAD><BODY><H1>");
-            buf.append(wrapInDescriptionLink(getShortDescription()));
-            buf.append("</H1>\n");
-            buf.append(detailText);
-            buf.append("</BODY></HTML>\n");
-            return buf.toString();
+        StringBuilder buf = new StringBuilder();
+        buf.append("<!DOCTYPE HTML\">\n");
+        buf.append("<HTML><HEAD><TITLE>");
+        buf.append(getShortDescription());
+        buf.append("</TITLE></HEAD><BODY><H1>");
+        buf.append(wrapInDescriptionLink(getShortDescription()));
+        buf.append("</H1>\n");
+        buf.append(detailText);
+        buf.append("</BODY></HTML>\n");
+        return buf.toString();
 
     }
 
 
     public String wrapInDescriptionLink(String text) {
-        if (isExperimental())
+        if (isExperimental()) {
             return
                     "<a href=\"http://findbugs.sourceforge.net/allBugDescriptions.html#"
-                            + type  +"\">"
-                            + text + "</a>";
+                    + type  +"\">"
+                    + text + "</a>";
+        }
         return
                 "<a href=\"http://findbugs.sourceforge.net/bugDescriptions.html#"
-                        + type  +"\">"
-                        + text + "</a>";
-                        
+                + type  +"\">"
+                + text + "</a>";
+
     }
     @Override
     public int compareTo(BugPattern other) {
@@ -249,8 +252,9 @@ public class BugPattern implements Comparable<BugPattern> {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof BugPattern))
+        if (!(o instanceof BugPattern)) {
             return false;
+        }
         BugPattern other = (BugPattern) o;
         return type.equals(other.type);
     }

@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 /**
  * An implementation of org.apache.bcel.util.Repository that uses the
  * AnalysisCache as its backing store.
- * 
+ *
  * @author David Hovemeyer
  */
 public class AnalysisCacheToRepositoryAdapter implements Repository {
@@ -45,7 +45,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.bcel.util.Repository#clear()
      */
     @Override
@@ -55,7 +55,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.bcel.util.Repository#findClass(java.lang.String)
      */
     @Override
@@ -68,7 +68,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.bcel.util.Repository#getClassPath()
      */
     @Override
@@ -78,13 +78,14 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.bcel.util.Repository#loadClass(java.lang.String)
      */
     @Override
     public JavaClass loadClass(String className) throws ClassNotFoundException {
-        if (className.length() == 0)
+        if (className.length() == 0) {
             throw new IllegalArgumentException("Request to load empty class");
+        }
         className = ClassName.toSlashedClassName(className);
         ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(className);
         try {
@@ -96,7 +97,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.bcel.util.Repository#loadClass(java.lang.Class)
      */
     @Override
@@ -106,7 +107,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.apache.bcel.util.Repository#removeClass(org.apache.bcel.classfile
      * .JavaClass)
@@ -118,7 +119,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.apache.bcel.util.Repository#storeClass(org.apache.bcel.classfile.
      * JavaClass)

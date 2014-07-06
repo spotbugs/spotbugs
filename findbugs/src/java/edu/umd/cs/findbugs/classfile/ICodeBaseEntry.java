@@ -24,13 +24,13 @@ import java.io.InputStream;
 
 /**
  * Object representing a resource in a code base.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface ICodeBaseEntry {
     /**
      * Get the name of the resource.
-     * 
+     *
      * @return the name of the resource
      */
     public String getResourceName();
@@ -38,14 +38,14 @@ public interface ICodeBaseEntry {
     /**
      * Get the number of bytes in the resource. Returns &lt;0 if the number of
      * bytes is not known.
-     * 
+     *
      * @return number of bytes in the resource, or &lt;0 if not known.
      */
     public int getNumBytes();
 
     /**
      * Open an input stream reading from the resource.
-     * 
+     *
      * @return InputStream reading from the resource.
      * @throws IOException
      *             if an error occurs reading from the resource
@@ -54,7 +54,7 @@ public interface ICodeBaseEntry {
 
     /**
      * Get the codebase this codebase entry belongs to.
-     * 
+     *
      * @return the codebase this codebase entry belongs to
      */
     public ICodeBase getCodeBase();
@@ -64,7 +64,7 @@ public interface ICodeBaseEntry {
      * codebase entry. Do not call this method unless
      * ClassDescriptor.isClassResource() returns true. This method may require
      * the class data to be loaded in order to determine the class.
-     * 
+     *
      * @return ClassDescriptor of this entry
      * @throws ResourceNotFoundException, InvalidClassFileFormatException
      *             if the codebase entry does not reference a valid classfile
@@ -76,7 +76,7 @@ public interface ICodeBaseEntry {
 
     /**
      * Override the resource name of this codebase entry.
-     * 
+     *
      * @param resourceName
      *            the new resource name
      */

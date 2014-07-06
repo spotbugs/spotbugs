@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.bcel.BCELUtil;
 /**
  * Scan classes for @NonNull, @PossiblyNull and @CheckForNull annotations, and
  * convey them to FindNullDeref.
- * 
+ *
  * @deprecated AnnotationDatabases are being phased out, since annotations are
  *             now stored directly in the XClass/XMethod/XField objects.
  *             Resolving nullness annotations will be handled through the
@@ -46,14 +46,15 @@ public class NoteNonNullAnnotations extends BuildNonNullAnnotationDatabase imple
 
     private static NullnessAnnotationDatabase getDatabase() {
         return null;
-        }
+    }
 
     @Override
     public void visitClassContext(ClassContext classContext) {
 
         JavaClass javaClass = classContext.getJavaClass();
-        if (!BCELUtil.preTiger(javaClass))
+        if (!BCELUtil.preTiger(javaClass)) {
             javaClass.accept(this);
+        }
     }
 
     @Override

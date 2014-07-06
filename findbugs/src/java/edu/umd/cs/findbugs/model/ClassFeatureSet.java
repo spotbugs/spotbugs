@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 /**
  * Features of a class which may be used to identify it if it is renamed or
  * modified.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassFeatureSet implements XMLWriteable {
@@ -58,7 +58,7 @@ public class ClassFeatureSet implements XMLWriteable {
 
     private boolean isInterface;
 
-    private Set<String> featureSet;
+    private final Set<String> featureSet;
 
     /**
      * Constructor. Creates an empty feature set.
@@ -74,7 +74,7 @@ public class ClassFeatureSet implements XMLWriteable {
 
     /**
      * Initialize from given JavaClass.
-     * 
+     *
      * @param javaClass
      *            the JavaClass
      * @return this object
@@ -113,7 +113,7 @@ public class ClassFeatureSet implements XMLWriteable {
     /**
      * Determine if given method overrides a superclass or superinterface
      * method.
-     * 
+     *
      * @param javaClass
      *            class defining the method
      * @param method
@@ -122,24 +122,27 @@ public class ClassFeatureSet implements XMLWriteable {
      *         false if not
      */
     private boolean overridesSuperclassMethod(JavaClass javaClass, Method method) {
-        if (method.isStatic())
+        if (method.isStatic()) {
             return false;
+        }
 
         try {
             JavaClass[] superclassList = javaClass.getSuperClasses();
             if (superclassList != null) {
                 JavaClassAndMethod match = Hierarchy.findMethod(superclassList, method.getName(), method.getSignature(),
                         Hierarchy.INSTANCE_METHOD);
-                if (match != null)
+                if (match != null) {
                     return true;
+                }
             }
 
             JavaClass[] interfaceList = javaClass.getAllInterfaces();
             if (interfaceList != null) {
                 JavaClassAndMethod match = Hierarchy.findMethod(interfaceList, method.getName(), method.getSignature(),
                         Hierarchy.INSTANCE_METHOD);
-                if (match != null)
+                if (match != null) {
                     return true;
+                }
             }
 
             return false;
@@ -150,22 +153,25 @@ public class ClassFeatureSet implements XMLWriteable {
 
     /**
      * Figure out if a class member (field or method) is synthetic.
-     * 
+     *
      * @param member
      *            a field or method
      * @return true if the member is synthetic
      */
     private boolean isSynthetic(FieldOrMethod member) {
-        if (BCELUtil.isSynthetic(member)) // this never works, but worth a try
+        if (BCELUtil.isSynthetic(member)) {
             return true;
+        }
 
         String name = member.getName();
 
-        if (name.startsWith("class$"))
+        if (name.startsWith("class$")) {
             return true;
+        }
 
-        if (name.startsWith("access$"))
+        if (name.startsWith("access$")) {
             return true;
+        }
 
         return false;
     }
@@ -218,7 +224,7 @@ public class ClassFeatureSet implements XMLWriteable {
 
     /**
      * Transform a class name by stripping its package name.
-     * 
+     *
      * @param className
      *            a class name
      * @return the transformed class name
@@ -237,7 +243,7 @@ public class ClassFeatureSet implements XMLWriteable {
     /**
      * Return true if classes in the given package is unlikely to be renamed:
      * e.g., because they are part of a public API.
-     * 
+     *
      * @param pkg
      *            the package name
      * @return true if classes in the package is unlikely to be renamed
@@ -249,7 +255,7 @@ public class ClassFeatureSet implements XMLWriteable {
     /**
      * Transform a method signature to allow it to be compared even if any of
      * its parameter types are moved to another package.
-     * 
+     *
      * @param signature
      *            a method signature
      * @return the transformed signature
@@ -274,7 +280,7 @@ public class ClassFeatureSet implements XMLWriteable {
     /**
      * Transform a field or method parameter signature to allow it to be
      * compared even if it is moved to another package.
-     * 
+     *
      * @param signature
      *            the signature
      * @return the transformed signature
@@ -317,11 +323,13 @@ public class ClassFeatureSet implements XMLWriteable {
 
     public static double similarity(ClassFeatureSet a, ClassFeatureSet b) {
         // Some features must match exactly
-        if (a.isInterface() != b.isInterface())
+        if (a.isInterface() != b.isInterface()) {
             return 0.0;
+        }
 
-        if (a.getNumFeatures() < MIN_FEATURES || b.getNumFeatures() < MIN_FEATURES)
+        if (a.getNumFeatures() < MIN_FEATURES || b.getNumFeatures() < MIN_FEATURES) {
             return a.getClassName().equals(b.getClassName()) ? EXACT_CLASS_NAME_MATCH : 0.0;
+        }
 
         int numMatch = 0;
         int max = Math.max(a.getNumFeatures(), b.getNumFeatures());
@@ -363,7 +371,7 @@ public class ClassFeatureSet implements XMLWriteable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.xml.XMLWriteable#writeXML(edu.umd.cs.findbugs.xml
      * .XMLOutput)

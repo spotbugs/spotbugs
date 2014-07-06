@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 /**
  * Scan the raw bytecodes of a method. This is useful in order to find out
  * quickly whether or not a method uses particular instructions.
- * 
+ *
  * @author David Hovemeyer
  */
 public class BytecodeScanner implements org.apache.bcel.Constants {
@@ -36,7 +36,7 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
     public interface Callback {
         /**
          * Called to indicate that a particular bytecode has been scanned.
-         * 
+         *
          * @param opcode
          *            the opcode of the instruction
          * @param index
@@ -47,7 +47,7 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
 
     /**
      * Convert the unsigned value of a byte into a short.
-     * 
+     *
      * @param value
      *            the byte
      * @return the byte's unsigned value as a short
@@ -65,7 +65,7 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
 
     /**
      * Extract an int from bytes at the given offset in the array.
-     * 
+     *
      * @param arr
      *            the array
      * @param offset
@@ -80,7 +80,7 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
 
     /**
      * Scan the raw bytecodes of a method.
-     * 
+     *
      * @param instructionList
      *            the bytecodes
      * @param callback
@@ -94,8 +94,9 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
             short opcode = unsignedValueOf(instructionList[index]);
             callback.handleInstruction(opcode, index);
 
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println(index + ": " + OPCODE_NAMES[opcode]);
+            }
 
             switch (opcode) {
 
@@ -250,14 +251,14 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
                 ++index;
                 break;
 
-            // Two byte instructions.
+                // Two byte instructions.
             case BIPUSH:
             case LDC:
             case NEWARRAY:
                 index += 2;
                 break;
 
-            // Instructions that can be used with the WIDE prefix.
+                // Instructions that can be used with the WIDE prefix.
             case ILOAD:
             case LLOAD:
             case FLOAD:
@@ -279,7 +280,7 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
                 }
                 break;
 
-            // IINC is a special case for WIDE handling
+                // IINC is a special case for WIDE handling
             case IINC:
                 if (wide) {
                     // Skip opcode, two byte index, and two byte immediate
@@ -292,7 +293,7 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
                 }
                 break;
 
-            // Three byte instructions.
+                // Three byte instructions.
             case SIPUSH:
             case LDC_W:
             case LDC2_W:
@@ -328,12 +329,12 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
                 index += 3;
                 break;
 
-            // Four byte instructions.
+                // Four byte instructions.
             case MULTIANEWARRAY:
                 index += 4;
                 break;
 
-            // Five byte instructions.
+                // Five byte instructions.
             case INVOKEINTERFACE:
             case INVOKEDYNAMIC:
             case GOTO_W:
@@ -341,7 +342,7 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
                 index += 5;
                 break;
 
-            // TABLESWITCH - variable length.
+                // TABLESWITCH - variable length.
             case TABLESWITCH: {
                 // Skip padding.
                 int offset = index + 1; // skip the opcode
@@ -354,13 +355,14 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
                 int low = extractInt(instructionList, offset + 4);
                 int high = extractInt(instructionList, offset + 8);
                 int tableSize = (high - low) + 1;
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("tableswitch: low=" + low + ", high=" + high + ", tableSize=" + tableSize);
+                }
 
                 // Skip to next instruction.
                 index = offset + 12 + (tableSize * 4);
             }
-                break;
+            break;
 
             // LOOKUPSWITCH - variable length.
             case LOOKUPSWITCH: {
@@ -373,13 +375,14 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
 
                 // Extract number of value/offset pairs.
                 int numPairs = extractInt(instructionList, offset + 4);
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("lookupswitch: numPairs=" + numPairs);
+                }
 
                 // Skip to next instruction.
                 index = offset + 8 + (numPairs * 8);
             }
-                break;
+            break;
 
             // Wide prefix.
             case WIDE:
@@ -391,11 +394,11 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
                 throw new IllegalArgumentException("Bad opcode " + opcode + " at offset " + index);
             }
 
-            if (index < 0)
+            if (index < 0) {
                 throw new IllegalStateException("index=" + index + ", opcode=" + opcode);
+            }
 
         }
     }
 }
 
-// vim:ts=4

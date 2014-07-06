@@ -10,7 +10,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Analysis engine for producing BlockTypeDataflow for an analyzed method.
- * 
+ *
  * @author David Hovemeyer
  */
 public class BlockTypeAnalysisFactory extends AnalysisFactory<BlockTypeDataflow> {
@@ -20,7 +20,7 @@ public class BlockTypeAnalysisFactory extends AnalysisFactory<BlockTypeDataflow>
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)

@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.ba;
 /**
  * Algorithm to perform a reverse depth first search on a CFG. (I.e., depth
  * first search on reversed CFG.)
- * 
+ *
  * @see CFG
  * @author David Hovemeyer
  */
@@ -31,7 +31,7 @@ public class ReverseDepthFirstSearch extends edu.umd.cs.findbugs.graph.ReverseDe
 
     /**
      * Constructor.
-     * 
+     *
      * @param cfg
      *            the CFG to perform the reverse depth first search on
      */
@@ -48,4 +48,3 @@ public class ReverseDepthFirstSearch extends edu.umd.cs.findbugs.graph.ReverseDe
     }
 }
 
-// vim:ts=4

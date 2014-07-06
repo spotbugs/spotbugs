@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs;
 
 /**
  * An exception to indicate that a plugin could not be loaded.
- * 
+ *
  * @author David Hovemeyer
  * @see PluginLoader
  */
@@ -33,7 +33,7 @@ public class PluginException extends Exception {
 
     /**
      * Constructor.
-     * 
+     *
      * @param msg
      *            message describing the exception
      */
@@ -43,7 +43,7 @@ public class PluginException extends Exception {
 
     /**
      * Constructor.
-     * 
+     *
      * @param msg
      *            message describing the exception
      * @param cause
@@ -54,4 +54,3 @@ public class PluginException extends Exception {
     }
 }
 
-// vim:ts=4

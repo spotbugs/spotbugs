@@ -54,11 +54,13 @@ public class FilterAndCombineBitfieldPropertyDatabase {
         Map<String, Integer> properties = new TreeMap<String, Integer>();
         Map<String, Integer> accessFlags = new TreeMap<String, Integer>();
 
-        if (args.length == 0)
+        if (args.length == 0) {
             process(System.in, properties, accessFlags);
-        else
-            for (String f : args)
+        } else {
+            for (String f : args) {
                 process(new FileInputStream(f), properties, accessFlags);
+            }
+        }
 
         for (Entry<String, Integer> e : properties.entrySet()) {
             String key = e.getKey();
@@ -74,18 +76,20 @@ public class FilterAndCombineBitfieldPropertyDatabase {
 
     static Status getStatus(@DottedClassName String name) {
         if (name.startsWith("com.sun") || name.startsWith("com.oracle")
-                || name.startsWith("sun") || name.startsWith("netscape"))
+                || name.startsWith("sun") || name.startsWith("netscape")) {
             return Status.UNEXPOSED;
+        }
         Status result = classStatus.get(name);
-        if (result != null)
+        if (result != null) {
             return result;
+        }
 
         try {
             Class<?> c = Class.forName(name, false, ClassLoader.getSystemClassLoader());
             int accessFlags = c.getModifiers();
-            if ((accessFlags & FLAGS) != 0)
+            if ((accessFlags & FLAGS) != 0) {
                 result = Status.EXPOSED;
-            else {
+            } else {
                 result = Status.UNEXPOSED;
             }
         } catch (Exception e) {
@@ -108,22 +112,25 @@ public class FilterAndCombineBitfieldPropertyDatabase {
         try {
             while (true) {
                 String s = in.readLine();
-                if (s == null)
+                if (s == null) {
                     break;
+                }
                 Matcher m = p.matcher(s);
                 if (m.find()) {
                     String key = m.group(1);
                     String className = m.group(2);
-                    if (getStatus(className) == Status.UNEXPOSED)
+                    if (getStatus(className) == Status.UNEXPOSED) {
                         continue;
+                    }
                     int accFlags = Integer.parseInt(m.group(3));
                     int bits = Integer.parseInt(m.group(4));
                     if ((accFlags & FLAGS) != 0) {
                         accessFlags.put(key, accFlags);
-                        if (properties.containsKey(key))
+                        if (properties.containsKey(key)) {
                             properties.put(key, bits | properties.get(key));
-                        else
+                        } else {
                             properties.put(key, bits);
+                        }
                     }
                 }
 

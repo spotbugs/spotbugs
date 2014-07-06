@@ -52,7 +52,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 public class Filter extends OrMatcher {
     private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
 
-    private IdentityHashMap<Matcher, Boolean> disabled = new IdentityHashMap<Matcher, Boolean>();
+    private final IdentityHashMap<Matcher, Boolean> disabled = new IdentityHashMap<Matcher, Boolean>();
 
     /**
      * Constructor for empty filter
@@ -72,18 +72,23 @@ public class Filter extends OrMatcher {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (!super.equals(obj))
+        }
+        if (!super.equals(obj)) {
             return false;
-        if (!(obj instanceof Filter))
+        }
+        if (!(obj instanceof Filter)) {
             return false;
+        }
         final Filter other = (Filter) obj;
         if (disabled == null) {
-            if (other.disabled != null)
+            if (other.disabled != null) {
                 return false;
-        } else if (!disabled.equals(other.disabled))
+            }
+        } else if (!disabled.equals(other.disabled)) {
             return false;
+        }
         return true;
     }
 
@@ -92,10 +97,11 @@ public class Filter extends OrMatcher {
     }
 
     public void setEnabled(Matcher m, boolean value) {
-        if (value)
+        if (value) {
             enable(m);
-        else
+        } else {
             disable(m);
+        }
     }
 
     public void disable(Matcher m) {
@@ -180,8 +186,9 @@ public class Filter extends OrMatcher {
         Iterator<Matcher> i = childIterator();
         while (i.hasNext()) {
             Matcher child = i.next();
-            if (isEnabled(child) && child.match(bugInstance))
+            if (isEnabled(child) && child.match(bugInstance)) {
                 return true;
+            }
         }
         return false;
     }

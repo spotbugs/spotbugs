@@ -50,26 +50,30 @@ public class ComparatorIdiom extends PreorderVisitor implements Detector {
         if (Subtypes2.instanceOf(obj, "java.util.Comparator") && !ClassName.isAnonymous(getClassName())
                 && !Subtypes2.instanceOf(obj, "java.io.Serializable")) {
             int priority = NORMAL_PRIORITY;
-            if (obj.isInterface() || obj.isAbstract())
+            if (obj.isInterface() || obj.isAbstract()) {
                 return;
+            }
 
             double easilySerializable = 1.0;
             for (Field f : obj.getFields()) {
                 try {
-                    if (f.getName().startsWith("this$"))
+                    if (f.getName().startsWith("this$")) {
                         return;
+                    }
                     String signature = f.getSignature();
                     char firstChar = signature.charAt(0);
-                    if (firstChar == 'L' || firstChar == '[')
+                    if (firstChar == 'L' || firstChar == '[') {
                         easilySerializable *= DeepSubtypeAnalysis.isDeepSerializable(signature);
+                    }
                 } catch (ClassNotFoundException e) {
                     easilySerializable = 0.0;
                     break;
                 }
             }
 
-            if (easilySerializable < 0.9)
+            if (easilySerializable < 0.9) {
                 priority = LOW_PRIORITY;
+            }
 
             bugReporter.reportBug(new BugInstance(this, "SE_COMPARATOR_SHOULD_BE_SERIALIZABLE", priority).addClass(this));
 

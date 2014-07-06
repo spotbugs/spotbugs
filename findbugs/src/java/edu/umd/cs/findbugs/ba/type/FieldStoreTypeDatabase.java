@@ -49,8 +49,9 @@ public class FieldStoreTypeDatabase extends FieldPropertyDatabase<FieldStoreType
                 continue;
             }
             ReferenceType storeType = type.getLoadType((ReferenceType) fieldType);
-            if (storeType.equals(fieldType))
+            if (storeType.equals(fieldType)) {
                 removeProperty(f);
+            }
         }
     }
 

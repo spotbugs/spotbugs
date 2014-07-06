@@ -25,7 +25,7 @@ package edu.umd.cs.findbugs.graph;
  * GraphEdge interface; represents an edge in a graph.
  */
 public interface GraphEdge<ActualEdgeType extends GraphEdge<ActualEdgeType, VertexType>, VertexType extends GraphVertex<VertexType>>
-        extends Comparable<ActualEdgeType> {
+extends Comparable<ActualEdgeType> {
 
     /**
      * Get the source vertex.
@@ -49,4 +49,3 @@ public interface GraphEdge<ActualEdgeType extends GraphEdge<ActualEdgeType, Vert
 
 }
 
-// vim:ts=4

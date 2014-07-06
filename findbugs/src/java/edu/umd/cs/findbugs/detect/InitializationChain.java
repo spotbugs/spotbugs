@@ -46,20 +46,20 @@ public class InitializationChain extends BytecodeScanningDetector {
 
     Map<String, Set<String>> classRequires = new TreeMap<String, Set<String>>();
 
-    
-   
-    private BugReporter bugReporter;
 
-    private Map<XMethod, Set<XField>> staticFieldsRead = new HashMap<XMethod, Set<XField>>();
-    private Set<XField> staticFieldsReadInAnyConstructor = new HashSet<XField>();
+
+    private final BugReporter bugReporter;
+
+    private final Map<XMethod, Set<XField>> staticFieldsRead = new HashMap<XMethod, Set<XField>>();
+    private final Set<XField> staticFieldsReadInAnyConstructor = new HashSet<XField>();
     private Set<XField> fieldsReadInThisConstructor = new HashSet<XField>();
 
-    private Set<XMethod> constructorsInvokedInStaticInitializer = new HashSet<XMethod>();
-    private List<InvocationInfo> invocationInfo = new ArrayList<InvocationInfo>();
-    private Set<XField> warningGiven = new HashSet<XField>();
+    private final Set<XMethod> constructorsInvokedInStaticInitializer = new HashSet<XMethod>();
+    private final List<InvocationInfo> invocationInfo = new ArrayList<InvocationInfo>();
+    private final Set<XField> warningGiven = new HashSet<XField>();
 
     private InvocationInfo lastInvocation;
-   
+
     static class InvocationInfo {
         public InvocationInfo(XMethod constructor, int pc) {
             this.constructor = constructor;
@@ -82,18 +82,20 @@ public class InitializationChain extends BytecodeScanningDetector {
         Method staticInitializer = null;
         for(Method m : obj.getMethods()) {
             String name = m.getName();
-            if (name.equals("<clinit>"))
+            if (name.equals("<clinit>")) {
                 staticInitializer = m;
-            else if (name.equals("<init>"))
+            } else if (name.equals("<init>")) {
                 visitOrder.add(m);
-            
+            }
+
         }
-        if (staticInitializer != null)
+        if (staticInitializer != null) {
             visitOrder.add(staticInitializer);
+        }
         return visitOrder;
     }
-    
-    
+
+
     @Override
     public void visit(Code obj) {
         fieldsReadInThisConstructor  = new HashSet<XField>();
@@ -115,9 +117,9 @@ public class InitializationChain extends BytecodeScanningDetector {
 
     @Override
     public void visitAfter(JavaClass obj) {
-        
+
         staticFieldsRead.clear();
-        
+
         staticFieldsReadInAnyConstructor.clear();
         fieldsReadInThisConstructor.clear();
 
@@ -140,41 +142,44 @@ public class InitializationChain extends BytecodeScanningDetector {
         }
 
         if (seen == INVOKESPECIAL && getNameConstantOperand().equals("<init>") &&  getClassConstantOperand().equals(getClassName())) {
-            
+
             XMethod m = getXMethodOperand();
             Set<XField> read = staticFieldsRead.get(m);
             if (constructorsInvokedInStaticInitializer.add(m) && read != null && !read.isEmpty()) {
                 lastInvocation = new InvocationInfo(m, getPC());
                 invocationInfo.add(lastInvocation);
-                
-                }
-            
+
+            }
+
         }
         if (seen == PUTSTATIC && getClassConstantOperand().equals(getClassName())) {
-               XField f = getXFieldOperand();
-               if (prev != null)
-                   prev.field = f;
-               if (staticFieldsReadInAnyConstructor.contains(f) && !warningGiven.contains(f)) {
-                   for(InvocationInfo i : invocationInfo) {
-                       Set<XField> fields = staticFieldsRead.get(i.constructor);
-                       if (fields != null && fields.contains(f)) {
-                           warningGiven.add(f);
-                           BugInstance bug = new BugInstance(this, "SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY).addClassAndMethod(this);
-                           if (i.field != null) {
-                               bug.addField(i.field).describe(FieldAnnotation.STORED_ROLE);
-                           }
-                           bug.addMethod(i.constructor).describe(MethodAnnotation.METHOD_CONSTRUCTOR);
-                           bug.addReferencedField(this).describe(FieldAnnotation.VALUE_OF_ROLE).addSourceLine(this, i.pc);
-                           bugReporter.reportBug(bug);
-                           break;
-                           
-                       }
-                   }
-               }
-              
-        } else if (seen == PUTSTATIC || seen == GETSTATIC || seen == INVOKESTATIC || seen == NEW)
-            if (getPC() + 6 < codeBytes.length)
+            XField f = getXFieldOperand();
+            if (prev != null) {
+                prev.field = f;
+            }
+            if (staticFieldsReadInAnyConstructor.contains(f) && !warningGiven.contains(f)) {
+                for(InvocationInfo i : invocationInfo) {
+                    Set<XField> fields = staticFieldsRead.get(i.constructor);
+                    if (fields != null && fields.contains(f)) {
+                        warningGiven.add(f);
+                        BugInstance bug = new BugInstance(this, "SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY).addClassAndMethod(this);
+                        if (i.field != null) {
+                            bug.addField(i.field).describe(FieldAnnotation.STORED_ROLE);
+                        }
+                        bug.addMethod(i.constructor).describe(MethodAnnotation.METHOD_CONSTRUCTOR);
+                        bug.addReferencedField(this).describe(FieldAnnotation.VALUE_OF_ROLE).addSourceLine(this, i.pc);
+                        bugReporter.reportBug(bug);
+                        break;
+
+                    }
+                }
+            }
+
+        } else if (seen == PUTSTATIC || seen == GETSTATIC || seen == INVOKESTATIC || seen == NEW) {
+            if (getPC() + 6 < codeBytes.length) {
                 requires.add(getDottedClassConstantOperand());
+            }
+        }
     }
 
     public void compute() {
@@ -184,13 +189,15 @@ public class InitializationChain extends BytecodeScanningDetector {
             Set<String> needs = classRequires.get(c);
             needs.retainAll(allClasses);
             Set<String> extra = new TreeSet<String>();
-            for (String need : needs)
+            for (String need : needs) {
                 extra.addAll(classRequires.get(need));
+            }
             needs.addAll(extra);
             needs.retainAll(allClasses);
             classRequires.put(c, needs);
-            if (needs.isEmpty())
+            if (needs.isEmpty()) {
                 emptyClasses.add(c);
+            }
         }
         for (String c : emptyClasses) {
             classRequires.remove(c);
@@ -200,8 +207,9 @@ public class InitializationChain extends BytecodeScanningDetector {
     @Override
     public void report() {
 
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Finishing computation");
+        }
         compute();
         compute();
         compute();
@@ -213,15 +221,18 @@ public class InitializationChain extends BytecodeScanningDetector {
         Set<String> allClasses = classRequires.keySet();
 
         for (String c : allClasses) {
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Class " + c + " requires:");
+            }
             for (String needs : (classRequires.get(c))) {
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("  " + needs);
+                }
                 Set<String> s = classRequires.get(needs);
-                if (s != null && s.contains(c) && c.compareTo(needs) < 0)
+                if (s != null && s.contains(c) && c.compareTo(needs) < 0) {
                     bugReporter.reportBug(new BugInstance(this, "IC_INIT_CIRCULARITY", NORMAL_PRIORITY).addClass(c).addClass(
                             needs));
+                }
             }
         }
     }

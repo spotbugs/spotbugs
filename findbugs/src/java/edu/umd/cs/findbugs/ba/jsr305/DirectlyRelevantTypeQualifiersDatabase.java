@@ -57,8 +57,9 @@ public class DirectlyRelevantTypeQualifiersDatabase {
      */
     public Collection<TypeQualifierValue<?>> getDirectlyRelevantTypeQualifiers(MethodDescriptor m) {
         Collection<TypeQualifierValue<?>> result = methodToDirectlyRelevantQualifiersMap.get(m);
-        if (result != null)
+        if (result != null) {
             return result;
+        }
         return Collections.<TypeQualifierValue<?>> emptyList();
     }
 

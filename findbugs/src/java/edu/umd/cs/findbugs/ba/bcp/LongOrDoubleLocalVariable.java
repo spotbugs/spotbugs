@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.ba.bcp;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 public class LongOrDoubleLocalVariable implements Variable {
-    private ValueNumber topValue, nextValue;
+    private final ValueNumber topValue, nextValue;
 
     public LongOrDoubleLocalVariable(ValueNumber topValue, ValueNumber nextValue) {
         this.topValue = topValue;
@@ -31,11 +31,11 @@ public class LongOrDoubleLocalVariable implements Variable {
 
     @Override
     public boolean sameAs(Variable other) {
-        if (!(other instanceof LongOrDoubleLocalVariable))
+        if (!(other instanceof LongOrDoubleLocalVariable)) {
             return false;
+        }
         LongOrDoubleLocalVariable otherLongOrDouble = (LongOrDoubleLocalVariable) other;
         return topValue.equals(otherLongOrDouble.topValue) && nextValue.equals(otherLongOrDouble.nextValue);
     }
 }
 
-// vim:ts=4

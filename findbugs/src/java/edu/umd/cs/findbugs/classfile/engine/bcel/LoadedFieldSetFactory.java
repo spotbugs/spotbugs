@@ -45,7 +45,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * (there is no need to remember stores of fields that are never read, or loads
  * of fields that are only loaded in one location). However, it might be useful
  * for other kinds of analysis.
- * 
+ *
  * <p>
  * The tricky part is that in addition to fields loaded and stored with
  * get/putfield and get/putstatic, we also try to figure out field accessed
@@ -70,7 +70,7 @@ public class LoadedFieldSetFactory extends AnalysisFactory<LoadedFieldSet> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
@@ -78,8 +78,9 @@ public class LoadedFieldSetFactory extends AnalysisFactory<LoadedFieldSet> {
     @Override
     public LoadedFieldSet analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         MethodGen methodGen = getMethodGen(analysisCache, descriptor);
-        if (methodGen == null)
+        if (methodGen == null) {
             return null;
+        }
         InstructionList il = methodGen.getInstructionList();
 
         LoadedFieldSet loadedFieldSet = new LoadedFieldSet(methodGen);
@@ -100,20 +101,22 @@ public class LoadedFieldSetFactory extends AnalysisFactory<LoadedFieldSet> {
                          * + " at " + inv); }
                          */
                         if (access != null) {
-                            if (access.isLoad())
+                            if (access.isLoad()) {
                                 loadedFieldSet.addLoad(handle, access.getField());
-                            else
+                            } else {
                                 loadedFieldSet.addStore(handle, access.getField());
+                            }
                         }
                     }
                 } else if (fieldInstructionOpcodeSet.get(opcode)) {
                     boolean isLoad = (opcode == Constants.GETFIELD || opcode == Constants.GETSTATIC);
                     XField field = Hierarchy.findXField((FieldInstruction) ins, cpg);
                     if (field != null) {
-                        if (isLoad)
+                        if (isLoad) {
                             loadedFieldSet.addLoad(handle, field);
-                        else
+                        } else {
                             loadedFieldSet.addStore(handle, field);
+                        }
                     }
                 }
             } catch (ClassNotFoundException e) {

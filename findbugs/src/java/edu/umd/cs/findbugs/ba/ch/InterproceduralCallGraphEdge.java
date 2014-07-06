@@ -24,14 +24,14 @@ import edu.umd.cs.findbugs.graph.AbstractEdge;
 /**
  * A class representing an edge in the interprocedural call graph; i.e., a call
  * from one method to another.
- * 
+ *
  * @author David Hovemeyer
  */
 public class InterproceduralCallGraphEdge extends AbstractEdge<InterproceduralCallGraphEdge, InterproceduralCallGraphVertex> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param source
      *            source vertex (caller)
      * @param target

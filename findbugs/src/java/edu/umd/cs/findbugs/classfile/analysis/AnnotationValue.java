@@ -32,19 +32,19 @@ import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 
 /**
  * The "raw" version of an annotation appearing in a class file.
- * 
+ *
  * @author William Pugh
  */
 public class AnnotationValue {
     private final ClassDescriptor annotationClass;
 
-    private Map<String, Object> valueMap = new HashMap<String, Object>(4);
+    private final Map<String, Object> valueMap = new HashMap<String, Object>(4);
 
-    private Map<String, Object> typeMap = new HashMap<String, Object>(4);
+    private final Map<String, Object> typeMap = new HashMap<String, Object>(4);
 
     /**
      * Constructor.
-     * 
+     *
      * @param annotationClass
      *            the annotation class
      */
@@ -54,7 +54,7 @@ public class AnnotationValue {
 
     /**
      * Constructor.
-     * 
+     *
      * @param annotationClass
      *            JVM signature of the annotation class
      */
@@ -74,7 +74,7 @@ public class AnnotationValue {
      * "http://asm.objectweb.org/current/doc/javadoc/user/org/objectweb/asm/AnnotationVisitor.html"
      * >AnnotationVisitor Javadoc</a> for information on what the object
      * returned could be.
-     * 
+     *
      * @param name
      *            name of annotation element
      * @return the element value (primitive value, String value, enum value,
@@ -86,7 +86,7 @@ public class AnnotationValue {
 
     /**
      * Get a descriptor specifying the type of an annotation element.
-     * 
+     *
      * @param name
      *            name of annotation element
      * @return descriptor specifying the type of the annotation element
@@ -101,8 +101,9 @@ public class AnnotationValue {
     }
 
     private static String canonicalString(String s) {
-        if (s.equals("value"))
+        if (s.equals("value")) {
             return "value";
+        }
         return s;
     }
 
@@ -119,7 +120,7 @@ public class AnnotationValue {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see
              * org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang
              * .String, java.lang.String)
@@ -135,7 +136,7 @@ public class AnnotationValue {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see
              * org.objectweb.asm.AnnotationVisitor#visitArray(java.lang.String)
              */
@@ -147,7 +148,7 @@ public class AnnotationValue {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.objectweb.asm.AnnotationVisitor#visitEnd()
              */
             @Override
@@ -157,7 +158,7 @@ public class AnnotationValue {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see
              * org.objectweb.asm.AnnotationVisitor#visitEnum(java.lang.String,
              * java.lang.String, java.lang.String)
@@ -221,10 +222,11 @@ public class AnnotationValue {
 
         @Override
         public void visitEnd() {
-            if (name != null)
+            if (name != null) {
                 valueMap.put(name, result.toArray());
-            else
+            } else {
                 outerList.add(result.toArray());
+            }
         }
 
         @Override

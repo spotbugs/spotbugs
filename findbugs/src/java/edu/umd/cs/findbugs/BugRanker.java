@@ -99,8 +99,9 @@ public class BugRanker {
 
         int get(String key) {
             Integer v = adjustment.get(key);
-            if (v == null)
+            if (v == null) {
                 return 0;
+            }
             return v;
         }
 
@@ -111,13 +112,15 @@ public class BugRanker {
         void storeAdjustment(String key, String value) {
             for (String k : key.split(",")) {
                 char firstChar = value.charAt(0);
-                if (firstChar == '+')
+                if (firstChar == '+') {
                     value = value.substring(1);
+                }
 
                 int v = Integer.parseInt(value);
                 adjustment.put(k, v);
-                if (firstChar == '+' || firstChar == '-')
+                if (firstChar == '+' || firstChar == '-') {
                     isRelative.add(k);
+                }
 
 
             }
@@ -138,25 +141,28 @@ public class BugRanker {
         try {
             while (true) {
                 String s = in.readLine();
-                if (s == null)
+                if (s == null) {
                     break;
+                }
 
                 s = s.trim();
-                if (s.length() == 0)
+                if (s.length() == 0) {
                     continue;
+                }
 
                 String parts[] = s.split(" ");
                 String rank = parts[0];
                 String kind = parts[1];
                 String what = parts[2];
-                if (kind.equals("BugPattern"))
+                if (kind.equals("BugPattern")) {
                     bugPatterns.storeAdjustment(what, rank);
-                else if (kind.equals("BugKind"))
+                } else if (kind.equals("BugKind")) {
                     bugKinds.storeAdjustment(what, rank);
-                else if (kind.equals("Category"))
+                } else if (kind.equals("Category")) {
                     bugCategories.storeAdjustment(what, rank);
-                else
+                } else {
                     AnalysisContext.logError("Can't parse bug rank " + s);
+                }
             }
         } finally {
             Util.closeSilently(in);
@@ -191,34 +197,41 @@ public class BugRanker {
 
     private static int adjustRank(int patternRank, int priority) {
         int priorityAdjustment = priorityAdjustment(priority);
-        if (patternRank > VISIBLE_RANK_MAX)
+        if (patternRank > VISIBLE_RANK_MAX) {
             return patternRank + priorityAdjustment;
+        }
         return Math.max(VISIBLE_RANK_MIN, Math.min(patternRank + priorityAdjustment, VISIBLE_RANK_MAX));
     }
 
     private static int rankBugPattern(BugPattern bugPattern, BugRanker... rankers) {
         String type = bugPattern.getType();
         int rank = 0;
-        for (BugRanker b : rankers)
+        for (BugRanker b : rankers) {
             if (b != null) {
                 rank += b.bugPatterns.get(type);
-                if (!b.bugPatterns.isRelative(type))
+                if (!b.bugPatterns.isRelative(type)) {
                     return rank;
+                }
             }
+        }
         String kind = bugPattern.getAbbrev();
-        for (BugRanker b : rankers)
+        for (BugRanker b : rankers) {
             if (b != null) {
                 rank += b.bugKinds.get(kind);
-                if (!b.bugKinds.isRelative(kind))
+                if (!b.bugKinds.isRelative(kind)) {
                     return rank;
+                }
             }
+        }
         String category = bugPattern.getCategory();
-        for (BugRanker b : rankers)
+        for (BugRanker b : rankers) {
             if (b != null) {
                 rank += b.bugCategories.get(category);
-                if (!b.bugCategories.isRelative(category))
+                if (!b.bugCategories.isRelative(category)) {
                     return rank;
+                }
             }
+        }
         return rank;
     }
 
@@ -252,26 +265,29 @@ public class BugRanker {
     public static int findRank(BugPattern pattern, @CheckForNull DetectorFactory detectorFactory) {
         boolean haveCache = Global.getAnalysisCache() != null;
         if (haveCache) {
-             Integer cachedResult = rankForBugPattern.get().get(pattern);
-             if (cachedResult != null)
-                 return cachedResult;
+            Integer cachedResult = rankForBugPattern.get().get(pattern);
+            if (cachedResult != null) {
+                return cachedResult;
+            }
         }
 
         int rank;
-        if (detectorFactory == null)
+        if (detectorFactory == null) {
             rank = findRankUnknownPlugin(pattern);
-        else {
+        } else {
             Plugin plugin = detectorFactory.getPlugin();
-           BugRanker pluginRanker = plugin.getBugRanker();
+            BugRanker pluginRanker = plugin.getBugRanker();
             BugRanker coreRanker = getCoreRanker();
 
-            if (pluginRanker == coreRanker)
+            if (pluginRanker == coreRanker) {
                 rank = rankBugPattern(pattern, coreRanker);
-            else
+            } else {
                 rank = rankBugPattern(pattern, pluginRanker, coreRanker);
+            }
         }
-        if (haveCache)
+        if (haveCache) {
             rankForBugPattern.get().put(pattern, rank);
+        }
         return rank;
     }
 
@@ -279,8 +295,9 @@ public class BugRanker {
 
         List<BugRanker> rankers = new ArrayList<BugRanker>();
         pluginLoop: for (Plugin plugin : Plugin.getAllPlugins()) {
-            if (plugin.isCorePlugin())
+            if (plugin.isCorePlugin()) {
                 continue;
+            }
             if (false) {
                 rankers.add(plugin.getBugRanker());
                 continue pluginLoop;
@@ -288,14 +305,16 @@ public class BugRanker {
             for (DetectorFactory df : plugin.getDetectorFactories()) {
 
                 if (df.getReportedBugPatterns().contains(pattern)) {
-                    if (PLUGIN_DEBUG)
+                    if (PLUGIN_DEBUG) {
                         System.out.println("Bug rank match " + plugin + " " + df + " for " + pattern);
+                    }
                     rankers.add(plugin.getBugRanker());
                     continue pluginLoop;
                 }
             }
-            if (PLUGIN_DEBUG)
+            if (PLUGIN_DEBUG) {
                 System.out.println("plugin " + plugin + " doesn't match " + pattern);
+            }
 
         }
         rankers.add(getCoreRanker());
@@ -306,8 +325,9 @@ public class BugRanker {
     public static void trimToMaxRank(BugCollection origCollection, int maxRank) {
         for (Iterator<BugInstance> i = origCollection.getCollection().iterator(); i.hasNext();) {
             BugInstance b = i.next();
-            if (BugRanker.findRank(b) > maxRank)
+            if (BugRanker.findRank(b) > maxRank) {
                 i.remove();
+            }
 
         }
     }

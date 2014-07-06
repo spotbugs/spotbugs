@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.util;
 
 /**
  * Exact String-matching predicate.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ExactStringMatcher implements StringMatcher {
@@ -29,7 +29,7 @@ public class ExactStringMatcher implements StringMatcher {
 
     /**
      * Constructor.
-     * 
+     *
      * @param expected
      *            the expected string value
      */

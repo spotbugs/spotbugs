@@ -21,13 +21,13 @@ package edu.umd.cs.findbugs.classfile;
 
 /**
  * Common base class for unchecked analysis exceptions.
- * 
+ *
  * @author David Hovemeyer
  */
 public class UncheckedAnalysisException extends RuntimeException {
     /**
      * Constructor.
-     * 
+     *
      * @param message
      *            message describing the exception
      */
@@ -37,7 +37,7 @@ public class UncheckedAnalysisException extends RuntimeException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param message
      *            message describing the exception
      * @param cause

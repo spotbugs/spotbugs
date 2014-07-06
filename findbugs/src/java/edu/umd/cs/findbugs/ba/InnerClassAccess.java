@@ -22,13 +22,14 @@ package edu.umd.cs.findbugs.ba;
 import javax.annotation.Nonnull;
 
 public class InnerClassAccess {
-    private String methodName;
+    private final String methodName;
 
-    private String methodSig;
+    private final String methodSig;
 
-    private @Nonnull XField field;
+    private @Nonnull
+    final XField field;
 
-    private boolean isLoad;
+    private final boolean isLoad;
 
     public InnerClassAccess(String methodName, String methodSig, @Nonnull XField field, boolean isLoad) {
         this.methodName = methodName;
@@ -58,4 +59,3 @@ public class InnerClassAccess {
     }
 }
 
-// vim:ts=4

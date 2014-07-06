@@ -71,8 +71,9 @@ public class MultiMap<K, V> {
         Collection<V> s = map.get(k);
         if (s != null) {
             s.remove(v);
-            if (s.isEmpty())
+            if (s.isEmpty()) {
                 map.remove(k);
+            }
         }
     }
 
@@ -82,8 +83,9 @@ public class MultiMap<K, V> {
 
     public Collection<V> get(K k) {
         Collection<V> s = map.get(k);
-        if (s != null)
+        if (s != null) {
             return s;
+        }
         return Collections.<V> emptySet();
     }
 

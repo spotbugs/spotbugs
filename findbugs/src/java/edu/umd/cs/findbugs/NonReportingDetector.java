@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs;
 
 /**
  * A Detector which does not report warnings.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface NonReportingDetector extends FirstPassDetector {

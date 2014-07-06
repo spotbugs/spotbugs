@@ -24,14 +24,14 @@ import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
 /**
  * Method property database storing which methods return values guaranteed to be
  * nonnull
- * 
+ *
  * @author David Hovemeyer
  */
 public class ReturnValueNullnessPropertyDatabase extends MethodPropertyDatabase<Boolean> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#decodeProperty
      * (java.lang.String)
@@ -45,7 +45,7 @@ public class ReturnValueNullnessPropertyDatabase extends MethodPropertyDatabase<
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#encodeProperty
      * (Property)

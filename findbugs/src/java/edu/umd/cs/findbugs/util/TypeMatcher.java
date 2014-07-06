@@ -23,13 +23,13 @@ import org.apache.bcel.generic.Type;
 
 /**
  * Predicate for matching types.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface TypeMatcher {
     /**
      * Determine whether given type matches this predicate.
-     * 
+     *
      * @param t
      *            a Type
      * @return true if the Type matches, false otherwise

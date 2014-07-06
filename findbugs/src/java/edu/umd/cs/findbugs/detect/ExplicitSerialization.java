@@ -70,20 +70,25 @@ public class ExplicitSerialization extends OpcodeStackDetector implements NonRep
         if (seen == INVOKEVIRTUAL && writeObject.equals(getXMethodOperand())) {
             OpcodeStack.Item top = stack.getStackItem(0);
             String signature = top.getSignature();
-            while (signature.charAt(0) == '[')
+            while (signature.charAt(0) == '[') {
                 signature = signature.substring(1);
+            }
             ClassDescriptor c = DescriptorFactory.createClassDescriptorFromFieldSignature(signature);
-            if (c == null || !Subtypes2.instanceOf(c, Serializable.class))
+            if (c == null || !Subtypes2.instanceOf(c, Serializable.class)) {
                 return;
+            }
 
             try {
                 XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
-                if (xClass.isInterface())
+                if (xClass.isInterface()) {
                     return;
-                if (xClass.isSynthetic())
+                }
+                if (xClass.isSynthetic()) {
                     return;
-                if (xClass.isAbstract())
+                }
+                if (xClass.isAbstract()) {
                     return;
+                }
                 unreadFields.strongEvidenceForIntendedSerialization(c);
             } catch (CheckedAnalysisException e) {
                 bugReporter.logError("Error looking up xClass of " + c, e);
@@ -94,17 +99,21 @@ public class ExplicitSerialization extends OpcodeStackDetector implements NonRep
             OpcodeStack.Item top = stack.getStackItem(0);
             if (readObject.equals(top.getReturnValueOf())) {
                 ClassDescriptor c = getClassDescriptorOperand();
-                if (!Subtypes2.instanceOf(c, Serializable.class))
+                if (!Subtypes2.instanceOf(c, Serializable.class)) {
                     return;
+                }
 
                 try {
                     XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
-                    if (xClass.isInterface())
+                    if (xClass.isInterface()) {
                         return;
-                    if (xClass.isSynthetic())
+                    }
+                    if (xClass.isSynthetic()) {
                         return;
-                    if (xClass.isAbstract())
+                    }
+                    if (xClass.isAbstract()) {
                         return;
+                    }
                     unreadFields.strongEvidenceForIntendedSerialization(c);
                 } catch (CheckedAnalysisException e) {
                     bugReporter.logError("Error looking up xClass of " + c, e);

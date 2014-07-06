@@ -36,16 +36,16 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * <p>
  * Note that the minOccur() and maxOccur() counts of the child PatternElements
  * are ignored. A MatchAny element always matches exactly one instruction.
- * 
+ *
  * @author David Hovemeyer
  * @see PatternElement
  */
 public class MatchAny extends PatternElement {
-    private PatternElement[] childList;
+    private final PatternElement[] childList;
 
     /**
      * Constructor.
-     * 
+     *
      * @param childList
      *            list of child PatternElements
      */
@@ -67,8 +67,9 @@ public class MatchAny extends PatternElement {
         // Just forward this on to all children,
         // since it is the children that the PatternMatcher will ask
         // about edges.
-        for (PatternElement aChildList : childList)
+        for (PatternElement aChildList : childList) {
             aChildList.setAllowTrailingEdges(allowTrailingEdges);
+        }
 
         return this;
     }
@@ -79,8 +80,9 @@ public class MatchAny extends PatternElement {
 
         for (PatternElement child : childList) {
             MatchResult matchResult = child.match(handle, cpg, before, after, bindingSet);
-            if (matchResult != null)
+            if (matchResult != null) {
                 return matchResult;
+            }
         }
 
         return null;
@@ -105,4 +107,3 @@ public class MatchAny extends PatternElement {
     }
 }
 
-// vim:ts=4

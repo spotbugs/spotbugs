@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 /**
  * Wizard dialog to automatically find and configure source directories for a
  * project.
- * 
+ *
  * @author David Hovemeyer
  */
 public class SourceDirectoryWizard extends javax.swing.JDialog {
@@ -52,7 +52,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
 
     /**
      * Creates new form SourceDirectoryWizard
-     * 
+     *
      * @param parentGUI
      */
     public SourceDirectoryWizard(java.awt.Frame parent, boolean modal, Project project, NewProjectWizard parentGUI) {
@@ -213,7 +213,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nextButtonActionPerformed(evt);
-               
+
             }
         });
         getContentPane().add(nextButton);
@@ -360,8 +360,9 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
         if (parentGUI != null) {
             parentGUI.setSourceDirecs(foundModel);
         }
-        if (discover != null && discover.isAlive())
+        if (discover != null && discover.isAlive()) {
             discover.stop();
+        }
         dispose();
     }// GEN-LAST:event_finshButtonActionPerformed
 
@@ -382,9 +383,9 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
 
     private JFileChooser chooser;
 
-    private Project project;
+    private final Project project;
 
-    private NewProjectWizard parentGUI;
+    private final NewProjectWizard parentGUI;
 
     private DefaultListModel<String> foundModel;
 

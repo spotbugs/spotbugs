@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author David Hovemeyer
  */
 public class DelegatingBugReporter implements BugReporter {
-    private BugReporter delegate;
+    private final BugReporter delegate;
 
     /**
      * Constructor.
@@ -106,8 +106,9 @@ public class DelegatingBugReporter implements BugReporter {
 
     @Override
     public void logError(String message, Throwable e) {
-        if (e instanceof MethodUnprofitableException)
+        if (e instanceof MethodUnprofitableException) {
             return;
+        }
         delegate.logError(message, e);
     }
 
@@ -128,4 +129,3 @@ public class DelegatingBugReporter implements BugReporter {
     }
 }
 
-// vim:ts=4

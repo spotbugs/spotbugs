@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.ba.XField;
 
 public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implements StatelessDetector {
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private int previousLoadOf = -1;
 
@@ -46,7 +46,7 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
         this.bugReporter = bugReporter;
     }
 
-    private BitSet previousStores = new BitSet();
+    private final BitSet previousStores = new BitSet();
 
     @Override
     public void visit(Code obj) {
@@ -62,26 +62,28 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
         if (seen == GOTO) {
             previousGotoTarget = getBranchTarget();
             gotoCount++;
-            if (previousGotoTarget < getPC())
+            if (previousGotoTarget < getPC()) {
                 previousLoadOf = -1;
+            }
         } else {
-            if (isRegisterLoad())
+            if (isRegisterLoad()) {
                 previousLoadOf = getRegisterOperand();
-            else {
+            } else {
                 if (isRegisterStore()) {
                     if (previousLoadOf == getRegisterOperand() && gotoCount < 2 && getPC() != previousGotoTarget) {
                         int priority = NORMAL_PRIORITY;
                         String methodName = getMethodName();
                         if (methodName.equals("<init>") || methodName.startsWith("set") && getCode().getCode().length <= 5
-                                || !previousStores.get(getRegisterOperand()))
+                                || !previousStores.get(getRegisterOperand())) {
                             priority = HIGH_PRIORITY;
+                        }
                         previousStores.set(getRegisterOperand());
                         XClass c = getXClass();
                         LocalVariableAnnotation local = LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
                                 getRegisterOperand(), getPC(), getPC());
                         if (local.getName().equals("?")) {
                             priority++;
-                        } else
+                        } else {
                             for (XField f : c.getXFields()) {
                                 if (f.getName().equals(local.getName()) && (f.isStatic() || !getMethod().isStatic())) {
                                     bugReporter.reportBug(new BugInstance(this, "SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD",
@@ -91,11 +93,13 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
 
                                 }
                             }
+                        }
 
                         bugReporter.reportBug(new BugInstance(this, "SA_LOCAL_SELF_ASSIGNMENT", priority).addClassAndMethod(this)
                                 .add(local).addSourceLine(this));
-                    } else
+                    } else {
                         previousStores.set(getRegisterOperand());
+                    }
                 }
 
                 previousLoadOf = -1;

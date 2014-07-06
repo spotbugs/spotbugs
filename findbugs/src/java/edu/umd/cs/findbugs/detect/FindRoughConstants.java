@@ -102,7 +102,7 @@ public class FindRoughConstants extends OpcodeStackDetector {
         new BadConstant(Math.E, 1, "Math.E")
     };
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     public FindRoughConstants(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -136,9 +136,9 @@ public class FindRoughConstants extends OpcodeStackDetector {
             if (badConstant.equalPrefix(constValue)) {
                 bugReporter.reportBug(new BugInstance(this,
                         "CNT_ROUGH_CONSTANT_VALUE", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addSourceLine(this)
-                        .addString(constValue.toString())
-                        .addString(badConstant.replacement));
+                .addClassAndMethod(this).addSourceLine(this)
+                .addString(constValue.toString())
+                .addString(badConstant.replacement));
                 return;
             }
             if (diff > 0.0000001) {
@@ -146,9 +146,9 @@ public class FindRoughConstants extends OpcodeStackDetector {
             }
             bugReporter.reportBug(new BugInstance(this,
                     "CNT_ROUGH_CONSTANT_VALUE", LOW_PRIORITY)
-                    .addClassAndMethod(this).addSourceLine(this)
-                    .addString(constValue.toString())
-                    .addString(badConstant.replacement));
+            .addClassAndMethod(this).addSourceLine(this)
+            .addString(constValue.toString())
+            .addString(badConstant.replacement));
         }
     }
 }

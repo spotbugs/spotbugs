@@ -35,4 +35,3 @@ public class CallGraphNode extends AbstractVertex<CallGraphEdge, CallGraphNode> 
     }
 }
 
-// vim:ts=4

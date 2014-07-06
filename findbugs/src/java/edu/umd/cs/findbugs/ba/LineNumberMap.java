@@ -43,15 +43,15 @@ public class LineNumberMap {
      */
     private static final boolean LINE_NUMBER_BUG = SystemProperties.getBoolean("lineNumberBug");
 
-    private MethodGen methodGen;
+    private final MethodGen methodGen;
 
-    private IdentityHashMap<InstructionHandle, LineNumber> lineNumberMap;
+    private final IdentityHashMap<InstructionHandle, LineNumber> lineNumberMap;
 
     private boolean hasLineNumbers;
 
     /**
      * Constructor.
-     * 
+     *
      * @param methodGen
      *            the method to summarize line numbers for
      */
@@ -81,44 +81,52 @@ public class LineNumberMap {
             InstructionHandle handle = methodGen.getInstructionList().getStart();
             while (handle != null) {
                 int bytecodeOffset = handle.getPosition();
-                if (bytecodeOffset < 0)
+                if (bytecodeOffset < 0) {
                     throw new IllegalStateException("Bad bytecode offset: " + bytecodeOffset);
-                if (DEBUG)
+                }
+                if (DEBUG) {
                     System.out.println("Looking for source line for bytecode offset " + bytecodeOffset);
+                }
                 int sourceLine;
                 try {
                     sourceLine = table.getSourceLine(bytecodeOffset);
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    if (LINE_NUMBER_BUG)
+                    if (LINE_NUMBER_BUG) {
                         throw e;
-                    else
+                    } else {
                         sourceLine = -1;
+                    }
                 }
-                if (sourceLine >= 0)
+                if (sourceLine >= 0) {
                     ++numGood;
+                }
                 lineNumberMap.put(handle, new LineNumber(bytecodeOffset, sourceLine));
                 handle = handle.getNext();
                 ++numBytecodes;
             }
             hasLineNumbers = true;
 
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("\t" + numGood + "/" + numBytecodes + " had valid line numbers");
+            }
         }
     }
 
     private void checkTable(LineNumberTable table) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("line number table has length " + table.getTableLength());
+        }
         LineNumber[] entries = table.getLineNumberTable();
         int lastBytecode = -1;
         for (int i = 0; i < entries.length; ++i) {
             LineNumber ln = entries[i];
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Entry " + i + ": pc=" + ln.getStartPC() + ", line=" + ln.getLineNumber());
+            }
             int pc = ln.getStartPC();
-            if (pc <= lastBytecode)
+            if (pc <= lastBytecode) {
                 throw new IllegalStateException("LineNumberTable is not sorted");
+            }
         }
     }
 
@@ -131,7 +139,7 @@ public class LineNumberMap {
 
     /**
      * Find the line number information for instruction whose handle is given.
-     * 
+     *
      * @param handle
      *            the InstructionHandle
      * @return the LineNumber object containing bytecode offset and source line

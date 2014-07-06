@@ -47,13 +47,13 @@ import edu.umd.cs.findbugs.ba.LockDataflow;
 
 public final class FindTwoLockWait implements Detector, StatelessDetector {
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private JavaClass javaClass;
 
-    private Collection<BugInstance> possibleWaitBugs = new LinkedList<BugInstance>();
+    private final Collection<BugInstance> possibleWaitBugs = new LinkedList<BugInstance>();
 
-    private Collection<SourceLineAnnotation> possibleNotifyLocations = new LinkedList<SourceLineAnnotation>();
+    private final Collection<SourceLineAnnotation> possibleNotifyLocations = new LinkedList<SourceLineAnnotation>();
 
     public FindTwoLockWait(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -76,11 +76,13 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
         Method[] methodList = javaClass.getMethods();
         for (Method method : methodList) {
             MethodGen methodGen = classContext.getMethodGen(method);
-            if (methodGen == null)
+            if (methodGen == null) {
                 continue;
+            }
 
-            if (!preScreen(methodGen))
+            if (!preScreen(methodGen)) {
                 continue;
+            }
 
             try {
                 analyzeMethod(classContext, method);
@@ -91,12 +93,14 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
                 bugReporter.logError("Error analyzing " + method.toString(), e);
             }
         }
-        if (!possibleNotifyLocations.isEmpty())
+        if (!possibleNotifyLocations.isEmpty()) {
             for (BugInstance bug : possibleWaitBugs) {
-                for (SourceLineAnnotation notifyLine : possibleNotifyLocations)
+                for (SourceLineAnnotation notifyLine : possibleNotifyLocations) {
                     bug.addSourceLine(notifyLine).describe("SOURCE_NOTIFICATION_DEADLOCK");
+                }
                 bugReporter.reportBug(bug);
             }
+        }
     }
 
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
@@ -120,13 +124,14 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
         InstructionHandle handle = mg.getInstructionList().getStart();
         while (handle != null && !(lockCount >= 2 && sawWaitOrNotify)) {
             Instruction ins = handle.getInstruction();
-            if (ins instanceof MONITORENTER)
+            if (ins instanceof MONITORENTER) {
                 ++lockCount;
-            else if (ins instanceof INVOKEVIRTUAL) {
+            } else if (ins instanceof INVOKEVIRTUAL) {
                 INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
                 String methodName = inv.getMethodName(cpg);
-                if (methodName.equals("wait") || methodName.startsWith("notify"))
+                if (methodName.equals("wait") || methodName.startsWith("notify")) {
                     sawWaitOrNotify = true;
+                }
             }
 
             handle = handle.getNext();
@@ -164,4 +169,3 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
     }
 }
 
-// vim:ts=3

@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 
 /**
  * Print the AppVersion information from a BugCollection.
- * 
+ *
  * @author David Hovemeyer
  */
 public class PrintAppVersion {

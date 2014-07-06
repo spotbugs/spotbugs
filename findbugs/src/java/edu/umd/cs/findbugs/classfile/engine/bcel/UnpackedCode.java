@@ -7,9 +7,9 @@ import edu.umd.cs.findbugs.ba.MethodBytecodeSet;
  * well as a map of bytecode offsets to opcodes.
  */
 public class UnpackedCode {
-    private MethodBytecodeSet bytecodeSet;
+    private final MethodBytecodeSet bytecodeSet;
 
-    private short[] offsetToBytecodeMap;
+    private final short[] offsetToBytecodeMap;
 
     public UnpackedCode(MethodBytecodeSet bytecodeSet, short[] offsetToBytecodeMap) {
         this.bytecodeSet = bytecodeSet;

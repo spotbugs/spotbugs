@@ -27,7 +27,7 @@ import org.apache.tools.ant.BuildException;
 
 /**
  * Ant task to create/update a bug history database.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ComputeBugHistoryTask extends AbstractFindBugsTask {
@@ -46,7 +46,7 @@ public class ComputeBugHistoryTask extends AbstractFindBugsTask {
 
     private boolean withMessages;
 
-    private List<DataFile> dataFileList;
+    private final List<DataFile> dataFileList;
 
     public ComputeBugHistoryTask() {
         super("edu.umd.cs.findbugs.workflow.Update");
@@ -86,7 +86,7 @@ public class ComputeBugHistoryTask extends AbstractFindBugsTask {
     /**
      * Called to create DataFile objects in response to nested &lt;DataFile&gt;
      * elements.
-     * 
+     *
      * @return new DataFile object specifying the location of an input data file
      */
     public DataFile createDataFile() {
@@ -97,7 +97,7 @@ public class ComputeBugHistoryTask extends AbstractFindBugsTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#checkParameters()
      */
     @Override
@@ -111,7 +111,7 @@ public class ComputeBugHistoryTask extends AbstractFindBugsTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#configureFindbugsEngine
      * ()
@@ -146,7 +146,7 @@ public class ComputeBugHistoryTask extends AbstractFindBugsTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#beforeExecuteJavaProcess
      * ()
@@ -158,7 +158,7 @@ public class ComputeBugHistoryTask extends AbstractFindBugsTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#afterExecuteJavaProcess
      * (int)

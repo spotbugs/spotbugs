@@ -7,8 +7,9 @@ public class ClassWarningSuppressor extends WarningSuppressor {
     public ClassWarningSuppressor(String bugPattern, ClassAnnotation clazz) {
         super(bugPattern);
         this.clazz = clazz;
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Suppressing " + bugPattern + " in " + clazz);
+        }
     }
 
     public ClassAnnotation getClassAnnotation() {
@@ -18,12 +19,14 @@ public class ClassWarningSuppressor extends WarningSuppressor {
     @Override
     public boolean match(BugInstance bugInstance) {
 
-        if (!super.match(bugInstance))
+        if (!super.match(bugInstance)) {
             return false;
+        }
 
         ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Compare " + primaryClassAnnotation + " with " + clazz);
+        }
 
         return clazz.contains(primaryClassAnnotation);
 

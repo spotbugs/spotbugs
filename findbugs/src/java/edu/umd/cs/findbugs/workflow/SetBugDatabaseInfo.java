@@ -109,54 +109,56 @@ public class SetBugDatabaseInfo {
 
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
-            if (option.equals("-withMessages"))
+            if (option.equals("-withMessages")) {
                 withMessages = true;
-            else if (option.equals("-resetSource"))
+            } else if (option.equals("-resetSource")) {
                 resetSource = true;
-            else if (option.equals("-resetProject"))
+            } else if (option.equals("-resetProject")) {
                 resetProject = true;
-            else if (option.equals("-purgeStats"))
+            } else if (option.equals("-purgeStats")) {
                 purgeStats = true;
-            else if (option.equals("-purgeDesignations"))
+            } else if (option.equals("-purgeDesignations")) {
                 purgeDesignations = true;
-            else if (option.equals("-purgeClassStats"))
+            } else if (option.equals("-purgeClassStats")) {
                 purgeClassStats = true;
-            else if (option.equals("-purgeMissingClasses"))
+            } else if (option.equals("-purgeMissingClasses")) {
                 purgeMissingClasses = true;
-            else
+            } else {
                 throw new IllegalArgumentException("no option " + option);
+            }
 
         }
 
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
-            if (option.equals("-name"))
+            if (option.equals("-name")) {
                 revisionName = argument;
-            else if (option.equals("-cloud"))
+            } else if (option.equals("-cloud")) {
                 cloudId = argument;
-            else if (option.equals("-cloudProperty")) {
+            } else if (option.equals("-cloudProperty")) {
                 int e = argument.indexOf('=');
-                if (e == -1)
+                if (e == -1) {
                     throw new IllegalArgumentException("Bad cloud property: " + argument);
+                }
                 String key = argument.substring(0, e);
                 String value = argument.substring(e + 1);
                 cloudProperties.put(key, value);
 
-            } else if (option.equals("-projectName"))
+            } else if (option.equals("-projectName")) {
                 projectName = argument;
-            else if (option.equals("-suppress"))
+            } else if (option.equals("-suppress")) {
                 exclusionFilterFile = argument;
-            else if (option.equals("-timestamp"))
+            } else if (option.equals("-timestamp")) {
                 revisionTimestamp = Date.parse(argument);
-
-            else if (option.equals("-source"))
+            } else if (option.equals("-source")) {
                 sourcePaths.add(argument);
-            else if (option.equals("-lastVersion")) {
+            } else if (option.equals("-lastVersion")) {
                 lastVersion = argument;
-            } else if (option.equals("-findSource"))
+            } else if (option.equals("-findSource")) {
                 searchSourcePaths.add(argument);
-            else
+            } else {
                 throw new IllegalArgumentException("Can't handle option " + option);
+            }
 
         }
 
@@ -170,24 +172,29 @@ public class SetBugDatabaseInfo {
 
         SortedBugCollection origCollection = new SortedBugCollection();
 
-        if (argCount < args.length)
+        if (argCount < args.length) {
             origCollection.readXML(args[argCount++]);
-        else
+        } else {
             origCollection.readXML(System.in);
+        }
         Project project = origCollection.getProject();
 
-        if (commandLine.revisionName != null)
+        if (commandLine.revisionName != null) {
             origCollection.setReleaseName(commandLine.revisionName);
-        if (commandLine.projectName != null)
+        }
+        if (commandLine.projectName != null) {
             origCollection.getProject().setProjectName(commandLine.projectName);
-        if (commandLine.revisionTimestamp != 0)
+        }
+        if (commandLine.revisionTimestamp != 0) {
             origCollection.setTimestamp(commandLine.revisionTimestamp);
+        }
         origCollection.setWithMessages(commandLine.withMessages);
 
-        if (commandLine.purgeDesignations)
+        if (commandLine.purgeDesignations) {
             for (BugInstance b : origCollection) {
                 b.setUserDesignation(null);
             }
+        }
         if (commandLine.exclusionFilterFile != null) {
             project.setSuppressionFilter(Filter.parseFilter(commandLine.exclusionFilterFile));
         }
@@ -205,19 +212,24 @@ public class SetBugDatabaseInfo {
             project.getCloudProperties().setProperty(e.getKey(), e.getValue());
             reinitializeCloud = true;
         }
-           
-        if (commandLine.resetSource)
+
+        if (commandLine.resetSource) {
             project.getSourceDirList().clear();
-        for (String source : commandLine.sourcePaths)
+        }
+        for (String source : commandLine.sourcePaths) {
             project.addSourceDir(source);
-        if (commandLine.purgeStats)
+        }
+        if (commandLine.purgeStats) {
             origCollection.getProjectStats().getPackageStats().clear();
-        if (commandLine.purgeClassStats)
+        }
+        if (commandLine.purgeClassStats) {
             for (PackageStats ps : origCollection.getProjectStats().getPackageStats()) {
                 ps.getClassStats().clear();
             }
-        if (commandLine.purgeMissingClasses)
+        }
+        if (commandLine.purgeMissingClasses) {
             origCollection.clearMissingClasses();
+        }
         if (commandLine.lastVersion != null) {
             long last = edu.umd.cs.findbugs.workflow.Filter.FilterCommandLine.getVersionNum(origCollection,
                     commandLine.lastVersion, true);
@@ -248,12 +260,12 @@ public class SetBugDatabaseInfo {
                 }
             }
             Set<String> foundPaths = new HashSet<String>();
-            for (String f : commandLine.searchSourcePaths)
+            for (String f : commandLine.searchSourcePaths) {
                 for (File javaFile : RecursiveSearchForJavaFiles.search(new File(f))) {
                     Set<String> matchingMissingClasses = missingFiles.get(javaFile.getName());
                     if (matchingMissingClasses == null) {
                         // System.out.println("Nothing for " + javaFile);
-                    } else
+                    } else {
                         for (String sourcePath : matchingMissingClasses) {
                             String path = javaFile.getAbsolutePath();
                             if (path.endsWith(sourcePath)) {
@@ -262,36 +274,44 @@ public class SetBugDatabaseInfo {
 
                             }
                         }
+                    }
 
                 }
+            }
 
             Set<String> toRemove = new HashSet<String>();
-            for (String p1 : foundPaths)
-                for (String p2 : foundPaths)
+            for (String p1 : foundPaths) {
+                for (String p2 : foundPaths) {
                     if (!p1.equals(p2) && p1.startsWith(p2)) {
                         toRemove.add(p1);
                         break;
                     }
+                }
+            }
             foundPaths.removeAll(toRemove);
 
             for (String dir : foundPaths) {
                 project.addSourceDir(dir);
-                if (argCount < args.length)
+                if (argCount < args.length) {
                     System.out.println("Found " + dir);
+                }
             }
 
         }
-        
-        if (reinitializeCloud)
-            origCollection.clearCloud();
-        // OK, now we know all the missing source files
-        // we also know all the .java files in the directories we were pointed
-        // to
 
-        if (argCount < args.length)
+        if (reinitializeCloud)
+        {
+            origCollection.clearCloud();
+            // OK, now we know all the missing source files
+            // we also know all the .java files in the directories we were pointed
+            // to
+        }
+
+        if (argCount < args.length) {
             origCollection.writeXML(args[argCount++]);
-        else
+        } else {
             origCollection.writeXML(System.out);
+        }
 
     }
 

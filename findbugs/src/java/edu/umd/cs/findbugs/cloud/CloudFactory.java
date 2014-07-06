@@ -67,15 +67,17 @@ public class CloudFactory {
             Constructor<? extends Cloud> constructor = cloudClass.getConstructor(CloudPlugin.class, BugCollection.class,
                     Properties.class);
             Cloud cloud = constructor.newInstance(plugin, bc, properties);
-            if (DEBUG)
+            if (DEBUG) {
                 bc.getProject().getGuiCallback().showMessageDialog("constructed " + cloud.getClass().getName());
+            }
             LOGGER.log(Level.FINE, "constructed cloud plugin " + plugin.getId());
-            if (!cloud.availableForInitialization())
-                handleInitializationException(bc, plugin, 
+            if (!cloud.availableForInitialization()) {
+                handleInitializationException(bc, plugin,
                         new IllegalStateException(cloud.getClass().getName() + " cloud " + plugin.getId()+ " doesn't have information needed for initialization"));
+            }
             return cloud;
         } catch (InvocationTargetException e) {
-           return handleInitializationException(bc, plugin, e.getCause());
+            return handleInitializationException(bc, plugin, e.getCause());
         } catch (Exception e) {
             return handleInitializationException(bc, plugin, e);
         }
@@ -89,8 +91,9 @@ public class CloudFactory {
         String cloudId = project.getCloudId();
         if (cloudId != null) {
             plugin = DetectorFactoryCollection.instance().getRegisteredClouds().get(cloudId);
-            if (plugin == null && FAIL_ON_CLOUD_ERROR)
+            if (plugin == null && FAIL_ON_CLOUD_ERROR) {
                 throw new IllegalArgumentException("Cannot find registered cloud for " + cloudId);
+            }
         }
         // is the desired plugin disabled for this project (and/or globally)? if so, skip it.
         if (plugin != null) {
@@ -101,11 +104,12 @@ public class CloudFactory {
             }
         }
         if (plugin == null) {
-            if (DEFAULT_CLOUD != null)
+            if (DEFAULT_CLOUD != null) {
                 LOGGER.log(Level.FINE, "Trying default cloud " + DEFAULT_CLOUD);
+            }
             cloudId = DEFAULT_CLOUD;
             plugin = DetectorFactoryCollection.instance().getRegisteredClouds().get(cloudId);
-             }
+        }
         return plugin;
     }
 
@@ -114,32 +118,38 @@ public class CloudFactory {
             bc.getProject().getGuiCallback().showMessageDialog("failed " + e.getMessage() + e.getClass().getName());
         }
         LOGGER.log(Level.WARNING, "Could not load cloud plugin " + plugin, e);
-        if (SystemProperties.getBoolean("findbugs.failIfUnableToConnectToCloud"))
+        if (SystemProperties.getBoolean("findbugs.failIfUnableToConnectToCloud")) {
             System.exit(1);
+        }
         return getPlainCloud(bc);
     }
 
     public static void initializeCloud(BugCollection bc, Cloud cloud) throws IOException {
         IGuiCallback callback = bc.getProject().getGuiCallback();
 
-        if (!cloud.availableForInitialization())
+        if (!cloud.availableForInitialization()) {
             return;
+        }
 
-        if (DEBUG)
+        if (DEBUG) {
             callback.showMessageDialog("attempting to initialize " + cloud.getClass().getName());
+        }
 
-        if (!cloud.initialize())
+        if (!cloud.initialize()) {
             throw new IOException("Unable to connect to " + cloud.getCloudName());
+        }
 
-        if (DEBUG)
+        if (DEBUG) {
             callback.showMessageDialog("initialized " + cloud.getClass().getName());
+        }
     }
 
 
     public static @Nonnull Cloud getPlainCloud(BugCollection bc) {
         DoNothingCloud cloud = new DoNothingCloud(bc);
-        if (cloud.initialize())
+        if (cloud.initialize()) {
             return cloud;
+        }
         throw new IllegalStateException("Unable to initialize DoNothingCloud");
     }
 

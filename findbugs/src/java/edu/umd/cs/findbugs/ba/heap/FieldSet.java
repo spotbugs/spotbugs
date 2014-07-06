@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.ba.XField;
 public class FieldSet {
     private boolean isTop, isBottom;
 
-    private Set<XField> fieldSet;
+    private final Set<XField> fieldSet;
 
     public FieldSet() {
         fieldSet = new HashSet<XField>();
@@ -68,8 +68,9 @@ public class FieldSet {
     }
 
     public void addField(XField field) {
-        if (!isValid())
+        if (!isValid()) {
             throw new IllegalStateException();
+        }
         fieldSet.add(field);
     }
 
@@ -78,8 +79,9 @@ public class FieldSet {
     }
 
     public void mergeWith(FieldSet other) {
-        if (other.isTop() || this.isBottom())
+        if (other.isTop() || this.isBottom()) {
             return;
+        }
 
         if (other.isBottom() || this.isTop()) {
             this.copyFrom(other);
@@ -102,19 +104,21 @@ public class FieldSet {
 
     public boolean isIntersectionNonEmpty(FieldSet other) {
         for (XField field : fieldSet) {
-            if (other.fieldSet.contains(field))
+            if (other.fieldSet.contains(field)) {
                 return true;
+            }
         }
         return false;
     }
 
     @Override
     public String toString() {
-        if (isTop)
+        if (isTop) {
             return "TOP";
-        else if (isBottom)
+        } else if (isBottom) {
             return "BOTTOM";
-        else
+        } else {
             return fieldSet.toString();
+        }
     }
 }

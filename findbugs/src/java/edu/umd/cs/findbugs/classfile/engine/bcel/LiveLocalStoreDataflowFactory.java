@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 /**
  * Analysis engine to produce LiveLocalStoreDataflow objects for analyzed
  * methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public class LiveLocalStoreDataflowFactory extends AnalysisFactory<LiveLocalStoreDataflow> {
@@ -45,7 +45,7 @@ public class LiveLocalStoreDataflowFactory extends AnalysisFactory<LiveLocalStor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)

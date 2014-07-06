@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
  * by class name before printing them.
  */
 public class SortingBugReporter extends TextUIBugReporter {
-    private SortedBugCollection bugCollection = new SortedBugCollection();
+    private final SortedBugCollection bugCollection = new SortedBugCollection();
 
     @Override
     public void observeClass(ClassDescriptor classDescriptor) {
@@ -40,8 +40,9 @@ public class SortingBugReporter extends TextUIBugReporter {
 
     @Override
     public void doReportBug(BugInstance bugInstance) {
-        if (bugCollection.add(bugInstance))
+        if (bugCollection.add(bugInstance)) {
             notifyObservers(bugInstance);
+        }
     }
 
     @Override
@@ -62,4 +63,3 @@ public class SortingBugReporter extends TextUIBugReporter {
     }
 }
 
-// vim:ts=4

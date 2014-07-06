@@ -87,8 +87,9 @@ public class AssertionMethods implements Constants {
             while (tok.hasMoreTokens()) {
                 String fullyQualifiedName = tok.nextToken();
                 int lastDot = fullyQualifiedName.lastIndexOf('.');
-                if (lastDot < 0)
+                if (lastDot < 0) {
                     continue;
+                }
                 String className = fullyQualifiedName.substring(0, lastDot);
                 String methodName = fullyQualifiedName.substring(lastDot + 1);
                 userAssertionMethodList.add(new UserAssertionMethod(className, methodName));
@@ -138,15 +139,15 @@ public class AssertionMethods implements Constants {
                             && methodName.startsWith("is")
                             || (voidReturnType || boolReturnType)
                             && (classNameLC.indexOf("assert") >= 0 || methodNameLC.startsWith("throw")
-                                    || methodName.startsWith("affirm") || methodName.startsWith("panic")
-                                    || methodName.equals("logTerminal") || methodName.startsWith("logAndThrow")
-                                    || methodNameLC.equals("insist") || methodNameLC.equals("usage")
-                                    || methodNameLC.equals("exit") || methodNameLC.startsWith("fail")
-                                    || methodNameLC.startsWith("fatal") || methodNameLC.indexOf("assert") >= 0
-                                    || methodNameLC.indexOf("legal") >= 0 || methodNameLC.indexOf("error") >= 0
-                                    || methodNameLC.indexOf("abort") >= 0
-                                    // || methodNameLC.indexOf("check") >= 0
-                                    || methodNameLC.indexOf("failed") >= 0) || methodName.equals("addOrThrowException")) {
+                            || methodName.startsWith("affirm") || methodName.startsWith("panic")
+                            || methodName.equals("logTerminal") || methodName.startsWith("logAndThrow")
+                            || methodNameLC.equals("insist") || methodNameLC.equals("usage")
+                            || methodNameLC.equals("exit") || methodNameLC.startsWith("fail")
+                            || methodNameLC.startsWith("fatal") || methodNameLC.indexOf("assert") >= 0
+                            || methodNameLC.indexOf("legal") >= 0 || methodNameLC.indexOf("error") >= 0
+                            || methodNameLC.indexOf("abort") >= 0
+                            // || methodNameLC.indexOf("check") >= 0
+                            || methodNameLC.indexOf("failed") >= 0) || methodName.equals("addOrThrowException")) {
                         assertionMethodRefSet.set(i);
                         if (DEBUG) {
                             System.out.println("==> YES");
@@ -165,16 +166,18 @@ public class AssertionMethods implements Constants {
 
     private static boolean isUserAssertionMethod(String className, String methodName) {
         for (UserAssertionMethod uam : userAssertionMethodList) {
-            if (className.equals(uam.getClassName()) && methodName.equals(uam.getMethodName()))
+            if (className.equals(uam.getClassName()) && methodName.equals(uam.getMethodName())) {
                 return true;
+            }
         }
         return false;
     }
 
     public boolean isAssertionHandle(InstructionHandle handle, ConstantPoolGen cpg) {
         Instruction ins = handle.getInstruction();
-        if (isAssertionInstruction(ins, cpg))
+        if (isAssertionInstruction(ins, cpg)) {
             return true;
+        }
 
         if (ins instanceof SIPUSH) {
             int v = ((SIPUSH) ins).getValue().intValue();
@@ -184,8 +187,9 @@ public class AssertionMethods implements Constants {
                     INVOKEINTERFACE iInterface = (INVOKEINTERFACE) next;
                     String className = iInterface.getClassName(cpg);
                     String fieldName = iInterface.getMethodName(cpg);
-                    if (className.equals("javax.servlet.http.HttpServletResponse") && fieldName.equals("setStatus"))
+                    if (className.equals("javax.servlet.http.HttpServletResponse") && fieldName.equals("setStatus")) {
                         return true;
+                    }
 
                 }
             }
@@ -204,16 +208,19 @@ public class AssertionMethods implements Constants {
 
     public boolean isAssertionInstruction(Instruction ins, ConstantPoolGen cpg) {
 
-        if (ins instanceof InvokeInstruction)
+        if (ins instanceof InvokeInstruction) {
             return isAssertionCall((InvokeInstruction) ins);
+        }
         if (ins instanceof GETSTATIC) {
             GETSTATIC getStatic = (GETSTATIC) ins;
             String className = getStatic.getClassName(cpg);
             String fieldName = getStatic.getFieldName(cpg);
-            if (className.equals("java.util.logging.Level") && fieldName.equals("SEVERE"))
+            if (className.equals("java.util.logging.Level") && fieldName.equals("SEVERE")) {
                 return true;
-            if (className.equals("org.apache.log4j.Level") && (fieldName.equals("ERROR") || fieldName.equals("FATAL")))
+            }
+            if (className.equals("org.apache.log4j.Level") && (fieldName.equals("ERROR") || fieldName.equals("FATAL"))) {
                 return true;
+            }
             return false;
 
         }
@@ -228,4 +235,3 @@ public class AssertionMethods implements Constants {
     }
 }
 
-// vim:ts=4

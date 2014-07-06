@@ -40,8 +40,9 @@ public class SuppressionMatcher extends ArrayList<BugInstance> implements Matche
 
     @Override
     public boolean add(BugInstance bugInstance) {
-        if (contains(bugInstance))
+        if (contains(bugInstance)) {
             return false;
+        }
         return super.add(bugInstance);
     }
 

@@ -26,13 +26,13 @@ import javax.annotation.CheckForNull;
 /**
  * A convenient base class for dataflow analysis classes which use Frames as
  * values.
- * 
+ *
  * @author David Hovemeyer
  * @see Frame
  * @see DataflowAnalysis
  */
 public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<ValueType>> extends
-        ForwardDataflowAnalysis<FrameType> {
+ForwardDataflowAnalysis<FrameType> {
     public FrameDataflowAnalysis(DepthFirstSearch dfs) {
         super(dfs);
     }
@@ -61,7 +61,7 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
      * Get the dataflow fact representing the point just before given Location.
      * Note "before" is meant in the logical sense, so for backward analyses,
      * before means after the location in the control flow sense.
-     * 
+     *
      * @return the fact at the point just before the location
      */
 
@@ -72,8 +72,9 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
         for (Location l : cfg.locations()) {
             if (l.getHandle().getPosition() == pc) {
                 FrameType fact = getFactAtLocation(l);
-                if (isFactValid(fact))
+                if (isFactValid(fact)) {
                     mergeInto(fact, result);
+                }
             }
         }
         return result;
@@ -83,7 +84,7 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
      * Get the dataflow fact representing the point just before given Location.
      * Note "before" is meant in the logical sense, so for backward analyses,
      * before means after the location in the control flow sense.
-     * 
+     *
      * @return the fact at the point just before the location
      */
 
@@ -91,17 +92,19 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
         FrameType result = createFact();
         makeFactTop(result);
 
-        for (BasicBlock b : cfg.getBlocksContainingInstructionWithOffset(pc))
+        for (BasicBlock b : cfg.getBlocksContainingInstructionWithOffset(pc)) {
             if (b.getFirstInstruction() != null && b.getFirstInstruction().getPosition() == pc) {
                 BasicBlock b2 = cfg.getPredecessorWithEdgeType(b, EdgeTypes.FALL_THROUGH_EDGE);
                 for (Iterator<Edge> i = cfg.incomingEdgeIterator(b2); i.hasNext();) {
                     Edge e = i.next();
                     FrameType fact = getFactOnEdge(e);
-                    if (isFactValid(fact))
+                    if (isFactValid(fact)) {
                         mergeInto(fact, result);
+                    }
                 }
 
             }
+        }
         return result;
     }
 
@@ -125,7 +128,7 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
      * the frame needs to be modified in a path-sensitive fashion. A typical
      * usage pattern is:
      * <p/>
-     * 
+     *
      * <pre>
      * FrameType copy = null;
      * if (someCondition()) {
@@ -145,7 +148,7 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
      * The advantage of using modifyFrame() is that new code can be added before
      * or after other places where the frame is modified, and the code will
      * remain correct.
-     * 
+     *
      * @param orig
      *            the original frame
      * @param copy
@@ -164,7 +167,7 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
 
     /**
      * Merge one frame into another.
-     * 
+     *
      * @param other
      *            the frame to merge with the result
      * @param result
@@ -210,7 +213,7 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
 
     /**
      * Merge the values contained in a given slot of two Frames.
-     * 
+     *
      * @param otherFrame
      *            a Frame
      * @param resultFrame
@@ -222,4 +225,3 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
     protected abstract void mergeValues(FrameType otherFrame, FrameType resultFrame, int slot) throws DataflowAnalysisException;
 }
 
-// vim:ts=4

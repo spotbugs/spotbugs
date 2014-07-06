@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Analysis engine to produce TypeDataflow objects for analyzed methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public class TypeDataflowFactory extends AnalysisFactory<TypeDataflow> {
@@ -50,7 +50,7 @@ public class TypeDataflowFactory extends AnalysisFactory<TypeDataflow> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)

@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.ba.XField;
  * fields are loaded/stored by the overall method. The main purpose is for doing
  * redundant load elimination and forward substitution more efficiently, but it
  * might be useful in other situations.
- * 
+ *
  * @author David Hovemeyer
  */
 public class LoadedFieldSet {
@@ -57,15 +57,15 @@ public class LoadedFieldSet {
 
     // Fields
     // private MethodGen methodGen;
-    private Map<XField, LoadStoreCount> loadStoreCountMap;
+    private final Map<XField, LoadStoreCount> loadStoreCountMap;
 
-    private Map<InstructionHandle, XField> handleToFieldMap;
+    private final Map<InstructionHandle, XField> handleToFieldMap;
 
-    private BitSet loadHandleSet;
+    private final BitSet loadHandleSet;
 
     /**
      * Constructor. Constructs an empty object.
-     * 
+     *
      * @param methodGen
      *            the method being analyzed for loads/stores
      */
@@ -79,7 +79,7 @@ public class LoadedFieldSet {
     /**
      * Get the number of times given field is loaded and stored within the
      * method.
-     * 
+     *
      * @param field
      *            the field
      * @return the load/store count object
@@ -95,7 +95,7 @@ public class LoadedFieldSet {
 
     /**
      * Add a load of given field at given instruction.
-     * 
+     *
      * @param handle
      *            the instruction
      * @param field
@@ -109,7 +109,7 @@ public class LoadedFieldSet {
 
     /**
      * Add a store of given field at given instruction.
-     * 
+     *
      * @param handle
      *            the instruction
      * @param field
@@ -122,7 +122,7 @@ public class LoadedFieldSet {
 
     /**
      * Get the field loaded or stored at given instruction, if any.
-     * 
+     *
      * @param handle
      *            the instruction
      * @return the field loaded or stored at the instruction, or null if the
@@ -135,7 +135,7 @@ public class LoadedFieldSet {
     /**
      * Return whether or not the given field is loaded by any instruction in the
      * method.
-     * 
+     *
      * @param field
      *            the field
      * @return true if the field is loaded somewhere in the method, false if it
@@ -147,7 +147,7 @@ public class LoadedFieldSet {
 
     /**
      * Return whether or not the given instruction is a load.
-     * 
+     *
      * @param handle
      *            the instruction
      * @return true if the instruction is a load, false if not
@@ -157,4 +157,3 @@ public class LoadedFieldSet {
     }
 }
 
-// vim:ts=4

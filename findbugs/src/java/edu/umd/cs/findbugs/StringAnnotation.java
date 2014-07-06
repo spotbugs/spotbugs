@@ -131,17 +131,19 @@ public class StringAnnotation implements BugAnnotation {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof StringAnnotation))
+        if (!(o instanceof StringAnnotation)) {
             return false;
+        }
         return value.equals(((StringAnnotation) o).value);
     }
 
     @Override
     public int compareTo(BugAnnotation o) {
-        if (!(o instanceof StringAnnotation)) // BugAnnotations must be
-                                              // Comparable with any type of
-                                              // BugAnnotation
+        if (!(o instanceof StringAnnotation)) {
+            // Comparable with any type of
+            // BugAnnotation
             return this.getClass().getName().compareTo(o.getClass().getName());
+        }
         return value.compareTo(((StringAnnotation) o).value);
     }
 
@@ -170,8 +172,9 @@ public class StringAnnotation implements BugAnnotation {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("value", value);
 
         String role = getDescription();
-        if (!role.equals(DEFAULT_ROLE))
+        if (!role.equals(DEFAULT_ROLE)) {
             attributeList.addAttribute("role", role);
+        }
 
         BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
     }
@@ -187,4 +190,3 @@ public class StringAnnotation implements BugAnnotation {
     }
 }
 
-// vim:ts=4

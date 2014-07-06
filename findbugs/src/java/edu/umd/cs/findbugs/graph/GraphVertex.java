@@ -38,4 +38,3 @@ public interface GraphVertex<ActualVertexType> extends Comparable<ActualVertexTy
 
 }
 
-// vim:ts=4

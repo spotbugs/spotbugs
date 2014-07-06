@@ -24,17 +24,17 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 /**
  * A Location where a particular value number becomes null.
- * 
+ *
  * @author David Hovemeyer
  */
 public class LocationWhereValueBecomesNull implements Comparable<LocationWhereValueBecomesNull> {
-    private Location location;
+    private final Location location;
 
-    private ValueNumber valueNumber;
+    private final ValueNumber valueNumber;
 
     /**
      * Constructor.
-     * 
+     *
      * @param location
      *            the Location where a value becomes null
      * @param valueNumber
@@ -61,7 +61,7 @@ public class LocationWhereValueBecomesNull implements Comparable<LocationWhereVa
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
@@ -76,7 +76,7 @@ public class LocationWhereValueBecomesNull implements Comparable<LocationWhereVa
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -90,7 +90,7 @@ public class LocationWhereValueBecomesNull implements Comparable<LocationWhereVa
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override

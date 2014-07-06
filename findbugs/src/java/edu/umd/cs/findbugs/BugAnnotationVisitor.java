@@ -37,4 +37,3 @@ public interface BugAnnotationVisitor {
     public void visitSourceLineAnnotation(SourceLineAnnotation sourceLineAnnotation);
 }
 
-// vim:ts=4

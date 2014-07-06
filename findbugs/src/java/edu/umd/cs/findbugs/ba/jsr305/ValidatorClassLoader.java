@@ -28,61 +28,71 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 class ValidatorClassLoader extends ClassLoader {
 
     static {
-        if (TypeQualifierValue.DEBUG_CLASSLOADING)
+        if (TypeQualifierValue.DEBUG_CLASSLOADING) {
             new RuntimeException("Initialising ValidatorClassLoader").printStackTrace();
+        }
 
     }
     final static ValidatorClassLoader INSTANCE = new ValidatorClassLoader();
 
     ValidatorClassLoader() {
         super(ClassLoader.getSystemClassLoader().getParent());
-        if (TypeQualifierValue.DEBUG_CLASSLOADING)
+        if (TypeQualifierValue.DEBUG_CLASSLOADING) {
             new RuntimeException("Creating ValidatorClassLoader #").printStackTrace();
+        }
     }
-    
+
     @Override
     protected Class<?> loadClass(String name, boolean resolve)
             throws ClassNotFoundException {
-        
+
         if (TypeQualifierValue.DEBUG_CLASSLOADING) {
-            if (resolve)
+            if (resolve) {
                 System.out.println("Loading and resolving class for " + name);
-            else System.out.println("Loading class for " + name);
+            } else {
+                System.out.println("Loading class for " + name);
+            }
         }
-      
+
         return super.loadClass(name, resolve);
     }
     @Override
     public Class<?> findClass(@DottedClassName String name) throws ClassNotFoundException {
-        if (TypeQualifierValue.DEBUG_CLASSLOADING)
+        if (TypeQualifierValue.DEBUG_CLASSLOADING) {
             System.out.println("Looking for class data for " + name);
-      
-        if (name.startsWith("javax.annotation"))
-                return Class.forName(name);
-       
+        }
+
+        if (name.startsWith("javax.annotation")) {
+            return Class.forName(name);
+        }
+
         try {
-             byte[] b = TypeQualifierValue.loadClassData(name);
+            byte[] b = TypeQualifierValue.loadClassData(name);
             return findClass(name, b);
         } catch (CheckedAnalysisException e) {
-            if (TypeQualifierValue.DEBUG_CLASSLOADING)
+            if (TypeQualifierValue.DEBUG_CLASSLOADING) {
                 e.printStackTrace();
+            }
             return super.findClass(name);
         } catch (RuntimeException e) {
-            if (TypeQualifierValue.DEBUG_CLASSLOADING)
+            if (TypeQualifierValue.DEBUG_CLASSLOADING) {
                 e.printStackTrace();
+            }
             throw e;
         }
     }
 
-    
+
     private Class<?> findClass(@DottedClassName String name, byte [] b)  {
         try {
-            if (TypeQualifierValue.DEBUG_CLASSLOADING)
+            if (TypeQualifierValue.DEBUG_CLASSLOADING) {
                 System.out.println("Loading " + b.length + " bytes for class " + name);
+            }
             Class<?> result = defineClass(name, b, 0, b.length);
             super.resolveClass(result);
-            if (TypeQualifierValue.DEBUG_CLASSLOADING)
+            if (TypeQualifierValue.DEBUG_CLASSLOADING) {
                 System.out.println("defined class " + name);
+            }
             return result;
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -91,7 +101,7 @@ class ValidatorClassLoader extends ClassLoader {
 
 
     }
-    
-    
+
+
 
 }

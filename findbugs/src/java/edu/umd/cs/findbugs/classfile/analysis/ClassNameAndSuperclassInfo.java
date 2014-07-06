@@ -123,17 +123,19 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor {
          *            The referencedClassDescriptorList to set.
          */
         public void setReferencedClassDescriptors(Collection<ClassDescriptor> referencedClassDescriptorList) {
-            if (referencedClassDescriptorList.size() == 0)
+            if (referencedClassDescriptorList.size() == 0) {
                 this.referencedClassDescriptorList = Collections.emptyList();
-            else
+            } else {
                 this.referencedClassDescriptorList = new ArrayList<ClassDescriptor>(referencedClassDescriptorList);
+            }
         }
 
         public void setCalledClassDescriptors(Collection<ClassDescriptor> calledClassDescriptorList) {
-            if (calledClassDescriptorList.size() == 0)
+            if (calledClassDescriptorList.size() == 0) {
                 this.calledClassDescriptors = Collections.emptySet();
-            else
+            } else {
                 this.calledClassDescriptors = new HashSet<ClassDescriptor>(calledClassDescriptorList);
+            }
         }
     }
 
@@ -148,8 +150,9 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor {
         this.interfaceDescriptorList = interfaceDescriptorList;
         this.codeBaseEntry = codeBaseEntry;
         this.accessFlags = accessFlags;
-        if (calledClassDescriptors == null)
+        if (calledClassDescriptors == null) {
             throw new NullPointerException("calledClassDescriptors must not be null");
+        }
         this.calledClassDescriptors = calledClassDescriptors;
         this.majorVersion = majorVersion;
         this.minorVersion = minorVersion;

@@ -40,8 +40,9 @@ public class MaxRankDecorator extends BugReporterDecorator {
     @Override
     public void reportBug(@Nonnull BugInstance bugInstance) {
         int rank = bugInstance.getBugRank();
-        if (rank <= maxRank)
+        if (rank <= maxRank) {
             getDelegate().reportBug(bugInstance);
+        }
 
     }
 

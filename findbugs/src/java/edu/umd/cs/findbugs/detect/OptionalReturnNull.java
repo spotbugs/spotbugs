@@ -35,7 +35,7 @@ public class OptionalReturnNull extends TypeReturnNull {
     @Override
     protected boolean matchesReturnSignature(String returnSignature) {
         return "Ljava/util/Optional;".equals(returnSignature)
-            || "Lcom/google/common/base/Optional;".equals(returnSignature);
+                || "Lcom/google/common/base/Optional;".equals(returnSignature);
     }
 
     @Override

@@ -63,11 +63,13 @@ public class WebCloudNameLookup implements NameLookup {
     public boolean signIn(CloudPlugin plugin, BugCollection bugCollection) throws IOException {
         loadProperties(plugin);
 
-        if (softSignin())
+        if (softSignin()) {
             return true;
+        }
 
-        if (sessionId == null)
+        if (sessionId == null) {
             sessionId = loadOrCreateSessionId();
+        }
 
         LOGGER.info("Opening browser for session " + sessionId);
         URL u = new URL(url + "/browser-auth/" + sessionId);
@@ -91,8 +93,9 @@ public class WebCloudNameLookup implements NameLookup {
     public void loadProperties(CloudPlugin plugin) {
         PropertyBundle pluginProps = plugin.getProperties();
         url = pluginProps.getProperty(APPENGINE_HOST_PROPERTY_NAME);
-        if (url == null)
+        if (url == null) {
             throw new IllegalStateException("Host not specified for " + plugin.getId());
+        }
     }
 
     /**
@@ -102,9 +105,10 @@ public class WebCloudNameLookup implements NameLookup {
      * @throws IOException
      */
     public boolean softSignin() throws IOException {
-        if (url == null)
+        if (url == null) {
             throw new IllegalStateException("Null host");
-        
+        }
+
         checkResolveHost();
 
         if (sessionId != null) {
@@ -117,8 +121,9 @@ public class WebCloudNameLookup implements NameLookup {
         }
         // check the previously used session ID
         long id = loadSessionId();
-        if (id == 0)
+        if (id == 0) {
             return false;
+        }
         boolean authorized = checkAuthorized(getAuthCheckUrl(id));
         if (authorized) {
             LOGGER.info("Authorized with session ID: " + id);
@@ -135,7 +140,7 @@ public class WebCloudNameLookup implements NameLookup {
         } catch (MalformedURLException e) {
             assert true;
             /* this will come out later */
-            }
+        }
     }
 
     private URL getAuthCheckUrl(long sessionId) throws MalformedURLException {
@@ -181,18 +186,20 @@ public class WebCloudNameLookup implements NameLookup {
     // ======================= end of public methods =======================
 
     private static SecureRandom secureRandom = new SecureRandom();
-    
+
     private long loadOrCreateSessionId() {
         long id = loadSessionId();
         if (id != 0) {
             LOGGER.info("Using saved session ID: " + id);
             return id;
         }
-         while (id == 0)
+        while (id == 0) {
             id = secureRandom.nextLong();
+        }
 
-        if (isSavingSessionInfoEnabled())
+        if (isSavingSessionInfoEnabled()) {
             saveSessionInformation(id);
+        }
 
         return id;
     }

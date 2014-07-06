@@ -51,9 +51,9 @@ public class URLClassPathRepository implements Repository {
 
     private static final long serialVersionUID = 1L;
 
-    private Map<String, JavaClass> nameToClassMap;
+    private final Map<String, JavaClass> nameToClassMap;
 
-    private URLClassPath urlClassPath;
+    private final URLClassPath urlClassPath;
 
     public URLClassPathRepository() {
         this.nameToClassMap = new HashMap<String, JavaClass>();
@@ -91,18 +91,21 @@ public class URLClassPathRepository implements Repository {
      */
     @Override
     public void storeClass(JavaClass javaClass) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Storing class " + javaClass.getClassName() + " in repository");
+        }
         JavaClass previous = nameToClassMap.put(javaClass.getClassName(), javaClass);
         if (DEBUG && previous != null) {
             System.out.println("\t==> A previous class was evicted!");
             dumpStack();
         }
         Repository tmp = org.apache.bcel.Repository.getRepository();
-        if (tmp != null && tmp != this)
+        if (tmp != null && tmp != this) {
             throw new IllegalStateException("Wrong/multiple BCEL repository");
-        if (tmp == null)
+        }
+        if (tmp == null) {
             org.apache.bcel.Repository.setRepository(this);
+        }
     }
 
     /*
@@ -149,8 +152,9 @@ public class URLClassPathRepository implements Repository {
      */
     @Override
     public JavaClass loadClass(/*@Nonnull*/ String className) throws ClassNotFoundException {
-        if (className == null)
+        if (className == null) {
             throw new IllegalArgumentException("className is null");
+        }
         // if (className.indexOf('/') >= 0) throw new IllegalStateException();
         JavaClass javaClass = findClass(className);
         if (javaClass == null) {
@@ -199,4 +203,3 @@ public class URLClassPathRepository implements Repository {
     }
 }
 
-// vim:ts=4

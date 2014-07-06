@@ -96,7 +96,7 @@ public class BugInstanceTest extends TestCase {
 
         SortedBugCollection bc = new SortedBugCollection();
         bc.setWithMessages(false);
-        
+
 
         String output = writeXML(inst, bc);
         System.err.println(output);
@@ -155,8 +155,9 @@ public class BugInstanceTest extends TestCase {
     }
 
     private void checkPropertyIterator(Iterator<BugProperty> iter, String[] names, String[] values) {
-        if (names.length != values.length)
+        if (names.length != values.length) {
             throw new IllegalArgumentException();
+        }
         for (int i = 0; i < names.length; ++i) {
             Assert.assertTrue(iter.hasNext());
             String name = names[i];
@@ -174,8 +175,9 @@ public class BugInstanceTest extends TestCase {
     private void removeThroughIterator(Iterator<BugProperty> iter, String name) {
         while (iter.hasNext()) {
             BugProperty prop = iter.next();
-            if (prop.getName().equals(name))
+            if (prop.getName().equals(name)) {
                 iter.remove();
+            }
         }
     }
 }

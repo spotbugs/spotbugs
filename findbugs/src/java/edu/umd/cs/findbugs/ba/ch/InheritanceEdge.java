@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.graph.AbstractEdge;
 /**
  * An edge in the InheritanceGraph. Source vertex is the subtype, target vertex
  * is a direct supertype.
- * 
+ *
  * @author David Hovemeyer
  */
 public class InheritanceEdge extends AbstractEdge<InheritanceEdge, ClassVertex> {

@@ -42,8 +42,9 @@ public class IfNull extends OneVariableInstruction implements EdgeTypes {
 
         // Instruction must be IFNULL or IFNONNULL.
         Instruction ins = handle.getInstruction();
-        if (!(ins instanceof IFNULL || ins instanceof IFNONNULL))
+        if (!(ins instanceof IFNULL || ins instanceof IFNONNULL)) {
             return null;
+        }
 
         // Ensure reference used is consistent with previous uses of
         // same variable.
@@ -58,4 +59,3 @@ public class IfNull extends OneVariableInstruction implements EdgeTypes {
     }
 }
 
-// vim:ts=4

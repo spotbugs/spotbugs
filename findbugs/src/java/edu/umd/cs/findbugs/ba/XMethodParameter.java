@@ -25,7 +25,7 @@ package edu.umd.cs.findbugs.ba;
 public class XMethodParameter implements Comparable<XMethodParameter> {
     /**
      * Create a new Method parameter reference
-     * 
+     *
      * @param m
      *            the method of which this is a parameter to
      * @param p
@@ -50,8 +50,9 @@ public class XMethodParameter implements Comparable<XMethodParameter> {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof XMethodParameter))
+        if (!(o instanceof XMethodParameter)) {
             return false;
+        }
         XMethodParameter mp2 = (XMethodParameter) o;
         return parameter == mp2.parameter && method.equals(mp2.method);
     }
@@ -65,8 +66,9 @@ public class XMethodParameter implements Comparable<XMethodParameter> {
     @SuppressWarnings("unchecked")
     public int compareTo(XMethodParameter mp2) {
         int result = method.compareTo(mp2.method);
-        if (result != 0)
+        if (result != 0) {
             return result;
+        }
         return parameter - mp2.parameter;
     }
 

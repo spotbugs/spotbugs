@@ -27,13 +27,13 @@ import edu.umd.cs.findbugs.graph.AbstractGraph;
 /**
  * Class representing the interprocedural call graph. Vertices represent
  * methods. Edges represent method calls.
- * 
+ *
  * @author David Hovemeyer
  */
 @Deprecated
 public class InterproceduralCallGraph extends AbstractGraph<InterproceduralCallGraphEdge, InterproceduralCallGraphVertex> {
 
-    private Map<MethodDescriptor, InterproceduralCallGraphVertex> methodDescToVertexMap;
+    private final Map<MethodDescriptor, InterproceduralCallGraphVertex> methodDescToVertexMap;
 
     /**
      * Constructor.
@@ -44,7 +44,7 @@ public class InterproceduralCallGraph extends AbstractGraph<InterproceduralCallG
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.graph.AbstractGraph#addVertex(edu.umd.cs.findbugs
      * .graph.AbstractVertex)
@@ -57,7 +57,7 @@ public class InterproceduralCallGraph extends AbstractGraph<InterproceduralCallG
 
     /**
      * Look up vertex corresponding to given method.
-     * 
+     *
      * @param methodDesc
      *            a MethodDescriptor specifying a method
      * @return the InterproceduralCallGraphVertex representing that method, or
@@ -69,7 +69,7 @@ public class InterproceduralCallGraph extends AbstractGraph<InterproceduralCallG
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.graph.AbstractGraph#allocateEdge(edu.umd.cs.findbugs
      * .graph.AbstractVertex, edu.umd.cs.findbugs.graph.AbstractVertex)

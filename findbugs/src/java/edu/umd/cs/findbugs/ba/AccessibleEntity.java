@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 /**
  * Common superinterface for code entities having access flags: classes, fields,
  * and methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface AccessibleEntity {

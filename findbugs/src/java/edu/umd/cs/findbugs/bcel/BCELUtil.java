@@ -40,13 +40,13 @@ import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Utility methods for detectors and analyses using BCEL.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class BCELUtil {
     /**
      * Construct a MethodDescriptor from JavaClass and method.
-     * 
+     *
      * @param jclass
      *            a JavaClass
      * @param method
@@ -61,7 +61,7 @@ public abstract class BCELUtil {
     /**
      * Get a MethodDescriptor describing the method called by given
      * InvokeInstruction.
-     * 
+     *
      * @param inv
      *            the InvokeInstruction
      * @param cpg
@@ -80,7 +80,7 @@ public abstract class BCELUtil {
     /**
      * Get FieldDescriptor describing the field accessed by given
      * FieldInstruction.
-     * 
+     *
      * @param fins
      *            a FieldInstruction
      * @param cpg
@@ -98,7 +98,7 @@ public abstract class BCELUtil {
 
     /**
      * Construct a ClassDescriptor from a JavaClass.
-     * 
+     *
      * @param jclass
      *            a JavaClass
      * @return a ClassDescriptor identifying that JavaClass
@@ -121,7 +121,7 @@ public abstract class BCELUtil {
 
     /**
      * Get a ClassDescriptor for the class described by given ObjectType object.
-     * 
+     *
      * @param type
      *            an ObjectType
      * @return a ClassDescriptor for the class described by the ObjectType
@@ -137,7 +137,7 @@ public abstract class BCELUtil {
      * Throw a ClassNotFoundException to indicate that class named by given
      * ClassDescriptor cannot be found. The exception message is formatted in a
      * way that can be decoded by ClassNotFoundExceptionParser.
-     * 
+     *
      * @param classDescriptor
      *            ClassDescriptor naming a class that cannot be found
      * @throws ClassNotFoundException
@@ -154,35 +154,44 @@ public abstract class BCELUtil {
     public static ObjectType getObjectTypeInstance(@DottedClassName String className) {
         return ObjectType.getInstance(className);
     }
-    
+
     public static ObjectType getObjectTypeInstance(Class<?> clazz) {
         return  getObjectTypeInstance(clazz.getName());
     }
-    
-    public static boolean isSynthetic(FieldOrMethod m) {
-        if (m.isSynthetic())
-            return true;
 
-        for(Attribute a : m.getAttributes())
-            if (a instanceof Synthetic)
+    public static boolean isSynthetic(FieldOrMethod m) {
+        if (m.isSynthetic()) {
+            return true;
+        }
+
+        for(Attribute a : m.getAttributes()) {
+            if (a instanceof Synthetic) {
                 return true;
+            }
+        }
         return false;
     }
     public static boolean isSynthetic(JavaClass j) {
-        if (j.isSynthetic())
+        if (j.isSynthetic()) {
             return true;
+        }
 
-        for(Attribute a : j.getAttributes())
-            if (a instanceof Synthetic)
+        for(Attribute a : j.getAttributes()) {
+            if (a instanceof Synthetic) {
                 return true;
+            }
+        }
         return false;
     }
     public static boolean isSynthetic(FieldGenOrMethodGen m) {
-        if (m.isSynthetic())
+        if (m.isSynthetic()) {
             return true;
-        for(Attribute a : m.getAttributes())
-            if (a instanceof Synthetic)
+        }
+        for(Attribute a : m.getAttributes()) {
+            if (a instanceof Synthetic) {
                 return true;
+            }
+        }
         return false;
     }
 }

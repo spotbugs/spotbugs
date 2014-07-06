@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.L10N;
  */
 public class ConsoleLogger implements Logger {
 
-    private LogSync logSync;
+    private final LogSync logSync;
 
     /**
      * Creates a new instance of ConsoleLogger
@@ -46,8 +46,9 @@ public class ConsoleLogger implements Logger {
     @Override
     public void logMessage(int severity, String message) {
         // If this is an error, pass it to the GUI
-        if (severity == ERROR)
+        if (severity == ERROR) {
             logSync.error(message);
+        }
 
         // Format a message for the console window
         Date date = new Date();
@@ -55,10 +56,11 @@ public class ConsoleLogger implements Logger {
         buf.append('[');
         buf.append(date.toString());
         buf.append("] ");
-        if (severity == ERROR)
+        if (severity == ERROR) {
             buf.append(L10N.getLocalString("msg.error_txt", "ERROR: "));
-        else if (severity == WARNING)
+        } else if (severity == WARNING) {
             buf.append(L10N.getLocalString("msg.warning_txt", "WARNING: "));
+        }
         buf.append(message);
         logSync.writeToLog(buf.toString());
     }

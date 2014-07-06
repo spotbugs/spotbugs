@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.charsets.UTF8;
 /**
  * Java main application to compute update a historical bug collection with
  * results from another build/analysis.
- * 
+ *
  * @author William Pugh
  */
 
@@ -52,10 +52,11 @@ public class CloudReport {
         }
 
         BugCollection bugs = new SortedBugCollection();
-        if (args.length == 0)
+        if (args.length == 0) {
             bugs.readXML(System.in);
-        else
+        } else {
             bugs.readXML(args[0]);
+        }
         bugs.getCloud().waitUntilIssueDataDownloaded();
         PrintWriter out = UTF8.printWriter(System.out);
         bugs.getCloud().printCloudSummary(out, bugs, new String[0]);

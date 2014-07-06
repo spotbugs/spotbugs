@@ -70,7 +70,7 @@ public class GUISaveState {
     private static final int MAXNUMRECENTPROJECTS = 5;
 
     private static final Sortables[] DEFAULT_COLUMN_HEADERS = new Sortables[] { Sortables.CATEGORY, Sortables.BUGCODE,
-            Sortables.TYPE, Sortables.DIVIDER, Sortables.BUG_RANK, Sortables.FIRST_SEEN, Sortables.DESIGNATION };
+        Sortables.TYPE, Sortables.DIVIDER, Sortables.BUG_RANK, Sortables.FIRST_SEEN, Sortables.DESIGNATION };
 
     private static final String[] RECENTPROJECTKEYS = new String[MAXNUMRECENTPROJECTS];
 
@@ -93,10 +93,12 @@ public class GUISaveState {
 
 
     static {
-        for (int x = 0; x < RECENTPROJECTKEYS.length; x++)
+        for (int x = 0; x < RECENTPROJECTKEYS.length; x++) {
             RECENTPROJECTKEYS[x] = "Project" + x;
-        for (int x = 0; x < COMMENTKEYS.length; x++)
+        }
+        for (int x = 0; x < COMMENTKEYS.length; x++) {
             COMMENTKEYS[x] = "Comment" + x;
+        }
     }
 
     private int splitMain;
@@ -135,7 +137,7 @@ public class GUISaveState {
 
     private List<String> enabledPlugins = new ArrayList<String>();
     private List<String> disabledPlugins = new ArrayList<String>();
-    private LinkedHashSet<URI> customPlugins = new LinkedHashSet<URI>();
+    private final LinkedHashSet<URI> customPlugins = new LinkedHashSet<URI>();
 
     private static String[] generateSorterKeys(int numSorters) {
         String[] result = new String[numSorters];
@@ -146,8 +148,9 @@ public class GUISaveState {
     }
 
     public static synchronized GUISaveState getInstance() {
-        if (instance == null)
+        if (instance == null) {
             instance = new GUISaveState();
+        }
         return instance;
     }
 
@@ -183,8 +186,9 @@ public class GUISaveState {
                 Sortables s = Sortables.getSortableByPrettyName(p.get(sortKeys[x], "*none*"));
 
                 if (s == null) {
-                    if (MainFrame.GUI2_DEBUG)
+                    if (MainFrame.GUI2_DEBUG) {
                         System.err.println("Sort order was corrupted, using default sort order");
+                    }
                     newInstance.useDefault = true;
                     break;
                 }
@@ -197,8 +201,9 @@ public class GUISaveState {
                 sortColumns.addAll(missingSortColumns);
                 newInstance.sortColumns = sortColumns.toArray(new Sortables[sortColumns.size()]);
             }
-        } else
+        } else {
             newInstance.useDefault = true;
+        }
 
         newInstance.dockingLayout = p.getByteArray(DOCKINGLAYOUT, new byte[0]);
 
@@ -206,30 +211,34 @@ public class GUISaveState {
         Rectangle r = new Rectangle(0, 0, 800, 650);
         if (boundsString != null) {
             String[] a = boundsString.split(",", 4);
-            if (a.length > 0)
+            if (a.length > 0) {
                 try {
                     r.x = Math.max(0, Integer.parseInt(a[0]));
                 } catch (NumberFormatException nfe) {
                     assert true;
                 }
-            if (a.length > 1)
+            }
+            if (a.length > 1) {
                 try {
                     r.y = Math.max(0, Integer.parseInt(a[1]));
                 } catch (NumberFormatException nfe) {
                     assert true;
                 }
-            if (a.length > 2)
+            }
+            if (a.length > 2) {
                 try {
                     r.width = Math.max(40, Integer.parseInt(a[2]));
                 } catch (NumberFormatException nfe) {
                     assert true;
                 }
-            if (a.length > 3)
+            }
+            if (a.length > 3) {
                 try {
                     r.height = Math.max(40, Integer.parseInt(a[3]));
                 } catch (NumberFormatException nfe) {
                     assert true;
                 }
+            }
         }
         newInstance.frameBounds = r;
         newInstance.extendedWindowState = p.getInt(EXTENDED_WINDOW_STATE, Frame.NORMAL);
@@ -241,16 +250,17 @@ public class GUISaveState {
         newInstance.packagePrefixSegments = p.getInt(PACKAGE_PREFIX_SEGEMENTS, 3);
 
         String plugins = p.get(CUSTOM_PLUGINS, "");
-        if (plugins.length() > 0)
+        if (plugins.length() > 0) {
             for (String s : plugins.split(" ")) {
-            try {
-                URI u = new URI(s);
-                Plugin.addCustomPlugin(u);
-                newInstance.customPlugins.add(u);
-            } catch (PluginException e) {
-                assert true;
-            } catch (URISyntaxException e) {
-                assert true;
+                try {
+                    URI u = new URI(s);
+                    Plugin.addCustomPlugin(u);
+                    newInstance.customPlugins.add(u);
+                } catch (PluginException e) {
+                    assert true;
+                } catch (URISyntaxException e) {
+                    assert true;
+                }
             }
         }
 
@@ -320,8 +330,9 @@ public class GUISaveState {
      * @param f
      */
     public void addRecentFile(File f) {
-        if (null != f)
+        if (null != f) {
             recentFiles.add(f);
+        }
     }
 
     /**
@@ -341,8 +352,9 @@ public class GUISaveState {
     public void fileNotFound(File f) {
         if (!recentFiles.contains(f)) {
             throw new IllegalStateException("Well no wonder it wasn't found, its not in the list.");
-        } else
+        } else {
             recentFiles.remove(f);
+        }
 
     }
 
@@ -550,7 +562,7 @@ public class GUISaveState {
         try {
             return customPlugins.add(u.toURI());
         } catch (URISyntaxException e) {
-           throw new IllegalArgumentException("Error converting to uri: " + u, e);
+            throw new IllegalArgumentException("Error converting to uri: " + u, e);
         }
     }
     public List<String> getDisabledPlugins() {
@@ -566,13 +578,15 @@ public class GUISaveState {
     }
 
     SorterTableColumnModel getStarterTable() {
-        if (starterTable != null)
+        if (starterTable != null) {
             return starterTable;
+        }
 
-        if (useDefault || sortColumns == null)
+        if (useDefault || sortColumns == null) {
             starterTable = new SorterTableColumnModel(GUISaveState.DEFAULT_COLUMN_HEADERS);
-        else
+        } else {
             starterTable = new SorterTableColumnModel(sortColumns);
+        }
 
         return starterTable;
     }

@@ -44,8 +44,9 @@ public class DeepSubtypeAnalysis {
         try {
             remote = AnalysisContext.lookupSystemClass("java.rmi.Remote");
         } catch (ClassNotFoundException e) {
-            if (storedException == null)
+            if (storedException == null) {
                 storedException = e;
+            }
         }
     }
 
@@ -53,33 +54,38 @@ public class DeepSubtypeAnalysis {
         if (type instanceof ArrayType) {
             ArrayType a = (ArrayType) type;
             Type t = a.getBasicType();
-            if (t instanceof ReferenceType) 
+            if (t instanceof ReferenceType) {
                 type = (ReferenceType) t;
-            else
+            } else {
                 return 1.0;
+            }
         }
         double result =  isDeepSerializable(type.getSignature());
         if (type instanceof GenericObjectType && Subtypes2.isContainer(type)) {
             GenericObjectType gt = (GenericObjectType) type;
             List<? extends ReferenceType> parameters = gt.getParameters();
-            if (parameters != null) for(ReferenceType t : parameters) {
-                double r = isDeepSerializable(t);
-                if (result > r)
-                    result = r;
+            if (parameters != null) {
+                for(ReferenceType t : parameters) {
+                    double r = isDeepSerializable(t);
+                    if (result > r) {
+                        result = r;
+                    }
+                }
             }
         }
-        
+
         return result;
     }
-    public static ReferenceType getLeastSerializableTypeComponent(ReferenceType type) 
+    public static ReferenceType getLeastSerializableTypeComponent(ReferenceType type)
             throws ClassNotFoundException {
         if (type instanceof ArrayType) {
             ArrayType a = (ArrayType) type;
             Type t = a.getBasicType();
-            if (t instanceof ReferenceType) 
+            if (t instanceof ReferenceType) {
                 type = (ReferenceType) t;
-            else
+            } else {
                 return type;
+            }
         }
 
         ReferenceType result = type;
@@ -87,21 +93,24 @@ public class DeepSubtypeAnalysis {
         if (type instanceof GenericObjectType && Subtypes2.isContainer(type)) {
             GenericObjectType gt = (GenericObjectType) type;
             List<? extends ReferenceType> parameters = gt.getParameters();
-            if (parameters != null) for(ReferenceType t : parameters) {
-                double r = isDeepSerializable(t);
-                if (value > r) {
-                    value = r;
-                    result = getLeastSerializableTypeComponent(t);
+            if (parameters != null) {
+                for(ReferenceType t : parameters) {
+                    double r = isDeepSerializable(t);
+                    if (value > r) {
+                        value = r;
+                        result = getLeastSerializableTypeComponent(t);
+                    }
                 }
             }
         }
-        
+
         return result;
     }
 
     public static double isDeepSerializable(@DottedClassName String refSig) throws ClassNotFoundException {
-        if (storedException != null)
+        if (storedException != null) {
             throw storedException;
+        }
 
         if (isPrimitiveComponentClass(refSig)) {
             if (DEBUG) {
@@ -111,8 +120,9 @@ public class DeepSubtypeAnalysis {
         }
 
         String refName = getComponentClass(refSig);
-        if (refName.equals("java.lang.Object"))
+        if (refName.equals("java.lang.Object")) {
             return 0.99;
+        }
 
         JavaClass refJavaClass = Repository.lookupClass(refName);
         return isDeepSerializable(refJavaClass);
@@ -123,12 +133,14 @@ public class DeepSubtypeAnalysis {
     }
 
     public static double isDeepRemote(String refSig) {
-        if (remote == null)
+        if (remote == null) {
             return 0.1;
+        }
 
         String refName = getComponentClass(refSig);
-        if (refName.equals("java.lang.Object"))
+        if (refName.equals("java.lang.Object")) {
             return 0.99;
+        }
 
         JavaClass refJavaClass;
         try {
@@ -159,21 +171,25 @@ public class DeepSubtypeAnalysis {
     }
 
     public static String getComponentClass(String refSig) {
-        while (refSig.charAt(0) == '[')
+        while (refSig.charAt(0) == '[') {
             refSig = refSig.substring(1);
+        }
 
         // TODO: This method now returns primitive type signatures, is this ok?
-        if (refSig.charAt(0) == 'L')
+        if (refSig.charAt(0) == 'L') {
             return refSig.substring(1, refSig.length() - 1).replace('/', '.');
+        }
         return refSig;
     }
 
     public static double isDeepSerializable(JavaClass x) throws ClassNotFoundException {
-        if (storedException != null)
+        if (storedException != null) {
             throw storedException;
+        }
 
-        if (x.getClassName().equals("java.lang.Object"))
+        if (x.getClassName().equals("java.lang.Object")) {
             return 0.4;
+        }
 
         if (DEBUG) {
             System.out.println("checking " + x.getClassName());
@@ -187,8 +203,9 @@ public class DeepSubtypeAnalysis {
             return result;
         }
 
-        if (x.isFinal())
+        if (x.isFinal()) {
             return result;
+        }
 
         double collectionResult = Analyze.deepInstanceOf(x, collection);
         double mapResult = Analyze.deepInstanceOf(x, map);
@@ -211,8 +228,9 @@ public class DeepSubtypeAnalysis {
         if (x.isAbstract() || x.isInterface()) {
             confidence = 0.8;
             result = Math.max(result, 0.4);
-        } else if (directSubtypes.isEmpty())
+        } else if (directSubtypes.isEmpty()) {
             confidence = 0.2;
+        }
 
         double confidence2 = (1 + confidence) / 2;
         result = Math.max(result, confidence2 * collectionResult);
@@ -250,7 +268,7 @@ public class DeepSubtypeAnalysis {
         }
 
 
-          if (DEBUG) {
+        if (DEBUG) {
             System.out.println("No high results; max: " + result);
         }
         return result;

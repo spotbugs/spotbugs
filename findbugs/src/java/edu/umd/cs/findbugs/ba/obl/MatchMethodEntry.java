@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.util.TypeMatcher;
 /**
  * An ObligationPolicyDatabaseEntry which creates or deletes an obligation based
  * on a call to a specified method.
- * 
+ *
  * @author David Hovemeyer
  */
 public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
@@ -51,7 +51,7 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
     private final Obligation[] obligations;
 
     private final ObligationPolicyDatabaseEntryType entryType;
-    
+
     @Override
     public Collection<Obligation> getAllObligations() {
         return Arrays.asList(obligations);
@@ -59,7 +59,7 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 
     /**
      * Constructor. Creates an entry which matches the given XMethod.
-     * 
+     *
      * @param xmethod
      *            an XMethod
      * @param action
@@ -84,7 +84,7 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 
     /**
      * Constructor.
-     * 
+     *
      * @param receiverType
      *            TypeMatcher to match the receiver type (or class containing
      *            static method)
@@ -123,8 +123,9 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
             Collection<ObligationPolicyDatabaseAction> actionList) {
         if (this.methodName.matches(methodName) && this.signature.matches(signature) && this.isStatic == isStatic
                 && this.receiverType.matches(receiverType)) {
-            for (Obligation o : obligations)
+            for (Obligation o : obligations) {
                 actionList.add(new ObligationPolicyDatabaseAction(action, o));
+            }
             return true;
         }
         return false;

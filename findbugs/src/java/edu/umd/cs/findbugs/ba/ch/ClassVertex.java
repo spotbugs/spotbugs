@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.graph.AbstractVertex;
 /**
  * Vertex class - represents a class or interface in the InheritanceGraph. Edges
  * connect subtypes to supertypes.
- * 
+ *
  * @author David Hovemeyer
  */
 class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
@@ -55,8 +55,9 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof ClassVertex))
+        if (!(o instanceof ClassVertex)) {
             return false;
+        }
         return classDescriptor.equals(((ClassVertex) o).classDescriptor);
     }
 
@@ -85,7 +86,7 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 
     /**
      * Factory method for resolved ClassVertex objects.
-     * 
+     *
      * @param classDescriptor
      *            ClassDescriptor naming the class or interface
      * @param xclass
@@ -98,7 +99,7 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 
     /**
      * Factory method for ClassVertex objects representing missing classes.
-     * 
+     *
      * @param classDescriptor
      *            ClassDescriptor naming the missing class or interface
      * @param isInterface
@@ -178,7 +179,7 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 
     /**
      * Set the ClassVertex representing the direct superclass.
-     * 
+     *
      * @param target
      *            ClassVertex representing the direct superclass.
      */

@@ -44,7 +44,7 @@ import javax.annotation.WillCloseWhenClosed;
 public class UTF8 {
 
     /**
-     * 
+     *
      */
     private static final String UTF_8 = "UTF-8";
     public static final Charset charset;
@@ -54,13 +54,13 @@ public class UTF8 {
     }
 
     public static PrintStream printStream(OutputStream out) {
-       return printStream(out, false);
+        return printStream(out, false);
     }
     public static PrintStream printStream(OutputStream out, boolean autoflush) {
         try {
             return new PrintStream(out,autoflush, UTF_8);
         } catch (UnsupportedEncodingException e) {
-           throw new AssertionError("UTF-8 not supported");
+            throw new AssertionError("UTF-8 not supported");
         }
     }
     public static Writer writer(OutputStream out) {

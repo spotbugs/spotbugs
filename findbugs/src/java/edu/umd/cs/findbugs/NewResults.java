@@ -25,9 +25,9 @@ import org.dom4j.DocumentException;
 
 @Deprecated
 public class NewResults {
-    private SortedBugCollection origCollection;
+    private final SortedBugCollection origCollection;
 
-    private SortedBugCollection newCollection;
+    private final SortedBugCollection newCollection;
 
     public NewResults(String origFilename, String newFilename) throws IOException, DocumentException {
         this(new SortedBugCollection(), new SortedBugCollection());
@@ -72,4 +72,3 @@ public class NewResults {
     }
 }
 
-// vim:ts=4

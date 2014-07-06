@@ -40,7 +40,7 @@ public class JavaWebStart {
     Method jnlpGetCodeBaseMethod;
 
     static final Object jnlpBasicService; // will not be null if
-                                          // jnlpShowMethod!=null
+    // jnlpShowMethod!=null
 
     static {
         // attempt to set the JNLP BasicService object and its showDocument(URL)
@@ -79,8 +79,9 @@ public class JavaWebStart {
         if (JavaWebStart.jnlpGetCodeBaseMethod != null) {
             try {
                 URL base = (URL) JavaWebStart.jnlpGetCodeBaseMethod.invoke(JavaWebStart.jnlpBasicService);
-                if (base != null)
+                if (base != null) {
                     return new URL(base, s);
+                }
             } catch (RuntimeException e) {
                 assert true;
             } catch (Exception e) {
@@ -91,22 +92,25 @@ public class JavaWebStart {
     }
 
     static Boolean viaWebStart(URL url) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-        if (JavaWebStart.jnlpShowDocumentMethod == null)
+        if (JavaWebStart.jnlpShowDocumentMethod == null) {
             throw new UnsupportedOperationException("Launch via web start not available");
+        }
         return (Boolean) JavaWebStart.jnlpShowDocumentMethod.invoke(JavaWebStart.jnlpBasicService, url);
     }
 
     static boolean showViaWebStart(URL url) {
-        if (JavaWebStart.jnlpShowDocumentMethod != null)
+        if (JavaWebStart.jnlpShowDocumentMethod != null) {
             try {
-                if (LaunchBrowser.DEBUG)
+                if (LaunchBrowser.DEBUG) {
                     JOptionPane.showMessageDialog(null, "Trying browse via webstart");
+                }
 
                 Boolean b = viaWebStart(url);
                 boolean success = b != null && b.booleanValue();
 
-                if (LaunchBrowser.DEBUG)
+                if (LaunchBrowser.DEBUG) {
                     JOptionPane.showMessageDialog(null, " browse via webstart: " + success);
+                }
                 return success;
 
             } catch (InvocationTargetException ite) {
@@ -114,6 +118,7 @@ public class JavaWebStart {
             } catch (IllegalAccessException iae) {
                 assert true;
             }
+        }
         return false;
     }
 

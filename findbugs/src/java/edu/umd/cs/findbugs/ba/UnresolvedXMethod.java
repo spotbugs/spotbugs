@@ -61,8 +61,9 @@ class UnresolvedXMethod extends AbstractMethod {
 
     @Override
     public ElementType getElementType() {
-        if (getName().equals("<init>"))
+        if (getName().equals("<init>")) {
             return ElementType.CONSTRUCTOR;
+        }
         return ElementType.METHOD;
     }
 
@@ -199,8 +200,9 @@ class UnresolvedXMethod extends AbstractMethod {
     @Override
     public Collection<ClassDescriptor> getParameterAnnotationDescriptors(int param) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
-        if (map == null)
+        if (map == null) {
             return Collections.<ClassDescriptor> emptySet();
+        }
         return map.keySet();
     }
 
@@ -208,21 +210,23 @@ class UnresolvedXMethod extends AbstractMethod {
     public boolean hasParameterAnnotations() {
         return !methodParameterAnnotations.isEmpty();
     }
-    
+
     @Override
     public @Nullable
     AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
-        if (map == null)
+        if (map == null) {
             return null;
+        }
         return map.get(desc);
     }
 
     @Override
     public Collection<AnnotationValue> getParameterAnnotations(int param) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
-        if (map == null)
+        if (map == null) {
             return Collections.<AnnotationValue> emptySet();
+        }
         return map.values();
     }
 

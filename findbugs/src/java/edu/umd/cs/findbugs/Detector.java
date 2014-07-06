@@ -29,7 +29,7 @@ public interface Detector extends Priorities {
     /**
      * Visit the ClassContext for a class which should be analyzed for instances
      * of bug patterns.
-     * 
+     *
      * @param classContext
      *            the ClassContext
      */
@@ -43,4 +43,3 @@ public interface Detector extends Priorities {
     public void report();
 }
 
-// vim:ts=4

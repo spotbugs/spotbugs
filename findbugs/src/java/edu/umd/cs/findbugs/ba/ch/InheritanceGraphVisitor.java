@@ -26,14 +26,14 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
  * Visitor interface for traversals of the inheritance graph.
- * 
+ *
  * @see Subtypes2
  * @author David Hovemeyer
  */
 public interface InheritanceGraphVisitor {
     /**
      * Visit a class vertex in the inheritance graph.
-     * 
+     *
      * @param classDescriptor
      *            ClassDescriptor of the class vertex
      * @param xclass
@@ -45,7 +45,7 @@ public interface InheritanceGraphVisitor {
 
     /**
      * Visit an inheritance edge in the inheritance graph.
-     * 
+     *
      * @param sourceDesc
      *            ClassDescriptor of the source class (subtype)
      * @param source

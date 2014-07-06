@@ -68,12 +68,12 @@ public class ReturnPath {
     }
 
     private static final int[][] mergeMatrix = {
-            // TOP EXIT UE EXIT_UE RETURNS
-            { TOP, }, // TOP
-            { EXIT, EXIT, }, // EXIT
-            { UE, EXIT_UE, UE, }, // UE
-            { EXIT_UE, EXIT_UE, EXIT_UE, EXIT_UE, }, // EXIT_UE
-            { RETURNS, RETURNS, RETURNS, RETURNS, RETURNS }, // RETURNS
+        // TOP EXIT UE EXIT_UE RETURNS
+        { TOP, }, // TOP
+        { EXIT, EXIT, }, // EXIT
+        { UE, EXIT_UE, UE, }, // UE
+        { EXIT_UE, EXIT_UE, EXIT_UE, EXIT_UE, }, // EXIT_UE
+        { RETURNS, RETURNS, RETURNS, RETURNS, RETURNS }, // RETURNS
     };
 
     public void mergeWith(ReturnPath other) {
@@ -101,4 +101,3 @@ public class ReturnPath {
     }
 }
 
-// vim:ts=4

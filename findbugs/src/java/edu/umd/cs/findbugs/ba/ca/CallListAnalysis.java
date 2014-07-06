@@ -38,10 +38,10 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ReversePostOrder;
 
 public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
-    private DepthFirstSearch dfs;
+    private final DepthFirstSearch dfs;
 
     // private ConstantPoolGen cpg;
-    private Map<InstructionHandle, Call> callMap;
+    private final Map<InstructionHandle, Call> callMap;
 
     public CallListAnalysis(CFG cfg, DepthFirstSearch dfs, ConstantPoolGen cpg) {
         this.dfs = dfs;

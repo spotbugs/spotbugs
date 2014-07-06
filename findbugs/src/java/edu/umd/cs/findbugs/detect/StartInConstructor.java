@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 public class StartInConstructor extends BytecodeScanningDetector implements StatelessDetector {
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private final BugAccumulator bugAccumulator;
 
@@ -66,15 +66,17 @@ public class StartInConstructor extends BytecodeScanningDetector implements Stat
             try {
                 if (Hierarchy.isSubtype(getDottedClassConstantOperand(), "java.lang.Thread")) {
                     int priority = Priorities.NORMAL_PRIORITY;
-                    if (getPC() + 4 >= getCode().getCode().length)
+                    if (getPC() + 4 >= getCode().getCode().length) {
                         priority = Priorities.LOW_PRIORITY;
+                    }
                     BugInstance bug = new BugInstance(this, "SC_START_IN_CTOR", priority).addClassAndMethod(this)
                             .addCalledMethod(this);
                     Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
                     Set<ClassDescriptor> directSubtypes = subtypes2.getDirectSubtypes(getClassDescriptor());
                     if (!directSubtypes.isEmpty()) {
-                        for (ClassDescriptor sub : directSubtypes)
+                        for (ClassDescriptor sub : directSubtypes) {
                             bug.addClass(sub).describe(ClassAnnotation.SUBCLASS_ROLE);
+                        }
                         bug.setPriority(Priorities.HIGH_PRIORITY);
                     }
                     bugAccumulator.accumulateBug(bug, this);

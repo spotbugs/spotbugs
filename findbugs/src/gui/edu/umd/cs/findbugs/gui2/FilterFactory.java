@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.util.NotImplementedYetException;
  * @author pugh
  */
 public class FilterFactory {
-    
+
     public static Matcher makeOrMatcher(Collection<SortableValue> sortables) {
         return makeMatcher(sortables, false);
     }
@@ -54,39 +54,44 @@ public class FilterFactory {
         if (originalMatcher instanceof NotMatcher) {
             return ((NotMatcher) originalMatcher).originalMatcher();
         }
-        
+
         NotMatcher notMatcher = new NotMatcher();
         notMatcher.addChild(originalMatcher);
         return notMatcher;
     }
-    
+
     private static Matcher makeMatcher(Collection<SortableValue> sortables, boolean andOr) {
         if (sortables.size() == 1) {
-            for (SortableValue s : sortables)
+            for (SortableValue s : sortables) {
                 return makeMatcher(s);
+            }
         }
         edu.umd.cs.findbugs.filter.CompoundMatcher matcher;
-        if (andOr == true)
+        if (andOr == true) {
             matcher = new AndMatcher();
-        else
+        } else {
             matcher = new OrMatcher();
-        for (SortableValue s : sortables)
+        }
+        for (SortableValue s : sortables) {
             matcher.addChild(makeMatcher(s));
+        }
         return matcher;
     }
 
     public static Matcher makeMatcher(Collection<Sortables> sortables, BugInstance bug) {
         if (sortables.size() == 1) {
-            for (Sortables s : sortables)
+            for (Sortables s : sortables) {
                 return makeMatcher(s, bug);
+            }
         }
         AndMatcher matcher = new AndMatcher();
-        for (Sortables s : sortables)
+        for (Sortables s : sortables) {
             matcher.addChild(makeMatcher(s, bug));
+        }
         return matcher;
     }
 
-    
+
     public static boolean canFilter(Sortables s) {
         switch (s) {
         case BUGCODE:
@@ -104,7 +109,7 @@ public class FilterFactory {
             return false;
         }
     }
-    
+
 
     private static Matcher makeMatcher(Sortables s, BugInstance bug) {
         switch (s) {
@@ -124,18 +129,19 @@ public class FilterFactory {
         case PACKAGE:
             String p = Sortables.CLASS.getFrom(bug);
             int lastDot = p.lastIndexOf('.');
-            if (lastDot > 0)
+            if (lastDot > 0) {
                 p = p.substring(0, lastDot);
+            }
             return new ClassMatcher("~" + p + "\\.[^.]+");
         case PRIORITY:
             return new PriorityMatcher(Integer.toString(bug.getPriority()));
-       
+
         case TYPE:
             return new BugMatcher(null, s.getFrom(bug), null);
 
         case BUG_RANK:
             return new RankMatcher(s.getFrom(bug));
-         
+
         case DIVIDER:
         default:
             throw new IllegalArgumentException("Don't know how to make maker for " + s);

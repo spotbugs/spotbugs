@@ -50,12 +50,15 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
 
     @Override
     public void visit(Code obj) {
-        if (isDoPrivileged && getMethodName().equals("run"))
+        if (isDoPrivileged && getMethodName().equals("run")) {
             return;
-        if (getMethod().isPrivate())
+        }
+        if (getMethod().isPrivate()) {
             return;
-        if (DumbMethods.isTestMethod(getMethod()))
+        }
+        if (DumbMethods.isTestMethod(getMethod())) {
             return;
+        }
         super.visit(obj);
         bugAccumulator.reportAccumulatedBugs();
     }
@@ -65,10 +68,11 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
         if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("setAccessible")) {
             @DottedClassName
             String className = getDottedClassConstantOperand();
-            if (className.equals("java.lang.reflect.Field") || className.equals("java.lang.reflect.Method"))
+            if (className.equals("java.lang.reflect.Field") || className.equals("java.lang.reflect.Method")) {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "DP_DO_INSIDE_DO_PRIVILEGED", LOW_PRIORITY).addClassAndMethod(this)
-                                .addCalledMethod(this), this);
+                        .addCalledMethod(this), this);
+            }
 
         }
         if (seen == NEW) {
@@ -76,9 +80,10 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
             String classOfConstructedClass = getDottedClassConstantOperand();
             if (Subtypes2.instanceOf(classOfConstructedClass, "java.lang.ClassLoader")
                     && !(getMethodName().equals("main") && getMethodSig().equals("([Ljava/lang/String;)V") && getMethod()
-                            .isStatic()))
+                            .isStatic())) {
                 bugAccumulator.accumulateBug(new BugInstance(this, "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addClass(classOfConstructedClass), this);
+                .addClassAndMethod(this).addClass(classOfConstructedClass), this);
+            }
         }
 
     }

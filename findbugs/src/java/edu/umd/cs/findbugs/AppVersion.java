@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * application. Timestamp is when FindBugs was run (according to
  * System.currentTimeMillis()), and the release name is available if the user
  * provided it.
- * 
+ *
  * @author David Hovemeyer
  */
 public class AppVersion implements XMLWriteable, Cloneable {
@@ -41,7 +41,7 @@ public class AppVersion implements XMLWriteable, Cloneable {
      */
     public static final String ELEMENT_NAME = "AppVersion";
 
-    private long sequence;
+    private final long sequence;
 
     private long timestamp;
 
@@ -71,7 +71,7 @@ public class AppVersion implements XMLWriteable, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#clone()
      */
 
@@ -95,8 +95,9 @@ public class AppVersion implements XMLWriteable, Cloneable {
      * @return Returns the timestamp.
      */
     public long getTimestamp() {
-        if (timestamp <= 0)
+        if (timestamp <= 0) {
             return System.currentTimeMillis();
+        }
         return timestamp;
     }
 
@@ -127,7 +128,7 @@ public class AppVersion implements XMLWriteable, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.xml.XMLWriteable#writeXML(edu.umd.cs.findbugs.xml
      * .XMLOutput)
@@ -137,14 +138,14 @@ public class AppVersion implements XMLWriteable, Cloneable {
         xmlOutput.openCloseTag(
                 ELEMENT_NAME,
                 new XMLAttributeList().addAttribute("sequence", String.valueOf(sequence))
-                        .addAttribute("timestamp", String.valueOf(timestamp)).addAttribute("release", releaseName)
-                        .addAttribute("codeSize", String.valueOf(codeSize))
-                        .addAttribute("numClasses", String.valueOf(numClasses)));
+                .addAttribute("timestamp", String.valueOf(timestamp)).addAttribute("release", releaseName)
+                .addAttribute("codeSize", String.valueOf(codeSize))
+                .addAttribute("numClasses", String.valueOf(numClasses)));
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
 

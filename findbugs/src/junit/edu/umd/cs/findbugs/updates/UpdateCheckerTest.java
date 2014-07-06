@@ -85,7 +85,7 @@ public class UpdateCheckerTest extends TestCase {
         org.junit.Assume.assumeTrue(!checker.updateChecksGloballyDisabled());
     }
 
-    
+
     public void testSimplePluginUpdate() throws Exception {
         // setup
         setResponseXml("my.id", "09/01/2011 02:00 PM EST", "2.1");
@@ -235,8 +235,11 @@ public class UpdateCheckerTest extends TestCase {
         StringBuilder builder = new StringBuilder();
         boolean first = true;
         for (String blah : pattern.split("\\*")) {
-            if (first) first = false;
-            else builder.append(".*");
+            if (first) {
+                first = false;
+            } else {
+                builder.append(".*");
+            }
             builder.append(Pattern.quote(blah.replaceAll("'", "\"")));
         }
         return builder.toString();
@@ -259,7 +262,7 @@ public class UpdateCheckerTest extends TestCase {
         try {
             fakeLoader = new PluginLoader(true, new URL("http://" + pluginId + ".findbugs.cs.umd.edu"));
         } catch (MalformedURLException e) {
-           throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
         Plugin plugin = new Plugin(pluginId, version, releaseDate, fakeLoader,  true, false);
         plugin.setShortDescription("My Plugin");

@@ -35,6 +35,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -132,7 +133,7 @@ public abstract class CloudCommentsPane extends JPanel {
         cloudReportPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         _cloudReportScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
 
-//        designationCombo.setPreferredSize(new Dimension(300, 20));
+        //        designationCombo.setPreferredSize(new Dimension(300, 20));
         commentBox.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -175,12 +176,14 @@ public abstract class CloudCommentsPane extends JPanel {
         designationCombo.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-                                                          boolean cellHasFocus) {
+                    boolean cellHasFocus) {
                 Component real = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value == null)
+                if (value == null) {
                     return real;
-                if (index == -1)
+                }
+                if (index == -1) {
                     return real;
+                }
                 JPanel panel = new JPanel(new GridBagLayout());
                 panel.setBorder(new EmptyBorder(3, 3, 3, 3));
                 int mask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
@@ -195,8 +198,8 @@ public abstract class CloudCommentsPane extends JPanel {
                 gbc.insets = new Insets(0, 10, 0, 0);
                 JLabel label = new JLabel(KeyEvent.getKeyModifiersText(mask) + "-" + (index + 1));
                 label.setForeground(Color.GRAY);
-//                Font font = label.getFont();
-//                label.setFont(font.deriveFont(font.getSize() - 2f));
+                //                Font font = label.getFont();
+                //                label.setFont(font.deriveFont(font.getSize() - 2f));
                 panel.add(label, gbc);
                 panel.setBackground(real.getBackground());
                 return panel;
@@ -207,13 +210,14 @@ public abstract class CloudCommentsPane extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 if (!updatingHeader) {
                     int selectedIndex = designationCombo.getSelectedIndex();
-                    if (selectedIndex >= 0)
+                    if (selectedIndex >= 0) {
                         setDesignation(userDesignationKeys.get(selectedIndex));
+                    }
                 }
             }
         });
 
-//        commentEntryPanel.setVisible(false);
+        //        commentEntryPanel.setVisible(false);
         submitCommentButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
@@ -224,8 +228,8 @@ public abstract class CloudCommentsPane extends JPanel {
         cloudDetailsLabel.setBorder(null);
         plainCommentFont = commentBox.getFont().deriveFont(Font.PLAIN);
         cloudReportPane.setFont(plainCommentFont);
-//        cloudReportPane.setEditorKit(new HTMLEditorKit());
-//        ((HTMLEditorKit) cloudReportPane.getDocument()).getStyleSheet().addRule("body { font-");
+        //        cloudReportPane.setEditorKit(new HTMLEditorKit());
+        //        ((HTMLEditorKit) cloudReportPane.getDocument()).getStyleSheet().addRule("body { font-");
 
         setDefaultComment(MSG_REVIEW);
         commentBox.addFocusListener(new FocusListener() {
@@ -245,8 +249,9 @@ public abstract class CloudCommentsPane extends JPanel {
                 if (isDefaultComment(text)) {
                     refresh();
                 } else if (text.equals(lastCommentText)) {
-                    if (text.trim().length() == 0)
+                    if (text.trim().length() == 0) {
                         refresh();
+                    }
                 } else {
                     submitComment(CloudCommentsPane.this.getSelectedBugs());
                     resetCommentBoxFont();
@@ -258,7 +263,7 @@ public abstract class CloudCommentsPane extends JPanel {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     cancelClicked();
-                } else if (e.getKeyCode() == KeyEvent.VK_ENTER && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
+                } else if (e.getKeyCode() == KeyEvent.VK_ENTER && (e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) {
                     submitComment(CloudCommentsPane.this.getSelectedBugs());
                 }
             }
@@ -281,7 +286,9 @@ public abstract class CloudCommentsPane extends JPanel {
     }
 
     private boolean isDefaultComment(String text) {
-        if (text.equals(MSG_REVIEW)) return true;
+        if (text.equals(MSG_REVIEW)) {
+            return true;
+        }
         try {
             new MessageFormat(MSG_REVIEW_MULTI).parse(text);
             return true; // didn't throw an exception
@@ -300,14 +307,15 @@ public abstract class CloudCommentsPane extends JPanel {
         submitCommentButton.setEnabled(changed);
         submitCommentButton.setText(changed
                 ? L10N.getLocalString("dlg.save_btn", "Save")
-                : L10N.getLocalString("dlg.saved_btn", "Saved"));
+                        : L10N.getLocalString("dlg.saved_btn", "Saved"));
         cancelLink.setEnabled(false/*changed*/);
     }
 
     private void setCommentText(String t) {
         lastCommentText = t;
-        if (!commentBox.getText().equals(t))
+        if (!commentBox.getText().equals(t)) {
             commentBox.setText(t);
+        }
     }
 
     private void resetCommentBoxFont() {
@@ -332,7 +340,7 @@ public abstract class CloudCommentsPane extends JPanel {
         Executor executor = backgroundExecutor;
 
         final AtomicInteger shownErrorMessages = new AtomicInteger(0);
-        for (final BugInstance bug : getSelectedBugs())
+        for (final BugInstance bug : getSelectedBugs()) {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -349,10 +357,11 @@ public abstract class CloudCommentsPane extends JPanel {
                         JOptionPane.showMessageDialog(CloudCommentsPane.this,
                                 "Error while submitting cloud reviews:\n"
                                         + e.getClass().getSimpleName() + ": " + e.getMessage(),
-                                "Review Submission Error", JOptionPane.ERROR_MESSAGE);
+                                        "Review Submission Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             });
+        }
     }
 
     protected void signInOrOutClicked() {
@@ -379,11 +388,11 @@ public abstract class CloudCommentsPane extends JPanel {
                             cloud.signIn();
                         } catch (Exception e) {
                             _bugCollection
-                                    .getProject()
-                                    .getGuiCallback()
-                                    .showMessageDialog(
-                                            "The FindBugs Cloud could not be contacted at this time.\n\n"
-                                                    + Util.getNetworkErrorMessage(e));
+                            .getProject()
+                            .getGuiCallback()
+                            .showMessageDialog(
+                                    "The FindBugs Cloud could not be contacted at this time.\n\n"
+                                            + Util.getNetworkErrorMessage(e));
                         }
                         refresh();
                     }
@@ -395,16 +404,19 @@ public abstract class CloudCommentsPane extends JPanel {
     }
 
     protected void commentBoxClicked() {
-        if (commentWasChanged())
+        if (commentWasChanged()) {
             return;
+        }
         setCanAddComments(false, true);
         CommentInfo commentInfo = new CommentInfo().invoke();
         boolean sameText = commentInfo.isSameText();
         String txt = commentInfo.getTxt();
-        if (!sameText)
+        if (!sameText) {
             txt = "";
-        if (txt == null || txt.trim().length() == 0)
+        }
+        if (txt == null || txt.trim().length() == 0) {
             txt = "";
+        }
         resetCommentBoxFont();
         boolean sameTextInBox = commentBox.getText().equals(txt);
         setCommentText(txt);
@@ -420,40 +432,46 @@ public abstract class CloudCommentsPane extends JPanel {
     private boolean commentWasChanged() {
         String text = commentBox.getText();
         boolean b = !isDefaultComment(text);
-//        boolean b1 = text.trim().equals("");
+        //        boolean b1 = text.trim().equals("");
         boolean b3 = text.equals(lastCommentText);
         return b && !b3;
     }
 
     public boolean canSetDesignations() {
-       List<BugInstance> bugs = getSelectedBugs();
-       if (bugs.isEmpty())
-           return true;
-       Cloud plugin = _bugCollection != null ? _bugCollection.getCloud() : null;
-       if (plugin == null)
-           return false;
-       for(BugInstance b : bugs)
-           if (plugin.canStoreUserAnnotation(b))
-               return true;
-       return false;
+        List<BugInstance> bugs = getSelectedBugs();
+        if (bugs.isEmpty()) {
+            return true;
+        }
+        Cloud plugin = _bugCollection != null ? _bugCollection.getCloud() : null;
+        if (plugin == null) {
+            return false;
+        }
+        for(BugInstance b : bugs) {
+            if (plugin.canStoreUserAnnotation(b)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setDesignation(final String designationKey) {
 
-//        List<BugInstance> selectedBugs = getSelectedBugs();
-//        if (selectedBugs.size() > 1)
-//            if (!confirmAnnotation(selectedBugs))
-//                return;
+        //        List<BugInstance> selectedBugs = getSelectedBugs();
+        //        if (selectedBugs.size() > 1)
+        //            if (!confirmAnnotation(selectedBugs))
+        //                return;
         final AtomicBoolean stop = new AtomicBoolean(false);
         applyToBugs(new BugAction() {
             @Override
             public void execute(BugInstance bug) {
-                if (stop.get())
+                if (stop.get()) {
                     return;
+                }
                 String oldValue = bug.getUserDesignationKey();
                 String key = designationKey;
-                if (key.equals(oldValue))
+                if (key.equals(oldValue)) {
                     return;
+                }
                 Cloud plugin = _bugCollection != null ? _bugCollection.getCloud() : null;
                 if (plugin != null && key.equals("I_WILL_FIX") && plugin.supportsClaims()) {
                     String claimedBy = plugin.claimedBy(bug);
@@ -463,13 +481,14 @@ public abstract class CloudCommentsPane extends JPanel {
                                         + claimedBy + " has already said they will fix this issue\n"
                                         + "Do you want to also be listed as fixing this issue?\n"
                                         + "If so, please coordinate with " + claimedBy,
-                                "Issue already claimed", JOptionPane.YES_NO_CANCEL_OPTION);
+                                        "Issue already claimed", JOptionPane.YES_NO_CANCEL_OPTION);
                         if (result == JOptionPane.CANCEL_OPTION) {
                             stop.set(true);
                             return;
                         }
-                        if (result != JOptionPane.YES_OPTION)
+                        if (result != JOptionPane.YES_OPTION) {
                             key = "MUST_FIX";
+                        }
                     }
                 }
                 changeDesignationOfBugRightNow(bug, key);
@@ -481,8 +500,9 @@ public abstract class CloudCommentsPane extends JPanel {
     @SuppressWarnings({"UnusedDeclaration"})
     private void submitComment(List<BugInstance> selectedBugs) {
         String comment = commentBox.getText();
-        if (isDefaultComment(comment))
+        if (isDefaultComment(comment)) {
             comment = "";
+        }
         //        if (selectedBugs.size() > 1)
         //            if (!confirmAnnotation(selectedBugs))
         //                return;
@@ -513,27 +533,30 @@ public abstract class CloudCommentsPane extends JPanel {
     }
 
     private void setLastSaved(long date) {
-        if (date > 0)
+        if (date > 0) {
             lastSavedLabel.setText("saved " + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
                     .format(new Date(date)));
-        else
+        } else {
             lastSavedLabel.setText("");
+        }
     }
 
     protected void cancelClicked() {
         setDefaultComment(lastCommentText);
-//        commentEntryPanel.setVisible(false);
+        //        commentEntryPanel.setVisible(false);
         setCanAddComments(true, false);
     }
 
     private List<BugInstance> getSelectedBugs() {
-        if (_bugInstance != null)
+        if (_bugInstance != null) {
             return Collections.singletonList(_bugInstance);
+        }
         if (_bugAspects != null) {
             List<BugInstance> set = new ArrayList<BugInstance>();
             for (BugLeafNode node : _bugAspects.getMatchingBugs(BugSet.getMainBugSet())) {
-                if (!BugSet.suppress(node))
+                if (!BugSet.suppress(node)) {
                     set.add(node.getBug());
+                }
             }
             return set;
         }
@@ -578,8 +601,9 @@ public abstract class CloudCommentsPane extends JPanel {
                 public void run() {
                     _bugCollection.reinitializeCloud();
                     Cloud cloud = _bugCollection.getCloud();
-                    if (cloud != null)
+                    if (cloud != null) {
                         cloud.waitUntilIssueDataDownloaded();
+                    }
                     updateCloudListeners(_bugCollection);
                     refresh();
                 }
@@ -605,10 +629,12 @@ public abstract class CloudCommentsPane extends JPanel {
     }
 
     private void setBugs(BugInstance bugInstance, BugAspects bugAspects) {
-        if (_bugInstance == bugInstance && _bugAspects == bugAspects)
+        if (_bugInstance == bugInstance && _bugAspects == bugAspects) {
             return;
-        if (!canNavigateAway())
+        }
+        if (!canNavigateAway()) {
             return;
+        }
 
         _bugInstance = bugInstance;
         _bugAspects = bugAspects;
@@ -626,8 +652,9 @@ public abstract class CloudCommentsPane extends JPanel {
 
     protected void changeDesignationOfBugRightNow(final BugInstance bug, final String designationKey) {
         String oldValue = bug.getUserDesignationKey();
-        if (designationKey.equals(oldValue))
+        if (designationKey.equals(oldValue)) {
             return;
+        }
         bug.setUserDesignationKey(designationKey, _bugCollection);
     }
 
@@ -660,9 +687,11 @@ public abstract class CloudCommentsPane extends JPanel {
     private boolean inCloud(Collection<BugInstance> bugs) {
         final Cloud cloud = _bugCollection.getCloud();
 
-        for (BugInstance b : bugs)
-            if (cloud.isInCloud(b))
+        for (BugInstance b : bugs) {
+            if (cloud.isInCloud(b)) {
                 return true;
+            }
+        }
         return false;
 
     }
@@ -700,8 +729,9 @@ public abstract class CloudCommentsPane extends JPanel {
                     lastSaved = newTs;
                 }
                 int reviewers = cloud.getNumberReviewers(bug);
-                if (reviewers > 0)
+                if (reviewers > 0) {
                     bugsWithReviews++;
+                }
                 totalReviews += reviewers;
             }
             report = bugs.size() + " bug" + (bugs.size() == 1 ? "" : "s") + " selected\n";
@@ -760,8 +790,9 @@ public abstract class CloudCommentsPane extends JPanel {
             CommentInfo commentInfo = new CommentInfo().invoke();
             boolean sameDesignation = commentInfo.isSameDesignation();
             String designation = commentInfo.getDesignation();
-            if (!sameDesignation)
+            if (!sameDesignation) {
                 designation = null;
+            }
             updatingHeader = true;
             designationCombo.setSelectedIndex(I18N.instance().getUserDesignationKeys(true).indexOf(designation));
             updatingHeader = false;
@@ -773,27 +804,28 @@ public abstract class CloudCommentsPane extends JPanel {
         final Cloud.SigninState state = cloud.getSigninState();
         final String stateStr = state == Cloud.SigninState.NO_SIGNIN_REQUIRED ? "" : "" + state;
         final String userStr = cloud.getUser() == null ? "" : cloud.getUser();
-        if (plugin.getId().equals("edu.umd.cs.findbugs.cloud.doNothingCloud"))
+        if (plugin.getId().equals("edu.umd.cs.findbugs.cloud.doNothingCloud")) {
             titleLabel.setText("<html><b>No cloud selected");
-        else
+        } else {
             titleLabel.setText("<html><b>Reviews - " + cloud.getCloudName() + "</b>"
                     + "<br><font style='font-size: x-small;color:darkgray'>" + stateStr
                     + (userStr.length() > 0 ? " - " + userStr : ""));
+        }
         switch (state) {
-            case NO_SIGNIN_REQUIRED:
-            case SIGNING_IN:
-                signInOutLink.setVisible(false);
-                break;
-            case SIGNED_IN:
-                setSignInOutText("sign out");
+        case NO_SIGNIN_REQUIRED:
+        case SIGNING_IN:
+            signInOutLink.setVisible(false);
+            break;
+        case SIGNED_IN:
+            setSignInOutText("sign out");
+            signInOutLink.setVisible(true);
+            break;
+        default:
+            if (state.couldSignIn()) {
+                setSignInOutText("sign in");
                 signInOutLink.setVisible(true);
-                break;
-             default:
-                 if (state.couldSignIn()) {
-                     setSignInOutText("sign in");
-                     signInOutLink.setVisible(true);
-                 }
-                 break;
+            }
+            break;
         }
         if (cloud.getPlugin().getId().equals("edu.umd.cs.findbugs.cloud.doNothingCloud")) {
             setSignInOutText("enable cloud plugin...");
@@ -1046,19 +1078,21 @@ public abstract class CloudCommentsPane extends JPanel {
             sameDesignation = true;
             for (BugInstance bug : getSelectedBugs()) {
                 String newText = bug.getAnnotationText();
-                if (txt == null)
+                if (txt == null) {
                     txt = newText;
-                else {
-                    if (!nullSafeEquals(txt, newText))
+                } else {
+                    if (!nullSafeEquals(txt, newText)) {
                         sameText = false;
+                    }
                 }
 
                 String newDesignation = bug.getUserDesignationKey();
-                if (designation == null)
+                if (designation == null) {
                     designation = newDesignation;
-                else {
-                    if (!nullSafeEquals(designation, newDesignation))
+                } else {
+                    if (!nullSafeEquals(designation, newDesignation)) {
                         sameDesignation = false;
+                    }
                 }
             }
             return this;

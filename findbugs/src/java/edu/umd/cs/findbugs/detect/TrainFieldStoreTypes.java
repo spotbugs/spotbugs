@@ -49,13 +49,13 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
  * Build a database of reference types stored into fields. This can be used in
  * the future to improve the precision of type analysis when values are loaded
  * from fields.
- * 
+ *
  * @author David Hovemeyer
  */
 public class TrainFieldStoreTypes implements Detector, TrainingDetector {
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
-    private FieldStoreTypeDatabase database;
+    private final FieldStoreTypeDatabase database;
 
     public TrainFieldStoreTypes(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -66,8 +66,9 @@ public class TrainFieldStoreTypes implements Detector, TrainingDetector {
     public void visitClassContext(ClassContext classContext) {
         Method[] methodList = classContext.getJavaClass().getMethods();
         for (Method method : methodList) {
-            if (method.getCode() == null)
+            if (method.getCode() == null) {
                 continue;
+            }
 
             try {
                 analyzeMethod(classContext, method);
@@ -75,12 +76,12 @@ public class TrainFieldStoreTypes implements Detector, TrainingDetector {
                 bugReporter.logError("Error compting field store types", e);
             } catch (DataflowAnalysisException e) {
                 bugReporter.logError("Error compting field store types", e);
-            } 
+            }
         }
     }
 
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException
-             {
+    {
         CFG cfg = classContext.getCFG(method);
         TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
@@ -91,34 +92,40 @@ public class TrainFieldStoreTypes implements Detector, TrainingDetector {
             short opcode = ins.getOpcode();
 
             // Field store instruction?
-            if (opcode != Constants.PUTFIELD && opcode != Constants.PUTSTATIC)
+            if (opcode != Constants.PUTFIELD && opcode != Constants.PUTSTATIC) {
                 continue;
+            }
 
             // Check if field type is a reference type
             FieldInstruction fins = (FieldInstruction) ins;
             Type fieldType = fins.getType(cpg);
-            if (!(fieldType instanceof ReferenceType))
+            if (!(fieldType instanceof ReferenceType)) {
                 continue;
+            }
 
             // Find the exact field being stored into
             XField xfield = Hierarchy.findXField(fins, cpg);
-            if (xfield == null)
+            if (xfield == null) {
                 continue;
+            }
 
             // Skip public and protected fields, since it is reasonable to
             // assume
             // we won't see every store to those fields
-            if (xfield.isPublic() || xfield.isProtected())
+            if (xfield.isPublic() || xfield.isProtected()) {
                 continue;
+            }
 
             // The top value on the stack is the one which will be stored
             // into the field
             TypeFrame frame = typeDataflow.getFactAtLocation(location);
-            if (!frame.isValid())
+            if (!frame.isValid()) {
                 continue;
+            }
             Type storeType = frame.getTopValue();
-            if (!(storeType instanceof ReferenceType))
+            if (!(storeType instanceof ReferenceType)) {
                 continue;
+            }
 
             // Get or create the field store type set
             FieldStoreType property = database.getProperty(xfield.getFieldDescriptor());

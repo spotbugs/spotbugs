@@ -23,14 +23,14 @@ import edu.umd.cs.findbugs.ba.CFG;
 
 /**
  * Dataflow class for BackwardTypeQualifierDataflowAnalysis.
- * 
+ *
  * @author David Hovemeyer
  */
 public class BackwardTypeQualifierDataflow extends TypeQualifierDataflow<BackwardTypeQualifierDataflowAnalysis> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param cfg
      *            CFG for analyzed method
      * @param analysis

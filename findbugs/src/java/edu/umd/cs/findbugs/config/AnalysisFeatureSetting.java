@@ -24,18 +24,19 @@ import edu.umd.cs.findbugs.ba.AnalysisFeatures.AnalysisFeature;
 
 /**
  * Configure a specific boolean analysis property.
- * 
+ *
  * @author David Hovemeyer
  */
 public class AnalysisFeatureSetting {
     private @AnalysisFeature
+    final
     int property;
 
-    private boolean enabled;
+    private final boolean enabled;
 
     /**
      * Constructor.
-     * 
+     *
      * @param property
      *            the analysis property to configure
      * @param enabled
@@ -49,7 +50,7 @@ public class AnalysisFeatureSetting {
     /**
      * Set the configured value of the analysis property in the given
      * AnalysisContext.
-     * 
+     *
      * @param analysisContext
      *            the AnalysisContext
      */

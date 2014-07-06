@@ -28,23 +28,23 @@ import org.apache.tools.ant.types.FileSet;
 /**
  * An ant task that is wraps the behavior of the UnionResults executable into an
  * ant task.
- * 
+ *
  * <taskdef name="UnionBugs2" classname="edu.umd.cs.findbugs.anttask.UnionBugs2"
  * classpath="...">
- * 
+ *
  * <UnionBugs2 to="${basedir}/findbugs.xml" > <fileset dir="plugins"> <include
  * name="*_findbugs_partial.xml" /> </fileset> </UnionBugs>
- * 
- * 
+ *
+ *
  * @ant.task category="utility"
- * 
+ *
  */
 
 public class UnionBugs2 extends AbstractFindBugsTask {
 
     private String to;
 
-    private ArrayList<FileSet> fileSets = new ArrayList<FileSet>();
+    private final ArrayList<FileSet> fileSets = new ArrayList<FileSet>();
 
     public UnionBugs2() {
         super("edu.umd.cs.findbugs.workflow.UnionResults");
@@ -53,16 +53,16 @@ public class UnionBugs2 extends AbstractFindBugsTask {
 
     /**
      * The fileset containing all the findbugs xml files that need to be merged
-     * 
+     *
      * @param arg
      */
     public void addFileset(FileSet arg) {
         this.fileSets.add(arg);
     }
-    
+
     /**
      * The File everything should get merged into
-     * 
+     *
      * @param arg
      */
     public void setTo(String arg) {
@@ -73,14 +73,16 @@ public class UnionBugs2 extends AbstractFindBugsTask {
     protected void checkParameters() {
         super.checkParameters();
 
-        if (to == null)
+        if (to == null) {
             throw new BuildException("to attribute is required", getLocation());
+        }
 
-        if (fileSets.size() < 1)
+        if (fileSets.size() < 1) {
             throw new BuildException("fileset is required");
+        }
     }
 
-  
+
     @Override
     protected void beforeExecuteJavaProcess() {
         log("unioning bugs...");

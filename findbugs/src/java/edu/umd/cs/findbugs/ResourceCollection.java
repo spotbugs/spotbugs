@@ -38,13 +38,13 @@ import edu.umd.cs.findbugs.ba.Location;
  * This distinction is important because some resources which exist in the
  * method aren't created in the method: for example, resources passed in as
  * parameters.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ResourceCollection<Resource> {
-    private List<Resource> resourceList;
+    private final List<Resource> resourceList;
 
-    private Map<Location, Resource> locationToResourceMap;
+    private final Map<Location, Resource> locationToResourceMap;
 
     /**
      * Constructor. Creates empty collection.
@@ -58,7 +58,7 @@ public class ResourceCollection<Resource> {
      * Add a preexisting resource. That is, one that is not created within the
      * analyzed method. Resources passed to the method as parameters fall into
      * this category.
-     * 
+     *
      * @param resource
      *            the preexisting resource
      */
@@ -68,7 +68,7 @@ public class ResourceCollection<Resource> {
 
     /**
      * Add a resource created within the analyzed method.
-     * 
+     *
      * @param location
      *            the location
      * @param resource
@@ -96,7 +96,7 @@ public class ResourceCollection<Resource> {
 
     /**
      * Get the resource that is created at given location.
-     * 
+     *
      * @param location
      *            the Location
      * @return the Resource created at that location, or null if no resource is
@@ -107,4 +107,3 @@ public class ResourceCollection<Resource> {
     }
 }
 
-// vim:ts=4

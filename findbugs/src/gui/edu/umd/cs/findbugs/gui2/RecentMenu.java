@@ -52,7 +52,7 @@ public class RecentMenu {
     }
 
     LimitedArrayList<File> recentFiles;// Originally called recentProjects
-                                       // before merge two lists into one.
+    // before merge two lists into one.
 
     JMenu recentMenu;
 
@@ -72,8 +72,9 @@ public class RecentMenu {
         for (File f : recentFiles) {
             Debug.println(f);
             if (!f.exists()) {
-                if (MainFrame.GUI2_DEBUG)
+                if (MainFrame.GUI2_DEBUG) {
                     System.err.println("a recent project was not found, removing it from menu");
+                }
                 continue;
             }
 
@@ -84,12 +85,13 @@ public class RecentMenu {
 
     /**
      * Adds a file to the list of recent files used.
-     * 
+     *
      * @param f
      */
     public void addRecentFile(final File f) {
-        if (f != null)
+        if (f != null) {
             recentFiles.add(f);
+        }
 
         makeRecentMenu();
     }

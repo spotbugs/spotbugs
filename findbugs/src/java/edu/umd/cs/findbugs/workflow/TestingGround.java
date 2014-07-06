@@ -46,8 +46,9 @@ public class TestingGround {
     public TestingGround execute() {
         ProjectPackagePrefixes foo = new ProjectPackagePrefixes();
 
-        for (BugInstance b : bugCollection.getCollection())
+        for (BugInstance b : bugCollection.getCollection()) {
             foo.countBug(b);
+        }
         foo.report();
 
         return this;
@@ -73,10 +74,11 @@ public class TestingGround {
         int argCount = commandLine.parse(args, 0, 2, "Usage: " + TestingGround.class.getName() + " [options] [<xml results>] ");
 
         SortedBugCollection bugCollection = new SortedBugCollection();
-        if (argCount < args.length)
+        if (argCount < args.length) {
             bugCollection.readXML(args[argCount++]);
-        else
+        } else {
             bugCollection.readXML(System.in);
+        }
         ArrayList<Bag<String>> live = new ArrayList<Bag<String>>();
         ArrayList<Bag<String>> died = new ArrayList<Bag<String>>();
         Bag<String> allBugs = new Bag<String>();
@@ -88,16 +90,19 @@ public class TestingGround {
             int first = (int) b.getFirstVersion();
             int buried = (int) b.getLastVersion() + 1;
             int finish = buried;
-            if (finish == 0)
+            if (finish == 0) {
                 finish = (int) bugCollection.getSequenceNumber();
+            }
 
             String bugPattern = b.getBugPattern().getType();
             allBugs.add(bugPattern);
 
-            for (int i = first; i <= finish; i++)
+            for (int i = first; i <= finish; i++) {
                 live.get(i).add(bugPattern);
-            if (buried > 0)
+            }
+            if (buried > 0) {
                 died.get(buried).add(bugPattern);
+            }
         }
         for (int i = 0; i < bugCollection.getSequenceNumber(); i++) {
             for (Map.Entry<String, Integer> e : died.get(i).entrySet()) {
@@ -117,12 +122,14 @@ public class TestingGround {
             if (buried > 0) {
                 int buriedCount = died.get(buried).getCount(bugPattern);
                 int total = live.get(buried).getCount(bugPattern);
-                if (buriedCount > 30 && buriedCount * 3 > total)
+                if (buriedCount > 30 && buriedCount * 3 > total) {
                     continue;
+                }
             }
             int survied = live.get((int) bugCollection.getSequenceNumber()).getCount(bugPattern);
-            if (survied == 0 && allBugs.getCount(bugPattern) > 100)
+            if (survied == 0 && allBugs.getCount(bugPattern) > 100) {
                 continue;
+            }
 
             results.add(b, false);
         }

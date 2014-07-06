@@ -50,19 +50,21 @@ public class ExcludingHashesBugReporter extends DelegatingBugReporter {
      * @throws DocumentException
      */
     public static void addToExcludedInstanceHashes(Set<String> instanceHashesToExclude, String baseline) throws IOException,
-            DocumentException {
+    DocumentException {
         Project project = new Project();
         BugCollection origCollection;
         origCollection = new SortedBugCollection(project);
         origCollection.readXML(baseline);
-        for (BugInstance b : origCollection.getCollection())
+        for (BugInstance b : origCollection.getCollection()) {
             instanceHashesToExclude.add(b.getInstanceHash());
+        }
     }
 
     @Override
     public void reportBug(@Nonnull BugInstance bugInstance) {
         String instanceHash = bugInstance.getInstanceHash();
-        if (!excludedHashes.contains(instanceHash))
+        if (!excludedHashes.contains(instanceHash)) {
             getDelegate().reportBug(bugInstance);
+        }
     }
 }

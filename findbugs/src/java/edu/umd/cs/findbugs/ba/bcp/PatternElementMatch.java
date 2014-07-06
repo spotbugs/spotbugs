@@ -42,7 +42,7 @@ public class PatternElementMatch {
 
     /**
      * Constructor.
-     * 
+     *
      * @param patternElement
      *            the PatternElement being matched
      * @param matchedInstruction
@@ -118,8 +118,9 @@ public class PatternElementMatch {
         PatternElementMatch cur = this, result = null;
         while (cur != null) {
             String elementLabel = cur.patternElement.getLabel();
-            if (elementLabel != null && elementLabel.equals(label))
+            if (elementLabel != null && elementLabel.equals(label)) {
                 result = cur;
+            }
             cur = cur.prev;
         }
         return result;
@@ -132,8 +133,9 @@ public class PatternElementMatch {
         PatternElementMatch cur = this;
         while (cur != null) {
             String elementLabel = cur.patternElement.getLabel();
-            if (elementLabel != null && elementLabel.equals(label))
+            if (elementLabel != null && elementLabel.equals(label)) {
                 return cur;
+            }
             cur = cur.prev;
         }
         return null;
@@ -167,15 +169,17 @@ public class PatternElementMatch {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof PatternElementMatch))
+        if (!(o instanceof PatternElementMatch)) {
             return false;
+        }
         PatternElementMatch lhs = this;
         PatternElementMatch rhs = (PatternElementMatch) o;
 
         while (lhs != null && rhs != null) {
             if (lhs.patternElement != rhs.patternElement || lhs.matchedInstruction != rhs.matchedInstruction
-                    || lhs.matchCount != rhs.matchCount)
+                    || lhs.matchCount != rhs.matchCount) {
                 return false;
+            }
 
             lhs = lhs.prev;
             rhs = rhs.prev;
@@ -185,4 +189,3 @@ public class PatternElementMatch {
     }
 }
 
-// vim:ts=4

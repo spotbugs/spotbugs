@@ -108,7 +108,7 @@ public class MainFrameComponentFactory implements Serializable {
         mainFrame.setSummaryTopPanel(new JPanel());
         mainFrame.getSummaryTopPanel().setLayout(new GridLayout(0, 1));
         mainFrame.getSummaryTopPanel().setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
-//        mainFrame.getSummaryTopPanel().setMinimumSize(new Dimension(fontSize * 50, fontSize * 5));
+        //        mainFrame.getSummaryTopPanel().setMinimumSize(new Dimension(fontSize * 50, fontSize * 5));
 
         JPanel summaryTopOuter = new JPanel(new BorderLayout());
         summaryTopOuter.add(mainFrame.getSummaryTopPanel(), BorderLayout.NORTH);
@@ -180,8 +180,9 @@ public class MainFrameComponentFactory implements Serializable {
         panel.add(sourceCodeScrollPane, BorderLayout.CENTER);
 
         panel.revalidate();
-        if (MainFrame.GUI2_DEBUG)
+        if (MainFrame.GUI2_DEBUG) {
             System.out.println("Created source code panel");
+        }
         return panel;
     }
 
@@ -247,13 +248,15 @@ public class MainFrameComponentFactory implements Serializable {
             URL u = null;
             if (bug != null) {
                 Cloud plugin = mainFrame.getBugCollection().getCloud();
-                if (plugin.supportsSourceLinks())
+                if (plugin.supportsSourceLinks()) {
                     u = plugin.getSourceLink(bug);
+                }
             }
-            if (u != null)
+            if (u != null) {
                 addLink(label, u);
-            else
+            } else {
                 removeLink(label);
+            }
 
         }
         mainFrame.getGuiLayout().setSourceTitle(title);
@@ -268,16 +271,18 @@ public class MainFrameComponentFactory implements Serializable {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     URL u = sourceLink;
-                    if (u != null)
+                    if (u != null) {
                         LaunchBrowser.showDocument(u);
+                    }
 
                 }
             });
         }
         component.setCursor(new Cursor(Cursor.HAND_CURSOR));
         Cloud plugin = mainFrame.getBugCollection().getCloud();
-        if (plugin != null)
+        if (plugin != null) {
             component.setToolTipText(plugin.getSourceLinkToolTip(null));
+        }
 
     }
 
@@ -309,12 +314,13 @@ public class MainFrameComponentFactory implements Serializable {
                 String srcStr = "";
                 int start = link.getStartLine();
                 int end = link.getEndLine();
-                if (start < 0 && end < 0)
+                if (start < 0 && end < 0) {
                     srcStr = sourceCodeLabel;
-                else if (start == end)
+                } else if (start == end) {
                     srcStr = " [" + summaryLine + " " + start + "]";
-                else if (start < end)
+                } else if (start < end) {
                     srcStr = " [" + summaryLines + " " + start + " - " + end + "]";
+                }
 
                 label.setToolTipText(clickToGoToText + " " + srcStr);
 
@@ -329,12 +335,13 @@ public class MainFrameComponentFactory implements Serializable {
             if (link != null && sourceCodeExists(link)) {
                 int start = link.getStartLine();
                 int end = link.getEndLine();
-                if (start < 0 && end < 0)
+                if (start < 0 && end < 0) {
                     srcStr = sourceCodeLabel;
-                else if (start == end)
+                } else if (start == end) {
                     srcStr = " [" + summaryLine + " " + start + "]";
-                else if (start < end)
+                } else if (start < end) {
                     srcStr = " [" + summaryLines + " " + start + " - " + end + "]";
+                }
 
                 if (!srcStr.equals("")) {
                     label.setToolTipText(clickToGoToText + " " + srcStr);
@@ -342,14 +349,16 @@ public class MainFrameComponentFactory implements Serializable {
                 }
             }
             String noteText;
-            if (note == bug.getPrimaryMethod() || note == bug.getPrimaryField())
+            if (note == bug.getPrimaryMethod() || note == bug.getPrimaryField()) {
                 noteText = note.toString();
-            else
+            } else {
                 noteText = note.toString(primaryClass);
-            if (!srcStr.equals(sourceCodeLabel))
+            }
+            if (!srcStr.equals(sourceCodeLabel)) {
                 label.setText(noteText + srcStr);
-            else
+            } else {
                 label.setText(noteText);
+            }
         } else {
             label.setText(value.toString(primaryClass));
         }
@@ -373,8 +382,9 @@ public class MainFrameComponentFactory implements Serializable {
         label.setText(str);
 
         SourceLineAnnotation link = bug.getPrimarySourceLineAnnotation();
-        if (link != null)
+        if (link != null) {
             label.addMouseListener(new BugSummaryMouseListener(bug, label, link));
+        }
 
         return label;
     }
@@ -391,7 +401,7 @@ public class MainFrameComponentFactory implements Serializable {
     }
 
     private static class InitializeGUI implements Runnable {
-        private MainFrame mainFrame;
+        private final MainFrame mainFrame;
 
         public InitializeGUI(final MainFrame mainFrame) {
             this.mainFrame = mainFrame;
@@ -434,8 +444,9 @@ public class MainFrameComponentFactory implements Serializable {
             mainFrame.mainFrameTree.setBranchPopupMenu(mainFrame.mainFrameTree.createBranchPopUpMenu());
             mainFrame.updateStatusBar();
             Rectangle bounds = GUISaveState.getInstance().getFrameBounds();
-            if (bounds != null)
+            if (bounds != null) {
                 mainFrame.setBounds(bounds);
+            }
 
             mainFrame.setExtendedState(GUISaveState.getInstance().getExtendedWindowState());
             Toolkit.getDefaultToolkit().setDynamicLayout(true);
@@ -485,15 +496,15 @@ public class MainFrameComponentFactory implements Serializable {
                     // a system without the EAWT
                     // because OSXAdapter extends ApplicationAdapter in its def
                     System.err
-                            .println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled ("
-                                    + e + ")");
+                    .println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled ("
+                            + e + ")");
                 } catch (ClassNotFoundException e) {
                     // This shouldn't be reached; if there's a problem with the
                     // OSXAdapter we should get the
                     // above NoClassDefFoundError first.
                     System.err
-                            .println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled ("
-                                    + e + ")");
+                    .println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled ("
+                            + e + ")");
                 } catch (Exception e) {
                     System.err.println("Exception while loading the OSXAdapter: " + e);
                     e.printStackTrace();

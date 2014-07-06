@@ -40,18 +40,19 @@ public class OutputStreamXMLOutput implements XMLOutput {
     private static final String OPENING = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
     private static String getStylesheetCode(String stylesheet) {
-        if (stylesheet == null)
+        if (stylesheet == null) {
             return "";
+        }
         return "<?xml-stylesheet type=\"text/xsl\" href=\"" + stylesheet + "\"?>\n";
     }
 
-    private Writer out;
+    private final Writer out;
 
     private int nestingLevel;
 
     private boolean newLine;
 
-    private String stylesheet;
+    private final String stylesheet;
 
     /**
      * Constructor.
@@ -89,17 +90,17 @@ public class OutputStreamXMLOutput implements XMLOutput {
     }
 
     /*
-    * @param os
-    *            Writer to write XML output to
-    * @param stylesheet
-    *            name of stylesheet
-    */
-   public OutputStreamXMLOutput(@WillCloseWhenClosed Writer writer, String stylesheet) {
-       this.out = writer;
-       this.nestingLevel = 0;
-       this.newLine = true;
-       this.stylesheet = stylesheet;
-   }
+     * @param os
+     *            Writer to write XML output to
+     * @param stylesheet
+     *            name of stylesheet
+     */
+    public OutputStreamXMLOutput(@WillCloseWhenClosed Writer writer, String stylesheet) {
+        this.out = writer;
+        this.nestingLevel = 0;
+        this.newLine = true;
+        this.stylesheet = stylesheet;
+    }
     @Override
     public void beginDocument() throws IOException {
         out.write(OPENING);
@@ -175,8 +176,9 @@ public class OutputStreamXMLOutput implements XMLOutput {
     @Override
     public void closeTag(String tagName) throws IOException {
         --nestingLevel;
-        if (newLine)
+        if (newLine) {
             indent();
+        }
         out.write("</" + tagName + ">\n");
         newLine = true;
     }
@@ -207,12 +209,12 @@ public class OutputStreamXMLOutput implements XMLOutput {
     }
 
     private void indent() throws IOException {
-        if (!newLine)
+        if (!newLine) {
             out.write("\n");
+        }
         for (int i = 0; i < nestingLevel; ++i) {
             out.write("  ");
         }
     }
 }
 
-// vim:ts=4

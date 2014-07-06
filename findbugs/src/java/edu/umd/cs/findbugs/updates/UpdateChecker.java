@@ -95,8 +95,9 @@ public class UpdateChecker {
     public @CheckForNull URI getRedirectURL(final boolean force) {
         String redirect = dfc.getGlobalOption(KEY_REDIRECT_ALL_UPDATE_CHECKS);
         String sysprop = System.getProperty("findbugs.redirectUpdateChecks");
-        if (sysprop != null)
+        if (sysprop != null) {
             redirect = sysprop;
+        }
         Plugin setter = dfc.getGlobalOptionSetter(KEY_REDIRECT_ALL_UPDATE_CHECKS);
         URI redirectUri = null;
         String pluginName = setter == null ? "<unknown plugin>" : setter.getShortDescription();
@@ -119,10 +120,11 @@ public class UpdateChecker {
         Preferences prefs = Preferences.userNodeForPackage(UpdateChecker.class);
 
         String oldSeen = prefs.get("last-plugin-update-seen", "");
-        if (oldSeen == null || oldSeen.equals(""))
+        if (oldSeen == null || oldSeen.equals("")) {
             return 0;
+        }
         try {
-        return Long.parseLong(oldSeen) + DONT_REMIND_WINDOW;
+            return Long.parseLong(oldSeen) + DONT_REMIND_WINDOW;
         } catch (Exception e) {
             return 0;
         }
@@ -155,8 +157,9 @@ public class UpdateChecker {
         Util.runInDameonThread(new Runnable() {
             @Override
             public void run() {
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("Checking for version updates");
+                }
                 try {
                     if (! latch.await(15, TimeUnit.SECONDS)) {
                         logError(Level.INFO, "Update check timed out");
@@ -210,26 +213,29 @@ public class UpdateChecker {
                 try {
                     actuallyCheckforUpdates(url, plugins, entryPoint);
                 } catch (Exception e) {
-                    if (e instanceof IllegalStateException && e.getMessage().contains("Shutdown in progress"))
+                    if (e instanceof IllegalStateException && e.getMessage().contains("Shutdown in progress")) {
                         return;
+                    }
                     logError(e, "Error doing update check at " + url);
                 } finally {
                     latch.countDown();
                 }
             }
         };
-        if (DEBUG)
+        if (DEBUG) {
             r.run();
-        else
+        } else {
             Util.runInDameonThread(r, "Check for updates");
+        }
     }
 
     static final boolean DEBUG = SystemProperties.getBoolean("findbugs.updatecheck.debug");
     /** protected for testing */
     protected void actuallyCheckforUpdates(URI url, Collection<Plugin> plugins, String entryPoint) throws IOException {
         LOGGER.fine("Checking for updates at " + url + " for " + getPluginNames(plugins));
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println(url);
+        }
         HttpURLConnection conn = (HttpURLConnection) url.toURL().openConnection();
         conn.setDoInput(true);
         conn.setDoOutput(true);
@@ -246,7 +252,7 @@ public class UpdateChecker {
         if (responseCode != 200) {
             logError(SystemProperties.ASSERTIONS_ENABLED ? Level.WARNING : Level.FINE,
                     "Error checking for updates at " + url + ": "
-                    + responseCode + " - " + conn.getResponseMessage());
+                            + responseCode + " - " + conn.getResponseMessage());
         } else {
             parseUpdateXml(url, plugins, conn.getInputStream());
         }
@@ -266,15 +272,17 @@ public class UpdateChecker {
             String applicationName = Version.getApplicationName();
             if (applicationName == null || applicationName.equals("")) {
                 int lastDot = entryPoint.lastIndexOf('.');
-                if (lastDot == -1)
+                if (lastDot == -1) {
                     applicationName = entryPoint;
-                else
+                } else {
                     applicationName = entryPoint.substring(lastDot + 1);
+                }
             }
             xmlOutput.addAttribute("app-name", applicationName);
             String applicationVersion = Version.getApplicationVersion();
-            if (applicationVersion == null)
+            if (applicationVersion == null) {
                 applicationVersion = "";
+            }
             xmlOutput.addAttribute("app-version", applicationVersion);
             xmlOutput.addAttribute("entry-point", entryPoint);
             xmlOutput.addAttribute("os", SystemProperties.getProperty("os.name", ""));
@@ -290,23 +298,25 @@ public class UpdateChecker {
                 xmlOutput.addAttribute("name", plugin.getShortDescription());
                 xmlOutput.addAttribute("version", plugin.getVersion());
                 Date date = plugin.getReleaseDate();
-                if (date != null)
+                if (date != null) {
                     xmlOutput.addAttribute("release-date", Long.toString(date.getTime()));
+                }
                 xmlOutput.stopTag(true);
             }
 
             xmlOutput.closeTag("findbugs-invocation");
             xmlOutput.flush();
         } finally {
-            if (finish)
+            if (finish) {
                 xmlOutput.finish();
+            }
         }
     }
 
     // package-private for testing
     @SuppressWarnings({ "unchecked" })
     void parseUpdateXml(URI url, Collection<Plugin> plugins, @WillClose
-    InputStream inputStream) {
+            InputStream inputStream) {
         try {
             Document doc = new SAXReader().read(inputStream);
             if (DEBUG) {
@@ -318,8 +328,9 @@ public class UpdateChecker {
             }
             List<Element> pluginEls =  XMLUtil.selectNodes(doc, "fb-plugin-updates/plugin");
             Map<String, Plugin> map = new HashMap<String, Plugin>();
-            for (Plugin p : plugins)
+            for (Plugin p : plugins) {
                 map.put(p.getPluginId(), p);
+            }
             for (Element pluginEl : pluginEls) {
                 String id = pluginEl.attributeValue("id");
                 Plugin plugin = map.get(id);
@@ -345,11 +356,13 @@ public class UpdateChecker {
     private void checkPluginRelease(Plugin plugin, Element maxEl) {
         @CheckForNull Date updateDate = parseReleaseDate(maxEl);
         @CheckForNull Date installedDate = plugin.getReleaseDate();
-        if (updateDate != null && installedDate != null && updateDate.before(installedDate))
+        if (updateDate != null && installedDate != null && updateDate.before(installedDate)) {
             return;
+        }
         String version = maxEl.attributeValue("version");
-        if (version.equals(plugin.getVersion()))
+        if (version.equals(plugin.getVersion())) {
             return;
+        }
 
         String url = maxEl.attributeValue("url");
         String message = maxEl.element("message").getTextTrim();
@@ -370,8 +383,9 @@ public class UpdateChecker {
     private @CheckForNull Date parseReleaseDate(Element releaseEl) {
         SimpleDateFormat format = new SimpleDateFormat(PLUGIN_RELEASE_DATE_FMT);
         String dateStr = releaseEl.attributeValue("date");
-        if (dateStr == null)
+        if (dateStr == null) {
             return null;
+        }
         try {
             return format.parse(dateStr);
         } catch (java.text.ParseException e) {
@@ -421,7 +435,7 @@ public class UpdateChecker {
         String ver = SystemProperties.getProperty("java.version", "");
         Matcher m = Pattern.compile("^\\d+\\.\\d+").matcher(ver);
         if (m.find()) {
-           return m.group();
+            return m.group();
         }
         return "";
     }
@@ -467,10 +481,11 @@ public class UpdateChecker {
             StringBuilder buf = new StringBuilder();
             String name = getPlugin().isCorePlugin() ? "FindBugs" : "FindBugs plugin " + getPlugin().getShortDescription();
             buf.append( name + " " + getVersion() );
-            if (date == null)
+            if (date == null) {
                 buf.append(" has been released");
-            else
+            } else {
                 buf.append(" was released " + format.format(date));
+            }
             buf.append(
                     " (you have " + getPlugin().getVersion()
                     + ")");
@@ -478,8 +493,9 @@ public class UpdateChecker {
 
             buf.append("   " + message.replaceAll("\n", "\n   "));
 
-            if (url != null)
+            if (url != null) {
                 buf.append("\nVisit " + url + " for details.");
+            }
             return buf.toString();
         }
     }
@@ -488,11 +504,13 @@ public class UpdateChecker {
         FindBugs.setNoAnalysis();
         DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
         UpdateChecker checker = dfc.getUpdateChecker();
-        if (checker.updateChecksGloballyDisabled())
+        if (checker.updateChecksGloballyDisabled()) {
             System.out.println("Update checkes are globally disabled");
+        }
         URI redirect = checker.getRedirectURL(false);
-        if (redirect != null)
+        if (redirect != null) {
             System.out.println("All update checks redirected to " + redirect);
+        }
         checker.writeXml(System.out, dfc.plugins(), "UpdateChecker", true);
 
 

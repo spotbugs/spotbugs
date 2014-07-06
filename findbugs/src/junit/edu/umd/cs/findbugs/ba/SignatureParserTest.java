@@ -41,4 +41,3 @@ public class SignatureParserTest extends TestCase {
     }
 }
 
-// vim:ts=4

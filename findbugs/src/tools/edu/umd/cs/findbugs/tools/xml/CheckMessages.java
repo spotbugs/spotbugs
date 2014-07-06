@@ -56,9 +56,9 @@ public class CheckMessages {
     }
 
     private static class XMLFile {
-        private String filename;
+        private final String filename;
 
-        private Document document;
+        private final Document document;
 
         public XMLFile(String filename) throws DocumentException {
             this.filename = filename;
@@ -102,39 +102,45 @@ public class CheckMessages {
         }
 
         public Attribute checkAttribute(Node node, String attrName) throws DocumentException {
-            if (!(node instanceof Element))
+            if (!(node instanceof Element)) {
                 throw new CheckMessagesException("Node is not an element", this, node);
+            }
             Element element = (Element) node;
             Attribute attr = element.attribute(attrName);
-            if (attr == null)
+            if (attr == null) {
                 throw new CheckMessagesException("Missing " + attrName + " attribute", this, node);
+            }
             return attr;
         }
 
         public Element checkElement(Node node, String elementName) throws DocumentException {
-            if (!(node instanceof Element))
+            if (!(node instanceof Element)) {
                 throw new CheckMessagesException("Node is not an element", this, node);
+            }
             Element element = (Element) node;
             Element child = element.element(elementName);
-            if (child == null)
+            if (child == null) {
                 throw new CheckMessagesException("Missing " + elementName + " element", this, node);
+            }
             return child;
         }
 
         public String checkNonEmptyText(Node node) throws DocumentException {
-            if (!(node instanceof Element))
+            if (!(node instanceof Element)) {
                 throw new CheckMessagesException("Node is not an element", this, node);
+            }
             Element element = (Element) node;
             String text = element.getText();
-            if (text.equals(""))
+            if (text.equals("")) {
                 throw new CheckMessagesException("Empty text in element", this, node);
+            }
             return text;
         }
     }
 
-    private Set<String> declaredDetectorsSet;
+    private final Set<String> declaredDetectorsSet;
 
-    private Set<String> declaredAbbrevsSet;
+    private final Set<String> declaredAbbrevsSet;
 
     public CheckMessages(String pluginDescriptorFilename) throws DocumentException {
 
@@ -147,7 +153,7 @@ public class CheckMessages {
 
     /**
      * Check given messages file for validity.
-     * 
+     *
      * @throws DocumentException
      *             if the messages file is invalid
      */
@@ -196,8 +202,9 @@ public class CheckMessages {
         notDescribed.addAll(declared);
         notDescribed.removeAll(described);
 
-        if (!notDescribed.isEmpty())
+        if (!notDescribed.isEmpty()) {
             throw new CheckMessagesException(description + ": " + notDescribed.toString(), xmlFile);
+        }
     }
 
     public static void main(String[] argv) throws Exception {
@@ -225,4 +232,3 @@ public class CheckMessages {
     }
 }
 
-// vim:ts=3

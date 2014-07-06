@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs;
 
 /**
  * Simple token class.
- * 
+ *
  * @author David Hovemeyer
  * @see Tokenizer
  */
@@ -56,13 +56,13 @@ public class Token {
      */
     public static final int COMMENT = 3;
 
-    private int kind;
+    private final int kind;
 
-    private String lexeme;
+    private final String lexeme;
 
     /**
      * Constructor.
-     * 
+     *
      * @param kind
      *            the kind of token
      * @param lexeme
@@ -75,7 +75,7 @@ public class Token {
 
     /**
      * Constructor when there is no text. E.g., EOF and EOL.
-     * 
+     *
      * @param kind
      *            the kind of token
      */
@@ -99,4 +99,3 @@ public class Token {
     }
 }
 
-// vim:ts=4

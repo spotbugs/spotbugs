@@ -93,16 +93,17 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 
     @Override
     protected String formatPackageMember(String key, ClassAnnotation primaryClass) {
-        if (key.equals("") || key.equals("hash"))
+        if (key.equals("") || key.equals("hash")) {
             return className;
-        else if (key.equals("givenClass"))
+        } else if (key.equals("givenClass")) {
             return shorten(primaryClass.getPackageName(), className);
-        else if (key.equals("excludingPackage"))
+        } else if (key.equals("excludingPackage")) {
             return shorten(getPackageName(), className);
-        else if (key.equals("simpleClass") || key.equals("simpleName"))
+        } else if (key.equals("simpleClass") || key.equals("simpleName")) {
             return ClassName.extractSimpleName(className);
-        else
+        } else {
             throw new IllegalArgumentException("unknown key " + key);
+        }
     }
 
     @Override
@@ -112,8 +113,9 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof ClassAnnotation))
+        if (!(o instanceof ClassAnnotation)) {
             return false;
+        }
         ClassAnnotation other = (ClassAnnotation) o;
         return className.equals(other.className);
     }
@@ -124,18 +126,20 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 
     public ClassAnnotation getTopLevelClass() {
         int firstDollar = className.indexOf('$');
-        if (firstDollar <= 0)
+        if (firstDollar <= 0) {
             return this;
+        }
         return new ClassAnnotation(className.substring(0, firstDollar));
 
     }
 
     @Override
     public int compareTo(BugAnnotation o) {
-        if (!(o instanceof ClassAnnotation)) // BugAnnotations must be
-                                             // Comparable with any type of
-                                             // BugAnnotation
+        if (!(o instanceof ClassAnnotation)) {
+            // Comparable with any type of
+            // BugAnnotation
             return this.getClass().getName().compareTo(o.getClass().getName());
+        }
         ClassAnnotation other = (ClassAnnotation) o;
         return className.compareTo(other.className);
     }
@@ -147,8 +151,9 @@ public class ClassAnnotation extends PackageMemberAnnotation {
      */
     @Override
     public SourceLineAnnotation getSourceLines() {
-        if (sourceLines == null)
+        if (sourceLines == null) {
             this.sourceLines = getSourceLinesForClass(className, sourceFileName);
+        }
         return sourceLines;
     }
 
@@ -158,15 +163,17 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 
         AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
 
-        if (currentAnalysisContext == null)
+        if (currentAnalysisContext == null) {
             return new SourceLineAnnotation(className, sourceFileName, -1, -1, -1, -1);
+        }
 
         SourceInfoMap.SourceLineRange classLine = currentAnalysisContext.getSourceInfoMap().getClassLine(className);
 
-        if (classLine == null)
+        if (classLine == null) {
             return SourceLineAnnotation.getSourceAnnotationForClass(className, sourceFileName);
-        else
+        } else {
             return new SourceLineAnnotation(className, sourceFileName, classLine.getStart(), classLine.getEnd(), -1, -1);
+        }
     }
 
     /*
@@ -185,12 +192,14 @@ public class ClassAnnotation extends PackageMemberAnnotation {
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("classname", getClassName());
-        if (isPrimary)
+        if (isPrimary) {
             attributeList.addAttribute("primary", "true");
+        }
 
         String role = getDescription();
-        if (!role.equals(DEFAULT_ROLE))
+        if (!role.equals(DEFAULT_ROLE)) {
             attributeList.addAttribute("role", role);
+        }
 
         xmlOutput.openTag(ELEMENT_NAME, attributeList);
         getSourceLines().writeXML(xmlOutput, addMessages, false);
@@ -204,4 +213,3 @@ public class ClassAnnotation extends PackageMemberAnnotation {
     }
 }
 
-// vim:ts=4

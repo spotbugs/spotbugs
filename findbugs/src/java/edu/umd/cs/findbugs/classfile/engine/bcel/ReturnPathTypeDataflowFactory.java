@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 /**
  * Analysis engine to produce ReturnPathTypeDataflow objects for analyzed
  * methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ReturnPathTypeDataflowFactory extends AnalysisFactory<ReturnPathTypeDataflow> {
@@ -43,7 +43,7 @@ public class ReturnPathTypeDataflowFactory extends AnalysisFactory<ReturnPathTyp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)

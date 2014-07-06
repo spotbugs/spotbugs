@@ -35,7 +35,7 @@ public abstract class AbstractFieldAnnotationVisitor extends FieldVisitor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.objectweb.asm.FieldVisitor#visitAttribute(org.objectweb.asm.Attribute
      * )

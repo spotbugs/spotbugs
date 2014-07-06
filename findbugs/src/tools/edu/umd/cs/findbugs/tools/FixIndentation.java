@@ -42,16 +42,18 @@ public class FixIndentation {
     static final String SPACES = "                                                                                                                                            ";
 
     static final boolean performUpdate = SystemProperties.getBoolean("fix.identation");
-    
+
     public static void main(String args[]) throws Exception {
         File root = new File(args[0]);
-        if (!root.exists() || !root.canRead())
+        if (!root.exists() || !root.canRead()) {
             throw new IllegalArgumentException("Unable to read " +root);
+        }
         recursiveFix(root, true);
         System.out.printf("Updated %d/%d files%n", updated, examined);
         System.out.printf("%d nonblank lines%n", lines);
-        if (!performUpdate)
+        if (!performUpdate) {
             System.out.println("No update actually performed");
+        }
     }
 
     static void recursiveFix(File root, boolean partial) throws IOException {
@@ -63,26 +65,33 @@ public class FixIndentation {
         while (!todo.isEmpty()) {
             File next = todo.remove().getAbsoluteFile();
             String nextPath = next.getAbsolutePath();
-            if (!nextPath.startsWith(rootPath))
+            if (!nextPath.startsWith(rootPath)) {
                 continue;
+            }
 
             if (next.isDirectory()) {
                 File[] contents = next.listFiles();
-                if (contents != null)
-                    for (File c : contents)
-                        if (seen.add(c))
+                if (contents != null) {
+                    for (File c : contents) {
+                        if (seen.add(c)) {
                             todo.add(c);
-            } else if (nextPath.endsWith(".java") || nextPath.endsWith(".xml"))
+                        }
+                    }
+                }
+            } else if (nextPath.endsWith(".java") || nextPath.endsWith(".xml")) {
                 fix(next, partial);
+            }
         }
     }
 
     static boolean TRIM_TRAILING_WS = false;
     static String fix(String s) {
-        if (s.length() == 0)
+        if (s.length() == 0) {
             return s;
-        if (TRIM_TRAILING_WS && s.trim().length() == 0)
+        }
+        if (TRIM_TRAILING_WS && s.trim().length() == 0) {
             return "";
+        }
         int pos = 0;
         int indentation = 0;
         int tabs = 0;
@@ -93,21 +102,24 @@ public class FixIndentation {
             } else if (c == '\t') {
                 indentation += 4;
                 tabs++;
-            } else
+            } else {
                 break;
+            }
         }
 
         if (TRIM_TRAILING_WS || tabs > 0) {
-            if (pos >= s.length())
+            if (pos >= s.length()) {
                 return "";
+            }
             return SPACES.substring(0, indentation) + s.substring(pos).trim();
 
         } else {
-            if (pos >= s.length())
+            if (pos >= s.length()) {
                 return s;
+            }
             return SPACES.substring(0, indentation) + s.substring(pos);
         }
-      
+
 
     }
 
@@ -124,27 +136,32 @@ public class FixIndentation {
         try {
             while (true) {
                 String s = in.readLine();
-                if (s == null)
+                if (s == null) {
                     break;
-                if (s.trim().length() > 0)
+                }
+                if (s.trim().length() > 0) {
                     lines++;
+                }
                 String s2 = fix(s);
                 if (!s2.equals(s)) {
                     consecutiveFixes++;
                     if (consecutiveFixes > 3 && partial) {
                         s2 = s;
                         consecutiveFixes = 0;
-                    } else
+                    } else {
                         anyChanges = true;
-                } else
+                    }
+                } else {
                     consecutiveFixes = 0;
+                }
                 out.println(s2);
             }
         } finally {
             in.close();
         }
-        if (!anyChanges)
+        if (!anyChanges) {
             return;
+        }
         updated++;
         if (!performUpdate) {
             System.out.println("Would update " + fileToUpdate);
@@ -157,14 +174,15 @@ public class FixIndentation {
         try {
             while (true) {
                 int sz = stringReader.read(buffer);
-                if (sz < 0)
+                if (sz < 0) {
                     break;
+                }
                 outFile.write(buffer, 0, sz);
             }
         } finally {
             outFile.close();
         }
-        
+
     }
 
 }

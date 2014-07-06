@@ -15,17 +15,21 @@ public class ParameterWarningSuppressor extends ClassWarningSuppressor {
     @Override
     public boolean match(BugInstance bugInstance) {
 
-        if (!super.match(bugInstance))
+        if (!super.match(bugInstance)) {
             return false;
+        }
 
         MethodAnnotation bugMethod = bugInstance.getPrimaryMethod();
         LocalVariableAnnotation localVariable = bugInstance.getPrimaryLocalVariableAnnotation();
-        if (bugMethod == null || !method.equals(bugMethod))
+        if (bugMethod == null || !method.equals(bugMethod)) {
             return false;
-        if (localVariable == null || localVariable.getRegister() != register)
+        }
+        if (localVariable == null || localVariable.getRegister() != register) {
             return false;
-        if (DEBUG)
+        }
+        if (DEBUG) {
             System.out.println("Suppressing " + bugInstance);
+        }
         return true;
     }
 }

@@ -63,8 +63,9 @@ public class FieldSummary {
     private boolean complete = false;
 
     public OpcodeStack.Item getSummary(XField field) {
-        if (field == null)
+        if (field == null) {
             return new OpcodeStack.Item();
+        }
 
         OpcodeStack.Item result = summary.get(field);
         if (result == null || field.isVolatile()) {
@@ -83,10 +84,12 @@ public class FieldSummary {
             while (true) {
                 XClass cx = Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
                 c = cx.getSuperclassDescriptor();
-                if (c == null)
+                if (c == null) {
                     return false;
-                if (callsOverriddenMethodsFromConstructor(c))
+                }
+                if (callsOverriddenMethodsFromConstructor(c)) {
                     return true;
+                }
             }
         } catch (CheckedAnalysisException e) {
             return false;
@@ -107,8 +110,9 @@ public class FieldSummary {
 
     public Set<ProgramPoint> getCalledFromSuperConstructor(ClassDescriptor superClass, XMethod calledFromConstructor) {
 
-        if (!callsOverriddenMethodsFromConstructor.contains(superClass))
+        if (!callsOverriddenMethodsFromConstructor.contains(superClass)) {
             return Collections.emptySet();
+        }
         for (Map.Entry<XMethod, Set<ProgramPoint>> e : selfMethodsCalledFromConstructor.entrySet()) {
             XMethod m = e.getKey();
             if (m.getName().equals(calledFromConstructor.getName())
@@ -117,8 +121,9 @@ public class FieldSummary {
                 String sig2 = calledFromConstructor.getSignature();
                 sig1 = sig1.substring(0, sig1.indexOf(')'));
                 sig2 = sig2.substring(0, sig2.indexOf(')'));
-                if (sig1.equals(sig2))
+                if (sig1.equals(sig2)) {
                     return e.getValue();
+                }
             }
         }
 
@@ -127,8 +132,9 @@ public class FieldSummary {
     }
 
     public void setFieldsWritten(XMethod method, Collection<XField> fields) {
-        if (fields.isEmpty())
+        if (fields.isEmpty()) {
             return;
+        }
         if (fields.size() == 1) {
             fieldsWritten.put(method, Collections.singleton(Util.first(fields)));
             return;
@@ -139,21 +145,26 @@ public class FieldSummary {
 
     public Set<XField> getFieldsWritten(XMethod method) {
         Set<XField> result = fieldsWritten.get(method);
-        if (result == null)
+        if (result == null) {
             return Collections.<XField> emptySet();
+        }
         return result;
     }
 
     public boolean isWrittenOutsideOfConstructor(XField field) {
-        if (field.isFinal())
+        if (field.isFinal()) {
             return false;
-        if (writtenOutsideOfConstructor.contains(field))
+        }
+        if (writtenOutsideOfConstructor.contains(field)) {
             return true;
-        if (!AnalysisContext.currentAnalysisContext().unreadFieldsAvailable())
+        }
+        if (!AnalysisContext.currentAnalysisContext().unreadFieldsAvailable()) {
             return true;
+        }
         UnreadFieldsData unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFieldsData();
-        if (unreadFields.isReflexive(field))
+        if (unreadFields.isReflexive(field)) {
             return true;
+        }
         return false;
     }
 
@@ -229,10 +240,12 @@ public class FieldSummary {
     }
 
     public void sawSuperCall(XMethod from, XMethod constructorInSuperClass) {
-        if (constructorInSuperClass == null || from == null)
+        if (constructorInSuperClass == null || from == null) {
             return;
-        if (constructorInSuperClass.getSignature().equals("()V"))
+        }
+        if (constructorInSuperClass.getSignature().equals("()V")) {
             return;
+        }
         nonVoidSuperConstructorsCalled.put(from, constructorInSuperClass);
 
     }

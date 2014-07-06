@@ -41,7 +41,7 @@ public class ClassNameTest extends TestCase {
         assertEquals("java/lang/Integer", ClassName.extractClassName("[[[Ljava/lang/Integer;"));
         assertEquals("java/lang/Integer", ClassName.extractClassName("java/lang/Integer"));
     }
-    
+
     public void testGetPrimitiveType() {
         assertEquals("I", ClassName.getPrimitiveType("java/lang/Integer"));
         assertEquals("F", ClassName.getPrimitiveType("java/lang/Float"));

@@ -34,7 +34,7 @@ import org.dom4j.Document;
 import org.dom4j.io.DocumentSource;
 
 public class HTMLBugReporter extends BugCollectionBugReporter {
-    private String stylesheet;
+    private final String stylesheet;
 
     private Exception fatalException;
 
@@ -74,8 +74,9 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
         } catch (Exception e) {
             logError("Could not generate HTML output", e);
             fatalException = e;
-            if (FindBugs.DEBUG)
+            if (FindBugs.DEBUG) {
                 e.printStackTrace();
+            }
         }
         outputStream.close();
     }
@@ -85,8 +86,9 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
     }
 
     private static InputStream getStylesheetStream(String stylesheet) throws IOException {
-        if (FindBugs.DEBUG)
+        if (FindBugs.DEBUG) {
             System.out.println("Attempting to load stylesheet " + stylesheet);
+        }
         try {
             URL u = new URL(stylesheet);
             return u.openStream();
@@ -106,4 +108,3 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
     }
 }
 
-// vim:ts=4

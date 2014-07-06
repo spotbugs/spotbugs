@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.I18N;
 
 public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
-    private Set<BugPattern> bugPatternSet;
+    private final Set<BugPattern> bugPatternSet;
 
     private String headerText;
 
@@ -50,11 +50,13 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
         @Override
         public int compare(BugPattern a, BugPattern b) {
             int cmp = a.getCategory().compareTo(b.getCategory());
-            if (cmp != 0)
+            if (cmp != 0) {
                 return cmp;
+            }
             cmp = a.getAbbrev().compareTo(b.getAbbrev());
-            if (cmp != 0)
+            if (cmp != 0) {
                 return cmp;
+            }
             return a.getType().compareTo(b.getType());
         }
     }
@@ -192,11 +194,11 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
             pp.setEndBodyText(args[argCount++]);
         }
 
-        if (unabridged)
+        if (unabridged) {
             pp.unabridged = true;
+        }
 
         pp.print();
     }
 }
 
-// vim:ts=3

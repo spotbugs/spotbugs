@@ -27,8 +27,9 @@ import java.util.Set;
 public class RecursiveSearchForJavaFiles {
 
     public static void main(String args[]) {
-        for (File f : search(new File(args[0])))
+        for (File f : search(new File(args[0]))) {
             System.out.println(f.getPath());
+        }
     }
 
     public static Set<File> search(File root) {
@@ -40,15 +41,16 @@ public class RecursiveSearchForJavaFiles {
         while (!worklist.isEmpty()) {
             File next = worklist.removeFirst();
             File[] files = next.listFiles();
-            if (files != null)
+            if (files != null) {
                 for (File f : files) {
-                    if (f.getName().endsWith(".java"))
+                    if (f.getName().endsWith(".java")) {
                         result.add(f);
-                    else if (f.isDirectory() && directories.add(f)) {
+                    } else if (f.isDirectory() && directories.add(f)) {
                         worklist.add(f);
                     }
 
                 }
+            }
 
         }
         return result;

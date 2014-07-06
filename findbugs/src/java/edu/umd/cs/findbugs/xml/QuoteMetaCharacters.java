@@ -26,28 +26,30 @@ import javax.annotation.Nonnull;
 
 /**
  * Quote metacharacters in a String.
- * 
+ *
  * @see MetaCharacterMap
  * @author David Hovemeyer
  */
 public abstract class QuoteMetaCharacters {
-    private String text;
+    private final String text;
 
-    private MetaCharacterMap map;
+    private final MetaCharacterMap map;
 
     /**
      * Constructor.
-     * 
+     *
      * @param text
      *            the text in which we want to quote metacharacters
      * @param map
      *            the MetaCharacterMap
      */
     public QuoteMetaCharacters(@Nonnull String text, @Nonnull MetaCharacterMap map) {
-        if (text == null)
+        if (text == null) {
             throw new NullPointerException("text must be nonnull");
-        if (map == null)
+        }
+        if (map == null) {
             throw new NullPointerException("map must be nonnull");
+        }
         this.text = text;
         this.map = map;
     }
@@ -73,7 +75,7 @@ public abstract class QuoteMetaCharacters {
     /**
      * Downcall method to emit literal text, in which any occurrences of the
      * metacharacters are quoted.
-     * 
+     *
      * @param s
      *            the literal text to emit
      */
@@ -82,11 +84,11 @@ public abstract class QuoteMetaCharacters {
     private int findNextMeta(String s, int start) {
         for (int i = start; i < s.length(); ++i) {
             char c = s.charAt(i);
-            if (map.isMeta(c))
+            if (map.isMeta(c)) {
                 return i;
+            }
         }
         return -1;
     }
 }
 
-// vim:ts=4

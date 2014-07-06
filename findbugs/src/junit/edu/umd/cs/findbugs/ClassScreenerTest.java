@@ -112,4 +112,3 @@ public class ClassScreenerTest extends TestCase {
     }
 }
 
-// vim:ts=4

@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 /**
  * Bug annotation class for java types. This is of lighter weight than
  * ClassAnnotation, and can be used for things like array types.
- * 
+ *
  * @see ClassAnnotation
  */
 public class TypeAnnotation extends BugAnnotationWithSourceLines {
@@ -56,14 +56,14 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
 
     /**
      * constructor.
-     * 
+     *
      * <p>
      * For information on type descriptors, <br>
      * see http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.
      * html#14152 <br>
      * or http://www.murrayc.com/learning/java/java_classfileformat.shtml#
      * TypeDescriptors
-     * 
+     *
      * @param typeDescriptor
      *            a jvm type descriptor, such as "[I"
      */
@@ -79,8 +79,9 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
         this(objectType.getSignature(), roleDescription);
         if (objectType instanceof GenericObjectType) {
             GenericObjectType genericObjectType = (GenericObjectType) objectType;
-            if (genericObjectType.getTypeCategory() == GenericUtilities.TypeCategory.PARAMETERIZED)
+            if (genericObjectType.getTypeCategory() == GenericUtilities.TypeCategory.PARAMETERIZED) {
                 typeParameters = genericObjectType.getGenericParametersAsString();
+            }
         }
     }
 
@@ -93,14 +94,15 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
             if (context != null) {
                 this.sourceFileName = context.lookupSourceFile(className);
                 this.sourceLines = ClassAnnotation.getSourceLinesForClass(className, sourceFileName);
-            } else
+            } else {
                 this.sourceFileName = SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
+            }
         }
     }
 
     /**
      * Get the type descriptor.
-     * 
+     *
      * @return the jvm type descriptor, such as "[I"
      */
     public String getTypeDescriptor() {
@@ -115,13 +117,15 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
     @Override
     public String format(String key, ClassAnnotation primaryClass) {
         String name = new SignatureConverter(descriptor).parseNext().replace("java.lang.", "");
-        if (key.equals("givenClass"))
+        if (key.equals("givenClass")) {
             name = PackageMemberAnnotation.shorten(primaryClass.getPackageName(), name);
-        else if (key.equals("excludingPackage"))
+        } else if (key.equals("excludingPackage")) {
             name = PackageMemberAnnotation.removePackage(name);
+        }
 
-        if (typeParameters != null && !key.equals("hash"))
+        if (typeParameters != null && !key.equals("hash")) {
             name = name + typeParameters;
+        }
         return name;
     }
 
@@ -146,16 +150,18 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof TypeAnnotation))
+        if (!(o instanceof TypeAnnotation)) {
             return false;
+        }
         return descriptor.equals(((TypeAnnotation) o).descriptor);
     }
 
     @Override
     public int compareTo(BugAnnotation o) {
-        if (!(o instanceof TypeAnnotation)) // BugAnnotations must be Comparable
-                                            // with any type of BugAnnotation
+        if (!(o instanceof TypeAnnotation)) {
+            // with any type of BugAnnotation
             return this.getClass().getName().compareTo(o.getClass().getName());
+        }
         return descriptor.compareTo(((TypeAnnotation) o).descriptor);
         // could try to determine equivalence with ClassAnnotation, but don't
         // see how this would be useful
@@ -186,10 +192,12 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("descriptor", descriptor);
 
         String role = getDescription();
-        if (!role.equals(DEFAULT_ROLE))
+        if (!role.equals(DEFAULT_ROLE)) {
             attributeList.addAttribute("role", role);
-        if (typeParameters != null)
+        }
+        if (typeParameters != null) {
             attributeList.addAttribute("typeParameters", typeParameters);
+        }
 
         BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
     }

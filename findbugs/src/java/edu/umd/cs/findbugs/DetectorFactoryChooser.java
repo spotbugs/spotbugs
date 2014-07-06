@@ -21,13 +21,13 @@ package edu.umd.cs.findbugs;
 
 /**
  * Predicate for choosing DetectorFactory objects.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface DetectorFactoryChooser {
     /**
      * Return whether or not given DetectorFactory should be chosen.
-     * 
+     *
      * @param factory
      *            the DetectorFactory
      * @return true if the DetectorFactory should be chosen, false if not
@@ -37,7 +37,7 @@ public interface DetectorFactoryChooser {
     /**
      * Enable the factory due to ordering constraints with other enabled
      * detectors
-     * 
+     *
      * @param factory
      */
     public void enable(DetectorFactory factory);

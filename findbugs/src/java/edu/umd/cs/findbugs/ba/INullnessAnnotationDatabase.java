@@ -26,14 +26,14 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 /**
  * Interface for querying nullness annotations on methods, fields, and
  * parameters.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface INullnessAnnotationDatabase {
 
     /**
      * Determine whether given parameter must be non-null.
-     * 
+     *
      * @param m
      *            a method
      * @param param
@@ -45,7 +45,7 @@ public interface INullnessAnnotationDatabase {
     /**
      * Get a resolved NullnessAnnotation on given XMethod, XField, or
      * XMethodParameter.
-     * 
+     *
      * @param o
      *            an XMethod, XField, or XMethodParameter
      * @param getMinimal
@@ -72,7 +72,7 @@ public interface INullnessAnnotationDatabase {
 
     /**
      * Add a field annotation to the database.
-     * 
+     *
      * @param cName
      *            dotted class name
      * @param mName
@@ -89,7 +89,7 @@ public interface INullnessAnnotationDatabase {
 
     /**
      * Add a method annotation to the database.
-     * 
+     *
      * @param cName
      *            dotted class name
      * @param mName
@@ -106,7 +106,7 @@ public interface INullnessAnnotationDatabase {
 
     /**
      * Add a method parameter annotation to the database.
-     * 
+     *
      * @param cName
      *            dotted class name
      * @param mName
@@ -125,7 +125,7 @@ public interface INullnessAnnotationDatabase {
 
     /**
      * Add a default annotation to the database.
-     * 
+     *
      * @param target
      *            one of AnnotationDatabase.METHOD, AnnotationDatabase.FIELD,
      *            AnnotationDatabase.PARAMETER, or AnnotationDatabase.ANY

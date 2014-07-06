@@ -34,18 +34,18 @@ import org.apache.bcel.generic.StoreInstruction;
 /**
  * Dataflow analysis to find live stores of locals. This is just a backward
  * analysis to see which loads reach stores of the same local.
- * 
+ *
  * <p>
  * This analysis also computes which stores that were killed by a subsequent
  * store on any subsequent reachable path. (The FindDeadLocalStores detector
  * uses this information to reduce false positives.)
- * 
+ *
  * @author David Hovemeyer
  */
 public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> implements Debug {
-    private int topBit;
+    private final int topBit;
 
-    private int killedByStoreOffset;
+    private final int killedByStoreOffset;
 
     public LiveLocalStoreAnalysis(MethodGen methodGen, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
         super(rdfs, dfs);
@@ -101,8 +101,9 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> imp
     @Override
     public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, BitSet fact)
             throws DataflowAnalysisException {
-        if (!isFactValid(fact))
+        if (!isFactValid(fact)) {
             return;
+        }
 
         Instruction ins = handle.getInstruction();
 
@@ -126,8 +127,9 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> imp
             fact.clear(local + killedByStoreOffset);
         }
 
-        if (!isFactValid(fact))
+        if (!isFactValid(fact)) {
             throw new IllegalStateException("Fact become invalid");
+        }
     }
 
     @Override
@@ -141,30 +143,36 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> imp
      */
     private void verifyFact(BitSet fact) {
         if (VERIFY_INTEGRITY) {
-            if (isTop(fact) && fact.nextSetBit(0) < topBit)
+            if (isTop(fact) && fact.nextSetBit(0) < topBit) {
                 throw new IllegalStateException();
+            }
         }
     }
 
     @Override
     public String factToString(BitSet fact) {
-        if (isTop(fact))
+        if (isTop(fact)) {
             return "[TOP]";
+        }
         StringBuilder buf = new StringBuilder("[ ");
         boolean empty = true;
         for (int i = 0; i < killedByStoreOffset; i++) {
             boolean killedByStore = killedByStore(fact, i);
             boolean storeAlive = isStoreAlive(fact, i);
-            if (!storeAlive && !killedByStore)
+            if (!storeAlive && !killedByStore) {
                 continue;
-            if (!empty)
+            }
+            if (!empty) {
                 buf.append(", ");
+            }
             empty = false;
             buf.append(i);
-            if (storeAlive)
+            if (storeAlive) {
                 buf.append("L");
-            if (killedByStore)
+            }
+            if (killedByStore) {
                 buf.append("k");
+            }
         }
         buf.append("]");
         return buf.toString();
@@ -180,7 +188,7 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> imp
 
     /**
      * Return whether or not a store of given local is alive.
-     * 
+     *
      * @param fact
      *            a dataflow fact created by this analysis
      * @param local
@@ -222,4 +230,3 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> imp
     // }
 }
 
-// vim:ts=4

@@ -52,10 +52,11 @@ public class FinalizerNullsFields extends BytecodeScanningDetector {
 
     @Override
     public void visit(Method obj) {
-        if (obj.getName().equals("finalize"))
+        if (obj.getName().equals("finalize")) {
             inFinalize = true;
-        else
+        } else {
             inFinalize = false;
+        }
     }
 
     @Override
@@ -80,14 +81,14 @@ public class FinalizerNullsFields extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (state == 0 && seen == ALOAD_0)
+        if (state == 0 && seen == ALOAD_0) {
             state++;
-        else if (state == 1 && seen == ACONST_NULL)
+        } else if (state == 1 && seen == ACONST_NULL) {
             state++;
-        else if (state == 2 && seen == PUTFIELD) {
+        } else if (state == 2 && seen == PUTFIELD) {
             bugAccumulator.accumulateBug(
                     new BugInstance(this, "FI_FINALIZER_NULLS_FIELDS", NORMAL_PRIORITY).addClassAndMethod(this)
-                            .addReferencedField(this), this);
+                    .addReferencedField(this), this);
             sawFieldNulling = true;
             state = 0;
         } else if (seen == RETURN) {

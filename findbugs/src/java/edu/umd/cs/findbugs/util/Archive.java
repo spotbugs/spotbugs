@@ -67,7 +67,7 @@ public class Archive {
         String extension = fileName.substring(lastDot).toLowerCase(Locale.ENGLISH);
         return extension;
     }
-    
+
     public static boolean isLibraryFileName(String fileName) {
         String extension = getExtension(fileName);
         return extension.equals(".jar");

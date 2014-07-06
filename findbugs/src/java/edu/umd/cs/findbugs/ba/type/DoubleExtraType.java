@@ -25,7 +25,7 @@ import org.apache.bcel.generic.Type;
  * Special type used to represent the "extra" part of a double value. We say
  * that when a double is stored, local <i>n</i> will have type double, and local
  * <i>n+1</i> will have this type.
- * 
+ *
  * @author David Hovemeyer
  * @see TypeAnalysis
  * @see TypeFrame
@@ -58,4 +58,3 @@ public class DoubleExtraType extends Type implements ExtendedTypes {
     }
 }
 
-// vim:ts=4

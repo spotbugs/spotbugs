@@ -59,11 +59,12 @@ public class DetectorsTest {
     private  File findbugsTestCases;
 
     /** detectors which are disabled by default but which must be used in test */
-    private String[] enabledDetectors = {"CheckExpectedWarnings","InefficientMemberAccess","EmptyZipFileEntry"};
+    private final String[] enabledDetectors = {"CheckExpectedWarnings","InefficientMemberAccess","EmptyZipFileEntry"};
 
     public  File getFindbugsTestCases() throws IOException {
-        if (findbugsTestCases != null)
+        if (findbugsTestCases != null) {
             return findbugsTestCases;
+        }
         File f = new File(SystemProperties.getProperty("findbugsTestCases.home", "../findbugsTestCases"));
         if (f.exists() && f.isDirectory() && f.canRead()) {
             findbugsTestCases = f;
@@ -74,8 +75,9 @@ public class DetectorsTest {
 
     public File getFindbugsTestCasesFile(String path) throws IOException {
         File f = new File(getFindbugsTestCases(), path);
-        if (f.exists() && f.canRead())
+        if (f.exists() && f.canRead()) {
             return f;
+        }
         throw new IOException("FindBugs test cases file " + path + " not available at " + f.getCanonicalPath());
     }
 
@@ -129,8 +131,9 @@ public class DetectorsTest {
             }
         }
 
-        if (!unexpectedBugs.isEmpty())
+        if (!unexpectedBugs.isEmpty()) {
             Assert.fail("Unexpected bugs (" + unexpectedBugs.size() + "):" + getBugsLocations(unexpectedBugs));
+        }
     }
 
     /**
@@ -206,12 +209,12 @@ public class DetectorsTest {
 
         project.addAuxClasspathEntry("lib/junit.jar");
         File lib = getFindbugsTestCasesFile("lib");
-         for(File f : lib.listFiles()) {
-             String path = f.getPath();
-             if (f.canRead() && path.endsWith(".jar")) {
+        for(File f : lib.listFiles()) {
+            String path = f.getPath();
+            if (f.canRead() && path.endsWith(".jar")) {
                 project.addAuxClasspathEntry(path);
             }
-         }
+        }
 
     }
 }

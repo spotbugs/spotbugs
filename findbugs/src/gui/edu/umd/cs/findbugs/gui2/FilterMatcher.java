@@ -61,22 +61,22 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
     }
 
     public FilterMatcher(Sortables filterBy, String value, FilterWhere mode) // 0
-                                                                             // =
-                                                                             // exactly;
-                                                                             // 1
-                                                                             // =
-                                                                             // at
-                                                                             // or
-                                                                             // after;
-                                                                             // 2
-                                                                             // =
-                                                                             // at
-                                                                             // or
-                                                                             // before;
-                                                                             // 3
-                                                                             // =
-                                                                             // not
-                                                                             // at
+    // =
+    // exactly;
+    // 1
+    // =
+    // at
+    // or
+    // after;
+    // 2
+    // =
+    // at
+    // or
+    // before;
+    // 3
+    // =
+    // not
+    // at
     {
         this.filterBy = filterBy;
         this.value = value;
@@ -94,10 +94,11 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
     public void setActive(boolean active) {
         if (active != this.active) {
             this.active = active;
-            if (active == true)
+            if (active == true) {
                 FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
-            else
+            } else {
                 FilterActivity.notifyListeners(FilterListener.Action.UNFILTERING, null);
+            }
         }
     }
 
@@ -107,8 +108,9 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 
     @Override
     public boolean match(BugInstance bugInstance) {
-        if (!active)
+        if (!active) {
             return true;
+        }
 
         SortableStringComparator ssc = filterBy.getComparator();
         int compare = ssc.compare(filterBy.getFrom(bugInstance), value);
@@ -131,19 +133,19 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
         switch (mode) {
         case FILTER_EXACTLY:
             return filterBy.toString() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " "
-                    + edu.umd.cs.findbugs.L10N.getLocalString("mode.equal_to", "equal to") + " " + filterBy.formatValue(value);
+            + edu.umd.cs.findbugs.L10N.getLocalString("mode.equal_to", "equal to") + " " + filterBy.formatValue(value);
         case FILTER_AT_OR_AFTER:
             return filterBy.toString() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " "
-                    + edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_after", "at or after") + " "
-                    + filterBy.formatValue(value);
+            + edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_after", "at or after") + " "
+            + filterBy.formatValue(value);
         case FILTER_AT_OR_BEFORE:
             return filterBy.toString() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " "
-                    + edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_before", "at or before") + " "
-                    + filterBy.formatValue(value);
+            + edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_before", "at or before") + " "
+            + filterBy.formatValue(value);
         case FILTER_ALL_BUT:
             return filterBy.toString() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " "
-                    + edu.umd.cs.findbugs.L10N.getLocalString("mode.not_equal_to", "not equal to") + " "
-                    + filterBy.formatValue(value);
+            + edu.umd.cs.findbugs.L10N.getLocalString("mode.not_equal_to", "not equal to") + " "
+            + filterBy.formatValue(value);
         default:
             throw new RuntimeException();
         }
@@ -151,13 +153,16 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 
     @Override
     public boolean equals(Object o) {
-        if (o == null)
+        if (o == null) {
             return false;
-        if (getClass() != o.getClass())
+        }
+        if (getClass() != o.getClass()) {
             return false;
+        }
 
-        if (filterBy.equals(((FilterMatcher) o).filterBy) && value.equals(((FilterMatcher) o).value))
+        if (filterBy.equals(((FilterMatcher) o).filterBy) && value.equals(((FilterMatcher) o).value)) {
             return true;
+        }
         return false;
     }
 
@@ -168,8 +173,9 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 
     @Override
     public int compareTo(FilterMatcher that) {
-        if (this.filterBy != that.filterBy)
+        if (this.filterBy != that.filterBy) {
             return (this.filterBy.ordinal() < that.filterBy.ordinal() ? -1 : 1);
+        }
 
         return this.value.compareTo(that.value);
     }

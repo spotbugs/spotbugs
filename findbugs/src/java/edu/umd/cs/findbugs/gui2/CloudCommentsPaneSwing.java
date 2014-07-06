@@ -15,11 +15,11 @@ import edu.umd.cs.findbugs.cloud.CloudPlugin;
 
 public class CloudCommentsPaneSwing extends CloudCommentsPane {
 
-    
+
     @Override
     public Dimension getPreferredSize() {
         return super.getMinimumSize();
-        
+
     }
 
     @Override

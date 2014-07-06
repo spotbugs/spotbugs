@@ -76,16 +76,19 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
         Method[] methodList = jclass.getMethods();
         for (Method method : methodList) {
             MethodGen methodGen = classContext.getMethodGen(method);
-            if (methodGen == null)
+            if (methodGen == null) {
                 continue;
+            }
 
             // Don't bother analyzing the method unless there is both locking
             // and a method call.
             BitSet bytecodeSet = classContext.getBytecodeSet(method);
-            if (bytecodeSet == null)
+            if (bytecodeSet == null) {
                 continue;
-            if (!(bytecodeSet.get(Constants.MONITORENTER) && bytecodeSet.get(Constants.INVOKEVIRTUAL)))
+            }
+            if (!(bytecodeSet.get(Constants.MONITORENTER) && bytecodeSet.get(Constants.INVOKEVIRTUAL))) {
                 continue;
+            }
 
             try {
                 analyzeMethod(classContext, method);
@@ -100,8 +103,9 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
 
         MethodGen methodGen = classContext.getMethodGen(method);
-        if (methodGen == null)
+        if (methodGen == null) {
             return;
+        }
         ConstantPoolGen cpg = methodGen.getConstantPool();
         CFG cfg = classContext.getCFG(method);
         ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
@@ -113,8 +117,9 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
             InstructionHandle handle = location.getHandle();
 
             Instruction ins = handle.getInstruction();
-            if (!(ins instanceof INVOKEVIRTUAL))
+            if (!(ins instanceof INVOKEVIRTUAL)) {
                 continue;
+            }
             INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
 
             String methodName = inv.getName(cpg);
@@ -122,15 +127,18 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
 
             if (Hierarchy.isMonitorWait(methodName, methodSig) || Hierarchy.isMonitorNotify(methodName, methodSig)) {
                 int numConsumed = inv.consumeStack(cpg);
-                if (numConsumed == Constants.UNPREDICTABLE)
+                if (numConsumed == Constants.UNPREDICTABLE) {
                     throw new DataflowAnalysisException("Unpredictable stack consumption", methodGen, handle);
+                }
 
                 ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
-                if (!frame.isValid())
+                if (!frame.isValid()) {
                     // Probably dead code
                     continue;
-                if (frame.getStackDepth() - numConsumed < 0)
+                }
+                if (frame.getStackDepth() - numConsumed < 0) {
                     throw new DataflowAnalysisException("Stack underflow", methodGen, handle);
+                }
                 ValueNumber ref = frame.getValue(frame.getNumSlots() - numConsumed);
                 LockSet lockSet = dataflow.getFactAtLocation(location);
                 int lockCount = lockSet.getLockCount(ref.getNumber());
@@ -138,11 +146,12 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
                 if (lockCount == 0) {
                     Collection<ValueNumber> lockedValueNumbers = lockSet.getLockedValueNumbers(frame);
                     boolean foundMatch = false;
-                    for (ValueNumber v : lockedValueNumbers)
+                    for (ValueNumber v : lockedValueNumbers) {
                         if (frame.veryFuzzyMatch(ref, v)) {
                             foundMatch = true;
                             break;
                         }
+                    }
 
                     if (!foundMatch) {
 
@@ -169,4 +178,3 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
     }
 }
 
-// vim:ts=3

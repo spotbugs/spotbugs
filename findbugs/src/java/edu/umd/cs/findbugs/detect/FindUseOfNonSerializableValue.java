@@ -67,8 +67,9 @@ public class FindUseOfNonSerializableValue implements Detector {
                 if (name.equals("setAttribute") && clazz.equals("javax.servlet.http.HttpSession") || (name.equals("writeObject")
                         && (clazz.equals("java.io.ObjectOutput")
                                 || clazz.equals("java.io.ObjectOutputStream")))) {
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("Found call to " + clazz + "." + name);
+                    }
 
                     skip = false;
                     break;
@@ -76,15 +77,18 @@ public class FindUseOfNonSerializableValue implements Detector {
 
             }
         }
-        if (skip)
+        if (skip) {
             return;
-        if (DEBUG)
+        }
+        if (DEBUG) {
             System.out.println(this.getClass().getSimpleName() + " Checking " + javaClass.getClassName());
+        }
         Method[] methodList = javaClass.getMethods();
 
         for (Method method : methodList) {
-            if (method.getCode() == null)
+            if (method.getCode() == null) {
                 continue;
+            }
 
             try {
                 analyzeMethod(classContext, method);
@@ -104,28 +108,33 @@ public class FindUseOfNonSerializableValue implements Detector {
         if (ins instanceof InvokeInstruction) {
             InvokeInstruction invoke = (InvokeInstruction) ins;
 
-           String mName = invoke.getMethodName(cpg);
+            String mName = invoke.getMethodName(cpg);
             String cName = invoke.getClassName(cpg);
 
-            if (mName.equals("setAttribute") && cName.equals("javax.servlet.http.HttpSession"))
+            if (mName.equals("setAttribute") && cName.equals("javax.servlet.http.HttpSession")) {
                 return Use.STORE_INTO_HTTP_SESSION;
+            }
             if (mName.equals("writeObject")
                     && (cName.equals("java.io.ObjectOutput")
-                            || cName.equals("java.io.ObjectOutputStream")))
+                            || cName.equals("java.io.ObjectOutputStream"))) {
                 return Use.PASSED_TO_WRITE_OBJECT;
+            }
         }
-       return null;
+        return null;
     }
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
         MethodGen methodGen = classContext.getMethodGen(method);
-        if (methodGen == null)
+        if (methodGen == null) {
             return;
+        }
         BitSet bytecodeSet = classContext.getBytecodeSet(method);
-        if (bytecodeSet == null)
+        if (bytecodeSet == null) {
             return;
+        }
         // We don't adequately model instanceof interfaces yet
-        if (bytecodeSet.get(Constants.INSTANCEOF) || bytecodeSet.get(Constants.CHECKCAST))
+        if (bytecodeSet.get(Constants.INSTANCEOF) || bytecodeSet.get(Constants.CHECKCAST)) {
             return;
+        }
         CFG cfg = classContext.getCFG(method);
         TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
@@ -142,8 +151,9 @@ public class FindUseOfNonSerializableValue implements Detector {
             Instruction ins = handle.getInstruction();
 
             Use use = getUse(cpg, ins);
-            if (use == null)
+            if (use == null) {
                 continue;
+            }
 
             TypeFrame frame = typeDataflow.getFactAtLocation(location);
             if (!frame.isValid()) {
@@ -180,22 +190,24 @@ public class FindUseOfNonSerializableValue implements Detector {
                     case PASSED_TO_WRITE_OBJECT:
                         pattern = "DMI_NONSERIALIZABLE_OBJECT_WRITTEN";
                         double isRemote = DeepSubtypeAnalysis.isDeepRemote(refType);
-                        if (isRemote >= 0.9)
+                        if (isRemote >= 0.9) {
                             continue;
-                        if (isSerializable < isRemote)
+                        }
+                        if (isSerializable < isRemote) {
                             isSerializable = isRemote;
+                        }
                         break;
                     case STORE_INTO_HTTP_SESSION:
                         pattern = "J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION";
                         break;
-                        default:
-                            throw new IllegalStateException();
+                    default:
+                        throw new IllegalStateException();
                     }
 
                     bugAccumulator.accumulateBug(new BugInstance(this, pattern,
                             isSerializable < 0.15 ? HIGH_PRIORITY : isSerializable > 0.5 ? LOW_PRIORITY : NORMAL_PRIORITY)
-                            .addClassAndMethod(methodGen, sourceFile).addType(problem).describe(TypeAnnotation.FOUND_ROLE),
-                            sourceLineAnnotation);
+                    .addClassAndMethod(methodGen, sourceFile).addType(problem).describe(TypeAnnotation.FOUND_ROLE),
+                    sourceLineAnnotation);
 
                 }
             } catch (ClassNotFoundException e) {

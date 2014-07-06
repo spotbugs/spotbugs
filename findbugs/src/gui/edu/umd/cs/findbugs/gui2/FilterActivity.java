@@ -47,14 +47,15 @@ public class FilterActivity {
         switch (whatsGoingOnCode) {
         case FILTERING:
         case UNFILTERING:
-            for (FilterListener i : currentListeners)
+            for (FilterListener i : currentListeners) {
                 i.clearCache();
+            }
             break;
-       
+
         }
         MainFrame.getInstance().updateStatusBar();
     }
-    
+
     public static class FilterActivityNotifier {
         public void notifyListeners(FilterListener.Action whatsGoingOnCode, TreePath optionalPath) {
             FilterActivity.notifyListeners(whatsGoingOnCode, optionalPath);

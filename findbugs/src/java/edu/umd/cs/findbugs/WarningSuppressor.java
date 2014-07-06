@@ -13,8 +13,9 @@ abstract public class WarningSuppressor implements Matcher {
 
     public WarningSuppressor(String bugPattern) {
         this.bugPattern = bugPattern;
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Suppressing " + bugPattern);
+        }
     }
 
     @Override
@@ -28,10 +29,12 @@ abstract public class WarningSuppressor implements Matcher {
         }
         if (!(bugPattern == null || bugInstance.getType().startsWith(bugPattern)
                 || bugInstance.getBugPattern().getCategory().equalsIgnoreCase(bugPattern) || bugInstance.getBugPattern()
-                .getAbbrev().equalsIgnoreCase(bugPattern)))
+                .getAbbrev().equalsIgnoreCase(bugPattern))) {
             return false;
-        if (DEBUG)
+        }
+        if (DEBUG) {
             System.out.println(" pattern matches");
+        }
         return true;
     }
 

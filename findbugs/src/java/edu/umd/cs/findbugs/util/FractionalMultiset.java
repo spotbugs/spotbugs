@@ -52,26 +52,29 @@ public class FractionalMultiset<K> {
 
     public void add(K k, double val) {
         Double v = map.get(k);
-        if (v == null)
+        if (v == null) {
             map.put(k, val);
-        else
+        } else {
             map.put(k, v + val);
+        }
     }
 
     public double getValue(K k) {
         Double v = map.get(k);
-        if (v == null)
+        if (v == null) {
             return 0;
+        }
         return v;
     }
 
     public void turnTotalIntoAverage(Multiset<K> counts) {
         for (Map.Entry<K, Double> e : map.entrySet()) {
             int count = counts.getCount(e.getKey());
-            if (count == 0)
+            if (count == 0) {
                 e.setValue(Double.NaN);
-            else
+            } else {
                 e.setValue(e.getValue() / count);
+            }
 
         }
     }
@@ -84,9 +87,10 @@ public class FractionalMultiset<K> {
     public Iterable<Map.Entry<K, Double>> entriesInDecreasingOrder() {
         TreeSet<Map.Entry<K, Double>> result = new TreeSet<Map.Entry<K, Double>>(new DecreasingOrderEntryComparator<K>());
         result.addAll(map.entrySet());
-        if (result.size() != map.size())
+        if (result.size() != map.size()) {
             throw new IllegalStateException("Map " + map.getClass().getSimpleName()
                     + " reuses Map.Entry objects; entrySet can't be passed to addAll");
+        }
         return result;
     }
 
@@ -94,9 +98,10 @@ public class FractionalMultiset<K> {
     public Iterable<Map.Entry<K, Double>> entriesInIncreasingOrder() {
         TreeSet<Map.Entry<K, Double>> result = new TreeSet<Map.Entry<K, Double>>(new DecreasingOrderEntryComparator<K>());
         result.addAll(map.entrySet());
-        if (result.size() != map.size())
+        if (result.size() != map.size()) {
             throw new IllegalStateException("Map " + map.getClass().getSimpleName()
                     + " reuses Map.Entry objects; entrySet can't be passed to addAll");
+        }
         return result;
     }
 
@@ -104,10 +109,12 @@ public class FractionalMultiset<K> {
     private static <E> int compareValues(Entry<E, Double> o1, Entry<E, Double> o2) {
         double c1 = o1.getValue();
         double c2 = o2.getValue();
-        if (c1 < c2)
+        if (c1 < c2) {
             return 1;
-        if (c1 > c2)
+        }
+        if (c1 > c2) {
             return -1;
+        }
         return System.identityHashCode(o1.getKey()) - System.identityHashCode(o2.getKey());
     }
 

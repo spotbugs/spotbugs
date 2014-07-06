@@ -37,7 +37,7 @@ import javax.annotation.meta.TypeQualifierDefault;
  * annotation of the corresponding parameter in the superclass applies)
  * <li>there is a default annotation applied to a more tightly nested element.
  * </ul>
- * 
+ *
  */
 @Documented
 @Nonnull

@@ -201,14 +201,15 @@ public class PrintingBugReporter extends TextUIBugReporter {
                     System.out.println("#" + sourceLine.getSourceFile() + "#" + sourceLine.getStartLine());
                     System.out.println(warning.getAnnotationText());
                 } catch (RuntimeException e) {
-                    if (storedException == null)
+                    if (storedException == null) {
                         storedException = e;
+                    }
                 }
             }
         } else {
 
             Bag<String> lowRank = new Bag<String>(new TreeMap<String, Integer>());
-            for (BugInstance warning : bugCollection.getCollection())
+            for (BugInstance warning : bugCollection.getCollection()) {
                 if (!reporter.isApplySuppressions() || !bugCollection.getProject().getSuppressionFilter().match(warning)) {
                     int rank = warning.getBugRank();
                     BugPattern pattern = warning.getBugPattern();
@@ -217,8 +218,9 @@ public class PrintingBugReporter extends TextUIBugReporter {
                         try {
                             reporter.printBug(warning);
                         } catch (RuntimeException e) {
-                            if (storedException == null)
+                            if (storedException == null) {
                                 storedException = e;
+                            }
                         }
                     } else if (rank <= commandLine.summarizeMaxRank) {
                         bugsReported = true;
@@ -226,6 +228,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
                     }
 
                 }
+            }
 
             reporter.finish();
             for (Map.Entry<String, Integer> e : lowRank.entrySet()) {
@@ -249,9 +252,9 @@ public class PrintingBugReporter extends TextUIBugReporter {
             System.err.println("Exit code set to: " + exitCode);
             System.exit(exitCode);
         } else
-        if (storedException != null) {
-            throw storedException;
-        }
+            if (storedException != null) {
+                throw storedException;
+            }
 
     }
 
@@ -285,4 +288,3 @@ public class PrintingBugReporter extends TextUIBugReporter {
     }
 }
 
-// vim:ts=4

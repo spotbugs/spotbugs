@@ -26,7 +26,7 @@ import org.apache.bcel.generic.InstructionHandle;
  * A ResourceTracker is used with ResourceValueAnalysis to determine where in a
  * method a certain kind of resource is created, and to model the effect of
  * instructions on the state of that resource.
- * 
+ *
  * @author David Hovemeyer
  * @see ResourceValueAnalysis
  */
@@ -34,7 +34,7 @@ public interface ResourceTracker<Resource> {
     /**
      * Determine if the given instruction is the site where a resource is
      * created.
-     * 
+     *
      * @param basicBlock
      *            basic block containing the instruction
      * @param handle
@@ -50,7 +50,7 @@ public interface ResourceTracker<Resource> {
     /**
      * Determine if the given instruction is the site where a resource is
      * closed.
-     * 
+     *
      * @param basicBlock
      *            basic block containing the instruction
      * @param handle
@@ -70,7 +70,7 @@ public interface ResourceTracker<Resource> {
     /**
      * Determine if the given instruction is the site where a resource is
      * closed.
-     * 
+     *
      * @param basicBlock
      *            basic block containing the instruction
      * @param handle
@@ -85,7 +85,7 @@ public interface ResourceTracker<Resource> {
     /**
      * Create a ResourceValueFrameModelingVisitor to model the effect of
      * instructions on the state of the resource.
-     * 
+     *
      * @param resource
      *            the resource we are tracking
      * @param cpg
@@ -100,7 +100,7 @@ public interface ResourceTracker<Resource> {
      * types to be tracked with varying precision. For example, we might want to
      * ignore implicit exceptions for stream objects, but treat them as
      * significant for database resources.
-     * 
+     *
      * @param resource
      *            the resource being tracked
      * @return true if implicit exceptions are significant, false if they should
@@ -112,7 +112,7 @@ public interface ResourceTracker<Resource> {
      * Determine whether the analysis should ignore given exception edge. This
      * allows the analysis to customize which kinds of exceptions are
      * significant.
-     * 
+     *
      * @param edge
      *            the exception edge
      * @param resource
@@ -127,7 +127,7 @@ public interface ResourceTracker<Resource> {
     /**
      * Return if the given parameter slot contains the resource instance upon
      * entry to the method. This is for resources passed as parameters.
-     * 
+     *
      * @param resource
      *            the resource
      * @param slot
@@ -137,4 +137,3 @@ public interface ResourceTracker<Resource> {
     public boolean isParamInstance(Resource resource, int slot);
 }
 
-// vim:ts=4

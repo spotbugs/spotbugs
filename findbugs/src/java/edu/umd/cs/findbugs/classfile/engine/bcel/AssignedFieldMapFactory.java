@@ -27,14 +27,14 @@ import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 
 /**
  * Analysis engine for producing an AssignedFieldMap for a class.
- * 
+ *
  * @author David Hovemeyer
  */
 public class AssignedFieldMapFactory extends RecomputableClassAnalysisEngine<AssignedFieldMap> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
@@ -50,7 +50,7 @@ public class AssignedFieldMapFactory extends RecomputableClassAnalysisEngine<Ass
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)

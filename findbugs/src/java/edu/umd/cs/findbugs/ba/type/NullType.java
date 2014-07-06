@@ -26,7 +26,7 @@ import org.apache.bcel.generic.ReferenceType;
  * the lattice than any object type, but lower than the overall Top type. It
  * represents the type of the null value, which may logically be merged with any
  * object type without loss of information.
- * 
+ *
  * @author David Hovemeyer
  * @see TypeAnalysis
  * @see TypeFrame
@@ -57,4 +57,3 @@ public class NullType extends ReferenceType implements ExtendedTypes {
     }
 }
 
-// vim:ts=4

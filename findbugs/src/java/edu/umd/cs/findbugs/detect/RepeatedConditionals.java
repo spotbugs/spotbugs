@@ -52,7 +52,7 @@ public class RepeatedConditionals extends OpcodeStackDetector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
      */
     int oldPC;
@@ -139,8 +139,8 @@ public class RepeatedConditionals extends OpcodeStackDetector {
                     bugReporter.reportBug(bug);
                 }
             }
-            emptyStackLocations.add(getPC());
-            prevOpcodeLocations.add(oldPC);
+        emptyStackLocations.add(getPC());
+        prevOpcodeLocations.add(oldPC);
 
         }
         oldPC = getPC();

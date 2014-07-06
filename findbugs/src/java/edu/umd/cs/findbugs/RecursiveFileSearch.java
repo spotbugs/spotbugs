@@ -33,25 +33,25 @@ import java.util.List;
  * Recursively search a directory, its subdirectories, etc. Note that the search
  * algorithm uses a worklist, so its implementation does not use recursive
  * method calls.
- * 
+ *
  * @author David Hovemeyer
  */
 public class RecursiveFileSearch {
-    private String baseDir;
+    private final String baseDir;
 
-    private FileFilter fileFilter;
+    private final FileFilter fileFilter;
 
-    private LinkedList<File> directoryWorkList;
+    private final LinkedList<File> directoryWorkList;
 
-    private HashSet<String> directoriesScanned = new HashSet<String>();
+    private final HashSet<String> directoriesScanned = new HashSet<String>();
 
-    private List<String> directoriesScannedList = new LinkedList<String>();
+    private final List<String> directoriesScannedList = new LinkedList<String>();
 
-    private ArrayList<String> resultList;
+    private final ArrayList<String> resultList;
 
     /**
      * Constructor.
-     * 
+     *
      * @param baseDir
      *            the base directory for the search
      * @param fileFilter
@@ -75,7 +75,7 @@ public class RecursiveFileSearch {
 
     /**
      * Perform the search.
-     * 
+     *
      * @return this object
      * @throws InterruptedException
      *             if the thread is interrupted before the search completes
@@ -89,15 +89,18 @@ public class RecursiveFileSearch {
 
         while (!directoryWorkList.isEmpty()) {
             File dir = directoryWorkList.removeFirst();
-            if (!dir.isDirectory())
+            if (!dir.isDirectory()) {
                 continue;
+            }
 
             File[] contentList = dir.listFiles();
-            if (contentList == null)
+            if (contentList == null) {
                 continue;
+            }
             for (File aContentList : contentList) {
-                if (Thread.interrupted())
+                if (Thread.interrupted()) {
                     throw new InterruptedException();
+                }
 
                 File file = aContentList;
 
@@ -137,4 +140,3 @@ public class RecursiveFileSearch {
 
 }
 
-// vim:ts=4

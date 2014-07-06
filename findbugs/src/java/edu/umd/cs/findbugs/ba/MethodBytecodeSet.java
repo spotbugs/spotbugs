@@ -25,7 +25,7 @@ import org.apache.bcel.Constants;
 
 /**
  * Class representing the set of opcodes used in a method.
- * 
+ *
  * @author David Hovemeyer
  */
 public class MethodBytecodeSet extends BitSet {

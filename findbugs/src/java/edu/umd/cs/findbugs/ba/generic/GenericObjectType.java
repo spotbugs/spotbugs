@@ -72,18 +72,21 @@ public class GenericObjectType extends ObjectType {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof GenericObjectType))
+        if (!(o instanceof GenericObjectType)) {
             return false;
-        if (!super.equals(o))
+        }
+        if (!super.equals(o)) {
             return false;
+        }
         GenericObjectType that = (GenericObjectType) o;
         return Util.nullSafeEquals(this.parameters, that.parameters) && Util.nullSafeEquals(this.variable, that.variable)
                 && Util.nullSafeEquals(this.extension, that.extension);
     }
 
     public Type getUpperBound() {
-        if ("+".equals(variable))
+        if ("+".equals(variable)) {
             return extension;
+        }
         return this;
     }
 
@@ -111,16 +114,18 @@ public class GenericObjectType extends ObjectType {
             return GenericUtilities.TypeCategory.PARAMETERIZED;
 
         } else if (!hasParameters() && variable != null && extension == null) {
-            if (variable.equals("*"))
+            if (variable.equals("*")) {
                 return GenericUtilities.TypeCategory.WILDCARD;
-            else
+            } else {
                 return GenericUtilities.TypeCategory.TYPE_VARIABLE;
+            }
 
         } else if (!hasParameters() && variable != null && extension != null) {
-            if (variable.equals("+"))
+            if (variable.equals("+")) {
                 return GenericUtilities.TypeCategory.WILDCARD_EXTENDS;
-            else if (variable.equals("-"))
+            } else if (variable.equals("-")) {
                 return GenericUtilities.TypeCategory.WILDCARD_SUPER;
+            }
 
         }
         // this should never happen
@@ -150,16 +155,18 @@ public class GenericObjectType extends ObjectType {
      * @return the type parameter at index
      */
     public ReferenceType getParameterAt(int index) {
-        if (index < getNumParameters())
+        if (index < getNumParameters()) {
             return parameters.get(index);
-        else
+        } else {
             throw new IndexOutOfBoundsException("The index " + index + " is too large for " + this);
+        }
     }
 
     public @CheckForNull
     List<? extends ReferenceType> getParameters() {
-        if (parameters == null)
+        if (parameters == null) {
             return null;
+        }
         return Collections.unmodifiableList(parameters);
     }
 
@@ -202,8 +209,9 @@ public class GenericObjectType extends ObjectType {
         super(DescriptorFactory.canonicalizeString(class_name));
         variable = null;
         extension = null;
-        if (parameters == null || parameters.size() == 0)
+        if (parameters == null || parameters.size() == 0) {
             throw new IllegalStateException("argument 'parameters' must contain at least 1 parameter");
+        }
         this.parameters = parameters;
     }
 
@@ -247,8 +255,9 @@ public class GenericObjectType extends ObjectType {
     }
 
     public String getGenericParametersAsString() {
-        if (getTypeCategory() != GenericUtilities.TypeCategory.PARAMETERIZED)
+        if (getTypeCategory() != GenericUtilities.TypeCategory.PARAMETERIZED) {
             throw new IllegalStateException(toString() + " doesn't have generic parameters");
+        }
         String baseStringValue = super.toString();
         String fullStringValue = toString();
         return fullStringValue.substring(baseStringValue.length());

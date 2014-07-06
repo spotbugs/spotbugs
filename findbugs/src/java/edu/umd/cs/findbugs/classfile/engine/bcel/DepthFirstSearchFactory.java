@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Analysis engine to produce DepthFirstSearch objects for analyzed methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public class DepthFirstSearchFactory extends AnalysisFactory<DepthFirstSearch> {
@@ -39,7 +39,7 @@ public class DepthFirstSearchFactory extends AnalysisFactory<DepthFirstSearch> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)

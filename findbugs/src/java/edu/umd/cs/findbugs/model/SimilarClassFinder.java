@@ -27,7 +27,7 @@ import java.util.List;
  * @author David Hovemeyer
  */
 public class SimilarClassFinder {
-    private List<SimilarClassSet> similarClassSetList;
+    private final List<SimilarClassSet> similarClassSetList;
 
     public SimilarClassFinder() {
         this.similarClassSetList = new LinkedList<SimilarClassSet>();

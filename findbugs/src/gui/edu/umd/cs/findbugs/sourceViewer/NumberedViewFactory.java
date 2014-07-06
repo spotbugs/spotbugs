@@ -39,7 +39,7 @@ class NumberedViewFactory implements ViewFactory {
     public View create(Element elem) {
         String kind = elem.getName();
         // System.out.println("Kind: " + kind);
-        if (kind != null)
+        if (kind != null) {
             if (kind.equals(AbstractDocument.ContentElementName)) {
                 return new LabelView(elem);
             } else if (kind.equals(AbstractDocument.ParagraphElementName)) {
@@ -51,6 +51,7 @@ class NumberedViewFactory implements ViewFactory {
             } else if (kind.equals(StyleConstants.IconElementName)) {
                 return new IconView(elem);
             }
+        }
         // default to text display
         return new LabelView(elem);
     }

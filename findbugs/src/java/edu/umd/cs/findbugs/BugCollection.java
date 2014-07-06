@@ -48,21 +48,21 @@ public interface BugCollection extends Iterable<BugInstance> {
     static final String ERRORS_ELEMENT_NAME = "Errors";
 
     static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError"; // 0.8.6
-                                                                       // and
-                                                                       // earlier
+    // and
+    // earlier
 
     static final String ERROR_ELEMENT_NAME = "Error"; // 0.8.7 and later
 
     static final String ERROR_MESSAGE_ELEMENT_NAME = "ErrorMessage"; // 0.8.7
-                                                                     // and
-                                                                     // later
+    // and
+    // later
 
     static final String ERROR_EXCEPTION_ELEMENT_NAME = "Exception"; // 0.8.7 and
-                                                                    // later
+    // later
 
     static final String ERROR_STACK_TRACE_ELEMENT_NAME = "StackTrace"; // 0.8.7
-                                                                       // and
-                                                                       // later
+    // and
+    // later
 
     static final String MISSING_CLASS_ELEMENT_NAME = "MissingClass";
 
@@ -71,7 +71,7 @@ public interface BugCollection extends Iterable<BugInstance> {
     static final String APP_CLASS_ELEMENT_NAME = "AppClass";
 
     static final String CLASS_HASHES_ELEMENT_NAME = "ClassHashes"; // 0.9.2 and
-                                                                   // later
+    // later
 
     static final String HISTORY_ELEMENT_NAME = "History"; // 0.9.2 and later
 

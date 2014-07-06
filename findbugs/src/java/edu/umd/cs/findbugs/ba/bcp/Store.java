@@ -33,14 +33,14 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 /**
  * A PatternElement representing a store to a field. Variables represent the
  * field and the value stored.
- * 
+ *
  * @author David Hovemeyer
  * @see PatternElement
  */
 public class Store extends FieldAccess {
     /**
      * Constructor.
-     * 
+     *
      * @param fieldVarName
      *            the name of the field variable
      * @param valueVarName
@@ -67,8 +67,9 @@ public class Store extends FieldAccess {
         } else if (ins instanceof PUTSTATIC) {
             fieldIns = (PUTSTATIC) ins;
             field = new FieldVariable(fieldIns.getClassName(cpg), fieldIns.getFieldName(cpg), fieldIns.getSignature(cpg));
-        } else
+        } else {
             return null;
+        }
 
         Variable value = snarfFieldValue(fieldIns, cpg, before);
 
@@ -76,4 +77,3 @@ public class Store extends FieldAccess {
     }
 }
 
-// vim:ts=4

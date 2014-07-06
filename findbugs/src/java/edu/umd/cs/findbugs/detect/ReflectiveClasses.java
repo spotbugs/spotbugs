@@ -47,8 +47,9 @@ public class ReflectiveClasses extends BytecodeScanningDetector implements NonRe
     @Override
     public void sawClass() {
         int opcode = getOpcode();
-        if ((opcode == LDC) || (opcode == LDC_W))
+        if ((opcode == LDC) || (opcode == LDC_W)) {
             process(getClassConstantOperand());
+        }
     }
 
     @Override
@@ -71,4 +72,3 @@ public class ReflectiveClasses extends BytecodeScanningDetector implements NonRe
     }
 }
 
-// vim:ts=4

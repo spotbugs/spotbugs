@@ -47,19 +47,19 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
         invokeOpcodeSet.set(Constants.INVOKEVIRTUAL);
     }
 
-    private ObjectType baseClassType;
+    private final ObjectType baseClassType;
 
-    private String methodName;
+    private final String methodName;
 
-    private String methodSig;
+    private final String methodSig;
 
-    private boolean isUninteresting;
+    private final boolean isUninteresting;
 
     private String bugType;
 
     /**
      * Constructor. The Streams created will be marked as uninteresting.
-     * 
+     *
      * @param baseClass
      *            base class through which the method will be called (we check
      *            instances of the base class and all subtypes)
@@ -77,7 +77,7 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
 
     /**
      * Constructor. The Streams created will be marked as interesting.
-     * 
+     *
      * @param baseClass
      *            base class through which the method will be called (we check
      *            instances of the base class and all subtypes)
@@ -106,30 +106,35 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
 
             // For now, just support instance methods
             short opcode = ins.getOpcode();
-            if (!invokeOpcodeSet.get(opcode))
+            if (!invokeOpcodeSet.get(opcode)) {
                 return null;
+            }
 
             // Is invoked class a subtype of the base class we want
             // FIXME: should test be different for INVOKESPECIAL and
             // INVOKESTATIC?
             InvokeInstruction inv = (InvokeInstruction) ins;
             ReferenceType classType = inv.getReferenceType(cpg);
-            if (!Hierarchy.isSubtype(classType, baseClassType))
+            if (!Hierarchy.isSubtype(classType, baseClassType)) {
                 return null;
+            }
 
             // See if method name and signature match
             String methodName = inv.getMethodName(cpg);
             String methodSig = inv.getSignature(cpg);
-            if (!this.methodName.equals(methodName) || !this.methodSig.equals(methodSig))
+            if (!this.methodName.equals(methodName) || !this.methodSig.equals(methodSig)) {
                 return null;
+            }
 
             String streamClass = type.getClassName();
-            if (streamClass.equals("java.sql.CallableStatement"))
+            if (streamClass.equals("java.sql.CallableStatement")) {
                 streamClass = "java.sql.PreparedStatement";
+            }
             Stream result = new Stream(location, streamClass, streamClass).setIgnoreImplicitExceptions(true).setIsOpenOnCreation(
                     true);
-            if (!isUninteresting)
+            if (!isUninteresting) {
                 result.setInteresting(bugType);
+            }
             return result;
         } catch (ClassNotFoundException e) {
             lookupFailureCallback.reportMissingClass(e);
@@ -139,4 +144,3 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
     }
 }
 
-// vim:ts=3

@@ -39,7 +39,7 @@ import edu.umd.cs.findbugs.util.Util;
  * For each source file that has reported bugs, compute a hash of all the issues
  * reported for that file. These hashes use line numbers, so a change that only
  * changes the line number of an issue will cause the hash to be different.
- * 
+ *
  * @author William Pugh
  */
 public class FileBugHash {
@@ -54,40 +54,45 @@ public class FileBugHash {
 
     FileBugHash(BugCollection bugs) {
 
-        for (PackageStats pStat : bugs.getProjectStats().getPackageStats())
+        for (PackageStats pStat : bugs.getProjectStats().getPackageStats()) {
             for (ClassStats cStat : pStat.getSortedClassStats()) {
                 String path = cStat.getName();
-                if (path.indexOf('.') == -1)
+                if (path.indexOf('.') == -1) {
                     path = cStat.getSourceFile();
-                else
+                } else {
                     path = path.substring(0, path.lastIndexOf('.') + 1).replace('.', '/') + cStat.getSourceFile();
+                }
                 counts.put(path, 0);
                 Integer size = sizes.get(path);
-                if (size == null)
+                if (size == null) {
                     size = 0;
+                }
                 sizes.put(path, size + cStat.size());
             }
+        }
         for (BugInstance bug : bugs.getCollection()) {
             SourceLineAnnotation source = bug.getPrimarySourceLineAnnotation();
 
             String packagePath = source.getPackageName().replace('.', '/');
             String key;
-            if (packagePath.length() == 0)
+            if (packagePath.length() == 0) {
                 key = source.getSourceFile();
-            else
+            } else {
                 key = packagePath + "/" + source.getSourceFile();
+            }
             StringBuilder buf = hashes.get(key);
             if (buf == null) {
                 buf = new StringBuilder();
                 hashes.put(key, buf);
             }
             buf.append(bug.getInstanceKey()).append("-").append(source.getStartLine()).append(".")
-                    .append(source.getStartBytecode()).append(" ");
+            .append(source.getStartBytecode()).append(" ");
             Integer count = counts.get(key);
-            if (count == null)
+            if (count == null) {
                 counts.put(key, 1);
-            else
+            } else {
                 counts.put(key, 1 + count);
+            }
         }
     }
 
@@ -98,26 +103,30 @@ public class FileBugHash {
     public @CheckForNull
     String getHash(String sourceFile) {
         StringBuilder rawHash = hashes.get(sourceFile);
-        if (rawHash == null || digest == null)
+        if (rawHash == null || digest == null) {
             return null;
+        }
         byte[] data = digest.digest(UTF8.getBytes(rawHash.toString()));
         String tmp = new BigInteger(1, data).toString(16);
-        if (tmp.length() < 32)
+        if (tmp.length() < 32) {
             tmp = "000000000000000000000000000000000".substring(0, 32 - tmp.length()) + tmp;
+        }
         return tmp;
     }
 
     public int getBugCount(String sourceFile) {
         Integer count = counts.get(sourceFile);
-        if (count == null)
+        if (count == null) {
             return 0;
+        }
         return count;
     }
 
     public int getSize(String sourceFile) {
         Integer size = sizes.get(sourceFile);
-        if (size == null)
+        if (size == null) {
             return 0;
+        }
         return size;
     }
 
@@ -129,10 +138,11 @@ public class FileBugHash {
         }
         BugCollection origCollection = new SortedBugCollection();
         int argCount = 0;
-        if (argCount == args.length)
+        if (argCount == args.length) {
             origCollection.readXML(System.in);
-        else
+        } else {
             origCollection.readXML(args[argCount]);
+        }
         FileBugHash result = compute(origCollection);
         for (String sourceFile : result.getSourceFiles()) {
             System.out.println(result.getHash(sourceFile) + "\t" + sourceFile);

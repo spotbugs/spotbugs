@@ -25,8 +25,8 @@ import edu.umd.cs.findbugs.cloud.username.NoNameLookup;
  * read from the analysis XML file, if present.
  */
 public class DoNothingCloud implements Cloud {
-    private CloudPlugin plugin;
-    private BugCollection bugCollection;
+    private final CloudPlugin plugin;
+    private final BugCollection bugCollection;
 
     private static CloudPlugin getFallbackPlugin() {
         return new CloudPluginBuilder().setCloudid("edu.umd.cs.findbugs.cloud.doNothingCloud").setDescription("Do Nothing Cloud")
@@ -354,37 +354,42 @@ public class DoNothingCloud implements Cloud {
     public long getFirstSeen(BugInstance b) {
         long computed = getFirstSeenFromVersion(b);
         Date fromXml = b.getXmlProps().getFirstSeen();
-        if (fromXml == null)
+        if (fromXml == null) {
             return computed;
+        }
 
         long fromXmlTime = fromXml.getTime();
-        if (computed == 0 && fromXmlTime > 0)
+        if (computed == 0 && fromXmlTime > 0) {
             return fromXmlTime;
-        else if (fromXmlTime == 0 && computed > 0)
+        } else if (fromXmlTime == 0 && computed > 0) {
             return computed;
+        }
 
         return Math.min(fromXmlTime, computed);
     }
 
     @Override
     public void addDateSeen(BugInstance b, long when) {
-        if (when > 0)
-          b.getXmlProps().setFirstSeen(new Date(when));
+        if (when > 0) {
+            b.getXmlProps().setFirstSeen(new Date(when));
+        }
     }
 
     public long getFirstSeenFromVersion(BugInstance b) {
         long firstVersion = b.getFirstVersion();
         AppVersion v = getBugCollection().getAppVersionFromSequenceNumber(firstVersion);
-        if (v == null)
+        if (v == null) {
             return getBugCollection().getTimestamp();
+        }
         return v.getTimestamp();
     }
 
     @Override
     public UserDesignation getConsensusDesignation(BugInstance b) {
         String consensus = b.getXmlProps().getConsensus();
-        if (consensus == null)
+        if (consensus == null) {
             return UserDesignation.UNCLASSIFIED;
+        }
         try {
             return UserDesignation.valueOf(consensus);
         } catch (IllegalArgumentException e) {
@@ -418,5 +423,5 @@ public class DoNothingCloud implements Cloud {
         return true;
     }
 
-   
+
 }

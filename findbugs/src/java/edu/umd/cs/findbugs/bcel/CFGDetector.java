@@ -34,14 +34,14 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Base class for detectors that analyze CFG (and/or use CFG-based analyses).
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class CFGDetector implements Detector2 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.Detector2#finishPass()
      */
     @Override
@@ -50,7 +50,7 @@ public abstract class CFGDetector implements Detector2 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.Detector2#getDetectorClassName()
      */
     @Override
@@ -62,7 +62,7 @@ public abstract class CFGDetector implements Detector2 {
     protected Method method;
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile
      * .ClassDescriptor)
@@ -97,7 +97,7 @@ public abstract class CFGDetector implements Detector2 {
     /**
      * Visit the CFG (control flow graph) of a method to be analyzed. Should be
      * overridded by subclasses.
-     * 
+     *
      * @param methodDescriptor
      * @param cfg
      * @throws CheckedAnalysisException

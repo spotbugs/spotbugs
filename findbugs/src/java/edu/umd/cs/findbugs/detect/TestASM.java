@@ -19,8 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import static org.apache.bcel.Constants.I2D;
-import static org.apache.bcel.Constants.INVOKESTATIC;
+import static org.apache.bcel.Constants.*;
 
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -35,7 +34,7 @@ import edu.umd.cs.findbugs.asm.ClassNodeDetector;
 
 /**
  * Sample detector, using ASM
- * 
+ *
  * @author David Hovemeyer
  */
 public class TestASM extends ClassNodeDetector {
@@ -80,9 +79,10 @@ public class TestASM extends ClassNodeDetector {
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         if ((access & Opcodes.ACC_STATIC) != 0 && (access & Opcodes.ACC_FINAL) != 0 && (access & Opcodes.ACC_PUBLIC) != 0
-                && !name.equals(name.toUpperCase()))
+                && !name.equals(name.toUpperCase())) {
             bugReporter.reportBug(new BugInstance(this, "NM_FIELD_NAMING_CONVENTION", Priorities.LOW_PRIORITY).addClass(this)
                     .addField(this.name, name, desc, access));
+        }
         return null;
     }
 

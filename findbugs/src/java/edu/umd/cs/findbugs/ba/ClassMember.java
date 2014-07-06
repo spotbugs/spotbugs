@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * Common super-interface for class members (fields and methods).
- * 
+ *
  * @see edu.umd.cs.findbugs.ba.XField
  * @see edu.umd.cs.findbugs.ba.XMethod
  * @author David Hovemeyer

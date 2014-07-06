@@ -65,35 +65,38 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
  * Factory methods for creating XMethod objects.
- * 
+ *
  * @author David Hovemeyer
  */
 public class XFactory {
     public static final boolean DEBUG_UNRESOLVED = SystemProperties.getBoolean("findbugs.xfactory.debugunresolved");
 
-    private Set<ClassDescriptor> reflectiveClasses = new HashSet<ClassDescriptor>();
+    private final Set<ClassDescriptor> reflectiveClasses = new HashSet<ClassDescriptor>();
 
-    private Map<MethodDescriptor, XMethod> methods = new HashMap<MethodDescriptor, XMethod>();
+    private final Map<MethodDescriptor, XMethod> methods = new HashMap<MethodDescriptor, XMethod>();
 
-    private Map<FieldDescriptor, XField> fields = new HashMap<FieldDescriptor, XField>();
+    private final Map<FieldDescriptor, XField> fields = new HashMap<FieldDescriptor, XField>();
 
-    private Set<XMethod> calledMethods = new HashSet<XMethod>();
+    private final Set<XMethod> calledMethods = new HashSet<XMethod>();
 
-    private Set<XField> emptyArrays = new HashSet<XField>();
+    private final Set<XField> emptyArrays = new HashSet<XField>();
 
-    private Set<String> calledMethodSignatures = new HashSet<String>();
-    
-    private Set<MethodDescriptor> functionsThatMightBeMistakenForProcedures = new HashSet<MethodDescriptor>();
+    private final Set<String> calledMethodSignatures = new HashSet<String>();
+
+    private final Set<MethodDescriptor> functionsThatMightBeMistakenForProcedures = new HashSet<MethodDescriptor>();
 
     public void canonicalizeAll() {
         DescriptorFactory descriptorFactory = DescriptorFactory.instance();
-        for (XMethod m : methods.values())
+        for (XMethod m : methods.values()) {
             if (m instanceof MethodDescriptor) {
                 descriptorFactory.canonicalize((MethodDescriptor) m);
             }
-        for (XField f : fields.values())
-            if (f instanceof FieldDescriptor)
+        }
+        for (XField f : fields.values()) {
+            if (f instanceof FieldDescriptor) {
                 descriptorFactory.canonicalize((FieldDescriptor) f);
+            }
+        }
     }
 
     /**
@@ -131,15 +134,16 @@ public class XFactory {
     }
 
     public boolean isCalled(XMethod m) {
-        if (m.getName().equals("<clinit>"))
+        if (m.getName().equals("<clinit>")) {
             return true;
+        }
         return calledMethods.contains(m);
     }
 
     public Set<XMethod> getCalledMethods() {
         return calledMethods;
     }
-    
+
     public void addFunctionThatMightBeMistakenForProcedures(MethodDescriptor m) {
         functionsThatMightBeMistakenForProcedures.add(m);
     }
@@ -160,18 +164,23 @@ public class XFactory {
     }
 
     public boolean isCalledDirectlyOrIndirectly(XMethod m) {
-        if (isCalled(m))
+        if (isCalled(m)) {
             return true;
-        if (m.isStatic() || m.isPrivate() || m.getName().equals("<init>"))
+        }
+        if (m.isStatic() || m.isPrivate() || m.getName().equals("<init>")) {
             return false;
+        }
         try {
             IAnalysisCache analysisCache = Global.getAnalysisCache();
             XClass clazz = analysisCache.getClassAnalysis(XClass.class, m.getClassDescriptor());
-            if (isCalledDirectlyOrIndirectly(clazz.getSuperclassDescriptor(), m))
+            if (isCalledDirectlyOrIndirectly(clazz.getSuperclassDescriptor(), m)) {
                 return true;
-            for (ClassDescriptor i : clazz.getInterfaceDescriptorList())
-                if (isCalledDirectlyOrIndirectly(i, m))
+            }
+            for (ClassDescriptor i : clazz.getInterfaceDescriptorList()) {
+                if (isCalledDirectlyOrIndirectly(i, m)) {
                     return true;
+                }
+            }
 
             return false;
         } catch (edu.umd.cs.findbugs.classfile.MissingClassException e) {
@@ -188,18 +197,23 @@ public class XFactory {
 
     private boolean isCalledDirectlyOrIndirectly(@CheckForNull ClassDescriptor clazzDescriptor, XMethod m)
             throws CheckedAnalysisException {
-        if (clazzDescriptor == null)
+        if (clazzDescriptor == null) {
             return false;
+        }
         IAnalysisCache analysisCache = Global.getAnalysisCache();
         XClass clazz = analysisCache.getClassAnalysis(XClass.class, clazzDescriptor);
         XMethod m2 = clazz.findMethod(m.getName(), m.getSignature(), m.isStatic());
-        if (m2 != null && isCalled(m2))
+        if (m2 != null && isCalled(m2)) {
             return true;
-        if (isCalledDirectlyOrIndirectly(clazz.getSuperclassDescriptor(), m))
+        }
+        if (isCalledDirectlyOrIndirectly(clazz.getSuperclassDescriptor(), m)) {
             return true;
-        for (ClassDescriptor i : clazz.getInterfaceDescriptorList())
-            if (isCalledDirectlyOrIndirectly(i, m))
+        }
+        for (ClassDescriptor i : clazz.getInterfaceDescriptorList()) {
+            if (isCalledDirectlyOrIndirectly(i, m)) {
                 return true;
+            }
+        }
 
         return false;
 
@@ -224,7 +238,7 @@ public class XFactory {
 
     /**
      * Create an XMethod object from a BCEL Method.
-     * 
+     *
      * @param className
      *            the class to which the Method belongs
      * @param method
@@ -249,7 +263,7 @@ public class XFactory {
 
     /**
      * Create an XMethod object from a BCEL Method.
-     * 
+     *
      * @param javaClass
      *            the class to which the Method belongs
      * @param method
@@ -258,8 +272,9 @@ public class XFactory {
      */
 
     public static XMethod createXMethod(JavaClass javaClass, Method method) {
-        if (method == null)
+        if (method == null) {
             throw new NullPointerException("method must not be null");
+        }
         XMethod xmethod = createXMethod(javaClass.getClassName(), method);
         assert xmethod.isResolved();
         return xmethod;
@@ -307,14 +322,16 @@ public class XFactory {
         XFactory xFactory = AnalysisContext.currentXFactory();
 
         XMethod m = xFactory.methods.get(desc);
-        if (m != null)
+        if (m != null) {
             return m;
+        }
         m = xFactory.resolveXMethod(desc);
         if (m instanceof MethodDescriptor) {
             xFactory.methods.put((MethodDescriptor) m, m);
             DescriptorFactory.instance().canonicalize((MethodDescriptor) m);
-        } else
+        } else {
             xFactory.methods.put(desc, m);
+        }
         return m;
     }
 
@@ -322,8 +339,9 @@ public class XFactory {
         XFactory xFactory = AnalysisContext.currentXFactory();
         int count = 0;
         for (XMethod m : xFactory.methods.values()) {
-            if (m instanceof MethodInfo)
+            if (m instanceof MethodInfo) {
                 count++;
+            }
         }
         System.out.printf("XFactory cached methods: %d/%d%n", count, xFactory.methods.size());
         DescriptorFactory.instance().profile();
@@ -335,14 +353,17 @@ public class XFactory {
         try {
             while (true) {
                 XMethod m = methods.get(desc);
-                if (m != null)
+                if (m != null) {
                     return m;
+                }
                 XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, desc.getClassDescriptor());
-                if (xClass == null)
+                if (xClass == null) {
                     break;
+                }
                 ClassDescriptor superClass = xClass.getSuperclassDescriptor();
-                if (superClass == null)
+                if (superClass == null) {
                     break;
+                }
                 desc = DescriptorFactory.instance().getMethodDescriptor(superClass.getClassName(), desc.getName(),
                         desc.getSignature(), desc.isStatic());
             }
@@ -352,11 +373,11 @@ public class XFactory {
             assert true;
         }
         UnresolvedXMethod xmethod = new UnresolvedXMethod(originalDescriptor);
-        
+
 
         ObligationPolicyDatabase database = Global.getAnalysisCache().getOptionalDatabase(ObligationPolicyDatabase.class);
 
-        if (BuildObligationPolicyDatabase.INFER_CLOSE_METHODS && database != null 
+        if (BuildObligationPolicyDatabase.INFER_CLOSE_METHODS && database != null
                 && !xmethod.getClassName().startsWith("java")) {
             boolean methodHasCloseInName = false;
             String methodName = xmethod.getName();
@@ -366,14 +387,15 @@ public class XFactory {
 
             for (int i = 0; i < xmethod.getNumParams(); i++) {
                 Obligation obligationType = paramObligationTypes[i];
-                if (obligationType == null)
+                if (obligationType == null) {
                     continue;
+                }
                 if (methodHasCloseInName) {
                     // Method has "close" in its name.
                     // Assume that it deletes the obligation.
                     ObligationPolicyDatabaseEntry entry = database.addParameterDeletesObligationDatabaseEntry(xmethod,
                             obligationType, ObligationPolicyDatabaseEntryType.STRONG);
-                   
+
                 } else {
 
                     /*
@@ -404,7 +426,7 @@ public class XFactory {
 
     /**
      * Create an XField object
-     * 
+     *
      * @param className
      * @param fieldName
      * @param fieldSignature
@@ -421,7 +443,7 @@ public class XFactory {
 
     /**
      * Create an XField object
-     * 
+     *
      * @param className
      * @param fieldName
      * @param fieldSignature
@@ -448,8 +470,9 @@ public class XFactory {
 
     public static XField createReferencedXField(DismantleBytecode visitor) {
         int seen = visitor.getOpcode();
-        if (seen != Opcodes.GETFIELD && seen != Opcodes.GETSTATIC && seen != Opcodes.PUTFIELD && seen != Opcodes.PUTSTATIC)
+        if (seen != Opcodes.GETFIELD && seen != Opcodes.GETSTATIC && seen != Opcodes.PUTFIELD && seen != Opcodes.PUTSTATIC) {
             throw new IllegalArgumentException("Not at a field reference");
+        }
         return createXFieldUsingSlashedClassName(visitor.getClassConstantOperand(), visitor.getNameConstantOperand(),
                 visitor.getSigConstantOperand(), visitor.getRefFieldIsStatic());
     }
@@ -470,7 +493,7 @@ public class XFactory {
 
     /**
      * Create an XField object from a BCEL Field.
-     * 
+     *
      * @param className
      *            the name of the Java class containing the field
      * @param field
@@ -490,7 +513,7 @@ public class XFactory {
      * Get an XField object exactly matching given class, name, and signature.
      * May return an unresolved object (if the class can't be found, or does not
      * directly declare named field).
-     * 
+     *
      * @param className
      *            name of class containing the field
      * @param name
@@ -519,8 +542,9 @@ public class XFactory {
         XFactory xFactory = AnalysisContext.currentXFactory();
 
         XField f = xFactory.fields.get(desc);
-        if (f == null)
+        if (f == null) {
             return new UnresolvedXField(desc);
+        }
         return f;
     }
 
@@ -528,8 +552,9 @@ public class XFactory {
         XFactory xFactory = AnalysisContext.currentXFactory();
 
         XField m = xFactory.fields.get(desc);
-        if (m != null)
+        if (m != null) {
             return m;
+        }
         m = xFactory.resolveXField(desc);
         xFactory.fields.put(desc, m);
         return m;
@@ -543,22 +568,28 @@ public class XFactory {
         try {
             while (!worklist.isEmpty()) {
                 ClassDescriptor d = worklist.removeFirst();
-                if (!d.equals(originalClassDescriptor))
+                if (!d.equals(originalClassDescriptor)) {
                     desc = DescriptorFactory.instance().getFieldDescriptor(d.getClassName(), desc.getName(), desc.getSignature(),
                             desc.isStatic());
+                }
 
                 XField f = fields.get(desc);
-                if (f != null)
+                if (f != null) {
                     return f;
+                }
                 XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, d);
-                if (xClass == null)
+                if (xClass == null) {
                     break;
+                }
                 ClassDescriptor superClass = xClass.getSuperclassDescriptor();
-                if (superClass != null)
+                if (superClass != null) {
                     worklist.add(superClass);
-                if (originalDescriptor.isStatic())
-                    for (ClassDescriptor i : xClass.getInterfaceDescriptorList())
+                }
+                if (originalDescriptor.isStatic()) {
+                    for (ClassDescriptor i : xClass.getInterfaceDescriptorList()) {
                         worklist.add(i);
+                    }
+                }
 
             }
         } catch (CheckedAnalysisException e) {
@@ -569,7 +600,7 @@ public class XFactory {
 
     /**
      * Create an XMethod object from an InvokeInstruction.
-     * 
+     *
      * @param invokeInstruction
      *            the InvokeInstruction
      * @param cpg
@@ -587,7 +618,7 @@ public class XFactory {
     /**
      * Create an XMethod object from the method currently being visited by the
      * given PreorderVisitor.
-     * 
+     *
      * @param visitor
      *            the PreorderVisitor
      * @return the XMethod representing the method currently being visited
@@ -602,7 +633,7 @@ public class XFactory {
     /**
      * Create an XField object from the field currently being visited by the
      * given PreorderVisitor.
-     * 
+     *
      * @param visitor
      *            the PreorderVisitor
      * @return the XField representing the method currently being visited
@@ -629,7 +660,7 @@ public class XFactory {
     /**
      * Get the XClass object providing information about the class named by the
      * given ClassDescriptor.
-     * 
+     *
      * @param classDescriptor
      *            a ClassDescriptor
      * @return an XClass object providing information about the class, or null
@@ -650,7 +681,7 @@ public class XFactory {
      * <em>All methods that implement XMethod or XField should
      * delegate to this method when implementing compareTo(Object)
      * if the right-hand object implements XField or XMethod.</em>
-     * 
+     *
      * @param lhs
      *            an XMethod or XField
      * @param rhs

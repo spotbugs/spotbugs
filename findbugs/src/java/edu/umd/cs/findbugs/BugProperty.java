@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * Name/value metadata pair that may be attached to a BugInstance. These are
  * different from BugAnnotations because they are not meant to be shown directly
  * to the user.
- * 
+ *
  * @author David Hovemeyer
  */
 public class BugProperty implements XMLWriteable, Serializable, Cloneable {
@@ -50,7 +50,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
     public static final String SEVERITY = "severity";
 
     // Fields
-    private String name;
+    private final String name;
 
     private String value;
 
@@ -58,7 +58,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 
     /**
      * Constructor.
-     * 
+     *
      * @param name
      *            name of property
      * @param value
@@ -80,7 +80,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 
     /**
      * Get name of property.
-     * 
+     *
      * @return name of property
      */
     public String getName() {
@@ -89,7 +89,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 
     /**
      * Get value of property.
-     * 
+     *
      * @return value of property
      */
     public String getValue() {
@@ -98,7 +98,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 
     /**
      * Get value of property as boolean.
-     * 
+     *
      * @return value of property as a boolean
      */
     public boolean getValueAsBoolean() {
@@ -107,7 +107,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 
     /**
      * Get value of property as an integer.
-     * 
+     *
      * @return value of property as integer
      * @throws NumberFormatException
      *             if the value cannot be parsed as an integer
@@ -118,7 +118,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 
     /**
      * Set value of property.
-     * 
+     *
      * @param value
      */
     public void setValue(String value) {
@@ -127,7 +127,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 
     /**
      * Set next property in list.
-     * 
+     *
      * @param next
      *            next property in list
      */
@@ -137,7 +137,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 
     /**
      * Get next property in list.
-     * 
+     *
      * @return next property in list
      */
     BugProperty getNext() {
@@ -146,7 +146,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.xml.XMLWriteable#writeXML(edu.umd.cs.findbugs.xml
      * .XMLOutput)

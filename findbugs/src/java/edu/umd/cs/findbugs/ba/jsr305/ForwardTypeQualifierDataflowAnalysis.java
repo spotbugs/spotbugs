@@ -150,10 +150,11 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
         When w;
         if (typeQualifierValue.canValidate(constantValue)) {
             w = typeQualifierValue.validate(constantValue);
-        } else if (typeQualifierValue.isStrictQualifier())
+        } else if (typeQualifierValue.isStrictQualifier()) {
             return;
-        else
+        } else {
             w = When.UNKNOWN;
+        }
 
         registerTopOfStackSource(SourceSinkType.CONSTANT_VALUE, location, w, false, constantValue);
     }
@@ -177,8 +178,9 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
         }
 
         XMethod calledXMethod = XFactory.createXMethod(inv, cpg);
-        if (TypeQualifierDataflowAnalysis.isIdentifyFunctionForTypeQualifiers(calledXMethod))
+        if (TypeQualifierDataflowAnalysis.isIdentifyFunctionForTypeQualifiers(calledXMethod)) {
             return;
+        }
 
         if (calledXMethod.isResolved()) {
             TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(calledXMethod,
@@ -213,8 +215,9 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 
     private void registerTopOfStackSource(SourceSinkType sourceSinkType, Location location, When when, boolean interproc,
             @CheckForNull Object constantValue) throws DataflowAnalysisException {
-        if (when == When.UNKNOWN && !typeQualifierValue.isStrictQualifier())
+        if (when == When.UNKNOWN && !typeQualifierValue.isStrictQualifier()) {
             return;
+        }
         ValueNumberFrame vnaFrameAfterInstruction = vnaDataflow.getFactAfterLocation(location);
         if (vnaFrameAfterInstruction.isValid()) {
             ValueNumber tosValue = vnaFrameAfterInstruction.getTopValue();

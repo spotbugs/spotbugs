@@ -33,22 +33,22 @@ import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * Policy database which defines which methods create and remove obligations.
- * 
+ *
  * <p>
  * See Weimer and Necula, <a href="http://doi.acm.org/10.1145/1028976.1029011"
  * >Finding and preventing run-time error handling mistakes</a>, OOPSLA 2004.
  * </p>
- * 
+ *
  * @author David Hovemeyer
  */
 public class ObligationPolicyDatabase {
     public static final boolean DEBUG = SystemProperties.getBoolean("oa.debug.db");
 
-    private ObligationFactory factory;
+    private final ObligationFactory factory;
 
-    private LinkedList<ObligationPolicyDatabaseEntry> entryList;
-    
-    private HashSet<Obligation> allObligations = new HashSet<Obligation>();
+    private final LinkedList<ObligationPolicyDatabaseEntry> entryList;
+
+    private final HashSet<Obligation> allObligations = new HashSet<Obligation>();
 
     private boolean strictChecking;
 
@@ -61,14 +61,15 @@ public class ObligationPolicyDatabase {
     public ObligationFactory getFactory() {
         return factory;
     }
-    
+
     public Set<Obligation> getAllObligations() {
         return allObligations;
     }
 
     public void addEntry(ObligationPolicyDatabaseEntry entry) {
-        if (DEBUG) 
+        if (DEBUG) {
             System.out.println("Adding entry " + entry);
+        }
         allObligations.addAll(entry.getAllObligations());
         entryList.add(entry);
     }
@@ -76,7 +77,7 @@ public class ObligationPolicyDatabase {
     /**
      * Add an appropriate policy database entry for parameters marked with the
      * WillClose annotation.
-     * 
+     *
      * @param xmethod
      *            a method
      * @param obligation
@@ -93,10 +94,11 @@ public class ObligationPolicyDatabase {
         addEntry(entry);
         return entry;
     }
-    
+
     public void setStrictChecking(boolean strictChecking) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Setting strict checking to " + strictChecking );
+        }
         this.strictChecking = strictChecking;
     }
 
@@ -114,10 +116,12 @@ public class ObligationPolicyDatabase {
             boolean matched = entry.getActions(receiverType, methodName, signature, isStatic, actionList);
 
             if (DEBUG) {
-                if (matched) 
+                if (matched)
+                {
                     System.out.println(" Entry " + entry + "  ==> MATCH");
-//                else
-//                    System.out.println("  ==> no match");                                
+                    //                else
+                    //                    System.out.println("  ==> no match");
+                }
             }
         }
         if (DEBUG) {
@@ -130,4 +134,3 @@ public class ObligationPolicyDatabase {
     }
 }
 
-// vim:ts=4

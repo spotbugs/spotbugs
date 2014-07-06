@@ -168,7 +168,7 @@ public class InnerClassAccessMap {
             return exception;
         }
     }
-    */
+     */
 
     /**
      * Callback to scan an access method to determine what field it accesses,
@@ -367,11 +367,11 @@ public class InnerClassAccessMap {
                     byte[] instructionList = code.getCode();
                     String methodSig = method.getSignature();
                     InstructionCallback callback = new InstructionCallback(javaClass, methodName, methodSig, instructionList);
-//                    try {
-                        new BytecodeScanner().scan(instructionList, callback);
-//                    } catch (LookupFailure lf) {
-//                        throw lf.getException();
-//                    }
+                    //                    try {
+                    new BytecodeScanner().scan(instructionList, callback);
+                    //                    } catch (LookupFailure lf) {
+                    //                        throw lf.getException();
+                    //                    }
                     InnerClassAccess access = callback.getAccess();
                     if (DEBUG) {
                         System.out.println((access != null ? "IS" : "IS NOT") + " an inner-class access method");

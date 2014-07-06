@@ -30,16 +30,16 @@ import org.apache.bcel.generic.ObjectType;
 /**
  * Dataflow analysis to determine the nesting of catch and finally blocks within
  * a method.
- * 
+ *
  * @see BlockType
  * @author David Hovemeyer
  */
 public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> {
-    private DepthFirstSearch dfs;
+    private final DepthFirstSearch dfs;
 
     /**
      * Constructor.
-     * 
+     *
      * @param dfs
      *            a DepthFirstSearch for the method to be analyzed
      */
@@ -140,4 +140,3 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
     // }
 }
 
-// vim:ts=4

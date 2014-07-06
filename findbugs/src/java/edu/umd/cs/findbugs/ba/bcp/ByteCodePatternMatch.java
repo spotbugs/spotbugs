@@ -26,11 +26,11 @@ import java.util.LinkedList;
 import org.apache.bcel.generic.InstructionHandle;
 
 public class ByteCodePatternMatch {
-    private BindingSet bindingSet;
+    private final BindingSet bindingSet;
 
-    private PatternElementMatch lastElementMatch;
+    private final PatternElementMatch lastElementMatch;
 
-    private LinkedList<PatternElementMatch> patternElementMatchList;
+    private final LinkedList<PatternElementMatch> patternElementMatchList;
 
     @Override
     public String toString() {
@@ -75,4 +75,3 @@ public class ByteCodePatternMatch {
     }
 }
 
-// vim:ts=4

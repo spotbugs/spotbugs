@@ -55,20 +55,21 @@ public class ProjectSettings implements Serializable {
     }
 
     public static synchronized ProjectSettings getInstance() {
-        if (instance == null)
+        if (instance == null) {
             instance = new ProjectSettings();
+        }
         return instance;
     }
 
     /**
      * The list of all defined filters
      */
-    private ArrayList<FilterMatcher> filters;
+    private final ArrayList<FilterMatcher> filters;
 
     /**
      * The CompoundMatcher enveloping all enabled matchers.
      */
-    private CompoundMatcher allMatchers;
+    private final CompoundMatcher allMatchers;
 
     /**
      * Max number of previous comments stored.
@@ -81,12 +82,14 @@ public class ProjectSettings implements Serializable {
             PreferencesFrame.getInstance().updateFilterPanel();
 
         } catch (ClassNotFoundException e) {
-            if (MainFrame.GUI2_DEBUG)
+            if (MainFrame.GUI2_DEBUG) {
                 System.err.println("Error in deserializing Settings:");
+            }
             Debug.println(e);
         } catch (IOException e) {
-            if (MainFrame.GUI2_DEBUG)
+            if (MainFrame.GUI2_DEBUG) {
                 System.err.println("IO error in deserializing Settings:");
+            }
             Debug.println(e);
             instance = newInstance();
         } finally {
@@ -102,8 +105,9 @@ public class ProjectSettings implements Serializable {
         try {
             new ObjectOutputStream(out).writeObject(this);
         } catch (IOException e) {
-            if (MainFrame.GUI2_DEBUG)
+            if (MainFrame.GUI2_DEBUG) {
                 System.err.println("Error serializing Settings:");
+            }
             Debug.println(e);
         } finally {
             try {
@@ -118,9 +122,9 @@ public class ProjectSettings implements Serializable {
     public void addFilter(FilterMatcher filter) {
         filters.add(filter);
         allMatchers.add(filter);
-        if (!(filter instanceof StackedFilterMatcher))
+        if (!(filter instanceof StackedFilterMatcher)) {
             FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
-        else {
+        } else {
             StackedFilterMatcher theSame = (StackedFilterMatcher) filter;
             FilterMatcher[] filtersInStack = theSame.getFilters();
             ArrayList<Sortables> order = MainFrame.getInstance().getSorter().getOrder();
@@ -143,8 +147,9 @@ public class ProjectSettings implements Serializable {
                 ArrayList<String> finalPath = new ArrayList<String>();
                 for (int x = 0; x < almostPath.size(); x++) {
                     Sortables s = almostPathSortables.get(x);
-                    if (MainFrame.getInstance().getSorter().getOrderBeforeDivider().contains(s))
+                    if (MainFrame.getInstance().getSorter().getOrderBeforeDivider().contains(s)) {
                         finalPath.add(almostPath.get(x));
+                    }
                 }
                 BugTreeModel model = (MainFrame.getInstance().getBugTreeModel());
                 try {
@@ -163,7 +168,7 @@ public class ProjectSettings implements Serializable {
     }
 
     public void addFilters(FilterMatcher[] newFilters) {
-        for (FilterMatcher i : newFilters)
+        for (FilterMatcher i : newFilters) {
             if (!filters.contains(i)) {
                 filters.add(i);
                 allMatchers.add(i);
@@ -173,6 +178,7 @@ public class ProjectSettings implements Serializable {
                 // FIXME Do I need to do this for allMatchers too? Or are the
                 // filters all the same, with both just holding references?
             }
+        }
         FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
         PreferencesFrame.getInstance().updateFilterPanel();
         MainFrame.getInstance().updateStatusBar();
@@ -199,7 +205,7 @@ public class ProjectSettings implements Serializable {
 
     /**
      * Sets the maximum number of previous comments stored.
-     * 
+     *
      * @param num
      */
     public void setMaxSizeOfPreviousComments(int num) {

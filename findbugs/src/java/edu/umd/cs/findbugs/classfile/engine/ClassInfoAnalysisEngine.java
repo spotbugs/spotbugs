@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 /**
  * Analysis engine to produce the ClassInfo for a loaded class. We parse just
  * enough information from the classfile to get the needed information.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
@@ -45,7 +45,7 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
@@ -53,14 +53,16 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
     @Override
     public ClassInfo analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
 
-        if (descriptor instanceof ClassInfo)
+        if (descriptor instanceof ClassInfo) {
             return (ClassInfo) descriptor;
+        }
         ClassData classData;
         try {
             classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
         } catch (edu.umd.cs.findbugs.classfile.MissingClassException e) {
-            if (!descriptor.getSimpleName().equals("package-info"))
+            if (!descriptor.getSimpleName().equals("package-info")) {
                 throw e;
+            }
 
             ClassInfo.Builder builder = new ClassInfo.Builder();
             builder.setClassDescriptor(descriptor);
@@ -85,7 +87,7 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)
@@ -97,7 +99,7 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#canRecompute()
      */
     @Override

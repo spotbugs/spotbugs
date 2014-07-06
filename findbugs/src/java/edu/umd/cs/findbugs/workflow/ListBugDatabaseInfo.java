@@ -56,10 +56,11 @@ public class ListBugDatabaseInfo {
 
         @Override
         public void handleOption(String option, String optionalExtraPart) {
-            if (option.equals("-formatDates"))
+            if (option.equals("-formatDates")) {
                 formatDates = true;
-            else
+            } else {
                 throw new IllegalArgumentException("unknown option: " + option);
+            }
         }
 
         @Override
@@ -76,9 +77,9 @@ public class ListBugDatabaseInfo {
         int argCount = commandLine.parse(args, 0, Integer.MAX_VALUE, USAGE);
 
         PrintWriter out = UTF8.printWriter(System.out, true);
-        if (argCount == args.length)
+        if (argCount == args.length) {
             listVersion(out, null, commandLine.formatDates);
-        else {
+        } else {
             out.println("version\ttime\tclasses\tNCSS\terrors\ttotal\thigh\tmedium\tlow\tfile");
             while (argCount < args.length) {
                 String fileName = args[argCount++];
@@ -89,22 +90,24 @@ public class ListBugDatabaseInfo {
     }
 
     private static void listVersion(PrintWriter out, @CheckForNull String fileName, boolean formatDates) throws IOException,
-            DocumentException {
+    DocumentException {
         SortedBugCollection origCollection;
         origCollection = new SortedBugCollection();
 
-        if (fileName == null)
+        if (fileName == null) {
             origCollection.readXML(System.in);
-        else
+        } else {
             origCollection.readXML(fileName);
+        }
         AppVersion appVersion = origCollection.getCurrentAppVersion();
         ProjectStats stats = origCollection.getProjectStats();
         out.print(appVersion.getReleaseName());
         out.print('\t');
-        if (formatDates)
+        if (formatDates) {
             out.print("\"" + new Date(appVersion.getTimestamp()) + "\"");
-        else
+        } else {
             out.print(appVersion.getTimestamp());
+        }
         out.print('\t');
 
         out.print(appVersion.getNumClasses());

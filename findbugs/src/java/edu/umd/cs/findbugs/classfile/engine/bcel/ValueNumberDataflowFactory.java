@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Analysis engine to produce ValueNumberDataflow objects for analyzed methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ValueNumberDataflowFactory extends AnalysisFactory<ValueNumberDataflow> {
@@ -53,7 +53,7 @@ public class ValueNumberDataflowFactory extends AnalysisFactory<ValueNumberDataf
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)

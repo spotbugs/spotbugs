@@ -31,13 +31,13 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 public class BadlyOverriddenAdapter extends BytecodeScanningDetector {
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private boolean isAdapter;
 
-    private Map<String, String> methodMap;
+    private final Map<String, String> methodMap;
 
-    private Map<String, BugInstance> badOverrideMap;
+    private final Map<String, BugInstance> badOverrideMap;
 
     public BadlyOverriddenAdapter(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -51,8 +51,9 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector {
             methodMap.clear();
             badOverrideMap.clear();
             JavaClass superClass = obj.getSuperClass();
-            if (superClass == null)
+            if (superClass == null) {
                 return;
+            }
             String packageName = superClass.getPackageName();
             String className = superClass.getClassName();
 
@@ -74,8 +75,9 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector {
     @Override
     public void visitAfter(JavaClass obj) {
         for (BugInstance bi : badOverrideMap.values()) {
-            if (bi != null)
+            if (bi != null) {
                 bugReporter.reportBug(bi);
+            }
         }
     }
 
@@ -88,7 +90,7 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector {
                 if (!signature.equals(obj.getSignature())) {
                     if (!badOverrideMap.keySet().contains(methodName)) {
                         badOverrideMap.put(methodName, new BugInstance(this, "BOA_BADLY_OVERRIDDEN_ADAPTER", NORMAL_PRIORITY)
-                                .addClassAndMethod(this).addSourceLine(this));
+                        .addClassAndMethod(this).addSourceLine(this));
                     }
                 } else {
                     badOverrideMap.put(methodName, null);
@@ -98,4 +100,3 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector {
     }
 }
 
-// vim:ts=4

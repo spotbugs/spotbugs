@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.cloud.Cloud;
 
 /**
  * Interface for any kind of GUI attached to the current FindBug analysis
- * 
+ *
  * @author Andrei
  */
 public interface IGuiCallback {
@@ -83,18 +83,18 @@ public interface IGuiCallback {
     void showMessageDialogAndWait(String message) throws InterruptedException;
 
     public class FormItem {
-        private String label;
+        private final String label;
 
-        private String defaultValue;
+        private final String defaultValue;
 
         private boolean password = false;
 
-        private List<String> possibleValues;
+        private final List<String> possibleValues;
 
         private JComponent field;
-        
+
         private String currentValue;
-        
+
         private List<FormItem> items;
 
         public FormItem(String label) {

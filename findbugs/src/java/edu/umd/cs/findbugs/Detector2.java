@@ -24,14 +24,14 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
  * Detector interface for new bytecode-framework-neutral architecture.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface Detector2 extends Priorities {
 
     /**
      * Visit a class.
-     * 
+     *
      * @param classDescriptor
      *            descriptor naming the class to visit
      * @throws CheckedAnalysisException
@@ -46,7 +46,7 @@ public interface Detector2 extends Priorities {
 
     /**
      * Get the name of the detector class.
-     * 
+     *
      * @return the name of the detector class.
      */
     public String getDetectorClassName();

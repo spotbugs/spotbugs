@@ -52,7 +52,7 @@ public class TrainLongInstantfParams extends PreorderVisitor implements Detector
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#encodeProperty
          * (Property)
@@ -73,13 +73,15 @@ public class TrainLongInstantfParams extends PreorderVisitor implements Detector
     @Override
     public void visit(Code obj) {
 
-        if (!getMethod().isPublic() && !getMethod().isProtected())
+        if (!getMethod().isPublic() && !getMethod().isProtected()) {
             return;
+        }
         SignatureParser p = new SignatureParser(getMethodSig());
         LocalVariableTable t = obj.getLocalVariableTable();
 
-        if (t == null)
+        if (t == null) {
             return;
+        }
         ParameterProperty property = new ParameterProperty();
 
         int index = getMethod().isStatic() ? 0 : 1;
@@ -95,10 +97,11 @@ public class TrainLongInstantfParams extends PreorderVisitor implements Detector
                     property.setParamWithProperty(parameterNumber, true);
                 }
             }
-            if (s.equals("J") || s.equals("D"))
+            if (s.equals("J") || s.equals("D")) {
                 index += 2;
-            else
+            } else {
                 index += 1;
+            }
             parameterNumber++;
         }
         if (!property.isEmpty()) {
@@ -109,7 +112,7 @@ public class TrainLongInstantfParams extends PreorderVisitor implements Detector
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.Detector#report()
      */
     @Override

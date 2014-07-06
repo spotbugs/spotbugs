@@ -25,7 +25,7 @@ import edu.umd.cs.findbugs.graph.AbstractVertex;
 /**
  * Class representing a vertex in the interprocedural call graph; i.e., a
  * method.
- * 
+ *
  * @author David Hovemeyer
  */
 public class InterproceduralCallGraphVertex extends AbstractVertex<InterproceduralCallGraphEdge, InterproceduralCallGraphVertex> {

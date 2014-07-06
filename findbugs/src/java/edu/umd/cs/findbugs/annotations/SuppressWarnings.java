@@ -26,8 +26,8 @@ import java.lang.annotation.Target;
 
 /**
  * Was used to suppress FindBugs warnings but generates name conflicts with {@link java.lang.SuppressWarnings}.
- * 
- * 
+ *
+ *
  * @deprecated - Use {@link SuppressFBWarnings} instead
  * @author pugh
  */
@@ -39,7 +39,7 @@ public @interface SuppressWarnings {
     /**
      * The set of FindBugs warnings that are to be suppressed by the compiler in the
      * annotated element.
-     * 
+     *
      */
     String[] value() default {};
 

@@ -43,7 +43,7 @@ public class StaticFieldLoadStreamFactory implements StreamFactory {
 
     /**
      * Constructor. Created Stream objects will be marked as uninteresting.
-     * 
+     *
      * @param streamBaseClass
      *            the base class of the stream objects created by the factory
      * @param className
@@ -65,17 +65,18 @@ public class StaticFieldLoadStreamFactory implements StreamFactory {
             RepositoryLookupFailureCallback lookupFailureCallback) {
 
         Instruction ins = location.getHandle().getInstruction();
-        if (ins.getOpcode() != Constants.GETSTATIC)
+        if (ins.getOpcode() != Constants.GETSTATIC) {
             return null;
+        }
 
         GETSTATIC getstatic = (GETSTATIC) ins;
         if (!className.equals(getstatic.getClassName(cpg)) || !fieldName.equals(getstatic.getName(cpg))
-                || !fieldSig.equals(getstatic.getSignature(cpg)))
+                || !fieldSig.equals(getstatic.getSignature(cpg))) {
             return null;
+        }
 
         return new Stream(location, type.getClassName(), streamBaseClass).setIgnoreImplicitExceptions(true).setIsOpenOnCreation(
                 true);
     }
 }
 
-// vim:ts=3

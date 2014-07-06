@@ -121,13 +121,14 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
     public void setLocalTypeTable(LocalVariableTypeTable localTypeTable) {
         this.localTypeTable = localTypeTable;
-        if (localTypeTable == null)
+        if (localTypeTable == null) {
             genericLocalVariables = null;
-        else {
+        } else {
             genericLocalVariables = new BitSet();
             for(LocalVariable lv : localTypeTable.getLocalVariableTypeTable()) {
-                if (lv.getSignature().indexOf('<') > 0)
+                if (lv.getSignature().indexOf('<') > 0) {
                     genericLocalVariables.set(lv.getIndex());
+                }
 
             }
         }
@@ -215,8 +216,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         TypeFrame frame = getFrame();
 
         int numWordsConsumed = ins.consumeStack(cpg);
-        if (numWordsConsumed == Constants.UNPREDICTABLE)
+        if (numWordsConsumed == Constants.UNPREDICTABLE) {
             throw new InvalidBytecodeException("Unpredictable stack consumption for " + ins);
+        }
         if (numWordsConsumed > frame.getStackDepth()) {
             throw new InvalidBytecodeException("Stack underflow for " + ins + ", " + numWordsConsumed + " needed, " + frame.getStackDepth() + " avail, frame is " + frame);
         }
@@ -235,8 +237,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
      * method ensures that we push two types for each double or long value.
      */
     protected void pushValue(Type type) {
-        if (type.getType() == T_VOID)
+        if (type.getType() == T_VOID) {
             throw new IllegalArgumentException("Can't push void");
+        }
         TypeFrame frame = getFrame();
         if (type.getType() == T_LONG) {
             frame.pushValue(Type.LONG);
@@ -244,8 +247,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         } else if (type.getType() == T_DOUBLE) {
             frame.pushValue(Type.DOUBLE);
             frame.pushValue(TypeFrame.getDoubleExtraType());
-        } else
+        } else {
             frame.pushValue(type);
+        }
     }
 
     /**
@@ -254,8 +258,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
     protected void pushReturnType(InvokeInstruction ins) {
         ConstantPoolGen cpg = getCPG();
         Type type = ins.getType(cpg);
-        if (type.getType() != T_VOID)
+        if (type.getType() != T_VOID) {
             pushValue(type);
+        }
     }
 
     /**
@@ -265,8 +270,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
     @Override
     public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
         if (VERIFY_INTEGRITY) {
-            if (numWordsProduced > 0)
+            if (numWordsProduced > 0) {
                 throw new InvalidBytecodeException("missing visitor method for " + ins);
+            }
         }
         super.modelNormalInstruction(ins, numWordsConsumed, numWordsProduced);
     }
@@ -351,8 +357,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         Type loadType = obj.getFieldType(cpg);
 
         XField xfield = Hierarchy.findXField(obj, getCPG());
-        if (xfield != null)
+        if (xfield != null) {
             loadType = getType(xfield);
+        }
 
 
         pushValue(loadType);
@@ -360,8 +367,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
     public static Type getType(XField xfield) {
         Type t = Type.getType(xfield.getSignature());
-        if (!(t instanceof ReferenceType))
+        if (!(t instanceof ReferenceType)) {
             return t;
+        }
         ReferenceType loadType = (ReferenceType) t;
 
         // Check the field store type database to see if we can
@@ -443,8 +451,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                 List<? extends ReferenceType> parameters = genericMapType.getParameters();
                 if (parameters != null && parameters.size() == expectedParameters) {
                     ReferenceType resultType = parameters.get(index);
-                    if (resultType instanceof GenericObjectType)
+                    if (resultType instanceof GenericObjectType) {
                         resultType = ((GenericObjectType) resultType).produce();
+                    }
                     typesComputedFromGenerics.add(resultType);
                     frame.popValue();
                     frame.pushValue(resultType);
@@ -465,8 +474,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             if (mapType instanceof GenericObjectType) {
                 GenericObjectType genericMapType = (GenericObjectType) mapType;
                 List<? extends ReferenceType> parameters = genericMapType.getParameters();
-                if (parameters == null)
+                if (parameters == null) {
                     return false;
+                }
                 if (parameters.size() == expectedNumberOfTypeParameters) {
                     ReferenceType keyType = parameters.get(index);
                     frame.popValue();
@@ -512,8 +522,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                         if (stackValue.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) {
                             String c = valueNumberDataflow.getClassName(stackValue);
                             if (c != null) {
-                                if (c.charAt(0) != '[' && !c.endsWith(";"))
+                                if (c.charAt(0) != '[' && !c.endsWith(";")) {
                                     c = "L" + c.replace('.', '/') + ";";
+                                }
                                 Type type = Type.getType(c);
                                 if (type instanceof ReferenceType) {
                                     instanceOfValueNumber = vnaFrame.getTopValue();
@@ -557,14 +568,17 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                 if (mapType instanceof GenericObjectType) {
                     GenericObjectType genericMapType = (GenericObjectType) mapType;
                     List<? extends ReferenceType> parameters = genericMapType.getParameters();
-                    if (parameters == null || parameters.size() != 2)
+                    if (parameters == null || parameters.size() != 2) {
                         break mapGetCheck;
+                    }
 
                     ClassDescriptor c = DescriptorFactory.getClassDescriptor(genericMapType);
-                    if (!Subtypes2.instanceOf(c, Map.class))
+                    if (!Subtypes2.instanceOf(c, Map.class)) {
                         break mapGetCheck;
-                    if (!isStraightGenericMap(c))
+                    }
+                    if (!isStraightGenericMap(c)) {
                         break mapGetCheck;
+                    }
 
                     ReferenceType valueType = parameters.get(1);
                     consumeStack(obj);
@@ -578,10 +592,12 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
         }
 
-        if (className.equals("java.util.Map$Entry"))
+        if (className.equals("java.util.Map$Entry")) {
             if (methodName.equals("getKey") && getResultTypeFromGenericType(frame, 0, 2) || methodName.equals("getValue")
-                    && getResultTypeFromGenericType(frame, 1, 2))
+                    && getResultTypeFromGenericType(frame, 1, 2)) {
                 return;
+            }
+        }
 
         if (methodName.equals("entrySet") && signature.equals("()Ljava/util/Set;") && className.startsWith("java.util")
                 && className.endsWith("Map")) {
@@ -597,30 +613,35 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             if (argType instanceof GenericObjectType) {
                 GenericObjectType genericArgType = (GenericObjectType) argType;
                 List<? extends ReferenceType> parameters = genericArgType.getParameters();
-                if (parameters != null && parameters.size() == 2)
+                if (parameters != null && parameters.size() == 2) {
                     mapType = GenericUtilities.getType("java.util.Map$Entry", parameters);
+                }
             }
             GenericObjectType entrySetType = GenericUtilities.getType("java.util.Set", Collections.singletonList(mapType));
             frame.pushValue(entrySetType);
             return;
 
         }
-        if (className.startsWith("java.util") && className.endsWith("Map"))
+        if (className.startsWith("java.util") && className.endsWith("Map")) {
             if (methodName.equals("keySet") && signature.equals("()Ljava/util/Set;")
                     && handleGetMapView(frame, "java.util.Set", 0, 2) || methodName.equals("values")
-                    && signature.equals("()Ljava/util/Collection;") && handleGetMapView(frame, "java.util.Collection", 1, 2))
+                    && signature.equals("()Ljava/util/Collection;") && handleGetMapView(frame, "java.util.Collection", 1, 2)) {
                 return;
+            }
+        }
 
         if (methodName.equals("iterator") && signature.equals("()Ljava/util/Iterator;") && className.startsWith("java.util")
-                && handleGetMapView(frame, "java.util.Iterator", 0, 1))
+                && handleGetMapView(frame, "java.util.Iterator", 0, 1)) {
             return;
+        }
         if (className.equals("java.util.Iterator") && methodName.equals("next") && signature.equals("()Ljava/lang/Object;")
-                && getResultTypeFromGenericType(frame, 0, 1))
+                && getResultTypeFromGenericType(frame, 0, 1)) {
             return;
+        }
 
         if (methodName.equals("initCause") && signature.equals("(Ljava/lang/Throwable;)Ljava/lang/Throwable;")
                 && (className.endsWith("Exception")
-                || className.endsWith("Error"))) {
+                        || className.endsWith("Error"))) {
             try {
 
                 frame.popValue();
@@ -629,8 +650,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                 AnalysisContext.logError("Ooops", e);
             }
         }
-        if (handleToArray(obj))
+        if (handleToArray(obj)) {
             return;
+        }
         Type result = TopType.instance();
         try {
             Set<XMethod> targets = Hierarchy2.resolveMethodCallTargets(obj, frame, cpg);
@@ -643,13 +665,15 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                 String sourceSignature = m.getSourceSignature();
                 if (DEBUG) {
                     System.out.println(" Call target: " + m);
-                    if (sourceSignature != null)
+                    if (sourceSignature != null) {
                         System.out.println("  source signature: " + sourceSignature);
+                    }
                 }
                 boolean foundSomething = false;
                 XMethod m2 = m.bridgeTo();
-                if (m2 != null)
+                if (m2 != null) {
                     m = m2;
+                }
                 if (sourceSignature != null && !sourceSignature.equals(m.getSignature())) {
                     GenericSignatureParser p = new GenericSignatureParser(sourceSignature);
                     String rv = p.getReturnTypeSignature();
@@ -680,8 +704,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                 }
                 if (!foundSomething) {
                     result = TopType.instance();
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println(" giving up");
+                    }
                     break;
                 }
             }
@@ -695,16 +720,18 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         }
 
         consumeStack(obj);
-        if (result instanceof TopType)
+        if (result instanceof TopType) {
             pushReturnType(obj);
-        else
+        } else {
             pushValue(result);
+        }
     }
 
     public static final Pattern mapSignaturePattern = Pattern.compile("<(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*):L[^;]*;(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*):L[^;]*;>.*Ljava/util/(\\p{javaJavaIdentifierStart}(\\p{javaJavaIdentifierPart}|/)*)?Map<T\\1;T\\2;>;.*");
     public static boolean isStraightGenericMap(ClassDescriptor c) {
-        if (c.matches(Map.class))
+        if (c.matches(Map.class)) {
             return true;
+        }
         XClass xc;
         try {
             xc = c.getXClass();
@@ -712,8 +739,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             return false;
         }
         String sourceSignature = xc.getSourceSignature();
-        if (sourceSignature == null)
+        if (sourceSignature == null) {
             return false;
+        }
         if (sourceSignature.startsWith("<")) {
             Matcher matcher = mapSignaturePattern.matcher(sourceSignature);
             if (!matcher.matches()) {
@@ -731,8 +759,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
     private Type merge(Type prevType, Type newType) throws DataflowAnalysisException {
         if (prevType.equals(TopType.instance())) {
 
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Got " + newType);
+            }
             return newType;
         } else if (prevType.equals(newType)) {
             return prevType;
@@ -783,18 +812,22 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
     @CheckForNull
     GenericObjectType getLocalVariable(int index, int pos) {
-        if (genericLocalVariables == null || !genericLocalVariables.get(index))
+        if (genericLocalVariables == null || !genericLocalVariables.get(index)) {
             return null;
-        for (LocalVariable local : localTypeTable.getLocalVariableTypeTable())
+        }
+        for (LocalVariable local : localTypeTable.getLocalVariableTypeTable()) {
             if (local.getIndex() == index && local.getStartPC() <= pos
                     && pos < +local.getStartPC() + local.getLength()) {
                 String signature = local.getSignature();
-                if (signature.indexOf('<') < 0) continue;
+                if (signature.indexOf('<') < 0) {
+                    continue;
+                }
                 Type t;
                 try {
                     t = GenericUtilities.getType(signature);
-                    if (t instanceof GenericObjectType)
+                    if (t instanceof GenericObjectType) {
                         return (GenericObjectType) t;
+                    }
                 } catch (RuntimeException e) {
                     AnalysisContext.logError("Bad signature " + signature
                             + " for " + local.getName(), e);
@@ -802,6 +835,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                 }
                 return null;
             }
+        }
         return null;
     }
 
@@ -816,14 +850,15 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                 Type value = frame.popValue();
                 int index = obj.getIndex();
                 if (value instanceof ReferenceType && !(value instanceof GenericObjectType)) {
-                         GenericObjectType gType = getLocalVariable(index,
+                    GenericObjectType gType = getLocalVariable(index,
                             getLocation().getHandle().getPosition());
                     value = GenericUtilities.merge(gType, value);
                 }
                 frame.setValue(index, value);
                 frame.setExact(index, isExact);
-            } else
+            } else {
                 super.handleStoreInstruction(obj);
+            }
 
         } catch (DataflowAnalysisException e) {
             throw new InvalidBytecodeException(
@@ -839,8 +874,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
     @Override
     public void handleLoadInstruction(LoadInstruction obj) {
         int numProduced = obj.produceStack(cpg);
-        if (numProduced == Constants.UNPREDICTABLE)
+        if (numProduced == Constants.UNPREDICTABLE) {
             throw new InvalidBytecodeException("Unpredictable stack production");
+        }
 
         if (numProduced != 1) {
             super.handleLoadInstruction(obj);
@@ -856,8 +892,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         }
         boolean isExact = frame.isExact(index);
         frame.pushValue(value);
-        if (isExact)
+        if (isExact) {
             setTopOfStackIsExact();
+        }
     }
 
     @Override
@@ -865,10 +902,11 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
         try {
             Type t = getFrame().popValue();
-            if (t instanceof NullType)
+            if (t instanceof NullType) {
                 pushValue(t);
-            else
+            } else {
                 pushValue(obj.getType(getCPG()));
+            }
         } catch (DataflowAnalysisException e) {
             throw new InvalidBytecodeException("Stack underflow for " + obj + ": " + e.getMessage());
         }
@@ -1169,11 +1207,13 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             boolean isExact = isTopOfStackExact();
             Type value = frame.popValue();
             frame.pushValue(value);
-            if (isExact)
+            if (isExact) {
                 setTopOfStackIsExact();
+            }
             frame.pushValue(value);
-            if (isExact)
+            if (isExact) {
                 setTopOfStackIsExact();
+            }
         } catch (DataflowAnalysisException e) {
             throw new InvalidBytecodeException(e.toString());
         }
@@ -1426,29 +1466,33 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
     @Override
     public void visitIFEQ(IFEQ obj) {
-        if (previousWasEffectiveInstanceOf)
+        if (previousWasEffectiveInstanceOf) {
             instanceOfFollowedByBranch = true;
+        }
         super.visitIFEQ(obj);
     }
 
     @Override
     public void visitIFGT(IFGT obj) {
-        if (previousWasEffectiveInstanceOf)
+        if (previousWasEffectiveInstanceOf) {
             instanceOfFollowedByBranch = true;
+        }
         super.visitIFGT(obj);
     }
 
     @Override
     public void visitIFLE(IFLE obj) {
-        if (previousWasEffectiveInstanceOf)
+        if (previousWasEffectiveInstanceOf) {
             instanceOfFollowedByBranch = true;
+        }
         super.visitIFLE(obj);
     }
 
     @Override
     public void visitIFNE(IFNE obj) {
-        if (previousWasEffectiveInstanceOf)
+        if (previousWasEffectiveInstanceOf) {
             instanceOfFollowedByBranch = true;
+        }
         super.visitIFNE(obj);
     }
 
@@ -1457,4 +1501,3 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
     }
 }
 
-// vim:ts=4

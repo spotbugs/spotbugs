@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 /**
  * This detector is currently disabled by default.
  * It generates false positives when creating directory entries.
- * 
+ *
  */
 public class EmptyZipFileEntry extends BytecodeScanningDetector implements StatelessDetector {
 
@@ -58,18 +58,20 @@ public class EmptyZipFileEntry extends BytecodeScanningDetector implements State
     public void sawOpcode(int seen) {
         if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("putNextEntry")) {
             streamType = getClassConstantOperand();
-            if (streamType.equals("java/util/zip/ZipOutputStream") || streamType.equals("java/util/jar/JarOutputStream"))
+            if (streamType.equals("java/util/zip/ZipOutputStream") || streamType.equals("java/util/jar/JarOutputStream")) {
                 sawPutEntry = getPC();
-            else
+            } else {
                 streamType = "";
+            }
         } else {
             if (getPC() - sawPutEntry <= 7 && seen == INVOKEVIRTUAL && getNameConstantOperand().equals("closeEntry")
-                    && getClassConstantOperand().equals(streamType))
+                    && getClassConstantOperand().equals(streamType)) {
                 bugReporter
-                        .reportBug(new BugInstance(this,
-                                streamType.equals("java/util/zip/ZipOutputStream") ? "AM_CREATES_EMPTY_ZIP_FILE_ENTRY"
-                                        : "AM_CREATES_EMPTY_JAR_FILE_ENTRY", NORMAL_PRIORITY).addClassAndMethod(this)
+                .reportBug(new BugInstance(this,
+                        streamType.equals("java/util/zip/ZipOutputStream") ? "AM_CREATES_EMPTY_ZIP_FILE_ENTRY"
+                                : "AM_CREATES_EMPTY_JAR_FILE_ENTRY", NORMAL_PRIORITY).addClassAndMethod(this)
                                 .addSourceLine(this));
+            }
 
         }
 

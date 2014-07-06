@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
  * on the annotated entity. This object makes it possible to report such
  * conflicts, while still providing a convenient interface for getting the
  * "effective" TypeQualifierAnnotation.
- * 
+ *
  * @author David Hovemeyer
  */
 public class TypeQualifierAnnotationLookupResult {
@@ -42,9 +42,9 @@ public class TypeQualifierAnnotationLookupResult {
      * Partial result of looking up a TypeQualifierAnnotation.
      */
     public static class PartialResult {
-        private AnnotatedObject annotatedObject;
+        private final AnnotatedObject annotatedObject;
 
-        private TypeQualifierAnnotation typeQualifierAnnotation;
+        private final TypeQualifierAnnotation typeQualifierAnnotation;
 
         PartialResult(AnnotatedObject annotatedObject, TypeQualifierAnnotation typeQualifierAnnotation) {
             this.annotatedObject = annotatedObject;
@@ -67,7 +67,7 @@ public class TypeQualifierAnnotationLookupResult {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Object#toString()
          */
         @Override
@@ -76,7 +76,7 @@ public class TypeQualifierAnnotationLookupResult {
         }
     }
 
-    private List<PartialResult> partialResultList;
+    private final List<PartialResult> partialResultList;
 
     TypeQualifierAnnotationLookupResult() {
         this.partialResultList = new LinkedList<PartialResult>();
@@ -88,7 +88,7 @@ public class TypeQualifierAnnotationLookupResult {
 
     /**
      * Get the effective TypeQualifierAnnotation.
-     * 
+     *
      * @return the effective TypeQualifierAnnotation, or null if no effective
      *         TypeQualifierAnnotation can be found
      */
@@ -112,7 +112,7 @@ public class TypeQualifierAnnotationLookupResult {
     /**
      * Subclasses must override this method to combine TypeQualifierAnnotations
      * found in multiple superclasses.
-     * 
+     *
      * @param a
      *            a TypeQualifierAnnotation
      * @param b
@@ -127,7 +127,7 @@ public class TypeQualifierAnnotationLookupResult {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override

@@ -46,19 +46,19 @@ public abstract class CommandLine {
 
     private static final String SPACES = "                    ";
 
-    private List<String> optionList;
+    private final List<String> optionList;
 
-    private Set<String> unlistedOptions;
+    private final Set<String> unlistedOptions;
 
-    private Map<Integer, String> optionGroups;
+    private final Map<Integer, String> optionGroups;
 
-    private Set<String> requiresArgumentSet;
+    private final Set<String> requiresArgumentSet;
 
-    private Map<String, String> optionDescriptionMap;
+    private final Map<String, String> optionDescriptionMap;
 
-    private Map<String, String> optionExtraPartSynopsisMap;
+    private final Map<String, String> optionExtraPartSynopsisMap;
 
-    private Map<String, String> argumentDescriptionMap;
+    private final Map<String, String> argumentDescriptionMap;
 
     int maxWidth;
 
@@ -96,8 +96,9 @@ public abstract class CommandLine {
         optionList.add(option);
         optionDescriptionMap.put(option, description);
 
-        if (option.length() > maxWidth)
+        if (option.length() > maxWidth) {
             maxWidth = option.length();
+        }
     }
 
     /**
@@ -118,8 +119,9 @@ public abstract class CommandLine {
 
         // Option will display as -foo[:extraPartSynopsis]
         int length = option.length() + optionExtraPartSynopsis.length() + 3;
-        if (length > maxWidth)
+        if (length > maxWidth) {
             maxWidth = length;
+        }
     }
 
     /**
@@ -139,8 +141,9 @@ public abstract class CommandLine {
         argumentDescriptionMap.put(option, argumentDesc);
 
         int width = option.length() + 3 + argumentDesc.length();
-        if (width > maxWidth)
+        if (width > maxWidth) {
             maxWidth = width;
+        }
     }
 
     /**
@@ -167,7 +170,7 @@ public abstract class CommandLine {
      */
 
     public String[] expandOptionFiles(String[] argv, boolean ignoreComments, boolean ignoreBlankLines) throws IOException,
-            HelpRequestedException {
+    HelpRequestedException {
         // Add all expanded options at the end of the options list, before the
         // list of
         // jar/zip/class files and directories.
@@ -223,16 +226,20 @@ public abstract class CommandLine {
         while ((line = reader.readLine()) != null) {
             line = line.trim();
 
-            if (ignoreComments && line.startsWith("#"))
+            if (ignoreComments && line.startsWith("#")) {
                 continue;
+            }
 
-            if (ignoreBlankLines && line.equals(""))
+            if (ignoreBlankLines && line.equals("")) {
                 continue;
-            if (line.length() >= 2 && line.charAt(0) == '"' && line.charAt(line.length() - 1) == '"')
+            }
+            if (line.length() >= 2 && line.charAt(0) == '"' && line.charAt(line.length() - 1) == '"') {
                 resultList.add(line.substring(0, line.length() - 1));
-            else
-                for (String segment : line.split(" "))
+            } else {
+                for (String segment : line.split(" ")) {
                     resultList.add(segment);
+                }
+            }
         }
     }
 
@@ -305,10 +312,12 @@ public abstract class CommandLine {
 
         while (arg < argv.length) {
             String option = argv[arg];
-            if (option.equals("-help") || option.equals("-h"))
+            if (option.equals("-help") || option.equals("-h")) {
                 throw new HelpRequestedException();
-            if (!option.startsWith("-"))
+            }
+            if (!option.startsWith("-")) {
                 break;
+            }
 
             String optionExtraPart = "";
             int colon = option.indexOf(':');
@@ -317,20 +326,24 @@ public abstract class CommandLine {
                 option = option.substring(0, colon);
             }
 
-            if (optionDescriptionMap.get(option) == null)
+            if (optionDescriptionMap.get(option) == null) {
                 throw new IllegalArgumentException("Unknown option: " + option);
+            }
 
             if (requiresArgumentSet.contains(option)) {
                 ++arg;
-                if (arg >= argv.length)
+                if (arg >= argv.length) {
                     throw new IllegalArgumentException("Option " + option + " requires an argument");
+                }
                 String argument = argv[arg];
-                if (!dryRun)
+                if (!dryRun) {
                     handleOptionWithArgument(option, argument);
+                }
                 ++arg;
             } else {
-                if (!dryRun)
+                if (!dryRun) {
                     handleOption(option, optionExtraPart);
+                }
                 ++arg;
             }
         }
@@ -376,8 +389,9 @@ public abstract class CommandLine {
             }
             count++;
 
-            if (unlistedOptions.contains(option))
+            if (unlistedOptions.contains(option)) {
                 continue;
+            }
             out.print("    ");
 
             StringBuilder buf = new StringBuilder();
@@ -401,8 +415,9 @@ public abstract class CommandLine {
     }
 
     private static void printField(PrintStream out, String s, int width) {
-        if (s.length() > width)
+        if (s.length() > width) {
             throw new IllegalArgumentException();
+        }
         int nSpaces = width - s.length();
         out.print(s);
         while (nSpaces > 0) {

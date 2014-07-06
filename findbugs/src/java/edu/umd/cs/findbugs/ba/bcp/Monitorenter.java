@@ -29,13 +29,13 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
  * A PatternElement for matching a MONITORENTER instruction.
- * 
+ *
  * @author DavidHovemeyer
  */
 public class Monitorenter extends OneVariableInstruction {
     /**
      * Constructor.
-     * 
+     *
      * @param varName
      *            name of the variable representing the reference to the object
      *            being locked
@@ -50,8 +50,9 @@ public class Monitorenter extends OneVariableInstruction {
 
         // Instruction must be MONITORENTER.
         Instruction ins = handle.getInstruction();
-        if (!(ins instanceof MONITORENTER))
+        if (!(ins instanceof MONITORENTER)) {
             return null;
+        }
 
         // Ensure the object being locked matches any previous
         // instructions which bound our variable name to a value.
@@ -60,4 +61,3 @@ public class Monitorenter extends OneVariableInstruction {
     }
 }
 
-// vim:ts=4

@@ -58,15 +58,17 @@ public class UsagesRequiringNonNullValues {
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-        for (Map.Entry<Integer, Collection<Pair>> e : map.asMap().entrySet())
+        for (Map.Entry<Integer, Collection<Pair>> e : map.asMap().entrySet()) {
             buf.append(e).append("\n");
+        }
         return buf.toString();
     }
 
     public void add(Location loc, ValueNumber vn, PointerUsageRequiringNonNullValue usage) {
         Pair p = new Pair(vn, usage);
-        if (DerefFinder.DEBUG)
+        if (DerefFinder.DEBUG) {
             System.out.println("At " + loc + " adding dereference " + p);
+        }
 
         map.add(loc.getHandle().getPosition(), p);
     }
@@ -76,13 +78,16 @@ public class UsagesRequiringNonNullValues {
         // PointerUsageRequiringNonNullValue secondBest = null;
         MergeTree mergeTree = vnaDataflow.getAnalysis().getMergeTree();
         for (Pair p : map.get(loc.getHandle().getPosition())) {
-            if (p.vn.equals(vn))
+            if (p.vn.equals(vn)) {
                 return p.pu;
-            if (!p.vn.hasFlag(ValueNumber.PHI_NODE))
+            }
+            if (!p.vn.hasFlag(ValueNumber.PHI_NODE)) {
                 continue;
+            }
             BitSet inputs = mergeTree.getTransitiveInputSet(p.vn);
-            if (inputs.get(vn.getNumber()))
+            if (inputs.get(vn.getNumber())) {
                 return p.pu;
+            }
         }
         return null;
     }

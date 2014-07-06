@@ -34,14 +34,14 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 public class FindUnsyncGet extends BytecodeScanningDetector {
     String prevClassName = " none ";
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     static final int doNotConsider = ACC_PRIVATE | ACC_STATIC | ACC_NATIVE;
 
     // Maps of property names to get and set methods
-    private HashMap<String, MethodAnnotation> getMethods = new HashMap<String, MethodAnnotation>();
+    private final HashMap<String, MethodAnnotation> getMethods = new HashMap<String, MethodAnnotation>();
 
-    private HashMap<String, MethodAnnotation> setMethods = new HashMap<String, MethodAnnotation>();
+    private final HashMap<String, MethodAnnotation> setMethods = new HashMap<String, MethodAnnotation>();
 
     public FindUnsyncGet(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -75,8 +75,9 @@ public class FindUnsyncGet extends BytecodeScanningDetector {
     @Override
     public void visit(Method obj) {
         int flags = obj.getAccessFlags();
-        if ((flags & doNotConsider) != 0)
+        if ((flags & doNotConsider) != 0) {
             return;
+        }
         String name = obj.getName();
         boolean isSynchronized = (flags & ACC_SYNCHRONIZED) != 0;
         /*
@@ -84,17 +85,17 @@ public class FindUnsyncGet extends BytecodeScanningDetector {
          * returnValue = sig.charAt(1 + sig.indexOf(')')); boolean firstArgIsRef
          * = (firstArg == 'L') || (firstArg == '['); boolean returnValueIsRef =
          * (returnValue == 'L') || (returnValue == '[');
-         * 
+         *
          * System.out.println(className + "." + name + " " + firstArgIsRef + " "
          * + returnValueIsRef + " " + isSynchronized + " " + isNative );
          */
         if (name.startsWith("get") && !isSynchronized
-        // && returnValueIsRef
-        ) {
+                // && returnValueIsRef
+                ) {
             getMethods.put(name.substring(3), MethodAnnotation.fromVisitedMethod(this));
         } else if (name.startsWith("set") && isSynchronized
-        // && firstArgIsRef
-        ) {
+                // && firstArgIsRef
+                ) {
             setMethods.put(name.substring(3), MethodAnnotation.fromVisitedMethod(this));
         }
     }

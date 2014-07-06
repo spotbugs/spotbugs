@@ -65,8 +65,9 @@ public class Multiset<K> {
 
     public boolean remove(K k) {
         Integer v = map.get(k);
-        if (v == null || v.intValue() == 0)
+        if (v == null || v.intValue() == 0) {
             return false;
+        }
         if (v.intValue() == 1) {
             map.remove(k);
             return true;
@@ -77,21 +78,24 @@ public class Multiset<K> {
 
     public void add(K k, int val) {
         Integer v = map.get(k);
-        if (v == null)
+        if (v == null) {
             map.put(k, val);
-        else
+        } else {
             map.put(k, v + val);
+        }
     }
 
     public void addAll(Iterable<K> c) {
-        for (K k : c)
+        for (K k : c) {
             add(k);
+        }
     }
 
     public int getCount(K k) {
         Integer v = map.get(k);
-        if (v == null)
+        if (v == null) {
             return 0;
+        }
         return v;
     }
 
@@ -107,9 +111,10 @@ public class Multiset<K> {
     public Iterable<Map.Entry<K, Integer>> entriesInDecreasingFrequency() {
         TreeSet<Map.Entry<K, Integer>> result = new TreeSet<Map.Entry<K, Integer>>(new EntryComparator<K>());
         result.addAll(map.entrySet());
-        if (result.size() != map.size())
+        if (result.size() != map.size()) {
             throw new IllegalStateException("Map " + map.getClass().getSimpleName()
                     + " reuses Map.Entry objects; entrySet can't be passed to addAll");
+        }
         return result;
     }
 
@@ -119,10 +124,12 @@ public class Multiset<K> {
         public int compare(Entry<E, Integer> o1, Entry<E, Integer> o2) {
             int c1 = o1.getValue();
             int c2 = o2.getValue();
-            if (c1 < c2)
+            if (c1 < c2) {
                 return 1;
-            if (c1 > c2)
+            }
+            if (c1 > c2) {
                 return -1;
+            }
             return System.identityHashCode(o1.getKey()) - System.identityHashCode(o2.getKey());
         }
 

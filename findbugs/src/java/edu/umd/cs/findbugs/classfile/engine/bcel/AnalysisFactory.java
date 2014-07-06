@@ -43,13 +43,13 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * Abstract factory class for creating analysis objects.
  */
 public abstract class AnalysisFactory<Analysis> implements IMethodAnalysisEngine<Analysis> {
-    private String analysisName;
+    private final String analysisName;
 
-    private Class<Analysis> analysisClass;
+    private final Class<Analysis> analysisClass;
 
     /**
      * Constructor.
-     * 
+     *
      * @param analysisName
      *            name of the analysis factory: for diagnostics/debugging
      */
@@ -71,7 +71,7 @@ public abstract class AnalysisFactory<Analysis> implements IMethodAnalysisEngine
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)

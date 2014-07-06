@@ -44,34 +44,40 @@ public class DontCatchIllegalMonitorStateException extends PreorderVisitor imple
 
     public DontCatchIllegalMonitorStateException(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        if (DEBUG)
+        if (DEBUG) {
             msgs = new HashSet<String>();
+        }
     }
 
     @Override
     public void visit(ExceptionTable obj) {
         if (DEBUG) {
             String names[] = obj.getExceptionNames();
-            for (String name : names)
-                if (name.equals("java.lang.Exception") || name.equals("java.lang.Throwable"))
+            for (String name : names) {
+                if (name.equals("java.lang.Exception") || name.equals("java.lang.Throwable")) {
                     System.out.println(name + " thrown by " + getFullyQualifiedMethodName());
+                }
+            }
         }
     }
 
     @Override
     public void visit(CodeException obj) {
         int type = obj.getCatchType();
-        if (type == 0)
+        if (type == 0) {
             return;
+        }
         String name = getConstantPool().constantToString(getConstantPool().getConstant(type));
         if (DEBUG) {
             String msg = "Catching " + name + " in " + getFullyQualifiedMethodName();
-            if (msgs.add(msg))
+            if (msgs.add(msg)) {
                 System.out.println(msg);
+            }
         }
-        if (name.equals("java.lang.IllegalMonitorStateException"))
+        if (name.equals("java.lang.IllegalMonitorStateException")) {
             bugReporter.reportBug(new BugInstance(this, "IMSE_DONT_CATCH_IMSE", HIGH_PRIORITY).addClassAndMethod(this)
                     .addSourceLine(this.classContext, this, obj.getHandlerPC()));
+        }
 
     }
 

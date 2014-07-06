@@ -54,30 +54,36 @@ public class URLProblems extends OpcodeStackDetector {
     @Override
     public void visit(Signature obj) {
         String sig = obj.getSignature();
-        for (String s : BAD_SIGNATURES)
+        for (String s : BAD_SIGNATURES) {
             if (sig.indexOf(s) >= 0) {
-                if (visitingField())
+                if (visitingField()) {
                     bugReporter.reportBug(new BugInstance(this, "DMI_COLLECTION_OF_URLS", HIGH_PRIORITY).addClass(this)
                             .addVisitedField(this));
-                else if (visitingMethod())
+                } else if (visitingMethod()) {
                     bugReporter.reportBug(new BugInstance(this, "DMI_COLLECTION_OF_URLS", HIGH_PRIORITY).addClassAndMethod(this));
-                else
+                } else {
                     bugReporter.reportBug(new BugInstance(this, "DMI_COLLECTION_OF_URLS", HIGH_PRIORITY).addClass(this).addClass(
                             this));
+                }
             }
+        }
     }
 
     void check(String className, Pattern name, int target, int url) {
-        if (!name.matcher(getNameConstantOperand()).matches())
+        if (!name.matcher(getNameConstantOperand()).matches()) {
             return;
-        if (stack.getStackDepth() <= target)
+        }
+        if (stack.getStackDepth() <= target) {
             return;
+        }
         OpcodeStack.Item targetItem = stack.getStackItem(target);
         OpcodeStack.Item urlItem = stack.getStackItem(url);
-        if (!urlItem.getSignature().equals("Ljava/net/URL;"))
+        if (!urlItem.getSignature().equals("Ljava/net/URL;")) {
             return;
-        if (!targetItem.getSignature().equals(className))
+        }
+        if (!targetItem.getSignature().equals(className)) {
             return;
+        }
         accumulator.accumulateBug(new BugInstance(this, "DMI_COLLECTION_OF_URLS", HIGH_PRIORITY).addClassAndMethod(this)
                 .addCalledMethod(this), this);
     }
@@ -98,7 +104,7 @@ public class URLProblems extends OpcodeStackDetector {
                     || getNameConstantOperand().equals("hashCode") && getSigConstantOperand().equals("()I")) {
                 accumulator.accumulateBug(
                         new BugInstance(this, "DMI_BLOCKING_METHODS_ON_URL", HIGH_PRIORITY).addClassAndMethod(this)
-                                .addCalledMethod(this), this);
+                        .addCalledMethod(this), this);
             }
         }
     }

@@ -24,14 +24,14 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * Descriptor uniquely identifying a method in a class.
- * 
+ *
  * @author David Hovemeyer
  */
 public class MethodDescriptor extends FieldOrMethodDescriptor implements ComparableMethod {
 
     /**
      * Constructor.
-     * 
+     *
      * @param className
      *            name of the class containing the method, in VM format (e.g.,
      *            "java/lang/String")
@@ -50,7 +50,7 @@ public class MethodDescriptor extends FieldOrMethodDescriptor implements Compara
     public int compareTo(ComparableMethod o) {
         return FieldOrMethodDescriptor.compareTo(this, (MethodDescriptor)o);
     }
-    
+
     @Override
     public final boolean equals(Object obj) {
         if (obj instanceof MethodDescriptor) {

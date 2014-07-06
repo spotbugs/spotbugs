@@ -31,36 +31,36 @@ import edu.umd.cs.findbugs.ExitCodes;
 
 /**
  * FindBugsViewerTask.java -- Ant Task to launch the FindBugsFrame
- * 
+ *
  * To use, create a new task that refrences the ant task (such as
  * "findbugs-viewer"). Then call this task while passing in parameters to modify
  * it's behaviour. It supports several options that are the same as the findbugs
  * task:
- * 
+ *
  * -projectFile -debug -jvmargs -home -classpath -pluginList -timeout
- * 
+ *
  * It also adds some new options:
- * 
+ *
  * -look: string name representing look and feel. Can be "native", "plastic" or
  * "gtk" -loadbugs: file name of bug report to load
- * 
+ *
  * The below is an example of how this could be done in an ant script:
- * 
+ *
  * <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
  * classpath="C:\dev\cvs.sourceforge.net\findbugs\lib\findbugs-ant.jar" />
  * <taskdef name="findbugs-viewer"
  * classname="edu.umd.cs.findbugs.anttask.FindBugsViewerTask"
  * classpath="C:\dev\cvs.sourceforge.net\findbugs\lib\findbugs-ant.jar" />
- * 
+ *
  * <property name="findbugs.home" location="C:\dev\cvs.sourceforge.net\findbugs"
  * /> <property name="findbugs.bugReport" location="bcel-fb.xml" />
- * 
+ *
  * <target name="findbugs-viewer" depends="jar"> <findbugs-viewer
  * home="${findbugs.home}" look="native" loadbugs="${findbugs.bugReport}"/>
  * </target>
- * 
+ *
  * Created on March 21, 2006, 12:57 PM
- * 
+ *
  * @author Mark McKay, mark@kitfox.com
  */
 public class FindBugsViewerTask extends Task {
@@ -94,7 +94,7 @@ public class FindBugsViewerTask extends Task {
 
     /**
      * Sets the file that contains the XML output of a findbugs report.
-     * 
+     *
      * @param loadbugs
      *            XML output from a findbugs session
      */
@@ -184,7 +184,7 @@ public class FindBugsViewerTask extends Task {
 
     /**
      * Set timeout in milliseconds.
-     * 
+     *
      * @param timeout
      *            the timeout
      */
@@ -194,7 +194,7 @@ public class FindBugsViewerTask extends Task {
 
     /**
      * Add an argument to the JVM used to execute FindBugs.
-     * 
+     *
      * @param arg
      *            the argument
      */
@@ -226,12 +226,13 @@ public class FindBugsViewerTask extends Task {
             File findbugsLibFindBugs = new File(findbugsLib, "findbugs.jar");
             File findBugsFindBugs = new File(homeDir, "findbugs.jar");
             // log("executing using home dir [" + homeDir + "]");
-            if (findbugsLibFindBugs.exists())
+            if (findbugsLibFindBugs.exists()) {
                 findbugsEngine.setClasspath(new Path(getProject(), findbugsLibFindBugs.getPath()));
-            else if (findBugsFindBugs.exists())
+            } else if (findBugsFindBugs.exists()) {
                 findbugsEngine.setClasspath(new Path(getProject(), findBugsFindBugs.getPath()));
-            else
+            } else {
                 throw new IllegalArgumentException("Can't find findbugs.jar in " + homeDir);
+            }
 
             findbugsEngine.setClassname("edu.umd.cs.findbugs.LaunchAppropriateUI");
             findbugsEngine.createJvmarg().setValue("-Dfindbugs.home=" + homeDir.getPath());

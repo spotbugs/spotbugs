@@ -27,24 +27,25 @@ import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Matches a String value against a predefined specification.
- * 
+ *
  * Matching can be done in three modes depending on ctor matchSpec argument.
- * 
+ *
  * If matchSpec is null, match will succeed for any value (including empty
  * String and null)
- * 
+ *
  * If matchSpec starts with ~ character it will be treated as
  * java.util.regex.Pattern, with the ~ character omited. The pattern will be
  * matched against whole value (ie Matcher.match(), not Matcher.find())
- * 
+ *
  * If matchSpec is a non-null String with any other initial charcter, exact
  * matching using String.equals(String) will be performed.
- * 
+ *
  * @author rafal@caltha.pl
  */
 public class NameMatch {
 
     private @CheckForNull
+    final
     String spec;
 
     private @CheckForNull
@@ -55,29 +56,34 @@ public class NameMatch {
 
     @Override
     public int hashCode() {
-        if (spec == null)
+        if (spec == null) {
             return 0;
+        }
         return spec.hashCode();
     }
 
     public boolean isUniversal() {
-        if (spec == null)
+        if (spec == null) {
             return true;
+        }
         return spec.equals("~.*");
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof NameMatch))
+        if (!(o instanceof NameMatch)) {
             return false;
+        }
         return Util.nullSafeEquals(spec, ((NameMatch) o).spec);
     }
 
     public String getValue() {
-        if (exact != null)
+        if (exact != null) {
             return exact;
-        if (pattern != null)
+        }
+        if (pattern != null) {
             return pattern.toString();
+        }
         return "~.*";
     }
 
@@ -93,19 +99,23 @@ public class NameMatch {
     }
 
     public boolean match(String value) {
-        if (exact != null)
+        if (exact != null) {
             return exact.equals(value);
-        if (pattern != null)
+        }
+        if (pattern != null) {
             return pattern.matcher(value).matches();
+        }
         return true;
     }
 
     @Override
     public String toString() {
-        if (exact != null)
+        if (exact != null) {
             return "exact(" + exact + ")";
-        if (pattern != null)
+        }
+        if (pattern != null) {
             return "regex(" + pattern.toString() + ")";
+        }
         return "any()";
     }
 

@@ -38,16 +38,18 @@ public class SignatureParser {
     private int totalArgumentSize;
 
     public int getTotalArgumentSize() {
-        if ( parameterOffset == null)
+        if ( parameterOffset == null) {
             getParameterOffset();
+        }
         return totalArgumentSize;
     }
 
-     private @CheckForNull int parameterOffset[];
+    private @CheckForNull int parameterOffset[];
 
-      @Nonnull int[] getParameterOffset() {
-        if ( parameterOffset != null )
+    @Nonnull int[] getParameterOffset() {
+        if ( parameterOffset != null ) {
             return parameterOffset;
+        }
         ArrayList<Integer> offsets = new ArrayList<Integer>();
         Iterator<String> i = parameterSignatureIterator();
         int totalSize = 0;
@@ -55,18 +57,20 @@ public class SignatureParser {
         while (i.hasNext()) {
             String s = i.next();
 
-            if (s.equals("D") || s.equals("J"))
+            if (s.equals("D") || s.equals("J")) {
                 totalSize += 2;
-            else
+            } else {
                 totalSize += 1;
+            }
             offsets.add(totalSize);
 
         }
         totalArgumentSize = totalSize;
         int numParameters = offsets.size();
         parameterOffset = new int[numParameters];
-        for (int j = 0; j < numParameters; j++)
+        for (int j = 0; j < numParameters; j++) {
             parameterOffset[j] = offsets.get(j);
+        }
         return parameterOffset;
     }
 
@@ -86,8 +90,9 @@ public class SignatureParser {
 
         @Override
         public String next() {
-            if (!hasNext())
+            if (!hasNext()) {
                 throw new NoSuchElementException();
+            }
             StringBuilder result = new StringBuilder();
             boolean done;
             do {
@@ -108,8 +113,9 @@ public class SignatureParser {
 
                 case 'L':
                     int semi = signature.indexOf(';', index + 1);
-                    if (semi < 0)
+                    if (semi < 0) {
                         throw new IllegalStateException("Invalid method signature: " + signature);
+                    }
                     result.append(signature.substring(index, semi + 1));
                     index = semi + 1;
                     break;
@@ -149,8 +155,9 @@ public class SignatureParser {
      *            the method signature to be parsed
      */
     public SignatureParser(String signature) {
-        if (!signature.startsWith("("))
+        if (!signature.startsWith("(")) {
             throw new IllegalArgumentException("Bad method signature: " + signature);
+        }
         this.signature = signature;
 
 
@@ -172,14 +179,14 @@ public class SignatureParser {
         return new ParameterSignatureIterator();
     }
 
-   public Iterable<String> parameterSignatures() {
-       return new Iterable<String>() {
+    public Iterable<String> parameterSignatures() {
+        return new Iterable<String>() {
 
-        @Override
-        public Iterator<String> iterator() {
-            return new ParameterSignatureIterator();
-        }};
-    
+            @Override
+            public Iterator<String> iterator() {
+                return new ParameterSignatureIterator();
+            }};
+
     }
 
     /**
@@ -189,8 +196,9 @@ public class SignatureParser {
      */
     public String getReturnTypeSignature() {
         int endOfParams = signature.lastIndexOf(')');
-        if (endOfParams < 0)
+        if (endOfParams < 0) {
             throw new IllegalArgumentException("Bad method signature: " + signature);
+        }
         return signature.substring(endOfParams + 1);
     }
 
@@ -206,8 +214,9 @@ public class SignatureParser {
     public boolean hasReferenceParameters() {
         for (Iterator<String> i = parameterSignatureIterator(); i.hasNext();) {
             char c = i.next().charAt(0);
-            if (c == 'L' || c == '[')
+            if (c == 'L' || c == '[') {
                 return true;
+            }
         }
         return false;
     }
@@ -216,8 +225,9 @@ public class SignatureParser {
         int count = 0;
         for (Iterator<String> i = parameterSignatureIterator(); i.hasNext();) {
             String p = i.next();
-            if (pos == count)
+            if (pos == count) {
                 return p;
+            }
             ++count;
         }
         throw new IndexOutOfBoundsException("Asked for parameter " + pos + " of " + signature);
@@ -276,4 +286,3 @@ public class SignatureParser {
     }
 }
 
-// vim:ts=4

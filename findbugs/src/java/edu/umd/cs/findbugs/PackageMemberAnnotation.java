@@ -55,8 +55,9 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
     private static String computeSourceFile(String className) {
         AnalysisContext context = AnalysisContext.currentAnalysisContext();
 
-        if (context != null)
+        if (context != null) {
             return context.lookupSourceFile(className);
+        }
         return SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
 
     }
@@ -68,16 +69,18 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
      *            name of the class
      */
     protected PackageMemberAnnotation(@DottedClassName String className, String description, String sourceFileName) {
-        if (className.length() == 0)
+        if (className.length() == 0) {
             throw new IllegalArgumentException("Empty classname not allowed");
+        }
         if (className.indexOf('/') >= 0) {
             assert false : "classname " + className + " should be dotted";
-            className = className.replace('/', '.');
+        className = className.replace('/', '.');
         }
         this.className = DescriptorFactory.canonicalizeString(className);
         this.sourceFileName = sourceFileName;
-        if (description != null)
+        if (description != null) {
             description = description.intern();
+        }
         this.description = description;
     }
 
@@ -114,10 +117,11 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
     public final @DottedClassName
     String getPackageName() {
         int lastDot = className.lastIndexOf('.');
-        if (lastDot < 0)
+        if (lastDot < 0) {
             return "";
-        else
+        } else {
             return className.substring(0, lastDot);
+        }
     }
 
     /**
@@ -131,16 +135,21 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
      */
     @Override
     public final String format(String key, ClassAnnotation primaryClass) {
-        if (key.equals("class.givenClass"))
+        if (key.equals("class.givenClass")) {
             return shorten(primaryClass.getPackageName(), className);
-        if (key.equals("simpleClass"))
+        }
+        if (key.equals("simpleClass")) {
             return ClassName.extractSimpleName(className);
-        if (key.equals("class"))
+        }
+        if (key.equals("class")) {
             return className;
-        if (key.equals("package"))
+        }
+        if (key.equals("package")) {
             return getPackageName();
-        if (key.equals("") && FindBugsDisplayFeatures.isAbridgedMessages() && primaryClass != null)
+        }
+        if (key.equals("") && FindBugsDisplayFeatures.isAbridgedMessages() && primaryClass != null) {
             return formatPackageMember("givenClass", primaryClass);
+        }
         return formatPackageMember(key, primaryClass);
     }
 
@@ -163,8 +172,9 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
         int index = typeName.lastIndexOf('.');
         if (index >= 0) {
             String otherPkg = typeName.substring(0, index);
-            if (otherPkg.equals(pkgName) || otherPkg.equals("java.lang"))
+            if (otherPkg.equals(pkgName) || otherPkg.equals("java.lang")) {
                 typeName = typeName.substring(index + 1);
+            }
         }
         return typeName;
     }
@@ -223,4 +233,3 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
 
 }
 
-// vim:ts=4

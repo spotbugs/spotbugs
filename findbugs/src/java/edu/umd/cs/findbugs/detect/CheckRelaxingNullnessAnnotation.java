@@ -19,8 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import static edu.umd.cs.findbugs.ba.NullnessAnnotation.CHECK_FOR_NULL;
-import static edu.umd.cs.findbugs.ba.NullnessAnnotation.NONNULL;
+import static edu.umd.cs.findbugs.ba.NullnessAnnotation.*;
 import static org.objectweb.asm.Opcodes.ACC_STATIC;
 
 import java.util.Arrays;
@@ -200,8 +199,8 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
                     if (containsNullness(method.getParameterAnnotations(i), CHECK_FOR_NULL)) {
                         NullnessAnnotation a = e.getValue();
                         BugInstance bug = new BugInstance(CheckRelaxingNullnessAnnotation.this,
-                                    "NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION", a.equals(NONNULL) ? HIGH_PRIORITY : NORMAL_PRIORITY);
-                            bug.addClassAndMethod(xmethod);
+                                "NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION", a.equals(NONNULL) ? HIGH_PRIORITY : NORMAL_PRIORITY);
+                        bug.addClassAndMethod(xmethod);
                         LocalVariableAnnotation lva = null;
                         if (localVariables != null) {
                             for(LocalVariableNode lvn : localVariables) {

@@ -35,9 +35,9 @@ import edu.umd.cs.findbugs.SystemProperties;
 
 /**
  * All FileChoosers are FBFileChoosers so font size will work
- * 
+ *
  * @author Kristin
- * 
+ *
  */
 public class FBFileChooser extends JFileChooser {
 
@@ -49,7 +49,7 @@ public class FBFileChooser extends JFileChooser {
 
     /**
      * Sets size of font
-     * 
+     *
      * @param size
      */
     protected void setFontSize(float size) {
@@ -62,13 +62,15 @@ public class FBFileChooser extends JFileChooser {
      * Helps above method, runs through all components recursively.
      */
     protected void setFontSizeHelper(Component[] comps, float size) {
-        if (comps.length <= 0)
+        if (comps.length <= 0) {
             return;
+        }
 
         for (Component comp : comps) {
             comp.setFont(comp.getFont().deriveFont(size));
-            if (comp instanceof Container)
+            if (comp instanceof Container) {
                 setFontSizeHelper(((Container) comp).getComponents(), size);
+            }
         }
     }
 
@@ -99,8 +101,9 @@ public class FBFileChooser extends JFileChooser {
     public int showOpenDialog(Component parent) {
         assert java.awt.EventQueue.isDispatchThread();
         int x = super.showOpenDialog(parent);
-        if (SystemProperties.getProperty("os.name").startsWith("Mac"))
+        if (SystemProperties.getProperty("os.name").startsWith("Mac")) {
             workAroundJFileChooserBug();
+        }
 
         GUISaveState.getInstance().setStarterDirectoryForLoadBugs(getCurrentDirectory());
 
@@ -111,8 +114,9 @@ public class FBFileChooser extends JFileChooser {
     public int showSaveDialog(Component parent) {
         assert java.awt.EventQueue.isDispatchThread();
         int x = super.showSaveDialog(parent);
-        if (SystemProperties.getProperty("os.name").startsWith("Mac"))
+        if (SystemProperties.getProperty("os.name").startsWith("Mac")) {
             workAroundJFileChooserBug();
+        }
 
         GUISaveState.getInstance().setStarterDirectoryForLoadBugs(getCurrentDirectory());
 
@@ -123,14 +127,15 @@ public class FBFileChooser extends JFileChooser {
     public int showDialog(Component parent, String approveButtonText) {
         assert java.awt.EventQueue.isDispatchThread();
         int x = super.showDialog(parent, approveButtonText);
-        if (SystemProperties.getProperty("os.name").startsWith("Mac"))
+        if (SystemProperties.getProperty("os.name").startsWith("Mac")) {
             workAroundJFileChooserBug();
+        }
 
         GUISaveState.getInstance().setStarterDirectoryForLoadBugs(getCurrentDirectory());
 
         return x;
     }
-    
+
     private void addHiddenFileCheckBox() {
         final JCheckBox showHiddenFileCheckBox = new JCheckBox("Show Hidden");
         JPanel accessory = new JPanel();

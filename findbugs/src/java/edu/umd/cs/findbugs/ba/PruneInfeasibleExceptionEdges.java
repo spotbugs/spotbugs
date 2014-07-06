@@ -69,9 +69,9 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
      * successful.
      */
     private static class MarkedEdge {
-        private Edge edge;
+        private final Edge edge;
 
-        private int flag;
+        private final int flag;
 
         public MarkedEdge(Edge edge, int flag) {
             this.edge = edge;
@@ -85,9 +85,9 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
         }
     }
 
-    private CFG cfg;
+    private final CFG cfg;
 
-    private TypeDataflow typeDataflow;
+    private final TypeDataflow typeDataflow;
 
     private boolean cfgModified;
 
@@ -126,8 +126,9 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
         // mark edges to set properties of
         for (Iterator<Edge> i = cfg.edgeIterator(); i.hasNext();) {
             Edge edge = i.next();
-            if (!edge.isExceptionEdge())
+            if (!edge.isExceptionEdge()) {
                 continue;
+            }
 
             ExceptionSet exceptionSet = typeDataflow.getEdgeExceptionSet(edge);
             if (exceptionSet.isEmpty()) {
@@ -150,10 +151,12 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
                 boolean someExplicit = exceptionSet.containsExplicitExceptions();
 
                 int flags = 0;
-                if (someChecked)
+                if (someChecked) {
                     flags |= CHECKED_EXCEPTIONS_FLAG;
-                if (someExplicit)
+                }
+                if (someExplicit) {
                     flags |= EXPLICIT_EXCEPTIONS_FLAG;
+                }
 
                 markedEdgeList.add(new MarkedEdge(edge, flags));
             }
@@ -162,8 +165,9 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
         // Remove deleted edges
         for (Edge edge : deletedEdgeSet) {
             cfg.removeEdge(edge);
-            if (STATS)
+            if (STATS) {
                 ++numEdgesPruned;
+            }
             cfgModified = true;
         }
 
@@ -181,4 +185,3 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
     }
 }
 
-// vim:ts=4

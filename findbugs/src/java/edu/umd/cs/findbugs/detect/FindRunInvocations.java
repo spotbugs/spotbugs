@@ -59,19 +59,21 @@ public class FindRunInvocations extends BytecodeScanningDetector implements Stat
 
     @Override
     public void sawOpcode(int seen) {
-        if (alreadySawStart)
+        if (alreadySawStart) {
             return;
+        }
         if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) && getSigConstantOperand().equals("()V")
                 && isThread(getDottedClassConstantOperand())) {
-            if (getNameConstantOperand().equals("start"))
+            if (getNameConstantOperand().equals("start")) {
                 alreadySawStart = true;
-            else {
+            } else {
                 boolean isJustThread = !getDottedClassConstantOperand().equals("java.lang.Thread");
-                if (amVisitingMainMethod() && getPC() == getCode().getLength() - 4 && isJustThread)
+                if (amVisitingMainMethod() && getPC() == getCode().getLength() - 4 && isJustThread) {
                     return;
-                else if (getNameConstantOperand().equals("run"))
+                } else if (getNameConstantOperand().equals("run")) {
                     bugAccumulator.accumulateBug(new BugInstance(this, "RU_INVOKE_RUN", isJustThread ? HIGH_PRIORITY
                             : NORMAL_PRIORITY).addClassAndMethod(this), this);
+                }
             }
         }
     }

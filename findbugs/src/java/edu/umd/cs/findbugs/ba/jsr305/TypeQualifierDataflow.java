@@ -24,15 +24,15 @@ import edu.umd.cs.findbugs.ba.Dataflow;
 
 /**
  * Dataflow class for TypeQualifierDataflowAnalysis.
- * 
+ *
  * @author David Hovemeyer
  */
 public class TypeQualifierDataflow<AnalysisType extends TypeQualifierDataflowAnalysis> extends
-        Dataflow<TypeQualifierValueSet, AnalysisType> {
+Dataflow<TypeQualifierValueSet, AnalysisType> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param cfg
      *            control flow graph (CFG) of analyzed method
      * @param analysis

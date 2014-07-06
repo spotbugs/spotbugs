@@ -32,7 +32,7 @@ public abstract class AbstractScannableCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java
      * .lang.String)
@@ -44,7 +44,7 @@ public abstract class AbstractScannableCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
      */
     @Override

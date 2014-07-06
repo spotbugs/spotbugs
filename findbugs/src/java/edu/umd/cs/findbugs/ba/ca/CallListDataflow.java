@@ -23,7 +23,7 @@ import edu.umd.cs.findbugs.ba.Dataflow;
 
 /**
  * Dataflow class for CallListAnalysis.
- * 
+ *
  * @author David Hovemeyer
  */
 public class CallListDataflow extends Dataflow<CallList, CallListAnalysis> {

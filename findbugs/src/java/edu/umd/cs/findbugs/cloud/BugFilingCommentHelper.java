@@ -77,7 +77,7 @@ public class BugFilingCommentHelper {
 
         int firstLine = Integer.MAX_VALUE;
         int lastLine = Integer.MIN_VALUE;
-        for (BugAnnotation a : b.getAnnotations())
+        for (BugAnnotation a : b.getAnnotations()) {
             if (a instanceof SourceLineAnnotation) {
                 SourceLineAnnotation s = (SourceLineAnnotation) a;
                 if (s.getClassName().equals(primaryClass.getClassName()) && s.getStartLine() > 0) {
@@ -87,6 +87,7 @@ public class BugFilingCommentHelper {
                 }
 
             }
+        }
 
         SourceLineAnnotation primarySource = primaryClass.getSourceLines();
         if (primarySource.isSourceFileKnown() && firstLine >= 1 && firstLine <= lastLine && lastLine - firstLine < 50) {
@@ -100,13 +101,15 @@ public class BugFilingCommentHelper {
                 List<SourceLine> source = new ArrayList<SourceLine>();
                 while (lineNumber <= lastLine + 4) {
                     String txt = in.readLine();
-                    if (txt == null)
+                    if (txt == null) {
                         break;
+                    }
                     if (lineNumber >= firstLine - 4) {
                         String trimmed = txt.trim();
                         if (trimmed.length() == 0) {
-                            if (lineNumber > lastLine)
+                            if (lineNumber > lastLine) {
                                 break;
+                            }
                             txt = trimmed;
 
                         }
@@ -115,14 +118,16 @@ public class BugFilingCommentHelper {
                     }
                     lineNumber++;
                 }
-                if (commonWhiteSpace == null)
+                if (commonWhiteSpace == null) {
                     commonWhiteSpace = "";
+                }
                 out.println("\nRelevant source code:");
                 for (SourceLine s : source) {
-                    if (s.text.length() == 0)
+                    if (s.text.length() == 0) {
                         out.printf("%5d: %n", s.line);
-                    else
+                    } else {
                         out.printf("%5d:   %s%n", s.line, s.text.substring(commonWhiteSpace.length()));
+                    }
                 }
 
                 out.println();
@@ -147,10 +152,11 @@ public class BugFilingCommentHelper {
         ClassAnnotation primaryClass = b.getPrimaryClass();
 
         for (BugAnnotation a : b.getAnnotations()) {
-            if (a == primaryClass)
+            if (a == primaryClass) {
                 out.println(a);
-            else
+            } else {
                 out.println("  " + a.toString(primaryClass));
+            }
         }
         if (cloud.supportsSourceLinks()) {
             URL link = cloud.getSourceLink(b);
@@ -192,13 +198,15 @@ public class BugFilingCommentHelper {
         UserDesignation designation = cloud.getUserDesignation(b);
 
         String result;
-        if (designation != UserDesignation.UNCLASSIFIED)
+        if (designation != UserDesignation.UNCLASSIFIED) {
             result = "Classified as: " + designation.toString() + "\n";
-        else
+        } else {
             result = "";
+        }
         String eval = cloud.getUserEvaluation(b).trim();
-        if (eval.length() > 0)
+        if (eval.length() > 0) {
             result = result + eval + "\n";
+        }
         return result;
     }
 
@@ -210,14 +218,17 @@ public class BugFilingCommentHelper {
     // ====================================
 
     private String commonLeadingWhitespace(String soFar, String txt) {
-        if (txt.length() == 0)
+        if (txt.length() == 0) {
             return soFar;
-        if (soFar == null)
+        }
+        if (soFar == null) {
             return txt;
+        }
         soFar = Util.commonPrefix(soFar, txt);
         for (int i = 0; i < soFar.length(); i++) {
-            if (!Character.isWhitespace(soFar.charAt(i)))
+            if (!Character.isWhitespace(soFar.charAt(i))) {
                 return soFar.substring(0, i);
+            }
         }
         return soFar;
     }

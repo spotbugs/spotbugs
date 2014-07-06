@@ -53,7 +53,7 @@ public class Util {
 
     @CheckForNull
     public static JavaClass getOuterClass(JavaClass obj) throws ClassNotFoundException {
-        for (Attribute a : obj.getAttributes())
+        for (Attribute a : obj.getAttributes()) {
             if (a instanceof InnerClasses) {
                 for (InnerClass ic : ((InnerClasses) a).getInnerClasses()) {
                     if (obj.getClassNameIndex() == ic.getInnerClassIndex()) {
@@ -65,33 +65,38 @@ public class Util {
                     }
                 }
             }
+        }
         return null;
     }
 
     public static int getSizeOfSurroundingTryBlock(@CheckForNull Method method, Class<? extends Throwable> exceptionClass, int pc) {
-        if (method == null)
+        if (method == null) {
             return Integer.MAX_VALUE;
+        }
 
         return getSizeOfSurroundingTryBlock(method, ClassName.toSlashedClassName(exceptionClass), pc);
     }
     public static int getSizeOfSurroundingTryBlock(@CheckForNull Method method, @CheckForNull String vmNameOfExceptionClass, int pc) {
-        if (method == null)
+        if (method == null) {
             return Integer.MAX_VALUE;
+        }
         return getSizeOfSurroundingTryBlock(method.getConstantPool(), method.getCode(), vmNameOfExceptionClass, pc);
     }
 
     public static @CheckForNull
     CodeException getSurroundingTryBlock(ConstantPool constantPool, Code code, @CheckForNull String vmNameOfExceptionClass, int pc) {
         int size = Integer.MAX_VALUE;
-        if (code.getExceptionTable() == null)
+        if (code.getExceptionTable() == null) {
             return null;
+        }
         CodeException result = null;
         for (CodeException catchBlock : code.getExceptionTable()) {
             if (vmNameOfExceptionClass != null) {
                 Constant catchType = constantPool.getConstant(catchBlock.getCatchType());
                 if (catchType == null && !vmNameOfExceptionClass.isEmpty() ||  catchType instanceof ConstantClass
-                        && !((ConstantClass) catchType).getBytes(constantPool).equals(vmNameOfExceptionClass))
+                        && !((ConstantClass) catchType).getBytes(constantPool).equals(vmNameOfExceptionClass)) {
                     continue;
+                }
             }
             int startPC = catchBlock.getStartPC();
             int endPC = catchBlock.getEndPC();
@@ -111,14 +116,16 @@ public class Util {
         int size = Integer.MAX_VALUE;
         int tightStartPC = 0;
         int tightEndPC = Integer.MAX_VALUE;
-        if (code.getExceptionTable() == null)
+        if (code.getExceptionTable() == null) {
             return size;
+        }
         for (CodeException catchBlock : code.getExceptionTable()) {
             if (vmNameOfExceptionClass != null) {
                 Constant catchType = constantPool.getConstant(catchBlock.getCatchType());
                 if (catchType == null && !vmNameOfExceptionClass.isEmpty() ||  catchType instanceof ConstantClass
-                        && !((ConstantClass) catchType).getBytes(constantPool).equals(vmNameOfExceptionClass))
+                        && !((ConstantClass) catchType).getBytes(constantPool).equals(vmNameOfExceptionClass)) {
                     continue;
+                }
             }
             int startPC = catchBlock.getStartPC();
             int endPC = catchBlock.getEndPC();
@@ -131,21 +138,25 @@ public class Util {
                 }
             }
         }
-        if (size == Integer.MAX_VALUE)
+        if (size == Integer.MAX_VALUE) {
             return size;
+        }
 
         // try to guestimate number of lines that correspond
         size = (size + 7) / 8;
         LineNumberTable lineNumberTable = code.getLineNumberTable();
-        if (lineNumberTable == null)
+        if (lineNumberTable == null) {
             return size;
+        }
 
         int count = 0;
         for (LineNumber line : lineNumberTable.getLineNumberTable()) {
-            if (line.getStartPC() > tightEndPC)
+            if (line.getStartPC() > tightEndPC) {
                 break;
-            if (line.getStartPC() >= tightStartPC)
+            }
+            if (line.getStartPC() >= tightStartPC) {
                 count++;
+            }
         }
         return count;
 

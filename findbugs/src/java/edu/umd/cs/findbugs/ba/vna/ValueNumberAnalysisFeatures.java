@@ -47,4 +47,3 @@ public interface ValueNumberAnalysisFeatures {
     public static final boolean RLE_DEBUG = SystemProperties.getBoolean("vna.rle.debug");
 }
 
-// vim:ts=4

@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class LocalMatcher implements Matcher {
-    private NameMatch name;
+    private final NameMatch name;
 
     public LocalMatcher(String name) {
         this.name = new NameMatch(name);
@@ -57,8 +57,9 @@ public class LocalMatcher implements Matcher {
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec());
-        if (disabled)
+        if (disabled) {
             attributes.addAttribute("disabled", "true");
+        }
         xmlOutput.openCloseTag("Local", attributes);
     }
 }

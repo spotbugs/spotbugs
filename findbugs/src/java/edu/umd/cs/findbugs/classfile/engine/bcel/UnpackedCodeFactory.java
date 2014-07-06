@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Analysis engine to produce UnpackedCode objects for analyzed methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public class UnpackedCodeFactory extends AnalysisFactory<UnpackedCode> {
@@ -41,7 +41,7 @@ public class UnpackedCodeFactory extends AnalysisFactory<UnpackedCode> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
@@ -50,8 +50,9 @@ public class UnpackedCodeFactory extends AnalysisFactory<UnpackedCode> {
     public UnpackedCode analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         Method method = getMethod(analysisCache, descriptor);
         Code code = method.getCode();
-        if (code == null)
+        if (code == null) {
             return null;
+        }
 
         byte[] instructionList = code.getCode();
 

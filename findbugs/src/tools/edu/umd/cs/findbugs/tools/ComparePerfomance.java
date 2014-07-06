@@ -54,8 +54,9 @@ public class ComparePerfomance {
 
     public int[] getRecord(String className) {
         int [] result = performance.get(className);
-        if (result != null)
+        if (result != null) {
             return result;
+        }
         result = new int[num];
         performance.put(className, result);
         return result;
@@ -68,8 +69,9 @@ public class ComparePerfomance {
         String fName = f.getName();
         InputStream in = new FileInputStream(f);
         try {
-            if (fName.endsWith(".gz"))
+            if (fName.endsWith(".gz")) {
                 in = new GZIPInputStream(in);
+            }
             doc = reader.read(in);
             Node summary = doc.selectSingleNode("/BugCollection/FindBugsSummary");
             double cpu_seconds = Double.parseDouble(summary.valueOf("@cpu_seconds"));
@@ -107,8 +109,9 @@ public class ComparePerfomance {
             int lastDot = name.lastIndexOf('.');
             String simpleName = name.substring(lastDot+1);
             System.out.printf("%s,%s", name, simpleName);
-            for(int x : e.getValue())
+            for(int x : e.getValue()) {
                 System.out.printf(",%d", x);
+            }
             System.out.println();
         }
     }

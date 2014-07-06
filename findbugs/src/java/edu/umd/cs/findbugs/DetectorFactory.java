@@ -57,13 +57,14 @@ public class DetectorFactory {
 
         ReflectionDetectorCreator(Class<?> detectorClass) {
             this.detectorClass = detectorClass;
-            if (SUPPORT_OLD_DETECTOR_INTERFACE)
+            if (SUPPORT_OLD_DETECTOR_INTERFACE) {
                 try {
                     setAnalysisContext = detectorClass.getDeclaredMethod("setAnalysisContext",
                             new Class[] { AnalysisContext.class });
                 } catch (NoSuchMethodException e) {
                     // Ignore
                 }
+            }
         }
 
         @Override
@@ -95,8 +96,9 @@ public class DetectorFactory {
             }
 
             if (Detector.class.isAssignableFrom(detectorClass)) {
-                if (NonReportingDetector.class.isAssignableFrom(detectorClass))
+                if (NonReportingDetector.class.isAssignableFrom(detectorClass)) {
                     return new NonReportingDetectorToDetector2Adapter(createDetector(bugReporter));
+                }
                 return new DetectorToDetector2Adapter(createDetector(bugReporter));
 
             }
@@ -214,8 +216,9 @@ public class DetectorFactory {
      *         interface
      */
     public boolean isDetectorClassSubtypeOf(Class<?> otherClass) {
-        if (FindBugs.isNoAnalysis())
+        if (FindBugs.isNoAnalysis()) {
             throw new IllegalStateException("No analysis specified");
+        }
         return otherClass.isAssignableFrom(detectorCreator.getDetectorClass());
     }
 
@@ -229,7 +232,7 @@ public class DetectorFactory {
         return !isDetectorClassSubtypeOf(TrainingDetector.class) && !isDetectorClassSubtypeOf(FirstPassDetector.class);
     }
 
-    
+
     /**
      * Check to see if we are running on a recent-enough JRE for this detector
      * to be enabled.
@@ -238,8 +241,9 @@ public class DetectorFactory {
      *         false if it is too old
      */
     public boolean isEnabledForCurrentJRE() {
-        if (requireJRE.equals(""))
+        if (requireJRE.equals("")) {
             return true;
+        }
         try {
             JavaVersion requiredVersion = new JavaVersion(requireJRE);
             JavaVersion runtimeVersion = JavaVersion.getRuntimeVersion();
@@ -309,8 +313,9 @@ public class DetectorFactory {
      * @return the priority adjustment
      */
     public int getPriorityAdjustment() {
-        if (enabledButNonReporting)
+        if (enabledButNonReporting) {
             return 100;
+        }
         return priorityAdjustment;
     }
 
@@ -339,8 +344,9 @@ public class DetectorFactory {
         while (tok.hasMoreTokens()) {
             String type = tok.nextToken();
             BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(type);
-            if (bugPattern != null)
+            if (bugPattern != null) {
                 result.add(bugPattern);
+            }
         }
         return result;
     }
@@ -370,8 +376,9 @@ public class DetectorFactory {
      */
     @Deprecated
     public Detector create(BugReporter bugReporter) {
-        if (FindBugs.isNoAnalysis())
+        if (FindBugs.isNoAnalysis()) {
             throw new IllegalStateException("No analysis specified");
+        }
         return detectorCreator.createDetector(bugReporter);
     }
 
@@ -383,8 +390,9 @@ public class DetectorFactory {
      * @return the Detector2
      */
     public Detector2 createDetector2(BugReporter bugReporter) {
-        if (FindBugs.isNoAnalysis())
+        if (FindBugs.isNoAnalysis()) {
             throw new IllegalStateException("No analysis specified");
+        }
         return detectorCreator.createDetector2(bugReporter);
     }
 
@@ -394,8 +402,9 @@ public class DetectorFactory {
      */
     public String getShortName() {
         int endOfPkg = className.lastIndexOf('.');
-        if (endOfPkg >= 0)
+        if (endOfPkg >= 0) {
             return className.substring(endOfPkg + 1);
+        }
         return className;
     }
 

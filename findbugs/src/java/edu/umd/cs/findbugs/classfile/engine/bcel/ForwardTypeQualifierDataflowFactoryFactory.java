@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Factory for ForwardTypeQualifierDataflowFactory objects.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ForwardTypeQualifierDataflowFactoryFactory extends AnalysisFactory<ForwardTypeQualifierDataflowFactory> {
@@ -36,7 +36,7 @@ public class ForwardTypeQualifierDataflowFactoryFactory extends AnalysisFactory<
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)

@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * Find occurrences of collection.toArray( new Foo[0] ); This causes another
  * memory allocation through reflection Much better to do collection.toArray(
  * new Foo[collection.size()] );
- * 
+ *
  * @author Dave Brosius
  */
 public class InefficientToArray extends BytecodeScanningDetector implements StatelessDetector {
@@ -52,9 +52,9 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
 
     private final static JavaClass collectionClass;
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
-    private BugAccumulator bugAccumulator;
+    private final BugAccumulator bugAccumulator;
 
     private int state = SEEN_NOTHING;
 
@@ -75,14 +75,16 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if (collectionClass != null)
+        if (collectionClass != null) {
             classContext.getJavaClass().accept(this);
+        }
     }
 
     @Override
     public void visit(Method obj) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("------------------- Analyzing " + obj.getName() + " ----------------");
+        }
         state = SEEN_NOTHING;
         super.visit(obj);
     }
@@ -96,20 +98,23 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
 
     @Override
     public void sawOpcode(int seen) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("State: " + state + "  Opcode: " + OPCODE_NAMES[seen]);
+        }
 
         switch (state) {
         case SEEN_NOTHING:
-            if (seen == ICONST_0)
+            if (seen == ICONST_0) {
                 state = SEEN_ICONST_0;
+            }
             break;
 
         case SEEN_ICONST_0:
             if (seen == ANEWARRAY) {
                 state = SEEN_ANEWARRAY;
-            } else
+            } else {
                 state = SEEN_NOTHING;
+            }
             break;
 
         case SEEN_ANEWARRAY:
@@ -118,9 +123,10 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
                 try {
                     String clsName = getDottedClassConstantOperand();
                     JavaClass cls = Repository.lookupClass(clsName);
-                    if (cls.implementationOf(collectionClass))
+                    if (cls.implementationOf(collectionClass)) {
                         bugAccumulator.accumulateBug(
                                 new BugInstance(this, "ITA_INEFFICIENT_TO_ARRAY", LOW_PRIORITY).addClassAndMethod(this), this);
+                    }
 
                 } catch (ClassNotFoundException cnfe) {
                     bugReporter.reportMissingClass(cnfe);
@@ -136,4 +142,3 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
     }
 }
 
-// vim:ts=4

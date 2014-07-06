@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.classfile.IClassPathBuilderProgress;
 /**
  * A callback that may be installed in a FindBugs instance to asynchronously
  * keep track of its progress.
- * 
+ *
  * @author David Hovemeyer
  * @see FindBugs
  */
@@ -32,7 +32,7 @@ public interface FindBugsProgress extends IClassPathBuilderProgress {
     /**
      * Report the total number of archives (Jar or zip files) that will be
      * analyzed.
-     * 
+     *
      * @param numArchives
      *            the number of archives
      */
@@ -54,7 +54,7 @@ public interface FindBugsProgress extends IClassPathBuilderProgress {
 
     /**
      * Provide an array that predicts the number of classes in each pass
-     * 
+     *
      * @param classesPerPass
      */
     public void predictPassCount(int[] classesPerPass);
@@ -62,7 +62,7 @@ public interface FindBugsProgress extends IClassPathBuilderProgress {
     /**
      * Report that FindBugs has finished scanning the archives and will start
      * analysing the classes contained therein.
-     * 
+     *
      * @param numClasses
      *            number of classes found in all of the archives
      */
@@ -80,4 +80,3 @@ public interface FindBugsProgress extends IClassPathBuilderProgress {
     public void finishPerClassAnalysis();
 }
 
-// vim:ts=4

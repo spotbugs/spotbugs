@@ -44,15 +44,15 @@ import javax.swing.ListCellRenderer;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 /**
- * 
+ *
  * Lets you choose your new filter, shouldn't let you choose filters that
  * wouldn't filter anything out including filters that you already have
- * 
+ *
  */
 @SuppressWarnings("serial")
 public class NewFilterFrame extends FBDialog {
 
-    private JList<String> list = new JList<>();
+    private final JList<String> list = new JList<>();
 
     private static NewFilterFrame instance = null;
 
@@ -109,8 +109,9 @@ public class NewFilterFrame extends FBDialog {
                 result.setFont(result.getFont().deriveFont(Driver.getFontSize()));
                 result.setOpaque(true);
                 result.setText(value.toString().toLowerCase());
-                if (isSelected)
+                if (isSelected) {
                     result.setBackground(SELECTED_BACKGROUND);
+                }
                 return result;
             }
         });
@@ -119,8 +120,9 @@ public class NewFilterFrame extends FBDialog {
             public void actionPerformed(ActionEvent evt) {
                 Sortables filterBy = (Sortables) comboBox.getSelectedItem();
                 String[] listData = filterBy.getAllSorted();
-                for (int i = 0; i < listData.length; i++)
+                for (int i = 0; i < listData.length; i++) {
                     listData[i] = filterBy.formatValue(listData[i]);
+                }
                 list.setListData(listData);
             }
         });
@@ -183,8 +185,9 @@ public class NewFilterFrame extends FBDialog {
                     // ProjectSettings.getInstance().addFilter(fm);
                     // }
                     FilterMatcher[] newFilters = new FilterMatcher[list.getSelectedIndices().length];
-                    for (int i = 0; i < newFilters.length; i++)
+                    for (int i = 0; i < newFilters.length; i++) {
                         newFilters[i] = new FilterMatcher(key, values[list.getSelectedIndices()[i]]);
+                    }
                     ProjectSettings.getInstance().addFilters(newFilters);
                     PreferencesFrame.getInstance().updateFilterPanel();
                     close();

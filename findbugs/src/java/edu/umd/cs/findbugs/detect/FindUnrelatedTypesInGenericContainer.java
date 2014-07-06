@@ -251,8 +251,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         Method[] methodList = javaClass.getMethods();
 
         for (Method method : methodList) {
-            if (method.getCode() == null)
+            if (method.getCode() == null) {
                 continue;
+            }
 
             try {
                 analyzeMethod(classContext, method);
@@ -260,11 +261,11 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 assert true; // move along; nothing to see
             } catch (CFGBuilderException e) {
                 String msg = "Detector " + this.getClass().getName() + " caught exception while analyzing "
-                + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
+                        + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
                 bugReporter.logError(msg, e);
             } catch (DataflowAnalysisException e) {
                 String msg = "Detector " + this.getClass().getName() + " caught exception while analyzing "
-                + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
+                        + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
                 bugReporter.logError(msg, e);
             }
         }
@@ -276,9 +277,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
     public boolean prescreen(ClassContext classContext, Method method) {
         BitSet bytecodeSet = classContext.getBytecodeSet(method);
         return bytecodeSet != null
-        && (bytecodeSet.get(Constants.INVOKEINTERFACE) || bytecodeSet.get(Constants.INVOKEVIRTUAL)
-                || bytecodeSet.get(Constants.INVOKESPECIAL) || bytecodeSet.get(Constants.INVOKESTATIC) || bytecodeSet
-                .get(Constants.INVOKENONVIRTUAL));
+                && (bytecodeSet.get(Constants.INVOKEINTERFACE) || bytecodeSet.get(Constants.INVOKEVIRTUAL)
+                        || bytecodeSet.get(Constants.INVOKESPECIAL) || bytecodeSet.get(Constants.INVOKESTATIC) || bytecodeSet
+                        .get(Constants.INVOKENONVIRTUAL));
     }
 
     /**
@@ -286,12 +287,14 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
      * code
      */
     private boolean isSynthetic(Method m) {
-        if ((m.getAccessFlags() & Constants.ACC_SYNTHETIC) != 0)
+        if ((m.getAccessFlags() & Constants.ACC_SYNTHETIC) != 0) {
             return true;
+        }
         Attribute[] attrs = m.getAttributes();
         for (Attribute attr : attrs) {
-            if (attr instanceof Synthetic)
+            if (attr instanceof Synthetic) {
                 return true;
+            }
         }
         return false;
     }
@@ -301,14 +304,15 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
     static {
         baseGenericTypes.addAll(Arrays.asList(new String[] { "java.util.Map", "java.util.Collection", "java.lang.Iterable",
                 "java.util.Iterator", "com.google.common.collect.Multimap", "com.google.common.collect.Multiset",
-                "com.google.common.collect.Table" }));
+        "com.google.common.collect.Table" }));
     }
 
     private boolean isGenericCollection(ClassDescriptor operandClass) {
         String dottedClassName = operandClass.getDottedClassName();
 
-        if (baseGenericTypes.contains(dottedClassName))
+        if (baseGenericTypes.contains(dottedClassName)) {
             return true;
+        }
 
         String found = null;
         for(String c : baseGenericTypes) {
@@ -317,42 +321,52 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 break;
             }
         }
-        if (found == null)
+        if (found == null) {
             return false;
-        if (dottedClassName.startsWith("java.util.") || dottedClassName.startsWith("com.google.common.collect.") )
+        }
+        if (dottedClassName.startsWith("java.util.") || dottedClassName.startsWith("com.google.common.collect.") ) {
             return true;
+        }
         try {
             XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, operandClass);
 
             String sig = xclass.getSourceSignature();
-            if (sig == null)
+            if (sig == null) {
                 return false;
+            }
 
             String typeParameter = null;
             List<String> split = GenericUtilities.split(sig, true);
             if (sig.charAt(0) == '<') {
                 int end = sig.indexOf(':');
-                if (end > 0)
+                if (end > 0) {
                     typeParameter = sig.substring(1, end);
+                }
 
             }
-            if (DEBUG) System.out.println(dottedClassName + " " + typeParameter + " " + split);
+            if (DEBUG) {
+                System.out.println(dottedClassName + " " + typeParameter + " " + split);
+            }
             for (String s : split) {
                 int i = s.indexOf('<');
-                if (i < 0)
+                if (i < 0) {
                     continue;
-                if (s.charAt(0) != 'L')
+                }
+                if (s.charAt(0) != 'L') {
                     throw new IllegalStateException("unexpected non signature: " + s);
+                }
                 ClassDescriptor c = DescriptorFactory.createClassDescriptor(s.substring(1, i));
                 String superTypeParameter = s.substring(i+1);
                 if (isGenericCollection(c) && (typeParameter == null || superTypeParameter.startsWith("T" + typeParameter))) {
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println(operandClass + " is a subtype of " + s);
+                    }
                     return true;
                 }
             }
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("Not a subtype");
+            }
 
 
         } catch (CheckedAnalysisException e1) {
@@ -362,11 +376,13 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
     }
 
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
-        if (isSynthetic(method) || !prescreen(classContext, method))
+        if (isSynthetic(method) || !prescreen(classContext, method)) {
             return;
+        }
         XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
-        if (xmethod.isSynthetic())
+        if (xmethod.isSynthetic()) {
             return;
+        }
 
         BugAccumulator accumulator = new BugAccumulator(bugReporter);
 
@@ -376,8 +392,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
         MethodGen methodGen = classContext.getMethodGen(method);
-        if (methodGen == null)
+        if (methodGen == null) {
             return;
+        }
         String fullMethodName = methodGen.getClassName() + "." + methodGen.getName();
 
         String sourceFile = classContext.getJavaClass().getSourceFileName();
@@ -392,8 +409,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
             Instruction ins = handle.getInstruction();
 
             // Only consider invoke instructions
-            if (!(ins instanceof InvokeInstruction))
+            if (!(ins instanceof InvokeInstruction)) {
                 continue;
+            }
 
             InvokeInstruction inv = (InvokeInstruction) ins;
 
@@ -406,15 +424,18 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
             SignatureParser sigParser = new SignatureParser(inv.getSignature(cpg));
 
             Collection<Info> collection = callMap.get(call);
-            if (!callMap.containsKey(call))
+            if (!callMap.containsKey(call)) {
                 continue;
+            }
             for(Info info : collection) {
                 Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("at " + handle.getPosition() + " Checking call to " + info.interfaceForCall + " : " + invokedMethod);
+                }
                 try {
-                    if (!subtypes2.isSubtype(invokedMethod.getClassDescriptor(), info.interfaceForCall))
+                    if (!subtypes2.isSubtype(invokedMethod.getClassDescriptor(), info.interfaceForCall)) {
                         continue;
+                    }
                 } catch (ClassNotFoundException e) {
                     if (info.interfaceForCall.getClassName().equals("java/util/Collection")
                             && invokedMethod.getClassName().equals("com.google.common.collect.Multiset")) {
@@ -440,10 +461,11 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
 
                 int lhsPos;
-                if (inv instanceof INVOKESTATIC)
+                if (inv instanceof INVOKESTATIC) {
                     lhsPos = sigParser.getSlotsFromTopOfStackForParameter(0);
-                else
+                } else {
                     lhsPos = sigParser.getTotalArgumentSize();
+                }
 
                 int stackPos = sigParser.getSlotsFromTopOfStackForParameter(pos);
 
@@ -492,8 +514,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
                             if (nextIns instanceof InvokeInstruction) {
                                 XMethod nextMethod = XFactory.createXMethod((InvokeInstruction) nextIns, cpg);
-                                if (nextMethod.getName().equals("assertFalse"))
+                                if (nextMethod.getName().equals("assertFalse")) {
                                     continue;
+                                }
                             }
                         }
                     }
@@ -509,41 +532,48 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
                 // Only consider generic...
                 Type objectType = frame.getStackValue(lhsPos);
-                if (!(objectType instanceof GenericObjectType))
+                if (!(objectType instanceof GenericObjectType)) {
                     continue;
+                }
 
                 GenericObjectType operand = (GenericObjectType) objectType;
 
                 int expectedTypeParameters = 1;
                 String simpleName = info.interfaceForCall.getSimpleName();
-                if ( simpleName.toLowerCase().endsWith("map") || simpleName.equals("Hashtable"))
+                if ( simpleName.toLowerCase().endsWith("map") || simpleName.equals("Hashtable")) {
                     expectedTypeParameters = 2;
-                else if (simpleName.equals("Table"))
+                } else if (simpleName.equals("Table")) {
                     expectedTypeParameters = 3;
+                }
 
                 // ... containers
-                if (!operand.hasParameters())
+                if (!operand.hasParameters()) {
                     continue;
-                if (operand.getNumParameters() != expectedTypeParameters)
+                }
+                if (operand.getNumParameters() != expectedTypeParameters) {
                     continue;
+                }
                 ClassDescriptor operandClass = DescriptorFactory.getClassDescriptor(operand);
-                if (!isGenericCollection(operandClass))
+                if (!isGenericCollection(operandClass)) {
                     continue;
+                }
 
                 if (expectedTypeParameters == 2 &&
                         Subtypes2.instanceOf(operandClass, Map.class)
-                        && !TypeFrameModelingVisitor.isStraightGenericMap(operandClass))
+                        && !TypeFrameModelingVisitor.isStraightGenericMap(operandClass)) {
                     continue;
+                }
                 Type expectedType;
-                if (allMethod)
+                if (allMethod) {
                     expectedType = operand;
-                else
+                } else {
                     expectedType = operand.getParameterAt(typeArgument);
+                }
                 Type actualType = frame.getStackValue(stackPos);
                 Type equalsType = actualType;
                 if (allMethod) {
                     if (!(actualType instanceof GenericObjectType)) {
-                      continue;
+                        continue;
                     }
                     equalsType = ((GenericObjectType)actualType).getParameterAt(typeArgument);
                 }
@@ -557,12 +587,14 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
                     GenericObjectType p2 = (GenericObjectType) actualType;
                     List<? extends ReferenceType> parameters = p2.getParameters();
-                    if (parameters != null && parameters.equals(operand.getParameters()))
+                    if (parameters != null && parameters.equals(operand.getParameters())) {
                         selfOperation = true;
+                    }
                 }
 
-                if (!selfOperation && ( matchResult == IncompatibleTypes.SEEMS_OK || matchResult.getPriority() == Priorities.IGNORE_PRIORITY))
+                if (!selfOperation && ( matchResult == IncompatibleTypes.SEEMS_OK || matchResult.getPriority() == Priorities.IGNORE_PRIORITY)) {
                     continue;
+                }
 
                 if (invokedMethodName.startsWith("contains") || invokedMethodName.equals("remove")) {
                     InstructionHandle next = handle.getNext();
@@ -571,8 +603,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
                         if (nextIns instanceof InvokeInstruction) {
                             XMethod nextMethod = XFactory.createXMethod((InvokeInstruction) nextIns, cpg);
-                            if (nextMethod.getName().equals("assertFalse"))
+                            if (nextMethod.getName().equals("assertFalse")) {
                                 continue;
+                            }
                         }
                     }
                 } else if (invokedMethodName.equals("get") || invokedMethodName.equals("remove")) {
@@ -582,15 +615,16 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
                         if (nextIns instanceof InvokeInstruction) {
                             XMethod nextMethod = XFactory.createXMethod((InvokeInstruction) nextIns, cpg);
-                            if (nextMethod.getName().equals("assertNull"))
+                            if (nextMethod.getName().equals("assertNull")) {
                                 continue;
+                            }
                         }
                     }
                 }
                 boolean noisy = false;
                 if (invokedMethodName.equals("get")) {
                     UnconditionalValueDerefDataflow unconditionalValueDerefDataflow = classContext
-                    .getUnconditionalValueDerefDataflow(method);
+                            .getUnconditionalValueDerefDataflow(method);
 
                     UnconditionalValueDerefSet unconditionalDeref = unconditionalValueDerefDataflow.getFactAtLocation(location);
                     ValueNumberFrame vnAfter = vnDataflow.getFactAfterLocation(location);
@@ -604,18 +638,21 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 // Report a bug that mentions each of the failed arguments in
                 // matches
 
-                if (expectedType instanceof GenericObjectType)
+                if (expectedType instanceof GenericObjectType) {
                     expectedType = ((GenericObjectType) expectedType).getUpperBound();
+                }
 
                 int priority = matchResult.getPriority();
-                if (!operandClass.getClassName().startsWith("java/util") && priority == Priorities.HIGH_PRIORITY)
+                if (!operandClass.getClassName().startsWith("java/util") && priority == Priorities.HIGH_PRIORITY) {
                     priority = Math.max(priority, Priorities.NORMAL_PRIORITY);
-                if (TestCaseDetector.likelyTestCase(xmethod))
+                }
+                if (TestCaseDetector.likelyTestCase(xmethod)) {
                     priority = Math.max(priority, Priorities.NORMAL_PRIORITY);
-                else if (selfOperation)
+                } else if (selfOperation) {
                     priority = Priorities.HIGH_PRIORITY;
+                }
                 ClassDescriptor expectedClassDescriptor = DescriptorFactory
-                .createClassOrObjectDescriptorFromSignature(expectedType.getSignature());
+                        .createClassOrObjectDescriptorFromSignature(expectedType.getSignature());
                 ClassDescriptor actualClassDescriptor = DescriptorFactory.createClassOrObjectDescriptorFromSignature(equalsType
                         .getSignature());
                 ClassSummary classSummary = AnalysisContext.currentAnalysisContext().getClassSummary();
@@ -624,11 +661,14 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                     targets = Hierarchy2.resolveVirtualMethodCallTargets(actualClassDescriptor, "equals",
                             "(Ljava/lang/Object;)Z", false, false);
                     boolean allOk = targets.size() > 0;
-                    for (XMethod m2 : targets)
-                        if (!classSummary.mightBeEqualTo(m2.getClassDescriptor(), expectedClassDescriptor))
+                    for (XMethod m2 : targets) {
+                        if (!classSummary.mightBeEqualTo(m2.getClassDescriptor(), expectedClassDescriptor)) {
                             allOk = false;
-                    if (allOk)
+                        }
+                    }
+                    if (allOk) {
                         priority += 2;
+                    }
                 } catch (ClassNotFoundException e) {
                     AnalysisContext.reportMissingClass(e);
                 }
@@ -671,18 +711,22 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
     private IncompatibleTypes compareTypes(Type expectedType, Type actualType, boolean ignoreBaseType) {
         // XXX equality not implemented for GenericObjectType
         // if (parmType.equals(argType)) return true;
-        if (expectedType == actualType)
+        if (expectedType == actualType) {
             return IncompatibleTypes.SEEMS_OK;
+        }
         // Compare type signatures instead
         String expectedString = GenericUtilities.getString(expectedType);
         String actualString = GenericUtilities.getString(actualType);
-        if (expectedString.equals(actualString))
+        if (expectedString.equals(actualString)) {
             return IncompatibleTypes.SEEMS_OK;
+        }
 
         if (expectedType.equals(Type.OBJECT))
+        {
             return IncompatibleTypes.SEEMS_OK;
-        // if either type is java.lang.Object, then automatically true!
-        // again compare strings...
+            // if either type is java.lang.Object, then automatically true!
+            // again compare strings...
+        }
 
         String objString = GenericUtilities.getString(Type.OBJECT);
 
@@ -705,33 +749,40 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
             return IncompatibleTypes.SEEMS_OK;
         }
 
-        if (actualType.equals(Type.OBJECT) && expectedCat == TypeCategory.ARRAY_TYPE)
+        if (actualType.equals(Type.OBJECT) && expectedCat == TypeCategory.ARRAY_TYPE) {
             return IncompatibleTypes.ARRAY_AND_OBJECT;
+        }
 
         // -~- plain objects are easy
-        if (expectedCat == TypeCategory.PLAIN_OBJECT_TYPE && argCat == TypeCategory.PLAIN_OBJECT_TYPE)
+        if (expectedCat == TypeCategory.PLAIN_OBJECT_TYPE && argCat == TypeCategory.PLAIN_OBJECT_TYPE) {
             return IncompatibleTypes.getPriorityForAssumingCompatible(expectedType, actualType, false);
+        }
 
-        if (expectedCat == TypeCategory.PARAMETERIZED && argCat == TypeCategory.PLAIN_OBJECT_TYPE)
+        if (expectedCat == TypeCategory.PARAMETERIZED && argCat == TypeCategory.PLAIN_OBJECT_TYPE) {
             return IncompatibleTypes.getPriorityForAssumingCompatible((GenericObjectType) expectedType, actualType);
-        if (expectedCat == TypeCategory.PLAIN_OBJECT_TYPE && argCat == TypeCategory.PARAMETERIZED)
+        }
+        if (expectedCat == TypeCategory.PLAIN_OBJECT_TYPE && argCat == TypeCategory.PARAMETERIZED) {
             return IncompatibleTypes.getPriorityForAssumingCompatible((GenericObjectType) actualType, expectedType);
+        }
 
         // -~- parmType is: "? extends Another Type" OR "? super Another Type"
-        if (expectedCat == TypeCategory.WILDCARD_EXTENDS || expectedCat == TypeCategory.WILDCARD_SUPER)
+        if (expectedCat == TypeCategory.WILDCARD_EXTENDS || expectedCat == TypeCategory.WILDCARD_SUPER) {
             return compareTypes(((GenericObjectType) expectedType).getExtension(), actualType, ignoreBaseType);
+        }
 
         // -~- Not handling type variables
-        if (expectedCat == TypeCategory.TYPE_VARIABLE || argCat == TypeCategory.TYPE_VARIABLE)
+        if (expectedCat == TypeCategory.TYPE_VARIABLE || argCat == TypeCategory.TYPE_VARIABLE) {
             return IncompatibleTypes.SEEMS_OK;
+        }
 
         // -~- Array Types: compare dimensions, then base type
         if (expectedCat == TypeCategory.ARRAY_TYPE && argCat == TypeCategory.ARRAY_TYPE) {
             ArrayType parmArray = (ArrayType) expectedType;
             ArrayType argArray = (ArrayType) actualType;
 
-            if (parmArray.getDimensions() != argArray.getDimensions())
+            if (parmArray.getDimensions() != argArray.getDimensions()) {
                 return IncompatibleTypes.ARRAY_AND_NON_ARRAY;
+            }
 
             return compareTypes(parmArray.getBasicType(), argArray.getBasicType(), ignoreBaseType);
         }
@@ -749,8 +800,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
             // base types should be related
             {
                 IncompatibleTypes result = compareTypes(parmGeneric.getObjectType(), argGeneric.getObjectType(), ignoreBaseType);
-                if (!result.equals(IncompatibleTypes.SEEMS_OK))
+                if (!result.equals(IncompatibleTypes.SEEMS_OK)) {
                     return result;
+                }
             }
             return compareTypeParameters(parmGeneric, argGeneric);
 
@@ -767,8 +819,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         }
 
         // -~- Wildcard e.g. List<*>.contains(...)
-        if (expectedCat == TypeCategory.WILDCARD) // No Way to know
+        if (expectedCat == TypeCategory.WILDCARD) {
             return IncompatibleTypes.SEEMS_OK;
+        }
 
         // -~- Non Reference types
         // if ( parmCat == TypeCategory.NON_REFERENCE_TYPE ||
@@ -790,8 +843,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         }
         for (int x = 0; x < p; x++) {
             IncompatibleTypes result = compareTypes(parmGeneric.getParameterAt(x), argGeneric.getParameterAt(x), false);
-            if (result != IncompatibleTypes.SEEMS_OK)
+            if (result != IncompatibleTypes.SEEMS_OK) {
                 return result;
+            }
         }
         return IncompatibleTypes.SEEMS_OK;
     }
@@ -801,8 +855,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         // XXX equality not implemented for GenericObjectType
         // if (parmType.equals(argType)) return true;
         // Compare type signatures instead
-        if (GenericUtilities.getString(parmType).equals(GenericUtilities.getString(argType)))
+        if (GenericUtilities.getString(parmType).equals(GenericUtilities.getString(argType))) {
             return true;
+        }
 
         if (parmType instanceof GenericObjectType) {
             GenericObjectType o = (GenericObjectType) parmType;
@@ -811,22 +866,26 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
             }
         }
         // ignore type variables for now
-        if (parmType instanceof GenericObjectType && !((GenericObjectType) parmType).hasParameters())
+        if (parmType instanceof GenericObjectType && !((GenericObjectType) parmType).hasParameters()) {
             return true;
-        if (argType instanceof GenericObjectType && !((GenericObjectType) argType).hasParameters())
+        }
+        if (argType instanceof GenericObjectType && !((GenericObjectType) argType).hasParameters()) {
             return true;
+        }
 
         // Case: Both are generic containers
         if (parmType instanceof GenericObjectType && argType instanceof GenericObjectType) {
             return true;
         } else {
             // Don't consider non reference types (should not be possible)
-            if (!(parmType instanceof ReferenceType && argType instanceof ReferenceType))
+            if (!(parmType instanceof ReferenceType && argType instanceof ReferenceType)) {
                 return true;
+            }
 
             // Don't consider non object types (for now)
-            if (!(parmType instanceof ObjectType && argType instanceof ObjectType))
+            if (!(parmType instanceof ObjectType && argType instanceof ObjectType)) {
                 return true;
+            }
 
             // Otherwise, compare base types ignoring generic information
             try {

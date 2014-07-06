@@ -38,8 +38,9 @@ public class AndMatcher extends CompoundMatcher {
         Iterator<Matcher> i = childIterator();
         while (i.hasNext()) {
             Matcher child = i.next();
-            if (!child.match(bugInstance))
+            if (!child.match(bugInstance)) {
                 return false;
+            }
         }
         anyMatches = true;
         return true;
@@ -54,8 +55,9 @@ public class AndMatcher extends CompoundMatcher {
             return;
         }
         xmlOutput.startTag("And");
-        if (disabled)
+        if (disabled) {
             xmlOutput.addAttribute("disabled", "true");
+        }
         xmlOutput.stopTag(false);
         super.writeChildrenXML(xmlOutput);
         xmlOutput.closeTag("And");
@@ -63,11 +65,11 @@ public class AndMatcher extends CompoundMatcher {
 
     @Override
     public String toString() {
-        if (numberChildren() == 1)
+        if (numberChildren() == 1) {
             return super.toString();
+        }
         return "And(" + super.toString() + ")";
     }
 
 }
 
-// vim:ts=4

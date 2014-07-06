@@ -67,8 +67,9 @@ public class DroppedException extends PreorderVisitor implements Detector {
     public DroppedException(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Dropped Exception debugging turned on");
+        }
     }
 
     @Override
@@ -76,7 +77,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
         this.classContext = classContext;
         classContext.getJavaClass().accept(this);
         bugAccumulator.reportAccumulatedBugs();
-     
+
     }
 
     @Override
@@ -84,8 +85,9 @@ public class DroppedException extends PreorderVisitor implements Detector {
     }
 
     boolean isChecked(String c) {
-        if (!causes.add(c))
+        if (!causes.add(c)) {
             return checkedCauses.contains(c);
+        }
         try {
             if (Hierarchy.isSubtype(c, "java.lang.Exception") && !Hierarchy.isSubtype(c, "java.lang.RuntimeException")) {
                 checkedCauses.add(c);
@@ -106,8 +108,9 @@ public class DroppedException extends PreorderVisitor implements Detector {
 
         CodeException[] exp = obj.getExceptionTable();
         LineNumberTable lineNumbers = obj.getLineNumberTable();
-        if (exp == null)
+        if (exp == null) {
             return;
+        }
         byte[] code = obj.getCode();
 
         for (CodeException aExp : exp) {
@@ -130,66 +133,77 @@ public class DroppedException extends PreorderVisitor implements Detector {
                 j += 1 + NO_OF_OPERANDS[opcode];
                 if (opcode >= IRETURN && opcode <= RETURN || opcode >= IFEQ && opcode <= GOTO && (opcode != GOTO || j < end)) {
                     exitInTryBlock = true;
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("\texit: " + opcode + " in " + getFullyQualifiedMethodName());
+                    }
                     break;
                 }
 
             }
 
             if (exitInTryBlock) {
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("Exit in try block");
+                }
                 continue;
             }
-            if (handled < 5)
+            if (handled < 5) {
                 continue;
+            }
             @DottedClassName String causeName;
-            if (cause == 0)
+            if (cause == 0) {
                 causeName = "java.lang.Throwable";
-            else {
+            } else {
                 causeName = Utility.compactClassName(getConstantPool().getConstantString(cause, CONSTANT_Class), false);
-                if (!isChecked(causeName))
+                if (!isChecked(causeName)) {
                     continue;
+                }
             }
 
             int jumpAtEnd = 0;
             if (end < code.length && asUnsignedByte(code[end]) == GOTO) {
                 jumpAtEnd = getUnsignedShort(code, end + 1);
-                if (jumpAtEnd < handled)
+                if (jumpAtEnd < handled) {
                     jumpAtEnd = 0;
+                }
             }
 
             int opcode = asUnsignedByte(code[handled]);
             int afterHandler = 0;
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("DE:\topcode is " + OPCODE_NAMES[opcode] + ", " + asUnsignedByte(code[handled + 1]));
+            }
             boolean drops = false;
             boolean startsWithASTORE03 = opcode >= ASTORE_0 && opcode <= ASTORE_3;
-                      if (startsWithASTORE03 && asUnsignedByte(code[handled + 1]) == RETURN) {
-                if (DEBUG)
+            if (startsWithASTORE03 && asUnsignedByte(code[handled + 1]) == RETURN) {
+                if (DEBUG) {
                     System.out.println("Drop 1");
+                }
                 drops = true;
                 afterHandler = handled + 1;
             }
             if (handled + 2 < code.length && opcode == ASTORE && asUnsignedByte(code[handled + 2]) == RETURN) {
                 drops = true;
                 afterHandler = handled + 2;
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("Drop 2");
+                }
             }
             if (handled + 3 < code.length && !exitInTryBlock) {
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("DE: checking for jumps");
+                }
                 if (startsWithASTORE03 && asUnsignedByte(code[handled - 3]) == GOTO) {
                     int offsetBefore = getUnsignedShort(code, handled - 2);
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("offset before = " + offsetBefore);
+                    }
                     if (offsetBefore == 4) {
                         drops = true;
                         afterHandler = handled + 1;
-                        if (DEBUG)
+                        if (DEBUG) {
                             System.out.println("Drop 3");
+                        }
                     }
                 }
                 if (opcode == ASTORE && asUnsignedByte(code[handled - 3]) == GOTO) {
@@ -197,8 +211,9 @@ public class DroppedException extends PreorderVisitor implements Detector {
                     if (offsetBefore == 5) {
                         drops = true;
                         afterHandler = handled + 2;
-                        if (DEBUG)
+                        if (DEBUG) {
                             System.out.println("Drop 4");
+                        }
                     }
                 }
                 if (startsWithASTORE03 && asUnsignedByte(code[handled + 1]) == GOTO && asUnsignedByte(code[handled - 3]) == GOTO) {
@@ -208,8 +223,9 @@ public class DroppedException extends PreorderVisitor implements Detector {
                     if (offsetAfter > 0 && offsetAfter + 4 == offsetBefore) {
                         drops = true;
                         afterHandler = handled + 4;
-                        if (DEBUG)
+                        if (DEBUG) {
                             System.out.println("Drop 5");
+                        }
                     }
                 }
 
@@ -220,52 +236,61 @@ public class DroppedException extends PreorderVisitor implements Detector {
                     if (offsetAfter > 0 && offsetAfter + 5 == offsetBefore) {
                         drops = true;
                         afterHandler = handled + 5;
-                        if (DEBUG)
+                        if (DEBUG) {
                             System.out.println("Drop 6");
+                        }
                     }
                 }
 
             }
 
             boolean multiLineHandler = false;
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("afterHandler = " + afterHandler + ", handled = " + handled);
+            }
             if (afterHandler > handled && lineNumbers != null) {
                 int startHandlerLinenumber = lineNumbers.getSourceLine(handled);
 
                 int endHandlerLinenumber = getNextExecutableLineNumber(lineNumbers, afterHandler) - 1;
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("Handler in lines " + startHandlerLinenumber + "-" + endHandlerLinenumber);
+                }
                 if (endHandlerLinenumber > startHandlerLinenumber) {
                     multiLineHandler = true;
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("Multiline handler");
+                    }
                 }
             }
 
             if (end - start >= 4 && drops && !causeName.equals("java.lang.InterruptedException")
                     && !causeName.equals("java.lang.CloneNotSupportedException")) {
                 int priority = NORMAL_PRIORITY;
-                if (exitInTryBlock)
+                if (exitInTryBlock) {
                     priority++;
-                if (end - start == 4)
+                }
+                if (end - start == 4) {
                     priority++;
+                }
                 SourceLineAnnotation srcLine = SourceLineAnnotation.fromVisitedInstruction(this.classContext, this, handled);
                 if (srcLine != null && LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS) {
-                    if (catchBlockHasComment(srcLine))
+                    if (catchBlockHasComment(srcLine)) {
                         return;
-                    else
+                    } else {
                         priority++;
+                    }
                 } else {
                     // can't look at source
-                    if (lineNumbers == null || multiLineHandler)
+                    if (lineNumbers == null || multiLineHandler) {
                         priority += 2;
+                    }
                 }
                 if (causeName.equals("java.lang.Error") || causeName.equals("java.lang.Exception") || causeName.equals("java.lang.Throwable")
                         || causeName.equals("java.lang.RuntimeException")) {
                     priority--;
-                    if (end - start > 30)
+                    if (end - start > 30) {
                         priority--;
+                    }
                 }
 
                 int register = -1;
@@ -280,24 +305,27 @@ public class DroppedException extends PreorderVisitor implements Detector {
                     if (DEBUG) {
                         System.out.println("Name: " + name);
                     }
-                    if (name.startsWith("ignore") || name.startsWith("cant"))
+                    if (name.startsWith("ignore") || name.startsWith("cant")) {
                         continue;
+                    }
                 }
 
 
                 if (DEBUG) {
                     System.out.println("Priority is " + priority);
                 }
-                if (priority > LOW_PRIORITY)
+                if (priority > LOW_PRIORITY) {
                     return;
-                if (priority < HIGH_PRIORITY)
+                }
+                if (priority < HIGH_PRIORITY) {
                     priority = HIGH_PRIORITY;
+                }
                 if (DEBUG) {
                     System.out.println("reporting warning");
                 }
 
                 BugInstance bugInstance = new BugInstance(this, exitInTryBlock ? "DE_MIGHT_DROP" : "DE_MIGHT_IGNORE", priority)
-                        .addClassAndMethod(this);
+                .addClassAndMethod(this);
                 bugInstance.addClass(causeName).describe("CLASS_EXCEPTION");
                 bugInstance.addSourceLine(srcLine);
                 bugAccumulator.accumulateBug(bugInstance, srcLine);
@@ -312,20 +340,23 @@ public class DroppedException extends PreorderVisitor implements Detector {
         int i = 0;
         for (; i < entries.length && entries[i].getStartPC() < PC; i++) {
             int line = entries[i].getLineNumber();
-            if (line > beforePC)
+            if (line > beforePC) {
                 beforePC = line;
+            }
         }
 
         if (i < entries.length) {
             int secondChoice = entries[i].getLineNumber();
             for (; i < entries.length; i++) {
                 int line = entries[i].getLineNumber();
-                if (line > beforePC)
+                if (line > beforePC) {
                     return line;
+                }
             }
             return secondChoice;
-        } else
+        } else {
             return entries[entries.length - 1].getLineNumber();
+        }
     }
 
     private static final int START = 0;
@@ -354,13 +385,14 @@ public class DroppedException extends PreorderVisitor implements Detector {
     /**
      * Analyze a class's source code to see if there is a comment (or other
      * text) in a catch block we have marked as dropping an exception.
-     * 
+     *
      * @return true if there is a comment in the catch block, false if not (or
      *         if we can't tell)
      */
     private boolean catchBlockHasComment(SourceLineAnnotation srcLine) {
-        if (!LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS)
+        if (!LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS) {
             return false;
+        }
 
         SourceFinder sourceFinder = AnalysisContext.currentAnalysisContext().getSourceFinder();
         try {
@@ -368,12 +400,15 @@ public class DroppedException extends PreorderVisitor implements Detector {
             int startLine = srcLine.getStartLine();
 
             int scanStartLine = startLine - NUM_CONTEXT_LINES;
-            if (scanStartLine < 1)
+            if (scanStartLine < 1) {
                 scanStartLine = 1;
+            }
 
             int offset = sourceFile.getLineOffset(scanStartLine - 1);
             if (offset < 0)
+            {
                 return false; // Source file has changed?
+            }
             Tokenizer tokenizer = new Tokenizer(UTF8.reader(sourceFile.getInputStreamFromOffset(offset)));
 
             // Read the tokens into an ArrayList,
@@ -384,12 +419,14 @@ public class DroppedException extends PreorderVisitor implements Detector {
             for (int line = scanStartLine; line < scanStartLine + MAX_LINES;) {
                 Token token = tokenizer.next();
                 int kind = token.getKind();
-                if (kind == Token.EOF)
+                if (kind == Token.EOF) {
                     break;
+                }
 
                 if (kind == Token.EOL) {
-                    if (line == startLine)
+                    if (line == startLine) {
                         eolOfCatchBlockStart = tokenList.size();
+                    }
                     ++line;
                 }
 
@@ -397,8 +434,10 @@ public class DroppedException extends PreorderVisitor implements Detector {
             }
 
             if (eolOfCatchBlockStart < 0)
+            {
                 return false; // Couldn't scan line reported as start of catch
-                              // block
+                // block
+            }
 
             // Starting at the end of the line reported as the start of the
             // catch block,
@@ -415,7 +454,9 @@ public class DroppedException extends PreorderVisitor implements Detector {
             }
 
             if (!foundCatch)
+            {
                 return false; // Couldn't find "catch" keyword
+            }
 
             // Scan forward from the "catch" keyword to see what text
             // is in the handler block. If the block is non-empty,
@@ -427,8 +468,9 @@ public class DroppedException extends PreorderVisitor implements Detector {
             int state = START;
             int level = 0;
             do {
-                if (!iter.hasNext())
+                if (!iter.hasNext()) {
                     break;
+                }
 
                 Token token = iter.next();
                 int type = token.getKind();
@@ -436,42 +478,50 @@ public class DroppedException extends PreorderVisitor implements Detector {
 
                 switch (type) {
                 case Token.EOL:
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("Saw token: [EOL]");
+                    }
                     ++numLines;
-                    if (numLines >= MAX_LINES)
+                    if (numLines >= MAX_LINES) {
                         done = true;
+                    }
                     break;
                 default:
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("Got token: " + value);
+                    }
                     switch (state) {
                     case START:
-                        if (value.equals("catch"))
+                        if (value.equals("catch")) {
                             state = CATCH;
+                        }
                         break;
                     case CATCH:
-                        if (value.equals("("))
+                        if (value.equals("(")) {
                             state = OPEN_PAREN;
+                        }
                         break;
                     case OPEN_PAREN:
                         if (value.equals(")")) {
-                            if (level == 0)
+                            if (level == 0) {
                                 state = CLOSE_PAREN;
-                            else
+                            } else {
                                 --level;
+                            }
                         } else if (value.equals("(")) {
                             ++level;
                         }
                         break;
                     case CLOSE_PAREN:
-                        if (value.equals("{"))
+                        if (value.equals("{")) {
                             state = OPEN_BRACE;
+                        }
                         break;
                     case OPEN_BRACE:
                         boolean closeBrace = value.equals("}");
-                        if (DEBUG && !closeBrace)
+                        if (DEBUG && !closeBrace) {
                             System.out.println("Found a comment in catch block: " + value);
+                        }
                         return !closeBrace;
                     }
                     break;
@@ -485,4 +535,3 @@ public class DroppedException extends PreorderVisitor implements Detector {
     }
 }
 
-// vim:ts=4

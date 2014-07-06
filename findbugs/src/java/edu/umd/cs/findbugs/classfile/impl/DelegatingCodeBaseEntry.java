@@ -32,13 +32,13 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  * Implementation of ICodeBaseEntry that delegates to another codebase entry.
  * This is needed for codebase entries in nested zipfiles, which are implemented
  * using a private zipfile codebase.
- * 
+ *
  * @author David Hovemeyer
  */
 public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
-    private ICodeBase frontEndCodeBase;
+    private final ICodeBase frontEndCodeBase;
 
-    private ICodeBaseEntry delegateCodeBaseEntry;
+    private final ICodeBaseEntry delegateCodeBaseEntry;
 
     public DelegatingCodeBaseEntry(ICodeBase frontEndCodeBase, ICodeBaseEntry delegateCodeBaseEntry) {
         this.frontEndCodeBase = frontEndCodeBase;
@@ -47,7 +47,7 @@ public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
      */
     @Override
@@ -57,7 +57,7 @@ public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
      */
     @Override
@@ -67,7 +67,7 @@ public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
      */
     @Override
@@ -77,7 +77,7 @@ public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getCodeBase()
      */
     @Override
@@ -87,7 +87,7 @@ public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
      */
     @Override
@@ -97,7 +97,7 @@ public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java
      * .lang.String)
@@ -109,7 +109,7 @@ public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -124,7 +124,7 @@ public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -134,7 +134,7 @@ public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override

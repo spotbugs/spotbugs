@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 public class BugLeafNode {
 
-    private BugInstance bug;
+    private final BugInstance bug;
 
     BugLeafNode(BugInstance b) {
         bug = b;
@@ -44,8 +44,9 @@ public class BugLeafNode {
 
     @Override
     public String toString() {
-        if (bug.isDead())
+        if (bug.isDead()) {
             return "\u2620 " + bug.getMessageWithoutPrefix();
+        }
         return bug.getMessageWithoutPrefix();
     }
 
@@ -70,10 +71,11 @@ public class BugLeafNode {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof BugLeafNode))
+        if (!(o instanceof BugLeafNode)) {
             return false;
-        else
+        } else {
             return bug == (((BugLeafNode) o).getBug());
+        }
     }
 
     @Override
@@ -82,11 +84,13 @@ public class BugLeafNode {
     }
 
     public boolean matches(BugAspects aspects) {
-        if (aspects.size() == 0)
+        if (aspects.size() == 0) {
             return true;
+        }
         for (BugAspects.SortableValue strPair : aspects) {
-            if (!matches(strPair))
+            if (!matches(strPair)) {
                 return false;
+            }
         }
 
         return true;

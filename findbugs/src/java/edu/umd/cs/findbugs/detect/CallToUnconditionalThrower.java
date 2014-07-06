@@ -60,7 +60,7 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
 
     AnalysisContext analysisContext;
 
-    private boolean testingEnabled;
+    private final boolean testingEnabled;
 
     public CallToUnconditionalThrower(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -73,8 +73,9 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
     }
 
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
-        if (BCELUtil.isSynthetic(method) || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE)
+        if (BCELUtil.isSynthetic(method) || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE) {
             return;
+        }
         CFG cfg = classContext.getCFG(method);
 
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
@@ -84,19 +85,22 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
             BasicBlock basicBlock = i.next();
 
             // Check if it's a method invocation.
-            if (!basicBlock.isExceptionThrower())
+            if (!basicBlock.isExceptionThrower()) {
                 continue;
+            }
             InstructionHandle thrower = basicBlock.getExceptionThrower();
             Instruction ins = thrower.getInstruction();
-            if (!(ins instanceof InvokeInstruction))
+            if (!(ins instanceof InvokeInstruction)) {
                 continue;
+            }
 
             InvokeInstruction inv = (InvokeInstruction) ins;
             boolean foundThrower = false;
             boolean foundNonThrower = false;
 
-            if (inv instanceof INVOKEINTERFACE)
+            if (inv instanceof INVOKEINTERFACE) {
                 continue;
+            }
 
             String className = inv.getClassName(cpg);
 
@@ -107,28 +111,33 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
             Set<XMethod> targetSet = null;
             try {
 
-                if (className.startsWith("["))
+                if (className.startsWith("[")) {
                     continue;
+                }
                 String methodSig = inv.getSignature(cpg);
-                if (!methodSig.endsWith("V"))
+                if (!methodSig.endsWith("V")) {
                     continue;
+                }
 
                 targetSet = Hierarchy2.resolveMethodCallTargets(inv, typeFrame, cpg);
 
                 for (XMethod xMethod : targetSet) {
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("\tFound " + xMethod);
+                    }
 
                     boolean isUnconditionalThrower = xMethod.isUnconditionalThrower() && !xMethod.isUnsupported()
                             && !xMethod.isSynthetic();
                     if (isUnconditionalThrower) {
                         foundThrower = true;
-                        if (DEBUG)
+                        if (DEBUG) {
                             System.out.println("Found thrower");
+                        }
                     } else {
                         foundNonThrower = true;
-                        if (DEBUG)
+                        if (DEBUG) {
                             System.out.println("Found non thrower");
+                        }
                     }
 
                 }
@@ -136,11 +145,12 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
                 analysisContext.getLookupFailureCallback().reportMissingClass(e);
             }
             boolean newResult = foundThrower && !foundNonThrower;
-            if (newResult)
+            if (newResult) {
                 bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.NORMAL_PRIORITY)
-                        .addClassAndMethod(classContext.getJavaClass(), method)
-                        .addString("Call to method that always throws Exception").addMethod(primaryXMethod)
-                        .describe(MethodAnnotation.METHOD_CALLED).addSourceLine(classContext, method, loc));
+                .addClassAndMethod(classContext.getJavaClass(), method)
+                .addString("Call to method that always throws Exception").addMethod(primaryXMethod)
+                .describe(MethodAnnotation.METHOD_CALLED).addSourceLine(classContext, method, loc));
+            }
 
         }
 
@@ -154,8 +164,9 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
         analysisContext = AnalysisContext.currentAnalysisContext();
         Method[] methodList = classContext.getJavaClass().getMethods();
         for (Method method : methodList) {
-            if (method.getCode() == null)
+            if (method.getCode() == null) {
                 continue;
+            }
 
             try {
 

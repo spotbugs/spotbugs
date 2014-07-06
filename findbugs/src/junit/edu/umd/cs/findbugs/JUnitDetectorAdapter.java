@@ -25,7 +25,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 /**
  * A special Detector2 class designed to run some JUnit test code. Only used by
  * FindBugsTestCase.
- * 
+ *
  * @author David Hovemeyer
  * @see FindBugsTestCase
  */
@@ -56,18 +56,21 @@ public class JUnitDetectorAdapter implements Detector2 {
     }
 
     public void finishTest() throws Exception {
-        if (throwable instanceof Exception)
+        if (throwable instanceof Exception) {
             throw (Exception) throwable;
-        if (throwable instanceof Error)
+        }
+        if (throwable instanceof Error) {
             throw (Error) throwable;
-        if (throwable != null)
+        }
+        if (throwable != null) {
             throw new Error(throwable);
+        }
 
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.Detector2#finishPass()
      */
     @Override
@@ -76,7 +79,7 @@ public class JUnitDetectorAdapter implements Detector2 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.Detector2#getDetectorClassName()
      */
     @Override
@@ -86,7 +89,7 @@ public class JUnitDetectorAdapter implements Detector2 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile
      * .ClassDescriptor)

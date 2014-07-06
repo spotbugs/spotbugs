@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.tools.html;
 
 public class ColorAlternator {
-    private String[] colorList;
+    private final String[] colorList;
 
     int index;
 
@@ -33,4 +33,3 @@ public class ColorAlternator {
     }
 }
 
-// vim:ts=3

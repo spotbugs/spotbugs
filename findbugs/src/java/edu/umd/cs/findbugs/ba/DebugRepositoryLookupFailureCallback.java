@@ -27,14 +27,14 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 /**
  * DebugRepositoryLookupFailureCallback implementation for debugging. (Test
  * drivers, etc.) It just prints a message and exits.
- * 
+ *
  * @author David Hovemeyer
  */
 public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFailureCallback {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#reportMissingClass
      * (java.lang.ClassNotFoundException)
@@ -43,8 +43,9 @@ public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFai
     @SuppressFBWarnings("DM_EXIT")
     public void reportMissingClass(ClassNotFoundException ex) {
         String missing = AbstractBugReporter.getMissingClassName(ex);
-        if (missing == null || missing.charAt(0) == '[')
+        if (missing == null || missing.charAt(0) == '[') {
             return;
+        }
 
         System.out.println("Missing class");
         ex.printStackTrace();
@@ -53,7 +54,7 @@ public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFai
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd
      * .cs.findbugs.classfile.ClassDescriptor)
@@ -67,7 +68,7 @@ public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFai
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#logError(java.
      * lang.String)
@@ -81,7 +82,7 @@ public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFai
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#logError(java.
      * lang.String, java.lang.Throwable)
@@ -110,7 +111,7 @@ public class DebugRepositoryLookupFailureCallback implements RepositoryLookupFai
 
     /**
      * Report that we skipped some analysis of a method
-     * 
+     *
      * @param method
      */
     @Override

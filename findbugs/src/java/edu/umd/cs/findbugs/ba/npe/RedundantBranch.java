@@ -38,7 +38,7 @@ public class RedundantBranch {
 
     /**
      * Constructor.
-     * 
+     *
      * @param location
      *            Location of ref comparison
      * @param lineNumber
@@ -57,7 +57,7 @@ public class RedundantBranch {
 
     /**
      * Constructor.
-     * 
+     *
      * @param location
      *            Location of ref comparison
      * @param lineNumber
@@ -74,7 +74,7 @@ public class RedundantBranch {
 
     /**
      * Set the edge which has been determined to be infeasible.
-     * 
+     *
      * @param infeasibleEdge
      *            The infeasibleEdge to set.
      */

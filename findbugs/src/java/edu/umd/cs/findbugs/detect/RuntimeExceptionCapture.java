@@ -62,7 +62,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * RuntimeExceptionCapture
- * 
+ *
  * @author Brian Goetz
  * @author Bill Pugh
  * @author David Hovemeyer
@@ -70,13 +70,13 @@ import edu.umd.cs.findbugs.util.ClassName;
 public class RuntimeExceptionCapture extends OpcodeStackDetector implements StatelessDetector {
     private static final boolean DEBUG = SystemProperties.getBoolean("rec.debug");
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
-    private List<ExceptionCaught> catchList = new ArrayList<ExceptionCaught>();
-   
-    private List<ExceptionThrown> throwList = new ArrayList<ExceptionThrown>();
+    private final List<ExceptionCaught> catchList = new ArrayList<ExceptionCaught>();
 
-    private BugAccumulator accumulator;
+    private final List<ExceptionThrown> throwList = new ArrayList<ExceptionThrown>();
+
+    private final BugAccumulator accumulator;
 
     private static class ExceptionCaught {
         public String exceptionClass;
@@ -118,15 +118,16 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
         accumulator.reportAccumulatedBugs();
     }
 
-   @Override
-   public void visitAfter(Code obj) {
+    @Override
+    public void visitAfter(Code obj) {
         for (ExceptionCaught caughtException : catchList) {
             Set<String> thrownSet = new HashSet<String>();
             for (ExceptionThrown thrownException : throwList) {
                 if (thrownException.offset >= caughtException.startOffset && thrownException.offset < caughtException.endOffset) {
                     thrownSet.add(thrownException.exceptionClass);
-                    if (thrownException.exceptionClass.equals(caughtException.exceptionClass))
+                    if (thrownException.exceptionClass.equals(caughtException.exceptionClass)) {
                         caughtException.seen = true;
+                    }
                 }
             }
             int catchClauses = 0;
@@ -137,23 +138,28 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
                     if (otherException.startOffset == caughtException.startOffset
                             && otherException.endOffset == caughtException.endOffset) {
                         catchClauses++;
-                        if (otherException.exceptionClass.equals("java.lang.RuntimeException"))
+                        if (otherException.exceptionClass.equals("java.lang.RuntimeException")) {
                             rteCaught = true;
+                        }
                     }
                 }
                 int range = caughtException.endOffset - caughtException.startOffset;
                 if (!rteCaught) {
                     int priority = LOW_PRIORITY + 1;
-                    if (range > 300)
+                    if (range > 300) {
                         priority--;
-                    else if (range < 30)
+                    } else if (range < 30) {
                         priority++;
-                    if (catchClauses > 1)
+                    }
+                    if (catchClauses > 1) {
                         priority++;
-                    if (thrownSet.size() > 1)
+                    }
+                    if (thrownSet.size() > 1) {
                         priority--;
-                    if (caughtException.dead)
+                    }
+                    if (caughtException.dead) {
                         priority--;
+                    }
                     accumulator.accumulateBug(new BugInstance(this, "REC_CATCH_EXCEPTION", priority).addClassAndMethod(this),
                             SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, caughtException.sourcePC));
                 }
@@ -168,8 +174,9 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
         try {
             super.visit(obj);
             int type = obj.getCatchType();
-            if (type == 0)
+            if (type == 0) {
                 return;
+            }
             String name = getConstantPool().constantToString(getConstantPool().getConstant(type));
 
             ExceptionCaught caughtException = new ExceptionCaught(name, obj.getStartPC(), obj.getEndPC(), obj.getHandlerPC());
@@ -216,10 +223,11 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
                 OpcodeStack.Item item = stack.getStackItem(0);
                 String signature = item.getSignature();
                 if (signature != null && signature.length() > 0) {
-                    if (signature.startsWith("L"))
+                    if (signature.startsWith("L")) {
                         signature = SignatureConverter.convert(signature);
-                    else
+                    } else {
                         signature = signature.replace('/', '.');
+                    }
                     throwList.add(new ExceptionThrown(signature, getPC()));
                 }
             }
@@ -229,23 +237,27 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
         case INVOKESPECIAL:
         case INVOKESTATIC:
             String className = getClassConstantOperand();
-            if (!className.startsWith("["))
+            if (!className.startsWith("[")) {
                 try {
                     XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class,
                             DescriptorFactory.createClassDescriptor(className));
                     XMethod m = Hierarchy2.findInvocationLeastUpperBound(c, getNameConstantOperand(), getSigConstantOperand(),
                             seen == INVOKESTATIC, seen == INVOKEINTERFACE);
-                    if (m == null)
+                    if (m == null) {
                         break;
+                    }
                     String[] exceptions = m.getThrownExceptions();
-                    if (exceptions != null)
-                        for (String name : exceptions)
+                    if (exceptions != null) {
+                        for (String name : exceptions) {
                             throwList.add(new ExceptionThrown(ClassName.toDottedClassName(name), getPC()));
+                        }
+                    }
                 } catch (MissingClassException e) {
                     bugReporter.reportMissingClass(e.getClassDescriptor());
                 } catch (CheckedAnalysisException e) {
                     bugReporter.logError("Error looking up " + className, e);
                 }
+            }
             break;
         default:
             break;
@@ -255,4 +267,3 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
 
 }
 
-// vim:ts=4

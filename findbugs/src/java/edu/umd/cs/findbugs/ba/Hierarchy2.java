@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import static edu.umd.cs.findbugs.ba.Hierarchy.DEBUG_METHOD_LOOKUP;
-import static edu.umd.cs.findbugs.ba.Hierarchy.INSTANCE_METHOD;
-import static edu.umd.cs.findbugs.ba.Hierarchy.STATIC_METHOD;
+import static edu.umd.cs.findbugs.ba.Hierarchy.*;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -58,7 +56,7 @@ import edu.umd.cs.findbugs.util.Util;
  * hierarchy using the {@link org.apache.bcel.Repository} class. Callers should
  * generally expect to handle ClassNotFoundException for when referenced classes
  * can't be found.
- * 
+ *
  * @author William Pugh
  */
 public class Hierarchy2 {
@@ -69,7 +67,7 @@ public class Hierarchy2 {
      * Look up the method referenced by given InvokeInstruction. This method
      * does <em>not</em> look for implementations in super or subclasses
      * according to the virtual dispatch rules.
-     * 
+     *
      * @param inv
      *            the InvokeInstruction
      * @param cpg
@@ -82,7 +80,7 @@ public class Hierarchy2 {
      *         the class
      */
     public static XMethod findExactMethod(InvokeInstruction inv, ConstantPoolGen cpg, JavaClassAndMethodChooser chooser)
-            {
+    {
         String className = inv.getClassName(cpg);
         String methodName = inv.getName(cpg);
         String methodSig = inv.getSignature(cpg);
@@ -95,16 +93,18 @@ public class Hierarchy2 {
 
     private static @CheckForNull
     XMethod thisOrNothing(@CheckForNull XMethod m, JavaClassAndMethodChooser chooser) {
-        if (m == null)
+        if (m == null) {
             return null;
-        if (chooser.choose(m))
+        }
+        if (chooser.choose(m)) {
             return m;
+        }
         return null;
     }
 
     public static @CheckForNull
     XMethod findInvocationLeastUpperBound(InvokeInstruction inv, ConstantPoolGen cpg, JavaClassAndMethodChooser methodChooser)
-            {
+    {
 
         if (DEBUG_METHOD_LOOKUP) {
             System.out.println("Find prototype method for " + SignatureConverter.convertMethodSignature(inv, cpg));
@@ -113,11 +113,13 @@ public class Hierarchy2 {
         short opcode = inv.getOpcode();
 
         if (opcode == Constants.INVOKESTATIC) {
-            if (methodChooser == INSTANCE_METHOD)
+            if (methodChooser == INSTANCE_METHOD) {
                 return null;
+            }
         } else {
-            if (methodChooser == STATIC_METHOD)
+            if (methodChooser == STATIC_METHOD) {
                 return null;
+            }
         }
 
         // Find the method
@@ -164,19 +166,22 @@ public class Hierarchy2 {
     XMethod findInvocationLeastUpperBound(XClass jClass, String methodName, String methodSig, boolean invokeStatic,
             boolean invokeInterface) {
         XMethod result = findMethod(jClass.getClassDescriptor(), methodName, methodSig, invokeStatic);
-        if (result != null)
+        if (result != null) {
             return result;
+        }
         ClassDescriptor sClass = jClass.getSuperclassDescriptor();
         if (sClass != null) {
             result = findInvocationLeastUpperBound(sClass, methodName, methodSig, invokeStatic, invokeInterface);
-            if (result != null)
+            if (result != null) {
                 return result;
+            }
         }
 
         for (ClassDescriptor i : jClass.getInterfaceDescriptorList()) {
             result = findInvocationLeastUpperBound(i, methodName, methodSig, invokeStatic, invokeInterface);
-            if (result != null)
+            if (result != null) {
                 return result;
+            }
         }
 
         return null;
@@ -186,18 +191,21 @@ public class Hierarchy2 {
     XMethod findInvocationLeastUpperBound0(XClass jClass, String methodName, String methodSig, boolean invokeStatic,
             boolean invokeInterface) {
         XMethod result = findMethod(jClass.getClassDescriptor(), methodName, methodSig, invokeStatic);
-        if (result != null)
+        if (result != null) {
             return result;
-        if (invokeInterface)
+        }
+        if (invokeInterface) {
             for (ClassDescriptor i : jClass.getInterfaceDescriptorList()) {
                 result = findInvocationLeastUpperBound(i, methodName, methodSig, invokeStatic, invokeInterface);
-                if (result != null)
+                if (result != null) {
                     return result;
+                }
             }
-        else {
+        } else {
             ClassDescriptor sClass = jClass.getSuperclassDescriptor();
-            if (sClass != null)
+            if (sClass != null) {
                 return findInvocationLeastUpperBound(sClass, methodName, methodSig, invokeStatic, invokeInterface);
+            }
         }
         return null;
     }
@@ -213,7 +221,7 @@ public class Hierarchy2 {
 
 
     public static @CheckForNull XMethod findFirstSuperMethod(XMethod m) {
-        
+
         try {
             @CheckForNull ClassDescriptor c = m.getClassDescriptor();
             XClass xc = getXClass(c);
@@ -221,8 +229,9 @@ public class Hierarchy2 {
             while (c != null) {
                 xc = getXClass(c);
                 XMethod xm = xc.findMatchingMethod(m.getMethodDescriptor());
-                if (xm != null)
+                if (xm != null) {
                     return xm;
+                }
                 c = xc.getSuperclassDescriptor();
             }
         } catch (CheckedAnalysisException e) {
@@ -230,20 +239,24 @@ public class Hierarchy2 {
         }
         return null;
     }
-    
+
     private static void findSuperMethods(@CheckForNull ClassDescriptor c, XMethod m, Set<XMethod> accumulator) {
-        if (c == null)
+        if (c == null) {
             return;
+        }
         try {
             XClass xc = getXClass(c);
             XMethod xm = xc.findMatchingMethod(m.getMethodDescriptor());
-            if (xm != null && !accumulator.add(xm))
+            if (xm != null && !accumulator.add(xm)) {
                 return;
+            }
             findSuperMethods(xc.getSuperclassDescriptor(), m, accumulator);
-            for (ClassDescriptor i : xc.getInterfaceDescriptorList())
+            for (ClassDescriptor i : xc.getInterfaceDescriptorList()) {
                 findSuperMethods(i, m, accumulator);
-            if (!accumulator.add(m))
+            }
+            if (!accumulator.add(m)) {
                 return;
+            }
 
         } catch (CheckedAnalysisException e) {
             AnalysisContext.logError("Error finding super methods for " + m, e);
@@ -274,7 +287,7 @@ public class Hierarchy2 {
     /**
      * Resolve possible method call targets. This works for both static and
      * instance method calls.
-     * 
+     *
      * @param invokeInstruction
      *            the InvokeInstruction
      * @param typeFrame
@@ -329,7 +342,7 @@ public class Hierarchy2 {
     /**
      * Resolve possible instance method call targets. Assumes that invokevirtual
      * and invokeinterface methods may call any subtype of the receiver class.
-     * 
+     *
      * @param receiverType
      *            type of the receiver object
      * @param invokeInstruction
@@ -346,7 +359,7 @@ public class Hierarchy2 {
 
     /**
      * Resolve possible instance method call targets.
-     * 
+     *
      * @param receiverType
      *            type of the receiver object
      * @param invokeInstruction
@@ -362,20 +375,22 @@ public class Hierarchy2 {
     public static Set<XMethod> resolveMethodCallTargets(ReferenceType receiverType, InvokeInstruction invokeInstruction,
             ConstantPoolGen cpg, boolean receiverTypeIsExact) throws ClassNotFoundException {
 
-        if (invokeInstruction.getOpcode() == Constants.INVOKESTATIC)
+        if (invokeInstruction.getOpcode() == Constants.INVOKESTATIC) {
             throw new IllegalArgumentException();
+        }
 
         String methodName = invokeInstruction.getName(cpg);
         String methodSig = invokeInstruction.getSignature(cpg);
 
         // Array method calls aren't virtual.
         // They should just resolve to Object methods.
-        if (receiverType instanceof ArrayType)
+        if (receiverType instanceof ArrayType) {
             try {
                 return Util.emptyOrNonnullSingleton(getXClass(objectDescriptor).findMethod(methodName, methodSig, false));
             } catch (CheckedAnalysisException e) {
                 return Collections.<XMethod> emptySet();
             }
+        }
 
         if (receiverType instanceof ObjectType) {
             // Get the receiver class.
@@ -431,8 +446,9 @@ public class Hierarchy2 {
 
         if (OPEN_WORLD_DEBUG) {
             System.out.println("OWD: " + receiverDesc + "." + methodName + methodSig);
-            if (upperBound != null)
+            if (upperBound != null) {
                 System.out.println("  upper bound:" + upperBound);
+            }
         }
         // Is this a virtual call site?
         boolean virtualCall = (upperBound == null || !upperBound.isFinal()) && !receiverTypeIsExact && !invokeSpecial;
@@ -445,8 +461,9 @@ public class Hierarchy2 {
             for (ClassDescriptor subtype : subTypeSet) {
                 XMethod concreteSubtypeMethod = findMethod(subtype, methodName, methodSig, false);
                 if (concreteSubtypeMethod != null && (OPEN_WORLD || !concreteSubtypeMethod.isAbstract())) {
-                    if (OPEN_WORLD_DEBUG)
+                    if (OPEN_WORLD_DEBUG) {
                         System.out.println("  -> " + concreteSubtypeMethod);
+                    }
 
                     result.add(concreteSubtypeMethod);
                 }
@@ -458,7 +475,7 @@ public class Hierarchy2 {
 
     /**
      * Find the declared exceptions for the method called by given instruction.
-     * 
+     *
      * @param inv
      *            the InvokeInstruction
      * @param cpg
@@ -472,12 +489,14 @@ public class Hierarchy2 {
         XMethod method = findInvocationLeastUpperBound(inv, cpg, inv instanceof INVOKESTATIC ? Hierarchy.STATIC_METHOD
                 : Hierarchy.INSTANCE_METHOD);
 
-        if (method == null)
+        if (method == null) {
             return null;
+        }
         String[] exceptions = method.getThrownExceptions();
 
-        if (exceptions == null)
+        if (exceptions == null) {
             return new ObjectType[0];
+        }
 
         ObjectType[] result = new ObjectType[exceptions.length];
         for (int i = 0; i < exceptions.length; ++i) {
@@ -488,4 +507,3 @@ public class Hierarchy2 {
 
 }
 
-// vim:ts=4

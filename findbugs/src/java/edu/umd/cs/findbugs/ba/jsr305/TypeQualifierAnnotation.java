@@ -93,18 +93,18 @@ public class TypeQualifierAnnotation {
     private static final When TOP = null;
 
     private static final When[][] combineReturnValueMatrix = {
-            // ALWAYS UNKNOWN MAYBE NEVER
-            /* ALWAYS */{ When.ALWAYS, },
-            /* UNKNOWN */{ When.ALWAYS, When.UNKNOWN, },
-            /* MAYBE */{ When.ALWAYS, When.UNKNOWN, When.MAYBE, },
-            /* NEVER */{ TOP, TOP, When.NEVER, When.NEVER }, };
+        // ALWAYS UNKNOWN MAYBE NEVER
+        /* ALWAYS */{ When.ALWAYS, },
+        /* UNKNOWN */{ When.ALWAYS, When.UNKNOWN, },
+        /* MAYBE */{ When.ALWAYS, When.UNKNOWN, When.MAYBE, },
+        /* NEVER */{ TOP, TOP, When.NEVER, When.NEVER }, };
 
     private static final When[][] combineParameterMatrix = {
-            // ALWAYS UNKNOWN MAYBE NEVER
-            /* ALWAYS */{ When.ALWAYS, },
-            /* UNKNOWN */{ When.UNKNOWN, When.UNKNOWN, },
-            /* MAYBE */{ When.MAYBE, When.MAYBE, When.MAYBE, },
-            /* NEVER */{ When.MAYBE, When.UNKNOWN, When.MAYBE, When.NEVER }, };
+        // ALWAYS UNKNOWN MAYBE NEVER
+        /* ALWAYS */{ When.ALWAYS, },
+        /* UNKNOWN */{ When.UNKNOWN, When.UNKNOWN, },
+        /* MAYBE */{ When.MAYBE, When.MAYBE, When.MAYBE, },
+        /* NEVER */{ When.MAYBE, When.UNKNOWN, When.MAYBE, When.NEVER }, };
 
     /**
      * Combine return type annotations.
@@ -169,8 +169,9 @@ public class TypeQualifierAnnotation {
     TypeQualifierAnnotation getValue(TypeQualifierValue<?> desc, When when) {
         DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation> map = instance.get();
         TypeQualifierAnnotation result = map.get(desc, when);
-        if (result != null)
+        if (result != null) {
             return result;
+        }
         result = new TypeQualifierAnnotation(desc, when);
         map.put(desc, when, result);
         return result;
@@ -183,8 +184,9 @@ public class TypeQualifierAnnotation {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof TypeQualifierAnnotation))
+        if (!(o instanceof TypeQualifierAnnotation)) {
             return false;
+        }
         TypeQualifierAnnotation other = (TypeQualifierAnnotation) o;
         return typeQualifier.equals(other.typeQualifier) && when.equals(other.when);
     }

@@ -366,31 +366,33 @@ public class FindBugsTask extends AbstractFindBugsTask {
      * Set the exclude filter file
      */
     public void setExcludeFilter(File filterFile) {
-        if (filterFile != null && filterFile.length() > 0)
-
+        if (filterFile != null && filterFile.length() > 0) {
             this.excludeFile = filterFile;
-        else
+        } else {
             this.excludeFile = null;
+        }
     }
 
     /**
      * Set the exclude filter file
      */
     public void setIncludeFilter(File filterFile) {
-        if (filterFile != null && filterFile.length() > 0)
+        if (filterFile != null && filterFile.length() > 0) {
             this.includeFile = filterFile;
-        else
+        } else {
             this.includeFile = null;
+        }
     }
 
     /**
      * Set the exclude filter file
      */
     public void setBaselineBugs(File baselineBugs) {
-        if (baselineBugs != null && baselineBugs.length() > 0)
+        if (baselineBugs != null && baselineBugs.length() > 0) {
             this.baselineBugs = baselineBugs;
-        else
+        } else {
             this.baselineBugs = null;
+        }
     }
 
     /**
@@ -447,7 +449,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
         Path path = createAuxClasspath();
         path.setRefid(r);
         path.toString(); // Evaluated for its side-effects (throwing a
-                         // BuildException)
+        // BuildException)
     }
 
     /**
@@ -531,8 +533,9 @@ public class FindBugsTask extends AbstractFindBugsTask {
      * Set name of output file.
      */
     public void setOutputFile(String outputFileName) {
-        if (outputFileName != null && outputFileName.length() > 0)
+        if (outputFileName != null && outputFileName.length() > 0) {
             this.outputFileName = outputFileName;
+        }
     }
 
     /**
@@ -561,8 +564,9 @@ public class FindBugsTask extends AbstractFindBugsTask {
                     + "elements must be defined for task <" + getTaskName() + "/>", getLocation());
         }
 
-        if (cloudId != null && cloudId.contains(" "))
+        if (cloudId != null && cloudId.contains(" ")) {
             throw new BuildException("cloudId must not contain spaces: '" + cloudId + "'");
+        }
 
         if (outputFormat != null
                 && !(outputFormat.trim().equalsIgnoreCase("xml") || outputFormat.trim().equalsIgnoreCase("xml:withMessages")
@@ -660,10 +664,12 @@ public class FindBugsTask extends AbstractFindBugsTask {
             addArg(adjustPriority);
         }
 
-        if (sorted)
+        if (sorted) {
             addArg("-sortByClass");
-        if (timestampNow)
+        }
+        if (timestampNow) {
             addArg("-timestampNow");
+        }
 
         if (outputFormat != null && !outputFormat.trim().equalsIgnoreCase("text")) {
             outputFormat = outputFormat.trim();
@@ -682,10 +688,12 @@ public class FindBugsTask extends AbstractFindBugsTask {
             }
             addArg(outputArg);
         }
-        if (quietErrors)
+        if (quietErrors) {
             addArg("-quiet");
-        if (reportLevel != null)
+        }
+        if (reportLevel != null) {
             addArg("-" + reportLevel.trim().toLowerCase());
+        }
         if (projectFile != null) {
             addArg("-project");
             addArg(projectFile.getPath());
@@ -788,4 +796,3 @@ public class FindBugsTask extends AbstractFindBugsTask {
     }
 }
 
-// vim:ts=4

@@ -27,7 +27,7 @@ import org.apache.bcel.generic.MethodGen;
  * can be thrown to indicate that a method invocation requires more stack
  * operands than are available. AbstractFrameModelingVisitor will catch this
  * exception and rethrow it as a checked DataflowAnalysisException.
- * 
+ *
  * @author David Hovemeyer
  */
 public class InvalidBytecodeException extends RuntimeException {
@@ -35,7 +35,7 @@ public class InvalidBytecodeException extends RuntimeException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param msg
      *            reason for the exception
      */
@@ -45,7 +45,7 @@ public class InvalidBytecodeException extends RuntimeException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param msg
      *            reason for the exception
      * @param cause
@@ -57,7 +57,7 @@ public class InvalidBytecodeException extends RuntimeException {
 
     /**
      * Constructor from method and instruction.
-     * 
+     *
      * @param message
      *            reason for the error
      * @param methodGen
@@ -71,7 +71,7 @@ public class InvalidBytecodeException extends RuntimeException {
 
     /**
      * Constructor from method and instruction.
-     * 
+     *
      * @param message
      *            reason for the error
      * @param methodGen

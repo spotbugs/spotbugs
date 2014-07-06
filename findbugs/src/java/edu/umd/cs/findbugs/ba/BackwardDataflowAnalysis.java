@@ -22,19 +22,20 @@ package edu.umd.cs.findbugs.ba;
 /**
  * Abstract base class for backward dataflow analyses. Provides convenient
  * implementations for isForwards() and getBlockOrder() methods.
- * 
+ *
  * @author David Hovemeyer
  * @see Dataflow
  * @see DataflowAnalysis
  */
 public abstract class BackwardDataflowAnalysis<Fact> extends AbstractDataflowAnalysis<Fact> {
-    private ReverseDepthFirstSearch rdfs;
+    private final ReverseDepthFirstSearch rdfs;
 
-    private DepthFirstSearch dfs;
+    private final DepthFirstSearch dfs;
 
     public BackwardDataflowAnalysis(ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
-        if (rdfs == null || dfs == null)
+        if (rdfs == null || dfs == null) {
             throw new IllegalArgumentException();
+        }
         this.rdfs = rdfs;
         this.dfs = dfs;
     }
@@ -54,4 +55,3 @@ public abstract class BackwardDataflowAnalysis<Fact> extends AbstractDataflowAna
     }
 }
 
-// vim:ts=4

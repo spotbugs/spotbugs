@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Analysis engine to produce LoadDataflow objects for analyzed methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public class LoadDataflowFactory extends AnalysisFactory<LoadDataflow> {
@@ -41,7 +41,7 @@ public class LoadDataflowFactory extends AnalysisFactory<LoadDataflow> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
@@ -49,8 +49,9 @@ public class LoadDataflowFactory extends AnalysisFactory<LoadDataflow> {
     @Override
     public LoadDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         MethodGen methodGen = getMethodGen(analysisCache, descriptor);
-        if (methodGen == null)
+        if (methodGen == null) {
             return null;
+        }
         LoadAnalysis analysis = new LoadAnalysis(getDepthFirstSearch(analysisCache, descriptor), getConstantPoolGen(
                 analysisCache, descriptor.getClassDescriptor()));
         LoadDataflow dataflow = new LoadDataflow(getCFG(analysisCache, descriptor), analysis);

@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.classfile.IErrorLogger;
  * failure. However, it is important to report such lookup failures to the user.
  * So, classes that use the Repository should have a callback object to report
  * lookup failures to.
- * 
+ *
  * @author David Hovemeyer
  */
 
@@ -38,4 +38,3 @@ import edu.umd.cs.findbugs.classfile.IErrorLogger;
 public interface RepositoryLookupFailureCallback extends IErrorLogger {
 }
 
-// vim:ts=4

@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.filter.Matcher;
 public class NewFilterFromBug extends FBDialog {
 
     private static final List<NewFilterFromBug> listOfAllFrames = new ArrayList<NewFilterFromBug>();
-    
+
     public NewFilterFromBug(final FilterFromBugPicker filterFromBugPicker, final ApplyNewFilter applyNewFilter) {
         this.setModal(true);
         listOfAllFrames.add(this);
@@ -53,7 +53,7 @@ public class NewFilterFromBug extends FBDialog {
 
         JPanel south = new JPanel();
         JButton okButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "OK"));
-        
+
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -75,7 +75,7 @@ public class NewFilterFromBug extends FBDialog {
         pack();
         setVisible(true);
     }
-    
+
     private final void closeDialog() {
         NewFilterFromBug.this.dispose();
     }

@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.classfile.IClassObserver;
  * the information reported by the analysis, which includes bug reports, and
  * also auxiliary information such as analysis errors, missing classes, and
  * class to source file mapping.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface BugReporter extends RepositoryLookupFailureCallback, IClassObserver {
@@ -47,7 +47,7 @@ public interface BugReporter extends RepositoryLookupFailureCallback, IClassObse
 
     /**
      * Set the error-reporting verbosity level.
-     * 
+     *
      * @param level
      *            the verbosity level
      */
@@ -55,7 +55,7 @@ public interface BugReporter extends RepositoryLookupFailureCallback, IClassObse
 
     /**
      * Set the priority threshold.
-     * 
+     *
      * @param threshold
      *            bug instances must be at least as important as this priority
      *            to be reported
@@ -65,7 +65,7 @@ public interface BugReporter extends RepositoryLookupFailureCallback, IClassObse
     /**
      * Report a bug. The implementation may report the bug immediately, or queue
      * it for later.
-     * 
+     *
      * @param bugInstance
      *            object describing the bug instance
      */
@@ -84,7 +84,7 @@ public interface BugReporter extends RepositoryLookupFailureCallback, IClassObse
 
     /**
      * Add an observer.
-     * 
+     *
      * @param observer
      *            the observer
      */
@@ -103,4 +103,3 @@ public interface BugReporter extends RepositoryLookupFailureCallback, IClassObse
     BugCollection getBugCollection();
 }
 
-// vim:ts=4

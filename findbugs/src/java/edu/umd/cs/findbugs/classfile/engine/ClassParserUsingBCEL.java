@@ -68,7 +68,7 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd
      * .cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder)
@@ -79,26 +79,28 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
         builder.setCodeBaseEntry(codeBaseEntry);
         builder.setAccessFlags(javaClass.getAccessFlags());
         ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(javaClass.getClassName());
-        if (expectedClassDescriptor != null && expectedClassDescriptor.equals(classDescriptor))
+        if (expectedClassDescriptor != null && expectedClassDescriptor.equals(classDescriptor)) {
             throw new InvalidClassFileFormatException("Expected " + expectedClassDescriptor, classDescriptor, codeBaseEntry);
+        }
         builder.setClassDescriptor(classDescriptor);
 
         builder.setSuperclassDescriptor(DescriptorFactory.createClassDescriptorFromDottedClassName(javaClass.getSuperclassName()));
         String[] allInterfaces = javaClass.getInterfaceNames();
         ClassDescriptor[] allInterfaceDescriptiors;
-        if (allInterfaces.length == 0)
+        if (allInterfaces.length == 0) {
             allInterfaceDescriptiors = ClassDescriptor.EMPTY_ARRAY;
-        else {
+        } else {
             allInterfaceDescriptiors = new ClassDescriptor[allInterfaces.length];
-            for (int i = 0; i < allInterfaces.length; i++)
+            for (int i = 0; i < allInterfaces.length; i++) {
                 allInterfaceDescriptiors[i] = DescriptorFactory.createClassDescriptorFromDottedClassName(allInterfaces[i]);
+            }
         }
         builder.setInterfaceDescriptorList(allInterfaceDescriptiors);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd
      * .cs.findbugs.classfile.analysis.ClassInfo.Builder)

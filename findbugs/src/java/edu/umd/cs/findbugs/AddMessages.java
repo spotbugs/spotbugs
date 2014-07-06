@@ -155,11 +155,12 @@ public class AddMessages {
         Element root = document.getRootElement();
         for (String bugType : bugTypeSet) {
             BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(bugType);
-            if (bugPattern == null)
+            if (bugPattern == null) {
                 continue;
+            }
             Element details = root.addElement("BugPattern");
             details.addAttribute("type", bugType).addAttribute("abbrev", bugPattern.getAbbrev())
-                    .addAttribute("category", bugPattern.getCategory());
+            .addAttribute("category", bugPattern.getCategory());
             details.addElement("ShortDescription").addText(bugPattern.getShortDescription());
             details.addElement("Details").addCDATA(bugPattern.getDetailText());
         }
@@ -194,4 +195,3 @@ public class AddMessages {
     }
 }
 
-// vim:ts=4

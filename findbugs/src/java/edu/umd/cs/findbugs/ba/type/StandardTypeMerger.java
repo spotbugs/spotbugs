@@ -65,45 +65,51 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 
     @Override
     public Type mergeTypes(Type a, Type b) throws DataflowAnalysisException {
-        if (a == null) return b;
-        if (b == null) return a;
+        if (a == null) {
+            return b;
+        }
+        if (b == null) {
+            return a;
+        }
         byte aType = a.getType(), bType = b.getType();
 
-        if (aType == T_TOP) // Top is the identity element
+        if (aType == T_TOP) {
             return b;
-        else if (bType == T_TOP) // Top is the identity element
+        } else if (bType == T_TOP) {
             return a;
-        else if (aType == T_BOTTOM || bType == T_BOTTOM) // Bottom meet anything
-                                                         // is bottom
+        } else if (aType == T_BOTTOM || bType == T_BOTTOM) {
+            // is bottom
             return BottomType.instance();
-        else if (isReferenceType(aType) && isReferenceType(bType)) { // Two
-                                                                     // object
-                                                                     // types!
+        } else if (isReferenceType(aType) && isReferenceType(bType)) { // Two
+            // object
+            // types!
             // Handle the Null type, which serves as a special "top"
             // value for reference types.
-            if (aType == T_NULL)
+            if (aType == T_NULL) {
                 return b;
-            else if (bType == T_NULL)
+            } else if (bType == T_NULL) {
                 return a;
+            }
 
             ReferenceType aRef = (ReferenceType) a;
             ReferenceType bRef = (ReferenceType) b;
             return mergeReferenceTypes(aRef, bRef);
-        } else if (isReferenceType(aType) || isReferenceType(bType)) // Object
-                                                                     // meet
-                                                                     // non-object
-                                                                     // is
-                                                                     // bottom
+        } else if (isReferenceType(aType) || isReferenceType(bType)) {
+            // meet
+            // non-object
+            // is
+            // bottom
             return BottomType.instance();
-        else if (aType == bType) // Same non-object type?
+        } else if (aType == bType) {
             return a;
-        else if (isIntegerType(aType) && isIntegerType(bType)) // Two different
-                                                               // integer types
-                                                               // - use T_INT
+        } else if (isIntegerType(aType) && isIntegerType(bType)) {
+            // integer types
+            // - use T_INT
             return Type.INT;
-        else
+        } else {
             // Default - types are incompatible
             return BottomType.instance();
+        }
     }
 
     /**
@@ -135,10 +141,11 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
     }
 
     private static void updateExceptionSet(ExceptionSet exceptionSet, ObjectType type) {
-        if (type instanceof ExceptionObjectType)
+        if (type instanceof ExceptionObjectType) {
             exceptionSet.addAll(((ExceptionObjectType) type).getExceptionSet());
-        else
+        } else {
             exceptionSet.addExplicit(type);
+        }
     }
 
     /**
@@ -153,8 +160,9 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
      * @return the merged Type
      */
     protected ReferenceType mergeReferenceTypes(ReferenceType aRef, ReferenceType bRef) throws DataflowAnalysisException {
-        if (aRef.equals(bRef))
+        if (aRef.equals(bRef)) {
             return aRef;
+        }
         byte aType = aRef.getType();
         byte bType = bRef.getType();
         try {
@@ -164,17 +172,20 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
             if (isObjectType(aType) && isObjectType(bType)
                     && ((aType == T_EXCEPTION || isThrowable(aRef))  && (bType == T_EXCEPTION ||   isThrowable(bRef)))) {
                 ExceptionSet union = exceptionSetFactory.createExceptionSet();
-                if (aType == T_OBJECT && aRef.getSignature().equals("Ljava/lang/Throwable;"))
+                if (aType == T_OBJECT && aRef.getSignature().equals("Ljava/lang/Throwable;")) {
                     return aRef;
-                if (bType == T_OBJECT && bRef.getSignature().equals("Ljava/lang/Throwable;"))
+                }
+                if (bType == T_OBJECT && bRef.getSignature().equals("Ljava/lang/Throwable;")) {
                     return bRef;
+                }
 
                 updateExceptionSet(union, (ObjectType) aRef);
                 updateExceptionSet(union, (ObjectType) bRef);
 
                 Type t = ExceptionObjectType.fromExceptionSet(union);
-                if (t instanceof ReferenceType)
+                if (t instanceof ReferenceType) {
                     return (ReferenceType) t;
+                }
             }
 
             if (aRef instanceof GenericObjectType && bRef instanceof GenericObjectType
@@ -188,11 +199,13 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
                         List<? extends ReferenceType> bP = bG.getParameters();
                         assert aP != null;
                         assert bP != null;
-                        if (aP.size() != bP.size())
+                        if (aP.size() != bP.size()) {
                             break;
+                        }
                         ArrayList<ReferenceType> result = new ArrayList<ReferenceType>(aP.size());
-                        for (int i = 0; i < aP.size(); i++)
+                        for (int i = 0; i < aP.size(); i++) {
                             result.add(mergeReferenceTypes(aP.get(i), bP.get(i)));
+                        }
 
                         GenericObjectType rOT = GenericUtilities.getType(aG.getClassName(), result);
                         return rOT;
@@ -202,10 +215,12 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
                 }
 
             }
-            if (aRef instanceof GenericObjectType)
+            if (aRef instanceof GenericObjectType) {
                 aRef = ((GenericObjectType) aRef).getObjectType();
-            if (bRef instanceof GenericObjectType)
+            }
+            if (bRef instanceof GenericObjectType) {
                 bRef = ((GenericObjectType) bRef).getObjectType();
+            }
 
             if (Subtypes2.ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES) {
                 return AnalysisContext.currentAnalysisContext().getSubtypes2().getFirstCommonSuperclass(aRef, bRef);
@@ -219,13 +234,13 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
     }
 
     private boolean isThrowable(ReferenceType ref) /*
-                                                    * throws
-                                                    * ClassNotFoundException
-                                                    */{
+     * throws
+     * ClassNotFoundException
+     */{
         try {
 
-                Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-                return subtypes2.isSubtype(ref, Type.THROWABLE);
+            Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+            return subtypes2.isSubtype(ref, Type.THROWABLE);
 
         } catch (ClassNotFoundException e) {
             // We'll just assume that it's not an exception type.
@@ -236,4 +251,3 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 
 }
 
-// vim:ts=4

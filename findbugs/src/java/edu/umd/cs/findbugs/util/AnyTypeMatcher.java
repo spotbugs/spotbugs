@@ -23,7 +23,7 @@ import org.apache.bcel.generic.Type;
 
 /**
  * A TypeMatcher that matches all types.
- * 
+ *
  * @author David Hovemeyer
  */
 public class AnyTypeMatcher implements TypeMatcher {

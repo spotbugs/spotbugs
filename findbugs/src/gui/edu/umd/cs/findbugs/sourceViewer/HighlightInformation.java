@@ -38,8 +38,9 @@ public class HighlightInformation {
     }
 
     public void setHighlight(int start, int end, Color color) {
-        for (int i = start; i <= end; i++)
+        for (int i = start; i <= end; i++) {
             map.put(i, color);
+        }
     }
 
     public void setHighlight(Integer line, Color color) {
@@ -51,8 +52,9 @@ public class HighlightInformation {
     }
 
     public void updateFoundLineNum(Integer line) {
-        if (foundLineNum != -1)
+        if (foundLineNum != -1) {
             unsetHighlight(foundLineNum);
+        }
         foundLineNum = line;
     }
 

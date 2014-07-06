@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs;
 /**
  * A fatal exception which should completely halt the FindBugs analysis. Use
  * sparingly.
- * 
+ *
  * @author David Hovemeyer
  */
 public class FatalException extends RuntimeException {
@@ -29,7 +29,7 @@ public class FatalException extends RuntimeException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param msg
      *            message describing the exception
      */
@@ -39,7 +39,7 @@ public class FatalException extends RuntimeException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param msg
      *            message describing the exception
      * @param cause

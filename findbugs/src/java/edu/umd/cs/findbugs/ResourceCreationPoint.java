@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.ba.Location;
 /**
  * A resource creation point. This serves as an embodiment of the resource for
  * use with ResourceValueAnalysis.
- * 
+ *
  * @author David Hovemeyer
  * @see edu.umd.cs.findbugs.ba.ResourceValueAnalysis
  * @see ResourceTrackingDetector
@@ -42,7 +42,7 @@ public class ResourceCreationPoint {
 
     /**
      * Constructor.
-     * 
+     *
      * @param location
      *            location where resource is created
      * @param resourceClass
@@ -68,4 +68,3 @@ public class ResourceCreationPoint {
     }
 }
 
-// vim:ts=4

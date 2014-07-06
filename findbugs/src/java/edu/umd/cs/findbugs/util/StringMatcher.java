@@ -21,13 +21,13 @@ package edu.umd.cs.findbugs.util;
 
 /**
  * A boolean predicate for matching String values.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface StringMatcher {
     /**
      * Return whether or not the given String matches.
-     * 
+     *
      * @param s
      *            a String
      * @return true if the String matches, false if it does not match

@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.ba;
 /**
  * Constants defining the type of control flow edges, as well as flags defining
  * additional information about the edges.
- * 
+ *
  * @see Edge
  */
 public interface EdgeTypes {
@@ -143,4 +143,3 @@ public interface EdgeTypes {
     public static final int EXPLICIT_EXCEPTIONS_FLAG = 2;
 }
 
-// vim:ts=3

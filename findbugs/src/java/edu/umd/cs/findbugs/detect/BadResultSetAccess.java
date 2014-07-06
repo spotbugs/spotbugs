@@ -77,9 +77,9 @@ public class BadResultSetAccess extends OpcodeStackDetector {
             String clsConstant = getClassConstantOperand();
             if ((clsConstant.equals("java/sql/ResultSet") && ((methodName.startsWith("get") && dbFieldTypesSet
                     .contains(methodName.substring(3))) || (methodName.startsWith("update") && dbFieldTypesSet
-                    .contains(methodName.substring(6)))))
-                    || ((clsConstant.equals("java/sql/PreparedStatement") && ((methodName.startsWith("set") && dbFieldTypesSet
-                            .contains(methodName.substring(3))))))) {
+                            .contains(methodName.substring(6)))))
+                            || ((clsConstant.equals("java/sql/PreparedStatement") && ((methodName.startsWith("set") && dbFieldTypesSet
+                                    .contains(methodName.substring(3))))))) {
                 String signature = getSigConstantOperand();
                 int numParms = PreorderVisitor.getNumberArguments(signature);
                 if (stack.getStackDepth() >= numParms) {
@@ -89,7 +89,7 @@ public class BadResultSetAccess extends OpcodeStackDetector {
                         bugReporter.reportBug(new BugInstance(this,
                                 clsConstant.equals("java/sql/PreparedStatement") ? "SQL_BAD_PREPARED_STATEMENT_ACCESS"
                                         : "SQL_BAD_RESULTSET_ACCESS", item.mustBeZero() ? HIGH_PRIORITY : NORMAL_PRIORITY)
-                                .addClassAndMethod(this).addSourceLine(this));
+                        .addClassAndMethod(this).addSourceLine(this));
                     }
                 }
             }
@@ -98,4 +98,3 @@ public class BadResultSetAccess extends OpcodeStackDetector {
     }
 }
 
-// vim:ts=4

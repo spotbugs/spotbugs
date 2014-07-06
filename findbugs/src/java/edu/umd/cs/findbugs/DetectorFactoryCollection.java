@@ -61,7 +61,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
 
     private static final Logger LOGGER = Logger.getLogger(DetectorFactoryCollection.class.getName());
     private static final boolean DEBUG_JAWS = SystemProperties.getBoolean("findbugs.jaws.debug");
-//    private static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
+    //    private static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
 
     private static DetectorFactoryCollection theInstance;
     private static final Object lock = new Object();
@@ -78,7 +78,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
 
     private final UpdateChecker updateChecker;
     private final CopyOnWriteArrayList<PluginUpdateListener> pluginUpdateListeners
-            = new CopyOnWriteArrayList<PluginUpdateListener>();
+    = new CopyOnWriteArrayList<PluginUpdateListener>();
     private volatile List<UpdateChecker.PluginUpdate> updates;
     private boolean updatesForced;
     private final Collection<Plugin> pluginsToUpdate;
@@ -166,31 +166,31 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         }
     }
 
-     private void setGlobalOptions() {
-         globalOptions.clear();
-         globalOptionsSetter.clear();
+    private void setGlobalOptions() {
+        globalOptions.clear();
+        globalOptionsSetter.clear();
 
-         for(Plugin p : plugins()) {
-             if (p.isGloballyEnabled()) {
-                 for(Map.Entry<String, String> e : p.getMyGlobalOptions().entrySet()) {
-                     String key = e.getKey();
-                     String value = e.getValue();
-                     String oldValue = globalOptions.get(key);
+        for(Plugin p : plugins()) {
+            if (p.isGloballyEnabled()) {
+                for(Map.Entry<String, String> e : p.getMyGlobalOptions().entrySet()) {
+                    String key = e.getKey();
+                    String value = e.getValue();
+                    String oldValue = globalOptions.get(key);
 
-                     if (oldValue != null) {
-                         if (oldValue.equals(value)) {
-                             continue;
-                         }
-                         Plugin oldP = globalOptionsSetter.get(key);
-                         throw new RuntimeException(
-                                 "Incompatible global options for " + key + "; conflict between " + oldP.getPluginId() + " and " + p.getPluginId());
-                     }
-                     globalOptions.put(key, value);
-                     globalOptionsSetter.put(key, p);
-                 }
-             }
-         }
-     }
+                    if (oldValue != null) {
+                        if (oldValue.equals(value)) {
+                            continue;
+                        }
+                        Plugin oldP = globalOptionsSetter.get(key);
+                        throw new RuntimeException(
+                                "Incompatible global options for " + key + "; conflict between " + oldP.getPluginId() + " and " + p.getPluginId());
+                    }
+                    globalOptions.put(key, value);
+                    globalOptionsSetter.put(key, p);
+                }
+            }
+        }
+    }
     @Override
     public  @CheckForNull String getGlobalOption(String key) {
         return globalOptions.get(key);
@@ -218,8 +218,9 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
 
     @Nonnull
     public Plugin getCorePlugin() {
-        if (corePlugin == null)
+        if (corePlugin == null) {
             throw new IllegalStateException("No core plugin");
+        }
         return corePlugin;
     }
 
@@ -279,8 +280,9 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
      * Register a DetectorFactory.
      */
     void registerDetector(DetectorFactory factory) {
-        if (FindBugs.DEBUG)
+        if (FindBugs.DEBUG) {
             System.out.println("Registering detector: " + factory.getFullName());
+        }
         String detectorName = factory.getShortName();
         if(!factoryList.contains(factory)) {
             factoryList.add(factory);
@@ -293,8 +295,9 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
     }
 
     void unRegisterDetector(DetectorFactory factory) {
-        if (FindBugs.DEBUG)
+        if (FindBugs.DEBUG) {
             System.out.println("Unregistering detector: " + factory.getFullName());
+        }
         String detectorName = factory.getShortName();
         factoryList.remove(factory);
         factoriesByName.remove(detectorName);
@@ -369,10 +372,11 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
     }
 
     public static void jawsDebugMessage(String message) {
-        if (DEBUG_JAWS)
+        if (DEBUG_JAWS) {
             JOptionPane.showMessageDialog(null, message);
-        else if (FindBugs.DEBUG)
+        } else if (FindBugs.DEBUG) {
             System.err.println(message);
+        }
     }
 
     void loadPlugin(Plugin plugin)  {
@@ -463,7 +467,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         return results;
     }
 
-    
+
     public  Map<String, CloudPlugin> getRegisteredClouds() {
         return Collections.unmodifiableMap(registeredClouds);
     }
@@ -488,8 +492,9 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
      */
     public boolean registerBugCategory(BugCategory bc) {
         String category = bc.getCategory();
-        if (categoryDescriptionMap.get(category) != null)
+        if (categoryDescriptionMap.get(category) != null) {
             return false;
+        }
         categoryDescriptionMap.put(category, bc);
         return true;
     }
@@ -525,7 +530,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
      * Get an Iterator over all registered bug patterns.
      */
     public Collection<BugPattern> getBugPatterns() {
-       return bugPatternMap.values();
+        return bugPatternMap.values();
     }
 
     /**
@@ -562,8 +567,9 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
      */
     public @Nonnull BugCode getBugCode(String shortBugType) {
         BugCode bugCode = lookupBugCode(shortBugType);
-        if (bugCode == null)
+        if (bugCode == null) {
             throw new IllegalArgumentException("Error: missing bug code for key" + shortBugType);
+        }
         return bugCode;
     }
 
@@ -597,11 +603,13 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
      */
     public Collection<String> getBugCategories() {
         ArrayList<String> result = new ArrayList<String>(categoryDescriptionMap.size());
-        for(BugCategory c : categoryDescriptionMap.values())
-            if (!c.isHidden())
+        for(BugCategory c : categoryDescriptionMap.values()) {
+            if (!c.isHidden()) {
                 result.add(c.getCategory());
+            }
+        }
         return result;
-   }
+    }
 
     public Collection<BugCategory> getBugCategoryObjects() {
         return categoryDescriptionMap.values(); // backed by the Map

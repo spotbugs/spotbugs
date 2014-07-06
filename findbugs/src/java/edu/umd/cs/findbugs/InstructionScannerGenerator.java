@@ -38,4 +38,3 @@ public interface InstructionScannerGenerator {
     public InstructionScanner createScanner();
 }
 
-// vim:ts=4

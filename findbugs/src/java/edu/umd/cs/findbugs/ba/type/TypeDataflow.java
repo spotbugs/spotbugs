@@ -69,4 +69,3 @@ public class TypeDataflow extends Dataflow<TypeFrame, TypeAnalysis> {
     }
 }
 
-// vim:ts=4

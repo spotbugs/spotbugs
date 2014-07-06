@@ -44,4 +44,3 @@ public interface InstructionScanner {
     public boolean isDone();
 }
 
-// vim:ts=4

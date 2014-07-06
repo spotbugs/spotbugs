@@ -39,7 +39,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class FindBugsSummaryStats extends PreorderVisitor implements Detector, BugReporterObserver, NonReportingDetector {
-    private ProjectStats stats;
+    private final ProjectStats stats;
 
     BitSet lines = new BitSet(500);
 
@@ -61,8 +61,9 @@ public class FindBugsSummaryStats extends PreorderVisitor implements Detector, B
 
     @Override
     public void visitJavaClass(JavaClass obj) {
-        if (AnalysisContext.currentAnalysisContext().isApplicationClass(obj))
+        if (AnalysisContext.currentAnalysisContext().isApplicationClass(obj)) {
             super.visitJavaClass(obj);
+        }
     }
 
     @Override
@@ -93,12 +94,14 @@ public class FindBugsSummaryStats extends PreorderVisitor implements Detector, B
     @Override
     public void visitAfter(JavaClass obj) {
         int linesNCSS = 1 + methods + fields;
-        if (sawLineNumbers)
+        if (sawLineNumbers) {
             linesNCSS += lines.cardinality();
-        else
+        } else {
             linesNCSS += classCodeSize / 10;
-        if (stats != null)
+        }
+        if (stats != null) {
             stats.addClass(getDottedClassName(), obj.getSourceFileName(), obj.isInterface(), linesNCSS);
+        }
         totalCodeSize += classCodeSize;
         totalNCSS += linesNCSS;
         totalMethods += methods;

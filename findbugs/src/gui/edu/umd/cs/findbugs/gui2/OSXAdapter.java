@@ -101,8 +101,9 @@ public class OSXAdapter extends ApplicationAdapter {
     // that needs to be called at runtime, and it can easily be done using
     // reflection (see MyApp.java)
     public static void registerMacOSXApplication(MainFrame inApp) {
-        if (mainApp != null)
+        if (mainApp != null) {
             throw new IllegalStateException("application already set");
+        }
 
         mainApp = inApp;
 

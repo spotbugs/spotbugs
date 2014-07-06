@@ -56,8 +56,9 @@ public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackD
     public void visit(Code obj) {
         if (getMethodName().equals("equals") && getMethodSig().equals("(Ljava/lang/Object;)Z")) {
             super.visit(obj);
-            if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass()))
+            if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass())) {
                 bugAccumulator.reportAccumulatedBugs();
+            }
             bugAccumulator.clearBugs();
         }
 
@@ -65,7 +66,7 @@ public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackD
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
      */
     @Override
@@ -102,21 +103,24 @@ public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackD
         OpcodeStack.Item item = stack.getStackItem(0);
         if (item.isInitialParameter() && item.getRegisterNumber() == 1) {
             ClassDescriptor thisClassDescriptor = getClassDescriptor();
-            if (c.equals(thisClassDescriptor))
+            if (c.equals(thisClassDescriptor)) {
                 return;
+            }
             Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
             try {
-                if (!c.isArray() && (subtypes2.isSubtype(c, thisClassDescriptor) || subtypes2.isSubtype(thisClassDescriptor, c)))
+                if (!c.isArray() && (subtypes2.isSubtype(c, thisClassDescriptor) || subtypes2.isSubtype(thisClassDescriptor, c))) {
                     return;
+                }
 
                 Type thisType = Type.getType(thisClassDescriptor.getSignature());
                 Type cType = Type.getType(c.getSignature());
                 IncompatibleTypes check = IncompatibleTypes.getPriorityForAssumingCompatible(thisType, cType, false);
                 int priority = check.getPriority();
-                if ("java/lang/Object".equals(getSuperclassName()) && ClassName.isAnonymous(getClassName()))
+                if ("java/lang/Object".equals(getSuperclassName()) && ClassName.isAnonymous(getClassName())) {
                     priority++;
+                }
                 bugAccumulator.accumulateBug(new BugInstance(this, "EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS", priority)
-                        .addClassAndMethod(this).addType(c).describe(TypeAnnotation.FOUND_ROLE), this);
+                .addClassAndMethod(this).addType(c).describe(TypeAnnotation.FOUND_ROLE), this);
                 classSummary.checksForEqualTo(thisClassDescriptor, c);
 
             } catch (ClassNotFoundException e) {

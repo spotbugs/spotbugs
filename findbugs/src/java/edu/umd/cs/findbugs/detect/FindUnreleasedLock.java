@@ -67,7 +67,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 
 class Lock extends ResourceCreationPoint {
-    private ValueNumber lockValue;
+    private final ValueNumber lockValue;
 
     public Lock(Location location, String lockClass, ValueNumber lockValue) {
         super(location, lockClass);
@@ -85,11 +85,11 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
     private int numAcquires = 0;
 
     private static class LockFrameModelingVisitor extends ResourceValueFrameModelingVisitor {
-        private LockResourceTracker resourceTracker;
+        private final LockResourceTracker resourceTracker;
 
-        private Lock lock;
+        private final Lock lock;
 
-        private ValueNumberDataflow vnaDataflow;
+        private final ValueNumberDataflow vnaDataflow;
 
         // private IsNullValueDataflow isNullDataflow;
 
@@ -110,25 +110,29 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
             int status = -1;
 
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("PC : " + handle.getPosition() + " " + ins);
+            }
             if (DEBUG && ins instanceof InvokeInstruction) {
                 InvokeInstruction iins = (InvokeInstruction) ins;
                 System.out.println("  " + ins.toString(cpg.getConstantPool()));
             }
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("resource frame before instruction: " + frame.toString());
+            }
 
             // Is a lock acquired or released by this instruction?
             Location creationPoint = lock.getLocation();
             if (handle == creationPoint.getHandle() && basicBlock == creationPoint.getBasicBlock()) {
                 status = ResourceValueFrame.OPEN;
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("OPEN");
+                }
             } else if (resourceTracker.isResourceClose(basicBlock, handle, cpg, lock, frame)) {
                 status = ResourceValueFrame.CLOSED;
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("CLOSE");
+                }
             }
 
             // Model use of instance values in frame slots
@@ -141,20 +145,23 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
             if (DEBUG) {
                 System.out.println("vna frame after instruction: " + vnaFrame.toString());
                 System.out.println("Lock value number: " + lock.getLockValue());
-                if (lock.getLockValue().hasFlag(ValueNumber.RETURN_VALUE))
+                if (lock.getLockValue().hasFlag(ValueNumber.RETURN_VALUE)) {
                     System.out.println("is return value");
+                }
             }
 
             for (int i = 0; i < updatedNumSlots; ++i) {
                 if (DEBUG) {
                     System.out.println("Slot " + i);
                     System.out.println("  Lock value number: " + vnaFrame.getValue(i));
-                    if (vnaFrame.getValue(i).hasFlag(ValueNumber.RETURN_VALUE))
+                    if (vnaFrame.getValue(i).hasFlag(ValueNumber.RETURN_VALUE)) {
                         System.out.println("  is return value");
+                    }
                 }
                 if (vnaFrame.fuzzyMatch(lock.getLockValue(), vnaFrame.getValue(i))) {
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("Saw lock value!");
+                    }
                     frame.setValue(i, ResourceValue.instance());
                 }
             }
@@ -163,8 +170,9 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
             if (status != -1) {
                 frame.setStatus(status);
             }
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("resource frame after instruction: " + frame.toString());
+            }
 
         }
 
@@ -175,13 +183,13 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
     }
 
     class LockResourceTracker implements ResourceTracker<Lock> {
-        private RepositoryLookupFailureCallback lookupFailureCallback;
+        private final RepositoryLookupFailureCallback lookupFailureCallback;
 
-        private CFG cfg;
+        private final CFG cfg;
 
-        private ValueNumberDataflow vnaDataflow;
+        private final ValueNumberDataflow vnaDataflow;
 
-        private IsNullValueDataflow isNullDataflow;
+        private final IsNullValueDataflow isNullDataflow;
 
         public LockResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback, CFG cfg,
                 ValueNumberDataflow vnaDataflow, IsNullValueDataflow isNullDataflow) {
@@ -196,8 +204,9 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
                 throws DataflowAnalysisException {
 
             InvokeInstruction inv = toInvokeInstruction(handle.getInstruction());
-            if (inv == null)
+            if (inv == null) {
                 return null;
+            }
 
             String className = inv.getClassName(cpg);
             String methodName = inv.getName(cpg);
@@ -210,10 +219,12 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
                     Location location = new Location(handle, basicBlock);
                     ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
                     ValueNumber lockValue = frame.getTopValue();
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.println("Lock value is " + lockValue.getNumber() + ", frame=" + frame.toString());
-                    if (DEBUG)
+                    }
+                    if (DEBUG) {
                         ++numAcquires;
+                    }
                     return new Lock(location, className, lockValue);
                 }
             } catch (ClassNotFoundException e) {
@@ -226,8 +237,9 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
         public boolean mightCloseResource(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg)
                 throws DataflowAnalysisException {
             InvokeInstruction inv = toInvokeInstruction(handle.getInstruction());
-            if (inv == null)
+            if (inv == null) {
                 return false;
+            }
 
             String className = inv.getClassName(cpg);
             String methodName = inv.getName(cpg);
@@ -250,8 +262,9 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
         public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Lock resource,
                 ResourceValueFrame frame) throws DataflowAnalysisException {
 
-            if (!mightCloseResource(basicBlock, handle, cpg))
+            if (!mightCloseResource(basicBlock, handle, cpg)) {
                 return false;
+            }
             ResourceValue topValue = frame.getTopValue();
             return topValue.isInstance();
 
@@ -287,11 +300,13 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
                     }
                     // Ignore exceptions from getfield instructions where the
                     // object reference is known not to be null
-                    if (fieldName.equals("lock"))
+                    if (fieldName.equals("lock")) {
                         return true;
+                    }
                     IsNullValueFrame frame = isNullDataflow.getFactAtLocation(location);
-                    if (!frame.isValid())
+                    if (!frame.isValid()) {
                         return false;
+                    }
                     IsNullValue receiver = frame.getInstance(ins, cpg);
                     boolean notNull = receiver.isDefinitelyNotNull();
                     if (DEBUG && notNull) {
@@ -302,12 +317,15 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
                     InvokeInstruction iins = (InvokeInstruction) ins;
                     String methodName = iins.getMethodName(cpg);
                     // System.out.println("Method " + methodName);
-                    if (methodName.startsWith("access$"))
+                    if (methodName.startsWith("access$")) {
                         return true;
-                    if (methodName.equals("readLock") || methodName.equals("writeLock"))
+                    }
+                    if (methodName.equals("readLock") || methodName.equals("writeLock")) {
                         return true;
-                    if (methodName.equals("lock") || methodName.equals("unlock"))
+                    }
+                    if (methodName.equals("lock") || methodName.equals("unlock")) {
                         return true;
+                    }
                 }
                 if (DEBUG) {
                     System.out.println("FOUND Exception thrower at: " + location);
@@ -328,8 +346,9 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
         private InvokeInstruction toInvokeInstruction(Instruction ins) {
             short opcode = ins.getOpcode();
-            if (opcode != Constants.INVOKEVIRTUAL && opcode != Constants.INVOKEINTERFACE)
+            if (opcode != Constants.INVOKEVIRTUAL && opcode != Constants.INVOKEINTERFACE) {
                 return null;
+            }
             return (InvokeInstruction) ins;
         }
     }
@@ -346,7 +365,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba
      * .ClassContext)
@@ -358,31 +377,37 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
         // We can ignore classes that were compiled for anything
         // less than JDK 1.5. This should avoid lots of unnecessary work
         // when analyzing code for older VM targets.
-        if (BCELUtil.preTiger(jclass))
+        if (BCELUtil.preTiger(jclass)) {
             return;
+        }
 
         boolean sawUtilConcurrentLocks = false;
-        for (Constant c : jclass.getConstantPool().getConstantPool())
+        for (Constant c : jclass.getConstantPool().getConstantPool()) {
             if (c instanceof ConstantMethodref) {
                 ConstantMethodref m = (ConstantMethodref) c;
                 ConstantClass cl = (ConstantClass) jclass.getConstantPool().getConstant(m.getClassIndex());
                 ConstantUtf8 name = (ConstantUtf8) jclass.getConstantPool().getConstant(cl.getNameIndex());
                 String nameAsString = name.getBytes();
-                if (nameAsString.startsWith("java/util/concurrent/locks"))
+                if (nameAsString.startsWith("java/util/concurrent/locks")) {
                     sawUtilConcurrentLocks = true;
+                }
 
             }
-        if (sawUtilConcurrentLocks)
+        }
+        if (sawUtilConcurrentLocks) {
             super.visitClassContext(classContext);
+        }
     }
 
     @Override
     public boolean prescreen(ClassContext classContext, Method method, boolean mightClose) {
-        if (!mightClose)
+        if (!mightClose) {
             return false;
+        }
         BitSet bytecodeSet = classContext.getBytecodeSet(method);
-        if (bytecodeSet == null)
+        if (bytecodeSet == null) {
             return false;
+        }
 
         MethodGen methodGen = classContext.getMethodGen(method);
 
@@ -392,7 +417,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
     @Override
     public LockResourceTracker getResourceTracker(ClassContext classContext, Method method) throws CFGBuilderException,
-            DataflowAnalysisException {
+    DataflowAnalysisException {
         return new LockResourceTracker(bugReporter, classContext.getCFG(method), classContext.getValueNumberDataflow(method),
                 classContext.getIsNullValueDataflow(method));
     }
@@ -425,7 +450,9 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
             InstructionHandle handle = location.getHandle();
             InstructionHandle nextInstruction = handle.getNext();
             if (nextInstruction.getInstruction() instanceof RETURN)
+            {
                 return; // don't report as error; intentional
+            }
             bugAccumulator.accumulateBug(new BugInstance(this, bugType, priority).addClassAndMethod(methodGen, sourceFile),
                     SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle));
         }
@@ -433,8 +460,9 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
     @Override
     public void report() {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("numAcquires=" + numAcquires);
+        }
     }
 
     // /* ----------------------------------------------------------------------
@@ -476,4 +504,3 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
     // }
 }
 
-// vim:ts=4

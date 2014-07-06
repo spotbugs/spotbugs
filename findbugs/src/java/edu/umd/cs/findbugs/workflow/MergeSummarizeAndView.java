@@ -102,10 +102,11 @@ public class MergeSummarizeAndView {
          */
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
-            if (option.equals("-gui"))
+            if (option.equals("-gui")) {
                 options.alwaysShowGui = true;
-            else
+            } else {
                 throw new IllegalArgumentException("Unknown option : " + option);
+            }
         }
 
         /*
@@ -117,24 +118,25 @@ public class MergeSummarizeAndView {
          */
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
-            if (option.equals("-workingDir"))
+            if (option.equals("-workingDir")) {
                 options.workingDirList = Arrays.asList(argument.split(","));
-            else if (option.equals("-srcDir"))
+            } else if (option.equals("-srcDir")) {
                 options.srcDirList = Arrays.asList(argument.split(","));
-            else if (option.equals("-maxRank"))
+            } else if (option.equals("-maxRank")) {
                 options.maxRank = Integer.parseInt(argument);
-            else if (option.equals("-maxAge"))
+            } else if (option.equals("-maxAge")) {
                 options.maxAge = Integer.parseInt(argument);
-            else if (option.equals("-cloud"))
+            } else if (option.equals("-cloud")) {
                 options.cloudId = argument;
-            else if (option.equals("-baseline"))
+            } else if (option.equals("-baseline")) {
                 try {
                     options.baselineDate = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH).parse(argument);
                 } catch (ParseException e) {
                     System.err.println("Date " + argument + " not in MM/dd/yyyy format (e.g., 05/13/2009)");
                 }
-            else
+            } else {
                 throw new IllegalArgumentException("Unknown option : " + option);
+            }
         }
 
     }
@@ -171,8 +173,9 @@ public class MergeSummarizeAndView {
         int argCount = commandLine.parse(argv, 1, Integer.MAX_VALUE, "Usage: " + MergeSummarizeAndView.class.getName()
                 + " [options] [<results1> <results2> ... <resultsn>] ");
 
-        for (int i = argCount; i < argv.length; i++)
+        for (int i = argCount; i < argv.length; i++) {
             options.analysisFiles.add(argv[i]);
+        }
         MergeSummarizeAndView msv = new MergeSummarizeAndView(options);
         boolean isCloudManagedByGui = false;
         try {
@@ -318,16 +321,18 @@ public class MergeSummarizeAndView {
         long old = System.currentTimeMillis() - options.maxAge * (24 * 3600 * 1000L);
         if (options.baselineDate != null) {
             long old2 = options.baselineDate.getTime();
-            if (old2 > old)
+            if (old2 > old) {
                 old = old2;
+            }
         }
 
         scaryBugs = results.createEmptyCollectionWithMetadata();
-        for (BugInstance warning : results.getCollection())
+        for (BugInstance warning : results.getCollection()) {
             if (!project.getSuppressionFilter().match(warning)) {
                 int rank = BugRanker.findRank(warning);
-                if (rank > BugRanker.VISIBLE_RANK_MAX)
+                if (rank > BugRanker.VISIBLE_RANK_MAX) {
                     continue;
+                }
                 if (cloud.getConsensusDesignation(warning).score() < 0) {
                     harmless++;
                     continue;
@@ -336,13 +341,15 @@ public class MergeSummarizeAndView {
                 long firstSeen = cloud.getFirstSeen(warning);
                 boolean isOld = FindBugs.validTimestamp(firstSeen) && firstSeen < old;
                 boolean highRank = rank > options.maxRank;
-                if (highRank)
+                if (highRank) {
                     numLowConfidence++;
-                else if (isOld)
+                } else if (isOld) {
                     tooOld++;
-                else
+                } else {
                     scaryBugs.add(warning);
+                }
             }
+        }
     }
 
     private boolean report() {
@@ -365,12 +372,15 @@ public class MergeSummarizeAndView {
             if (hasScaryBugs) {
                 System.out.println();
                 System.out.print("plus ");
-                if (numLowConfidence > 0)
+                if (numLowConfidence > 0) {
                     System.out.printf("%d less scary recent issues", numLowConfidence);
-                if (numLowConfidence > 0 && tooOld > 0)
+                }
+                if (numLowConfidence > 0 && tooOld > 0) {
                     System.out.printf(" and ");
-                if (tooOld > 0)
+                }
+                if (tooOld > 0) {
                     System.out.printf("%d older issues", tooOld);
+                }
                 System.out.println();
             }
         }
@@ -410,4 +420,3 @@ public class MergeSummarizeAndView {
 
 }
 
-// vim:ts=3

@@ -221,7 +221,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
      */
     @Override
     public void build(IClassPath classPath, IClassPathBuilderProgress progress) throws CheckedAnalysisException, IOException,
-            InterruptedException {
+    InterruptedException {
         // Discover all directly and indirectly referenced codebases
         processWorkList(classPath, projectWorkList, progress);
 
@@ -627,9 +627,11 @@ public class ClassPathBuilder implements IClassPathBuilder {
                 scanJarManifestForClassPathEntries(workList, discoveredCodeBase.getCodeBase());
             } catch (IOException e) {
                 if (item.isAppCodeBase() || item.getHowDiscovered() == ICodeBase.Discovered.SPECIFIED) {
-                    if (e instanceof FileNotFoundException)
+                    if (e instanceof FileNotFoundException) {
                         errorLogger.logError("File not found: " + item.getCodeBaseLocator());
-                    else errorLogger.logError("Cannot open codebase " + item.getCodeBaseLocator(), e);
+                    } else {
+                        errorLogger.logError("Cannot open codebase " + item.getCodeBaseLocator(), e);
+                    }
                 }
             } catch (ResourceNotFoundException e) {
                 if (item.getHowDiscovered() == ICodeBase.Discovered.SPECIFIED) {

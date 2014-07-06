@@ -24,15 +24,15 @@ import edu.umd.cs.findbugs.Plugin;
 
 /**
  * Select all detector factories for reporting detectors.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ReportingDetectorFactorySelector implements DetectorFactorySelector {
-    private Plugin plugin;
+    private final Plugin plugin;
 
     /**
      * Constructor.
-     * 
+     *
      * @param plugin
      *            Plugin containing detector factories to be selected; if null,
      *            factories from any Plugin may be selected
@@ -43,7 +43,7 @@ public class ReportingDetectorFactorySelector implements DetectorFactorySelector
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.plan.DetectorFactorySelector#selectFactory(edu.umd
      * .cs.findbugs.DetectorFactory)

@@ -31,7 +31,7 @@ public class ProgramPoint {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -45,25 +45,31 @@ public class ProgramPoint {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         ProgramPoint other = (ProgramPoint) obj;
         if (method == null) {
-            if (other.method != null)
+            if (other.method != null) {
                 return false;
-        } else if (!method.equals(other.method))
+            }
+        } else if (!method.equals(other.method)) {
             return false;
-        if (pc != other.pc)
+        }
+        if (pc != other.pc) {
             return false;
+        }
         return true;
     }
 

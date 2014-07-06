@@ -56,8 +56,9 @@ public class Obfuscate {
     }
 
     public static String hashClass(@DottedClassName String className) {
-        if (className.startsWith("java"))
+        if (className.startsWith("java")) {
             return className;
+        }
         return "obfuscated.H" + hashData(className);
     }
 
@@ -76,12 +77,14 @@ public class Obfuscate {
         case 'J':
         case 'D':
         case 'F':
-            if (signature.length() == 1)
+            if (signature.length() == 1) {
                 return signature;
+            }
             throw new IllegalArgumentException("bad signature: " + signature);
         case 'L':
-            if (!signature.endsWith(";"))
+            if (!signature.endsWith(";")) {
                 throw new IllegalArgumentException("bad signature: " + signature);
+            }
             return hashFieldSignature(signature);
         default:
             throw new IllegalArgumentException("bad signature: " + signature);
@@ -90,11 +93,12 @@ public class Obfuscate {
 
     public static String hashFieldSignature(String signature) {
         signature = signature.substring(1, signature.length() - 1);
-        if (!signature.startsWith("java"))
-                signature = "obfuscated/H" + hashData(signature);
+        if (!signature.startsWith("java")) {
+            signature = "obfuscated/H" + hashData(signature);
+        }
         return "L" + signature + ";";
     }
-    
+
     public static String hashMethodSignature(String signature) {
         SignatureParser parser = new SignatureParser(signature);
         StringBuilder buf = new StringBuilder("(");
@@ -110,8 +114,9 @@ public class Obfuscate {
 
     static MethodAnnotation obfuscate(MethodAnnotation m) {
         String className = m.getClassName();
-        if (className.startsWith("java"))
+        if (className.startsWith("java")) {
             return m;
+        }
 
         String methodName = m.getMethodName();
         String methodSignature = m.getMethodSignature();
@@ -138,7 +143,7 @@ public class Obfuscate {
         return result;
 
     }
-    
+
 
     static ClassAnnotation obfuscate(ClassAnnotation m) {
         ClassAnnotation result = new ClassAnnotation(hashClass(m.getClassName()));
@@ -235,8 +240,9 @@ public class Obfuscate {
 
             }
         };
-        for (BugAnnotation a : b.getAnnotations())
+        for (BugAnnotation a : b.getAnnotations()) {
             a.accept(visitor);
+        }
         result.setOldInstanceHash(hashData(b.getInstanceHash()));
         result.setHistory(b);
         return result;

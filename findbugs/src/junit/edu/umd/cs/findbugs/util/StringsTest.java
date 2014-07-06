@@ -24,27 +24,27 @@ import junit.framework.TestCase;
 public class StringsTest extends TestCase {
 
     public static String[] escapedStrings = {
-            // mixed entities/unicode escape sequences
-            "a b c 1 2 3 &amp; &lt; &gt; &quot; &apos; \\u0005 \\u0013 &#955; \\\\u0007",
-            // *even* series of prefixed slashes + \\u -> do escape
-            "a b c \\\\\\u0005",
-            // *odd* series of prefixed slashes + \\u -> don't escape
-            "a b c \\\\\\\\u0005",
-            // mixed even/odd prefixed slashes
-            "a b c \\\\\\u0005 \\\\\\\\u0013",
-            // make sure slashes work on their own (no double un/escaping)
-            "\\\\\\",
-            // make sure that normal characters are handled correctly if they
-            // appear after escapes
-            "a b c 1 2 3 &amp; &lt; &gt; &quot; &apos; \\u0005 \\u0013 &#955; \\\\u0007 a b c 1 2 3",
-            // escaping a null string should be safe
-            null,
-            // an empty string should be safe too
-            "", };
+        // mixed entities/unicode escape sequences
+        "a b c 1 2 3 &amp; &lt; &gt; &quot; &apos; \\u0005 \\u0013 &#955; \\\\u0007",
+        // *even* series of prefixed slashes + \\u -> do escape
+        "a b c \\\\\\u0005",
+        // *odd* series of prefixed slashes + \\u -> don't escape
+        "a b c \\\\\\\\u0005",
+        // mixed even/odd prefixed slashes
+        "a b c \\\\\\u0005 \\\\\\\\u0013",
+        // make sure slashes work on their own (no double un/escaping)
+        "\\\\\\",
+        // make sure that normal characters are handled correctly if they
+        // appear after escapes
+        "a b c 1 2 3 &amp; &lt; &gt; &quot; &apos; \\u0005 \\u0013 &#955; \\\\u0007 a b c 1 2 3",
+        // escaping a null string should be safe
+        null,
+        // an empty string should be safe too
+        "", };
 
     public static String[] unescapedStrings = { "a b c 1 2 3 & < > \" ' \u0005 \u0013 \u03BB \\\\u0007", "a b c \\\\\u0005",
-            "a b c \\\\\\\\u0005", "a b c \\\\\u0005 \\\\\\\\u0013", "\\\\\\",
-            "a b c 1 2 3 & < > \" ' \u0005 \u0013 \u03BB \\\\u0007 a b c 1 2 3", null, "", };
+        "a b c \\\\\\\\u0005", "a b c \\\\\u0005 \\\\\\\\u0013", "\\\\\\",
+        "a b c 1 2 3 & < > \" ' \u0005 \u0013 \u03BB \\\\u0007 a b c 1 2 3", null, "", };
 
     public void testEscapeXml() {
         assert (escapedStrings.length == unescapedStrings.length);

@@ -23,7 +23,7 @@ import edu.umd.cs.findbugs.props.PriorityAdjustment;
 
 /**
  * Warning properties for inconsistent synchronization detector.
- * 
+ *
  * @author David Hovemeyer
  */
 public class InconsistentSyncWarningProperty extends AbstractWarningProperty {

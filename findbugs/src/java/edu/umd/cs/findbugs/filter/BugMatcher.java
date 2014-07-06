@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Match bug instances having one of given codes or patterns.
- * 
+ *
  * @author rafal@caltha.pl
  */
 public class BugMatcher implements Matcher {
@@ -41,7 +41,7 @@ public class BugMatcher implements Matcher {
 
     /**
      * Constructor.
-     * 
+     *
      * @param codes
      *            comma-separated list of bug codes
      * @param patterns
@@ -60,10 +60,11 @@ public class BugMatcher implements Matcher {
         boolean result1 = codes.match(bugInstance.getAbbrev());
         boolean result2 = patterns.match(bugInstance.getType());
         boolean result3 = categories.match(bugInstance.getBugPattern().getCategory());
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Matching " + bugInstance.getAbbrev() + "/" + bugInstance.getType() + "/"
                     + bugInstance.getBugPattern().getCategory() + " with " + this + ", result = " + result1 + "/" + result2 + "/"
                     + result3);
+        }
 
         return result1 || result2 || result3;
     }
@@ -75,8 +76,9 @@ public class BugMatcher implements Matcher {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof BugMatcher))
+        if (!(o instanceof BugMatcher)) {
             return false;
+        }
         BugMatcher other = (BugMatcher) o;
         return codes.equals(other.codes) && patterns.equals(other.patterns) && categories.equals(other.categories);
     }
@@ -84,8 +86,9 @@ public class BugMatcher implements Matcher {
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         xmlOutput.startTag("Bug");
-        if (disabled)
+        if (disabled) {
             xmlOutput.addAttribute("disabled", "true");
+        }
 
         addAttribute(xmlOutput, "code", codes);
         addAttribute(xmlOutput, "pattern", patterns);
@@ -95,19 +98,23 @@ public class BugMatcher implements Matcher {
 
     public void addAttribute(XMLOutput xmlOutput, String name, StringSetMatch matches) throws IOException {
         String value = matches.toString();
-        if (value.length() != 0)
+        if (value.length() != 0) {
             xmlOutput.addAttribute(name, value);
+        }
     }
 
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder("Bug(");
-        if (!codes.isEmpty())
+        if (!codes.isEmpty()) {
             buf.append("code = \"").append(codes).append("\" ");
-        if (!patterns.isEmpty())
+        }
+        if (!patterns.isEmpty()) {
             buf.append("pattern = \"").append(patterns).append("\" ");
-        if (!categories.isEmpty())
+        }
+        if (!categories.isEmpty()) {
             buf.append("category = \"").append(categories).append("\" ");
+        }
         buf.setLength(buf.length() - 1);
         buf.append(")");
         return buf.toString();

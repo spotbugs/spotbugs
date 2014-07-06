@@ -74,7 +74,7 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     public boolean waitUntilIssueDataDownloaded(long timeout, TimeUnit unit) throws InterruptedException {
         return true;
     }
-    
+
     @Override
     public Mode getMode() {
         return Mode.COMMUNAL;
@@ -89,8 +89,9 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     @Override
     public UserDesignation getUserDesignation(BugInstance b) {
         BugDesignation bd = b.getUserDesignation();
-        if (bd == null)
+        if (bd == null) {
             return UserDesignation.UNCLASSIFIED;
+        }
         return UserDesignation.valueOf(bd.getDesignationKey());
     }
 
@@ -98,8 +99,9 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     @Override
     public String getUserEvaluation(BugInstance b) {
         BugDesignation bd = b.getUserDesignation();
-        if (bd == null)
+        if (bd == null) {
             return "";
+        }
         return bd.getAnnotationText();
     }
 
@@ -107,8 +109,9 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     @Override
     public long getUserTimestamp(BugInstance b) {
         BugDesignation bd = b.getUserDesignation();
-        if (bd == null)
+        if (bd == null) {
             return Long.MAX_VALUE;
+        }
         return bd.getTimestamp();
     }
 
@@ -163,8 +166,9 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     @Override
     protected Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance bd) {
         BugDesignation designation = getPrimaryDesignation(bd);
-        if (designation == null)
+        if (designation == null) {
             return Collections.emptySet();
+        }
         return Collections.singleton(designation);
     }
 
@@ -189,8 +193,9 @@ public class BugCollectionStorageCloud extends AbstractCloud {
 
     @Override
     public void addDateSeen(BugInstance b, long when) {
-        if (when > 0)
-          b.getXmlProps().setFirstSeen(new Date(when));
+        if (when > 0) {
+            b.getXmlProps().setFirstSeen(new Date(when));
+        }
     }
 
 }

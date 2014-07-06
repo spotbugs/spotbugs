@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 /**
  * Analysis engine to produce UnconditionalValueDerefDataflow objects for
  * analyzed methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public class UnconditionalValueDerefDataflowFactory extends AnalysisFactory<UnconditionalValueDerefDataflow> {
@@ -48,7 +48,7 @@ public class UnconditionalValueDerefDataflowFactory extends AnalysisFactory<Unco
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)

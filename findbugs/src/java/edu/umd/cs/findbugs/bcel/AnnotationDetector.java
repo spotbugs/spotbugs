@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 /**
  * Base class for Detectors which want to perform a preorder traversal of the
  * classfile including visiting Annotations.
- * 
+ *
  * @see AnnotationVisitor
  */
 abstract public class AnnotationDetector extends AnnotationVisitor implements Detector, UseAnnotationDatabase {
@@ -41,7 +41,7 @@ abstract public class AnnotationDetector extends AnnotationVisitor implements De
 
     /**
      * Get the ClassContext of the class currently being visited.
-     * 
+     *
      * @return the current ClassContext
      */
     public ClassContext getClassContext() {
@@ -53,4 +53,3 @@ abstract public class AnnotationDetector extends AnnotationVisitor implements De
     }
 }
 
-// vim:ts=4

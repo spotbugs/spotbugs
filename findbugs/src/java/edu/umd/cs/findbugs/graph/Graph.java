@@ -52,7 +52,7 @@ public interface Graph<EdgeType extends GraphEdge<EdgeType, VertexType>, VertexT
     /**
      * Add given vertex to the graph. The vertex should not be part of any other
      * graph.
-     * 
+     *
      * @param v
      *            the vertex to add
      */
@@ -60,7 +60,7 @@ public interface Graph<EdgeType extends GraphEdge<EdgeType, VertexType>, VertexT
 
     /**
      * Determine if the graph contains the given vertex.
-     * 
+     *
      * @param v
      *            the vertex
      * @return true if the vertex is part of the graph, false if not
@@ -70,7 +70,7 @@ public interface Graph<EdgeType extends GraphEdge<EdgeType, VertexType>, VertexT
     /**
      * Add a new edge to the graph. Duplicate edges (with same source and target
      * vertices) are allowed.
-     * 
+     *
      * @param source
      *            the source vertex
      * @param target
@@ -82,7 +82,7 @@ public interface Graph<EdgeType extends GraphEdge<EdgeType, VertexType>, VertexT
     /**
      * Look up an edge by source and target vertex. If multiple edges with same
      * source and target vertex exist, one is selected arbitrarily.
-     * 
+     *
      * @param source
      *            the source vertex
      * @param target
@@ -127,7 +127,7 @@ public interface Graph<EdgeType extends GraphEdge<EdgeType, VertexType>, VertexT
 
     /**
      * Get an Iterator over outgoing edges from given vertex.
-     * 
+     *
      * @param source
      *            the source vertex
      * @return an Iterator over outgoing edges
@@ -136,7 +136,7 @@ public interface Graph<EdgeType extends GraphEdge<EdgeType, VertexType>, VertexT
 
     /**
      * Get an Iterator over incoming edges to a given vertex.
-     * 
+     *
      * @param target
      *            the target vertex
      * @return an Iterator over incoming edges
@@ -145,7 +145,7 @@ public interface Graph<EdgeType extends GraphEdge<EdgeType, VertexType>, VertexT
 
     /**
      * Get number of edges going into given vertex.
-     * 
+     *
      * @param vertex
      *            the vertex
      * @return number of edges going into the vertex
@@ -154,7 +154,7 @@ public interface Graph<EdgeType extends GraphEdge<EdgeType, VertexType>, VertexT
 
     /**
      * Get number of edges going out of given vertex.
-     * 
+     *
      * @param vertex
      *            the vertex
      * @return number of edges going out of the vertex
@@ -164,7 +164,7 @@ public interface Graph<EdgeType extends GraphEdge<EdgeType, VertexType>, VertexT
     /**
      * Get an iterator over the successors of this vertex; i.e., the targets of
      * the vertex's outgoing edges.
-     * 
+     *
      * @param source
      *            the source vertex
      * @return an Iterator over the successors of the vertex
@@ -174,7 +174,7 @@ public interface Graph<EdgeType extends GraphEdge<EdgeType, VertexType>, VertexT
     /**
      * Get an iterator over the predecessors of this vertex; i.e., the sources
      * of the vertex's incoming edges.
-     * 
+     *
      * @param target
      *            the target vertex
      * @return an Iterator over the predecessors of the vertex
@@ -183,4 +183,3 @@ public interface Graph<EdgeType extends GraphEdge<EdgeType, VertexType>, VertexT
 
 }
 
-// vim:ts=4

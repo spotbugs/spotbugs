@@ -29,11 +29,11 @@ import javax.annotation.meta.When;
 
 /**
  * The annotated element must not be null.
- * 
+ *
  * Annotated Fields must only not be null after construction has completed.
  * Annotated methods must have non-null return values.
- * 
- * @deprecated - use {@link javax.annotation.Nonnull} instead. 
+ *
+ * @deprecated - use {@link javax.annotation.Nonnull} instead.
  **/
 @Documented
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE })

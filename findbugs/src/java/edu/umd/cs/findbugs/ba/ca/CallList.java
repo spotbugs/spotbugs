@@ -24,7 +24,7 @@ import java.util.Iterator;
 public class CallList {
     private boolean isTop, isBottom;
 
-    private ArrayList<Call> callList;
+    private final ArrayList<Call> callList;
 
     public CallList() {
         this.callList = new ArrayList<Call>();
@@ -95,8 +95,9 @@ public class CallList {
             // Result is the common prefix
             int len = Math.min(a.size(), b.size());
             for (int i = 0; i < len; ++i) {
-                if (!a.get(i).equals(b.get(i)))
+                if (!a.get(i).equals(b.get(i))) {
                     break;
+                }
                 result.add(a.get(i));
             }
         }
@@ -105,8 +106,9 @@ public class CallList {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || obj.getClass() != this.getClass())
+        if (obj == null || obj.getClass() != this.getClass()) {
             return false;
+        }
         CallList other = (CallList) obj;
         return this.callList.equals(other.callList);
     }
@@ -120,8 +122,9 @@ public class CallList {
     public String toString() {
         StringBuilder buf = new StringBuilder();
         for (Call call : callList) {
-            if (buf.length() > 0)
+            if (buf.length() > 0) {
                 buf.append(',');
+            }
             buf.append(call.getMethodName());
         }
         return buf.toString();

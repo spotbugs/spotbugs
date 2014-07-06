@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.ba.type;
 /**
  * Extended type codes used by StackAndLocalTypes and StackAndLocalTypeAnalysis
  * for typing locals and stack values used in Java bytecode.
- * 
+ *
  * @author David Hovemeyer
  * @see TypeFrame
  * @see TypeAnalysis
@@ -79,4 +79,3 @@ public interface ExtendedTypes {
     public static final byte T_AVAIL_TYPE = 100;
 }
 
-// vim:ts=4

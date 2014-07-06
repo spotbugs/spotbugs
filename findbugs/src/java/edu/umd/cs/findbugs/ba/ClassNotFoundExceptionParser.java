@@ -95,4 +95,3 @@ public class ClassNotFoundExceptionParser {
 
 }
 
-// vim:ts=4

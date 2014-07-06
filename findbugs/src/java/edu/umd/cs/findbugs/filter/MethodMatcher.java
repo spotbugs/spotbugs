@@ -49,20 +49,25 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
     public boolean match(BugInstance bugInstance) {
 
         MethodAnnotation methodAnnotation = null;
-        if (role == null || role.equals(""))
+        if (role == null || role.equals("")) {
             methodAnnotation = bugInstance.getPrimaryMethod();
-        else
-            for (BugAnnotation a : bugInstance.getAnnotations())
+        } else {
+            for (BugAnnotation a : bugInstance.getAnnotations()) {
                 if (a instanceof MethodAnnotation && role.equals(a.getDescription())) {
                     methodAnnotation = (MethodAnnotation) a;
                     break;
                 }
-        if (methodAnnotation == null)
+            }
+        }
+        if (methodAnnotation == null) {
             return false;
-        if (!name.match(methodAnnotation.getMethodName()))
+        }
+        if (!name.match(methodAnnotation.getMethodName())) {
             return false;
-        if (signature != null && !signature.match(methodAnnotation.getMethodSignature()))
+        }
+        if (signature != null && !signature.match(methodAnnotation.getMethodSignature())) {
             return false;
+        }
         return true;
     }
 
@@ -74,13 +79,14 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec());
-        if (signature != null)
+        if (signature != null) {
             attributes
-                .addOptionalAttribute("signature", signature.getSpec()).addOptionalAttribute("role", role);
-        if (disabled)
+            .addOptionalAttribute("signature", signature.getSpec()).addOptionalAttribute("role", role);
+        }
+        if (disabled) {
             attributes.addAttribute("disabled", "true");
+        }
         xmlOutput.openCloseTag("Method", attributes);
     }
 }
 
-// vim:ts=4

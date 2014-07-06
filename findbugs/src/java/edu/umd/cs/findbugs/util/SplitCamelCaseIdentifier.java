@@ -25,15 +25,15 @@ import java.util.Set;
 
 /**
  * Split a camel case identifier into individual words.
- * 
+ *
  * @author David Hovemeyer
  */
 public class SplitCamelCaseIdentifier {
-    private String ident;
+    private final String ident;
 
     /**
      * Constructor.
-     * 
+     *
      * @param ident
      *            the identifier to split into words
      */
@@ -43,7 +43,7 @@ public class SplitCamelCaseIdentifier {
 
     /**
      * Split the identifier into words.
-     * 
+     *
      * @return Collection of words in the identifier
      */
     public Collection<String> split() {
@@ -70,8 +70,9 @@ public class SplitCamelCaseIdentifier {
                 while (i < s.length()) {
                     char c = s.charAt(i);
                     if (Character.isUpperCase(c)) {
-                        if (camelWord)
+                        if (camelWord) {
                             break;
+                        }
                     } else if (!camelWord) {
                         break;
                     }

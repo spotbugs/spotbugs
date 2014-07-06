@@ -24,13 +24,13 @@ import edu.umd.cs.findbugs.Plugin;
 
 /**
  * Select a detector factory for a specific detector class.
- * 
+ *
  * @author David Hovemeyer
  */
 public class SingleDetectorFactorySelector implements DetectorFactorySelector {
-    private Plugin plugin;
+    private final Plugin plugin;
 
-    private String className;
+    private final String className;
 
     public SingleDetectorFactorySelector(Plugin plugin, String className) {
         this.plugin = plugin;

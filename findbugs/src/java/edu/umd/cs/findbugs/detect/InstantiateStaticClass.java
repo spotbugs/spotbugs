@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 public class InstantiateStaticClass extends BytecodeScanningDetector {
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     public InstantiateStaticClass(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -40,39 +40,47 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
 
-            if ((seen == INVOKESPECIAL) && getNameConstantOperand().equals("<init>") && getSigConstantOperand().equals("()V")) {
-                XClass xClass = getXClassOperand();
-                if (xClass == null)
-                    return;
-                String clsName = getClassConstantOperand();
-                if (clsName.equals("java/lang/Object"))
-                    return;
-
-                // ignore superclass synthesized ctor calls
-                if (getMethodName().equals("<init>") && (getPC() == 1))
-                    return;
-
-                // ignore the typesafe enumerated constant pattern
-                if (getMethodName().equals("<clinit>") && (getClassName().equals(clsName)))
-                    return;
-
-                if (isStaticOnlyClass(xClass))
-                    bugReporter.reportBug(new BugInstance(this, "ISC_INSTANTIATE_STATIC_CLASS", LOW_PRIORITY).addClassAndMethod(
-                            this).addSourceLine(this));
+        if ((seen == INVOKESPECIAL) && getNameConstantOperand().equals("<init>") && getSigConstantOperand().equals("()V")) {
+            XClass xClass = getXClassOperand();
+            if (xClass == null) {
+                return;
             }
+            String clsName = getClassConstantOperand();
+            if (clsName.equals("java/lang/Object")) {
+                return;
+            }
+
+            // ignore superclass synthesized ctor calls
+            if (getMethodName().equals("<init>") && (getPC() == 1)) {
+                return;
+            }
+
+            // ignore the typesafe enumerated constant pattern
+            if (getMethodName().equals("<clinit>") && (getClassName().equals(clsName))) {
+                return;
+            }
+
+            if (isStaticOnlyClass(xClass)) {
+                bugReporter.reportBug(new BugInstance(this, "ISC_INSTANTIATE_STATIC_CLASS", LOW_PRIORITY).addClassAndMethod(
+                        this).addSourceLine(this));
+            }
+        }
 
     }
 
     private boolean isStaticOnlyClass(XClass xClass)  {
 
-        if (xClass.getInterfaceDescriptorList().length > 0)
+        if (xClass.getInterfaceDescriptorList().length > 0) {
             return false;
+        }
         ClassDescriptor superclassDescriptor = xClass.getSuperclassDescriptor();
-        if (superclassDescriptor == null)
+        if (superclassDescriptor == null) {
             return false;
+        }
         String superClassName = superclassDescriptor.getClassName();
-        if (!superClassName.equals("java/lang/Object"))
+        if (!superClassName.equals("java/lang/Object")) {
             return false;
+        }
         int staticCount = 0;
 
         List<? extends XMethod> methods = xClass.getXMethods();
@@ -80,20 +88,23 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
             // !m.isSynthetic(): bug #1282: No warning should be generated if only static methods are synthetic
             if (m.isStatic() && !m.isSynthetic()) {
                 staticCount++;
-            } else if (!m.getName().equals("<init>") || !m.getSignature().equals("()V"))
+            } else if (!m.getName().equals("<init>") || !m.getSignature().equals("()V")) {
                 return false;
+            }
         }
 
         List<? extends XField> fields = xClass.getXFields();
         for (XField f : fields) {
             if (f.isStatic()) {
                 staticCount++;
-            } else if (!f.isPrivate())
+            } else if (!f.isPrivate()) {
                 return false;
+            }
         }
 
-        if (staticCount == 0)
+        if (staticCount == 0) {
             return false;
+        }
         return true;
 
     }

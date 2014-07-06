@@ -30,10 +30,10 @@ import javax.annotation.meta.When;
 /**
  * The annotated element should might be null, and uses of the element should
  * check for null.
- * 
+ *
  * When this annotation is applied to a method it applies to the method return
  * value.
- * 
+ *
  * @deprecated - use CheckForNull instead; the name of which more clearly
  *             indicates that not only could the value be null, but that good
  *             coding practice requires that the value be checked for null.

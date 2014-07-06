@@ -128,8 +128,9 @@ public class Hierarchy {
      * (RuntimeException or Error).
      */
     public static boolean isUncheckedException(ObjectType type) throws ClassNotFoundException {
-        if (type.equals(Type.THROWABLE) || type.equals(RUNTIME_EXCEPTION_TYPE) || type.equals(ERROR_TYPE))
+        if (type.equals(Type.THROWABLE) || type.equals(RUNTIME_EXCEPTION_TYPE) || type.equals(ERROR_TYPE)) {
             return true;
+        }
         ClassDescriptor c = DescriptorFactory.getClassDescriptor(type);
         Subtypes2 subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
         return subtypes2.isSubtype(c, RUNTIME_EXCEPTION, ERROR);
@@ -161,10 +162,12 @@ public class Hierarchy {
      * @return true if the instruction is a monitor wait, false if not
      */
     public static boolean isMonitorWait(Instruction ins, ConstantPoolGen cpg) {
-        if (!(ins instanceof InvokeInstruction))
+        if (!(ins instanceof InvokeInstruction)) {
             return false;
-        if (ins.getOpcode() == Constants.INVOKESTATIC)
+        }
+        if (ins.getOpcode() == Constants.INVOKESTATIC) {
             return false;
+        }
 
         InvokeInstruction inv = (InvokeInstruction) ins;
         String methodName = inv.getMethodName(cpg);
@@ -198,10 +201,12 @@ public class Hierarchy {
      * @return true if the instruction is a monitor wait, false if not
      */
     public static boolean isMonitorNotify(Instruction ins, ConstantPoolGen cpg) {
-        if (!(ins instanceof InvokeInstruction))
+        if (!(ins instanceof InvokeInstruction)) {
             return false;
-        if (ins.getOpcode() == Constants.INVOKESTATIC)
+        }
+        if (ins.getOpcode() == Constants.INVOKESTATIC) {
             return false;
+        }
 
         InvokeInstruction inv = (InvokeInstruction) ins;
         String methodName = inv.getMethodName(cpg);
@@ -329,11 +334,13 @@ public class Hierarchy {
         short opcode = inv.getOpcode();
 
         if (opcode == Constants.INVOKESTATIC) {
-            if (methodChooser == INSTANCE_METHOD)
+            if (methodChooser == INSTANCE_METHOD) {
                 return null;
+            }
         } else {
-            if (methodChooser == STATIC_METHOD)
+            if (methodChooser == STATIC_METHOD) {
                 return null;
+            }
         }
 
         // Find the method
@@ -366,18 +373,21 @@ public class Hierarchy {
     JavaClassAndMethod findInvocationLeastUpperBound(JavaClass jClass, String methodName, String methodSig,
             JavaClassAndMethodChooser methodChooser, boolean invokeInterface) throws ClassNotFoundException {
         JavaClassAndMethod result = findMethod(jClass, methodName, methodSig, methodChooser);
-        if (result != null)
+        if (result != null) {
             return result;
-        if (invokeInterface)
+        }
+        if (invokeInterface) {
             for (JavaClass i : jClass.getInterfaces()) {
                 result = findInvocationLeastUpperBound(i, methodName, methodSig, methodChooser, invokeInterface);
-                if (result != null)
+                if (result != null) {
                     return null;
+                }
             }
-        else {
+        } else {
             JavaClass sClass = jClass.getSuperClass();
-            if (sClass != null)
+            if (sClass != null) {
                 return findInvocationLeastUpperBound(sClass, methodName, methodSig, methodChooser, invokeInterface);
+            }
         }
         return null;
 
@@ -425,7 +435,7 @@ public class Hierarchy {
             System.out.println("Check " + javaClass.getClassName());
         }
         Method[] methodList = javaClass.getMethods();
-        for (Method method : methodList)
+        for (Method method : methodList) {
             if (method.getName().equals(methodName) && method.getSignature().equals(methodSig)) {
                 JavaClassAndMethod m = new JavaClassAndMethod(javaClass, method);
                 if (chooser.choose(m)) {
@@ -435,6 +445,7 @@ public class Hierarchy {
                     return m;
                 }
             }
+        }
         if (DEBUG_METHOD_LOOKUP) {
             System.out.println("\t==> NOT FOUND");
         }
@@ -491,7 +502,7 @@ public class Hierarchy {
             System.out.println("Check " + javaClass.getClassName());
         }
         Method[] methodList = javaClass.getMethods();
-        for (Method method : methodList)
+        for (Method method : methodList) {
             if (method.getName().equals(methodName) && method.getSignature().equals(methodSig)
                     && accessFlagsAreConcrete(method.getAccessFlags())) {
                 JavaClassAndMethod m = new JavaClassAndMethod(javaClass, method);
@@ -499,6 +510,7 @@ public class Hierarchy {
                 return m;
 
             }
+        }
         if (DEBUG_METHOD_LOOKUP) {
             System.out.println("\t==> NOT FOUND");
         }
@@ -632,8 +644,9 @@ public class Hierarchy {
         JavaClassAndMethod m = null;
 
         for (JavaClass cls : classList) {
-            if ((m = findMethod(cls, methodName, methodSig, chooser)) != null)
+            if ((m = findMethod(cls, methodName, methodSig, chooser)) != null) {
                 break;
+            }
         }
 
         return m;
@@ -779,8 +792,9 @@ public class Hierarchy {
             InvokeInstruction invokeInstruction, ConstantPoolGen cpg, boolean receiverTypeIsExact) throws ClassNotFoundException {
         HashSet<JavaClassAndMethod> result = new HashSet<JavaClassAndMethod>();
 
-        if (invokeInstruction.getOpcode() == Constants.INVOKESTATIC)
+        if (invokeInstruction.getOpcode() == Constants.INVOKESTATIC) {
             throw new IllegalArgumentException();
+        }
 
         String methodName = invokeInstruction.getName(cpg);
         String methodSig = invokeInstruction.getSignature(cpg);
@@ -790,8 +804,9 @@ public class Hierarchy {
         if (receiverType instanceof ArrayType) {
             JavaClass javaLangObject = AnalysisContext.currentAnalysisContext().lookupClass("java.lang.Object");
             JavaClassAndMethod classAndMethod = findMethod(javaLangObject, methodName, methodSig, INSTANCE_METHOD);
-            if (classAndMethod != null)
+            if (classAndMethod != null) {
                 result.add(classAndMethod);
+            }
             return result;
         }
 
@@ -836,10 +851,11 @@ public class Hierarchy {
                         result.add(new JavaClassAndMethod(concreteSubtypeMethod));
                     }
                 }
-                if (false && subTypeSet.size() > 500)
+                if (false && subTypeSet.size() > 500) {
                     new RuntimeException(receiverClassName + " has " + subTypeSet.size() + " subclasses, " + result.size()
                             + " of which implement " + methodName + methodSig + " " + invokeInstruction)
-                            .printStackTrace(System.out);
+                    .printStackTrace(System.out);
+                }
 
             }
         }
@@ -902,7 +918,7 @@ public class Hierarchy {
      *         could be found
      */
     public static XField findXField(String className, String fieldName, String fieldSig, boolean isStatic)
-             {
+    {
 
         return XFactory.createXField(className, fieldName, fieldSig, isStatic);
     }
@@ -930,10 +946,11 @@ public class Hierarchy {
         XField xfield = findXField(className, fieldName, fieldSig, isStatic);
         short opcode = fins.getOpcode();
         if (xfield != null && xfield.isResolved()
-                && xfield.isStatic() == (opcode == Constants.GETSTATIC || opcode == Constants.PUTSTATIC))
+                && xfield.isStatic() == (opcode == Constants.GETSTATIC || opcode == Constants.PUTSTATIC)) {
             return xfield;
-        else
+        } else {
             return null;
+        }
     }
 
     /**
@@ -975,4 +992,3 @@ public class Hierarchy {
 
 }
 
-// vim:ts=4

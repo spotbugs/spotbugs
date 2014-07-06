@@ -24,11 +24,11 @@ import java.io.PrintStream;
 /**
  * Display FindBugs progress in the terminal window using ASCII codes. We assume
  * that the terminal window is at least 80 characters wide.
- * 
+ *
  * @author David Hovemeyer
  */
 public class TextUIProgressCallback implements FindBugsProgress {
-    private PrintStream out;
+    private final PrintStream out;
 
     private int goal;
 

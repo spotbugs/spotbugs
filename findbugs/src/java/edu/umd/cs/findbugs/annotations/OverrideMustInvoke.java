@@ -29,13 +29,13 @@ import java.lang.annotation.Target;
  * Used to annotate a method that, if overridden, must (or should) be invoked by
  * an invocation on super in the overriding method. Examples of such methods
  * include finalize() and clone().
- * 
+ *
  * The argument to the method indicates when the super invocation should occur:
  * at any time, at the beginning of the overriding method, or at the end of the
  * overriding method.
- * 
+ *
  * @see edu.umd.cs.findbugs.annotations.When
- * 
+ *
  * @deprecated - Use {@link javax.annotation.OverridingMethodsMustInvokeSuper} instead
  **/
 @Documented

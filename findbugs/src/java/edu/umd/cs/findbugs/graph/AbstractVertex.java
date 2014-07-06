@@ -21,14 +21,14 @@ package edu.umd.cs.findbugs.graph;
 
 /**
  * GraphVertex implementation for use with AbstractGraph.
- * 
+ *
  * @see GraphVertex
  * @see AbstractGraph
  * @see AbstractEdge
  * @author David Hovemeyer
  */
 public class AbstractVertex<EdgeType extends AbstractEdge<EdgeType, ActualVertexType>, ActualVertexType extends AbstractVertex<EdgeType, ActualVertexType>>
-        implements GraphVertex<ActualVertexType> {
+implements GraphVertex<ActualVertexType> {
 
     private int label;
 
@@ -102,10 +102,11 @@ public class AbstractVertex<EdgeType extends AbstractEdge<EdgeType, ActualVertex
         while (cur != null) {
             EdgeType next = cur.getNextIncomingEdge();
             if (cur.equals(edge)) {
-                if (prev != null)
+                if (prev != null) {
                     prev.setNextIncomingEdge(next);
-                else
+                } else {
                     firstIncomingEdge = next;
+                }
                 return;
             }
             prev = cur;
@@ -119,10 +120,11 @@ public class AbstractVertex<EdgeType extends AbstractEdge<EdgeType, ActualVertex
         while (cur != null) {
             EdgeType next = cur.getNextOutgoingEdge();
             if (cur.equals(edge)) {
-                if (prev != null)
+                if (prev != null) {
                     prev.setNextOutgoingEdge(next);
-                else
+                } else {
                     firstOutgoingEdge = next;
+                }
                 return;
             }
             prev = cur;
@@ -133,4 +135,3 @@ public class AbstractVertex<EdgeType extends AbstractEdge<EdgeType, ActualVertex
 
 }
 
-// vim:ts=4

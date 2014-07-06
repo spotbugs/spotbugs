@@ -24,17 +24,17 @@ package edu.umd.cs.findbugs.ba;
  * BasicAbstractDataflowAnalysis subtype. The main functionality is offering
  * getFact{At,After}Location() methods which forward to the actual analysis
  * object.
- * 
+ *
  * @see edu.umd.cs.findbugs.ba.Dataflow
  * @see edu.umd.cs.findbugs.ba.BasicAbstractDataflowAnalysis
  * @author David Hovemeyer
  */
 public class AbstractDataflow<Fact, AnalysisType extends BasicAbstractDataflowAnalysis<Fact>> extends
-        Dataflow<Fact, AnalysisType> {
+Dataflow<Fact, AnalysisType> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param cfg
      *            CFG of the method on which dfa is performed
      * @param analysis
@@ -46,7 +46,7 @@ public class AbstractDataflow<Fact, AnalysisType extends BasicAbstractDataflowAn
 
     /**
      * Get the fact that is true on the given control edge.
-     * 
+     *
      * @param edge
      *            the edge
      * @return the fact that is true on the edge

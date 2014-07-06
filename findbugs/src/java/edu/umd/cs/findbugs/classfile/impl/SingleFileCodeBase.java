@@ -43,14 +43,14 @@ import edu.umd.cs.findbugs.io.IO;
 
 /**
  * Implementation of ICodeBase for a single classfile.
- * 
+ *
  * @author David Hovemeyer
  */
 public class SingleFileCodeBase implements IScannableCodeBase {
 
-    private ICodeBaseLocator codeBaseLocator;
+    private final ICodeBaseLocator codeBaseLocator;
 
-    private String fileName;
+    private final String fileName;
 
     private boolean isAppCodeBase;
 
@@ -75,7 +75,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getCodeBaseLocator()
      */
     @Override
@@ -85,7 +85,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IScannableCodeBase#containsSourceFiles()
      */
@@ -96,7 +96,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#iterator()
      */
     @Override
@@ -106,7 +106,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#hasNext()
              */
             @Override
@@ -116,7 +116,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
              */
             @Override
@@ -132,7 +132,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
      */
@@ -147,7 +147,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBase#setApplicationCodeBase(boolean)
      */
@@ -158,7 +158,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#isApplicationCodeBase()
      */
     @Override
@@ -168,7 +168,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#setHowDiscovered(int)
      */
     @Override
@@ -178,7 +178,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getHowDiscovered()
      */
     @Override
@@ -188,7 +188,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#setLastModifiedTime(long)
      */
     @Override
@@ -200,7 +200,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getLastModifiedTime()
      */
     @Override
@@ -210,7 +210,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
      */
     @Override
@@ -224,7 +224,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
      */
     @Override
@@ -235,7 +235,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
     /**
      * Get the resource name of the single file. We have to open the file and
      * parse the constant pool in order to find this out.
-     * 
+     *
      * @return the resource name (e.g., "java/lang/String.class" if the class is
      *         java.lang.String)
      */
@@ -282,7 +282,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 
     /**
      * Return the number of bytes in the file.
-     * 
+     *
      * @return the number of bytes in the file, or -1 if the file's length can't
      *         be determined
      */

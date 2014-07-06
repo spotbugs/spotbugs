@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 /**
  * Base class for Detectors which want to extend DismantleBytecode.
- * 
+ *
  * @see DismantleBytecode
  */
 public class BytecodeScanningDetector extends DismantleBytecode implements Detector {
@@ -40,7 +40,7 @@ public class BytecodeScanningDetector extends DismantleBytecode implements Detec
 
     /**
      * Get the ClassContext of the class currently being visited.
-     * 
+     *
      * @return the current ClassContext
      */
     public ClassContext getClassContext() {
@@ -49,7 +49,7 @@ public class BytecodeScanningDetector extends DismantleBytecode implements Detec
 
     /**
      * Check see if the Code for this method should be visited.
-     * 
+     *
      * @param obj
      *            Code attribute
      * @return true if the Code should be visited
@@ -63,4 +63,3 @@ public class BytecodeScanningDetector extends DismantleBytecode implements Detec
     }
 }
 
-// vim:ts=4

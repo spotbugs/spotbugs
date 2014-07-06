@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.util.Util;
  * A control decision which resulted in information being gained about whether a
  * particular value is null or non-null on the IFCMP_EDGE and FALL_THROUGH_EDGE
  * branches.
- * 
+ *
  * @see IsNullValue
  * @see IsNullValueFrame
  * @see IsNullValueAnalysis
@@ -47,7 +47,7 @@ public class IsNullConditionDecision {
 
     /**
      * Constructor.
-     * 
+     *
      * @param value
      *            the ValueNumber for which we have new information; null if no
      *            new information
@@ -76,8 +76,9 @@ public class IsNullConditionDecision {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof IsNullConditionDecision))
+        if (!(o instanceof IsNullConditionDecision)) {
             return false;
+        }
         IsNullConditionDecision other = (IsNullConditionDecision) o;
         return Util.nullSafeEquals(value, other.value) && Util.nullSafeEquals(ifcmpDecision, other.ifcmpDecision)
                 && Util.nullSafeEquals(fallThroughDecision, other.fallThroughDecision);
@@ -101,7 +102,7 @@ public class IsNullConditionDecision {
      * Determine whether or not the given edge is feasible. An edge may be
      * infeasible if the comparison is redundant (i.e., can only be determined
      * one way)
-     * 
+     *
      * @param edgeType
      *            the type of edge; must be IFCMP_EDGE or FALL_THROUGH_EDGE
      * @return true if the edge is feasible, false if infeasible
@@ -113,7 +114,7 @@ public class IsNullConditionDecision {
 
     /**
      * Get the decision reached about the value on outgoing edge of given type.
-     * 
+     *
      * @param edgeType
      *            the type of edge; must be IFCMP_EDGE or FALL_THROUGH_EDGE
      * @return the IsNullValue representing the decision, or null if the edge is
@@ -143,4 +144,3 @@ public class IsNullConditionDecision {
     }
 }
 
-// vim:ts=4

@@ -30,11 +30,11 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 
 /**
  * StreamFactory for stream objects loaded from instance fields.
- * 
+ *
  * @author David Hovemeyer
  */
 public class InstanceFieldLoadStreamFactory implements StreamFactory {
-    private String streamBaseClass;
+    private final String streamBaseClass;
 
     private String bugPatternType;
 
@@ -42,7 +42,7 @@ public class InstanceFieldLoadStreamFactory implements StreamFactory {
      * Constructor. By default, Streams created by this factory will not be
      * marked as interesting. The setBugPatternType() method should be called to
      * make the factory produce interesting streams.
-     * 
+     *
      * @param streamBaseClass
      *            the base class of the streams produced by the factory
      */
@@ -53,7 +53,7 @@ public class InstanceFieldLoadStreamFactory implements StreamFactory {
     /**
      * Set the bug pattern type reported for unclosed streams loaded from this
      * field. This makes the created streams "interesting".
-     * 
+     *
      * @param bugPatternType
      *            the bug pattern type
      */
@@ -67,21 +67,25 @@ public class InstanceFieldLoadStreamFactory implements StreamFactory {
             RepositoryLookupFailureCallback lookupFailureCallback) {
 
         Instruction ins = location.getHandle().getInstruction();
-        if (ins.getOpcode() != Constants.GETFIELD)
+        if (ins.getOpcode() != Constants.GETFIELD) {
             return null;
+        }
 
         String fieldClass = type.getClassName();
         try {
-            if (fieldClass.startsWith("["))
+            if (fieldClass.startsWith("[")) {
                 return null;
-            if (!Hierarchy.isSubtype(fieldClass, streamBaseClass))
+            }
+            if (!Hierarchy.isSubtype(fieldClass, streamBaseClass)) {
                 return null;
+            }
 
             Stream stream = new Stream(location, fieldClass, streamBaseClass);
             stream.setIsOpenOnCreation(true);
             stream.setOpenLocation(location);
-            if (bugPatternType != null)
+            if (bugPatternType != null) {
                 stream.setInteresting(bugPatternType);
+            }
 
             // System.out.println("Instance field stream at " + location);
             return stream;
@@ -92,4 +96,3 @@ public class InstanceFieldLoadStreamFactory implements StreamFactory {
     }
 }
 
-// vim:ts=4

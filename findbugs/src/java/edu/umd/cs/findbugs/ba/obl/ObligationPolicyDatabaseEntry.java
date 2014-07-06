@@ -26,7 +26,7 @@ import org.apache.bcel.generic.ReferenceType;
 /**
  * Interface defining an entry in the ObligationPolicyDatabase. Checks called
  * methods to see what actions they apply.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface ObligationPolicyDatabaseEntry {
@@ -38,7 +38,7 @@ public interface ObligationPolicyDatabaseEntry {
     /**
      * Get the ObligationPolicyDatabaseActions that should be applied when the
      * method described by the parameters is called.
-     * 
+     *
      * @param receiverType
      *            receiver type of called method
      * @param methodName
@@ -55,6 +55,6 @@ public interface ObligationPolicyDatabaseEntry {
      */
     public boolean getActions(ReferenceType receiverType, String methodName, String signature, boolean isStatic,
             Collection<ObligationPolicyDatabaseAction> actionList);
-    
+
     public Collection<Obligation> getAllObligations();
 }

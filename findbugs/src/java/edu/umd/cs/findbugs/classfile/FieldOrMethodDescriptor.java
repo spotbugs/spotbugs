@@ -120,8 +120,8 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
 
 
     protected boolean haveEqualFields(FieldOrMethodDescriptor other) {
-    return this.isStatic == other.isStatic && this.slashedClassName.equals(other.slashedClassName)
-            && this.name.equals(other.name) && this.signature.equals(other.signature);
+        return this.isStatic == other.isStatic && this.slashedClassName.equals(other.slashedClassName)
+                && this.name.equals(other.name) && this.signature.equals(other.signature);
     }
 
     /*
@@ -148,15 +148,18 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
     }
 
     public static int compareTo(FieldOrMethodDescriptor thas, FieldOrMethodDescriptor that) {
-         int result = thas.slashedClassName.compareTo(that.slashedClassName);
-        if (result != 0)
+        int result = thas.slashedClassName.compareTo(that.slashedClassName);
+        if (result != 0) {
             return result;
+        }
         result = thas.name.compareTo(that.name);
-        if (result != 0)
+        if (result != 0) {
             return result;
+        }
         result = thas.signature.compareTo(that.signature);
-        if (result != 0)
+        if (result != 0) {
             return result;
+        }
         result = (thas.isStatic ? 1 : 0) - (that.isStatic ? 1 : 0);
         return result;
     }

@@ -41,8 +41,9 @@ public class UnresolvedXField extends AbstractField {
 
     protected UnresolvedXField(@DottedClassName String className, String methodName, String methodSig, int accessFlags) {
         super(className, methodName, methodSig, accessFlags);
-        if (methodSig.charAt(0) == '(')
+        if (methodSig.charAt(0) == '(') {
             throw new IllegalArgumentException("Bad signature: " + methodSig);
+        }
         if (XFactory.DEBUG_UNRESOLVED) {
             System.out.println("Unresolved xmethod: " + this);
         }
@@ -50,8 +51,9 @@ public class UnresolvedXField extends AbstractField {
 
     protected UnresolvedXField(FieldDescriptor m) {
         super(m.getClassDescriptor().getDottedClassName(), m.getName(), m.getSignature(), m.isStatic() ? Constants.ACC_STATIC : 0);
-        if (m.getSignature().charAt(0) == '(')
+        if (m.getSignature().charAt(0) == '(') {
             throw new IllegalArgumentException("Bad signature: " + m.getSignature());
+        }
         if (XFactory.DEBUG_UNRESOLVED) {
             System.out.println("Unresolved xmethod: " + this);
         }
@@ -59,7 +61,7 @@ public class UnresolvedXField extends AbstractField {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
@@ -73,7 +75,7 @@ public class UnresolvedXField extends AbstractField {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getAnnotation(
      * edu.umd.cs.findbugs.classfile.ClassDescriptor)
@@ -85,7 +87,7 @@ public class UnresolvedXField extends AbstractField {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#
      * getAnnotationDescriptors()
      */
@@ -96,7 +98,7 @@ public class UnresolvedXField extends AbstractField {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getAnnotations()
      */
@@ -107,7 +109,7 @@ public class UnresolvedXField extends AbstractField {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getContainingScope
      * ()
@@ -121,7 +123,7 @@ public class UnresolvedXField extends AbstractField {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getElementType()
      */
@@ -132,7 +134,7 @@ public class UnresolvedXField extends AbstractField {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isDeprecated()
      */
     @Override

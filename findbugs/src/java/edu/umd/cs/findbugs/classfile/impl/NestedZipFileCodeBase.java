@@ -38,13 +38,13 @@ import edu.umd.cs.findbugs.io.IO;
  * codebase. These are handled by extracting the nested zip/jar file to a
  * temporary file, and delegating to an internal ZipFileCodeBase that reads from
  * the temporary file.
- * 
+ *
  * @author David Hovemeyer
  */
 public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
-    private ICodeBase parentCodeBase;
+    private final ICodeBase parentCodeBase;
 
-    private String resourceName;
+    private final String resourceName;
 
     private File tempFile;
 
@@ -52,7 +52,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
 
     /**
      * Constructor.
-     * 
+     *
      * @param codeBaseLocator
      *            the codebase locator for this codebase
      */
@@ -67,7 +67,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
             // Create a temp file
             this.tempFile = File.createTempFile("findbugs", ".zip");
             tempFile.deleteOnExit(); // just in case we crash before the
-                                     // codebase is closed
+            // codebase is closed
 
             // Copy nested zipfile to the temporary file
             // FIXME: potentially long blocking operation - should be
@@ -96,7 +96,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#iterator()
      */
     @Override
@@ -106,7 +106,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
      */
@@ -121,7 +121,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
      */
     @Override
@@ -131,7 +131,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
      */
     @Override

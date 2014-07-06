@@ -26,7 +26,7 @@ import org.apache.tools.ant.BuildException;
 /**
  * Ant task to invoke the FilterBugs program in the workflow package (a.k.a. the
  * filterBugs script.)
- * 
+ *
  * @author David Hovemeyer
  */
 public class FilterBugsTask extends AbstractFindBugsTask {
@@ -241,7 +241,7 @@ public class FilterBugsTask extends AbstractFindBugsTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#checkParameters()
      */
     @Override
@@ -282,7 +282,7 @@ public class FilterBugsTask extends AbstractFindBugsTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#configureFindbugsEngine
      * ()
@@ -329,7 +329,7 @@ public class FilterBugsTask extends AbstractFindBugsTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#beforeExecuteJavaProcess
      * ()
@@ -341,7 +341,7 @@ public class FilterBugsTask extends AbstractFindBugsTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#afterExecuteJavaProcess
      * (int)

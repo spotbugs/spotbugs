@@ -28,13 +28,13 @@ import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
  * An implementation of ICodeBaseIterator that delegates to another codebase. In
  * particular, the codebase entries it creates are DelegatingCodeBaseEntry
  * objects.
- * 
+ *
  * @author David Hovemeyer
  */
 public class DelegatingCodeBaseIterator implements ICodeBaseIterator {
-    private ICodeBase frontEndCodeBase;
+    private final ICodeBase frontEndCodeBase;
 
-    private ICodeBaseIterator delegateCodeBaseIterator;
+    private final ICodeBaseIterator delegateCodeBaseIterator;
 
     public DelegatingCodeBaseIterator(ICodeBase frontEndCodeBase, IScannableCodeBase delegateCodeBase)
             throws InterruptedException {
@@ -44,7 +44,7 @@ public class DelegatingCodeBaseIterator implements ICodeBaseIterator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#hasNext()
      */
     @Override
@@ -54,7 +54,7 @@ public class DelegatingCodeBaseIterator implements ICodeBaseIterator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
      */
     @Override

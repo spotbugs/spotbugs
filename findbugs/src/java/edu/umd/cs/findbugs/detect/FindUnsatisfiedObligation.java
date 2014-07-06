@@ -74,12 +74,12 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 /**
  * Find unsatisfied obligations in Java methods. Examples: open streams, open
  * database connections, etc.
- * 
+ *
  * <p>
  * See Weimer and Necula, <a href="http://doi.acm.org/10.1145/1028976.1029011"
  * >Finding and preventing run-time error handling mistakes</a>, OOPSLA 2004.
  * </p>
- * 
+ *
  * @author David Hovemeyer
  */
 public class FindUnsatisfiedObligation extends CFGDetector {
@@ -111,7 +111,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 
     private final BugReporter bugReporter;
 
-    private ObligationPolicyDatabase database;
+    private final ObligationPolicyDatabase database;
 
     public FindUnsatisfiedObligation(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -144,8 +144,9 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                 }
             }
         }
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println(classDescriptor + " isn't interesting for obligation analysis");
+        }
     }
 
     @Override
@@ -170,7 +171,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
         /**
          * Determine whether the state has "balanced" obligation counts for the
          * consumed and produced Obligation types.
-         * 
+         *
          * @param state
          *            a State
          * @return true if the obligation counts are balanced, false otherwise
@@ -297,7 +298,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 
                 // Apply the false-positive suppression heuristics
                 int leakCount = getAdjustedLeakCount(state, id);
-                
+
 
                 if (leakCount > 0) {
                     leakedObligationMap.put(obligation, state);
@@ -361,10 +362,10 @@ public class FindUnsatisfiedObligation extends CFGDetector {
             List<PossibleObligationTransfer> transferList;
 
             public PostProcessingPathVisitor(Obligation possiblyLeakedObligation/*
-                                                                                 * ,
-                                                                                 * int
-                                                                                 * initialLeakCount
-                                                                                 */, State state) {
+             * ,
+             * int
+             * initialLeakCount
+             */, State state) {
                 this.possiblyLeakedObligation = possiblyLeakedObligation;
                 this.state = state;
                 this.adjustedLeakCount = state.getObligationSet().getCount(possiblyLeakedObligation.getId());
@@ -399,7 +400,9 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                 try {
                     Instruction ins = handle.getInstruction();
                     short opcode = ins.getOpcode();
-                    if (DEBUG) System.out.printf("%3d %s%n", handle.getPosition(),Constants.OPCODE_NAMES[opcode]);
+                    if (DEBUG) {
+                        System.out.printf("%3d %s%n", handle.getPosition(),Constants.OPCODE_NAMES[opcode]);
+                    }
 
                     if (opcode == Constants.PUTFIELD || opcode == Constants.PUTSTATIC || opcode == Constants.ARETURN) {
                         //
@@ -418,8 +421,9 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                                         possiblyLeakedObligation.getType())) {
                             // Remove one obligation of this type
                             adjustedLeakCount--;
-                            if (DEBUG)
+                            if (DEBUG) {
                                 System.out.println("removing obligation to close " + tosType + " at " + handle.getPosition());
+                            }
                         }
                     }
 
@@ -601,7 +605,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
          * <li>return statements (if an instance of the obligation type is
          * returned from the method, subtract one from leak count)</li>
          * </ul>
-         * 
+         *
          * @return the adjusted leak count (positive if leaked obligation,
          *         negative if attempt to release an un-acquired obligation)
          */
@@ -660,7 +664,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                             if (entryState.getObligationSet().getCount(obligation.getId()) > 0) {
                                 lastSourceLine = SourceLineAnnotation.forFirstLineOfMethod(methodDescriptor);
                                 lastSourceLine
-                                        .setDescription(SourceLineAnnotation.ROLE_OBLIGATION_CREATED_BY_WILLCLOSE_PARAMETER);
+                                .setDescription(SourceLineAnnotation.ROLE_OBLIGATION_CREATED_BY_WILLCLOSE_PARAMETER);
                                 bugInstance.add(lastSourceLine);
                                 sawFirstCreation = true;
 
@@ -726,7 +730,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.Detector#report()
      */
     public void report() {

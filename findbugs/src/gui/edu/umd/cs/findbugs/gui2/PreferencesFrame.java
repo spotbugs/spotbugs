@@ -479,7 +479,7 @@ public class PreferencesFrame extends FBDialog {
 
     private void addField(JPanel p, GridBagConstraints c, int y, String lbl, JComponent field) {
         c.gridy = y;
-        JLabel l = new JLabel(lbl, JLabel.TRAILING);
+        JLabel l = new JLabel(lbl, SwingConstants.TRAILING);
         l.setLabelFor(field);
         c.anchor = GridBagConstraints.LINE_END;
         c.gridx = 0;

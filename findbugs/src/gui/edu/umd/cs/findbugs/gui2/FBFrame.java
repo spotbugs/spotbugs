@@ -31,7 +31,7 @@ public class FBFrame extends JFrame {
 
     /**
      * Sets size of font
-     * 
+     *
      * @param size
      */
     protected void setFontSize(float size) {
@@ -57,8 +57,9 @@ public class FBFrame extends JFrame {
     protected void setFontSizeHelper(float size, Component... comps) {
         for (Component comp : comps) {
             comp.setFont(comp.getFont().deriveFont(size));
-            if (comp instanceof Container)
+            if (comp instanceof Container) {
                 setFontSizeHelper(size, ((Container) comp).getComponents());
+            }
         }
     }
 

@@ -53,13 +53,16 @@ public class CopyBuggySource {
     enum SrcKind {
         DIR, ZIP, Z0P_GZ;
         static SrcKind get(File f) {
-            if (f.exists() && f.isDirectory() && f.canWrite())
+            if (f.exists() && f.isDirectory() && f.canWrite()) {
                 return DIR;
+            }
             if (!f.exists()) {
-                if (f.getName().endsWith(".zip"))
+                if (f.getName().endsWith(".zip")) {
                     return ZIP;
-                if (f.getName().endsWith(".z0p.gz"))
+                }
+                if (f.getName().endsWith(".z0p.gz")) {
                     return Z0P_GZ;
+                }
             }
             throw new IllegalArgumentException("Invalid src destination: " + f);
         }
@@ -126,16 +129,19 @@ public class CopyBuggySource {
             long lastModified = sourceFile.getLastModified();
             in = sourceFile.getInputStream();
             out = getOutputStream(fullName, 0);
-            if (out == null)
+            if (out == null) {
                 return;
+            }
             while (true) {
                 int sz = in.read(buf);
-                if (sz < 0)
+                if (sz < 0) {
                     break;
+                }
                 out.write(buf, 0, sz);
             }
-            if (dstFile != null)
+            if (dstFile != null) {
                 dstFile.setLastModified(lastModified);
+            }
             System.out.println("Copied " + fullName);
             copyCount++;
         } catch (IOException e) {
@@ -151,16 +157,19 @@ public class CopyBuggySource {
 
     private void copySourceForAnnotation(BugAnnotation ann) {
         SourceLineAnnotation sourceAnnotation;
-        if (ann instanceof BugAnnotationWithSourceLines)
+        if (ann instanceof BugAnnotationWithSourceLines) {
             sourceAnnotation = ((BugAnnotationWithSourceLines) ann).getSourceLines();
-        else if (ann instanceof SourceLineAnnotation)
+        } else if (ann instanceof SourceLineAnnotation) {
             sourceAnnotation = (SourceLineAnnotation) ann;
-        else
+        } else {
             return;
-        if (sourceAnnotation == null)
+        }
+        if (sourceAnnotation == null) {
             return;
-        if (sourceAnnotation.isUnknown())
+        }
+        if (sourceAnnotation.isUnknown()) {
             return;
+        }
 
         String fullName = SourceFinder.getPlatformName(sourceAnnotation);
 
@@ -169,8 +178,9 @@ public class CopyBuggySource {
             sourceFile = sourceFinder.findSourceFile(sourceAnnotation);
         } catch (IOException e) {
 
-            if (couldNotFind.add(fullName))
+            if (couldNotFind.add(fullName)) {
                 System.out.println("Did not find " + fullName);
+            }
             return;
         }
 
@@ -186,8 +196,9 @@ public class CopyBuggySource {
                 copySourceForAnnotation(i.next());
             }
         }
-        if (zOut != null)
+        if (zOut != null) {
             zOut.close();
+        }
 
         System.out.printf("All done. %d files not found, %d files copied%n", couldNotFind.size(), copyCount);
     }
@@ -207,8 +218,9 @@ public class CopyBuggySource {
 
             if (!parent.mkdirs() && !parent.isDirectory()) {
                 String path = parent.getPath();
-                if (couldNotCreate.add(path))
+                if (couldNotCreate.add(path)) {
                     System.out.println("Can't create directory for " + path);
+                }
                 return null;
             }
 
@@ -224,8 +236,9 @@ public class CopyBuggySource {
 
     public static void close(InputStream in) {
         try {
-            if (in != null)
+            if (in != null) {
                 in.close();
+            }
         } catch (IOException e) {
         }
 
@@ -233,10 +246,11 @@ public class CopyBuggySource {
 
     public static void close(OutputStream out) {
         try {
-            if (out instanceof ZipOutputStream)
+            if (out instanceof ZipOutputStream) {
                 ((ZipOutputStream) out).closeEntry();
-            else if (out != null)
+            } else if (out != null) {
                 out.close();
+            }
         } catch (IOException e) {
         }
 

@@ -25,13 +25,13 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Utility methods for BugAnnotation classes.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class BugAnnotationUtil {
     /**
      * Write a BugAnnotation as XML.
-     * 
+     *
      * @param xmlOutput
      *            the XMLOutput
      * @param elementName
@@ -48,13 +48,15 @@ public abstract class BugAnnotationUtil {
             XMLAttributeList attributeList, boolean addMessages) throws IOException {
 
         SourceLineAnnotation src = null;
-        if (annotation instanceof BugAnnotationWithSourceLines)
+        if (annotation instanceof BugAnnotationWithSourceLines) {
             src = ((BugAnnotationWithSourceLines) annotation).getSourceLines();
+        }
 
         if (addMessages || src != null) {
             xmlOutput.openTag(elementName, attributeList);
-            if (src != null)
+            if (src != null) {
                 src.writeXML(xmlOutput, addMessages, false);
+            }
             if (addMessages) {
                 xmlOutput.openTag(BugAnnotation.MESSAGE_TAG);
                 xmlOutput.writeText(annotation.toString());

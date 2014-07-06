@@ -29,7 +29,7 @@ import javax.annotation.Nonnull;
 public class CategoryFilteringBugReporter extends DelegatingBugReporter {
     private static final boolean DEBUG = SystemProperties.getBoolean("cfbreporter.debug");
 
-    private Set<String> categorySet;
+    private final Set<String> categorySet;
 
     public CategoryFilteringBugReporter(BugReporter realBugReporter, Set<String> categorySet) {
         super(realBugReporter);
@@ -43,8 +43,9 @@ public class CategoryFilteringBugReporter extends DelegatingBugReporter {
         if (categorySet.contains(category)) {
             getDelegate().reportBug(bugInstance);
         } else {
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println("CategoryFilteringBugReporter: filtered due to category " + category);
+            }
         }
     }
 }

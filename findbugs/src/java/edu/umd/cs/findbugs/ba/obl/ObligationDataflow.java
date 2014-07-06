@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.ba.Dataflow;
 
 /**
  * Dataflow class for ObligationAnalysis.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ObligationDataflow extends Dataflow<StateSet, ObligationAnalysis> {

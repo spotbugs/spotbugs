@@ -29,15 +29,15 @@ import edu.umd.cs.findbugs.log.Profiler;
 /**
  * An adapter allowing classes implementing the Detector interface to support
  * the new Detector2 interface.
- * 
+ *
  * @author David Hovemeyer
  */
 public class DetectorToDetector2Adapter implements Detector2 {
-    private Detector detector;
+    private final Detector detector;
 
     /**
      * Constructor.
-     * 
+     *
      * @param detector
      *            the Detector we want to adapt
      */
@@ -47,7 +47,7 @@ public class DetectorToDetector2Adapter implements Detector2 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.Detector2#finishPass()
      */
     @Override
@@ -57,7 +57,7 @@ public class DetectorToDetector2Adapter implements Detector2 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile
      * .ClassDescriptor)
@@ -81,7 +81,7 @@ public class DetectorToDetector2Adapter implements Detector2 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.Detector2#getDetectorClassName()
      */
     @Override

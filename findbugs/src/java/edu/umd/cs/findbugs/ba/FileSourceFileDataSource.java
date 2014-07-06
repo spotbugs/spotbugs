@@ -29,7 +29,7 @@ import java.io.InputStream;
  * Data source for source files which are stored in the filesystem.
  */
 public class FileSourceFileDataSource implements SourceFileDataSource {
-    private String fileName;
+    private final String fileName;
 
     public FileSourceFileDataSource(String fileName) {
         this.fileName = fileName;
@@ -45,10 +45,9 @@ public class FileSourceFileDataSource implements SourceFileDataSource {
         return fileName;
     }
 
-     @Override
+    @Override
     public long getLastModified() {
         return new File(fileName).lastModified();
     }
 }
 
-// vim:ts=4

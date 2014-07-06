@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.SortedBugCollection;
  * Mine historical information from a BugCollection. The BugCollection should be
  * built using UpdateBugCollection to record the history of analyzing all
  * versions over time.
- * 
+ *
  * @author David Hovemeyer
  * @author William Pugh
  */
@@ -57,7 +57,7 @@ public class RebornIssues {
     public RebornIssues execute() {
 
         Map<String, List<BugInstance>> map = new HashMap<String, List<BugInstance>>();
-        for (BugInstance b : bugCollection.getCollection())
+        for (BugInstance b : bugCollection.getCollection()) {
             if (b.getFirstVersion() != 0 || b.getLastVersion() != -1) {
                 List<BugInstance> lst = map.get(b.getInstanceHash());
                 if (lst == null) {
@@ -66,6 +66,7 @@ public class RebornIssues {
                 }
                 lst.add(b);
             }
+        }
         for (List<BugInstance> lst : map.values()) {
             if (lst.size() > 1) {
                 TreeSet<Long> removalTimes = new TreeSet<Long>();
@@ -74,19 +75,23 @@ public class RebornIssues {
                 String bugPattern = "XXX";
                 for (BugInstance b : lst) {
                     bugPattern = b.getBugPattern().getType();
-                    if (b.getFirstVersion() > 0)
+                    if (b.getFirstVersion() > 0) {
                         additionTimes.add(b.getFirstVersion());
-                    if (b.getLastVersion() != -1)
+                    }
+                    if (b.getLastVersion() != -1) {
                         removalTimes.add(b.getLastVersion());
+                    }
                 }
                 Iterator<Long> aI = additionTimes.iterator();
-                if (!aI.hasNext())
+                if (!aI.hasNext()) {
                     continue;
+                }
                 long a = aI.next();
                 loop: for (Long removed : removalTimes) {
                     while (a <= removed) {
-                        if (!aI.hasNext())
+                        if (!aI.hasNext()) {
                             break loop;
+                        }
                         a = aI.next();
                     }
                     System.out.printf("%5d %5d %s%n", removed, a, bugPattern);
@@ -120,10 +125,11 @@ public class RebornIssues {
                 + " [options] [<xml results> [<history]] ");
 
         SortedBugCollection bugCollection = new SortedBugCollection();
-        if (argCount < args.length)
+        if (argCount < args.length) {
             bugCollection.readXML(args[argCount++]);
-        else
+        } else {
             bugCollection.readXML(System.in);
+        }
         reborn.setBugCollection(bugCollection);
         reborn.execute();
 

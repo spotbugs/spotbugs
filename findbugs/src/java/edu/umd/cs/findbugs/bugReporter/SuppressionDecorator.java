@@ -66,12 +66,13 @@ public class SuppressionDecorator extends BugReporterDecorator {
                 URL u;
 
                 if (adjustmentSource.startsWith("file:") || adjustmentSource.startsWith("http:")
-                        || adjustmentSource.startsWith("https:"))
+                        || adjustmentSource.startsWith("https:")) {
                     u = new URL(adjustmentSource);
-                else {
+                } else {
                     u = plugin.getPlugin().getResource(adjustmentSource);
-                    if (u == null)
+                    if (u == null) {
                         u = DetectorFactoryCollection.getCoreResource(adjustmentSource);
+                    }
 
                 }
                 if (u != null) {
@@ -94,8 +95,9 @@ public class SuppressionDecorator extends BugReporterDecorator {
             String s;
             while ((s = in.readLine()) != null) {
                 s = s.trim();
-                if (s.length() == 0)
+                if (s.length() == 0) {
                     continue;
+                }
                 String packageName = s.substring(1).trim();
                 if (s.charAt(0) == '+') {
                     check.add(packageName);
@@ -119,8 +121,9 @@ public class SuppressionDecorator extends BugReporterDecorator {
             getDelegate().reportBug(bugInstance);
             return;
         }
-        if (check.isEmpty())
+        if (check.isEmpty()) {
             return;
+        }
 
         ClassAnnotation c = bugInstance.getPrimaryClass();
         @DottedClassName
@@ -134,8 +137,9 @@ public class SuppressionDecorator extends BugReporterDecorator {
                 return;
             }
             int i = packageName.lastIndexOf('.');
-            if (i < 0)
+            if (i < 0) {
                 return;
+            }
             packageName = packageName.substring(0, i);
         }
 

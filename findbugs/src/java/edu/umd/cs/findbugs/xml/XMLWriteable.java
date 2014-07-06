@@ -23,18 +23,17 @@ import java.io.IOException;
 
 /**
  * Interface indicating that an object can write itself to an XML document.
- * 
+ *
  * @see XMLOutput
  * @author David Hovemeyer
  */
 public interface XMLWriteable {
     /**
      * Write this object to given XMLOutput.
-     * 
+     *
      * @param xmlOutput
      *            the XMLOutput for the document
      */
     public void writeXML(XMLOutput xmlOutput) throws IOException;
 }
 
-// vim:ts=4

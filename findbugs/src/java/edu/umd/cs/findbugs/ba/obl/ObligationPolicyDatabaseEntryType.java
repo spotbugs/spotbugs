@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba.obl;
 
 /**
  * Types of ObligationPolicyDatabaseEntries.
- * 
+ *
  * @author David Hovemeyer
  */
 public enum ObligationPolicyDatabaseEntryType {

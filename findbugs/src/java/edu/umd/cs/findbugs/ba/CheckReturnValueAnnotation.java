@@ -55,24 +55,28 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration<CheckRetur
 
     public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE = new CheckReturnValueAnnotation(
             "CheckReturnValueMediumBadPractice", 7, "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE", Detector.NORMAL_PRIORITY);
-    
+
     public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_INFERRED = new CheckReturnValueAnnotation(
             "CheckReturnValueInferred", 8, "RV_RETURN_VALUE_IGNORED_INFERRED", Detector.NORMAL_PRIORITY);
 
     private final static CheckReturnValueAnnotation[] myValues = { CHECK_RETURN_VALUE_UNKNOWN, CHECK_RETURN_VALUE_HIGH,
-            CHECK_RETURN_VALUE_MEDIUM, CHECK_RETURN_VALUE_LOW, CHECK_RETURN_VALUE_IGNORE, CHECK_RETURN_VALUE_VERY_HIGH, 
-            CHECK_RETURN_VALUE_LOW_BAD_PRACTICE, CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE, CHECK_RETURN_VALUE_INFERRED};
+        CHECK_RETURN_VALUE_MEDIUM, CHECK_RETURN_VALUE_LOW, CHECK_RETURN_VALUE_IGNORE, CHECK_RETURN_VALUE_VERY_HIGH,
+        CHECK_RETURN_VALUE_LOW_BAD_PRACTICE, CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE, CHECK_RETURN_VALUE_INFERRED};
 
     @CheckForNull
     public static CheckReturnValueAnnotation parse(String priority) {
-        if (priority == null)
+        if (priority == null) {
             return CHECK_RETURN_VALUE_MEDIUM;
-        if (priority.endsWith("HIGH"))
+        }
+        if (priority.endsWith("HIGH")) {
             return CHECK_RETURN_VALUE_HIGH;
-        if (priority.endsWith("MEDIUM"))
+        }
+        if (priority.endsWith("MEDIUM")) {
             return CHECK_RETURN_VALUE_MEDIUM;
-        if (priority.endsWith("LOW"))
+        }
+        if (priority.endsWith("LOW")) {
             return CHECK_RETURN_VALUE_LOW;
+        }
         throw new IllegalArgumentException("Bad priority: " + priority);
 
     }

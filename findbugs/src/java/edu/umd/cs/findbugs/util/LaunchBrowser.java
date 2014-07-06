@@ -75,13 +75,15 @@ public class LaunchBrowser {
 
     static boolean showDocumentViaDesktop(URL u) {
 
-        if (desktopObject != null && desktopBrowseMethod != null)
+        if (desktopObject != null && desktopBrowseMethod != null) {
             try {
-                if (DEBUG)
+                if (DEBUG) {
                     JOptionPane.showMessageDialog(null, "Trying desktop browse");
+                }
                 viaDesktop(u.toURI());
-                if (DEBUG)
+                if (DEBUG) {
                     JOptionPane.showMessageDialog(null, "desktop browse succeeded");
+                }
                 return true;
             } catch (InvocationTargetException ite) {
                 assert true;
@@ -92,19 +94,22 @@ public class LaunchBrowser {
             } catch (URISyntaxException e) {
                 assert true;
             }
+        }
         return false;
     }
 
     static void viaDesktop(URI u) throws IllegalAccessException, InvocationTargetException {
-        if (desktopBrowseMethod == null)
+        if (desktopBrowseMethod == null) {
             throw new UnsupportedOperationException("Launch via desktop not available");
+        }
         desktopBrowseMethod.invoke(desktopObject, u);
     }
 
     static boolean showDocumentViaExec(URL url) {
         if (launchViaExec && !launchViaExecFailed) {
-            if (DEBUG)
+            if (DEBUG) {
                 JOptionPane.showMessageDialog(null, "Trying exec browse");
+            }
 
             try {
                 Process p = launchViaExec(url);
@@ -113,20 +118,24 @@ public class LaunchBrowser {
                 int exitValue = p.exitValue();
                 if (exitValue != 0) {
                     launchViaExecFailed = true;
-                    if (DEBUG)
+                    if (DEBUG) {
                         JOptionPane.showMessageDialog(null, "exec browse launch failed with exit code " + exitValue);
+                    }
                     return false;
                 }
-                if (DEBUG)
+                if (DEBUG) {
                     JOptionPane.showMessageDialog(null, "exec browse succeeded");
+                }
                 return true;
             } catch (IllegalThreadStateException e) {
-                if (DEBUG)
+                if (DEBUG) {
                     JOptionPane.showMessageDialog(null, "exec browse succeeded but not done");
+                }
                 return true;
             } catch (Exception e) {
-                if (DEBUG)
+                if (DEBUG) {
                     JOptionPane.showMessageDialog(null, "exec browse failed" + e.getMessage());
+                }
                 launchViaExecFailed = true;
             }
         }
@@ -143,19 +152,22 @@ public class LaunchBrowser {
     /**
      * attempt to show the given URL. will first attempt via the JNLP api, then
      * will try showViaExec().
-     * 
+     *
      * @param url
      *            the URL
      * @return true on success
      */
     public static boolean showDocument(URL url) {
 
-        if (showDocumentViaDesktop(url))
+        if (showDocumentViaDesktop(url)) {
             return true;
-        if (showDocumentViaExec(url))
+        }
+        if (showDocumentViaExec(url)) {
             return true;
-        if (JavaWebStart.showViaWebStart(url))
+        }
+        if (JavaWebStart.showViaWebStart(url)) {
             return true;
+        }
 
         return false;
 

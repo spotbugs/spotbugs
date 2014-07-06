@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Factory to create BackwardTypeQualifierDataflowFactory objects.
- * 
+ *
  * @author David Hovemeyer
  */
 public class BackwardTypeQualifierDataflowFactoryFactory extends AnalysisFactory<BackwardTypeQualifierDataflowFactory> {
@@ -36,7 +36,7 @@ public class BackwardTypeQualifierDataflowFactoryFactory extends AnalysisFactory
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)

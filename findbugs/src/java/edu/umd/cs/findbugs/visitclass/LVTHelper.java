@@ -32,7 +32,7 @@ import org.apache.bcel.classfile.LocalVariableTable;
 public class LVTHelper {
     /**
      * returns the local variable at an index int the scope of PC
-     * 
+     *
      * @param lvt
      *            the local variable table
      * @param index
@@ -47,8 +47,9 @@ public class LVTHelper {
         for (int i = 0; i < length; i++) {
             if (lvs[i].getIndex() == index) {
                 int startPC = lvs[i].getStartPC();
-                if ((pc >= startPC) && (pc < (startPC + lvs[i].getLength())))
+                if ((pc >= startPC) && (pc < (startPC + lvs[i].getLength()))) {
                     return lvs[i];
+                }
             }
         }
 

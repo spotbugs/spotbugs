@@ -26,10 +26,10 @@ import java.util.List;
 
 /**
  * Class to maintain a snapshot of a processes's time and memory usage.
- * 
+ *
  * This uses some JDK 1.5 APIs so must be careful that it doesn't cause any harm
  * when run from 1.4.
- * 
+ *
  * @see FindBugs
  * @author Brian Cole
  */
@@ -89,7 +89,7 @@ public class Footprint {
         } // catch possible Error thrown when complied by the Eclipse compiler
 
         clockTime = System.currentTimeMillis(); // or new
-                                                // java.util.Date().getTime() ;
+        // java.util.Date().getTime() ;
 
         try {
             peakMem = new MemoryBeanWrapper().getPeakUsage();
@@ -161,9 +161,11 @@ public class Footprint {
                 try {
                     java.lang.management.MemoryUsage memUsage = mpBean.getPeakUsage();
                     if (memUsage != null)
+                    {
                         sum += memUsage.getUsed(); // or getCommitted()
-                    // System.out.println(mpBean.getType()+", "+mpBean.getName()+", "+memUsage.getUsed());
-                    // System.out.println("Memory type="+mpBean.getType()+", Pool name="+mpBean.getName()+", Memory usage="+mpBean.getPeakUsage());
+                        // System.out.println(mpBean.getType()+", "+mpBean.getName()+", "+memUsage.getUsed());
+                        // System.out.println("Memory type="+mpBean.getType()+", Pool name="+mpBean.getName()+", Memory usage="+mpBean.getPeakUsage());
+                    }
                 } catch (RuntimeException e) {
                     assert true;
                     // AnalysisContext.logError("Error getting peak usage", e);

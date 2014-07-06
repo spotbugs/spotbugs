@@ -23,7 +23,7 @@ import java.io.Serializable;
 
 /**
  * An object providing context information about a particular BugInstance.
- * 
+ *
  * @author David Hovemeyer
  * @see BugInstance
  */
@@ -37,7 +37,7 @@ public interface BugAnnotation extends Comparable<BugAnnotation>, XMLWriteableWi
 
     /**
      * Accept a BugAnnotationVisitor.
-     * 
+     *
      * @param visitor
      *            the visitor to accept
      */
@@ -47,7 +47,7 @@ public interface BugAnnotation extends Comparable<BugAnnotation>, XMLWriteableWi
      * Format the annotation as a String. The given key specifies additional
      * information about how the annotation should be formatted. If the key is
      * empty, then the "default" format will be used.
-     * 
+     *
      * @param key
      *            how the annotation should be formatted
      * @param primaryClass
@@ -71,7 +71,7 @@ public interface BugAnnotation extends Comparable<BugAnnotation>, XMLWriteableWi
     /**
      * Is this annotation used to compute instance hashes or match bug instances
      * across versions
-     * 
+     *
      * @return true if significant
      */
     public boolean isSignificant();
@@ -79,4 +79,3 @@ public interface BugAnnotation extends Comparable<BugAnnotation>, XMLWriteableWi
     public String toString(ClassAnnotation primaryClass);
 }
 
-// vim:ts=4

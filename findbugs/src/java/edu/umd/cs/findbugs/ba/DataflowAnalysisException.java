@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 
 /**
  * Exception type to indicate a dataflow analysis failure.
- * 
+ *
  * @see Dataflow
  * @see DataflowAnalysis
  */
@@ -41,7 +41,7 @@ public class DataflowAnalysisException extends CheckedAnalysisException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param msg
      *            message describing the reason for the exception
      */
@@ -51,7 +51,7 @@ public class DataflowAnalysisException extends CheckedAnalysisException {
 
     /**
      * Constructor from message and another Throwable object.
-     * 
+     *
      * @param msg
      *            message describing the reason for the exception
      * @param cause
@@ -63,7 +63,7 @@ public class DataflowAnalysisException extends CheckedAnalysisException {
 
     /**
      * Constructor from method and instruction.
-     * 
+     *
      * @param message
      *            reason for the error
      * @param methodGen
@@ -78,7 +78,7 @@ public class DataflowAnalysisException extends CheckedAnalysisException {
     /**
      * Constructor from message, method and instruction, and Throwable object
      * (cause).
-     * 
+     *
      * @param message
      *            reason for the error
      * @param methodGen
@@ -94,4 +94,3 @@ public class DataflowAnalysisException extends CheckedAnalysisException {
     }
 }
 
-// vim:ts=4

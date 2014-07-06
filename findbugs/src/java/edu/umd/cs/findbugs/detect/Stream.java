@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.ba.ResourceValueFrame;
  * can customize how they work for different kinds of streams
  */
 public class Stream extends ResourceCreationPoint implements Comparable<Stream> {
-    private String streamBase;
+    private final String streamBase;
 
     private boolean isUninteresting;
 
@@ -75,7 +75,7 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
      * Constructor. By default, Stream objects are marked as uninteresting.
      * setInteresting("BUG_TYPE") must be called explicitly to mark the Stream
      * as interesting.
-     * 
+     *
      * @param location
      *            where the stream is created
      * @param streamClass
@@ -93,7 +93,7 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 
     /**
      * Mark this Stream as interesting.
-     * 
+     *
      * @param bugType
      *            the bug type that should be reported if the stream is not
      *            closed on all paths out of the method
@@ -125,7 +125,7 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 
     /**
      * Set the number of the parameter which passes the stream instance.
-     * 
+     *
      * @param instanceParam
      *            number of the parameter passing the stream instance
      */
@@ -181,12 +181,14 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
     }
 
     public boolean isStreamOpen(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, ResourceValueFrame frame) {
-        if (isOpenOnCreation)
+        if (isOpenOnCreation) {
             return false;
+        }
 
         Instruction ins = handle.getInstruction();
-        if (!(ins instanceof INVOKESPECIAL))
+        if (!(ins instanceof INVOKESPECIAL)) {
             return false;
+        }
 
         // Does this instruction open the stream?
         INVOKESPECIAL inv = (INVOKESPECIAL) ins;
@@ -217,8 +219,9 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 
     public boolean isStreamClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, ResourceValueFrame frame,
             RepositoryLookupFailureCallback lookupFailureCallback) {
-        if (!mightCloseStream(basicBlock, handle, cpg))
+        if (!mightCloseStream(basicBlock, handle, cpg)) {
             return false;
+        }
 
         Instruction ins = handle.getInstruction();
 
@@ -226,8 +229,9 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
             // Does this instruction close the stream?
             InvokeInstruction inv = (InvokeInstruction) ins;
 
-            if (!frame.isValid() || !getInstanceValue(frame, inv, cpg).isInstance())
+            if (!frame.isValid() || !getInstanceValue(frame, inv, cpg).isInstance()) {
                 return false;
+            }
 
             // It's a close if the invoked class is any subtype of the stream
             // base class.
@@ -235,12 +239,15 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
             // even though it's the same instance.)
             try {
                 String classClosed = inv.getClassName(cpg);
-                
-                if (relatedType(classClosed) ) return true;
-                if (classClosed.equals("java.io.ObjectOutput"))
+
+                if (relatedType(classClosed) ) {
+                    return true;
+                }
+                if (classClosed.equals("java.io.ObjectOutput")) {
                     return relatedType("java.io.ObjectOutputStream");
-                else if (classClosed.equals("java.io.ObjectInput"))
+                } else if (classClosed.equals("java.io.ObjectInput")) {
                     return relatedType("java.io.ObjectInputStream");
+                }
                 return false;
             } catch (ClassNotFoundException e) {
                 lookupFailureCallback.reportMissingClass(e);
@@ -257,8 +264,9 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 
     private ResourceValue getInstanceValue(ResourceValueFrame frame, InvokeInstruction inv, ConstantPoolGen cpg) {
         int numConsumed = inv.consumeStack(cpg);
-        if (numConsumed == Constants.UNPREDICTABLE)
+        if (numConsumed == Constants.UNPREDICTABLE) {
             throw new IllegalStateException();
+        }
         return frame.getValue(frame.getNumSlots() - numConsumed);
     }
 
@@ -273,17 +281,22 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Stream))
+        if (!(o instanceof Stream)) {
             return false;
+        }
         Stream other = (Stream) o;
-        if (!getLocation().equals(other.getLocation()))
+        if (!getLocation().equals(other.getLocation())) {
             return false;
-        if (!streamBase.equals(other.streamBase))
+        }
+        if (!streamBase.equals(other.streamBase)) {
             return false;
-        if (!getResourceClass().equals(other.getResourceClass()))
+        }
+        if (!getResourceClass().equals(other.getResourceClass())) {
             return false;
-        if (instanceParam != other.instanceParam)
+        }
+        if (instanceParam != other.instanceParam) {
             return false;
+        }
         return true;
     }
 
@@ -298,20 +311,23 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
         // different parameters to be distinguished.
 
         cmp = getLocation().compareTo(other.getLocation());
-        if (cmp != 0)
+        if (cmp != 0) {
             return cmp;
+        }
         cmp = streamBase.compareTo(other.streamBase);
-        if (cmp != 0)
+        if (cmp != 0) {
             return cmp;
+        }
         cmp = getResourceClass().compareTo(other.getResourceClass());
-        if (cmp != 0)
+        if (cmp != 0) {
             return cmp;
+        }
         cmp = instanceParam - other.instanceParam;
-        if (cmp != 0)
+        if (cmp != 0) {
             return cmp;
+        }
 
         return 0;
     }
 }
 
-// vim:ts=3

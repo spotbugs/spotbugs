@@ -53,8 +53,9 @@ public class NavigableTextPane extends JTextPane {
      */
     private int parentHeight() {
         Container parent = getParent();
-        if (parent != null)
+        if (parent != null) {
             return parent.getHeight();
+        }
         return getHeight(); // entire pane height, may be huge
     }
 
@@ -66,8 +67,9 @@ public class NavigableTextPane extends JTextPane {
         Document d = getDocument();
         try {
             Element element = d.getDefaultRootElement().getElement(line - 1);
-            if (element == null)
+            if (element == null) {
                 throw new BadLocationException("line " + line + " does not exist", -line);
+            }
             return element.getStartOffset();
         } catch (ArrayIndexOutOfBoundsException aioobe) {
             BadLocationException ble = new BadLocationException("line " + line + " does not exist", -line);
@@ -101,8 +103,9 @@ public class NavigableTextPane extends JTextPane {
             int y = lineToY(line);
             scrollYToVisibleImpl(y, margin);
         } catch (BadLocationException ble) {
-            if (MainFrame.GUI2_DEBUG)
+            if (MainFrame.GUI2_DEBUG) {
                 ble.printStackTrace();
+            }
         }
     }
 
@@ -112,8 +115,9 @@ public class NavigableTextPane extends JTextPane {
      */
     public void scrollLineToVisible(int line, int margin) {
         int maxMargin = (parentHeight() - 20) / 2;
-        if (margin > maxMargin)
+        if (margin > maxMargin) {
             margin = Math.max(0, maxMargin);
+        }
         scrollLineToVisibleImpl(line, margin);
     }
 
@@ -132,8 +136,9 @@ public class NavigableTextPane extends JTextPane {
         try {
             startY = lineToY(startLine);
         } catch (BadLocationException ble) {
-            if (MainFrame.GUI2_DEBUG)
+            if (MainFrame.GUI2_DEBUG) {
                 ble.printStackTrace();
+            }
             return; // give up
         }
         try {
@@ -162,15 +167,15 @@ public class NavigableTextPane extends JTextPane {
                 int y = pq.remove();
                 int lo = Math.min(startY, y);
                 int hi = Math.max(endY, y);
-                if (hi - lo > max)
+                if (hi - lo > max) {
                     break;
-                else {
+                } else {
                     startY = lo;
                     endY = hi;
                 }
             }
         }
-        
+
         if (endY - startY > max) {
             endY = startY + max;
         }

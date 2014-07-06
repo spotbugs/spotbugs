@@ -28,7 +28,7 @@ import org.apache.bcel.generic.InstructionHandle;
  * A really simple forward dataflow analysis to find the depth of the Java
  * operand stack. This is more of a proof of concept for the dataflow analysis
  * framework than anything useful.
- * 
+ *
  * @see Dataflow
  * @see DataflowAnalysis
  */
@@ -37,11 +37,11 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 
     public static final int BOTTOM = -2;
 
-    private ConstantPoolGen cpg;
+    private final ConstantPoolGen cpg;
 
     /**
      * Constructor.
-     * 
+     *
      * @param cpg
      *            the ConstantPoolGen of the method whose CFG we're performing
      *            the analysis on
@@ -95,14 +95,16 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
         Instruction ins = handle.getInstruction();
         int produced = ins.produceStack(cpg);
         int consumed = ins.consumeStack(cpg);
-        if (produced == Constants.UNPREDICTABLE || consumed == Constants.UNPREDICTABLE)
+        if (produced == Constants.UNPREDICTABLE || consumed == Constants.UNPREDICTABLE) {
             throw new IllegalStateException("Unpredictable stack delta for instruction: " + handle);
+        }
         int depth = fact.getDepth();
         depth += (produced - consumed);
-        if (depth < 0)
+        if (depth < 0) {
             fact.setDepth(BOTTOM);
-        else
+        } else {
             fact.setDepth(depth);
+        }
     }
 
     @Override
@@ -111,14 +113,15 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
         int b = result.getDepth();
         int combined;
 
-        if (a == TOP)
+        if (a == TOP) {
             combined = b;
-        else if (b == TOP)
+        } else if (b == TOP) {
             combined = a;
-        else if (a == BOTTOM || b == BOTTOM || a != b)
+        } else if (a == BOTTOM || b == BOTTOM || a != b) {
             combined = BOTTOM;
-        else
+        } else {
             combined = a;
+        }
 
         result.setDepth(combined);
     }
@@ -157,4 +160,3 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
     // }
 }
 
-// vim:ts=4

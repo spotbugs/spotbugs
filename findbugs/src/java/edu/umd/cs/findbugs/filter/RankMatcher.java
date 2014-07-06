@@ -27,11 +27,11 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Matcher to select BugInstances with a particular rank or higher.
- * 
+ *
  * @author William Pugh
  */
 public class RankMatcher implements Matcher {
-    private int rank;
+    private final int rank;
 
     @Override
     public String toString() {
@@ -40,7 +40,7 @@ public class RankMatcher implements Matcher {
 
     /**
      * Constructor.
-     * 
+     *
      * @param rankAsString
      *            the rank, as a String
      * @throws NumberFormatException
@@ -57,8 +57,9 @@ public class RankMatcher implements Matcher {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof RankMatcher))
+        if (!(o instanceof RankMatcher)) {
             return false;
+        }
         RankMatcher other = (RankMatcher) o;
         return rank == other.rank;
     }
@@ -71,8 +72,9 @@ public class RankMatcher implements Matcher {
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Integer.toString(rank));
-        if (disabled)
+        if (disabled) {
             attributes.addAttribute("disabled", "true");
+        }
         xmlOutput.openCloseTag("Rank", attributes);
     }
 }

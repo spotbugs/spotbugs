@@ -26,17 +26,17 @@ import java.util.Locale;
 /**
  * A StringMatcher that checks to see if a candidate string (assumed to be a
  * camel-case word), when broken into components, contains a given word.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ContainsCamelCaseWordStringMatcher implements StringMatcher {
-    private String expected;
+    private final String expected;
 
     /**
      * Constructor. This StringMatcher will match any string which, when broken
      * into camel-case identifier components, has a component which matches the
      * (lower-cased) expected string value.
-     * 
+     *
      * @param expected
      *            the expected string value
      */

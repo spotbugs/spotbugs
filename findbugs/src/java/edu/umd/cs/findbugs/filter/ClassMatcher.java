@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 public class ClassMatcher implements Matcher {
     private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
 
-    private NameMatch className;
+    private final NameMatch className;
 
     @Override
     public String toString() {
@@ -46,18 +46,19 @@ public class ClassMatcher implements Matcher {
         ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
         String bugClassName = primaryClassAnnotation.getClassName();
         boolean result = className.match(bugClassName);
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println("Matching " + bugClassName + " with " + className + ", result = " + result);
+        }
         return result;
     }
 
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", className.getSpec());
-        if (disabled)
+        if (disabled) {
             attributes.addAttribute("disabled", "true");
+        }
         xmlOutput.openCloseTag("Class", attributes);
     }
 }
 
-// vim:ts=4

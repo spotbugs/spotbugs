@@ -62,8 +62,9 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
             // If the resource instance is stored in a field, then it escapes
             ResourceValueFrame frame = getFrame();
             ResourceValue topValue = frame.getTopValue();
-            if (topValue.equals(ResourceValue.instance()))
+            if (topValue.equals(ResourceValue.instance())) {
                 frame.setStatus(ResourceValueFrame.ESCAPED);
+            }
         } catch (DataflowAnalysisException e) {
             throw new InvalidBytecodeException("Stack underflow", e);
         }
@@ -107,7 +108,7 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
      * Override this to check for methods that it is legal to pass the instance
      * to without the instance escaping. By default, we consider all methods to
      * be possible escape routes.
-     * 
+     *
      * @param inv
      *            the InvokeInstruction to which the resource instance is passed
      *            as an argument
@@ -133,8 +134,9 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
             }
         }
 
-        if (instanceArgNum >= 0 && instanceEscapes(inv, instanceArgNum))
+        if (instanceArgNum >= 0 && instanceEscapes(inv, instanceArgNum)) {
             frame.setStatus(ResourceValueFrame.ESCAPED);
+        }
 
         handleNormalInstruction(inv);
     }
@@ -147,8 +149,9 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 
             topValue = frame.getTopValue();
 
-            if (topValue.equals(ResourceValue.instance()))
+            if (topValue.equals(ResourceValue.instance())) {
                 frame.setStatus(ResourceValueFrame.ESCAPED);
+            }
         } catch (DataflowAnalysisException e) {
             AnalysisContext.logError("Analysis error", e);
         }
@@ -179,8 +182,9 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
         try {
             ResourceValueFrame frame = getFrame();
             ResourceValue topValue = frame.getTopValue();
-            if (topValue.equals(ResourceValue.instance()))
+            if (topValue.equals(ResourceValue.instance())) {
                 frame.setStatus(ResourceValueFrame.ESCAPED);
+            }
         } catch (DataflowAnalysisException e) {
             throw new InvalidBytecodeException("Stack underflow", e);
         }
@@ -190,4 +194,3 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 
 }
 
-// vim:ts=4

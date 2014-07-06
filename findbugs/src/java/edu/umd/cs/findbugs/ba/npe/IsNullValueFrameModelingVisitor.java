@@ -98,12 +98,14 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
      */
     @Override
     public void analyzeInstruction(Instruction ins) throws DataflowAnalysisException {
-        if (!getFrame().isValid())
+        if (!getFrame().isValid()) {
             return;
+        }
         slotContainingNewNullValue = -1;
         super.analyzeInstruction(ins);
-        if (!getFrame().isValid())
+        if (!getFrame().isValid()) {
             return;
+        }
 
         if (!NO_ASSERT_HACK) {
             if (assertionMethods.isAssertionHandle(getLocation().getHandle(), cpg)) {
@@ -116,8 +118,9 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
                 }
                 for (Map.Entry<ValueNumber, IsNullValue> e : frame.getKnownValueMapEntrySet()) {
                     IsNullValue value = e.getValue();
-                    if (value.isDefinitelyNull() || value.isNullOnSomePath())
+                    if (value.isDefinitelyNull() || value.isNullOnSomePath()) {
                         e.setValue(IsNullValue.nonReportingNotNullValue());
+                    }
 
                 }
             }
@@ -174,7 +177,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
         Location location = getLocation();
 
-        if (trackValueNumbers)
+        if (trackValueNumbers) {
             try {
                 ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(location);
                 Set<ValueNumber> nonnullParameters = UnconditionalValueDerefAnalysis.checkAllNonNullParams(location, vnaFrame,
@@ -208,7 +211,8 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
             } catch (DataflowAnalysisException e) {
                 AnalysisContext.logError("Error looking up nonnull parameters for invoked method", e);
             }
-       // Determine if we are going to model the return value of this call.
+        }
+        // Determine if we are going to model the return value of this call.
         boolean modelCallReturnValue = MODEL_NONNULL_RETURN && returnType instanceof ReferenceType;
 
         if (!modelCallReturnValue) {
@@ -227,12 +231,15 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
                 if (targetSet.isEmpty()) {
                     XMethod calledMethod = XFactory.createXMethod(obj, getCPG());
                     result = getReturnValueNullness(calledMethod);
-                } else for (XMethod calledMethod : targetSet) {
-                    IsNullValue pushValue = getReturnValueNullness(calledMethod);
-                    if (result == null)
-                        result = pushValue;
-                    else
-                        result = IsNullValue.merge(result, pushValue);
+                } else {
+                    for (XMethod calledMethod : targetSet) {
+                        IsNullValue pushValue = getReturnValueNullness(calledMethod);
+                        if (result == null) {
+                            result = pushValue;
+                        } else {
+                            result = IsNullValue.merge(result, pushValue);
+                        }
+                    }
                 }
             } catch (DataflowAnalysisException e) {
                 result = IsNullValue.nonReportingNotNullValue();
@@ -247,8 +254,9 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
     public IsNullValue getReturnValueNullness(XMethod calledMethod) {
         IsNullValue pushValue;
-        if (IsNullValueAnalysis.DEBUG)
+        if (IsNullValueAnalysis.DEBUG) {
             System.out.println("Check " + calledMethod + " for null return...");
+        }
         NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase()
                 .getResolvedAnnotation(calledMethod, false);
         Boolean alwaysNonNull = AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase()
@@ -317,19 +325,22 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
         }
         super.visitPUTFIELD(obj);
         XField field = XFactory.createXField(obj, cpg);
-        if (nullValueStored != null && ValueNumberAnalysisFeatures.REDUNDANT_LOAD_ELIMINATION)
+        if (nullValueStored != null && ValueNumberAnalysisFeatures.REDUNDANT_LOAD_ELIMINATION) {
             try {
                 ValueNumberFrame vnaFrameBefore = vnaDataflow.getFactAtLocation(getLocation());
                 ValueNumber refValue = vnaFrameBefore.getStackValue(1);
                 AvailableLoad load = new AvailableLoad(refValue, field);
                 ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(getLocation());
                 ValueNumber[] newValueNumbersForField = vnaFrameAfter.getAvailableLoad(load);
-                if (newValueNumbersForField != null && trackValueNumbers)
-                    for (ValueNumber v : newValueNumbersForField)
+                if (newValueNumbersForField != null && trackValueNumbers) {
+                    for (ValueNumber v : newValueNumbersForField) {
                         getFrame().setKnownValue(v, nullValueStored);
+                    }
+                }
             } catch (DataflowAnalysisException e) {
                 AnalysisContext.logError("Oops", e);
             }
+        }
     }
 
     @Override
@@ -387,8 +398,9 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
         }
         if (field.getClassName().equals("java.util.logging.Level") && field.getName().equals("SEVERE")
                 || field.getClassName().equals("org.apache.log4j.Level")
-                && (field.getName().equals("ERROR") || field.getName().equals("FATAL")))
+                && (field.getName().equals("ERROR") || field.getName().equals("FATAL"))) {
             getFrame().toExceptionValues();
+        }
 
         if (field.getName().startsWith("class$")) {
             produce(IsNullValue.nonNullValue());
@@ -508,4 +520,3 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
 }
 
-// vim:ts=4

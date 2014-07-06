@@ -51,7 +51,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
     static final String OTHER_CATEGORY_ABBREV = "X";
 
-   protected PrintWriter outputStream = UTF8.printWriter(System.out, true);
+    protected PrintWriter outputStream = UTF8.printWriter(System.out, true);
 
     public TextUIBugReporter() {
         reportStackTrace = true;
@@ -113,10 +113,12 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
         if (pattern != null) {
             String categoryAbbrev = null;
             BugCategory bcat = DetectorFactoryCollection.instance().getBugCategory(pattern.getCategory());
-            if (bcat != null)
+            if (bcat != null) {
                 categoryAbbrev = bcat.getAbbrev();
-            if (categoryAbbrev == null)
+            }
+            if (categoryAbbrev == null) {
                 categoryAbbrev = OTHER_CATEGORY_ABBREV;
+            }
             outputStream.print(categoryAbbrev);
             outputStream.print(" ");
         }
@@ -151,8 +153,9 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
         boolean errors = analysisErrors || missingClasses || getQueuedErrors().size() > 0;
         analysisErrors = missingClasses = false;
         super.reportQueuedErrors();
-        if (errors)
+        if (errors) {
             emitLine("");
+        }
     }
 
     @Override
@@ -253,4 +256,3 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
 }
 
-// vim:ts=4

@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.detect.FindRefComparison;
 
 /**
  * Tests for Subtypes2.
- * 
+ *
  * @author Bill Pugh
  * @author David Hovemeyer
  */
@@ -91,7 +91,7 @@ public class Subtypes2Test extends FindBugsTestCase {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see junit.framework.TestCase#setUp()
      */
     @Override
@@ -134,7 +134,7 @@ public class Subtypes2Test extends FindBugsTestCase {
         executeFindBugsTest(new RunnableWithExceptions() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
             @Override
@@ -150,7 +150,7 @@ public class Subtypes2Test extends FindBugsTestCase {
         executeFindBugsTest(new RunnableWithExceptions() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
             @Override
@@ -166,7 +166,7 @@ public class Subtypes2Test extends FindBugsTestCase {
         executeFindBugsTest(new RunnableWithExceptions() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
             @Override
@@ -195,7 +195,7 @@ public class Subtypes2Test extends FindBugsTestCase {
         executeFindBugsTest(new RunnableWithExceptions() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
             @Override
@@ -212,7 +212,7 @@ public class Subtypes2Test extends FindBugsTestCase {
         executeFindBugsTest(new RunnableWithExceptions() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
             @Override
@@ -228,7 +228,7 @@ public class Subtypes2Test extends FindBugsTestCase {
         executeFindBugsTest(new RunnableWithExceptions() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
             @Override
@@ -244,7 +244,7 @@ public class Subtypes2Test extends FindBugsTestCase {
         executeFindBugsTest(new RunnableWithExceptions() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
             @Override
@@ -262,7 +262,7 @@ public class Subtypes2Test extends FindBugsTestCase {
         executeFindBugsTest(new RunnableWithExceptions() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
             @Override
@@ -278,7 +278,7 @@ public class Subtypes2Test extends FindBugsTestCase {
         executeFindBugsTest(new RunnableWithExceptions() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
             @Override
@@ -296,7 +296,7 @@ public class Subtypes2Test extends FindBugsTestCase {
         executeFindBugsTest(new RunnableWithExceptions() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
             @Override
@@ -318,7 +318,7 @@ public class Subtypes2Test extends FindBugsTestCase {
         executeFindBugsTest(new RunnableWithExceptions() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
             @Override
@@ -338,7 +338,7 @@ public class Subtypes2Test extends FindBugsTestCase {
         executeFindBugsTest(new RunnableWithExceptions() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
              */
             @Override

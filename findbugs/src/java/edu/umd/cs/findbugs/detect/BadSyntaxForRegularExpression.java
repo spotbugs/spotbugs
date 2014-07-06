@@ -38,18 +38,22 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
     }
 
     private void singleDotPatternWouldBeSilly(int stackDepth, boolean ignorePasswordMasking) {
-        if (ignorePasswordMasking && stackDepth != 1)
+        if (ignorePasswordMasking && stackDepth != 1) {
             throw new IllegalArgumentException("Password masking requires stack depth 1, but is " + stackDepth);
-        if (stack.getStackDepth() < stackDepth)
+        }
+        if (stack.getStackDepth() < stackDepth) {
             return;
+        }
         OpcodeStack.Item it = stack.getStackItem(stackDepth);
         Object value = it.getConstant();
-        if (value == null || !(value instanceof String))
+        if (value == null || !(value instanceof String)) {
             return;
+        }
         String regex = (String) value;
         boolean dotIsUsed = regex.equals(".");
-        if (!dotIsUsed && !regex.equals("|"))
+        if (!dotIsUsed && !regex.equals("|")) {
             return;
+        }
         int priority = HIGH_PRIORITY;
         if (ignorePasswordMasking && dotIsUsed) {
             priority = NORMAL_PRIORITY;
@@ -58,10 +62,12 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
             if (topValue instanceof String) {
                 String replacementString = (String) topValue;
                 if (replacementString.toLowerCase().equals("x") || replacementString.equals("-") || replacementString.equals("*")
-                        || replacementString.equals(" ") || replacementString.equals("\\*"))
+                        || replacementString.equals(" ") || replacementString.equals("\\*")) {
                     return;
-                if (replacementString.length() == 1 && getMethodName().toLowerCase().indexOf("pass") >= 0)
+                }
+                if (replacementString.length() == 1 && getMethodName().toLowerCase().indexOf("pass") >= 0) {
                     priority = LOW_PRIORITY;
+                }
             }
         }
 
@@ -74,31 +80,35 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
     }
 
     private void sawRegExPattern(int stackDepth, int flags) {
-        if (stack.getStackDepth() < stackDepth)
+        if (stack.getStackDepth() < stackDepth) {
             return;
+        }
         OpcodeStack.Item it = stack.getStackItem(stackDepth);
         if (it.getSpecialKind() == OpcodeStack.Item.FILE_SEPARATOR_STRING && (flags & Pattern.LITERAL) == 0) {
             bugReporter.reportBug(new BugInstance(this, "RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION", HIGH_PRIORITY)
-                    .addClassAndMethod(this).addCalledMethod(this).addSourceLine(this));
+            .addClassAndMethod(this).addCalledMethod(this).addSourceLine(this));
             return;
         }
         Object value = it.getConstant();
-        if (value == null || !(value instanceof String))
+        if (value == null || !(value instanceof String)) {
             return;
+        }
         String regex = (String) value;
         try {
             Pattern.compile(regex, flags);
         } catch (PatternSyntaxException e) {
             String message = e.getMessage();
             int eol = message.indexOf('\n');
-            if (eol > 0)
+            if (eol > 0) {
                 message = message.substring(0, eol);
+            }
             BugInstance bug = new BugInstance(this, "RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION", HIGH_PRIORITY)
-                    .addClassAndMethod(this).addCalledMethod(this).addString(message).describe(StringAnnotation.ERROR_MSG_ROLE)
-                    .addString(regex).describe(StringAnnotation.REGEX_ROLE);
+            .addClassAndMethod(this).addCalledMethod(this).addString(message).describe(StringAnnotation.ERROR_MSG_ROLE)
+            .addString(regex).describe(StringAnnotation.REGEX_ROLE);
             String options = getOptions(flags);
-            if (options.length() > 0)
+            if (options.length() > 0) {
                 bug.addString("Regex flags: " + options).describe(StringAnnotation.STRING_MESSAGE);
+            }
             bug.addSourceLine(this);
             bugReporter.reportBug(bug);
         }
@@ -106,27 +116,29 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
 
     /** return an int on the stack, or 'defaultValue' if can't determine */
     private int getIntValue(int stackDepth, int defaultValue) {
-        if (stack.getStackDepth() < stackDepth)
+        if (stack.getStackDepth() < stackDepth) {
             return defaultValue;
+        }
         OpcodeStack.Item it = stack.getStackItem(stackDepth);
         Object value = it.getConstant();
-        if (value == null || !(value instanceof Integer))
+        if (value == null || !(value instanceof Integer)) {
             return defaultValue;
+        }
         return ((Number) value).intValue();
     }
 
     @Override
     public void sawOpcode(int seen) {
         if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/regex/Pattern")
-                && getNameConstantOperand().equals("compile") && getSigConstantOperand().startsWith("(Ljava/lang/String;I)"))
+                && getNameConstantOperand().equals("compile") && getSigConstantOperand().startsWith("(Ljava/lang/String;I)")) {
             sawRegExPattern(1, getIntValue(0, 0));
-        else if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/regex/Pattern")
-                && getNameConstantOperand().equals("compile") && getSigConstantOperand().startsWith("(Ljava/lang/String;)"))
+        } else if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/regex/Pattern")
+                && getNameConstantOperand().equals("compile") && getSigConstantOperand().startsWith("(Ljava/lang/String;)")) {
             sawRegExPattern(0);
-        else if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/regex/Pattern")
-                && getNameConstantOperand().equals("matches"))
+        } else if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/regex/Pattern")
+                && getNameConstantOperand().equals("matches")) {
             sawRegExPattern(1);
-        else if (seen == INVOKEVIRTUAL && getClassConstantOperand().equals("java/lang/String")
+        } else if (seen == INVOKEVIRTUAL && getClassConstantOperand().equals("java/lang/String")
                 && getNameConstantOperand().equals("replaceAll")) {
             sawRegExPattern(1);
             singleDotPatternWouldBeSilly(1, true);
@@ -147,10 +159,12 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
     }
 
     static void appendOption(StringBuilder b, int flags, int mask, String name) {
-        if ((flags & mask) == 0)
+        if ((flags & mask) == 0) {
             return;
-        if (b.length() > 0)
+        }
+        if (b.length() > 0) {
             b.append(" | ");
+        }
         b.append("Pattern." + name);
 
     }

@@ -25,7 +25,7 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 
 /**
  * List the analysis errors in a bug collection
- * 
+ *
  * @author Bill Pugh
  */
 public class ListErrors {
@@ -39,11 +39,11 @@ public class ListErrors {
         bugCollection.readXML(args[0]);
         for (AnalysisError e : bugCollection.getErrors()) {
             String msg = e.getExceptionMessage();
-            if (msg != null && msg.trim().length() > 0)
+            if (msg != null && msg.trim().length() > 0) {
                 System.out.println(e.getMessage() + " : " + msg);
-
-            else
+            } else {
                 System.out.println(e.getMessage());
+            }
 
         }
 

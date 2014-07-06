@@ -93,8 +93,9 @@ public class ComponentPlugin<T> {
 
     public Class<? extends T> getComponentClass() {
         if (!isAvailable()) {
-            if (FindBugs.isNoAnalysis())
+            if (FindBugs.isNoAnalysis()) {
                 throw new IllegalStateException("No analysis set; no component class loaded for " + getPlugin());
+            }
             throw new IllegalStateException("No component class for " + getPlugin());
         }
         return componentClass;

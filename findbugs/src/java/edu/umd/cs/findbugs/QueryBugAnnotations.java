@@ -30,12 +30,12 @@ import java.util.Set;
 public abstract class QueryBugAnnotations {
     // Bug's text annotation must contain one of the key
     // words in order to match
-    private HashSet<String> keywordSet = new HashSet<String>();
+    private final HashSet<String> keywordSet = new HashSet<String>();
 
     /**
      * Add a keyword to the query. A BugInstance's text annotation must contain
      * at least one keyword in order to match the query.
-     * 
+     *
      * @param keyword
      *            the keyword
      */
@@ -46,7 +46,7 @@ public abstract class QueryBugAnnotations {
     /**
      * Scan bug instances contained in given file, reporting those whose text
      * annotations contain at least one of the keywords in the query.
-     * 
+     *
      * @param filename
      *            an XML file containing bug instances
      */
@@ -59,7 +59,7 @@ public abstract class QueryBugAnnotations {
     /**
      * Scan bug instances contained in given bug collection, reporting those
      * whose text annotations contain at least one of the keywords in the query.
-     * 
+     *
      * @param bugCollection
      *            the bug collection
      * @param filename
@@ -82,7 +82,7 @@ public abstract class QueryBugAnnotations {
 
     /**
      * Called when a bug instance contains a query keyword.
-     * 
+     *
      * @param bugInstance
      *            the bug instance containing the keyword
      * @param filename
@@ -91,4 +91,3 @@ public abstract class QueryBugAnnotations {
     protected abstract void match(BugInstance bugInstance, String filename) throws Exception;
 }
 
-// vim:ts=4

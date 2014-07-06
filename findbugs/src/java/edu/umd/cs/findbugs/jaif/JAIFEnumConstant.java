@@ -23,7 +23,7 @@ package edu.umd.cs.findbugs.jaif;
  * @author David Hovemeyer
  */
 public class JAIFEnumConstant {
-    private String name;
+    private final String name;
 
     public JAIFEnumConstant(String name) {
         this.name = name;
@@ -38,7 +38,7 @@ public class JAIFEnumConstant {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override

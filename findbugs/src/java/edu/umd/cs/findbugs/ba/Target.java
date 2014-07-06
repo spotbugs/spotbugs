@@ -25,13 +25,14 @@ import org.apache.bcel.generic.InstructionHandle;
  * The target of a branch instruction.
  */
 public class Target {
-    private InstructionHandle targetInstruction;
+    private final InstructionHandle targetInstruction;
 
-    private @Edge.Type int edgeType;
+    private @Edge.Type
+    final int edgeType;
 
     /**
      * Constructor.
-     * 
+     *
      * @param targetInstruction
      *            the handle of the target instruction
      * @param edgeType

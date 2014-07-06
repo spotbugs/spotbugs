@@ -29,16 +29,19 @@ public class EditDistance {
     private static final int INSERT_OR_DELETE_COST = 2;
 
     private static int minimum(int a, int b, int c) {
-        if (a > b)
+        if (a > b) {
             return Math.min(b, c);
+        }
         return Math.min(a, c);
     }
 
     private static int distance(char a, char b) {
-        if (a == b)
+        if (a == b) {
             return 0;
-        if (Character.toLowerCase(a) == Character.toLowerCase(b))
+        }
+        if (Character.toLowerCase(a) == Character.toLowerCase(b)) {
             return 1;
+        }
         return 2;
     }
 
@@ -52,8 +55,9 @@ public class EditDistance {
         int n1 = str1.length();
         int n2 = str2.length();
         int diff = Math.abs(n1 - n2);
-        if (diff > 6)
+        if (diff > 6) {
             return INSERT_OR_DELETE_COST * Math.max(n1, n2);
+        }
         return editDistance1(str1, str2);
 
     }
@@ -68,13 +72,16 @@ public class EditDistance {
             distance[i] = new int[n2 + 1];
             distance[i][0] = INSERT_OR_DELETE_COST * i;
         }
-        for (int j = 1; j <= n2; j++)
+        for (int j = 1; j <= n2; j++) {
             distance[0][j] = INSERT_OR_DELETE_COST * j;
+        }
 
-        for (int i = 1; i <= n1; i++)
-            for (int j = 1; j <= n2; j++)
+        for (int i = 1; i <= n1; i++) {
+            for (int j = 1; j <= n2; j++) {
                 distance[i][j] = minimum(distance[i - 1][j] + INSERT_OR_DELETE_COST, distance[i][j - 1] + INSERT_OR_DELETE_COST,
                         distance[i - 1][j - 1] + distance(str1.charAt(i - 1), str2.charAt(j - 1)));
+            }
+        }
 
         return distance[n1][n2];
     }
@@ -86,14 +93,16 @@ public class EditDistance {
         int[] distance = new int[n2 + 1];
         int[] oldDistance = new int[n2 + 1];
 
-        for (int j = 1; j <= n2; j++)
+        for (int j = 1; j <= n2; j++) {
             oldDistance[j] = INSERT_OR_DELETE_COST * j;
+        }
 
         for (int i = 1; i <= n1; i++) {
             distance[0] = INSERT_OR_DELETE_COST * i;
-            for (int j = 1; j <= n2; j++)
+            for (int j = 1; j <= n2; j++) {
                 distance[j] = minimum(oldDistance[j] + INSERT_OR_DELETE_COST, distance[j - 1] + INSERT_OR_DELETE_COST,
                         oldDistance[j - 1] + distance(str1.charAt(i - 1), str2.charAt(j - 1)));
+            }
             int[] tmp = oldDistance;
             oldDistance = distance;
             distance = tmp;

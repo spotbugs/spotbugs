@@ -23,7 +23,7 @@ import org.apache.bcel.generic.Type;
 
 /**
  * Special "bottom" type. It is the zero element for the type merge operation.
- * 
+ *
  * @author David Hovemeyer
  * @see TypeAnalysis
  * @see TypeFrame
@@ -59,4 +59,3 @@ public class BottomType extends Type implements ExtendedTypes {
     }
 }
 
-// vim:ts=4

@@ -25,7 +25,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 /**
  * Write an object to XMLOutput while optionally adding descriptive messages.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface XMLWriteableWithMessages extends XMLWriteable {

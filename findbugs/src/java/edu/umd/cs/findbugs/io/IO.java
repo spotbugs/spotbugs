@@ -80,15 +80,16 @@ public class IO {
     static byte[] copyOf(byte[] original, int newLength) {
         byte[] copy = new byte[newLength];
         System.arraycopy(original, 0, copy, 0,
-                         Math.min(original.length, newLength));
+                Math.min(original.length, newLength));
         return copy;
     }
 
 
     public static byte[] readAll(@WillClose InputStream in, int size) throws IOException {
         try {
-            if (size == 0)
+            if (size == 0) {
                 throw new IllegalArgumentException();
+            }
             byte[] result = new byte[size];
             int pos = 0;
             while (true) {
@@ -97,11 +98,13 @@ public class IO {
                     pos += sz;
                 }
 
-                if (pos < size)
+                if (pos < size) {
                     return copyOf(result, pos);
+                }
                 int nextByte = in.read();
-                if (nextByte == -1)
+                if (nextByte == -1) {
                     return result;
+                }
                 size = size * 2 + 500;
                 result = copyOf(result, size);
                 result[pos++] = (byte) nextByte;
@@ -128,7 +131,7 @@ public class IO {
 
     public static long copy(@WillNotClose InputStream in, @WillNotClose OutputStream out, long maxBytes)
 
-    throws IOException {
+            throws IOException {
         long total = 0;
 
         int sz = 0;
@@ -146,7 +149,7 @@ public class IO {
 
     public static long copy(Reader in, Writer out, long maxChars)
 
-    throws IOException {
+            throws IOException {
         long total = 0;
 
         int sz;
@@ -165,7 +168,7 @@ public class IO {
      * Close given InputStream, ignoring any resulting exception.
      *
      */
-     public static void close(@CheckForNull Closeable c) {
+    public static void close(@CheckForNull Closeable c) {
         if (c == null) {
             return;
         }
@@ -229,21 +232,24 @@ public class IO {
      *             if in.skip throws an IOException
      */
     public static void skipFully(InputStream in, long bytes) throws IOException {
-        if (bytes < 0)
+        if (bytes < 0) {
             throw new IllegalArgumentException("Can't skip " + bytes + " bytes");
+        }
         long remaining = bytes;
         while (remaining > 0) {
             long skipped = in.skip(remaining);
-            if (skipped <= 0)
+            if (skipped <= 0) {
                 throw new EOFException("Reached EOF while trying to skip a total of " + bytes);
+            }
             remaining -= skipped;
         }
 
     }
 
     public static boolean verifyURL(URL u) {
-        if (u == null)
+        if (u == null) {
             return false;
+        }
 
         InputStream i = null;
 

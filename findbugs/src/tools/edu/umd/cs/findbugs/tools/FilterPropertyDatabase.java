@@ -48,8 +48,9 @@ public class FilterPropertyDatabase {
      */
     public static void main(String[] args) throws IOException {
         InputStream inSource = System.in;
-        if (args.length > 0)
+        if (args.length > 0) {
             inSource = new FileInputStream(args[0]);
+        }
         process(inSource);
 
     }
@@ -65,20 +66,23 @@ public class FilterPropertyDatabase {
             in = new BufferedReader(Util.getReader(inSource));
 
             Pattern p = Pattern.compile("^(([^,]+),.+),([0-9]+)\\|(.+)$");
-            
+
             while (true) {
                 String s = in.readLine();
-                if (s == null)
+                if (s == null) {
                     break;
+                }
                 Matcher m = p.matcher(s);
                 if (m.find()) {
                     String className = m.group(2);
-                    if (FilterAndCombineBitfieldPropertyDatabase.getStatus(className) == Status.UNEXPOSED)
+                    if (FilterAndCombineBitfieldPropertyDatabase.getStatus(className) == Status.UNEXPOSED) {
                         continue;
+                    }
                     int accFlags = Integer.parseInt(m.group(3));
-                   
-                    if ((accFlags & FLAGS) != 0)
+
+                    if ((accFlags & FLAGS) != 0) {
                         System.out.println(s);
+                    }
                 }
 
             }

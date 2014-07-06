@@ -25,7 +25,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Analysis engine to produce ExceptionSetFactory objects for analyzed methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ExceptionSetFactoryFactory extends AnalysisFactory<ExceptionSetFactory> {
@@ -38,7 +38,7 @@ public class ExceptionSetFactoryFactory extends AnalysisFactory<ExceptionSetFact
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)

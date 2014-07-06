@@ -45,8 +45,9 @@ public class Call {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || obj.getClass() != this.getClass())
+        if (obj == null || obj.getClass() != this.getClass()) {
             return false;
+        }
         Call other = (Call) obj;
         return this.className.equals(other.className) && this.methodName.equals(other.methodName)
                 && this.methodSig.equals(other.methodSig);

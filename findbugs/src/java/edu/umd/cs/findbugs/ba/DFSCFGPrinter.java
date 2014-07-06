@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 public class DFSCFGPrinter extends CFGPrinter implements DFSEdgeTypes {
-    private DepthFirstSearch dfs;
+    private final DepthFirstSearch dfs;
 
     public DFSCFGPrinter(CFG cfg, DepthFirstSearch dfs) {
         super(cfg);

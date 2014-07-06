@@ -30,14 +30,14 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 /**
  * A PatternElement which matches NEW instructions and binds the result to a
  * variable.
- * 
+ *
  * @author David Hovemeyer
  * @see PatternElement
  */
 public class New extends OneVariableInstruction {
     /**
      * Constructor.
-     * 
+     *
      * @param resultVarName
      *            name of the result of the NEW instruction
      */
@@ -50,12 +50,12 @@ public class New extends OneVariableInstruction {
             BindingSet bindingSet) throws DataflowAnalysisException {
 
         Instruction ins = handle.getInstruction();
-        if (!(ins instanceof NEW))
+        if (!(ins instanceof NEW)) {
             return null;
+        }
 
         LocalVariable result = new LocalVariable(after.getTopValue());
         return addOrCheckDefinition(result, bindingSet);
     }
 }
 
-// vim:ts=4

@@ -45,7 +45,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  * A plan for executing Detectors on an application. Automatically assigns
  * Detectors to passes and orders Detectors within each pass based on ordering
  * constraints specified in the plugin descriptor(s).
- * 
+ *
  * @author David Hovemeyer
  */
 public class ExecutionPlan {
@@ -234,8 +234,9 @@ public class ExecutionPlan {
             }
             appendDetectorsToPass(unassignedSet, lastPass);
         }
-        if (DEBUG)
+        if (DEBUG) {
             print();
+        }
     }
 
     /**
@@ -247,7 +248,7 @@ public class ExecutionPlan {
 
     /**
      * Get the number of passes in the execution plan.
-     * 
+     *
      * @return the number of passes in the execution plan
      */
     public int getNumPasses() {
@@ -266,7 +267,7 @@ public class ExecutionPlan {
      * correct ordering of the detectors (which may mean either passes or an
      * ordering within a single pass, depending on whether the constraints are
      * inter-pass or intra-pass).
-     * 
+     *
      * @param nodeMap
      *            map to be populated with detector class names to constraint
      *            graph nodes for those detectors
@@ -361,7 +362,7 @@ public class ExecutionPlan {
                     while (incomingEdgeIterator.hasNext()) {
                         ConstraintEdge edge = incomingEdgeIterator.next();
                         System.out.println("  requires " + edge.getSource().getFactory().getShortName());
-                        
+
                     }
                 }
 
@@ -486,7 +487,7 @@ public class ExecutionPlan {
     }
 
     private void appendDetectorsToPass(Collection<DetectorFactory> detectorSet, AnalysisPass pass)
-             {
+    {
         DetectorFactory[] unassignedList = detectorSet.toArray(new DetectorFactory[detectorSet.size()]);
         Arrays.sort(unassignedList, new Comparator<DetectorFactory>() {
             @Override
@@ -546,4 +547,3 @@ public class ExecutionPlan {
     }
 }
 
-// vim:ts=4

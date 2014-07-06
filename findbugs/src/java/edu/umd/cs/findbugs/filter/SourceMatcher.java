@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 public class SourceMatcher implements Matcher {
     private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
 
-    private NameMatch fileName;
+    private final NameMatch fileName;
 
     @Override
     public String toString() {
@@ -63,10 +63,10 @@ public class SourceMatcher implements Matcher {
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", fileName.getSpec());
-        if (disabled)
+        if (disabled) {
             attributes.addAttribute("disabled", "true");
+        }
         xmlOutput.openCloseTag("Source", attributes);
     }
 }
 
-// vim:ts=4

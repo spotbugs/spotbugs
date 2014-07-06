@@ -32,11 +32,11 @@ import org.apache.bcel.classfile.JavaClass;
  * class hierarchy, based on the current class path.
  */
 public class RepositoryClassParser {
-    private ClassParser classParser;
+    private final ClassParser classParser;
 
     /**
      * Constructor.
-     * 
+     *
      * @param inputStream
      *            the input stream from which to read the class file
      * @param fileName
@@ -48,7 +48,7 @@ public class RepositoryClassParser {
 
     /**
      * Constructor.
-     * 
+     *
      * @param fileName
      *            name of the class file
      */
@@ -58,7 +58,7 @@ public class RepositoryClassParser {
 
     /**
      * Constructor.
-     * 
+     *
      * @param zipFile
      *            name of a zip file containing the class
      * @param fileName
@@ -71,7 +71,7 @@ public class RepositoryClassParser {
     /**
      * Parse the class file into a JavaClass object. If succesful, the new
      * JavaClass is entered into the Repository.
-     * 
+     *
      * @return the parsed JavaClass
      * @throws IOException
      *             if the class cannot be parsed
@@ -83,4 +83,3 @@ public class RepositoryClassParser {
     }
 }
 
-// vim:ts=4

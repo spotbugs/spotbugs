@@ -25,7 +25,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Analysis engine to produce LockChecker objects for analyzed methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public class LockCheckerFactory extends AnalysisFactory<LockChecker> {
@@ -38,7 +38,7 @@ public class LockCheckerFactory extends AnalysisFactory<LockChecker> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)

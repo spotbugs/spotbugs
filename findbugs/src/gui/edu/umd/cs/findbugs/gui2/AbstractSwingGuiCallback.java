@@ -49,9 +49,9 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
 
     @Override
     public void showMessageDialogAndWait(final String message) throws InterruptedException {
-        if (SwingUtilities.isEventDispatchThread())
+        if (SwingUtilities.isEventDispatchThread()) {
             JOptionPane.showMessageDialog(parent, message);
-        else
+        } else {
             try {
                 SwingUtilities.invokeAndWait(new Runnable() {
                     @Override
@@ -62,19 +62,21 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
             } catch (InvocationTargetException e) {
                 throw new IllegalStateException(e);
             }
+        }
     }
 
     @Override
     public void showMessageDialog(final String message) {
-        if (SwingUtilities.isEventDispatchThread())
+        if (SwingUtilities.isEventDispatchThread()) {
             JOptionPane.showMessageDialog(parent, message);
-        else
+        } else {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
                     JOptionPane.showMessageDialog(parent, message);
                 }
             });
+        }
     }
 
     @Override
@@ -88,8 +90,9 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
         ProgressMonitorInputStream pmin = new ProgressMonitorInputStream(parent, msg, in);
         ProgressMonitor pm = pmin.getProgressMonitor();
 
-        if (length > 0)
+        if (length > 0) {
             pm.setMaximum(length);
+        }
         return pmin;
     }
 
@@ -107,8 +110,9 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
     @Override
     public List<String> showForm(String message, String title, List<FormItem> items) {
         int result = showFormDialog(message, title, items);
-        if (result != JOptionPane.OK_OPTION)
+        if (result != JOptionPane.OK_OPTION) {
             return null;
+        }
         updateFormItemsFromGui(items);
         List<String> results = new ArrayList<String>();
         for (FormItem item : items) {
@@ -169,8 +173,9 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
 
     private void replaceBoxModelValues(MutableComboBoxModel<String> mmodel, List<String> newPossibleValues) {
         try {
-            while (mmodel.getSize() > 0)
+            while (mmodel.getSize() > 0) {
                 mmodel.removeElementAt(0);
+            }
         } catch (Exception e) {
             // ignore weird index out of bounds exceptions
         }
@@ -181,15 +186,16 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
 
     private boolean boxModelIsSame(JComboBox<String> box, List<String> newPossibleValues) {
         boolean same = true;
-        if (box.getModel().getSize() != newPossibleValues.size())
+        if (box.getModel().getSize() != newPossibleValues.size()) {
             same = false;
-        else
+        } else {
             for (int i = 0; i < box.getModel().getSize(); i++) {
                 if (!box.getModel().getElementAt(i).equals(newPossibleValues.get(i))) {
                     same = false;
                     break;
                 }
             }
+        }
         return same;
     }
 
@@ -262,10 +268,11 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
             model.addElement(possibleValue);
         }
         String defaultValue = item.getDefaultValue();
-        if (defaultValue == null)
+        if (defaultValue == null) {
             model.setSelectedItem(model.getElementAt(0));
-        else
+        } else {
             model.setSelectedItem(defaultValue);
+        }
         box.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

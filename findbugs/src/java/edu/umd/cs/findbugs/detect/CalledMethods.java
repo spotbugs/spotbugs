@@ -52,11 +52,13 @@ public class CalledMethods extends BytecodeScanningDetector implements NonReport
         if ((seen == PUTFIELD || seen == PUTSTATIC)) {
             XField f = getXFieldOperand();
             if (f != null) {
-                if (f.isFinal() || !f.isProtected() && !f.isPublic())
-                    if (emptyArrayOnTOS)
+                if (f.isFinal() || !f.isProtected() && !f.isPublic()) {
+                    if (emptyArrayOnTOS) {
                         emptyArray.add(f);
-                    else
+                    } else {
                         nonEmptyArray.add(f);
+                    }
+                }
             }
 
         }
@@ -65,8 +67,9 @@ public class CalledMethods extends BytecodeScanningDetector implements NonReport
 
         if (seen == GETSTATIC || seen == GETFIELD) {
             XField f = getXFieldOperand();
-            if (emptyArray.contains(f) && !nonEmptyArray.contains(f) && f.isFinal())
+            if (emptyArray.contains(f) && !nonEmptyArray.contains(f) && f.isFinal()) {
                 emptyArrayOnTOS = true;
+            }
         }
         switch (seen) {
         case INVOKEVIRTUAL:
@@ -75,8 +78,9 @@ public class CalledMethods extends BytecodeScanningDetector implements NonReport
         case INVOKEINTERFACE:
             ClassDescriptor c = getClassDescriptorOperand();
             Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-            if (subtypes2.isApplicationClass(c))
+            if (subtypes2.isApplicationClass(c)) {
                 xFactory.addCalledMethod(getMethodDescriptorOperand());
+            }
 
             break;
         default:
@@ -87,11 +91,11 @@ public class CalledMethods extends BytecodeScanningDetector implements NonReport
     @Override
     public void report() {
         emptyArray.removeAll(nonEmptyArray);
-        for (XField f : emptyArray)
+        for (XField f : emptyArray) {
             xFactory.addEmptyArrayField(f);
+        }
         emptyArray.clear();
     }
 
 }
 
-// vim:ts=4

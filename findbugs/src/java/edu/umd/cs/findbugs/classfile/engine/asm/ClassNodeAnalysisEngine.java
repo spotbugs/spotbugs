@@ -31,14 +31,14 @@ import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 
 /**
  * Analysis engine to produce the ClassNode (ASM tree format) for a class.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassNodeAnalysisEngine extends RecomputableClassAnalysisEngine<ClassNode> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
@@ -64,7 +64,7 @@ public class ClassNodeAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)

@@ -70,7 +70,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * The special mode <code>ORDINARY_METHOD</code> is equivalent to
  * <code>INSTANCE|STATIC</code>. The special mode <code>ANY</code> is equivalent
  * to <code>INSTANCE|STATIC|CONSTRUCTOR</code>.
- * 
+ *
  * @author David Hovemeyer
  * @see PatternElement
  */
@@ -106,7 +106,7 @@ public class Invoke extends PatternElement {
     }
 
     private static class ExactStringMatcher implements StringMatcher {
-        private String value;
+        private final String value;
 
         public ExactStringMatcher(String value) {
             this.value = value;
@@ -119,7 +119,7 @@ public class Invoke extends PatternElement {
     }
 
     private static class RegexpStringMatcher implements StringMatcher {
-        private Pattern pattern;
+        private final Pattern pattern;
 
         public RegexpStringMatcher(String re) {
             pattern = Pattern.compile(re);
@@ -132,7 +132,7 @@ public class Invoke extends PatternElement {
     }
 
     private static class SubclassMatcher implements StringMatcher {
-        private String className;
+        private final String className;
 
         public SubclassMatcher(String className) {
             this.className = className;
@@ -159,7 +159,7 @@ public class Invoke extends PatternElement {
 
     /**
      * Constructor.
-     * 
+     *
      * @param className
      *            the class name of the method; may be specified exactly, as a
      *            regexp, or as a subtype match
@@ -186,7 +186,7 @@ public class Invoke extends PatternElement {
 
     private StringMatcher createMatcher(String s) {
         return s.startsWith("/") ? (StringMatcher) new RegexpStringMatcher(s.substring(1))
-                : (StringMatcher) new ExactStringMatcher(s);
+        : (StringMatcher) new ExactStringMatcher(s);
     }
 
     @Override
@@ -195,8 +195,9 @@ public class Invoke extends PatternElement {
 
         // See if the instruction is an InvokeInstruction
         Instruction ins = handle.getInstruction();
-        if (!(ins instanceof InvokeInstruction))
+        if (!(ins instanceof InvokeInstruction)) {
             return null;
+        }
         InvokeInstruction inv = (InvokeInstruction) ins;
 
         String methodName = inv.getMethodName(cpg);
@@ -205,21 +206,26 @@ public class Invoke extends PatternElement {
 
         int actualMode = 0;
 
-        if (isStatic)
+        if (isStatic) {
             actualMode |= STATIC;
-        if (isCtor)
+        }
+        if (isCtor) {
             actualMode |= CONSTRUCTOR;
-        if (!isStatic && !isCtor)
+        }
+        if (!isStatic && !isCtor) {
             actualMode |= INSTANCE;
+        }
 
         // Intersection of actual and desired modes must be nonempty.
-        if ((actualMode & mode) == 0)
+        if ((actualMode & mode) == 0) {
             return null;
+        }
 
         // Check class name, method name, and method signature.
         if (!methodNameMatcher.match(methodName) || !methodSigMatcher.match(inv.getSignature(cpg))
-                || !classNameMatcher.match(inv.getClassName(cpg)))
+                || !classNameMatcher.match(inv.getClassName(cpg))) {
             return null;
+        }
 
         // It's a match!
         return new MatchResult(this, bindingSet);
@@ -242,4 +248,3 @@ public class Invoke extends PatternElement {
     }
 }
 
-// vim:ts=4

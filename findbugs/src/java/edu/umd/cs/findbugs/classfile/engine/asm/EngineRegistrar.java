@@ -26,12 +26,12 @@ import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 
 /**
  * Analysis engine registrar for ASM-based analyses.
- * 
+ *
  * @author David Hovemeyer
  */
 public class EngineRegistrar implements IAnalysisEngineRegistrar {
     private static final IClassAnalysisEngine<?>[] classAnalysisEngineList = { new ClassNodeAnalysisEngine(),
-            new ClassReaderAnalysisEngine(), };
+        new ClassReaderAnalysisEngine(), };
 
     private static IMethodAnalysisEngine<?>[] methodAnalysisEngineList = {};
 
@@ -43,7 +43,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar#
      * registerAnalysisEngines(edu.umd.cs.findbugs.classfile.IAnalysisCache)
      */

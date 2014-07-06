@@ -23,7 +23,7 @@ package edu.umd.cs.findbugs.ba.bcp;
  * A set of Bindings, which are definitions of variables occuring in a
  * ByteCodePattern. BindingSets are immutable; to add a binding, a new cell is
  * allocated. (Are we CONSING yet?)
- * 
+ *
  * @author David Hovemeyer
  * @see Binding
  */
@@ -34,7 +34,7 @@ public class BindingSet {
 
     /**
      * Constructor; creates a new BindingSet as an extension of an existing one.
-     * 
+     *
      * @param binding
      *            a variable binding
      * @param parent
@@ -47,14 +47,15 @@ public class BindingSet {
 
     /**
      * Look for a Binding for given variable.
-     * 
+     *
      * @param varName
      *            name of the variable
      * @return the Binding, or null if no such Binding is present in the set
      */
     public Binding lookup(String varName) {
-        if (varName.equals(binding.getVarName()))
+        if (varName.equals(binding.getVarName())) {
             return binding;
+        }
         return parent != null ? parent.lookup(varName) : null;
     }
 
@@ -64,8 +65,9 @@ public class BindingSet {
         BindingSet cur = this;
         buf.append('[');
         while (cur != null) {
-            if (cur != this)
+            if (cur != this) {
                 buf.append(", ");
+            }
             buf.append(cur.binding.toString());
             cur = cur.parent;
         }
@@ -74,4 +76,3 @@ public class BindingSet {
     }
 }
 
-// vim:ts=4

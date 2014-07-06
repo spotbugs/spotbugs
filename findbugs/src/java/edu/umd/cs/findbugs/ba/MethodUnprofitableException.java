@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Used to signal a method not analyzed because it seemed unprofitable to do so
- * 
+ *
  * @author pugh
  */
 public class MethodUnprofitableException extends CFGBuilderException {
@@ -36,7 +36,7 @@ public class MethodUnprofitableException extends CFGBuilderException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param method
      *            the method that is unprofitable to analyze
      */
@@ -47,7 +47,7 @@ public class MethodUnprofitableException extends CFGBuilderException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param jClass
      *            the class containing the method that is unprofitable to
      *            analyze
@@ -61,7 +61,7 @@ public class MethodUnprofitableException extends CFGBuilderException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param methodDescriptor
      *            the MethodDescriptor indicating the method it is unprofitable
      *            to analyze

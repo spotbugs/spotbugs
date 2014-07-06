@@ -18,7 +18,7 @@ public class NullValueUnconditionalDeref {
 
     private boolean alwaysReadlineValue;
 
-    private Set<Location> derefLocationSet;
+    private final Set<Location> derefLocationSet;
 
     public NullValueUnconditionalDeref() {
         this.alwaysOnExceptionPath = true;
@@ -36,8 +36,9 @@ public class NullValueUnconditionalDeref {
         if (!isNullValue.isException()) {
             alwaysOnExceptionPath = false;
         }
-        if (!isNullValue.isFieldValue())
+        if (!isNullValue.isFieldValue()) {
             alwaysFieldValue = false;
+        }
         if (!isNullValue.isReturnValue()) {
             alwaysMethodReturnValue = false;
         }

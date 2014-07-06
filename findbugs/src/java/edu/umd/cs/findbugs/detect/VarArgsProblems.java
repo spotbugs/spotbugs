@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.TypeAnnotation;
 
 public class VarArgsProblems extends BytecodeScanningDetector implements StatelessDetector {
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private int state;
 
@@ -80,11 +80,12 @@ public class VarArgsProblems extends BytecodeScanningDetector implements Statele
         // System.out.println("State:" + state);
         if (seen == GOTO && getBranchOffset() == 4) {
             state = SEEN_GOTO;
-        } else
+        } else {
             switch (state) {
             case SEEN_NOTHING:
-                if ((seen == ICONST_1))
+                if ((seen == ICONST_1)) {
                     state = SEEN_ICONST_1;
+                }
                 break;
 
             case SEEN_ICONST_1:
@@ -93,34 +94,39 @@ public class VarArgsProblems extends BytecodeScanningDetector implements Statele
                     // getClassConstantOperand());
                     primitiveArraySig = getClassConstantOperand();
                     state = SEEN_ANEWARRAY;
-                } else
+                } else {
                     state = SEEN_NOTHING;
+                }
                 break;
 
             case SEEN_ANEWARRAY:
-                if (seen == DUP)
+                if (seen == DUP) {
                     state = SEEN_DUP;
-                else
+                } else {
                     state = SEEN_NOTHING;
+                }
                 break;
             case SEEN_DUP:
-                if (seen == ICONST_0)
+                if (seen == ICONST_0) {
                     state = SEEN_ICONST_0;
-                else
+                } else {
                     state = SEEN_NOTHING;
+                }
                 break;
             case SEEN_ICONST_0:
-                if (((seen >= ALOAD_0) && (seen < ALOAD_3)) || (seen == ALOAD))
+                if (((seen >= ALOAD_0) && (seen < ALOAD_3)) || (seen == ALOAD)) {
                     state = SEEN_ALOAD;
-                else
+                } else {
                     state = SEEN_NOTHING;
+                }
                 break;
 
             case SEEN_ALOAD:
-                if (seen == AASTORE)
+                if (seen == AASTORE) {
                     state = SEEN_AASTORE;
-                else
+                } else {
                     state = SEEN_NOTHING;
+                }
                 break;
 
             case SEEN_AASTORE:
@@ -128,14 +134,16 @@ public class VarArgsProblems extends BytecodeScanningDetector implements Statele
                     // System.out.println(getClassConstantOperand());
                     // System.out.println(getNameConstantOperand());
                     // System.out.println(getSigConstantOperand());
-                    if (getSigConstantOperand().indexOf("Ljava/lang/Object;)") == -1)
+                    if (getSigConstantOperand().indexOf("Ljava/lang/Object;)") == -1) {
                         break;
+                    }
                     int priority = NORMAL_PRIORITY;
-                    if (getNameConstantOperand().equals("asList") && getClassConstantOperand().equals("java/util/Arrays"))
+                    if (getNameConstantOperand().equals("asList") && getClassConstantOperand().equals("java/util/Arrays")) {
                         priority = HIGH_PRIORITY;
+                    }
                     bugReporter.reportBug(new BugInstance(this, "VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG", priority)
-                            .addClassAndMethod(this).addType(primitiveArraySig).describe(TypeAnnotation.FOUND_ROLE)
-                            .addCalledMethod(this).addSourceLine(this));
+                    .addClassAndMethod(this).addType(primitiveArraySig).describe(TypeAnnotation.FOUND_ROLE)
+                    .addCalledMethod(this).addSourceLine(this));
                 }
                 state = SEEN_NOTHING;
                 break;
@@ -147,5 +155,6 @@ public class VarArgsProblems extends BytecodeScanningDetector implements Statele
                 throw new IllegalStateException("State " + state + " not expected");
 
             }
+        }
     }
 }

@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 /**
  * Dataflow fact to represent the depth of the Java operand stack.
- * 
+ *
  * @see StackDepthAnalysis
  */
 public class StackDepth {
@@ -29,7 +29,7 @@ public class StackDepth {
 
     /**
      * Constructor.
-     * 
+     *
      * @param depth
      *            the stack depth
      */
@@ -53,13 +53,13 @@ public class StackDepth {
 
     @Override
     public String toString() {
-        if (getDepth() == StackDepthAnalysis.TOP)
+        if (getDepth() == StackDepthAnalysis.TOP) {
             return "[TOP]";
-        else if (getDepth() == StackDepthAnalysis.BOTTOM)
+        } else if (getDepth() == StackDepthAnalysis.BOTTOM) {
             return "[BOTTOM]";
-        else
+        } else {
             return "[" + String.valueOf(depth) + "]";
+        }
     }
 }
 
-// vim:ts=4

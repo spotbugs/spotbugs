@@ -148,8 +148,9 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
                 for (Map.Entry<MethodDescriptor, String> e : db.entrySet()) {
                     String[] v = e.getValue().split(",");
                     Obligation obligation = database.getFactory().getObligationByName(v[2]);
-                    if (obligation == null)
+                    if (obligation == null) {
                         obligation = database.getFactory().addObligation(v[2]);
+                    }
                     database.addEntry(new MatchMethodEntry(e.getKey(), ObligationPolicyDatabaseActionType.valueOf(v[0]),
                             ObligationPolicyDatabaseEntryType.valueOf(v[1]), obligation));
                 }
@@ -244,9 +245,10 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
                      */
                     if (xmethod.getName().equals("<init>") || xmethod.isStatic()
                             || xmethod.getName().toLowerCase().indexOf("close") >= 0
-                            || xmethod.getSignature().toLowerCase().indexOf("Closeable") >= 0)
+                            || xmethod.getSignature().toLowerCase().indexOf("Closeable") >= 0) {
                         addParameterDeletesObligationDatabaseEntry(xmethod, obligationType,
                                 ObligationPolicyDatabaseEntryType.WEAK);
+                    }
                 }
             }
         }

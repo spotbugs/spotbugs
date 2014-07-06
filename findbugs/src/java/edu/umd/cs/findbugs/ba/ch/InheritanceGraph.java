@@ -23,14 +23,14 @@ import edu.umd.cs.findbugs.graph.AbstractGraph;
 
 /**
  * Graph of inheritance relationships.
- * 
+ *
  * @author David Hovemeyer
  */
 public class InheritanceGraph extends AbstractGraph<InheritanceEdge, ClassVertex> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.graph.AbstractGraph#allocateEdge(edu.umd.cs.findbugs
      * .graph.AbstractVertex, edu.umd.cs.findbugs.graph.AbstractVertex)
@@ -42,7 +42,7 @@ public class InheritanceGraph extends AbstractGraph<InheritanceEdge, ClassVertex
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.graph.AbstractGraph#createEdge(edu.umd.cs.findbugs
      * .graph.AbstractVertex, edu.umd.cs.findbugs.graph.AbstractVertex)

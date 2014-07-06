@@ -23,7 +23,7 @@ import javax.annotation.meta.When;
 
 /**
  * Flow value type for type qualifier dataflow analysis.
- * 
+ *
  * @author David Hovemeyer
  */
 public enum FlowValue {
@@ -65,11 +65,11 @@ public enum FlowValue {
     // Unknown
     //
     private static final FlowValue[][] mergeMatrix = {
-            // TOP ALWAYS NEVER UNKNOWN
-            /* TOP */{ TOP, },
-            /* ALWAYS */{ ALWAYS, ALWAYS, },
-            /* NEVER */{ NEVER, UNKNOWN, NEVER, },
-            /* UNKNOWN */{ UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN }, };
+        // TOP ALWAYS NEVER UNKNOWN
+        /* TOP */{ TOP, },
+        /* ALWAYS */{ ALWAYS, ALWAYS, },
+        /* NEVER */{ NEVER, UNKNOWN, NEVER, },
+        /* UNKNOWN */{ UNKNOWN, UNKNOWN, UNKNOWN, UNKNOWN }, };
 
     public static final FlowValue meet(FlowValue a, FlowValue b) {
         int aIndex = a.ordinal();
@@ -90,23 +90,24 @@ public enum FlowValue {
      *            a forwards flow value
      * @param backward
      *            a backwards flow value
-     * 
+     *
      * @return true if values conflict, false otherwise
      */
     public static boolean valuesConflict(boolean strictChecking, FlowValue forward, FlowValue backward) {
         if (forward == TOP || backward == TOP || backward == UNKNOWN || forward == backward) {
             return false;
         }
-        
-        if (strictChecking)
+
+        if (strictChecking) {
             return true;
-        
+        }
+
         return (forward == ALWAYS && backward == NEVER) || (forward == NEVER && backward == ALWAYS);
     }
 
     /**
      * Convert a When value to a FlowValue value.
-     * 
+     *
      * @param when
      *            a When value
      * @return the corresponding FlowValue
@@ -128,7 +129,7 @@ public enum FlowValue {
 
     /**
      * Determine whether given backwards FlowValue conflicts with given source.
-     * 
+     *
      * @param backwardsFlowValue
      *            a backwards FlowValue
      * @param source

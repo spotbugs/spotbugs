@@ -41,4 +41,3 @@ public interface ExitCodes {
     public static final int BUGS_FOUND_FLAG = 1;
 }
 
-// vim:ts=4

@@ -55,8 +55,9 @@ abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
 
     @Override
     public final void visitCode(Code obj) {
-        if (!shouldVisitCode(obj))
+        if (!shouldVisitCode(obj)) {
             return;
+        }
         stack = new OpcodeStack();
         stack.resetForMethodEntry(this);
         super.visitCode(obj);

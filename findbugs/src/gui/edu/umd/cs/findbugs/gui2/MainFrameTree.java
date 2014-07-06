@@ -122,9 +122,11 @@ public class MainFrameTree implements Serializable {
     public Sortables[] getAvailableSortables() {
         Sortables[] sortables;
         ArrayList<Sortables> a = new ArrayList<Sortables>(Sortables.values().length);
-        for (Sortables s : Sortables.values())
-            if (s.isAvailable(mainFrame))
+        for (Sortables s : Sortables.values()) {
+            if (s.isAvailable(mainFrame)) {
                 a.add(s);
+            }
+        }
         sortables = new Sortables[a.size()];
         a.toArray(sortables);
         return sortables;
@@ -172,11 +174,11 @@ public class MainFrameTree implements Serializable {
 
     private void warnUserOfFilters() {
         JOptionPane
-                .showMessageDialog(
-                        mainFrame,
-                        edu.umd.cs.findbugs.L10N
-                                .getLocalString("dlg.everything_is_filtered",
-                                        "All bugs in this project appear to be filtered out.  \nYou may wish to check your filter settings in the preferences menu."),
+        .showMessageDialog(
+                mainFrame,
+                edu.umd.cs.findbugs.L10N
+                .getLocalString("dlg.everything_is_filtered",
+                        "All bugs in this project appear to be filtered out.  \nYou may wish to check your filter settings in the preferences menu."),
                         "Warning", JOptionPane.WARNING_MESSAGE);
     }
 
@@ -192,12 +194,12 @@ public class MainFrameTree implements Serializable {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (!mainFrame.canNavigateAway()) { return; }
-                
-                new NewFilterFromBug(new FilterFromBugPicker(currentSelectedBugLeaf.getBug(), 
-                                                             Arrays.asList(mainFrame.getAvailableSortables())),
-                                     new ApplyNewFilter(mainFrame.getProject().getSuppressionFilter(), 
-                                                        PreferencesFrame.getInstance(), 
-                                                        new FilterActivityNotifier()));
+
+                new NewFilterFromBug(new FilterFromBugPicker(currentSelectedBugLeaf.getBug(),
+                        Arrays.asList(mainFrame.getAvailableSortables())),
+                        new ApplyNewFilter(mainFrame.getProject().getSuppressionFilter(),
+                                PreferencesFrame.getInstance(),
+                                new FilterActivityNotifier()));
 
                 mainFrame.setProjectChanged(true);
                 mainFrame.getTree().setSelectionRow(0); // Selects the top of the Jtree so the CommentsArea syncs up.
@@ -242,8 +244,9 @@ public class MainFrameTree implements Serializable {
                 // benefit of using the smarter deletion method.
 
                 try {
-                    if (!mainFrame.canNavigateAway())
+                    if (!mainFrame.canNavigateAway()) {
                         return;
+                    }
                     int startCount;
                     TreePath path = MainFrame.getInstance().getTree().getSelectionPath();
                     TreePath deletePath = path;
@@ -252,12 +255,12 @@ public class MainFrameTree implements Serializable {
                     while (count == startCount) {
                         deletePath = deletePath.getParentPath();
                         if (deletePath.getParentPath() == null)// We are at the
-                                                               // top of the
-                                                               // tree, don't
-                                                               // let this be
-                                                               // removed,
-                                                               // rebuild tree
-                                                               // from root.
+                            // top of the
+                            // tree, don't
+                            // let this be
+                            // removed,
+                            // rebuild tree
+                            // from root.
                         {
                             Matcher m = mainFrame.getCurrentSelectedBugAspects().getMatcher();
                             Filter suppressionFilter = MainFrame.getInstance().getProject().getSuppressionFilter();
@@ -290,16 +293,16 @@ public class MainFrameTree implements Serializable {
                     mainFrame.setProjectChanged(true);
 
                     MainFrame.getInstance().getTree().setSelectionRow(0);// Selects
-                                                                         // the
-                                                                         // top
-                                                                         // of
-                                                                         // the
-                                                                         // Jtree
-                                                                         // so
-                                                                         // the
-                                                                         // CommentsArea
-                                                                         // syncs
-                                                                         // up.
+                    // the
+                    // top
+                    // of
+                    // the
+                    // Jtree
+                    // so
+                    // the
+                    // CommentsArea
+                    // syncs
+                    // up.
                 } catch (RuntimeException e) {
                     MainFrame.getInstance().showMessageDialog("Unable to create filter: " + e.getMessage());
                 }
@@ -341,8 +344,9 @@ public class MainFrameTree implements Serializable {
         int i = 0;
         while (true) {
             int rows = jTree.getRowCount();
-            if (i >= rows || rows >= max)
+            if (i >= rows || rows >= max) {
                 break;
+            }
             jTree.expandRow(i++);
         }
     }
@@ -355,8 +359,9 @@ public class MainFrameTree implements Serializable {
         for (int i = 0; i < rows; i++) {
             TreePath treePath = jTree.getPathForRow(i);
             Object lastPathComponent = treePath.getLastPathComponent();
-            if (lastPathComponent instanceof BugLeafNode)
+            if (lastPathComponent instanceof BugLeafNode) {
                 return true;
+            }
         }
         return false;
     }
@@ -364,26 +369,30 @@ public class MainFrameTree implements Serializable {
     @SwingThread
     void expandToFirstLeaf(int max) {
         Debug.println("expand to first leaf");
-        if (leavesShown())
+        if (leavesShown()) {
             return;
+        }
         JTree jTree = getTree();
         int i = 0;
         while (true) {
             int rows = jTree.getRowCount();
-            if (i >= rows || rows >= max)
+            if (i >= rows || rows >= max) {
                 break;
+            }
             TreePath treePath = jTree.getPathForRow(i);
             Object lastPathComponent = treePath.getLastPathComponent();
-            if (lastPathComponent instanceof BugLeafNode)
+            if (lastPathComponent instanceof BugLeafNode) {
                 return;
+            }
             jTree.expandRow(i++);
         }
     }
 
     void setupTreeListeners() {
         // noinspection ConstantIfStatement
-        if (false)
+        if (false) {
             tree.addTreeExpansionListener(new MyTreeExpansionListener());
+        }
         tree.addTreeSelectionListener(new MyTreeSelectionListener());
 
         tree.addMouseListener(new TreeMouseListener());
@@ -411,16 +420,19 @@ public class MainFrameTree implements Serializable {
             @Override
             public void mouseClicked(MouseEvent e) {
                 Debug.println("tableheader.getReorderingAllowed() = " + getTableheader().getReorderingAllowed());
-                if (!getTableheader().getReorderingAllowed())
+                if (!getTableheader().getReorderingAllowed()) {
                     return;
-                if (e.getClickCount() == 2)
+                }
+                if (e.getClickCount() == 2) {
                     SorterDialog.getInstance().setVisible(true);
+                }
             }
 
             @Override
             public void mouseReleased(MouseEvent arg0) {
-                if (!getTableheader().getReorderingAllowed())
+                if (!getTableheader().getReorderingAllowed()) {
                     return;
+                }
                 BugTreeModel bt = (BugTreeModel) (getTree().getModel());
                 bt.checkSorter();
             }
@@ -539,16 +551,18 @@ public class MainFrameTree implements Serializable {
                 window.setCursor(cursor);
                 CardLayout layout = (CardLayout) cardPanel.getLayout();
                 layout.show(cardPanel, card.name());
-                if (card == MainFrame.BugCard.TREECARD)
+                if (card == MainFrame.BugCard.TREECARD) {
                     SorterDialog.getInstance().thaw();
-                else
+                } else {
                     SorterDialog.getInstance().freeze();
+                }
             }
         };
-        if (SwingUtilities.isEventDispatchThread())
+        if (SwingUtilities.isEventDispatchThread()) {
             doRun.run();
-        else
+        } else {
             SwingUtilities.invokeLater(doRun);
+        }
     }
 
     private JPanel makeNavigationPanel(String packageSelectorLabel, JComponent packageSelector, JComponent treeHeader,
@@ -600,8 +614,9 @@ public class MainFrameTree implements Serializable {
         public void mouseClicked(MouseEvent e) {
             TreePath path = tree.getPathForLocation(e.getX(), e.getY());
 
-            if (path == null)
+            if (path == null) {
                 return;
+            }
 
             if ((e.getButton() == MouseEvent.BUTTON3) || (e.getButton() == MouseEvent.BUTTON1 && e.isControlDown())) {
 
@@ -610,12 +625,13 @@ public class MainFrameTree implements Serializable {
                     bugPopupMenu.show(tree, e.getX(), e.getY());
                 } else {
                     tree.setSelectionPath(path);
-                    if (!(path.getParentPath() == null))// If the path's parent
-                                                        // path is null, the
-                                                        // root was selected,
-                                                        // dont allow them to
-                                                        // filter out the root.
+                    if (!(path.getParentPath() == null)) {
+                        // path is null, the
+                        // root was selected,
+                        // dont allow them to
+                        // filter out the root.
                         branchPopupMenu.show(tree, e.getX(), e.getY());
+                    }
                 }
             }
         }
@@ -641,8 +657,9 @@ public class MainFrameTree implements Serializable {
         private volatile boolean ignoreSelection = false;
         @Override
         public void valueChanged(TreeSelectionEvent selectionEvent) {
-            if (ignoreSelection)
+            if (ignoreSelection) {
                 return;
+            }
 
             TreePath path = selectionEvent.getNewLeadSelectionPath();
             if (path != null) {

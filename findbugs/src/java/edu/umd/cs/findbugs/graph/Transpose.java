@@ -29,9 +29,9 @@ import java.util.Iterator;
  */
 public class Transpose<GraphType extends Graph<EdgeType, VertexType>, EdgeType extends GraphEdge<EdgeType, VertexType>, VertexType extends GraphVertex<VertexType>> {
 
-    private IdentityHashMap<VertexType, VertexType> m_origToTransposeMap;
+    private final IdentityHashMap<VertexType, VertexType> m_origToTransposeMap;
 
-    private IdentityHashMap<VertexType, VertexType> m_transposeToOrigMap;
+    private final IdentityHashMap<VertexType, VertexType> m_transposeToOrigMap;
 
     /**
      * Constructor.
@@ -44,7 +44,7 @@ public class Transpose<GraphType extends Graph<EdgeType, VertexType>, EdgeType e
     /**
      * Transpose a graph. Note that the original graph is not modified; the new
      * graph and its vertices and edges are new objects.
-     * 
+     *
      * @param orig
      *            the graph to transpose
      * @param toolkit
@@ -97,7 +97,7 @@ public class Transpose<GraphType extends Graph<EdgeType, VertexType>, EdgeType e
     /**
      * Get the vertex in the transposed graph which corresponds to the given
      * vertex in the original graph.
-     * 
+     *
      * @param v
      *            the vertex in the original graph
      * @return the equivalent vertex in the transposed graph
@@ -109,7 +109,7 @@ public class Transpose<GraphType extends Graph<EdgeType, VertexType>, EdgeType e
     /**
      * Get the vertex in the original graph which corresponds to the given
      * vertex in the transposed graph.
-     * 
+     *
      * @param v
      *            the vertex in the transposed graph
      * @return the equivalent vertex in the original graph
@@ -120,4 +120,3 @@ public class Transpose<GraphType extends Graph<EdgeType, VertexType>, EdgeType e
 
 }
 
-// vim:ts=4

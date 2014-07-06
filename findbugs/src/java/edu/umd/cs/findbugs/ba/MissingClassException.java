@@ -26,13 +26,14 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 /**
  * DataflowAnalysisException variant to report a class lookup failure that
  * caused dataflow analysis to abort.
- * 
+ *
  * @author David Hovemeyer
  */
 public class MissingClassException extends DataflowAnalysisException {
     private static final long serialVersionUID = 1L;
 
     private @DottedClassName
+    final
     String className;
 
     private MissingClassException(String className) {
@@ -42,7 +43,7 @@ public class MissingClassException extends DataflowAnalysisException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param exception
      *            the ClassNotFoundException that caused this exception
      */
@@ -53,7 +54,7 @@ public class MissingClassException extends DataflowAnalysisException {
 
     /**
      * Get the name of the missing class.
-     * 
+     *
      * @return name of the missing class, or null if the missing class name is
      *         unknown
      */
@@ -67,7 +68,7 @@ public class MissingClassException extends DataflowAnalysisException {
 
     /**
      * Get the ClassNotFoundException that caused this exception.
-     * 
+     *
      * @return the ClassNotFoundException that caused this exception
      */
     public ClassNotFoundException getClassNotFoundException() {

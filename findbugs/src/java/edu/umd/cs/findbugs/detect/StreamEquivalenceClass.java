@@ -24,11 +24,11 @@ import java.util.Iterator;
 
 /**
  * Set of streams that are in an equivalence class.
- * 
+ *
  * @author David Hovemeyer
  */
 public class StreamEquivalenceClass {
-    private HashSet<Stream> memberSet;
+    private final HashSet<Stream> memberSet;
 
     private boolean isClosed;
 
@@ -42,7 +42,7 @@ public class StreamEquivalenceClass {
 
     /**
      * Add a single member to the equivalence class.
-     * 
+     *
      * @param member
      *            the member Stream
      */
@@ -59,7 +59,7 @@ public class StreamEquivalenceClass {
 
     /**
      * Add all members of other StreamEquivalenceClass to this one.
-     * 
+     *
      * @param other
      *            the other StreamEquivalenceClass
      */
@@ -80,4 +80,3 @@ public class StreamEquivalenceClass {
     }
 }
 
-// vim:ts=4

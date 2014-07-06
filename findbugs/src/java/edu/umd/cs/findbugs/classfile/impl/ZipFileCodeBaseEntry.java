@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /**
  * Implementation of ICodeBaseEntry for resources in zipfile codebases.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry {
@@ -43,7 +43,7 @@ public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
      */
     @Override
@@ -53,7 +53,7 @@ public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
      */
     @Override
@@ -63,7 +63,7 @@ public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#getCodeBase
      * ()
@@ -75,7 +75,7 @@ public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#
      * getRealResourceName()
      */
@@ -86,7 +86,7 @@ public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
      */
     @Override
@@ -96,7 +96,7 @@ public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -110,7 +110,7 @@ public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -120,7 +120,7 @@ public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override

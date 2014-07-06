@@ -32,22 +32,22 @@ import edu.umd.cs.findbugs.SystemProperties;
  * <p>
  * FIXME: instead of storing the simple paths, should invoke a callback as each
  * simple path is produced. That would save memory.
- * 
+ *
  * @author David Hovemeyer
  * @see CFG
  */
 public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
-    private CFG cfg;
+    private final CFG cfg;
 
-    private DepthFirstSearch dfs;
+    private final DepthFirstSearch dfs;
 
-    private int maxPaths;
+    private final int maxPaths;
 
-    private int maxWork;
+    private final int maxWork;
 
     private int work;
 
-    private List<List<Edge>> pathList;
+    private final List<List<Edge>> pathList;
 
     private static final boolean DEBUG = SystemProperties.getBoolean("spe.debug");
 
@@ -58,7 +58,7 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
 
     /**
      * Constructor.
-     * 
+     *
      * @param cfg
      *            the control flow graph to enumerate simple paths of
      * @param maxPaths
@@ -79,7 +79,7 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
 
     /**
      * Constructor; max work is set to DEFAULT_MAX_WORK.
-     * 
+     *
      * @param cfg
      *            the control flow graph to enumerate simple paths of
      * @param maxPaths
@@ -91,21 +91,23 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
 
     /**
      * Enumerate the simple paths.
-     * 
+     *
      * @return this object
      */
     public SimplePathEnumerator enumerate() {
         Iterator<Edge> entryOut = cfg.outgoingEdgeIterator(cfg.getEntry());
-        if (!entryOut.hasNext())
+        if (!entryOut.hasNext()) {
             throw new IllegalStateException();
+        }
         Edge entryEdge = entryOut.next();
 
         LinkedList<Edge> init = new LinkedList<Edge>();
         init.add(entryEdge);
 
         work(init);
-        if (DEBUG && work == maxWork)
+        if (DEBUG && work == maxWork) {
             System.out.println("**** Reached max work! ****");
+        }
 
         return this;
     }
@@ -118,8 +120,9 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
     }
 
     private void work(LinkedList<Edge> partialPath) {
-        if (pathList.size() == maxPaths)
+        if (pathList.size() == maxPaths) {
             return;
+        }
 
         Edge last = partialPath.getLast();
 
@@ -136,8 +139,9 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
             Edge outEdge = i.next();
 
             // Ignore back edges and unhandled exception edges
-            if (dfs.getDFSEdgeType(outEdge) == BACK_EDGE || outEdge.getType() == UNHANDLED_EXCEPTION_EDGE)
+            if (dfs.getDFSEdgeType(outEdge) == BACK_EDGE || outEdge.getType() == UNHANDLED_EXCEPTION_EDGE) {
                 continue;
+            }
 
             // Add the edge to the current partial path, and recur
             partialPath.add(outEdge);
@@ -145,15 +149,16 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
             partialPath.removeLast();
 
             // Have we done the maximum amount of work?
-            if (work == maxWork)
+            if (work == maxWork) {
                 return;
+            }
             ++work;
 
             // Did we reach the maximum number of simple paths?
-            if (pathList.size() == maxPaths)
+            if (pathList.size() == maxPaths) {
                 return;
+            }
         }
     }
 }
 
-// vim:ts=4

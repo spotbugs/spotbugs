@@ -28,40 +28,42 @@ import java.util.regex.Pattern;
 public class SignatureUtil {
 
     public static String createMethodSignature(String params, String returns) {
-        if (params == null && returns == null)
+        if (params == null && returns == null) {
             return null;
-           
-        String pString, rString;
-        if (params == null)
-            pString = ".*";
-        else {
-        StringBuilder buf = new StringBuilder();
+        }
 
-        StringTokenizer tok = new StringTokenizer(params, " \t\n\r\f,");
-        while (tok.hasMoreTokens()) {
-            String param = typeToSignature(tok.nextToken());
-            buf.append(param);
+        String pString, rString;
+        if (params == null) {
+            pString = ".*";
+        } else {
+            StringBuilder buf = new StringBuilder();
+
+            StringTokenizer tok = new StringTokenizer(params, " \t\n\r\f,");
+            while (tok.hasMoreTokens()) {
+                String param = typeToSignature(tok.nextToken());
+                buf.append(param);
+            }
+            pString = buf.toString();
         }
-       pString = buf.toString();
-        }
-        if (returns == null) 
+        if (returns == null) {
             rString = ".*";
-        else 
+        } else {
             rString = typeToSignature(returns);
+        }
         if (params == null || returns == null) {
             String result = "~\\(" + pString + "\\)" + rString;
             assert Pattern.compile(result.substring(1)) != null;
             return result;
-        }
-        
-        else
+        } else {
             return "(" + pString + ")" + rString;
-       
+        }
+
     }
 
     public static String createFieldSignature(String type) {
-        if (type == null)
+        if (type == null) {
             return null;
+        }
         return typeToSignature(type);
     }
 
@@ -74,25 +76,26 @@ public class SignatureUtil {
     }
 
     private static String scalarTypeToSiganture(String type) {
-        if (type.equals("boolean"))
+        if (type.equals("boolean")) {
             return "Z";
-        else if (type.equals("byte"))
+        } else if (type.equals("byte")) {
             return "B";
-        else if (type.equals("char"))
+        } else if (type.equals("char")) {
             return "C";
-        else if (type.equals("short"))
+        } else if (type.equals("short")) {
             return "S";
-        else if (type.equals("int"))
+        } else if (type.equals("int")) {
             return "I";
-        else if (type.equals("long"))
+        } else if (type.equals("long")) {
             return "J";
-        else if (type.equals("float"))
+        } else if (type.equals("float")) {
             return "F";
-        else if (type.equals("double"))
+        } else if (type.equals("double")) {
             return "D";
-        else if (type.equals("void"))
+        } else if (type.equals("void")) {
             return "V";
-        else
+        } else {
             return "L" + type.replace('.', '/') + ";";
+        }
     }
 }

@@ -43,9 +43,9 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  * ObligationAnalysis.
  */
 public class ObligationFactory {
-    private Map<String, Obligation> classNameToObligationMap;
+    private final Map<String, Obligation> classNameToObligationMap;
 
-    private Set<String> slashedClassNames = new HashSet<String>();
+    private final Set<String> slashedClassNames = new HashSet<String>();
 
     // // XXX: this is just for debugging.
     // static ObligationFactory lastInstance;
@@ -62,16 +62,18 @@ public class ObligationFactory {
 
     public boolean signatureInvolvesObligations(String sig) {
         sig = sig.replaceAll("java/io/File", "java/io/");
-        for (String c : slashedClassNames)
-            if (sig.indexOf(c) >= 0)
+        for (String c : slashedClassNames) {
+            if (sig.indexOf(c) >= 0) {
                 return true;
+            }
+        }
         return false;
     }
 
     /**
      * Determine whether class named by given ClassDescriptor is an Obligation
      * type.
-     * 
+     *
      * @param classDescriptor
      *            a class
      * @return true if the class is an Obligation type, false otherwise
@@ -87,7 +89,7 @@ public class ObligationFactory {
 
     /**
      * Get an Iterator over known Obligation types.
-     * 
+     *
      * @return Iterator over known Obligation types
      */
     public Iterator<Obligation> obligationIterator() {
@@ -98,7 +100,7 @@ public class ObligationFactory {
      * Look up an Obligation by type. This returns the first Obligation that is
      * a supertype of the type given (meaning that the given type could be an
      * instance of the returned Obligation).
-     * 
+     *
      * @param type
      *            a type
      * @return an Obligation that is a supertype of the given type, or null if
@@ -109,8 +111,9 @@ public class ObligationFactory {
     Obligation getObligationByType(ObjectType type) throws ClassNotFoundException {
         for (Iterator<Obligation> i = obligationIterator(); i.hasNext();) {
             Obligation obligation = i.next();
-            if (Hierarchy.isSubtype(type, obligation.getType()))
+            if (Hierarchy.isSubtype(type, obligation.getType())) {
                 return obligation;
+            }
         }
         return null;
     }
@@ -119,7 +122,7 @@ public class ObligationFactory {
      * Look up an Obligation by type. This returns the first Obligation that is
      * a supertype of the type given (meaning that the given type could be an
      * instance of the returned Obligation).
-     * 
+     *
      * @param classDescriptor
      *            a ClassDescriptor naming a class type
      * @return an Obligation that is a supertype of the given type, or null if
@@ -138,7 +141,7 @@ public class ObligationFactory {
     /**
      * Get array of Obligation types corresponding to the parameters of the
      * given method.
-     * 
+     *
      * @param xmethod
      *            a method
      * @return array of Obligation types for each of the method's parameters; a
@@ -173,8 +176,9 @@ public class ObligationFactory {
 
     public Obligation getObligationById(int id) {
         for (Obligation obligation : classNameToObligationMap.values()) {
-            if (obligation.getId() == id)
+            if (obligation.getId() == id) {
                 return obligation;
+            }
         }
         return null;
     }
@@ -188,4 +192,3 @@ public class ObligationFactory {
     }
 }
 
-// vim:ts=4

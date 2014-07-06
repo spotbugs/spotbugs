@@ -105,7 +105,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         this.methodName = methodName;
         if (methodSig.indexOf('.') >= 0) {
             assert false : "signatures should not be dotted: " + methodSig;
-            methodSig = methodSig.replace('.', '/');
+        methodSig = methodSig.replace('.', '/');
         }
         this.methodSig = methodSig;
         this.isStatic = isStatic;
@@ -151,8 +151,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
             if (!oVisitor.getStack().isTop() && oVisitor.getStack().getStackDepth() > params) {
                 OpcodeStack.Item item = oVisitor.getStack().getStackItem(params);
                 String cName = ClassName.fromFieldSignature(item.getSignature());
-                if (cName != null)
+                if (cName != null) {
                     className = cName;
+                }
 
             }
 
@@ -282,8 +283,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
 
     public String getJavaSourceMethodName() {
-        if (methodName.equals("<clinit>"))
+        if (methodName.equals("<clinit>")) {
             return "<static initializer for " + getSimpleClassName() + ">";
+        }
 
         if (methodName.equals("<init>")) {
             return getSimpleClassName();
@@ -327,23 +329,24 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
     @Override
     protected String formatPackageMember(String key, ClassAnnotation primaryClass) {
-        if (key.equals(""))
+        if (key.equals("")) {
             return UGLY_METHODS ? getUglyMethod() : getFullMethod(primaryClass);
-        else if (key.equals("givenClass")) {
+        } else if (key.equals("givenClass")) {
             if (methodName.equals("<init>")) {
                 return "new " + shorten(primaryClass.getPackageName(), className) + getSignatureInClass(primaryClass);
             }
-            if (className.equals(primaryClass.getClassName()))
+            if (className.equals(primaryClass.getClassName())) {
                 return getNameInClass(primaryClass);
-            else
+            } else {
                 return shorten(primaryClass.getPackageName(), className) + "." + getNameInClass(primaryClass);
+            }
         } else if (key.equals("name")) {
             return methodName;
         } else if (key.equals("nameAndSignature")) {
             return getNameInClass(primaryClass);
-        } else if (key.equals("shortMethod"))
+        } else if (key.equals("shortMethod")) {
             return className + "." + methodName + "(...)";
-        else if (key.equals("hash")) {
+        } else if (key.equals("hash")) {
             String tmp = getNameInClass(false, true, true);
 
             return className + "." + tmp;
@@ -353,8 +356,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
             String pkgName = primaryClass == null ? "" : primaryClass.getPackageName();
             SignatureConverter converter = new SignatureConverter(returnType);
             return shorten(pkgName, converter.parseNext());
-        } else
+        } else {
             throw new IllegalArgumentException("unknown key " + key);
+        }
     }
 
     /**
@@ -389,31 +393,36 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         // Convert to "nice" representation
         StringBuilder result = new StringBuilder();
         if (!omitMethodName) {
-            if (useJVMMethodName)
+            if (useJVMMethodName) {
                 result.append(getMethodName());
-            else
+            } else {
                 result.append(getJavaSourceMethodName());
+            }
         }
         result.append('(');
 
         // append args
         SignatureConverter converter = new SignatureConverter(methodSig);
 
-        if (converter.getFirst() != '(')
+        if (converter.getFirst() != '(') {
             throw new IllegalStateException("bad method signature " + methodSig);
+        }
         converter.skip();
 
         boolean needsComma = false;
         while (converter.getFirst() != ')') {
-            if (needsComma)
-                if (hash)
+            if (needsComma) {
+                if (hash) {
                     result.append(",");
-                else
+                } else {
                     result.append(", ");
-            if (shortenPackages)
+                }
+            }
+            if (shortenPackages) {
                 result.append(removePackageName(converter.parseNext()));
-            else
+            } else {
                 result.append(converter.parseNext());
+            }
             needsComma = true;
         }
         converter.skip();
@@ -428,18 +437,20 @@ public class MethodAnnotation extends PackageMemberAnnotation {
      */
     public String getFullMethod(ClassAnnotation primaryClass) {
         if (fullMethod == null) {
-            if (methodName.equals("<init>"))
+            if (methodName.equals("<init>")) {
                 fullMethod = "new " + stripJavaLang(className) + getSignatureInClass(primaryClass);
-            else
+            } else {
                 fullMethod = stripJavaLang(className) + "." + getNameInClass(primaryClass);
+            }
         }
 
         return fullMethod;
     }
 
     public String stripJavaLang(@DottedClassName String className) {
-        if (className.startsWith("java.lang."))
+        if (className.startsWith("java.lang.")) {
             return className.substring(10);
+        }
         return className;
     }
 
@@ -454,26 +465,30 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof MethodAnnotation))
+        if (!(o instanceof MethodAnnotation)) {
             return false;
+        }
         MethodAnnotation other = (MethodAnnotation) o;
         return className.equals(other.className) && methodName.equals(other.methodName) && methodSig.equals(other.methodSig);
     }
 
     @Override
     public int compareTo(BugAnnotation o) {
-        if (!(o instanceof MethodAnnotation)) // BugAnnotations must be
-                                              // Comparable with any type of
-                                              // BugAnnotation
+        if (!(o instanceof MethodAnnotation)) {
+            // Comparable with any type of
+            // BugAnnotation
             return this.getClass().getName().compareTo(o.getClass().getName());
+        }
         MethodAnnotation other = (MethodAnnotation) o;
         int cmp;
         cmp = className.compareTo(other.className);
-        if (cmp != 0)
+        if (cmp != 0) {
             return cmp;
+        }
         cmp = methodName.compareTo(other.methodName);
-        if (cmp != 0)
+        if (cmp != 0) {
             return cmp;
+        }
         return methodSig.compareTo(other.methodSig);
     }
 
@@ -494,12 +509,14 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("classname", getClassName())
                 .addAttribute("name", getMethodName()).addAttribute("signature", getMethodSignature())
                 .addAttribute("isStatic", String.valueOf(isStatic()));
-        if (isPrimary)
+        if (isPrimary) {
             attributeList.addAttribute("primary", "true");
+        }
 
         String role = getDescription();
-        if (!role.equals(DEFAULT_ROLE))
+        if (!role.equals(DEFAULT_ROLE)) {
             attributeList.addAttribute("role", role);
+        }
 
         if (sourceLines == null && !addMessages) {
             xmlOutput.openCloseTag(ELEMENT_NAME, attributeList);
@@ -521,8 +538,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     public boolean isSignificant() {
         String role = getDescription();
         if (METHOD_DANGEROUS_TARGET.equals(role) || METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL.equals(role)
-                || METHOD_SAFE_TARGET.equals(role) || METHOD_EQUALS_USED.equals(role) || METHOD_COMPUTED_IN.equals(role))
+                || METHOD_SAFE_TARGET.equals(role) || METHOD_EQUALS_USED.equals(role) || METHOD_COMPUTED_IN.equals(role)) {
             return false;
+        }
         return true;
     }
 }

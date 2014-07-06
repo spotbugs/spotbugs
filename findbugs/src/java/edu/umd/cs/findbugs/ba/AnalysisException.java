@@ -38,7 +38,7 @@ public class AnalysisException extends UncheckedAnalysisException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param message
      *            reason for the error
      */
@@ -49,7 +49,7 @@ public class AnalysisException extends UncheckedAnalysisException {
     /**
      * Constructor from another Throwable object. This is useful for chaining
      * exceptions.
-     * 
+     *
      * @param message
      *            reason for the error
      * @param throwable
@@ -62,7 +62,7 @@ public class AnalysisException extends UncheckedAnalysisException {
     /**
      * Constructor from MethodGen and another Throwable object. This is useful
      * for chaining exceptions.
-     * 
+     *
      * @param message
      *            reason for the error
      * @param methodGen
@@ -76,7 +76,7 @@ public class AnalysisException extends UncheckedAnalysisException {
 
     /**
      * Constructor from method and instruction.
-     * 
+     *
      * @param message
      *            reason for the error
      * @param methodGen
@@ -90,7 +90,7 @@ public class AnalysisException extends UncheckedAnalysisException {
 
     /**
      * Constructor from method and instruction.
-     * 
+     *
      * @param message
      *            reason for the error
      * @param methodGen
@@ -104,7 +104,7 @@ public class AnalysisException extends UncheckedAnalysisException {
 
     /**
      * Constructor from method, instruction, and causing Throwable object.
-     * 
+     *
      * @param message
      *            reason for the error
      * @param methodGen
@@ -120,7 +120,7 @@ public class AnalysisException extends UncheckedAnalysisException {
 
     /**
      * Constructor from method, instruction, and causing Throwable object.
-     * 
+     *
      * @param message
      *            reason for the error
      * @param methodGen
@@ -135,4 +135,3 @@ public class AnalysisException extends UncheckedAnalysisException {
     }
 }
 
-// vim:ts=4

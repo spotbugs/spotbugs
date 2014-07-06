@@ -33,7 +33,7 @@ public class StreamEscape implements Comparable<StreamEscape> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param source
      *            Location where stream is opened
      * @param target
@@ -47,8 +47,9 @@ public class StreamEscape implements Comparable<StreamEscape> {
     @Override
     public int compareTo(StreamEscape other) {
         int cmp = source.compareTo(other.source);
-        if (cmp != 0)
+        if (cmp != 0) {
             return cmp;
+        }
         return target.compareTo(other.target);
     }
 
@@ -59,8 +60,9 @@ public class StreamEscape implements Comparable<StreamEscape> {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof StreamEscape))
+        if (!(o instanceof StreamEscape)) {
             return false;
+        }
         StreamEscape other = (StreamEscape) o;
         return source.equals(other.source) && target.equals(other.target);
     }
@@ -71,4 +73,3 @@ public class StreamEscape implements Comparable<StreamEscape> {
     }
 }
 
-// vim:ts=3

@@ -28,7 +28,7 @@ public class TypeFrameModelingVisitorTest {
 
     @Test
     public void testMapSignaturePattern() {
-//        assertTrue(TypeFrameModelingVisitor.mapSignaturePattern.matcher("<") && !sourceSignature.contains("Map<TK;TV;>"))
+        //        assertTrue(TypeFrameModelingVisitor.mapSignaturePattern.matcher("<") && !sourceSignature.contains("Map<TK;TV;>"))
     }
 
 }

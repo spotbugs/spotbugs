@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
  * Codebase locator for a zip/jar archive nested inside a parent codebase.
- * 
+ *
  * @author David Hovemeyer
  */
 public class NestedZipFileCodeBaseLocator implements ICodeBaseLocator {
@@ -56,7 +56,7 @@ public class NestedZipFileCodeBaseLocator implements ICodeBaseLocator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.ICodeBaseLocator#createRelativeCodeBaseLocator
      * (java.lang.String)
@@ -70,7 +70,7 @@ public class NestedZipFileCodeBaseLocator implements ICodeBaseLocator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.umd.cs.findbugs.classfile.ICodeBaseLocator#openCodeBase()
      */
     @Override
@@ -80,7 +80,7 @@ public class NestedZipFileCodeBaseLocator implements ICodeBaseLocator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -90,7 +90,7 @@ public class NestedZipFileCodeBaseLocator implements ICodeBaseLocator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -104,7 +104,7 @@ public class NestedZipFileCodeBaseLocator implements ICodeBaseLocator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override

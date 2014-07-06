@@ -31,12 +31,12 @@ public class BugCategory implements Comparable<BugCategory> {
     private String abbrev;
 
     private String detailText;
-    
+
     private boolean hidden;
 
     /**
      * Constructor.
-     * 
+     *
      * @param category
      *            the category
      * @param shortDescription
@@ -56,7 +56,7 @@ public class BugCategory implements Comparable<BugCategory> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param category
      *            the category
      * @param shortDescription
@@ -68,7 +68,7 @@ public class BugCategory implements Comparable<BugCategory> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param category
      *            the category
      */
@@ -112,7 +112,7 @@ public class BugCategory implements Comparable<BugCategory> {
     public void setShortDescription(String shortDescription) {
         this.shortDescription = shortDescription;
     }
-    
+
     /**
      * Set the abbreviation (typically a single capital letter)
      */
@@ -140,8 +140,9 @@ public class BugCategory implements Comparable<BugCategory> {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof BugCategory))
+        if (!(o instanceof BugCategory)) {
             return false;
+        }
         BugCategory other = (BugCategory) o;
         return category.equals(other.category);
     }

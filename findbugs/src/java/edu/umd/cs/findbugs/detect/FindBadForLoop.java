@@ -49,8 +49,9 @@ public class FindBadForLoop extends OpcodeStackDetector implements StatelessDete
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == ISTORE || seen == ISTORE_0 || seen == ISTORE_1 || seen == ISTORE_2 || seen == ISTORE_3)
+        if (seen == ISTORE || seen == ISTORE_0 || seen == ISTORE_1 || seen == ISTORE_2 || seen == ISTORE_3) {
             lastRegStore = getRegisterOperand();
+        }
         if (lineNumbers != null
                 && stack.getStackDepth() >= 2
                 && (seen == IF_ICMPGE || seen == IF_ICMPGT || seen == IF_ICMPLT || seen == IF_ICMPLE || seen == IF_ICMPNE || seen == IF_ICMPEQ)) {
@@ -77,7 +78,7 @@ public class FindBadForLoop extends OpcodeStackDetector implements StatelessDete
                             && beforeIncLineNumber > incLineNumber) {
 
                         bugReporter.reportBug(new BugInstance(this, "QF_QUESTIONABLE_FOR_LOOP", NORMAL_PRIORITY)
-                                .addClassAndMethod(this).addSourceLine(this));
+                        .addClassAndMethod(this).addSourceLine(this));
                     }
                 }
 

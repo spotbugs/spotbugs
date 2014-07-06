@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.gui2.BugTreeModel.BranchOperationException;
 public class StackedFilterMatcher extends FilterMatcher {
     private static final long serialVersionUID = 3958267780332359162L;
 
-    private FilterMatcher[] filters;
+    private final FilterMatcher[] filters;
 
     @Override
     Sortables getFilterBy() {
@@ -65,17 +65,19 @@ public class StackedFilterMatcher extends FilterMatcher {
         BugTreeModel.TreeModification whatToDo;
 
         if (active != this.active) {
-            if (active == false)
+            if (active == false) {
                 this.active = active;
+            }
 
             StackedFilterMatcher theSame = this;
             FilterMatcher[] filtersInStack = theSame.getFilters();
             ArrayList<Sortables> order = MainFrame.getInstance().getSorter().getOrder();
             int sizeToCheck = filtersInStack.length;
-            if (order.contains(Sortables.DIVIDER))
+            if (order.contains(Sortables.DIVIDER)) {
                 if (order.indexOf(Sortables.DIVIDER) < filtersInStack.length) {
                     sizeToCheck++;
                 }
+            }
             List<Sortables> sortablesToCheck = order.subList(0, Math.min(sizeToCheck, order.size()));
             Debug.println("Size to check" + sizeToCheck + " checking list" + sortablesToCheck);
             Debug.println("checking filters");
@@ -93,8 +95,9 @@ public class StackedFilterMatcher extends FilterMatcher {
             ArrayList<String> finalPath = new ArrayList<String>();
             for (int x = 0; x < almostPath.size(); x++) {
                 Sortables s = almostPathSortables.get(x);
-                if (MainFrame.getInstance().getSorter().getOrderBeforeDivider().contains(s))
+                if (MainFrame.getInstance().getSorter().getOrderBeforeDivider().contains(s)) {
                     finalPath.add(almostPath.get(x));
+                }
             }
             try {
                 if (finalPath.size() == filtersInStack.length) {
@@ -107,25 +110,27 @@ public class StackedFilterMatcher extends FilterMatcher {
                     }
                 } else {
                     event = (MainFrame.getInstance().getBugTreeModel()).restructureBranch(finalPath, active);// if
-                                                                                                             // active
-                                                                                                             // is
-                                                                                                             // true,
-                                                                                                             // this
-                                                                                                             // removes,
-                                                                                                             // if
-                                                                                                             // active
-                                                                                                             // if
-                                                                                                             // false,
-                                                                                                             // it
-                                                                                                             // inserts
-                    if (active)
+                    // active
+                    // is
+                    // true,
+                    // this
+                    // removes,
+                    // if
+                    // active
+                    // if
+                    // false,
+                    // it
+                    // inserts
+                    if (active) {
                         whatToDo = BugTreeModel.TreeModification.REMOVERESTRUCTURE;
-                    else
+                    } else {
                         whatToDo = BugTreeModel.TreeModification.INSERTRESTRUCTURE;
+                    }
                 }
 
-                if (active == true)
+                if (active == true) {
                     this.active = active;
+                }
                 (MainFrame.getInstance().getBugTreeModel()).sendEvent(event, whatToDo);
             } catch (BranchOperationException e) {
                 // Another filter already filters out the branch this filter
@@ -143,12 +148,15 @@ public class StackedFilterMatcher extends FilterMatcher {
 
     @Override
     public boolean match(BugInstance bugInstance) {
-        if (!isActive())
+        if (!isActive()) {
             return true;
+        }
 
-        for (FilterMatcher i : filters)
-            if (i.match(bugInstance))
+        for (FilterMatcher i : filters) {
+            if (i.match(bugInstance)) {
                 return true;
+            }
+        }
 
         return false;
     }
@@ -157,19 +165,23 @@ public class StackedFilterMatcher extends FilterMatcher {
     public String toString() {
         // return "StackedFilterMatcher: " + Arrays.toString(filters);
         StringBuilder result = new StringBuilder();
-        for (int i = 0; i < filters.length - 1; i++)
+        for (int i = 0; i < filters.length - 1; i++) {
             result.append(filters[i].toString() + (i == filters.length - 2 ? " " : ", "));
-        if (filters.length > 1)
+        }
+        if (filters.length > 1) {
             result.append("and ");
-        if (filters.length > 0)
+        }
+        if (filters.length > 0) {
             result.append(filters[filters.length - 1]);
+        }
         return result.toString();
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || !(o instanceof StackedFilterMatcher))
+        if (o == null || !(o instanceof StackedFilterMatcher)) {
             return false;
+        }
 
         FilterMatcher[] mine = new FilterMatcher[filters.length];
         System.arraycopy(this.filters, 0, mine, 0, mine.length);
@@ -185,8 +197,9 @@ public class StackedFilterMatcher extends FilterMatcher {
     @Override
     public int hashCode() {
         int hash = 0;
-        for (FilterMatcher f : filters)
+        for (FilterMatcher f : filters) {
             hash += f.hashCode();
+        }
         return hash;
     }
 

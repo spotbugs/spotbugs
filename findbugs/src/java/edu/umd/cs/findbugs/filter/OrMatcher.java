@@ -32,8 +32,9 @@ public class OrMatcher extends CompoundMatcher {
         Iterator<Matcher> i = childIterator();
         while (i.hasNext()) {
             Matcher child = i.next();
-            if (child.match(bugInstance))
+            if (child.match(bugInstance)) {
                 return true;
+            }
         }
         return false;
     }
@@ -45,8 +46,9 @@ public class OrMatcher extends CompoundMatcher {
             return;
         }
         xmlOutput.startTag("Or");
-        if (disabled)
+        if (disabled) {
             xmlOutput.addAttribute("disabled", "true");
+        }
         xmlOutput.stopTag(false);
         writeChildrenXML(xmlOutput);
         xmlOutput.closeTag("Or");
@@ -54,11 +56,11 @@ public class OrMatcher extends CompoundMatcher {
 
     @Override
     public String toString() {
-        if (numberChildren() == 1)
+        if (numberChildren() == 1) {
             return super.toString();
+        }
         return "Or(" + super.toString() + ")";
     }
 
 }
 
-// vim:ts=4

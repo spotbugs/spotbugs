@@ -32,22 +32,25 @@ public class DualKeyHashMap<K1, K2, V> {
 
     public V get(K1 k1, K2 k2) {
         Map<K2, V> m = map.get(k1);
-        if (m == null)
+        if (m == null) {
             return null;
+        }
         return m.get(k2);
     }
 
     public boolean containsKey(K1 k1, K2 k2) {
         Map<K2, V> m = map.get(k1);
-        if (m == null)
+        if (m == null) {
             return false;
+        }
         return m.containsKey(k2);
     }
 
     public Map<K2, V> get(K1 k1) {
         Map<K2, V> m = map.get(k1);
-        if (m == null)
+        if (m == null) {
             return Collections.<K2, V> emptyMap();
+        }
         return m;
     }
 
@@ -61,9 +64,9 @@ public class DualKeyHashMap<K1, K2, V> {
             m = Collections.singletonMap(k2, v);
             map.put(k1, m);
             return null;
-        } else if (m instanceof HashMap)
+        } else if (m instanceof HashMap) {
             return m.put(k2, v);
-        else {
+        } else {
             m = Util.makeSmallHashMap(m);
             map.put(k1, m);
             return m.put(k2, v);

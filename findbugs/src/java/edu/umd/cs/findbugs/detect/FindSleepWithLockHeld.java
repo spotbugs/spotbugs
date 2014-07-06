@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.ba.LockSet;
 
 /**
  * Find calls to Thread.sleep() made with a lock held.
- * 
+ *
  * @author David Hovemeyer
  */
 public class FindSleepWithLockHeld implements Detector {
@@ -62,11 +62,13 @@ public class FindSleepWithLockHeld implements Detector {
 
         Method[] methodList = javaClass.getMethods();
         for (Method method : methodList) {
-            if (method.getCode() == null)
+            if (method.getCode() == null) {
                 continue;
+            }
 
-            if (!prescreen(classContext, method))
+            if (!prescreen(classContext, method)) {
                 continue;
+            }
 
             try {
                 analyzeMethod(classContext, method);
@@ -80,15 +82,18 @@ public class FindSleepWithLockHeld implements Detector {
 
     private boolean prescreen(ClassContext classContext, Method method) {
         BitSet bytecodeSet = classContext.getBytecodeSet(method);
-        if (bytecodeSet == null)
+        if (bytecodeSet == null) {
             return false;
+        }
         // method must acquire a lock
-        if (!bytecodeSet.get(Constants.MONITORENTER) && !method.isSynchronized())
+        if (!bytecodeSet.get(Constants.MONITORENTER) && !method.isSynchronized()) {
             return false;
+        }
 
         // and contain a static method invocation
-        if (!bytecodeSet.get(Constants.INVOKESTATIC))
+        if (!bytecodeSet.get(Constants.INVOKESTATIC)) {
             return false;
+        }
 
         return true;
     }
@@ -103,11 +108,13 @@ public class FindSleepWithLockHeld implements Detector {
             Location location = i.next();
             Instruction ins = location.getHandle().getInstruction();
 
-            if (!(ins instanceof INVOKESTATIC))
+            if (!(ins instanceof INVOKESTATIC)) {
                 continue;
+            }
 
-            if (!isSleep((INVOKESTATIC) ins, classContext.getConstantPoolGen()))
+            if (!isSleep((INVOKESTATIC) ins, classContext.getConstantPoolGen())) {
                 continue;
+            }
 
             // System.out.println("Found sleep at " + location.getHandle());
 
@@ -123,8 +130,9 @@ public class FindSleepWithLockHeld implements Detector {
 
     private boolean isSleep(INVOKESTATIC ins, ConstantPoolGen cpg) {
         String className = ins.getClassName(cpg);
-        if (!className.equals("java.lang.Thread"))
+        if (!className.equals("java.lang.Thread")) {
             return false;
+        }
         String methodName = ins.getMethodName(cpg);
         String signature = ins.getSignature(cpg);
 

@@ -25,7 +25,7 @@ import edu.umd.cs.findbugs.props.PriorityAdjustment;
 /**
  * Warning property for a null argument being passed to a method which might
  * dereference it.
- * 
+ *
  * @author David Hovemeyer
  */
 public class NullArgumentWarningProperty extends AbstractWarningProperty {

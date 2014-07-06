@@ -175,8 +175,9 @@ public class SortedBugCollection implements BugCollection {
 
     @Override
     public @CheckForNull Cloud getCloudLazily() {
-        if (cloud != null && bugsPopulated)
-           cloud.bugsPopulated();
+        if (cloud != null && bugsPopulated) {
+            cloud.bugsPopulated();
+        }
         return cloud;
     }
 
@@ -189,14 +190,15 @@ public class SortedBugCollection implements BugCollection {
         if (result == null) {
             IGuiCallback callback = getProject().getGuiCallback();
             result = cloud = CloudFactory.createCloudWithoutInitializing(this);
-             try {
+            try {
                 CloudFactory.initializeCloud(this, result);
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Could not load cloud plugin "+ result.getCloudName(), e);
                 callback.showMessageDialog("Unable to connect to " + result.getCloudName() + ": " + Util.getNetworkErrorMessage(e));
-                if (CloudFactory.FAIL_ON_CLOUD_ERROR)
+                if (CloudFactory.FAIL_ON_CLOUD_ERROR) {
                     throw new IllegalStateException("Could not load FindBugs Cloud plugin - to avoid this message, " +
                             "set -D" + CloudFactory.FAIL_ON_CLOUD_ERROR_PROP + "=false", e);
+                }
                 result = cloud = CloudFactory.getPlainCloud(this);
             }
             callback.registerCloud(getProject(), this, result);
@@ -206,8 +208,9 @@ public class SortedBugCollection implements BugCollection {
         if (!result.isInitialized()) {
             LOGGER.log(Level.SEVERE, "Cloud " + result.getCloudName() + " is not initialized ");
         }
-        if (bugsPopulated)
+        if (bugsPopulated) {
             result.bugsPopulated();
+        }
         return result;
     }
 
@@ -408,14 +411,16 @@ public class SortedBugCollection implements BugCollection {
 
             xr.parse(new InputSource(reader));
         } catch (SAXParseException e) {
-            if (base != null)
+            if (base != null) {
                 throw new DocumentException("Parse error at line " + e.getLineNumber() + " : " + e.getColumnNumber() + " of "
                         + base, e);
+            }
             throw new DocumentException("Parse error at line " + e.getLineNumber() + " : " + e.getColumnNumber(), e);
         } catch (SAXException e) {
             // FIXME: throw SAXException from method?
-            if (base != null)
+            if (base != null) {
                 throw new DocumentException("Sax error while parsing " + base, e);
+            }
             throw new DocumentException("Sax error ", e);
         } finally {
             Util.closeSilently(reader);
@@ -442,8 +447,9 @@ public class SortedBugCollection implements BugCollection {
     @Override
     public void writeXML(String fileName) throws IOException {
         OutputStream out = new FileOutputStream(fileName);
-        if (fileName.endsWith(".gz"))
+        if (fileName.endsWith(".gz")) {
             out = new GZIPOutputStream(out);
+        }
         writeXML(out);
     }
 
@@ -455,8 +461,9 @@ public class SortedBugCollection implements BugCollection {
      */
     public void writeXML(File file) throws IOException {
         OutputStream out = new FileOutputStream(file);
-        if (file.getName().endsWith(".gz"))
+        if (file.getName().endsWith(".gz")) {
             out = new GZIPOutputStream(out);
+        }
         writeXML(out);
     }
 
@@ -520,16 +527,17 @@ public class SortedBugCollection implements BugCollection {
         xmlOutput.openTag(
                 ROOT_ELEMENT_NAME,
                 new XMLAttributeList().addAttribute("version", analysisVersion)
-                        .addAttribute("sequence", String.valueOf(getSequenceNumber()))
-                        .addAttribute("timestamp", String.valueOf(getTimestamp()))
-                        .addAttribute("analysisTimestamp", String.valueOf(getAnalysisTimestamp()))
-                        .addAttribute("release", getReleaseName()));
+                .addAttribute("sequence", String.valueOf(getSequenceNumber()))
+                .addAttribute("timestamp", String.valueOf(getTimestamp()))
+                .addAttribute("analysisTimestamp", String.valueOf(getAnalysisTimestamp()))
+                .addAttribute("release", getReleaseName()));
         project.writeXML(xmlOutput, null, this);
     }
 
     public void computeBugHashes() {
-        if (preciseHashOccurrenceNumbersAvailable)
+        if (preciseHashOccurrenceNumbersAvailable) {
             return;
+        }
         invalidateHashes();
         HashMap<String, Integer> seen = new HashMap<String, Integer>();
 
@@ -545,8 +553,9 @@ public class SortedBugCollection implements BugCollection {
                 seen.put(hash, count + 1);
             }
         }
-        for (BugInstance bugInstance : getCollection())
+        for (BugInstance bugInstance : getCollection()) {
             bugInstance.setInstanceOccurrenceMax(seen.get(bugInstance.getInstanceHash()));
+        }
         preciseHashOccurrenceNumbersAvailable = true;
     }
 
@@ -572,27 +581,33 @@ public class SortedBugCollection implements BugCollection {
                 getProjectStats().computeFileStats(this);
                 String commonBase = null;
                 for (String s : project.getSourceDirList()) {
-                    if (commonBase == null)
+                    if (commonBase == null) {
                         commonBase = s;
-                    else
+                    } else {
                         commonBase = commonBase.substring(0, commonPrefix(commonBase, s));
+                    }
 
                 }
                 if (commonBase != null && commonBase.length() > 0) {
-                    if (commonBase.indexOf("/./") > 0)
+                    if (commonBase.indexOf("/./") > 0) {
                         commonBase = commonBase.substring(0, commonBase.indexOf("/."));
+                    }
                     File base = new File(commonBase);
-                    if (base.exists() && base.isDirectory() && base.canRead())
+                    if (base.exists() && base.isDirectory() && base.canRead()) {
                         SourceLineAnnotation.generateRelativeSource(base, project);
+                    }
                 }
             }
-            if (earlyStats && !minimalXML)
+            if (earlyStats && !minimalXML) {
                 getProjectStats().writeXML(xmlOutput, withMessages);
+            }
 
             // Write BugInstances
-            for (BugInstance bugInstance : getCollection())
-                if (!applySuppressions || !project.getSuppressionFilter().match(bugInstance))
+            for (BugInstance bugInstance : getCollection()) {
+                if (!applySuppressions || !project.getSuppressionFilter().match(bugInstance)) {
                     bugInstance.writeXML(xmlOutput, this, withMessages);
+                }
+            }
 
             writeEpilogue(xmlOutput);
 
@@ -604,8 +619,9 @@ public class SortedBugCollection implements BugCollection {
 
     int commonPrefix(String s1, String s2) {
         int pos = 0;
-        while (pos < s1.length() && pos < s2.length() && s1.charAt(pos) == s2.charAt(pos))
+        while (pos < s1.length() && pos < s2.length() && s1.charAt(pos) == s2.charAt(pos)) {
             pos++;
+        }
         return pos;
     }
 
@@ -617,8 +633,9 @@ public class SortedBugCollection implements BugCollection {
             writeBugCodes(xmlOutput);
         }
         // Errors, missing classes
-        if (!minimalXML)
+        if (!minimalXML) {
             emitErrors(xmlOutput);
+        }
 
         if (!earlyStats && !minimalXML) {
             // Statistics
@@ -672,8 +689,9 @@ public class SortedBugCollection implements BugCollection {
         // Emit element describing each reported bug pattern
         for (String bugType : bugTypeSet) {
             BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(bugType);
-            if (bugPattern == null)
+            if (bugPattern == null) {
                 continue;
+            }
 
             XMLAttributeList attributeList = new XMLAttributeList();
             attributeList.addAttribute("type", bugType);
@@ -710,8 +728,9 @@ public class SortedBugCollection implements BugCollection {
         for (String bugCodeAbbrev : bugCodeSet) {
             BugCode bugCode = DetectorFactoryCollection.instance().getBugCode(bugCodeAbbrev);
             String bugCodeDescription = bugCode.getDescription();
-            if (bugCodeDescription == null)
+            if (bugCodeDescription == null) {
                 continue;
+            }
 
             XMLAttributeList attributeList = new XMLAttributeList();
             attributeList.addAttribute("abbrev", bugCodeAbbrev);
@@ -739,8 +758,9 @@ public class SortedBugCollection implements BugCollection {
         // Emit element describing each reported bug code
         for (String bugCat : bugCatSet) {
             String bugCatDescription = I18N.instance().getBugCategoryDescription(bugCat);
-            if (bugCatDescription == null)
+            if (bugCatDescription == null) {
                 continue;
+            }
 
             XMLAttributeList attributeList = new XMLAttributeList();
             attributeList.addAttribute("category", bugCat);
@@ -784,20 +804,20 @@ public class SortedBugCollection implements BugCollection {
                     }
                 }
 
-//                if (false && error.getNestedExceptionMessage() != null) {
-//                    xmlOutput.openTag(ERROR_EXCEPTION_ELEMENT_NAME);
-//                    xmlOutput.writeText(error.getNestedExceptionMessage());
-//                    xmlOutput.closeTag(ERROR_EXCEPTION_ELEMENT_NAME);
-//
-//                    stackTrace = error.getNestedStackTrace();
-//                    if (stackTrace != null) {
-//                        for (String aStackTrace : stackTrace) {
-//                            xmlOutput.openTag(ERROR_STACK_TRACE_ELEMENT_NAME);
-//                            xmlOutput.writeText(aStackTrace);
-//                            xmlOutput.closeTag(ERROR_STACK_TRACE_ELEMENT_NAME);
-//                        }
-//                    }
-//                }
+                //                if (false && error.getNestedExceptionMessage() != null) {
+                //                    xmlOutput.openTag(ERROR_EXCEPTION_ELEMENT_NAME);
+                //                    xmlOutput.writeText(error.getNestedExceptionMessage());
+                //                    xmlOutput.closeTag(ERROR_EXCEPTION_ELEMENT_NAME);
+                //
+                //                    stackTrace = error.getNestedStackTrace();
+                //                    if (stackTrace != null) {
+                //                        for (String aStackTrace : stackTrace) {
+                //                            xmlOutput.openTag(ERROR_STACK_TRACE_ELEMENT_NAME);
+                //                            xmlOutput.writeText(aStackTrace);
+                //                            xmlOutput.closeTag(ERROR_STACK_TRACE_ELEMENT_NAME);
+                //                        }
+                //                    }
+                //                }
             }
             xmlOutput.closeTag(ERROR_ELEMENT_NAME);
         }
@@ -809,8 +829,9 @@ public class SortedBugCollection implements BugCollection {
     }
 
     private static void checkInputStream(@WillNotClose InputStream in) throws IOException {
-        if (!in.markSupported())
+        if (!in.markSupported()) {
             return;
+        }
 
         byte[] buf = new byte[200];
         in.mark(buf.length);
@@ -862,8 +883,9 @@ public class SortedBugCollection implements BugCollection {
     private static final class BoundedLinkedHashSet extends LinkedHashSet<AnalysisError> {
         @Override
         public boolean add(AnalysisError a) {
-            if (this.size() > 1000)
+            if (this.size() > 1000) {
                 return false;
+            }
             return super.add(a);
         }
     }
@@ -877,11 +899,13 @@ public class SortedBugCollection implements BugCollection {
         public int compare(BugInstance lhs, BugInstance rhs) {
             ClassAnnotation lca = lhs.getPrimaryClass();
             ClassAnnotation rca = rhs.getPrimaryClass();
-            if (lca == null || rca == null)
+            if (lca == null || rca == null) {
                 throw new IllegalStateException("null class annotation: " + lca + "," + rca);
+            }
             int cmp = lca.getClassName().compareTo(rca.getClassName());
-            if (cmp != 0)
+            if (cmp != 0) {
                 return cmp;
+            }
             return lhs.compareTo(rhs);
         }
 
@@ -896,15 +920,19 @@ public class SortedBugCollection implements BugCollection {
         @Override
         public int compare(BugInstance lhs, BugInstance rhs) {
             int result = super.compare(lhs, rhs);
-            if (result != 0)
+            if (result != 0) {
                 return result;
+            }
             long diff = lhs.getFirstVersion() - rhs.getFirstVersion();
-            if (diff == 0)
+            if (diff == 0) {
                 diff = lhs.getLastVersion() - rhs.getLastVersion();
-            if (diff < 0)
+            }
+            if (diff < 0) {
                 return -1;
-            if (diff > 0)
+            }
+            if (diff > 0) {
                 return 1;
+            }
             return 0;
         }
 
@@ -990,8 +1018,9 @@ public class SortedBugCollection implements BugCollection {
         }
 
         invalidateHashes();
-        if (!bugInstance.isDead())
+        if (!bugInstance.isDead()) {
             projectStats.addBug(bugInstance);
+        }
         return bugSet.add(bugInstance);
     }
 
@@ -1044,16 +1073,18 @@ public class SortedBugCollection implements BugCollection {
 
     @Override
     public void addMissingClass(String className) {
-        if (className == null || className.length() == 0)
-            return;
-        if (className.startsWith("[")) {
-            assert false : "Bad class name " + className;
+        if (className == null || className.length() == 0) {
             return;
         }
-        if (className.endsWith(";"))
+        if (className.startsWith("[")) {
+            assert false : "Bad class name " + className;
+        return;
+        }
+        if (className.endsWith(";")) {
             addError("got signature rather than classname: " + className, new IllegalArgumentException());
-        else
+        } else {
             missingClassSet.add(className);
+        }
     }
 
     public Collection<? extends AnalysisError> getErrors() {
@@ -1070,8 +1101,9 @@ public class SortedBugCollection implements BugCollection {
 
     public BugInstance getMatching(BugInstance bugInstance) {
         SortedSet<BugInstance> tailSet = bugSet.tailSet(bugInstance);
-        if (tailSet.isEmpty())
+        if (tailSet.isEmpty()) {
             return null;
+        }
         BugInstance first = tailSet.first();
         return bugInstance.equals(first) ? first : null;
     }
@@ -1100,9 +1132,11 @@ public class SortedBugCollection implements BugCollection {
     @Override
     @Deprecated
     public BugInstance lookupFromUniqueId(String uniqueId) {
-        for (BugInstance bug : bugSet)
-            if (bug.getInstanceHash().equals(uniqueId))
+        for (BugInstance bug : bugSet) {
+            if (bug.getInstanceHash().equals(uniqueId)) {
                 return bug;
+            }
+        }
         return null;
     }
 
@@ -1116,11 +1150,14 @@ public class SortedBugCollection implements BugCollection {
 
     @Override
     public boolean hasDeadBugs() {
-        if (sequence == 0)
+        if (sequence == 0) {
             return false;
-        for(BugInstance b : bugSet)
-            if (b.isDead())
+        }
+        for(BugInstance b : bugSet) {
+            if (b.isDead()) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -1171,8 +1208,9 @@ public class SortedBugCollection implements BugCollection {
 
     @Override
     public String getReleaseName() {
-        if (releaseName == null)
+        if (releaseName == null) {
             return "";
+        }
         return releaseName;
     }
 
@@ -1198,8 +1236,9 @@ public class SortedBugCollection implements BugCollection {
     }
 
     public void trimAppVersions(long numberToRetain) {
-        while (appVersionList.size() > numberToRetain)
+        while (appVersionList.size() > numberToRetain) {
             appVersionList.remove(appVersionList.size() - 1);
+        }
         sequence = appVersionList.size();
     }
 
@@ -1243,20 +1282,25 @@ public class SortedBugCollection implements BugCollection {
 
     @Override
     public AppVersion getAppVersionFromSequenceNumber(long target) {
-        for (AppVersion av : appVersionList)
-            if (av.getSequenceNumber() == target)
+        for (AppVersion av : appVersionList) {
+            if (av.getSequenceNumber() == target) {
                 return av;
-        if (target == this.getSequenceNumber())
+            }
+        }
+        if (target == this.getSequenceNumber()) {
             return this.getCurrentAppVersion();
+        }
         return null;
     }
 
     @Override
     public BugInstance findBug(String instanceHash, String bugType, int lineNumber) {
-        for (BugInstance bug : bugSet)
+        for (BugInstance bug : bugSet) {
             if (bug.getInstanceHash().equals(instanceHash) && bug.getBugPattern().getType().equals(bugType)
-                    && bug.getPrimarySourceLineAnnotation().getStartLine() == lineNumber)
+                    && bug.getPrimarySourceLineAnnotation().getStartLine() == lineNumber) {
                 return bug;
+            }
+        }
         return null;
     }
 
@@ -1285,8 +1329,9 @@ public class SortedBugCollection implements BugCollection {
     }
 
     public InputStream progressMonitoredInputStream(InputStream in, int length, String msg) {
-        if (GraphicsEnvironment.isHeadless())
+        if (GraphicsEnvironment.isHeadless()) {
             return in;
+        }
         IGuiCallback guiCallback = project.getGuiCallback();
         return guiCallback.getProgressMonitorInputStream(in, length, msg);
     }
@@ -1367,4 +1412,3 @@ public class SortedBugCollection implements BugCollection {
 
 }
 
-// vim:ts=4

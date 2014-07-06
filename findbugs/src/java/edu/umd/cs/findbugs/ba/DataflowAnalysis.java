@@ -26,14 +26,14 @@ import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * A dataflow analysis to be used with the {@link Dataflow} class.
- * 
+ *
  * <p>
  * In order to avoid duplicating functionality (such as caching of start and
  * result facts), most analyses should extend the
  * {@link BasicAbstractDataflowAnalysis} or {@link AbstractDataflowAnalysis}
  * classes rather than directly implementing this interface.
  * </p>
- * 
+ *
  * @author David Hovemeyer
  * @see Dataflow
  */
@@ -46,7 +46,7 @@ public interface DataflowAnalysis<Fact> {
 
     /**
      * Get the start fact for given basic block.
-     * 
+     *
      * @param block
      *            the basic block
      */
@@ -54,7 +54,7 @@ public interface DataflowAnalysis<Fact> {
 
     /**
      * Get the result fact for given basic block.
-     * 
+     *
      * @param block
      *            the basic block
      */
@@ -64,7 +64,7 @@ public interface DataflowAnalysis<Fact> {
      * Get dataflow fact at (just before) given Location. Note "before" is meant
      * in the logical sense, so for backward analyses, before means after the
      * location in the control flow sense.
-     * 
+     *
      * @param location
      *            the Location
      * @return the dataflow value at given Location
@@ -76,7 +76,7 @@ public interface DataflowAnalysis<Fact> {
      * Get the dataflow fact representing the point just after given Location.
      * Note "after" is meant in the logical sense, so for backward analyses,
      * after means before the location in the control flow sense.
-     * 
+     *
      * @param location
      *            the Location
      * @return the dataflow value after given Location
@@ -86,7 +86,7 @@ public interface DataflowAnalysis<Fact> {
 
     /**
      * Get the fact that is true on the given control edge.
-     * 
+     *
      * @param edge
      *            the edge
      * @return the fact that is true on the edge
@@ -122,7 +122,7 @@ public interface DataflowAnalysis<Fact> {
     /**
      * Return the BlockOrder specifying the order in which BasicBlocks should be
      * visited in the main dataflow loop.
-     * 
+     *
      * @param cfg
      *            the CFG upon which we're performing dataflow analysis
      */
@@ -138,7 +138,7 @@ public interface DataflowAnalysis<Fact> {
      * might be either the entry or exit of the block, depending on whether the
      * analysis is forwards or backwards), modify result to be the facts at the
      * other end of the block.
-     * 
+     *
      * @param basicBlock
      *            the basic block
      * @param end
@@ -157,12 +157,12 @@ public interface DataflowAnalysis<Fact> {
      * Edge transfer function. Modify the given fact that is true on the
      * (logical) edge source to modify it so that it is true at the (logical)
      * edge target.
-     * 
+     *
      * <p>
      * A do-nothing implementation is legal, and appropriate for analyses where
      * branches are not significant.
      * </p>
-     * 
+     *
      * @param edge
      *            the Edge
      * @param fact
@@ -174,7 +174,7 @@ public interface DataflowAnalysis<Fact> {
     /**
      * Meet a dataflow fact associated with an incoming edge into another fact.
      * This is used to determine the start fact for a basic block.
-     * 
+     *
      * @param fact
      *            the predecessor fact (incoming edge)
      * @param edge
@@ -201,7 +201,7 @@ public interface DataflowAnalysis<Fact> {
 
     /**
      * Return a String representation of given Fact. For debugging purposes.
-     * 
+     *
      * @param fact
      *            a dataflow fact
      * @return String representation of the fact
@@ -209,4 +209,3 @@ public interface DataflowAnalysis<Fact> {
     public String factToString(Fact fact);
 }
 
-// vim:ts=4

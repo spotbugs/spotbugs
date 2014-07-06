@@ -53,11 +53,13 @@ public class Churn {
     }
 
     String getKey(BugInstance b) {
-        if (false)
+        if (false) {
             return b.getType();
+        }
         String result = b.getCategoryAbbrev();
-        if (result.equals("C") || result.equals("N"))
+        if (result.equals("C") || result.equals("N")) {
             return result;
+        }
         return "O";
 
         // return b.getPriorityAbbreviation() + "-" + b.getType();
@@ -68,26 +70,30 @@ public class Churn {
 
         int maxRemovedAtOnce() {
             int count = 0;
-            for (int c : lastCount.values())
-                if (count < c)
+            for (int c : lastCount.values()) {
+                if (count < c) {
                     count = c;
+                }
+            }
             return count;
         }
 
         Map<Long, Integer> lastCount = new HashMap<Long, Integer>();
 
         void update(BugInstance bug) {
-            if (bug.isDead())
+            if (bug.isDead()) {
                 fixed++;
-            else
+            } else {
                 persist++;
+            }
             final long lastVersion = bug.getLastVersion();
             if (lastVersion != -1) {
                 Integer v = lastCount.get(lastVersion);
-                if (v == null)
+                if (v == null) {
                     lastCount.put(lastVersion, 0);
-                else
+                } else {
                     lastCount.put(lastVersion, v + 1);
+                }
             }
         }
     }
@@ -111,8 +117,9 @@ public class Churn {
 
             String key = getKey(bugInstance);
             Data d = data.get(key);
-            if (d == null)
+            if (d == null) {
                 data.put(key, d = new Data());
+            }
             d.update(bugInstance);
             all.update(bugInstance);
 
@@ -128,12 +135,14 @@ public class Churn {
                 System.out.printf("%3d #age %s%n", lifespan, key);
                 System.out.printf("%3d %3d #spread %s%n", first, last, key);
                 diedAfter[lifespan]++;
-                for (int t = 1; t < lifespan; t++)
+                for (int t = 1; t < lifespan; t++) {
                     aliveAt[t]++;
+                }
             } else if (first != 0) {
                 int lifespan = (int) (bugCollection.getSequenceNumber() - first + 1);
-                for (int t = 1; t < lifespan; t++)
+                for (int t = 1; t < lifespan; t++) {
                     aliveAt[t]++;
+                }
             }
         }
         return this;
@@ -141,22 +150,25 @@ public class Churn {
 
     public void dump(PrintStream out) {
         for (int t = 1; t < aliveAt.length; t++) {
-            if (aliveAt[t] != 0)
+            if (aliveAt[t] != 0) {
                 System.out.printf("%3d%% %4d %5d %3d #decay%n", diedAfter[t] * 100 / aliveAt[t], diedAfter[t], aliveAt[t], t);
+            }
         }
         System.out.printf("%7s %3s %5s %5s %5s  %s%n", "chi", "%", "const", "fix", "max", "kind");
         double fixRate;
-        if (this.fixRate == -1)
+        if (this.fixRate == -1) {
             fixRate = ((double) all.fixed) / (all.fixed + all.persist);
-        else
+        } else {
             fixRate = this.fixRate / 100.0;
+        }
         double highFixRate = fixRate + 0.05;
         double lowFixRate = fixRate - 0.05;
         for (Map.Entry<String, Data> e : data.entrySet()) {
             Data d = e.getValue();
             int total = d.persist + d.fixed;
-            if (total < 2)
+            if (total < 2) {
                 continue;
+            }
 
             double rawFixRate = ((double) d.fixed) / total;
 
@@ -166,16 +178,18 @@ public class Churn {
             } else {
                 double baseFixRate;
 
-                if (rawFixRate < lowFixRate)
+                if (rawFixRate < lowFixRate) {
                     baseFixRate = lowFixRate;
-                else
+                } else {
                     baseFixRate = highFixRate;
+                }
                 double expectedFixed = baseFixRate * total;
                 double expectedPersist = (1 - baseFixRate) * total;
                 chiValue = (d.fixed - expectedFixed) * (d.fixed - expectedFixed) / expectedFixed + (d.persist - expectedPersist)
                         * (d.persist - expectedPersist) / expectedPersist;
-                if (rawFixRate < lowFixRate)
+                if (rawFixRate < lowFixRate) {
                     chiValue = -chiValue;
+                }
             }
 
             System.out.printf("%7d %3d %5d %5d %5d %s%n", (int) chiValue, d.fixed * 100 / total, d.persist, d.fixed,
@@ -197,10 +211,11 @@ public class Churn {
 
         @Override
         public void handleOptionWithArgument(String option, String argument) {
-            if (option.equals("-fixRate"))
+            if (option.equals("-fixRate")) {
                 fixRate = Integer.parseInt(argument);
-            else
+            } else {
                 throw new IllegalArgumentException("unknown option: " + option);
+            }
         }
     }
 
@@ -213,10 +228,11 @@ public class Churn {
                 .parse(args, 0, 2, "Usage: " + Churn.class.getName() + " [options] [<xml results> [<history]] ");
 
         SortedBugCollection bugCollection = new SortedBugCollection();
-        if (argCount < args.length)
+        if (argCount < args.length) {
             bugCollection.readXML(args[argCount++]);
-        else
+        } else {
             bugCollection.readXML(System.in);
+        }
         churn.setBugCollection(bugCollection);
         churn.execute();
         PrintStream out = System.out;

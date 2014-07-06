@@ -84,8 +84,9 @@ public class I18N {
     public @Nonnull
     String getMessage(String key) {
         BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
-        if (bugPattern == null)
+        if (bugPattern == null) {
             return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
+        }
         return bugPattern.getAbbrev() + ": " + bugPattern.getLongDescription();
     }
 
@@ -100,16 +101,18 @@ public class I18N {
     public @Nonnull
     String getShortMessage(String key) {
         BugPattern bugPattern =  DetectorFactoryCollection.instance().lookupBugPattern(key);
-        if (bugPattern == null)
+        if (bugPattern == null) {
             return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
+        }
         return bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription();
     }
 
     public @Nonnull
     String getShortMessageWithoutCode(String key) {
         BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
-        if (bugPattern == null)
+        if (bugPattern == null) {
             return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
+        }
         return bugPattern.getShortDescription();
     }
 
@@ -122,8 +125,9 @@ public class I18N {
     public @Nonnull
     String getDetailHTML(String key) {
         BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
-        if (bugPattern == null)
+        if (bugPattern == null) {
             return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
+        }
         return bugPattern.getDetailHTML();
     }
 
@@ -139,14 +143,15 @@ public class I18N {
         try {
             return annotationDescriptionBundle.getString(key);
         } catch (MissingResourceException mre) {
-            if (DEBUG)
+            if (DEBUG) {
                 return "TRANSLATE(" + key + ") (param={0}}";
-            else
+            } else {
                 try {
                     return englishAnnotationDescriptionBundle.getString(key);
                 } catch (MissingResourceException mre2) {
                     return key + " {0}";
                 }
+            }
         }
     }
 
@@ -163,8 +168,9 @@ public class I18N {
     public @Nonnull
     String getBugTypeDescription(String shortBugType) {
         BugCode bugCode = DetectorFactoryCollection.instance().lookupBugCode(shortBugType);
-        if (bugCode == null)
+        if (bugCode == null) {
             return L10N.getLocalString("err.missing_code", "Error: missing bug code for key") + " " + shortBugType;
+        }
         return bugCode.getDescription();
     }
 
@@ -219,8 +225,9 @@ public class I18N {
      */
     public List<String> getUserDesignationKeys(boolean sort) {
         List<String> result = getUserDesignationKeys();
-        if (sort)
+        if (sort) {
             Collections.sort(result, designationKeyComparator);
+        }
         return result;
     }
 
@@ -240,50 +247,62 @@ public class I18N {
         public int compare(String lKey, String rKey) {
             int lCat = categoryOf(lKey);
             int catDiff = lCat - categoryOf(rKey);
-            if (catDiff != 0 || lCat != 0)
+            if (catDiff != 0 || lCat != 0) {
                 return catDiff;
+            }
             // if we get this far we have two unrecognized strings
             return lKey.compareTo(rKey);
         }
 
         private static int categoryOf(String key) {
-            if (key == null)
+            if (key == null) {
                 return -30;
-            if (key.length() <= 0)
+            }
+            if (key.length() <= 0) {
                 return -29;
+            }
             switch (key.charAt(0)) {
             case 'U':
-                if ("UNCLASSIFIED".equals(key))
+                if ("UNCLASSIFIED".equals(key)) {
                     return 20;
+                }
                 break;
             case 'I':
-                if ("I_WILL_FIX".equals(key))
+                if ("I_WILL_FIX".equals(key)) {
                     return 12;
+                }
                 break;
 
             case 'B':
-                if ("BAD_ANALYSIS".equals(key))
+                if ("BAD_ANALYSIS".equals(key)) {
                     return 15;
+                }
                 break;
             case 'N':
-                if ("NEEDS_STUDY".equals(key))
+                if ("NEEDS_STUDY".equals(key)) {
                     return -22;
-                if ("NOT_A_BUG".equals(key))
+                }
+                if ("NOT_A_BUG".equals(key)) {
                     return -15;
+                }
                 break;
             case 'O':
-                if ("OBSOLETE_CODE".equals(key))
+                if ("OBSOLETE_CODE".equals(key)) {
                     return 30;
+                }
                 break;
             case 'M':
-                if ("MOSTLY_HARMLESS".equals(key))
+                if ("MOSTLY_HARMLESS".equals(key)) {
                     return -10;
-                if ("MUST_FIX".equals(key))
+                }
+                if ("MUST_FIX".equals(key)) {
                     return 10;
+                }
                 break;
             case 'S':
-                if ("SHOULD_FIX".equals(key))
+                if ("SHOULD_FIX".equals(key)) {
                     return 5;
+                }
             }
             return 0; // between MOSTLY_HARMLESS and SHOULD_FIX
         }
@@ -294,4 +313,3 @@ public class I18N {
 
 }
 
-// vim:ts=4

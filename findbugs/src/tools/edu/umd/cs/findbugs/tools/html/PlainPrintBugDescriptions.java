@@ -80,10 +80,10 @@ public class PlainPrintBugDescriptions extends PrintBugDescriptions {
 
     public static void main(String[] args) throws Exception {
         String docTitle = "FindBugs Bug Descriptions";
-        if (args.length > 0)
+        if (args.length > 0) {
             docTitle = args[0];
+        }
         new PlainPrintBugDescriptions(docTitle, System.out).print();
     }
 }
 
-// vim:ts=3

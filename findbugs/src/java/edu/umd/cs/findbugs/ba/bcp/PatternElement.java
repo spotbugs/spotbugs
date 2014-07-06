@@ -62,7 +62,7 @@ public abstract class PatternElement {
 
     /**
      * Set a label for this PatternElement.
-     * 
+     *
      * @param label
      *            the label
      * @return this object
@@ -74,7 +74,7 @@ public abstract class PatternElement {
 
     /**
      * Get the label of this PatternElement.
-     * 
+     *
      * @return the label, or null if the PatternElement is not labeled
      */
     public String getLabel() {
@@ -110,7 +110,7 @@ public abstract class PatternElement {
      * matched. By default, trailing edges may be matched. When this value is
      * set to false, it ensures that the successor instruction must be in the
      * same basic block.
-     * 
+     *
      * @param allowTrailingEdges
      *            true if trailing edges may be matched, false if trailing edges
      *            will never be matched
@@ -129,7 +129,7 @@ public abstract class PatternElement {
 
     /**
      * Look up a variable definition in given BindingSet.
-     * 
+     *
      * @param varName
      *            the name of the variable
      * @param bindingSet
@@ -137,8 +137,9 @@ public abstract class PatternElement {
      * @return the Variable, or null if no Variable is bound to the name
      */
     public static Variable lookup(String varName, BindingSet bindingSet) {
-        if (bindingSet == null)
+        if (bindingSet == null) {
             return null;
+        }
         Binding binding = bindingSet.lookup(varName);
         return (binding != null) ? binding.getVariable() : null;
     }
@@ -146,7 +147,7 @@ public abstract class PatternElement {
     /**
      * Return whether or not this element matches the given instruction with the
      * given Bindings in effect.
-     * 
+     *
      * @param handle
      *            the instruction
      * @param cpg
@@ -169,7 +170,7 @@ public abstract class PatternElement {
 
     /**
      * Return whether or not it is acceptable to take the given branch.
-     * 
+     *
      * @param edge
      *            the Edge representing the branch
      * @param source
@@ -193,7 +194,7 @@ public abstract class PatternElement {
     /**
      * Add a variable definition to the given BindingSet, or if there is an
      * existing definition, make sure it is consistent with the new definition.
-     * 
+     *
      * @param varName
      *            the name of the variable
      * @param variable
@@ -210,8 +211,9 @@ public abstract class PatternElement {
             bindingSet = new BindingSet(new Binding(varName, variable), bindingSet);
         } else {
             if (!existingVariable.sameAs(variable)) {
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.println("\tConflicting variable " + varName + ": " + variable + " != " + existingVariable);
+                }
                 return null;
             }
         }
@@ -231,4 +233,3 @@ public abstract class PatternElement {
     }
 }
 
-// vim:ts=4

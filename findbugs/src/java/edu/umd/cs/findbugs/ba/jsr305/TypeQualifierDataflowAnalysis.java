@@ -52,31 +52,37 @@ import edu.umd.cs.findbugs.util.ClassName;
 public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnalysis<TypeQualifierValueSet> {
 
     static String primitiveType (String simpleClass) {
-        if (simpleClass.equals("Integer"))
+        if (simpleClass.equals("Integer")) {
             return "int";
+        }
         return  simpleClass.toLowerCase();
     }
 
     static boolean isIdentifyFunctionForTypeQualifiers(XMethod m) {
         String className = m.getClassName();
-        if (!className.startsWith("java.lang"))
+        if (!className.startsWith("java.lang")) {
             return false;
+        }
         String methodName = m.getName();
 
         if (m.isStatic()) {
-            if (!methodName.equals("valueOf"))
+            if (!methodName.equals("valueOf")) {
                 return false;
+            }
             String signature = m.getSignature();
-            if (signature.charAt(2) != ')')
+            if (signature.charAt(2) != ')') {
                 return false;
+            }
         } else {
             String simpleClassName = ClassName.extractSimpleName(className);
 
-            if (!methodName.equals(primitiveType(simpleClassName) + "Value"))
+            if (!methodName.equals(primitiveType(simpleClassName) + "Value")) {
                 return false;
+            }
             String signature = m.getSignature();
-            if (signature.charAt(1) != ')')
+            if (signature.charAt(1) != ')') {
                 return false;
+            }
         }
         return true;
     }

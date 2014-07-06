@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 /**
  * An action applied by an entry in the ObligationPolicyDatabase. Adds or
  * removes an obligation.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ObligationPolicyDatabaseAction {

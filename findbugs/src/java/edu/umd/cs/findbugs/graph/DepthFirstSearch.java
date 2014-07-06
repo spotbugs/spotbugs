@@ -23,17 +23,17 @@ import java.util.Iterator;
 
 /**
  * Perform a forward depth first search of a graph.
- * 
+ *
  * @author David Hovemeyer
  * @see Graph
  * @see AbstractDepthFirstSearch
  */
 public class DepthFirstSearch<GraphType extends Graph<EdgeType, VertexType>, EdgeType extends GraphEdge<EdgeType, VertexType>, VertexType extends GraphVertex<VertexType>>
-        extends AbstractDepthFirstSearch<GraphType, EdgeType, VertexType> {
+extends AbstractDepthFirstSearch<GraphType, EdgeType, VertexType> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param graph
      *            the graph to perform a depth first search of
      */
@@ -58,4 +58,3 @@ public class DepthFirstSearch<GraphType extends Graph<EdgeType, VertexType>, Edg
 
 }
 
-// vim:ts=4

@@ -58,8 +58,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     public static final MethodInfo[] EMPTY_ARRAY = new MethodInfo[0];
 
     public static MethodInfo[] newArray(int sz) {
-        if (sz == 0)
+        if (sz == 0) {
             return EMPTY_ARRAY;
+        }
         return new MethodInfo[sz];
     }
 
@@ -89,7 +90,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         boolean hasBackBranch;
 
         boolean isIdentity;
-        
+
         boolean usesInvokeDynamic;
 
         int methodCallCount;
@@ -125,13 +126,15 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         }
 
         public void setVariableHasName(int p) {
-            if (p < 64)
+            if (p < 64) {
                 variableHasName |= 1 << p;
+            }
         }
 
         public void setVariableIsSynthetic(int p) {
-            if (p < 64)
+            if (p < 64) {
                 variableIsSynthetic |= 1 << p;
+            }
         }
 
         public void setUsesConcurrency() {
@@ -183,8 +186,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         }
 
         public MethodInfo build() {
-            if (variableHasName != 0)
+            if (variableHasName != 0) {
                 variableIsSynthetic |= (~variableHasName);
+            }
             return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags,
                     isUnconditionalThrower, isUnsupported, usesConcurrency, hasBackBranch, isStub, isIdentity,
                     usesInvokeDynamic, methodCallCount, exceptions, accessMethodForMethod,
@@ -210,7 +214,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         }
 
         /**
-         * 
+         *
          */
         public void setUsesInvokeDynamic() {
             usesInvokeDynamic = true;
@@ -230,7 +234,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     final boolean isStub;
 
     final String methodSourceSignature;
-    
+
     final @CheckForNull
     String[] exceptions;
 
@@ -239,16 +243,16 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations;
 
     public static class MethodInfoDatabase {
-         final IdentityHashMap<MethodInfo, Void> unconditionalThrowers = new IdentityHashMap<MethodInfo, Void>();
-         final IdentityHashMap<MethodInfo, Void> unsupportedMethods = new IdentityHashMap<MethodInfo, Void>();
-         final IdentityHashMap<MethodInfo, MethodDescriptor> accessMethodForMethod = new IdentityHashMap<MethodInfo, MethodDescriptor>();
-         final IdentityHashMap<MethodInfo, FieldDescriptor> accessMethodForField = new IdentityHashMap<MethodInfo, FieldDescriptor>();
-         final IdentityHashMap<MethodInfo, Void> identityMethods = new IdentityHashMap<MethodInfo, Void>();
-         final IdentityHashMap<MethodInfo, Void> invokeDynamicMethods = new IdentityHashMap<MethodInfo, Void>();
+        final IdentityHashMap<MethodInfo, Void> unconditionalThrowers = new IdentityHashMap<MethodInfo, Void>();
+        final IdentityHashMap<MethodInfo, Void> unsupportedMethods = new IdentityHashMap<MethodInfo, Void>();
+        final IdentityHashMap<MethodInfo, MethodDescriptor> accessMethodForMethod = new IdentityHashMap<MethodInfo, MethodDescriptor>();
+        final IdentityHashMap<MethodInfo, FieldDescriptor> accessMethodForField = new IdentityHashMap<MethodInfo, FieldDescriptor>();
+        final IdentityHashMap<MethodInfo, Void> identityMethods = new IdentityHashMap<MethodInfo, Void>();
+        final IdentityHashMap<MethodInfo, Void> invokeDynamicMethods = new IdentityHashMap<MethodInfo, Void>();
 
     }
 
-     /**
+    /**
      * @return Returns the database.
      */
     static MethodInfoDatabase getDatabase() {
@@ -287,20 +291,26 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         super(className, methodName, methodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
         this.accessFlags = accessFlags;
         this.exceptions = exceptions;
-        if (exceptions != null)
-            for (int i = 0; i < exceptions.length; i++)
+        if (exceptions != null) {
+            for (int i = 0; i < exceptions.length; i++) {
                 exceptions[i] = DescriptorFactory.canonicalizeString(exceptions[i]);
+            }
+        }
         this.methodSourceSignature = DescriptorFactory.canonicalizeString(methodSourceSignature);
         this.methodAnnotations = Util.immutableMap(methodAnnotations);
         this.methodParameterAnnotations = Util.immutableMap(methodParameterAnnotations);
-        if (isUnconditionalThrower)
+        if (isUnconditionalThrower) {
             getUnconditionalthrowers().put(this, null);
-        if (isUnsupported)
+        }
+        if (isUnsupported) {
             getUnconditionalthrowers().put(this, null);
-        if (accessMethodForMethod != null)
+        }
+        if (accessMethodForMethod != null) {
             getAccessmethodformethod().put(this, accessMethodForMethod);
-        if (accessMethodForField!= null)
+        }
+        if (accessMethodForField!= null) {
             getAccessmethodforfield().put(this, accessMethodForField);
+        }
         if (isIdentity) {
             getIdentitymethods().put(this, null);
         }
@@ -332,7 +342,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     public boolean isIdentity() {
         return getIdentitymethods().containsKey(this);
     }
-    
+
     @Override
     public boolean usesInvokeDynamic() {
         return getInvokeDynamicMethods().containsKey(this);
@@ -351,7 +361,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     @Override
     public boolean isVariableSynthetic(int param) {
-        if (param >= 64) return false;
+        if (param >= 64) {
+            return false;
+        }
         return (variableIsSynthetic & (1 << param)) != 0;
     }
 
@@ -418,7 +430,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
             return FieldOrMethodDescriptor.compareTo(this, (MethodDescriptor) rhs);
         }
 
-         if (rhs instanceof XMethod) {
+        if (rhs instanceof XMethod) {
             return XFactory.compare((XMethod) this, (XMethod) rhs);
         }
 
@@ -498,8 +510,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     @Override
     public Collection<ClassDescriptor> getParameterAnnotationDescriptors(int param) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
-        if (map == null)
+        if (map == null) {
             return Collections.<ClassDescriptor> emptySet();
+        }
         return map.keySet();
     }
 
@@ -507,21 +520,23 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     public boolean hasParameterAnnotations() {
         return !methodParameterAnnotations.isEmpty();
     }
-    
+
     @Override
     public @Nullable
     AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
-        if (map == null)
+        if (map == null) {
             return null;
+        }
         return map.get(desc);
     }
 
     @Override
     public Collection<AnnotationValue> getParameterAnnotations(int param) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
-        if (map == null)
+        if (map == null) {
             return Collections.<AnnotationValue> emptySet();
+        }
         return map.values();
     }
 
@@ -593,8 +608,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     @Override
     public ElementType getElementType() {
-        if (getName().equals("<init>"))
+        if (getName().equals("<init>")) {
             return ElementType.CONSTRUCTOR;
+        }
         return ElementType.METHOD;
     }
 
@@ -672,8 +688,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     @Override
     public XMethod resolveAccessMethodForMethod() {
         MethodDescriptor access = getAccessMethodForMethod();
-        if (access != null)
+        if (access != null) {
             return XFactory.createXMethod(access);
+        }
         return this;
     }
 }

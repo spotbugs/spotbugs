@@ -34,11 +34,11 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
  * instructions.
  */
 public class IOStreamFactory implements StreamFactory {
-    private ObjectType baseClassType;
+    private final ObjectType baseClassType;
 
-    private ObjectType[] uninterestingSubclassTypeList;
+    private final ObjectType[] uninterestingSubclassTypeList;
 
-    private String bugType;
+    private final String bugType;
 
     @Override
     public String toString() {
@@ -60,8 +60,9 @@ public class IOStreamFactory implements StreamFactory {
         try {
             Instruction ins = location.getHandle().getInstruction();
 
-            if (ins.getOpcode() != Constants.NEW)
+            if (ins.getOpcode() != Constants.NEW) {
                 return null;
+            }
 
             if (Hierarchy.isSubtype(type, baseClassType)) {
                 boolean isUninteresting = false;
@@ -72,9 +73,10 @@ public class IOStreamFactory implements StreamFactory {
                     }
                 }
                 Stream result = new Stream(location, type.getClassName(), baseClassType.getClassName())
-                        .setIgnoreImplicitExceptions(true);
-                if (!isUninteresting)
+                .setIgnoreImplicitExceptions(true);
+                if (!isUninteresting) {
                     result.setInteresting(bugType);
+                }
                 return result;
             }
         } catch (ClassNotFoundException e) {
@@ -85,4 +87,3 @@ public class IOStreamFactory implements StreamFactory {
     }
 }
 
-// vim:ts=3

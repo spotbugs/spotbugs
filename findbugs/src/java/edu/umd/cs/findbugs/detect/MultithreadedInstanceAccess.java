@@ -44,7 +44,7 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
 
     private static final String SERVLET_NAME = "javax.servlet.Servlet";
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private Set<JavaClass> mtClasses;
 
@@ -61,8 +61,9 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
     }
 
     private Set<JavaClass> getMtClasses() {
-        if (mtClasses != null)
+        if (mtClasses != null) {
             return mtClasses;
+        }
 
         mtClasses = new HashSet<JavaClass>();
         try {
@@ -84,8 +85,9 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
         try {
             JavaClass cls = classContext.getJavaClass();
             String superClsName = cls.getSuperclassName();
-            if ("java.lang.Object".equals(superClsName))
+            if ("java.lang.Object".equals(superClsName)) {
                 return;
+            }
 
             if (STRUTS_ACTION_NAME.equals(superClsName)) {
                 mtClassName = STRUTS_ACTION_NAME;
@@ -124,17 +126,18 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
         writingField = false;
     }
 
-    
+
     @Override
     public boolean shouldVisitCode(Code code) {
         return !getMethodName().equals("<init>") && !getMethodName().equals("init");
-            
+
     }
 
     @Override
     public void sawField() {
-        if ((monitorCount > 0) || (!writingField))
+        if ((monitorCount > 0) || (!writingField)) {
             return;
+        }
 
         ConstantFieldref fieldRef;
         Constant c = getConstantRefOperand();
@@ -156,15 +159,16 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
                             ConstantUtf8 nameCons = (ConstantUtf8) cp.getConstant(nameIdx);
                             ConstantUtf8 typeCons = (ConstantUtf8) cp.getConstant(ntc.getSignatureIndex());
 
-                            if (alreadyReported.contains(nameCons.getBytes()))
+                            if (alreadyReported.contains(nameCons.getBytes())) {
                                 return;
+                            }
                             alreadyReported.add(nameCons.getBytes());
                             bugReporter.reportBug(new BugInstance(this,
                                     STRUTS_ACTION_NAME.equals(mtClassName) ? "MTIA_SUSPECT_STRUTS_INSTANCE_FIELD"
                                             : "MTIA_SUSPECT_SERVLET_INSTANCE_FIELD", LOW_PRIORITY)
-                                    .addField(
-                                            new FieldAnnotation(getDottedClassName(), nameCons.getBytes(), typeCons.getBytes(),
-                                                    false)).addClass(this).addSourceLine(this));
+                            .addField(
+                                    new FieldAnnotation(getDottedClassName(), nameCons.getBytes(), typeCons.getBytes(),
+                                            false)).addClass(this).addSourceLine(this));
                         }
                         break;
                     }
@@ -175,10 +179,11 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == MONITORENTER)
+        if (seen == MONITORENTER) {
             monitorCount++;
-        else if (seen == MONITOREXIT)
+        } else if (seen == MONITOREXIT) {
             monitorCount--;
+        }
 
         writingField = ((seen == PUTFIELD) || (seen == PUTFIELD_QUICK) || (seen == PUTFIELD_QUICK_W));
     }

@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 /**
  * A wildcard PatternElement, which matches any kind of instruction
  * indiscriminately.
- * 
+ *
  * @author David Hovemeyer
  * @see PatternElement
  */
@@ -48,7 +48,7 @@ public class Wild extends PatternElement {
     /**
      * Constructor. Matches any number of instructions from 0 to the maximum
      * specified.
-     * 
+     *
      * @param max
      *            the maximum number of instructions the wildcard may match
      */
@@ -59,7 +59,7 @@ public class Wild extends PatternElement {
 
     /**
      * Constructor.
-     * 
+     *
      * @param min
      *            minimum number of times the wildcard must match
      * @param max
@@ -72,7 +72,7 @@ public class Wild extends PatternElement {
 
     /**
      * Set min and max values.
-     * 
+     *
      * @param min
      *            minimum number of times the wildcard must match
      * @param max
@@ -105,4 +105,3 @@ public class Wild extends PatternElement {
     }
 }
 
-// vim:ts=4

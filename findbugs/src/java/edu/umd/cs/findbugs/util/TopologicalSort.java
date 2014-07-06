@@ -83,19 +83,22 @@ public class TopologicalSort {
     }
 
     public static <E> void countBadEdges(List<E> elements, OutEdges<E> outEdges) {
-        if (!DEBUG)
+        if (!DEBUG) {
             return;
+        }
         HashSet<E> seen = new HashSet<E>();
         HashSet<E> all = new HashSet<E>(elements);
         int result = 0;
         int total = 0;
         for (E e : elements) {
-            for (E e2 : outEdges.getOutEdges(e))
+            for (E e2 : outEdges.getOutEdges(e)) {
                 if (e != e2 && all.contains(e2) && !outEdges.getOutEdges(e2).contains(e)) {
                     total++;
-                    if (!seen.contains(e2))
+                    if (!seen.contains(e2)) {
                         result++;
+                    }
                 }
+            }
             seen.add(e);
         }
         System.out.println(" bad edges are " + result + "/" + total);
@@ -123,18 +126,22 @@ public class TopologicalSort {
 
         @Override
         public List<E> compute() {
-            for (E e : consider)
+            for (E e : consider) {
                 visit(e);
+            }
             return result;
         }
 
         void visit(E e) {
-            if (!consider.contains(e))
+            if (!consider.contains(e)) {
                 return;
-            if (!visited.add(e))
+            }
+            if (!visited.add(e)) {
                 return;
-            for (E e2 : outEdges.getOutEdges(e))
+            }
+            for (E e2 : outEdges.getOutEdges(e)) {
                 visit(e2);
+            }
 
             result.add(e);
         }
@@ -142,8 +149,9 @@ public class TopologicalSort {
 
     static class Worker2<E> implements SortAlgorithm<E> {
         Worker2(Collection<E> consider, OutEdges<E> outEdges) {
-            if (outEdges == null)
+            if (outEdges == null) {
                 throw new IllegalArgumentException("outEdges must not be null");
+            }
             this.consider = new LinkedHashSet<E>(consider);
             this.outEdges = outEdges;
 
@@ -178,12 +186,14 @@ public class TopologicalSort {
             iEdges = new MultiMap<E, E>(LinkedList.class);
             oEdges = new MultiMap<E, E>(LinkedList.class);
 
-            for (E e : consider)
-                for (E e2 : outEdges.getOutEdges(e))
+            for (E e : consider) {
+                for (E e2 : outEdges.getOutEdges(e)) {
                     if (e != e2 && consider.contains(e2)) {
                         iEdges.add(e2, e);
                         oEdges.add(e, e2);
                     }
+                }
+            }
             for (E e : consider) {
                 HashSet<E> both = new HashSet<E>(iEdges.get(e));
                 both.retainAll(oEdges.get(e));
@@ -201,15 +211,17 @@ public class TopologicalSort {
                     if (oEdges.get(e).isEmpty()) {
                         doFirst.add(e);
                         removeVertex(e);
-                        if (DEBUG)
+                        if (DEBUG) {
                             System.out.println("do " + e + " first");
+                        }
                         i.remove();
                         foundSomething = true;
                     } else if (iEdges.get(e).isEmpty()) {
                         doLast.add(e);
                         removeVertex(e);
-                        if (DEBUG)
+                        if (DEBUG) {
                             System.out.println("do " + e + " last");
+                        }
                         i.remove();
                         foundSomething = true;
                     } else {
@@ -253,8 +265,9 @@ public class TopologicalSort {
             int myScore = score(e);
             if (outEdges instanceof OutEdges2) {
                 int score2 = ((OutEdges2<E>) outEdges).score(e);
-                if (score2 > 1)
+                if (score2 > 1) {
                     score2 += 11;
+                }
                 myScore = 5 * myScore + score2;
             }
             return myScore;
@@ -266,16 +279,20 @@ public class TopologicalSort {
          */
         private int score(E e) {
             int myScore = 0;
-            for (E e2 : oEdges.get(e))
-                if (iEdges.get(e2).size() == 1)
+            for (E e2 : oEdges.get(e)) {
+                if (iEdges.get(e2).size() == 1) {
                     myScore -= 2;
-                else
+                } else {
                     myScore -= 1;
-            for (E e2 : iEdges.get(e))
-                if (oEdges.get(e2).size() == 1)
+                }
+            }
+            for (E e2 : iEdges.get(e)) {
+                if (oEdges.get(e2).size() == 1) {
                     myScore += 2;
-                else
+                } else {
                     myScore += 1;
+                }
+            }
             return myScore;
         }
 

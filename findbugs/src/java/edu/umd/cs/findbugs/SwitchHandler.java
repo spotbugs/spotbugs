@@ -37,19 +37,21 @@ public class SwitchHandler {
     public SwitchHandler() {
         switchOffsetStack = new ArrayList<SwitchDetails>();
     }
-    
+
     public int stackSize() {
         return switchOffsetStack.size();
     }
     int numEnumValues(@CheckForNull XClass c) {
-        if (c == null)
+        if (c == null) {
             return -1;
+        }
         int total = 0;
         String enumSignature = ClassName.toSignature(c.getClassDescriptor().getClassName());
         for(XField f : c.getXFields()) {
             if (f.getSignature().equals(enumSignature)
-                    && f.isPublic() && f.isFinal())
+                    && f.isPublic() && f.isFinal()) {
                 total++;
+            }
         }
         return total;
     }
@@ -60,20 +62,22 @@ public class SwitchHandler {
         int[] switchOffsets = dbc.getSwitchOffsets();
         SwitchDetails details = new SwitchDetails(dbc.getPC(), switchOffsets, dbc.getDefaultSwitchOffset(), switchOffsets.length == numEnumValues(enumType));
 
-        
+
         int size = switchOffsetStack.size();
         while (--size >= 0) {
             SwitchDetails existingDetail = switchOffsetStack.get(size);
-            if (details.switchPC > (existingDetail.switchPC + existingDetail.swOffsets[existingDetail.swOffsets.length - 1]))
+            if (details.switchPC > (existingDetail.switchPC + existingDetail.swOffsets[existingDetail.swOffsets.length - 1])) {
                 switchOffsetStack.remove(size);
+            }
         }
         switchOffsetStack.add(details);
     }
 
     public boolean isOnSwitchOffset(DismantleBytecode dbc) {
         int pc = dbc.getPC();
-        if (pc == getDefaultOffset())
+        if (pc == getDefaultOffset()) {
             return false;
+        }
 
         return (pc == getNextSwitchOffset(dbc));
     }
@@ -84,11 +88,13 @@ public class SwitchHandler {
             SwitchDetails details = switchOffsetStack.get(size - 1);
 
             int nextSwitchOffset = details.getNextSwitchOffset(dbc.getPC());
-            if (nextSwitchOffset >= 0)
+            if (nextSwitchOffset >= 0) {
                 return nextSwitchOffset;
+            }
 
-            if (dbc.getPC() <= details.getDefaultOffset())
+            if (dbc.getPC() <= details.getDefaultOffset()) {
                 return -1;
+            }
             switchOffsetStack.remove(size - 1);
             size--;
         }
@@ -98,16 +104,18 @@ public class SwitchHandler {
 
     public int getDefaultOffset() {
         int size = switchOffsetStack.size();
-        if (size == 0)
+        if (size == 0) {
             return -1;
+        }
 
         SwitchDetails details = switchOffsetStack.get(size - 1);
         return details.getDefaultOffset();
     }
 
     public SourceLineAnnotation getCurrentSwitchStatement(BytecodeScanningDetector detector) {
-        if (switchOffsetStack.isEmpty())
+        if (switchOffsetStack.isEmpty()) {
             throw new IllegalStateException("No current switch statement");
+        }
         SwitchDetails details = switchOffsetStack.get(switchOffsetStack.size()-1);
         return SourceLineAnnotation.fromVisitedInstructionRange(
                 detector.getClassContext(), detector, details.switchPC, details.switchPC + details.maxOffset-1);
@@ -121,7 +129,7 @@ public class SwitchHandler {
         final int maxOffset;
 
         int nextOffset;
-        
+
         final boolean exhaustive;
 
         public SwitchDetails(int pc, int[] offsets, int defOffset, boolean exhaustive) {
@@ -130,8 +138,9 @@ public class SwitchHandler {
             int lastValue = -1;
             int maxOffset = defOffset;
             for (int offset : offsets) {
-                if (maxOffset < offset)
+                if (maxOffset < offset) {
                     maxOffset = offset;
+                }
                 if (offset == defOffset) {
                     exhaustive = false;
                 }
@@ -157,18 +166,21 @@ public class SwitchHandler {
         }
 
         public int getNextSwitchOffset(int currentPC) {
-            while ((nextOffset < swOffsets.length) && (currentPC > (switchPC + swOffsets[nextOffset])))
+            while ((nextOffset < swOffsets.length) && (currentPC > (switchPC + swOffsets[nextOffset]))) {
                 nextOffset++;
+            }
 
-            if (nextOffset >= swOffsets.length)
+            if (nextOffset >= swOffsets.length) {
                 return -1;
+            }
 
             return switchPC + swOffsets[nextOffset];
         }
 
         public int getDefaultOffset() {
-            if (exhaustive)
+            if (exhaustive) {
                 return Short.MIN_VALUE;
+            }
             return switchPC + defaultOffset;
         }
     }

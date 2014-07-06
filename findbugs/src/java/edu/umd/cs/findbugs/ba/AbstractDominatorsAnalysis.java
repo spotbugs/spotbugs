@@ -41,7 +41,7 @@ import org.apache.bcel.generic.InstructionHandle;
  * An EdgeChooser may be specified to select which edges to take into account.
  * For example, exception edges could be ignored.
  * </p>
- * 
+ *
  * @author David Hovemeyer
  * @see DataflowAnalysis
  * @see CFG
@@ -50,11 +50,11 @@ import org.apache.bcel.generic.InstructionHandle;
 public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAnalysis<BitSet> {
     private final CFG cfg;
 
-    private EdgeChooser edgeChooser;
+    private final EdgeChooser edgeChooser;
 
     /**
      * Constructor.
-     * 
+     *
      * @param cfg
      *            the CFG to compute dominator relationships for
      * @param ignoreExceptionEdges
@@ -64,17 +64,18 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
         this(cfg, new EdgeChooser() {
             @Override
             public boolean choose(Edge edge) {
-                if (ignoreExceptionEdges && edge.isExceptionEdge())
+                if (ignoreExceptionEdges && edge.isExceptionEdge()) {
                     return false;
-                else
+                } else {
                     return true;
+                }
             }
         });
     }
 
     /**
      * Constructor.
-     * 
+     *
      * @param cfg
      *            the CFG to compute dominator relationships for
      * @param edgeChooser
@@ -133,22 +134,24 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
 
     @Override
     public void meetInto(BitSet fact, Edge edge, BitSet result) throws DataflowAnalysisException {
-        if (!edgeChooser.choose(edge))
+        if (!edgeChooser.choose(edge)) {
             return;
+        }
 
-        if (isTop(fact))
+        if (isTop(fact)) {
             return;
-        else if (isTop(result))
+        } else if (isTop(result)) {
             copy(fact, result);
-        else
+        } else {
             // Meet is intersection
             result.and(fact);
+        }
     }
 
     /**
      * Get a bitset containing the unique IDs of all blocks which dominate (or
      * postdominate) the given block.
-     * 
+     *
      * @param block
      *            a BasicBlock
      * @return BitSet of the unique IDs of all blocks that dominate (or
@@ -161,7 +164,7 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
     /**
      * Get a bitset containing the unique IDs of all blocks in CFG dominated (or
      * postdominated, depending on how the analysis was done) by given block.
-     * 
+     *
      * @param dominator
      *            we want to get all blocks dominated (or postdominated) by this
      *            block
@@ -172,12 +175,12 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
         for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext();) {
             BasicBlock block = i.next();
             BitSet dominators = getResultFact(block);
-            if (dominators.get(dominator.getLabel()))
+            if (dominators.get(dominator.getLabel())) {
                 allDominated.set(block.getLabel());
+            }
         }
         return allDominated;
     }
 
 }
 
-// vim:ts=4

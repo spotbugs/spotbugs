@@ -21,13 +21,13 @@ package edu.umd.cs.findbugs.model;
 
 /**
  * Rewrite class names. This is needed for comparing warnings across versions.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface ClassNameRewriter {
     /**
      * Rewrite a class name.
-     * 
+     *
      * @param className
      *            a class name
      * @return the rewritten class name

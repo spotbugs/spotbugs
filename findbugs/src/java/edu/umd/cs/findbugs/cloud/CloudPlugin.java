@@ -46,8 +46,8 @@ public class CloudPlugin {
     final boolean hidden;
 
     public CloudPlugin(String findbugsPluginId, String cloudid, ClassLoader classLoader, Class<? extends Cloud> cloudClass,
-                       Class<? extends NameLookup> usernameClass, boolean hidden, PropertyBundle properties, String description,
-                       String details) {
+            Class<? extends NameLookup> usernameClass, boolean hidden, PropertyBundle properties, String description,
+            String details) {
         this.findbugsPluginId = findbugsPluginId;
         this.cloudid = cloudid;
         this.classLoader = classLoader;
@@ -99,7 +99,7 @@ public class CloudPlugin {
     public String toString() {
         return getDescription();
     }
-    
+
     public boolean isOnline() {
         return OnlineCloud.class.isAssignableFrom(cloudClass);
     }

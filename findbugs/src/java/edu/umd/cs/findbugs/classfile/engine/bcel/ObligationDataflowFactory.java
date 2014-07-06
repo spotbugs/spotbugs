@@ -39,7 +39,7 @@ import edu.umd.cs.findbugs.log.Profiler;
 
 /**
  * Analysis factory which creates instances of ObligationDataflow.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ObligationDataflowFactory extends AnalysisFactory<ObligationDataflow> {

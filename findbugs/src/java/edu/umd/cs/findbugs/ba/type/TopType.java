@@ -23,7 +23,7 @@ import org.apache.bcel.generic.Type;
 
 /**
  * Special "top" type. It is the identity element for the type merge operation.
- * 
+ *
  * @author David Hovemeyer
  * @see TypeAnalysis
  * @see TypeFrame
@@ -59,4 +59,3 @@ public class TopType extends Type implements ExtendedTypes {
     }
 }
 
-// vim:ts=4

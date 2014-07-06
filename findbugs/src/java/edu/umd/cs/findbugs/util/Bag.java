@@ -26,7 +26,7 @@ import java.util.Set;
 
 /**
  * Simple implementation of a Bag
- * 
+ *
  * @author pugh
  */
 public class Bag<E> {
@@ -42,19 +42,21 @@ public class Bag<E> {
 
     public boolean add(E e) {
         Integer v = map.get(e);
-        if (v == null)
+        if (v == null) {
             map.put(e, 1);
-        else
+        } else {
             map.put(e, v + 1);
+        }
         return true;
     }
 
     public boolean add(E e, int count) {
         Integer v = map.get(e);
-        if (v == null)
+        if (v == null) {
             map.put(e, count);
-        else
+        } else {
             map.put(e, v + count);
+        }
         return true;
     }
 
@@ -68,10 +70,11 @@ public class Bag<E> {
 
     public int getCount(E e) {
         Integer v = map.get(e);
-        if (v == null)
+        if (v == null) {
             return 0;
-        else
+        } else {
             return v;
+        }
     }
 
 }

@@ -31,14 +31,14 @@ import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 /**
  * Adapter to produce the ClassContext for a given class. This is
  * backwards-compatibility for the BCEL-based analysis framework.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassContextClassAnalysisEngine extends RecomputableClassAnalysisEngine<ClassContext> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
@@ -53,7 +53,7 @@ public class ClassContextClassAnalysisEngine extends RecomputableClassAnalysisEn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)

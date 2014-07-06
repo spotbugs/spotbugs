@@ -91,8 +91,9 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
     @Override
     public void visit(Code obj) {
-        if (DEBUG)
+        if (DEBUG) {
             System.out.printf("%nVisiting %s%n", getMethodDescriptor());
+        }
         reachable = false;
         lastPC = 0;
         biggestJumpTarget = -1;
@@ -106,10 +107,12 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         super.visit(obj);
         enumType = null;
         if (!found.isEmpty()) {
-            if (found.size() >= 4 && priority == NORMAL_PRIORITY)
+            if (found.size() >= 4 && priority == NORMAL_PRIORITY) {
                 priority = LOW_PRIORITY;
-            for (SourceLineAnnotation s : found)
+            }
+            for (SourceLineAnnotation s : found) {
                 bugAccumulator.accumulateBug(new BugInstance(this, "SF_SWITCH_FALLTHROUGH", priority).addClassAndMethod(this), s);
+            }
         }
 
         bugAccumulator.reportAccumulatedBugs();
@@ -123,12 +126,14 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             int prev = Integer.MIN_VALUE;
             for (LineNumber ln : table.getLineNumberTable()) {
                 int thisLineNumber = ln.getLineNumber();
-                if (thisLineNumber < startLine && thisLineNumber > prev && ln.getStartPC() < s.getStartBytecode())
+                if (thisLineNumber < startLine && thisLineNumber > prev && ln.getStartPC() < s.getStartBytecode()) {
                     prev = thisLineNumber;
+                }
             }
             int diff = startLine - prev;
-            if (diff > 5)
+            if (diff > 5) {
                 return;
+            }
 
             bugAccumulator.accumulateBug(new BugInstance(this, "SF_SWITCH_NO_DEFAULT", NORMAL_PRIORITY).addClassAndMethod(this),
                     s);
@@ -144,13 +149,13 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         boolean isCaseOffset = switchHdlr.isOnSwitchOffset(this);
 
         if (DEBUG) {
-            if (seen == GOTO)
+            if (seen == GOTO) {
                 System.out.printf("%4d: goto %-7d %s %s %s %d%n", getPC(), getBranchTarget(), reachable, isCaseOffset,
                         isDefaultOffset, switchHdlr.stackSize());
-
-            else
+            } else {
                 System.out.printf("%4d: %-12s %s %s %s %d%n", getPC(), OPCODE_NAMES[seen], reachable, isCaseOffset,
                         isDefaultOffset, switchHdlr.stackSize());
+            }
         }
 
         if (reachable && (isDefaultOffset || isCaseOffset)) {
@@ -167,8 +172,9 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                     found.add(sourceLineAnnotation);
                 } else if ( getPC() >= biggestJumpTarget) {
                     SourceLineAnnotation sourceLineAnnotation = switchHdlr.getCurrentSwitchStatement(this);
-                    if (DEBUG)
+                    if (DEBUG) {
                         System.out.printf("Found fallthrough to default offset at %d (BJT is %d)%n", getPC(), biggestJumpTarget);
+                    }
 
                     foundSwitchNoDefault(sourceLineAnnotation);
                 }
@@ -183,8 +189,9 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         if (seen == GETFIELD && stack.getStackDepth() > 0) {
             OpcodeStack.Item top = stack.getStackItem(0);
-            if (top.getRegisterNumber() == 0)
+            if (top.getRegisterNumber() == 0) {
                 potentiallyDeadFields.remove(getXFieldOperand());
+            }
         }
 
         else if (seen == PUTFIELD && stack.getStackDepth() >= 2) {
@@ -195,7 +202,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                     // killed store
                     priority = HIGH_PRIORITY;
                     bugAccumulator.accumulateBug(new BugInstance(this, "SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH", priority)
-                            .addClassAndMethod(this).addField(f), this);
+                    .addClassAndMethod(this).addField(f), this);
 
                 }
                 potentiallyDeadFields.add(f);
@@ -220,17 +227,16 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             clearAllDeadStores();
         }
 
-        if (isRegisterLoad())
+        if (isRegisterLoad()) {
             potentiallyDeadStores.clear(getRegisterOperand());
-
-        else if (isRegisterStore() && !atCatchBlock()) {
+        } else if (isRegisterStore() && !atCatchBlock()) {
             int register = getRegisterOperand();
             if (potentiallyDeadStores.get(register) && (potentiallyDeadStoresFromBeforeFallthrough.get(register))) {
                 // killed store
                 priority = HIGH_PRIORITY;
                 deadStore = LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC() - 1, getPC());
                 bugAccumulator.accumulateBug(new BugInstance(this, "SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH", priority)
-                        .addClassAndMethod(this).add(deadStore), this);
+                .addClassAndMethod(this).add(deadStore), this);
 
             }
             potentiallyDeadStores.set(register);
@@ -241,32 +247,39 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             XClass c = getXClassOperand();
             if (c != null) {
                 ClassDescriptor superclassDescriptor = c.getSuperclassDescriptor();
-                if (superclassDescriptor != null && superclassDescriptor.getClassName().equals("java/lang/Enum"))
+                if (superclassDescriptor != null && superclassDescriptor.getClassName().equals("java/lang/Enum")) {
                     enumType = c;
-                if (DEBUG)
+                }
+                if (DEBUG) {
                     System.out.println("Saw " + enumType + ".ordinal()");
+                }
             }
-        } else if (seen != TABLESWITCH && seen != LOOKUPSWITCH && seen != IALOAD)
+        } else if (seen != TABLESWITCH && seen != LOOKUPSWITCH && seen != IALOAD) {
             enumType = null;
+        }
 
         switch (seen) {
         case TABLESWITCH:
         case LOOKUPSWITCH:
             if (justSawHashcode)
+            {
                 break; // javac compiled switch statement
+            }
             reachable = false;
             biggestJumpTarget = -1;
             switchHdlr.enterSwitch(this, enumType);
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.printf("  entered switch, default is %d%n", switchHdlr.getDefaultOffset());
+            }
             break;
 
         case GOTO_W:
         case GOTO:
             if (biggestJumpTarget < getBranchTarget()) {
                 biggestJumpTarget = getBranchTarget();
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.printf("  Setting BJT to %d%n", biggestJumpTarget);
+                }
             }
 
             reachable = false;
@@ -316,18 +329,21 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
                 int startLine = srcLine.getStartLine();
                 int numLines = srcLine.getEndLine() - startLine - 1;
-                if (numLines <= 0)
+                if (numLines <= 0) {
                     return false;
+                }
                 r = UTF8.bufferedReader(sourceFile.getInputStream());
                 for (int i = 0; i < startLine; i++) {
                     String line = r.readLine();
-                    if (line == null)
+                    if (line == null) {
                         return false;
+                    }
                 }
                 for (int i = 0; i < numLines; i++) {
                     String line = r.readLine();
-                    if (line == null)
+                    if (line == null) {
                         return false;
+                    }
                     line = line.toLowerCase();
                     if (line.indexOf("fall") >= 0 || line.indexOf("nobreak") >= 0) {
                         return true;
@@ -337,8 +353,9 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                 // Problems with source file, mean report the bug
             } finally {
                 try {
-                    if (r != null)
+                    if (r != null) {
                         r.close();
+                    }
                 } catch (IOException ioe) {
                 }
             }

@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.ba.bcp.PatternMatcher;
  * A base class for bug detectors that are based on a ByteCodePattern.
  * ByteCodePatterns provide an easy way to detect patterns of bytecode
  * instructions, taking into account control flow and uses of fields and values.
- * 
+ *
  * @see ByteCodePattern
  */
 public abstract class ByteCodePatternDetector implements Detector {
@@ -55,11 +55,13 @@ public abstract class ByteCodePatternDetector implements Detector {
             Method[] methodList = jclass.getMethods();
 
             for (Method method : methodList) {
-                if (method.isAbstract() || method.isNative())
+                if (method.isAbstract() || method.isNative()) {
                     continue;
+                }
 
-                if (METHOD != null && !method.getName().equals(METHOD))
+                if (METHOD != null && !method.getName().equals(METHOD)) {
                     continue;
+                }
 
                 if (DEBUG) {
                     System.out.print("=====================================================================\n" + "Method "
@@ -67,12 +69,14 @@ public abstract class ByteCodePatternDetector implements Detector {
                             + "=====================================================================\n");
                 }
 
-                if (!prescreen(method, classContext))
+                if (!prescreen(method, classContext)) {
                     continue;
+                }
 
                 MethodGen methodGen = classContext.getMethodGen(method);
-                if (methodGen == null)
+                if (methodGen == null) {
                     continue;
+                }
 
                 PatternMatcher matcher = new PatternMatcher(pattern, classContext, method);
                 matcher.execute();
@@ -132,7 +136,7 @@ public abstract class ByteCodePatternDetector implements Detector {
      * As a datapoint, prescreening speeds up the BCPDoubleCheck detector <b>by
      * a factor of 5</b> with no loss of generality and only a dozen or so extra
      * lines of code.
-     * 
+     *
      * @param method
      *            the method
      * @param classContext
@@ -144,7 +148,7 @@ public abstract class ByteCodePatternDetector implements Detector {
 
     /**
      * Called to report an instance of the ByteCodePattern.
-     * 
+     *
      * @param classContext
      *            the ClassContext for the analyzed class
      * @param method
@@ -157,4 +161,3 @@ public abstract class ByteCodePatternDetector implements Detector {
             throws CFGBuilderException, DataflowAnalysisException;
 }
 
-// vim:ts=4

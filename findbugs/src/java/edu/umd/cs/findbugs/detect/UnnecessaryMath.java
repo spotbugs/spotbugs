@@ -112,8 +112,9 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
     public void visit(Code obj) {
         // Don't complain about unnecessary math calls in class initializers,
         // since they may be there to improve readability.
-        if (getMethod().getName().equals("<clinit>"))
+        if (getMethod().getName().equals("<clinit>")) {
             return;
+        }
 
         state = SEEN_NOTHING;
         super.visit(obj);
@@ -128,14 +129,15 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
             } else if ((seen == LDC2_W) || (seen == LDC_W)) {
                 state = SEEN_DCONST;
                 Constant c = this.getConstantRefOperand();
-                if (c instanceof ConstantDouble)
+                if (c instanceof ConstantDouble) {
                     constValue = ((ConstantDouble) c).getBytes();
-                else if (c instanceof ConstantFloat)
+                } else if (c instanceof ConstantFloat) {
                     constValue = ((ConstantFloat) c).getBytes();
-                else if (c instanceof ConstantLong)
+                } else if (c instanceof ConstantLong) {
                     constValue = ((ConstantLong) c).getBytes();
-                else
+                } else {
                     state = SEEN_NOTHING;
+                }
             }
         } else if (state == SEEN_DCONST) {
             if (seen == INVOKESTATIC) {
@@ -155,4 +157,3 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
     }
 }
 
-// vim:ts=4

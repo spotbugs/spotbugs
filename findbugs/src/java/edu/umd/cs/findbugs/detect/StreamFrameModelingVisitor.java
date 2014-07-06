@@ -37,9 +37,9 @@ import edu.umd.cs.findbugs.ba.ResourceValueFrameModelingVisitor;
  * (in this case, Streams).
  */
 public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisitor {
-    private StreamResourceTracker resourceTracker;
+    private final StreamResourceTracker resourceTracker;
 
-    private Stream stream;
+    private final Stream stream;
 
     private Location location;
 
@@ -88,8 +88,9 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
         // If needed, update frame status
         if (status != -1) {
             frame.setStatus(status);
-            if (created)
+            if (created) {
                 frame.setValue(frame.getNumSlots() - 1, ResourceValue.instance());
+            }
         }
 
     }
@@ -107,25 +108,28 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
         String methodSig = inv.getSignature(cpg);
         if (inv.getOpcode() == Constants.INVOKEVIRTUAL
                 && (methodName.equals("load") || methodName.equals("loadFromXml") || methodName.equals("store") || methodName
-                        .equals("save")) && className.equals("java.util.Properties"))
+                        .equals("save")) && className.equals("java.util.Properties")) {
             escapes = false;
+        }
         if (inv.getOpcode() == Constants.INVOKEVIRTUAL && (methodName.equals("load") || methodName.equals("store"))
-                && className.equals("java.security.KeyStore"))
+                && className.equals("java.security.KeyStore")) {
             escapes = false;
+        }
         if (inv.getOpcode() == Constants.INVOKEVIRTUAL && "getChannel".equals(methodName)
-                && "()Ljava/nio/channels/FileChannel;".equals(methodSig))
+                && "()Ljava/nio/channels/FileChannel;".equals(methodSig)) {
             escapes = true;
+        }
 
         if (FindOpenStream.DEBUG && escapes) {
             System.out.println("ESCAPE at " + location + " at call to " + className + "." + methodName + ":" + methodSig);
         }
 
         // Record the fact that this might be a stream escape
-        if (stream.getOpenLocation() != null)
+        if (stream.getOpenLocation() != null) {
             resourceTracker.addStreamEscape(stream, location);
+        }
 
         return escapes;
     }
 }
 
-// vim:ts=3

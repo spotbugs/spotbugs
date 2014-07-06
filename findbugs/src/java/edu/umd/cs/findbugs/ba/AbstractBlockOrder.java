@@ -28,7 +28,7 @@ import java.util.Iterator;
  * Abstract base class for BlockOrder variants. It allows the subclass to
  * specify just a Comparator for BasicBlocks, and handles the work of doing the
  * sorting and providing Iterators.
- * 
+ *
  * @see BlockOrder
  */
 public abstract class AbstractBlockOrder implements BlockOrder {
@@ -50,19 +50,19 @@ public abstract class AbstractBlockOrder implements BlockOrder {
 
         // Put the ordered blocks into an array list
         blockList = new ArrayList<BasicBlock>(numBlocks);
-        for (int i = 0; i < numBlocks; ++i)
+        for (int i = 0; i < numBlocks; ++i) {
             blockList.add(blocks[i]);
+        }
     }
 
     @Override
     public Iterator<BasicBlock> blockIterator() {
         return blockList.iterator();
     }
-    
+
     @Override
     public int compare(BasicBlock b1, BasicBlock b2) {
         return comparator.compare(b1, b2);
     }
 }
 
-// vim:ts=4

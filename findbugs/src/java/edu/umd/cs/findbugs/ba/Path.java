@@ -25,7 +25,7 @@ import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * A Path is a sequence of basic blocks.
- * 
+ *
  * @author David Hovemeyer
  */
 public class Path {
@@ -50,7 +50,7 @@ public class Path {
 
     /**
      * Append given BasicBlock id to the path.
-     * 
+     *
      * @param id
      *            a BasicBlock id (label)
      */
@@ -64,7 +64,7 @@ public class Path {
     /**
      * Determine whether or not the id of the given BasicBlock appears anywhere
      * in the path.
-     * 
+     *
      * @param blockId
      *            the id (label) of a BasicBlock
      * @return true if the BasicBlock's id appears in the path, false if not
@@ -80,7 +80,7 @@ public class Path {
 
     /**
      * Get the BasicBlock id at the given index in the path.
-     * 
+     *
      * @param index
      *            an index in the Path (0 is the first component)
      * @return the id of the BasicBlock at the given index
@@ -92,7 +92,7 @@ public class Path {
 
     /**
      * Get the number of components (BasicBlock ids) in the Path.
-     * 
+     *
      * @return number of components in the Path
      */
     public int getLength() {
@@ -101,7 +101,7 @@ public class Path {
 
     /**
      * Return an exact copy of this Path.
-     * 
+     *
      * @return an exact copy of this Path
      */
     public Path duplicate() {
@@ -112,7 +112,7 @@ public class Path {
 
     /**
      * Make this Path identical to the given one.
-     * 
+     *
      * @param other
      *            a Path to which this object should be made identical
      */
@@ -125,7 +125,7 @@ public class Path {
 
     /**
      * Accept a PathVisitor.
-     * 
+     *
      * @param cfg
      *            the control flow graph
      * @param visitor
@@ -141,7 +141,7 @@ public class Path {
     /**
      * Accept a PathVisitor, starting from a given BasicBlock and
      * InstructionHandle.
-     * 
+     *
      * @param cfg
      *            the control flow graph
      * @param visitor
@@ -206,7 +206,7 @@ public class Path {
 
     /**
      * Determine whether or not given Path is a prefix of this one.
-     * 
+     *
      * @param path
      *            another Path
      * @return true if this Path is a prefix of the other Path, false otherwise
@@ -241,14 +241,17 @@ public class Path {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || o.getClass() != this.getClass())
+        if (o == null || o.getClass() != this.getClass()) {
             return false;
+        }
         Path other = (Path) o;
-        if (this.length != other.length)
+        if (this.length != other.length) {
             return false;
+        }
         for (int i = 0; i < this.length; ++i) {
-            if (this.blockIdList[i] != other.blockIdList[i])
+            if (this.blockIdList[i] != other.blockIdList[i]) {
                 return false;
+            }
         }
         return true;
     }
@@ -260,10 +263,11 @@ public class Path {
         StringBuilder buf = new StringBuilder();
         for (int i = 0; i < length; ++i) {
             int block = blockIdList[i];
-            if (block < SYMBOLS.length())
+            if (block < SYMBOLS.length()) {
                 buf.append(SYMBOLS.charAt(block));
-            else
+            } else {
                 buf.append("'" + block + "'");
+            }
         }
         return buf.toString();
     }
@@ -282,4 +286,3 @@ public class Path {
     }
 }
 
-// vim:ts=4

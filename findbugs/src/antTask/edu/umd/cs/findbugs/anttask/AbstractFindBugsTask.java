@@ -69,7 +69,7 @@ public abstract class AbstractFindBugsTask extends Task {
         }
     }
 
-    private String mainClass;
+    private final String mainClass;
 
     private boolean debug = false;
 
@@ -85,7 +85,7 @@ public abstract class AbstractFindBugsTask extends Task {
 
     protected String errorProperty = null;
 
-    private List<SystemProperty> systemPropertyList = new ArrayList<SystemProperty>();
+    private final List<SystemProperty> systemPropertyList = new ArrayList<SystemProperty>();
 
     private Path classpath = null;
 
@@ -200,7 +200,7 @@ public abstract class AbstractFindBugsTask extends Task {
         Path path = createClasspath();
         path.setRefid(r);
         path.toString(); // Evaluated for its side-effects (throwing a
-                         // BuildException)
+        // BuildException)
     }
 
     /**
@@ -268,8 +268,9 @@ public abstract class AbstractFindBugsTask extends Task {
         }
 
         for (SystemProperty systemProperty : systemPropertyList) {
-            if (systemProperty.getName() == null || systemProperty.getValue() == null)
+            if (systemProperty.getName() == null || systemProperty.getValue() == null) {
                 throw new BuildException("systemProperty elements must have name and value attributes");
+            }
         }
     }
 
@@ -282,8 +283,9 @@ public abstract class AbstractFindBugsTask extends Task {
         findbugsEngine.setProject(getProject());
         findbugsEngine.setTaskName(getTaskName());
         findbugsEngine.setFork(true);
-        if (jvm.length() > 0)
+        if (jvm.length() > 0) {
             findbugsEngine.setJvm(jvm);
+        }
         findbugsEngine.setTimeout(timeout);
 
         if (debug) {
@@ -308,10 +310,11 @@ public abstract class AbstractFindBugsTask extends Task {
             }
             File findbugsLibFindBugs = new File(findbugsLib, "findbugs.jar");
             // log("executing using home dir [" + homeDir + "]");
-            if (findbugsLibFindBugs.exists())
+            if (findbugsLibFindBugs.exists()) {
                 findbugsEngine.setClasspath(new Path(getProject(), findbugsLibFindBugs.getPath()));
-            else
+            } else {
                 throw new IllegalArgumentException("Can't find findbugs.jar in " + findbugsLib);
+            }
             findbugsEngine.createJvmarg().setValue("-Dfindbugs.home=" + homeDir.getPath());
         } else {
             // Use an explicitly specified classpath and list of plugin Jars
@@ -404,8 +407,9 @@ public abstract class AbstractFindBugsTask extends Task {
     protected abstract void beforeExecuteJavaProcess();
 
     protected void afterExecuteJavaProcess(int rc) {
-        if (rc != 0)
+        if (rc != 0) {
             throw new BuildException("execution of " + getTaskName() + " failed");
+        }
 
     }
 

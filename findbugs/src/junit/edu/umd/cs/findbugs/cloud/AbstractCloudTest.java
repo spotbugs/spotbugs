@@ -134,11 +134,12 @@ public class AbstractCloudTest extends TestCase {
             assertEquals("line " + (i + 1), expectedLines[i].trim(), actualLines[i].trim());
         }
         int diff = actualLines.length - expectedLines.length;
-        if (diff < 0)
+        if (diff < 0) {
             fail((-diff) + " more lines than expected "
                     + Arrays.asList(actualLines).subList(expectedLines.length, actualLines.length));
-        else if (diff > 0)
+        } else if (diff > 0) {
             fail((diff) + " missing lines " + Arrays.asList(expectedLines).subList(actualLines.length, expectedLines.length));
+        }
     }
 
     public void testPrintSummaryOneBugNoEvals() {
@@ -163,7 +164,7 @@ public class AbstractCloudTest extends TestCase {
                 "Distribution of reviews", " num designation", "   2 I will fix", "   1 not a bug", "",
                 "Distribution of number of reviews", "   3  with   1 review" },
 
-        printSummary(bug1, bug2, bug3));
+                printSummary(bug1, bug2, bug3));
     }
 
     public void testPrintSummaryWithMoreThan9Reviewers() {
@@ -182,7 +183,7 @@ public class AbstractCloudTest extends TestCase {
                 "  3    9 user9", "  4    8 user8", "  5    7 user7", "  6    6 user6", "  7    5 user5", "  8    4 user4",
                 "  9    3 user3", " 11    1 user", "Total of 12 reviewers", "", "Distribution of reviews",
                 " num designation", "  66 I will fix", "   1 not a bug", "", "Distribution of number of reviews",
-                "  67  with   1 review" },
+        "  67  with   1 review" },
 
         printSummary(bugs.toArray(new BugInstance[0])));
     }
@@ -200,7 +201,7 @@ public class AbstractCloudTest extends TestCase {
                 "   1 mostly harmless", "", "Distribution of number of reviews", "   1  with   1 review",
                 "   1  with   2 reviews", "   1  with   3 reviews" },
 
-        printSummary(bugs.toArray(new BugInstance[0])));
+                printSummary(bugs.toArray(new BugInstance[0])));
     }
 
     public void testVotingModePropertyNull() throws Exception {
@@ -272,10 +273,11 @@ public class AbstractCloudTest extends TestCase {
     }
 
     private void checkVotingMode(Mode expectedMode, String modeString) throws IOException {
-        if (modeString == null)
+        if (modeString == null) {
             plugin.getProperties().getProperties().remove("findbugs.cloud.votingmode");
-        else
+        } else {
             plugin.getProperties().setProperty("findbugs.cloud.votingmode", modeString);
+        }
         cloud = new MyAbstractCloud(plugin, bugCollection, new Properties());
         cloud.initialize();
         assertEquals(expectedMode, cloud.getMode());
@@ -283,10 +285,12 @@ public class AbstractCloudTest extends TestCase {
 
     private void initializeSourceLinks(String pattern, String format, String formatWithLine) throws IOException {
         plugin.getProperties().setProperty("findbugs.sourcelink.pattern", pattern);
-        if (format != null)
+        if (format != null) {
             plugin.getProperties().setProperty("findbugs.sourcelink.format", format);
-        if (formatWithLine != null)
+        }
+        if (formatWithLine != null) {
             plugin.getProperties().setProperty("findbugs.sourcelink.formatWithLine", formatWithLine);
+        }
         cloud = new MyAbstractCloud(plugin, bugCollection, new Properties());
         cloud.initialize();
     }
@@ -311,8 +315,9 @@ public class AbstractCloudTest extends TestCase {
         StringBuilder builder = new StringBuilder();
         boolean first = true;
         for (String string : lines) {
-            if (!first)
+            if (!first) {
                 builder.append("\n");
+            }
             builder.append(string);
             first = false;
         }
@@ -441,7 +446,7 @@ public class AbstractCloudTest extends TestCase {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.cloud.Cloud#fileBug(edu.umd.cs.findbugs.BugInstance
          * , ProtoClasses.BugLinkType)
@@ -453,7 +458,7 @@ public class AbstractCloudTest extends TestCase {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.cloud.Cloud#getBugIsUnassigned(edu.umd.cs.findbugs
          * .BugInstance)
@@ -465,7 +470,7 @@ public class AbstractCloudTest extends TestCase {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.cloud.Cloud#getReviewers(edu.umd.cs.findbugs.
          * BugInstance)
@@ -477,7 +482,7 @@ public class AbstractCloudTest extends TestCase {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.cloud.Cloud#getWillNotBeFixed(edu.umd.cs.findbugs
          * .BugInstance)
@@ -489,7 +494,7 @@ public class AbstractCloudTest extends TestCase {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * edu.umd.cs.findbugs.cloud.AbstractCloud#getLatestDesignationFromEachUser
          * (edu.umd.cs.findbugs.BugInstance)
@@ -498,17 +503,19 @@ public class AbstractCloudTest extends TestCase {
         protected Iterable<BugDesignation> getLatestDesignationFromEachUser(BugInstance b) {
             Map<String, BugDesignation> map = new HashMap<String, BugDesignation>();
             List<BugDesignation> list = designations.get(b);
-            if (list == null)
+            if (list == null) {
                 return Collections.emptyList();
+            }
             for (BugDesignation bd : list) {
                 BugDesignation old = map.get(bd.getUser());
-                if (old == null || old.getTimestamp() < bd.getTimestamp())
+                if (old == null || old.getTimestamp() < bd.getTimestamp()) {
                     map.put(bd.getUser(), bd);
+                }
             }
             return map.values();
         }
 
 
-      
+
     }
 }

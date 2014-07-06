@@ -30,14 +30,14 @@ import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 
 /**
  * Analysis engine to produce ConstantPoolGen objects for an analyzed class.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ConstantPoolGenFactory extends RecomputableClassAnalysisEngine<ConstantPoolGen> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
@@ -50,7 +50,7 @@ public class ConstantPoolGenFactory extends RecomputableClassAnalysisEngine<Cons
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)

@@ -21,11 +21,11 @@ package edu.umd.cs.findbugs.props;
 /**
  * Enum representing how a particular warning property is expected to affect its
  * likelihood of being serious, benign, or a false positive.
- * 
+ *
  * @author David Hovemeyer
  */
 public class PriorityAdjustment {
-    private String value;
+    private final String value;
 
     private PriorityAdjustment(String value) {
         this.value = value;

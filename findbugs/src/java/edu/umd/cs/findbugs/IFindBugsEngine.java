@@ -33,21 +33,21 @@ import edu.umd.cs.findbugs.filter.FilterException;
  * Interface for a FindBugs engine class. An instance of this interface takes a
  * project, user configuration options, orchestrates the analysis of the classes
  * in the project, and reports the results to the configured BugReporter.
- * 
+ *
  * @author David Hovemeyer
  */
 public interface IFindBugsEngine {
 
     /**
      * Get the BugReporter.
-     * 
+     *
      * @return the BugReporter
      */
     public BugReporter getBugReporter();
 
     /**
      * Set the BugReporter.
-     * 
+     *
      * @param bugReporter
      *            The BugReporter to set
      */
@@ -55,7 +55,7 @@ public interface IFindBugsEngine {
 
     /**
      * Set the Project.
-     * 
+     *
      * @param project
      *            The Project to set
      */
@@ -63,7 +63,7 @@ public interface IFindBugsEngine {
 
     /**
      * Get the Project.
-     * 
+     *
      * @return the Project
      */
     public Project getProject();
@@ -71,7 +71,7 @@ public interface IFindBugsEngine {
     /**
      * Set the progress callback that will be used to keep track of the progress
      * of the analysis.
-     * 
+     *
      * @param progressCallback
      *            the progress callback
      */
@@ -79,7 +79,7 @@ public interface IFindBugsEngine {
 
     /**
      * Set filter of bug instances to include or exclude.
-     * 
+     *
      * @param filterFileName
      *            the name of the filter file
      * @param include
@@ -90,7 +90,7 @@ public interface IFindBugsEngine {
 
     /**
      * Provide baseline of bugs not to report
-     * 
+     *
      * @param baselineBugs
      *            the name of the xml bug baseline file
      * @throws DocumentException
@@ -101,7 +101,7 @@ public interface IFindBugsEngine {
      * Set the UserPreferences representing which Detectors should be used. If
      * UserPreferences are not set explicitly, the default set of Detectors will
      * be used.
-     * 
+     *
      * @param userPreferences
      *            the UserPreferences
      */
@@ -109,7 +109,7 @@ public interface IFindBugsEngine {
 
     /**
      * Add an IClassObserver.
-     * 
+     *
      * @param classObserver
      *            the IClassObserver
      */
@@ -118,7 +118,7 @@ public interface IFindBugsEngine {
     /**
      * Set the ClassScreener. This object chooses which individual classes to
      * analyze. By default, all classes are analyzed.
-     * 
+     *
      * @param classScreener
      *            the ClassScreener to use
      */
@@ -126,7 +126,7 @@ public interface IFindBugsEngine {
 
     /**
      * Set relaxed reporting mode.
-     * 
+     *
      * @param relaxedReportingMode
      *            true if relaxed reporting mode should be enabled, false if not
      */
@@ -134,7 +134,7 @@ public interface IFindBugsEngine {
 
     /**
      * Set whether or not training output should be emitted.
-     * 
+     *
      * @param trainingOutputDir
      *            directory to save training output in
      */
@@ -143,7 +143,7 @@ public interface IFindBugsEngine {
     /**
      * Set whether or not training input should be used to make the analysis
      * more precise.
-     * 
+     *
      * @param trainingInputDir
      *            directory to load training input from
      */
@@ -151,7 +151,7 @@ public interface IFindBugsEngine {
 
     /**
      * Set analysis feature settings.
-     * 
+     *
      * @param settingList
      *            list of analysis feature settings
      */
@@ -182,7 +182,7 @@ public interface IFindBugsEngine {
     /**
      * Set the filename of the source info file containing line numbers for
      * fields and classes.
-     * 
+     *
      * @param sourceInfoFile
      *            the source info filename
      */
@@ -191,7 +191,7 @@ public interface IFindBugsEngine {
     /**
      * Execute FindBugs on the Project. All bugs found are reported to the
      * BugReporter object which was set when this object was constructed.
-     * 
+     *
      * @throws java.io.IOException
      *             if an I/O exception occurs analyzing one of the files
      * @throws InterruptedException
@@ -223,7 +223,7 @@ public interface IFindBugsEngine {
 
     /**
      * Get the UserPreferences.
-     * 
+     *
      * @return the UserPreferences
      */
     public UserPreferences getUserPreferences();
@@ -231,35 +231,35 @@ public interface IFindBugsEngine {
     /**
      * Return whether or not training output should be emitted after analysis
      * completes.
-     * 
+     *
      * @return true if training output should be emitted, false if not
      */
     public boolean emitTrainingOutput();
 
     /**
      * Get the training output directory.
-     * 
+     *
      * @return the training output directory
      */
     public String getTrainingOutputDir();
 
     /**
      * Return whether or not we should make use of training data.
-     * 
+     *
      * @return true if training data should be used, false if not
      */
     public boolean useTrainingInput();
 
     /**
      * Get the training input database directory.
-     * 
+     *
      * @return the training input database directory
      */
     public String getTrainingInputDir();
 
     /**
      * Set whether or not nested archives should be scanned.
-     * 
+     *
      * @param scanNestedArchives
      *            true if nested archives should be scanned, false if not
      */
@@ -268,7 +268,7 @@ public interface IFindBugsEngine {
     /**
      * Set whether or not to generate an empty output file if there were no
      * class files specified.
-     * 
+     *
      * @param noClassOk
      *            true if FindBugs should generate empty output file
      */
@@ -277,7 +277,7 @@ public interface IFindBugsEngine {
     /**
      * Set the DetectorFactoryCollection from which plugins/detectors may be
      * accessed.
-     * 
+     *
      * @param detectorFactoryCollection
      *            the DetectorFactoryCollection
      */

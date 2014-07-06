@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 /**
  * Factory for ValueNumbers. A single Factory must be used to create all of the
  * ValueNumbers for a method.
- * 
+ *
  * @author David Hovemeyer
  * @see ValueNumber
  */
@@ -41,7 +41,7 @@ public class ValueNumberFactory {
      */
     private ArrayList<ValueNumber> allocatedValueList = new ArrayList<ValueNumber>();
 
-    private HashMap<String, ValueNumber> classObjectValueMap = new HashMap<String, ValueNumber>();
+    private final HashMap<String, ValueNumber> classObjectValueMap = new HashMap<String, ValueNumber>();
 
     /**
      * Create a fresh (unique) value number.
@@ -62,8 +62,9 @@ public class ValueNumberFactory {
      * Return a previously allocated value.
      */
     public ValueNumber forNumber(int number) {
-        if (number >= getNumValuesAllocated())
+        if (number >= getNumValuesAllocated()) {
             throw new IllegalArgumentException("Value " + number + " has not been allocated");
+        }
         return allocatedValueList.get(number);
     }
 
@@ -76,7 +77,7 @@ public class ValueNumberFactory {
 
     /**
      * Compact the value numbers produced by this factory.
-     * 
+     *
      * @param map
      *            array mapping old numbers to new numbers
      * @param numValuesAllocated
@@ -84,8 +85,9 @@ public class ValueNumberFactory {
      */
     @Deprecated
     public void compact(int[] map, int numValuesAllocated) {
-        if (true)
+        if (true) {
             throw new UnsupportedOperationException();
+        }
         ArrayList<ValueNumber> oldList = this.allocatedValueList;
         ArrayList<ValueNumber> newList = new ArrayList<ValueNumber>(Collections.<ValueNumber> nCopies(numValuesAllocated, null));
 
@@ -104,7 +106,7 @@ public class ValueNumberFactory {
 
     /**
      * Get the ValueNumber for given class's Class object.
-     * 
+     *
      * @param className
      *            the class
      */
@@ -123,15 +125,16 @@ public class ValueNumberFactory {
     public @CheckForNull
     @DottedClassName
     String getClassName(ValueNumber v) {
-        if (!v.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
+        if (!v.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) {
             throw new IllegalArgumentException("Not a value number for a constant class");
+        }
         for (Map.Entry<String, ValueNumber> e : classObjectValueMap.entrySet()) {
-            if (e.getValue().equals(v))
+            if (e.getValue().equals(v)) {
                 return e.getKey();
+            }
         }
         return null;
     }
 
 }
 
-// vim:ts=4

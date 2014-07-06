@@ -62,14 +62,14 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
     @Override
     public void visit(Code obj) {
         if (isInnerClass  && !BCELUtil.isSynthetic(getMethod())) {
-//            System.out.println(getFullyQualifiedMethodName());
+            //            System.out.println(getFullyQualifiedMethodName());
             super.visit(obj);
         }
     }
 
     @Override
     public void sawOpcode(int seen) {
-//        System.out.printf("%3d : %s%n", getPC(), OPCODE_NAMES[seen]);
+        //        System.out.printf("%3d : %s%n", getPC(), OPCODE_NAMES[seen]);
         if (seen != INVOKEVIRTUAL) {
             return;
         }
@@ -110,11 +110,11 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
                     priority++;
                 }
 
-//                System.out.println("Found it");
+                //                System.out.println("Found it");
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", priority)
-                                .addClassAndMethod(this).addMethod(invokedMethod).describe("METHOD_INHERITED")
-                                .addMethod(alternativeMethod).describe("METHOD_ALTERNATIVE_TARGET"), this);
+                        .addClassAndMethod(this).addMethod(invokedMethod).describe("METHOD_INHERITED")
+                        .addMethod(alternativeMethod).describe("METHOD_ALTERNATIVE_TARGET"), this);
                 break;
             }
         }

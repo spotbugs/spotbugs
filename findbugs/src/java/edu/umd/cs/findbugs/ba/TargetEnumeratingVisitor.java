@@ -34,23 +34,23 @@ import org.apache.bcel.generic.Select;
 /**
  * Visitor to find all of the targets of an instruction whose InstructionHandle
  * is given. Note that we don't consider exception edges.
- * 
+ *
  * @author David Hovemeyer
  * @author Chadd Williams
  */
 public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisitor implements EdgeTypes {
 
-    private InstructionHandle handle;
+    private final InstructionHandle handle;
 
-    private ConstantPoolGen constPoolGen;
+    private final ConstantPoolGen constPoolGen;
 
-    private LinkedList<Target> targetList;
+    private final LinkedList<Target> targetList;
 
     private boolean isBranch, isReturn, isThrow, isExit;
 
     /**
      * Constructor.
-     * 
+     *
      * @param handle
      *            the handle of the instruction whose targets should be
      *            enumerated
@@ -106,8 +106,9 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
     public void visitGotoInstruction(GotoInstruction ins) {
         isBranch = true;
         InstructionHandle target = ins.getTarget();
-        if (target == null)
+        if (target == null) {
             throw new IllegalStateException();
+        }
         targetList.add(new Target(target, GOTO_EDGE));
     }
 
@@ -115,8 +116,9 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
     public void visitIfInstruction(IfInstruction ins) {
         isBranch = true;
         InstructionHandle target = ins.getTarget();
-        if (target == null)
+        if (target == null) {
             throw new IllegalStateException();
+        }
         targetList.add(new Target(target, IFCMP_EDGE));
         InstructionHandle fallThrough = handle.getNext();
         targetList.add(new Target(fallThrough, FALL_THROUGH_EDGE));
@@ -159,8 +161,9 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
         String methodName = ins.getName(constPoolGen);
         String methodSig = ins.getSignature(constPoolGen);
 
-        if (className.equals("java.lang.System") && methodName.equals("exit") && methodSig.equals("(I)V"))
+        if (className.equals("java.lang.System") && methodName.equals("exit") && methodSig.equals("(I)V")) {
             isExit = true;
+        }
     }
 
 }

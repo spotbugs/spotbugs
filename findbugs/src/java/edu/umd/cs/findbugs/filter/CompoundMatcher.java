@@ -33,17 +33,20 @@ public abstract class CompoundMatcher implements Matcher {
     @Override
     public int hashCode() {
         int result = this.getClass().hashCode();
-        for (Matcher m : children)
+        for (Matcher m : children) {
             result += m.hashCode();
+        }
         return result;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == null)
+        if (o == null) {
             return false;
-        if (o.getClass() != this.getClass())
+        }
+        if (o.getClass() != this.getClass()) {
             return false;
+        }
         CompoundMatcher m = (CompoundMatcher) o;
         return children.equals(m.children);
     }
@@ -73,17 +76,20 @@ public abstract class CompoundMatcher implements Matcher {
     }
 
     public void writeChildrenXML(XMLOutput xmlOutput) throws IOException {
-        for (Matcher m : children)
+        for (Matcher m : children) {
             m.writeXML(xmlOutput, false);
+        }
     }
 
     @Override
     public String toString() {
-        if (children.isEmpty())
+        if (children.isEmpty()) {
             return "";
+        }
         StringBuilder buf = new StringBuilder();
-        for (Matcher m : children)
+        for (Matcher m : children) {
             buf.append(m).append(" ");
+        }
         buf.setLength(buf.length() - 1);
         return buf.toString();
     }
@@ -93,4 +99,3 @@ public abstract class CompoundMatcher implements Matcher {
     }
 }
 
-// vim:ts=4

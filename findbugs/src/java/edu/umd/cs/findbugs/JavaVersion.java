@@ -57,22 +57,24 @@ public class JavaVersion {
 
     /**
      * Constructor.
-     * 
+     *
      * @param versionString
      *            a version string, as returned from the
      *            <code>java.version</code> system property: e.g., "1.4.2_04"
      */
     public JavaVersion(String versionString) throws JavaVersionException {
         Matcher matcher = PATTERN.matcher(versionString);
-        if (!matcher.matches())
+        if (!matcher.matches()) {
             throw new JavaVersionException("Could not parse Java version string: " + versionString);
+        }
         try {
             major = Integer.parseInt(matcher.group(1));
             minor = Integer.parseInt(matcher.group(2));
-            if (matcher.group(3) != null)
+            if (matcher.group(3) != null) {
                 rest = matcher.group(3);
-            else
+            } else {
                 rest = "";
+            }
         } catch (NumberFormatException e) {
             throw new JavaVersionException("Could not parse Java Version string: " + versionString, e);
         }
@@ -80,7 +82,7 @@ public class JavaVersion {
 
     /**
      * Constructor.
-     * 
+     *
      * @param major
      *            major version
      * @param minor
@@ -136,7 +138,7 @@ public class JavaVersion {
     /**
      * Return whether the Java version represented by this object is at least as
      * recent as the one given.
-     * 
+     *
      * @param other
      *            another JavaVersion
      * @return true if this Java version is at least as recent as the one given
@@ -146,4 +148,3 @@ public class JavaVersion {
     }
 }
 
-// vim:ts=3

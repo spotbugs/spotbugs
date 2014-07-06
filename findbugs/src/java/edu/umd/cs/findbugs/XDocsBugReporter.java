@@ -43,9 +43,9 @@ public class XDocsBugReporter extends TextUIBugReporter {
 
     final private Project project;
 
-    private Document document;
+    private final Document document;
 
-    private Element root;
+    private final Element root;
 
     private static final String ROOT_ELEMENT_NAME = "BugCollection";
 
@@ -225,4 +225,3 @@ public class XDocsBugReporter extends TextUIBugReporter {
 
 }
 
-// vim:ts=3

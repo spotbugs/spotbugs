@@ -42,8 +42,9 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 
     @Override
     public void loadAuxiliaryAnnotations() {
-        if (IGNORE_BUILTIN_ANNOTATIONS)
+        if (IGNORE_BUILTIN_ANNOTATIONS) {
             return;
+        }
         boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
 
         addMethodAnnotation("java.util.Iterator", "hasNext", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
@@ -119,7 +120,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
         addWarningAboutSubmit(ThreadPoolExecutor.class);
         addWarningAboutSubmit(ScheduledThreadPoolExecutor.class);
         addWarningAboutSubmit(AbstractExecutorService.class);
-                
+
         addMethodAnnotation("java.util.concurrent.BlockingQueue", "poll", "(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;",
                 false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
         addMethodAnnotation("java.util.Queue", "poll", "()Ljava/lang/Object;", false,
@@ -146,7 +147,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
         addMethodAnnotation("java.math.BigDecimal", "precision", "()I", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-        
+
         addMethodAnnotation("java.math.BigDecimal", "toBigIntegerExact", "()Ljava/math/BigInteger;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
         addMethodAnnotation("java.math.BigDecimal", "longValueExact", "()J", false,
@@ -184,12 +185,12 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
         addMethodAnnotation("java.lang.ProcessBuilder", "redirectErrorStream", "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-        
+
         addDefaultMethodAnnotation("jsr166z.forkjoin.ParallelArray", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
         addDefaultMethodAnnotation("jsr166z.forkjoin.ParallelLongArray", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
         addDefaultMethodAnnotation("jsr166z.forkjoin.ParallelDoubleArray", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-        
-        
+
+
         addMethodAnnotation(java.sql.Statement.class, "executeQuery", "(Ljava/lang/String;)Ljava/sql/ResultSet;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
         addMethodAnnotation(java.sql.PreparedStatement.class, "executeQuery", "()Ljava/sql/ResultSet;", false,
@@ -225,32 +226,37 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 
     @Override
     public CheckReturnValueAnnotation getResolvedAnnotation(Object o, boolean getMinimal) {
-        if (!(o instanceof XMethod))
+        if (!(o instanceof XMethod)) {
             return null;
+        }
         XMethod m = (XMethod) o;
-        if (m.getName().startsWith("access$"))
+        if (m.getName().startsWith("access$")) {
             return null;
-        else if (m.getName().equals("<init>")) {
+        } else if (m.getName().equals("<init>")) {
             try {
-                if (throwableClass != null && Repository.instanceOf(m.getClassName(), throwableClass))
+                if (throwableClass != null && Repository.instanceOf(m.getClassName(), throwableClass)) {
                     return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_VERY_HIGH;
+                }
             } catch (ClassNotFoundException e) {
                 AnalysisContext.reportMissingClass(e);
             }
-            if (m.getClassName().equals("java.lang.Thread"))
+            if (m.getClassName().equals("java.lang.Thread")) {
                 return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_VERY_HIGH;
+            }
             try {
 
-                if (threadClass != null && Repository.instanceOf(m.getClassName(), threadClass))
+                if (threadClass != null && Repository.instanceOf(m.getClassName(), threadClass)) {
                     return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW;
+                }
             } catch (ClassNotFoundException e) {
                 AnalysisContext.reportMissingClass(e);
             }
-        } else if (m.getName().equals("equals") && m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic())
+        } else if (m.getName().equals("equals") && m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic()) {
             return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
-        else if (m.getSignature().endsWith(")Ljava/lang/String;")
-                && (m.getClassName().equals("java.lang.StringBuffer") || m.getClassName().equals("java.lang.StringBuilder")))
+        } else if (m.getSignature().endsWith(")Ljava/lang/String;")
+                && (m.getClassName().equals("java.lang.StringBuffer") || m.getClassName().equals("java.lang.StringBuilder"))) {
             return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
+        }
         return super.getResolvedAnnotation(o, getMinimal);
     }
 

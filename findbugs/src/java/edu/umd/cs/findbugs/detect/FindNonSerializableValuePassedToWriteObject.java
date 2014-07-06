@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
 
 public class FindNonSerializableValuePassedToWriteObject implements Detector {
 
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private static final boolean DEBUG = false;
 
@@ -44,8 +44,9 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
         Method[] methodList = classContext.getJavaClass().getMethods();
 
         for (Method method : methodList) {
-            if (method.getCode() == null)
+            if (method.getCode() == null) {
                 continue;
+            }
 
             try {
                 analyzeMethod(classContext, method);
@@ -60,14 +61,17 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
 
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
         MethodGen methodGen = classContext.getMethodGen(method);
-        if (methodGen == null)
+        if (methodGen == null) {
             return;
+        }
         BitSet bytecodeSet = classContext.getBytecodeSet(method);
-        if (bytecodeSet == null)
+        if (bytecodeSet == null) {
             return;
+        }
         // We don't adequately model instanceof interfaces yet
-        if (bytecodeSet.get(Constants.INSTANCEOF) || bytecodeSet.get(Constants.CHECKCAST))
+        if (bytecodeSet.get(Constants.INSTANCEOF) || bytecodeSet.get(Constants.CHECKCAST)) {
             return;
+        }
         CFG cfg = classContext.getCFG(method);
         TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
@@ -84,16 +88,19 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
             int pc = handle.getPosition();
             Instruction ins = handle.getInstruction();
 
-            if (!(ins instanceof InvokeInstruction))
+            if (!(ins instanceof InvokeInstruction)) {
                 continue;
+            }
 
             InvokeInstruction invoke = (InvokeInstruction) ins;
             String mName = invoke.getMethodName(cpg);
-            if (!mName.equals("writeObject"))
+            if (!mName.equals("writeObject")) {
                 continue;
+            }
             String cName = invoke.getClassName(cpg);
-            if (!cName.equals("java.io.ObjectOutput") && !cName.equals("java.io.ObjectOutputStream"))
+            if (!cName.equals("java.io.ObjectOutput") && !cName.equals("java.io.ObjectOutputStream")) {
                 continue;
+            }
 
             TypeFrame frame = typeDataflow.getFactAtLocation(location);
             if (!frame.isValid()) {
@@ -120,16 +127,19 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
 
                 double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(refType);
 
-                if (isSerializable >= 0.9)
+                if (isSerializable >= 0.9) {
                     continue;
-                
+                }
+
                 ReferenceType problem = DeepSubtypeAnalysis.getLeastSerializableTypeComponent(refType);
 
                 double isRemote = DeepSubtypeAnalysis.isDeepRemote(refType);
-                if (isRemote >= 0.9)
+                if (isRemote >= 0.9) {
                     continue;
-                if (isSerializable < isRemote) 
+                }
+                if (isSerializable < isRemote) {
                     isSerializable = isRemote;
+                }
 
 
                 SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext,

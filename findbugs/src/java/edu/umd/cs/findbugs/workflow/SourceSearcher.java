@@ -42,26 +42,32 @@ public class SourceSearcher {
     }
 
     public boolean findSource(SourceLineAnnotation srcLine) {
-        if (srcLine == null)
+        if (srcLine == null) {
             return false;
+        }
         String cName = srcLine.getClassName();
-        if (sourceFound.contains(cName))
+        if (sourceFound.contains(cName)) {
             return true;
-        if (sourceNotFound.contains(cName))
+        }
+        if (sourceNotFound.contains(cName)) {
             return false;
+        }
 
         boolean result = sourceFinder.hasSourceFile(srcLine);
         return result;
     }
 
     public boolean findSource0(SourceLineAnnotation srcLine) {
-        if (srcLine == null)
+        if (srcLine == null) {
             return false;
+        }
         String cName = srcLine.getClassName();
-        if (sourceFound.contains(cName))
+        if (sourceFound.contains(cName)) {
             return true;
-        if (sourceNotFound.contains(cName))
+        }
+        if (sourceNotFound.contains(cName)) {
             return false;
+        }
 
         try {
             InputStream in = sourceFinder.openSource(srcLine);

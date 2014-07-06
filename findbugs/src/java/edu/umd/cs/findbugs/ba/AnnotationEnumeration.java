@@ -34,8 +34,9 @@ public class AnnotationEnumeration<E extends AnnotationEnumeration<E>> implement
 
     @Override
     public final boolean equals(Object o) {
-        if (!(o instanceof AnnotationEnumeration<?>))
+        if (!(o instanceof AnnotationEnumeration<?>)) {
             return false;
+        }
         return index == ((AnnotationEnumeration<?>) o).getIndex();
     }
 
@@ -58,7 +59,7 @@ public class AnnotationEnumeration<E extends AnnotationEnumeration<E>> implement
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Comparable#compareTo(T)
      */
     @Override

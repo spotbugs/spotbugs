@@ -28,14 +28,14 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 
 /**
  * Analysis engine to produce an ASM ClassReader for a class.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassReaderAnalysisEngine extends RecomputableClassAnalysisEngine<FBClassReader> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs
      * .classfile.IAnalysisCache, java.lang.Object)
@@ -52,7 +52,7 @@ public class ClassReaderAnalysisEngine extends RecomputableClassAnalysisEngine<F
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs
      * .findbugs.classfile.IAnalysisCache)

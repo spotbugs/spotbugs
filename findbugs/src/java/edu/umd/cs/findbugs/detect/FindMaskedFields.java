@@ -46,15 +46,15 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 
 public class FindMaskedFields extends BytecodeScanningDetector {
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     private int numParms;
 
-    private Map<String, Field> classFields = new HashMap<String, Field>();
+    private final Map<String, Field> classFields = new HashMap<String, Field>();
 
     private boolean staticMethod;
 
-    private Collection<RememberedBug> rememberedBugs = new LinkedList<RememberedBug>();
+    private final Collection<RememberedBug> rememberedBugs = new LinkedList<RememberedBug>();
 
     static class RememberedBug {
         BugInstance bug;
@@ -75,8 +75,9 @@ public class FindMaskedFields extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass obj = classContext.getJavaClass();
-        if (!obj.isInterface())
+        if (!obj.isInterface()) {
             classContext.getJavaClass().accept(this);
+        }
     }
 
     @Override
@@ -85,19 +86,21 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 
         Field[] fields = obj.getFields();
         String fieldName;
-        for (Field field : fields)
+        for (Field field : fields) {
             if (!field.isStatic() && !field.isPrivate()) {
                 fieldName = field.getName();
                 classFields.put(fieldName, field);
             }
+        }
 
         // Walk up the super class chain, looking for name collisions
 
         XClass c = getXClass();
         while (true) {
             ClassDescriptor s = c.getSuperclassDescriptor();
-            if (s == null || s.getClassName().equals("java/lang/Object"))
+            if (s == null || s.getClassName().equals("java/lang/Object")) {
                 break;
+            }
             try {
                 c = Global.getAnalysisCache().getClassAnalysis(XClass.class, s);
             } catch (CheckedAnalysisException e) {
@@ -107,32 +110,38 @@ public class FindMaskedFields extends BytecodeScanningDetector {
             for (XField fld : c.getXFields()) {
                 if (!fld.isStatic() && (fld.isPublic() || fld.isProtected())) {
                     fieldName = fld.getName();
-                    if (fieldName.length() == 1)
+                    if (fieldName.length() == 1) {
                         continue;
-                    if (fieldName.equals("serialVersionUID"))
+                    }
+                    if (fieldName.equals("serialVersionUID")) {
                         continue;
+                    }
                     String superClassName = s.getClassName();
                     if (superClassName.startsWith("java/io")
                             && (superClassName.endsWith("InputStream") && fieldName.equals("in") || superClassName
-                                    .endsWith("OutputStream") && fieldName.equals("out")))
+                                    .endsWith("OutputStream") && fieldName.equals("out"))) {
                         continue;
+                    }
                     if (classFields.containsKey(fieldName)) {
                         Field maskingField = classFields.get(fieldName);
                         String mClassName = getDottedClassName();
                         FieldAnnotation fa = new FieldAnnotation(mClassName, maskingField.getName(), maskingField.getSignature(),
                                 maskingField.isStatic());
                         int priority = NORMAL_PRIORITY;
-                        if (maskingField.isStatic() || maskingField.isFinal())
+                        if (maskingField.isStatic() || maskingField.isFinal()) {
                             priority++;
-                        else if (fld.getSignature().charAt(0) == 'L' && !fld.getSignature().startsWith("Ljava/lang/")
-                                || fld.getSignature().charAt(0) == '[')
+                        } else if (fld.getSignature().charAt(0) == 'L' && !fld.getSignature().startsWith("Ljava/lang/")
+                                || fld.getSignature().charAt(0) == '[') {
                             priority--;
-                        if (!fld.getSignature().equals(maskingField.getSignature()))
+                        }
+                        if (!fld.getSignature().equals(maskingField.getSignature())) {
                             priority += 2;
-                        else if (fld.getAccessFlags() != maskingField.getAccessFlags())
+                        } else if (fld.getAccessFlags() != maskingField.getAccessFlags()) {
                             priority++;
-                        if (fld.isSynthetic() || fld.getName().indexOf('$') >= 0)
+                        }
+                        if (fld.isSynthetic() || fld.getName().indexOf('$') >= 0) {
                             priority++;
+                        }
 
                         FieldAnnotation maskedFieldAnnotation = FieldAnnotation.fromFieldDescriptor(fld.getFieldDescriptor());
                         BugInstance bug = new BugInstance(this, "MF_CLASS_MASKS_FIELD", priority).addClass(this).addField(fa)
@@ -151,8 +160,9 @@ public class FindMaskedFields extends BytecodeScanningDetector {
     public void visit(Method obj) {
         super.visit(obj);
         numParms = getNumberMethodArguments();
-        if (!obj.isStatic())
+        if (!obj.isStatic()) {
             numParms++;
+        }
         // System.out.println(obj);
         // System.out.println(numParms);
         staticMethod = obj.isStatic();
@@ -167,17 +177,20 @@ public class FindMaskedFields extends BytecodeScanningDetector {
     @Override
     public void visit(LocalVariableTable obj) {
         if (ENABLE_LOCALS) {
-            if (staticMethod)
+            if (staticMethod) {
                 return;
+            }
 
             LocalVariable[] vars = obj.getLocalVariableTable();
             // System.out.println("Num params = " + numParms);
             for (LocalVariable var : vars) {
-                if (var.getIndex() < numParms)
+                if (var.getIndex() < numParms) {
                     continue;
+                }
                 String varName = var.getName();
-                if (varName.equals("serialVersionUID"))
+                if (varName.equals("serialVersionUID")) {
                     continue;
+                }
                 Field f = classFields.get(varName);
                 // System.out.println("Checking " + varName);
                 // System.out.println(" got " + f);
@@ -187,9 +200,10 @@ public class FindMaskedFields extends BytecodeScanningDetector {
                 // that is.
                 if (f != null) {
                     FieldAnnotation fa = FieldAnnotation.fromBCELField(getDottedClassName(), f);
-                    if (true || var.getStartPC() > 0)
+                    if (true || var.getStartPC() > 0) {
                         bugReporter.reportBug(new BugInstance(this, "MF_METHOD_MASKS_FIELD", LOW_PRIORITY)
-                                .addClassAndMethod(this).addField(fa).addSourceLine(this, var.getStartPC() - 1));
+                        .addClassAndMethod(this).addField(fa).addSourceLine(this, var.getStartPC() - 1));
+                    }
                 }
             }
         }
@@ -205,30 +219,37 @@ public class FindMaskedFields extends BytecodeScanningDetector {
             int score2 = 0;
             int priority = bug.getPriority();
             if (unreadFields.classesScanned.contains(rb.maskedField.getClassName())) {
-                if (unreadFields.getReadFields().contains(rb.maskedField))
+                if (unreadFields.getReadFields().contains(rb.maskedField)) {
                     score1++;
-                if (unreadFields.getWrittenFields().contains(rb.maskedField))
+                }
+                if (unreadFields.getWrittenFields().contains(rb.maskedField)) {
                     score1++;
-                if (unreadFields.isWrittenOutsideOfInitialization(rb.maskedField))
+                }
+                if (unreadFields.isWrittenOutsideOfInitialization(rb.maskedField)) {
                     score1++;
-            } else
+                }
+            } else {
                 score1 += 2;
-            if (unreadFields.getReadFields().contains(rb.maskingField))
+            }
+            if (unreadFields.getReadFields().contains(rb.maskingField)) {
                 score2++;
-            if (unreadFields.getWrittenFields().contains(rb.maskingField))
+            }
+            if (unreadFields.getWrittenFields().contains(rb.maskingField)) {
                 score2++;
-            if (unreadFields.isWrittenOutsideOfInitialization(rb.maskingField))
+            }
+            if (unreadFields.isWrittenOutsideOfInitialization(rb.maskingField)) {
                 score2++;
+            }
             int score = score1 + score2;
-            if (score1 == 0 || score2 == 0)
+            if (score1 == 0 || score2 == 0) {
                 bug.setPriority(priority + 1);
-            else if (score >= 5)
+            } else if (score >= 5) {
                 bug.setPriority(priority - 1);
-            else if (score < 3)
+            } else if (score < 3) {
                 bug.setPriority(priority + 1);
+            }
             bugReporter.reportBug(bug);
         }
     }
 }
 
-// vim:ts=4

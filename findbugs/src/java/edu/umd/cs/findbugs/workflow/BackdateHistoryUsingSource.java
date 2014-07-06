@@ -56,10 +56,12 @@ public class BackdateHistoryUsingSource {
 
         for (BugInstance b : origCollection) {
             SourceLineAnnotation s = b.getPrimarySourceLineAnnotation();
-            if (!s.isSourceFileKnown())
+            if (!s.isSourceFileKnown()) {
                 continue;
-            if (!sourceFinder.hasSourceFile(s))
+            }
+            if (!sourceFinder.hasSourceFile(s)) {
                 continue;
+            }
             SourceFile sourceFile = sourceFinder.findSourceFile(s);
             long when = sourceFile.getLastModified();
             if (when > 0) {
@@ -81,8 +83,9 @@ public class BackdateHistoryUsingSource {
 
         cloud.waitUntilIssueDataDownloaded();
 
-        if (args.length > 1)
+        if (args.length > 1) {
             origCollection.writeXML(args[1]);
+        }
         cloud.waitUntilNewIssuesUploaded();
         cloud.shutdown();
 

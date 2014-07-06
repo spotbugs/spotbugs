@@ -39,18 +39,18 @@ import edu.umd.cs.findbugs.ba.type.TypeMerger;
  * to lists of CodeExceptionGen objects. This class also maps instructions which
  * are the start of exception handlers to the CodeExceptionGen object
  * representing the handler.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ExceptionHandlerMap {
-    private IdentityHashMap<InstructionHandle, List<CodeExceptionGen>> codeToHandlerMap;
+    private final IdentityHashMap<InstructionHandle, List<CodeExceptionGen>> codeToHandlerMap;
 
-    private IdentityHashMap<InstructionHandle, CodeExceptionGen> startInstructionToHandlerMap;
+    private final IdentityHashMap<InstructionHandle, CodeExceptionGen> startInstructionToHandlerMap;
 
-    private TypeMerger merger;
+    private final TypeMerger merger;
     /**
      * Constructor.
-     * 
+     *
      * @param methodGen
      *            the method to build the map for
      */
@@ -66,7 +66,7 @@ public class ExceptionHandlerMap {
      * specified to handle exceptions for the instruction whose handle is given.
      * Note that the handlers in the returned list are <b>in order of
      * priority</b>, as defined in the method's exception handler table.
-     * 
+     *
      * @param handle
      *            the handle of the instruction we want the exception handlers
      *            for
@@ -80,7 +80,7 @@ public class ExceptionHandlerMap {
     /**
      * If the given instruction is the start of an exception handler, get the
      * CodeExceptionGen object representing the handler.
-     * 
+     *
      * @param start
      *            the instruction
      * @return the CodeExceptionGen object, or null if the instruction is not
@@ -115,8 +115,9 @@ public class ExceptionHandlerMap {
                     // i.e., an ANY handler, or catch(Throwable...),
                     // then no further (lower-priority)
                     // handlers are reachable from the instruction.
-                    if (Hierarchy.isUniversalExceptionHandler(exceptionHandler.getCatchType()))
+                    if (Hierarchy.isUniversalExceptionHandler(exceptionHandler.getCatchType())) {
                         break handlerLoop;
+                    }
                 }
             }
 
@@ -125,13 +126,18 @@ public class ExceptionHandlerMap {
     }
 
     public static CodeExceptionGen merge(@CheckForNull TypeMerger m, CodeExceptionGen e1, CodeExceptionGen e2) {
-        if (e1 == null) return e2;
-        if (e2 == null) return e1;
-        if (m == null)
+        if (e1 == null) {
+            return e2;
+        }
+        if (e2 == null) {
             return e1;
+        }
+        if (m == null) {
+            return e1;
+        }
         if ( ! e1.getHandlerPC().equals( e2.getHandlerPC() ) ){
             // log error
-                        return e1;
+            return e1;
         }
         try {
             Type t = m.mergeTypes(e1.getCatchType(), e2.getCatchType());
@@ -143,7 +149,7 @@ public class ExceptionHandlerMap {
         }
     }
 
-    
+
     private void addExceptionHandler(CodeExceptionGen exceptionHandler) {
         InstructionHandle handlerPC = exceptionHandler.getHandlerPC();
         CodeExceptionGen existing = startInstructionToHandlerMap.get(handlerPC);
@@ -152,7 +158,7 @@ public class ExceptionHandlerMap {
         }
         startInstructionToHandlerMap.put(handlerPC, exceptionHandler);
     }
-    
+
     private void addHandler(InstructionHandle handle, CodeExceptionGen exceptionHandler) {
         List<CodeExceptionGen> handlerList = codeToHandlerMap.get(handle);
         if (handlerList == null) {
@@ -163,4 +169,3 @@ public class ExceptionHandlerMap {
     }
 }
 
-// vim:ts=4

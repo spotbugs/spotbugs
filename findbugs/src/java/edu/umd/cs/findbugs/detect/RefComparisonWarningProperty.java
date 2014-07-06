@@ -23,7 +23,7 @@ import edu.umd.cs.findbugs.props.PriorityAdjustment;
 
 /**
  * Warning properties for FindRefComparison detector.
- * 
+ *
  * @author David Hovemeyer
  */
 public class RefComparisonWarningProperty extends AbstractWarningProperty {

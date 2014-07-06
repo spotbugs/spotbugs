@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 /**
  * Information about a source or sink in the type qualifier dataflow analysis.
- * 
+ *
  * @author David Hovemeyer
  */
 public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
@@ -48,7 +48,7 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param type
      *            type of the source or sink
      * @param location
@@ -131,7 +131,7 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
      * Set the SourceSinkInfo as having been created based on the results of
      * type qualifiers computed for a called method (and not explicitly
      * annotating the called method).
-     * 
+     *
      * @param interproc
      *            true if the SourceSinkInfo results from computed type
      *            qualifiers for a called method, false otherwise
@@ -144,7 +144,7 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
      * Return whether or not the SourceSinkInfo was created based on the results
      * of type qualifiers computed for a called method (and not explicitly
      * annotating the called method).
-     * 
+     *
      * @return true if the SourceSinkInfo results from computed type qualifiers
      *         for a called method, false otherwise
      */
@@ -154,7 +154,7 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
@@ -187,44 +187,58 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         SourceSinkInfo other = (SourceSinkInfo) obj;
         if (constantValue == null) {
-            if (other.constantValue != null)
+            if (other.constantValue != null) {
                 return false;
-        } else if (!constantValue.equals(other.constantValue))
+            }
+        } else if (!constantValue.equals(other.constantValue)) {
             return false;
-        if (interproc != other.interproc)
+        }
+        if (interproc != other.interproc) {
             return false;
-        if (local != other.local)
+        }
+        if (local != other.local) {
             return false;
+        }
         if (location == null) {
-            if (other.location != null)
+            if (other.location != null) {
                 return false;
-        } else if (!location.equals(other.location))
+            }
+        } else if (!location.equals(other.location)) {
             return false;
-        if (parameter != other.parameter)
+        }
+        if (parameter != other.parameter) {
             return false;
-        if (type != other.type)
+        }
+        if (type != other.type) {
             return false;
+        }
         if (vn == null) {
-            if (other.vn != null)
+            if (other.vn != null) {
                 return false;
-        } else if (!vn.equals(other.vn))
+            }
+        } else if (!vn.equals(other.vn)) {
             return false;
-        if (when != other.when)
+        }
+        if (when != other.when) {
             return false;
+        }
         return true;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override

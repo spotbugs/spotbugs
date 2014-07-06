@@ -25,11 +25,11 @@ import java.lang.reflect.Modifier;
  * Check that the BCEL classes present seem to be the right ones. Specifically,
  * we check whether the ones extended in FindBugs code are non-final. The
  * following BCEL classes are extended in FindBugs code:
- * 
+ *
  * org.apache.bcel.generic.ObjectType; org.apache.bcel.generic.Type;
  * org.apache.bcel.Constants; org.apache.bcel.classfile.EmptyVisitor
  * org.apache.bcel.Repository;
- * 
+ *
  * @author langmead
  */
 
@@ -62,7 +62,7 @@ public class CheckBcel {
 
     /**
      * Check whether given Class is declared final
-     * 
+     *
      * @param c
      *            the class to check
      * @return true iff Class is declared final
@@ -73,7 +73,7 @@ public class CheckBcel {
 
     /**
      * Output an appropriate error when a BCEL class looks wrong.
-     * 
+     *
      * @param cname
      *            name of the BCEL class
      */
@@ -89,7 +89,7 @@ public class CheckBcel {
      * Check that the BCEL classes present seem to be the right ones.
      * Specifically, we check whether the ones extended in FindBugs code are
      * non-final.
-     * 
+     *
      * @return true iff all checks passed
      */
     public static boolean check() {

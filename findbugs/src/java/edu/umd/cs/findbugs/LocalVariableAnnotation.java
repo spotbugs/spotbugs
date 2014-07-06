@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Bug annotation class for local variable names
- * 
+ *
  * @author William Pugh
  * @see BugAnnotation
  */
@@ -93,7 +93,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 
     /**
      * Constructor.
-     * 
+     *
      * @param name
      *            the name of the local variable
      * @param register
@@ -113,7 +113,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 
     /**
      * Constructor.
-     * 
+     *
      * @param name
      *            the name of the local variable
      * @param register
@@ -149,9 +149,9 @@ public class LocalVariableAnnotation implements BugAnnotation {
                 lv1 = localVariableTable.getLocalVariable(local, position2);
                 position1 = position2;
             }
-            if (lv1 != null)
+            if (lv1 != null) {
                 localName = lv1.getName();
-            else
+            } else {
                 for (LocalVariable lv : localVariableTable.getLocalVariableTable()) {
                     if (lv.getIndex() == local) {
                         if (!localName.equals("?") && !localName.equals(lv.getName())) {
@@ -162,17 +162,19 @@ public class LocalVariableAnnotation implements BugAnnotation {
                         localName = lv.getName();
                     }
                 }
+            }
         }
         LineNumberTable lineNumbers = method.getLineNumberTable();
-        if (lineNumbers == null)
+        if (lineNumbers == null) {
             return new LocalVariableAnnotation(localName, local, position1);
+        }
         int line = lineNumbers.getSourceLine(position1);
         return new LocalVariableAnnotation(localName, local, position1, line);
     }
 
     /**
      * Get a local variable annotation describing a parameter.
-     * 
+     *
      * @param method
      *            a Method
      * @param local
@@ -181,10 +183,11 @@ public class LocalVariableAnnotation implements BugAnnotation {
      */
     public static LocalVariableAnnotation getParameterLocalVariableAnnotation(Method method, int local) {
         LocalVariableAnnotation lva = getLocalVariableAnnotation(method, local, 0, 0);
-        if (lva.isNamed())
+        if (lva.isNamed()) {
             lva.setDescription(LocalVariableAnnotation.PARAMETER_NAMED_ROLE);
-        else
+        } else {
             lva.setDescription(LocalVariableAnnotation.PARAMETER_ROLE);
+        }
         return lva;
     }
 
@@ -207,20 +210,23 @@ public class LocalVariableAnnotation implements BugAnnotation {
         // System.out.println("format: " + key + " reg: " + register + " name: "
         // + value);
         if (key.equals("hash")) {
-            if (register < 0)
+            if (register < 0) {
                 return "??";
+            }
             return name;
         }
-        if (register < 0)
+        if (register < 0) {
             return "?";
-        if (key.equals("register"))
+        }
+        if (key.equals("register")) {
             return String.valueOf(register);
-        else if (key.equals("pc"))
+        } else if (key.equals("pc")) {
             return String.valueOf(pc);
-        else if (key.equals("name") || key.equals("givenClass"))
+        } else if (key.equals("name") || key.equals("givenClass")) {
             return name;
-        else if (!name.equals("?"))
+        } else if (!name.equals("?")) {
             return name;
+        }
         return "$L" + register;
     }
 
@@ -241,17 +247,19 @@ public class LocalVariableAnnotation implements BugAnnotation {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof LocalVariableAnnotation))
+        if (!(o instanceof LocalVariableAnnotation)) {
             return false;
+        }
         return name.equals(((LocalVariableAnnotation) o).name);
     }
 
     @Override
     public int compareTo(BugAnnotation o) {
-        if (!(o instanceof LocalVariableAnnotation)) // BugAnnotations must be
-                                                     // Comparable with any type
-                                                     // of BugAnnotation
+        if (!(o instanceof LocalVariableAnnotation)) {
+            // Comparable with any type
+            // of BugAnnotation
             return this.getClass().getName().compareTo(o.getClass().getName());
+        }
         return name.compareTo(((LocalVariableAnnotation) o).name);
     }
 
@@ -281,8 +289,9 @@ public class LocalVariableAnnotation implements BugAnnotation {
                 .addAttribute("register", String.valueOf(register)).addAttribute("pc", String.valueOf(pc));
 
         String role = getDescription();
-        if (!role.equals(DEFAULT_ROLE))
+        if (!role.equals(DEFAULT_ROLE)) {
             attributeList.addAttribute("role", role);
+        }
 
         BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
     }
@@ -314,8 +323,9 @@ public class LocalVariableAnnotation implements BugAnnotation {
     public static @CheckForNull
     LocalVariableAnnotation getLocalVariableAnnotation(Method method, Item item, int pc) {
         int reg = item.getRegisterNumber();
-        if (reg < 0)
+        if (reg < 0) {
             return null;
+        }
         return getLocalVariableAnnotation(method, reg, pc, item.getPC());
 
     }
@@ -323,8 +333,9 @@ public class LocalVariableAnnotation implements BugAnnotation {
     public static @CheckForNull
     LocalVariableAnnotation getLocalVariableAnnotation(DismantleBytecode visitor, Item item) {
         int reg = item.getRegisterNumber();
-        if (reg < 0)
+        if (reg < 0) {
             return null;
+        }
         return getLocalVariableAnnotation(visitor.getMethod(), reg, visitor.getPC(), item.getPC());
 
     }
@@ -341,8 +352,9 @@ public class LocalVariableAnnotation implements BugAnnotation {
             BitSet liveStoreSetAtEntry = llsaDataflow.getAnalysis().getResultFact(cfg.getEntry());
             int localsThatAreParameters = PreorderVisitor.getNumberArguments(method.getSignature());
             int startIndex = 0;
-            if (!method.isStatic())
+            if (!method.isStatic()) {
                 startIndex = 1;
+            }
             SignatureParser parser = new SignatureParser(method.getSignature());
             Iterator<String> signatureIterator = parser.parameterSignatureIterator();
             for (int i = startIndex; i < localsThatAreParameters + startIndex; i++) {
@@ -351,8 +363,9 @@ public class LocalVariableAnnotation implements BugAnnotation {
                     // parameter isn't live and signatures match
                     LocalVariableAnnotation potentialMatch = LocalVariableAnnotation.getLocalVariableAnnotation(method, i, 0, 0);
                     potentialMatch.setDescription(DID_YOU_MEAN_ROLE);
-                    if (!potentialMatch.isNamed())
+                    if (!potentialMatch.isNamed()) {
                         return potentialMatch;
+                    }
                     int distance = EditDistance.editDistance(name, potentialMatch.getName());
                     if (distance < lowestCost) {
                         match = potentialMatch;
@@ -380,8 +393,9 @@ public class LocalVariableAnnotation implements BugAnnotation {
         LocalVariableAnnotation match = null;
         int localsThatAreParameters = PreorderVisitor.getNumberArguments(method.getSignature());
         int startIndex = 0;
-        if (!method.isStatic())
+        if (!method.isStatic()) {
             startIndex = 1;
+        }
         SignatureParser parser = new SignatureParser(method.getSignature());
         Iterator<String> signatureIterator = parser.parameterSignatureIterator();
         int lowestCost = Integer.MAX_VALUE;
@@ -389,8 +403,9 @@ public class LocalVariableAnnotation implements BugAnnotation {
             String sig = signatureIterator.next();
             if (signature.equals(sig)) {
                 LocalVariableAnnotation potentialMatch = LocalVariableAnnotation.getLocalVariableAnnotation(method, i, 0, 0);
-                if (!potentialMatch.isNamed())
+                if (!potentialMatch.isNamed()) {
                     continue;
+                }
                 int distance = EditDistance.editDistance(name, potentialMatch.getName());
                 if (distance < lowestCost) {
                     match = potentialMatch;
@@ -403,8 +418,9 @@ public class LocalVariableAnnotation implements BugAnnotation {
                 // signatures match
             }
         }
-        if (lowestCost < 5)
+        if (lowestCost < 5) {
             return match;
+        }
         return null;
     }
 
@@ -414,4 +430,3 @@ public class LocalVariableAnnotation implements BugAnnotation {
     }
 }
 
-// vim:ts=4
