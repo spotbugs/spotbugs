@@ -32,6 +32,8 @@ findbugs/plugin/googlecode.jar
 findbugs/plugin/jira.jar
 findbugs/src/doc/allBugDescriptions.html
 findbugs/src/doc/bugDescriptions.html
+findbugs/src/doc/bugDescriptions_fr.html
+findbugs/src/doc/bugDescriptions_ja.html
 findbugs/web/
 findbugsTestCases/build/
 findbugsTestCases/classesEclipse/
