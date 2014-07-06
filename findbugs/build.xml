@@ -740,6 +740,21 @@
             <param name="bugdesc.title" value="FindBugs Bug Descriptions (Unabridged)"/>
             <param name="bugdesc.prologue" value="${doc.html.gen.allBugDescriptions.prologue}"/>
             <param name="bugdesc.unabridged" value="true"/>
+            <param name="bugdesc.user.language" value="en"/>
+        </antcall>
+        <antcall target="generatebugdesc">
+            <param name="bugdesc.output" value="${docsrc.dir}/bugDescriptions_ja.html"/>
+            <param name="bugdesc.title" value="FindBugs Bug Descriptions"/>
+            <param name="bugdesc.prologue" value="${doc.html.gen.bugDescriptions.prologue}"/>
+            <param name="bugdesc.unabridged" value="false"/>
+            <param name="bugdesc.user.language" value="ja"/>
+        </antcall>
+        <antcall target="generatebugdesc">
+            <param name="bugdesc.output" value="${docsrc.dir}/bugDescriptions_fr.html"/>
+            <param name="bugdesc.title" value="FindBugs Bug Descriptions"/>
+            <param name="bugdesc.prologue" value="${doc.html.gen.bugDescriptions.prologue}"/>
+            <param name="bugdesc.unabridged" value="false"/>
+            <param name="bugdesc.user.language" value="fr"/>
         </antcall>
     </target>
 
@@ -759,6 +774,7 @@
             logError="true"
             output="${bugdesc.output}">
             <jvmarg value="-ea"/>
+            <jvmarg value="-Duser.language=${bugdesc.user.language}"/>
             <jvmarg value="-Dfindbugs.home=${basedir}"/>
             <jvmarg value="-Dfindbugs.bugdesc.unabridged=${bugdesc.unabridged}"/>
             <classpath refid="tools.classpath"/>
