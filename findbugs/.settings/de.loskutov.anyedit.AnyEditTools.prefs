@@ -1,4 +1,4 @@
-activeContentFilterList=*.makefile,makefile,*.Makefile,Makefile,Makefile.*,*.mk,.classpath
+activeContentFilterList=*.makefile,makefile,*.Makefile,Makefile,Makefile.*,*.mk,.classpath,*.properties
 addNewLine=true
 convertActionOnSaave=AnyEdit.CnvrtTabToSpaces
 eclipse.preferences.version=1
