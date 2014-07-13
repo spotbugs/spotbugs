@@ -47,7 +47,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 /**
@@ -64,7 +63,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
  * </CODE> The attributes specified for a <CODE>BugResolution</CODE> supports
  * all primitive types and strings. If an error occurs while loading a
  * <CODE>BugResolution</CODE>, the error will be reported to the error log.
- * 
+ *
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:g1zgragg@hsr.ch">Guido Zgraggen</a>
@@ -126,7 +125,7 @@ public class BugResolutionLoader {
     /**
      * Loades the <CODE>BugResolutions</CODE> from the given XML-Document into
      * the specified <CODE>BugResolutionAssociations</CODE>.
-     * 
+     *
      * @param fixesDoc
      *            the XML-Document that contains the quick-fixes.
      * @param associations
@@ -150,9 +149,9 @@ public class BugResolutionLoader {
         return associations;
     }
 
-    private void loadBugResolution(Element bugFixElement, BugResolutionAssociations associations) {
+    private static void loadBugResolution(Element bugFixElement, BugResolutionAssociations associations) {
         String bugType = bugFixElement.getAttribute(BUG_TYPE);
-        if (bugType == null) {
+        if (bugType.isEmpty()) {
             FindbugsPlugin.getDefault().logError("No bug type found in BugResolution-Element.");
             return;
         }
@@ -184,7 +183,7 @@ public class BugResolutionLoader {
     }
 
     @CheckForNull
-    private IMarkerResolution instantiateBugResolution(Class<? extends IMarkerResolution> resolutionClass,
+    private static IMarkerResolution instantiateBugResolution(Class<? extends IMarkerResolution> resolutionClass,
             Map<String, String> attributes) {
         try {
             IMarkerResolution resolution = resolutionClass.newInstance();
@@ -199,7 +198,7 @@ public class BugResolutionLoader {
         }
     }
 
-    private void loadAttributes(IMarkerResolution resolution, Map<String, String> attributes) {
+    private static void loadAttributes(IMarkerResolution resolution, Map<String, String> attributes) {
         for (Entry<String, String> attr : attributes.entrySet()) {
             String name = attr.getKey();
             String value = attr.getValue();
@@ -207,7 +206,7 @@ public class BugResolutionLoader {
         }
     }
 
-    private void loadAttribute(IMarkerResolution resolution, String name, String value) {
+    private static void loadAttribute(IMarkerResolution resolution, String name, String value) {
         Class<? extends IMarkerResolution> typeClass = resolution.getClass();
         for (Method method : typeClass.getMethods()) {
             if (!isPropertySetterMethod(method, name)) {
@@ -228,7 +227,7 @@ public class BugResolutionLoader {
         }
     }
 
-    private boolean isPropertySetterMethod(Method method, String propertyName) {
+    private static boolean isPropertySetterMethod(Method method, String propertyName) {
         return method.getParameterTypes().length == 1 && method.getName().startsWith("set") && method.getName().length() > 3
                 && method.getName().substring(3).equalsIgnoreCase(propertyName);
     }
@@ -236,7 +235,7 @@ public class BugResolutionLoader {
     /**
      * Parse a given string value into the specified type. Only primitive types
      * are currently supported.
-     * 
+     *
      * @param value
      *            the string value
      * @param type
@@ -245,7 +244,7 @@ public class BugResolutionLoader {
      * @throws IllegalArgumentException
      *             if the specified <CODE>type</CODE> isn't parseable.
      */
-    private <T> Object parseValue(String value, Class<T> type) throws IllegalArgumentException {
+    private static <T> Object parseValue(String value, Class<T> type) throws IllegalArgumentException {
         if (String.class == type) {
             return value;
         }
@@ -268,9 +267,9 @@ public class BugResolutionLoader {
     }
 
     @CheckForNull
-    private Class<? extends IMarkerResolution> parseBugResolutionClass(Element resolutionElement) {
+    private static Class<? extends IMarkerResolution> parseBugResolutionClass(Element resolutionElement) {
         String className = resolutionElement.getAttribute(RESOLUTION_CLASS);
-        if (className == null) {
+        if (className.isEmpty()) {
             FindbugsPlugin.getDefault().logWarning("Missing a classname in the resolution element.");
             return null;
         }
@@ -287,7 +286,7 @@ public class BugResolutionLoader {
         return null;
     }
 
-    private Map<String, String> parseAttributes(Element resolutionElement) {
+    private static Map<String, String> parseAttributes(Element resolutionElement) {
         Map<String, String> attributes = new Hashtable<String, String>();
         try {
             NodeList attrList = resolutionElement.getElementsByTagName(ATTR);
@@ -296,11 +295,6 @@ public class BugResolutionLoader {
                 Element attrElement = (Element) attrList.item(i);
                 String name = attrElement.getAttribute(ATTR_NAME);
                 String value = attrElement.getTextContent();
-                if (false && SystemProperties.ASSERTIONS_ENABLED) {
-                    if (value.equals(attrElement.getTextContent())) {
-                        System.out.println("Expected " + attrElement.getTextContent() + ", got " + value);
-                    }
-                }
                 if (name != null && value != null) {
                     attributes.put(name, value);
                 }

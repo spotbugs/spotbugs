@@ -32,13 +32,14 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 /**
  * The <CODE>BugResolutionGenerator</CODE> searchs for bug-resolutions, that can
  * be used to fix the specific bug-type.
- * 
+ *
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:g1zgragg@hsr.ch">Guido Zgraggen</a>
  */
 public class BugResolutionGenerator implements IMarkerResolutionGenerator2 {
 
+    @Override
     public IMarkerResolution[] getResolutions(IMarker marker) {
         try {
             String type = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
@@ -53,6 +54,7 @@ public class BugResolutionGenerator implements IMarkerResolutionGenerator2 {
         }
     }
 
+    @Override
     public boolean hasResolutions(IMarker marker) {
         try {
             String type = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
