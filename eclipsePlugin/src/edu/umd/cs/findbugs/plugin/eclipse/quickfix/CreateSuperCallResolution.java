@@ -57,7 +57,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  */
 public class CreateSuperCallResolution extends BugResolution {
 
-    private boolean insertFirst = true;
+    private boolean insertFirst;
 
     public CreateSuperCallResolution() {
         super();
@@ -74,14 +74,6 @@ public class CreateSuperCallResolution extends BugResolution {
 
     public void setInsertFirst(boolean insertFirst) {
         this.insertFirst = insertFirst;
-    }
-
-    public boolean isInsertLast() {
-        return !isInsertFirst();
-    }
-
-    public void setInsertLast(boolean insertLast) {
-        setInsertFirst(!insertLast);
     }
 
     @Override

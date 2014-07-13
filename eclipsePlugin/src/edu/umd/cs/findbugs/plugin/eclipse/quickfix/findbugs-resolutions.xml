@@ -43,7 +43,7 @@
     <bug type="FI_MISSING_SUPER_CALL">
         <resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateSuperCallResolution">
             <attr name="label">Add super.finalize() call.</attr>
-            <attr name="insertLast">true</attr>
+            <attr name="insertFirst">false</attr>
         </resolution>
     </bug>
     <bug type="FI_USELESS">
@@ -65,7 +65,7 @@
     <bug type="IJU_TEARDOWN_NO_SUPER">
         <resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateSuperCallResolution">
             <attr name="label">Add super.tearDown() call.</attr>
-            <attr name="insertLast">true</attr>
+            <attr name="insertFirst">false</attr>
         </resolution>
     </bug>
     <bug type="IM_BAD_CHECK_FOR_ODD">
