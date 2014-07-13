@@ -597,18 +597,23 @@ public final class MarkerUtil {
                 MarkerConfidence.Ignore.name()));
     }
 
-    public static @CheckForNull
-    BugPattern findBugPatternForMarker(IMarker marker) {
+    @CheckForNull
+    public static BugPattern findBugPatternForMarker(IMarker marker) {
+        String patternId = getBugPatternString(marker);
+        if (patternId != null) {
+            return DetectorFactoryCollection.instance().lookupBugPattern(patternId);
+        }
+        return null;
+    }
+
+    @CheckForNull
+    public static String getBugPatternString(IMarker marker){
         try {
-            Object patternId = marker.getAttribute(FindBugsMarker.BUG_TYPE);
-            if (patternId instanceof String) {
-                return DetectorFactoryCollection.instance().lookupBugPattern((String) patternId);
-            }
+            return (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
         } catch (CoreException e) {
             FindbugsPlugin.getDefault().logException(e, "Marker does not contain pattern id");
             return null;
         }
-        return null;
     }
 
     public static @CheckForNull
