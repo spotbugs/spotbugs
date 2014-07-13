@@ -51,21 +51,13 @@ public class BugResolutionAssociations {
 
     private final Map<String, Set<Class<? extends IMarkerResolution>>> resolutionClasses;
 
-    private final Map<String, Set<IMarkerResolution>> resolutions;
-
-    // -------------------------------------------------------------------------
-
     protected BugResolutionAssociations(Map<String, Set<Class<? extends IMarkerResolution>>> resolutionClasses,
             Map<String, Set<IMarkerResolution>> resolutions) {
         super();
         if (resolutionClasses == null) {
             resolutionClasses = new Hashtable<String, Set<Class<? extends IMarkerResolution>>>();
         }
-        if (resolutions == null) {
-            resolutions = new Hashtable<String, Set<IMarkerResolution>>();
-        }
         this.resolutionClasses = resolutionClasses;
-        this.resolutions = resolutions;
     }
 
     protected BugResolutionAssociations(Map<String, Set<Class<? extends IMarkerResolution>>> resolutionClasses) {
@@ -83,65 +75,20 @@ public class BugResolutionAssociations {
         return registerBugResolutions(bugType, classes);
     }
 
-    public boolean deregisterBugResolution(String bugType, Class<? extends IMarkerResolution> resolutionClass) {
-        checkForNull(bugType, "bug type");
-        Set<Class<? extends IMarkerResolution>> classes = new HashSet<Class<? extends IMarkerResolution>>();
-        classes.add(resolutionClass);
-        return deregisterBugResolutions(bugType, classes);
-    }
-
-    protected boolean registerBugResolutions(String bugType, Set<Class<? extends IMarkerResolution>> resolutionClasses) {
+    protected boolean registerBugResolutions(String bugType, Set<Class<? extends IMarkerResolution>> rclasses) {
         Assert.isNotNull(bugType);
-        Assert.isNotNull(resolutionClasses);
-        if (resolutionClasses.isEmpty()) {
+        Assert.isNotNull(rclasses);
+        if (rclasses.isEmpty()) {
             return false;
         }
 
         Set<Class<? extends IMarkerResolution>> classes = this.resolutionClasses.get(bugType);
         if (classes != null) {
-            return classes.addAll(resolutionClasses);
+            return classes.addAll(rclasses);
         }
 
-        this.resolutionClasses.put(bugType, resolutionClasses);
+        this.resolutionClasses.put(bugType, rclasses);
         return true;
-    }
-
-    protected boolean deregisterBugResolutions(String bugType, Set<Class<? extends IMarkerResolution>> resolutionClasses) {
-        Assert.isNotNull(bugType);
-        Assert.isNotNull(resolutionClasses);
-        if (resolutionClasses.isEmpty()) {
-            return false;
-        }
-
-        Set<Class<? extends IMarkerResolution>> classes = this.resolutionClasses.get(bugType);
-        if (classes == null) {
-            return false;
-        }
-
-        classes.removeAll(resolutionClasses);
-        if (classes.isEmpty()) {
-            this.resolutionClasses.remove(bugType);
-        }
-        return true;
-    }
-
-    // -------------------------------------------------------------------------
-
-    public boolean addBugResolution(String bugType, IMarkerResolution bugFix) {
-        return addBugResolutions(bugType, bugFix);
-    }
-
-    public boolean addBugResolutions(String bugType, IMarkerResolution... resolutions) {
-        Assert.isNotNull(bugType);
-        if (resolutions.length == 0) {
-            return false;
-        }
-
-        Set<IMarkerResolution> fixes = new HashSet<IMarkerResolution>();
-        for (IMarkerResolution bugFix : resolutions) {
-            fixes.add(bugFix);
-        }
-        return addBugResolutions(bugType, fixes);
     }
 
     protected boolean addBugResolutions(String bugType, Set<IMarkerResolution> resolutions) {
@@ -151,93 +98,22 @@ public class BugResolutionAssociations {
             return false;
         }
 
-        Set<Class<? extends IMarkerResolution>> resolutionClasses = new HashSet<Class<? extends IMarkerResolution>>();
+        Set<Class<? extends IMarkerResolution>> resolutionClazzes = new HashSet<Class<? extends IMarkerResolution>>();
         for (IMarkerResolution bugFix : resolutions) {
-            resolutionClasses.add(bugFix.getClass());
+            resolutionClazzes.add(bugFix.getClass());
         }
-        registerBugResolutions(bugType, resolutionClasses);
-
-        Set<IMarkerResolution> fixes = this.resolutions.get(bugType);
-        if (fixes != null) {
-            return fixes.addAll(resolutions);
-        }
-
-        this.resolutions.put(bugType, resolutions);
-        return true;
+        return registerBugResolutions(bugType, resolutionClazzes);
     }
-
-    // -------------------------------------------------------------------------
 
     public IMarkerResolution[] getBugResolutions(String bugType) {
         Assert.isNotNull(bugType);
-        Set<? extends IMarkerResolution> resolutionSet = resolutions.get(bugType);
-        if (resolutionSet != null) {
-            return resolutionSet.toArray(new IMarkerResolution[resolutionSet.size()]);
-        }
         return createBugResolutions(bugType);
     }
 
-    // -------------------------------------------------------------------------
-
     public boolean containsBugResolution(String bugType) {
         Assert.isNotNull(bugType);
-        return resolutions.containsKey(bugType) || resolutionClasses.containsKey(bugType);
+        return resolutionClasses.containsKey(bugType);
     }
-
-    // -------------------------------------------------------------------------
-
-    public boolean removeBugResolution(String bugType, IMarkerResolution bugFix) {
-        return removeBugResolutions(bugType, bugFix);
-    }
-
-    public boolean removeBugResolutions(String bugType, IMarkerResolution... resolutions) {
-        Assert.isNotNull(bugType);
-
-        Set<IMarkerResolution> resolutionSet;
-        if (resolutions.length > 0) {
-            resolutionSet = new HashSet<IMarkerResolution>();
-            for (IMarkerResolution resolution : resolutions) {
-                resolutionSet.add(resolution);
-            }
-        } else {
-            resolutionSet = this.resolutions.get(bugType);
-        }
-        return removeBugResolutions(bugType, resolutionSet);
-    }
-
-    protected boolean removeBugResolutions(String bugType, Set<IMarkerResolution> resolutions) {
-        Assert.isNotNull(bugType);
-        Assert.isNotNull(resolutions);
-        if (resolutions.isEmpty()) {
-            return false;
-        }
-
-        Set<Class<? extends IMarkerResolution>> resolutionClasses = new HashSet<Class<? extends IMarkerResolution>>();
-        for (IMarkerResolution resolution : resolutions) {
-            resolutionClasses.add(resolution.getClass());
-        }
-
-        Set<IMarkerResolution> resolutionSet = this.resolutions.get(bugType);
-        if (resolutionSet == null) {
-            return false;
-        }
-
-        resolutionSet.removeAll(resolutions);
-        if (resolutionSet.isEmpty()) {
-            this.resolutions.remove(bugType);
-        }
-
-        return deregisterBugResolutions(bugType, resolutionClasses);
-    }
-
-    // -------------------------------------------------------------------------
-
-    public void clear() {
-        resolutionClasses.clear();
-        resolutions.clear();
-    }
-
-    // -------------------------------------------------------------------------
 
     @Override
     public String toString() {
@@ -256,8 +132,6 @@ public class BugResolutionAssociations {
         return sb.toString();
     }
 
-    // -------------------------------------------------------------------------
-
     private IMarkerResolution[] createBugResolutions(String bugType) {
         Assert.isNotNull(bugType);
         Set<Class<? extends IMarkerResolution>> classes = resolutionClasses.get(bugType);
@@ -266,11 +140,10 @@ public class BugResolutionAssociations {
         }
 
         Set<IMarkerResolution> fixes = instantiateBugResolutions(classes);
-        resolutions.put(bugType, fixes);
         return fixes.toArray(new IMarkerResolution[fixes.size()]);
     }
 
-    private Set<IMarkerResolution> instantiateBugResolutions(Set<Class<? extends IMarkerResolution>> classes) {
+    private static Set<IMarkerResolution> instantiateBugResolutions(Set<Class<? extends IMarkerResolution>> classes) {
         Assert.isNotNull(classes);
         Set<IMarkerResolution> fixes = new HashSet<IMarkerResolution>();
         for (Class<? extends IMarkerResolution> resolutionClass : classes) {
@@ -283,7 +156,7 @@ public class BugResolutionAssociations {
     }
 
     @CheckForNull
-    private <F extends IMarkerResolution> F instantiateBugResolution(Class<F> resolutionClass) {
+    private static <F extends IMarkerResolution> F instantiateBugResolution(Class<F> resolutionClass) {
         try {
             return resolutionClass.newInstance();
         } catch (InstantiationException e) {
