@@ -2,7 +2,13 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ConditionCheck.checkForNull;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -21,14 +27,16 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.eclipse.ui.views.markers.WorkbenchMarkerResolution;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
@@ -46,18 +54,37 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:g1zgragg@hsr.ch">Guido Zgraggen</a>
  */
-public abstract class BugResolution implements IMarkerResolution {
+public abstract class BugResolution extends WorkbenchMarkerResolution {
 
     static private final String MISSING_BUG_INSTANCE = "This bug is no longer in the system. "
             + "The bugs somehow got out of sync with the memory representation. "
-            + "Try running FindBugs again. If that does not work, check the error log and remove the *.fbwarnings files.";
+            + "Try running FindBugs again. If that does not work, check the error log.";
 
-    private String label = getClass().getSimpleName();
+    private String label;
 
-    private IProgressMonitor monitor = null;
+    private IProgressMonitor monitor;
+
+    private String bugPattern;
+
+    private IMarker currentMarker;
+
+    /**
+     * Called by reflection!
+     */
+    public BugResolution() {
+        label = getClass().getSimpleName();
+    }
+
+    /**
+     * Called on initialization
+     * @param options optional arguments
+     */
+    public void setOptions(@Nonnull Map<String, String> options){
+        // noop
+    }
 
     @Override
-    @CheckForNull
+    @Nonnull
     public String getLabel() {
         return label;
     }
@@ -65,6 +92,35 @@ public abstract class BugResolution implements IMarkerResolution {
     public void setLabel(String label) {
         checkForNull(label, "label");
         this.label = label;
+    }
+
+    @Override
+    public String getDescription() {
+        return getLabel();
+    }
+
+    @Override
+    public Image getImage() {
+        ImageRegistry registry = FindbugsPlugin.getDefault().getImageRegistry();
+        return registry.get(FindbugsPlugin.ICON_DEFAULT);
+    }
+
+    @Override
+    public IMarker[] findOtherMarkers(IMarker[] markers) {
+        Set<IMarker> set = new HashSet<>(markers.length);
+        for (IMarker other : markers) {
+            if(currentMarker == other || !MarkerUtil.isFindBugsMarker(other)) {
+                continue;
+            }
+            String pattern = MarkerUtil.getBugPatternString(other);
+            if(pattern == null){
+                continue;
+            }
+            if (pattern.equals(bugPattern)) {
+                set.add(other);
+            }
+        }
+        return set.toArray(new IMarker[set.size()]);
     }
 
     @CheckForNull
@@ -91,13 +147,7 @@ public abstract class BugResolution implements IMarkerResolution {
         try {
             // do NOT inline this method invocation
             runInternal(marker);
-        } catch (BugResolutionException e) {
-            reportException(e);
-        } catch (JavaModelException e) {
-            reportException(e);
-        } catch (BadLocationException e) {
-            reportException(e);
-        } catch (CoreException e) {
+        } catch (BugResolutionException | BadLocationException | CoreException e) {
             reportException(e);
         }
     }
@@ -198,6 +248,36 @@ public abstract class BugResolution implements IMarkerResolution {
         originalUnit.getBuffer().setContents(doc.get());
         originalUnit.commitWorkingCopy(false, monitor);
         return edits.getRegion();
+    }
+
+    /**
+     * @return the bug type we started to work with (can be different on different resolution instances
+     * if the resolution class supports multiple bug patterns)
+     */
+    @CheckForNull
+    public String getBugPattern() {
+        return bugPattern;
+    }
+
+    public void setBugPattern(@Nonnull String pattern) {
+        Objects.requireNonNull(pattern);
+        this.bugPattern = pattern;
+    }
+
+    /**
+     * @return the marker we started to work with (can be different on different resolution instances
+     * if the resolution class supports multiple bug types)
+     */
+    public IMarker getMarker() {
+        return currentMarker;
+    }
+
+    /**
+     * @param initialMarker the initialMarker to set
+     */
+    public void setMarker(IMarker initialMarker) {
+        Objects.requireNonNull(initialMarker);
+        this.currentMarker = initialMarker;
     }
 
 }

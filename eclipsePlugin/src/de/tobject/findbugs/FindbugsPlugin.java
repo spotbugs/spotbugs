@@ -104,8 +104,6 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.config.UserPreferences;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionAssociations;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionLoader;
 import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
 
 
@@ -200,10 +198,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     /** Resource bundle. */
     private ResourceBundle resourceBundle;
-
-    private BugResolutionAssociations bugResolutions;
-
-    private boolean bugResolutionsLoaded;
 
     /**
      * Constructor.
@@ -1106,23 +1100,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             FindbugsPlugin.getDefault().logException(e, "Could not read user preferences for project");
             return null;
         }
-    }
-
-    public BugResolutionAssociations getBugResolutions() {
-        if (!bugResolutionsLoaded) {
-            bugResolutionsLoaded = true;
-            try {
-                bugResolutions = loadBugResolutions();
-            } catch (Exception e) {
-                FindbugsPlugin.getDefault().logException(e, "Could not read load bug resolutions");
-            }
-        }
-        return bugResolutions;
-    }
-
-    private static BugResolutionAssociations loadBugResolutions() {
-        BugResolutionLoader loader = new BugResolutionLoader();
-        return loader.loadBugResolutions();
     }
 
     public static void showMarker(IMarker marker, String viewId, IWorkbenchPart source) {

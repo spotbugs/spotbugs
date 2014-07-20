@@ -21,16 +21,15 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
-import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ConditionCheck.checkForNull;
-
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ui.IMarkerResolution;
 
@@ -38,9 +37,9 @@ import de.tobject.findbugs.FindbugsPlugin;
 
 /**
  * The <CODE>BugResolutionAssociations</CODE> is the container for the loaded
- * bug-resolutions. For each registred bug-type, at least one resolution-class
- * has to be specified. Also an instance of a bug-resolution can be associated
- * with a bug-type.
+ * bug-resolutions. For each registred bug pattern, at least one resolution-class
+ * has to be specified. Also an instance of a bug resolution can be associated
+ * with a bug pattern.
  *
  * @see BugResolutionAssociations#getBugResolutions(String)
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
@@ -49,105 +48,51 @@ import de.tobject.findbugs.FindbugsPlugin;
  */
 public class BugResolutionAssociations {
 
-    private final Map<String, Set<Class<? extends IMarkerResolution>>> resolutionClasses;
+    private final Map<String, List<QuickFixContribution>> quickFixes;
 
-    protected BugResolutionAssociations(Map<String, Set<Class<? extends IMarkerResolution>>> resolutionClasses,
-            Map<String, Set<IMarkerResolution>> resolutions) {
+    protected BugResolutionAssociations(Map<String, List<QuickFixContribution>> quickFixes) {
         super();
-        if (resolutionClasses == null) {
-            resolutionClasses = new Hashtable<String, Set<Class<? extends IMarkerResolution>>>();
-        }
-        this.resolutionClasses = resolutionClasses;
-    }
-
-    protected BugResolutionAssociations(Map<String, Set<Class<? extends IMarkerResolution>>> resolutionClasses) {
-        this(resolutionClasses, null);
-    }
-
-    public BugResolutionAssociations() {
-        this(null);
-    }
-
-    public boolean registerBugResolution(String bugType, Class<? extends IMarkerResolution> resolutionClass) {
-        checkForNull(bugType, "bug type");
-        Set<Class<? extends IMarkerResolution>> classes = new HashSet<Class<? extends IMarkerResolution>>();
-        classes.add(resolutionClass);
-        return registerBugResolutions(bugType, classes);
-    }
-
-    protected boolean registerBugResolutions(String bugType, Set<Class<? extends IMarkerResolution>> rclasses) {
-        Assert.isNotNull(bugType);
-        Assert.isNotNull(rclasses);
-        if (rclasses.isEmpty()) {
-            return false;
-        }
-
-        Set<Class<? extends IMarkerResolution>> classes = this.resolutionClasses.get(bugType);
-        if (classes != null) {
-            return classes.addAll(rclasses);
-        }
-
-        this.resolutionClasses.put(bugType, rclasses);
-        return true;
-    }
-
-    protected boolean addBugResolutions(String bugType, Set<IMarkerResolution> resolutions) {
-        Assert.isNotNull(bugType);
-        Assert.isNotNull(resolutions);
-        if (resolutions.isEmpty()) {
-            return false;
-        }
-
-        Set<Class<? extends IMarkerResolution>> resolutionClazzes = new HashSet<Class<? extends IMarkerResolution>>();
-        for (IMarkerResolution bugFix : resolutions) {
-            resolutionClazzes.add(bugFix.getClass());
-        }
-        return registerBugResolutions(bugType, resolutionClazzes);
-    }
-
-    public IMarkerResolution[] getBugResolutions(String bugType) {
-        Assert.isNotNull(bugType);
-        return createBugResolutions(bugType);
+        this.quickFixes = quickFixes;
     }
 
     public boolean containsBugResolution(String bugType) {
         Assert.isNotNull(bugType);
-        return resolutionClasses.containsKey(bugType);
+        return quickFixes.containsKey(bugType);
     }
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        for (Entry<String, Set<Class<? extends IMarkerResolution>>> entry : resolutionClasses.entrySet()) {
-            final String bugType = entry.getKey();
-            sb.append(bugType);
-            sb.append(" { ");
-            for (Class<? extends IMarkerResolution> resolutionClass : entry.getValue()) {
-                sb.append(resolutionClass.getName());
-                sb.append(", ");
-            }
-            sb.replace(sb.length() - 2, sb.length(), " }\n");
+        StringBuilder sb = new StringBuilder();
+        Set<Entry<String, List<QuickFixContribution>>> set = quickFixes.entrySet();
+        for (Entry<String, List<QuickFixContribution>> entry : set) {
+            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append(", ");
         }
-        // sb.trimToSize();
+        if(sb.length() > 1) {
+            sb.setLength(sb.length() - 2);
+        }
         return sb.toString();
     }
 
-    private IMarkerResolution[] createBugResolutions(String bugType) {
+    public IMarkerResolution[] createBugResolutions(String bugType, IMarker marker) {
         Assert.isNotNull(bugType);
-        Set<Class<? extends IMarkerResolution>> classes = resolutionClasses.get(bugType);
+        Assert.isNotNull(marker);
+        List<QuickFixContribution> classes = quickFixes.get(bugType);
         if (classes == null) {
             return new IMarkerResolution[0];
         }
 
-        Set<IMarkerResolution> fixes = instantiateBugResolutions(classes);
+        Set<BugResolution> fixes = instantiateBugResolutions(classes);
+        for (BugResolution fix : fixes) {
+            fix.setMarker(marker);
+        }
         return fixes.toArray(new IMarkerResolution[fixes.size()]);
     }
 
-    private static Set<IMarkerResolution> instantiateBugResolutions(Set<Class<? extends IMarkerResolution>> classes) {
-        Assert.isNotNull(classes);
-        Set<IMarkerResolution> fixes = new HashSet<IMarkerResolution>();
-        for (Class<? extends IMarkerResolution> resolutionClass : classes) {
-            IMarkerResolution fixer = instantiateBugResolution(resolutionClass);
+    private static Set<BugResolution> instantiateBugResolutions(List<QuickFixContribution> quicks) {
+        Assert.isNotNull(quicks);
+        Set<BugResolution> fixes = new HashSet<>();
+        for (QuickFixContribution qf : quicks) {
+            BugResolution fixer = instantiateBugResolution(qf);
             if (fixer != null) {
                 fixes.add(fixer);
             }
@@ -156,15 +101,15 @@ public class BugResolutionAssociations {
     }
 
     @CheckForNull
-    private static <F extends IMarkerResolution> F instantiateBugResolution(Class<F> resolutionClass) {
+    private static BugResolution instantiateBugResolution(QuickFixContribution qf) {
         try {
-            return resolutionClass.newInstance();
-        } catch (InstantiationException e) {
-            FindbugsPlugin.getDefault().logException(e,
-                    "Failed to instantiate bug-resolution '" + resolutionClass.getName() + "'.");
-            return null;
-        } catch (IllegalAccessException e) {
-            FindbugsPlugin.getDefault().logException(e, "Failed to create bug-resolution '" + resolutionClass.getName() + "'.");
+            BugResolution br = qf.producer.call();
+            br.setLabel(qf.label);
+            br.setBugPattern(qf.pattern);
+            br.setOptions(qf.args);
+            return br;
+        } catch (Throwable e) {
+            FindbugsPlugin.getDefault().logException(e, "Failed to create bug-resolution '" + qf + "'.");
             return null;
         }
     }

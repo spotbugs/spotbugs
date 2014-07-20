@@ -2,6 +2,7 @@
 <?eclipse version="3.0"?>
 <plugin>
    <extension-point id="findbugsPlugins" name="Custom FindBugs detector plugins" schema="schema/detectorPlugins.exsd"/>
+   <extension-point id="findbugsQuickFixes" name="Custom FindBugs quick fixes" schema="schema/findbugsQuickFixes.exsd"/>
    <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
@@ -1326,6 +1327,105 @@
              Java &gt; FindBugs preferences.
       </description>
     </transfer>
+   </extension>
+
+
+   <extension
+         point="edu.umd.cs.findbugs.plugin.eclipse.findbugsQuickFixes">
+
+    <quickFix
+        pattern="DM_BOOLEAN_CTOR"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution"
+        label="Use valueOf(...) instead"
+    />
+    <quickFix
+        pattern="DM_FP_NUMBER_CTOR"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution"
+        label="Use valueOf(...) instead"
+    />
+    <quickFix
+        pattern="DM_NUMBER_CTOR"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution"
+        label="Use valueOf(...) instead"
+    />
+    <quickFix
+        pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateDoPrivilegedBlockResolution"
+        label="Create doPrivileged() block."
+    />
+    <quickFix
+        pattern="EI_EXPOSE_REP"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateMutableCloneResolution"
+        label="Clone the field (think about performance first!)"
+    />
+    <quickFix
+        pattern="ES_COMPARING_STRINGS_WITH_EQ"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseEqualsResolution"
+        label="Use equals(...) instead"
+    />
+    <quickFix
+        pattern="ESync_EMPTY_SYNC"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.RemoveUselessStatementResolution"
+        label="Remove empty synchronized block"
+    />
+    <quickFix
+        pattern="FI_EMPTY"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.RemoveUselessMethodResolution"
+        label="Remove empty finalizer."
+    />
+    <quickFix
+        pattern="FI_USELESS"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.RemoveUselessMethodResolution"
+        label="Remove useless finalizer."
+    />
+    <quickFix
+        pattern="FI_PUBLIC_SHOULD_BE_PROTECTED"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.ChangePublicToProtectedResolution"
+        label="Change public to protected."
+    />
+    <quickFix
+        pattern="FI_MISSING_SUPER_CALL"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateSuperCallResolution"
+        label="Add super.finalize() call."
+        arguments="insertFirst=false"
+    />
+    <quickFix
+        pattern="IJU_SETUP_NO_SUPER"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateSuperCallResolution"
+        label="Add super.setUp() call."
+        arguments="insertFirst=true"
+    />
+    <quickFix
+        pattern="IJU_TEARDOWN_NO_SUPER"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateSuperCallResolution"
+        label="Add super.tearDown() call."
+        arguments="insertFirst=false"
+    />
+    <quickFix
+        pattern="IM_BAD_CHECK_FOR_ODD"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateRemainderOddnessCheckResolution"
+        label="Replace if-condition by 'x % 2 != 0'"
+    />
+    <quickFix
+        pattern="IM_BAD_CHECK_FOR_ODD"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateAndOddnessCheckResolution"
+        label="Replace if-condition by '(x &amp; 1) == 1'"
+    />
+    <quickFix
+        pattern="MS_SHOULD_BE_FINAL"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.MakeFieldFinalResolution"
+        label="Add 'final' modifier to field"
+    />
+    <quickFix
+        pattern="SIC_INNER_SHOULD_BE_STATIC"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.MakeInnerTypeStaticResolution"
+        label="Make inner class static"
+    />
+    <quickFix
+        pattern="SS_SHOULD_BE_STATIC"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.MakeFieldStaticResolution"
+        label="Change to a static field"
+    />
    </extension>
 
 

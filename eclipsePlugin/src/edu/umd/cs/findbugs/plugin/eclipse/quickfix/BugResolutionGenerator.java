@@ -21,13 +21,15 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.IMarkerResolutionGenerator2;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.reporter.MarkerUtil;
 
 /**
  * The <CODE>BugResolutionGenerator</CODE> searchs for bug-resolutions, that can
@@ -39,34 +41,51 @@ import de.tobject.findbugs.marker.FindBugsMarker;
  */
 public class BugResolutionGenerator implements IMarkerResolutionGenerator2 {
 
+    private BugResolutionAssociations bugResolutions;
+
+    private boolean bugResolutionsLoaded;
+
+    public BugResolutionAssociations getBugResolutions() {
+        if (!bugResolutionsLoaded) {
+            bugResolutionsLoaded = true;
+            try {
+                bugResolutions = loadBugResolutions();
+            } catch (Exception e) {
+                FindbugsPlugin.getDefault().logException(e, "Could not read load bug resolutions");
+            }
+        }
+        return bugResolutions;
+    }
+
+    private static BugResolutionAssociations loadBugResolutions() {
+        Map<String, List<QuickFixContribution>> quickFixes = QuickFixesExtensionHelper.getContributedQuickFixes();
+        return new BugResolutionAssociations(quickFixes);
+    }
+
     @Override
     public IMarkerResolution[] getResolutions(IMarker marker) {
-        try {
-            String type = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
-            BugResolutionAssociations resolutions = FindbugsPlugin.getDefault().getBugResolutions();
-            if (resolutions == null) {
-                return new IMarkerResolution[0];
-            }
-            return resolutions.getBugResolutions(type);
-        } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Marker has no FindBugs bug-type.");
+        String type = MarkerUtil.getBugPatternString(marker);
+        if(type == null){
             return null;
         }
+        BugResolutionAssociations resolutions = getBugResolutions();
+        if (resolutions == null) {
+            return new IMarkerResolution[0];
+        }
+        return resolutions.createBugResolutions(type, marker);
     }
 
     @Override
     public boolean hasResolutions(IMarker marker) {
-        try {
-            String type = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
-            BugResolutionAssociations resolutions = FindbugsPlugin.getDefault().getBugResolutions();
-            if (resolutions == null) {
-                return false;
-            }
-            return resolutions.containsBugResolution(type);
-        } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Marker has no FindBugs bug-type.");
+        String type = MarkerUtil.getBugPatternString(marker);
+        if(type == null){
             return false;
         }
+        BugResolutionAssociations resolutions = getBugResolutions();
+        if (resolutions == null) {
+            return false;
+        }
+        return resolutions.containsBugResolution(type);
     }
 
 }

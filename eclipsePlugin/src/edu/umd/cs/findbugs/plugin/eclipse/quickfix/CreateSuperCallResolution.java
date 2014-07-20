@@ -24,6 +24,10 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getMethodDeclaration;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getTypeDeclaration;
 
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.Block;
@@ -63,17 +67,17 @@ public class CreateSuperCallResolution extends BugResolution {
         super();
     }
 
-    public CreateSuperCallResolution(boolean insertFirst) {
-        this();
-        setInsertFirst(insertFirst);
+    /**
+     * Called on initialization
+     * @param options optional arguments
+     */
+    @Override
+    public void setOptions(@Nonnull Map<String, String> options){
+        insertFirst = Boolean.parseBoolean(options.get("insertFirst"));
     }
 
     public boolean isInsertFirst() {
         return insertFirst;
-    }
-
-    public void setInsertFirst(boolean insertFirst) {
-        this.insertFirst = insertFirst;
     }
 
     @Override

@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="edu.umd.cs.findbugs.plugin.eclipse" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="edu.umd.cs.findbugs.plugin.eclipse" id="findbugsQuickFixes" name="Custom FindBugs quick fixes"/>
+      </appInfo>
+      <documentation>
+         Extension point can be used to contribute custom quick fix resolutions for the FindBugs plugin.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
+      <complexType>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <element ref="quickFix" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="quickFix">
+      <complexType>
+         <attribute name="class" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolution:"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+         <attribute name="arguments" type="string">
+            <annotation>
+               <documentation>
+                  Optional arguments map, as comma separated list of key=value pairs.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="pattern" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Bug pattern supported by this fix.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="label" type="string" use="required">
+            <annotation>
+               <documentation>
+                  QuickFix label: a short text indicating what the resolution will do
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         3.0.1
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         [Enter extension point usage example here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiinfo"/>
+      </appInfo>
+      <documentation>
+         See BugResolution
+      </documentation>
+   </annotation>
+
+
+
+</schema>
