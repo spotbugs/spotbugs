@@ -151,6 +151,11 @@ public class BugRanker {
                 }
 
                 String parts[] = s.split(" ");
+                if (parts.length != 3) {
+                    AnalysisContext.logError("Can't parse bug rank line: '" + s + "'. "
+                            + "Valid line must contain 3 parts separated by spaces.");
+                    continue;
+                }
                 String rank = parts[0];
                 String kind = parts[1];
                 String what = parts[2];
@@ -161,7 +166,8 @@ public class BugRanker {
                 } else if (kind.equals("Category")) {
                     bugCategories.storeAdjustment(what, rank);
                 } else {
-                    AnalysisContext.logError("Can't parse bug rank " + s);
+                    AnalysisContext.logError("Can't parse rank kind from line: '" + s + "'. "
+                            + "Valid kind must be either 'BugPattern', 'BugKind' or 'Category'.");
                 }
             }
         } finally {
