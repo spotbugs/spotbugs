@@ -76,7 +76,9 @@
          <attribute name="label" type="string" use="required">
             <annotation>
                <documentation>
-                  QuickFix label: a short text indicating what the resolution will do
+                  QuickFix label: a short text indicating what the resolution will do.
+                  If there are more than one resolution per QuickFix, they will be sorted
+                  alphabetically by their label value.
                </documentation>
             </annotation>
          </attribute>
