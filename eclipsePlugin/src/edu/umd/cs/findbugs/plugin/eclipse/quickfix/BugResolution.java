@@ -232,7 +232,8 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         MessageDialog.openError(FindbugsPlugin.getShell(), "BugResolution failed.", e.getLocalizedMessage());
     }
 
-    private CompilationUnit createWorkingCopy(ICompilationUnit unit) throws JavaModelException {
+    @Nonnull
+    protected final CompilationUnit createWorkingCopy(@Nonnull ICompilationUnit unit) throws JavaModelException {
         unit.becomeWorkingCopy(monitor);
         ASTParser parser = ASTParser.newParser(AST.JLS3);
         parser.setSource(unit);
