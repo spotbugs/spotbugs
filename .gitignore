@@ -67,4 +67,4 @@ server/webUpdateCheck/classesEclipse/
 server/webUpdateCheck/build/
 target
 webCloudProtocol/build/
-
+*.log
