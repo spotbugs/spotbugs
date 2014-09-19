@@ -74,6 +74,8 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
 
     private final Map<IJavaElement, ASTRewrite> reusableRewrites = new HashMap<>();
 
+    private final Map<ICompilationUnit, CompilationUnit>  reusableCompilationUnits = new HashMap<>();
+
     /**
      * Called by reflection!
      */
@@ -194,7 +196,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             }
 
             Document doc = new Document(originalUnit.getBuffer().getContents());
-            CompilationUnit workingUnit = createWorkingCopy(originalUnit);
+            CompilationUnit workingUnit = makeOrReuseWorkingCopy(originalUnit);
 
             ASTRewrite rewrite = makeOrReuseRewrite(workingUnit);
 
@@ -202,15 +204,6 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             marker.delete();
             FindbugsPlugin.getBugCollection(project, monitor).remove(bug);
             return new PendingRewrite(rewrite, doc, originalUnit);
-
-//                IRegion region = rewriteCompilationUnit(rewrite, doc, originalUnit);
-//                FindbugsPlugin.getBugCollection(project, monitor).remove(bug);
-//                marker.delete();
-//
-//                IEditorPart part = EditorUtility.isOpenInEditor(originalUnit);
-//                if (part instanceof ITextEditor) {
-//                    ((ITextEditor) part).selectAndReveal(region.getOffset(), region.getLength());
-//                }
         } catch (BugResolutionException | CoreException e) {
                 try {
                     if (originalUnit != null) {
@@ -224,9 +217,17 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         }
     }
 
+    private CompilationUnit makeOrReuseWorkingCopy(ICompilationUnit originalUnit) throws JavaModelException {
+        CompilationUnit copy = reusableCompilationUnits.get(originalUnit);
+        if (copy != null) {
+            return copy;
+        }
+        copy = createWorkingCopy(originalUnit);
+        reusableCompilationUnits.put(originalUnit, copy);
+        return copy;
+    }
+
     private ASTRewrite makeOrReuseRewrite(CompilationUnit workingUnit) {
-        //TODO maybe cache compilation units, not astrewrites
-        System.out.println(workingUnit.getJavaElement().hashCode());
         ASTRewrite rewrite = reusableRewrites.get(workingUnit.getJavaElement());
         if (rewrite != null) {
             return rewrite;
@@ -275,7 +276,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         ICompilationUnit originalUnit = getCompilationUnit(marker);
         if (originalUnit == null) {
             throw new BugResolutionException("No compilation unit found for marker " + marker.getType() + " (" + marker.getId()
-                    + ")");
+                    + ')');
         }
 
         Document doc = new Document(originalUnit.getBuffer().getContents());
