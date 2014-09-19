@@ -3,6 +3,7 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ConditionCheck.checkForNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +71,8 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     private String bugPattern;
 
     private IMarker currentMarker;
+
+    private final Map<IJavaElement, ASTRewrite> reusableRewrites = new HashMap<>();
 
     /**
      * Called by reflection!
@@ -193,7 +196,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             Document doc = new Document(originalUnit.getBuffer().getContents());
             CompilationUnit workingUnit = createWorkingCopy(originalUnit);
 
-            ASTRewrite rewrite = ASTRewrite.create(workingUnit.getAST());
+            ASTRewrite rewrite = makeOrReuseRewrite(workingUnit);
 
             repairBug(rewrite, workingUnit, bug);
             marker.delete();
@@ -219,6 +222,18 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             reportException(e);
             return null;
         }
+    }
+
+    private ASTRewrite makeOrReuseRewrite(CompilationUnit workingUnit) {
+        //TODO maybe cache compilation units, not astrewrites
+        System.out.println(workingUnit.getJavaElement().hashCode());
+        ASTRewrite rewrite = reusableRewrites.get(workingUnit.getJavaElement());
+        if (rewrite != null) {
+            return rewrite;
+        }
+        rewrite = ASTRewrite.create(workingUnit.getAST());
+        reusableRewrites.put(workingUnit.getJavaElement(), rewrite);
+        return rewrite;
     }
 
 

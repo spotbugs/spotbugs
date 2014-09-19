@@ -951,7 +951,9 @@ public final class MarkerUtil {
 
     public static boolean isFindBugsMarker(IMarker marker) {
         try {
-            return marker != null && marker.exists() && marker.isSubtypeOf(FindBugsMarker.NAME);
+            return marker != null &&
+                    marker.exists() &&
+                    marker.isSubtypeOf(FindBugsMarker.NAME);
         } catch (CoreException e) {
             FindbugsPlugin.getDefault().logException(e, "Exception while checking FindBugs type on marker.");
         }
