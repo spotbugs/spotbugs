@@ -1364,6 +1364,11 @@
         label="Use equals(...) instead"
     />
     <quickFix
+        pattern="ES_COMPARING_PARAMETER_STRING_WITH_EQ"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseEqualsResolution"
+        label="Use equals(...) instead"
+    />
+    <quickFix
         pattern="ESync_EMPTY_SYNC"
         class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.RemoveUselessStatementResolution"
         label="Remove empty synchronized block"
