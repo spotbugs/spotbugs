@@ -2,7 +2,9 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ConditionCheck.checkForNull;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -37,6 +39,7 @@ import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.markers.WorkbenchMarkerResolution;
+import org.eclipse.ui.views.markers.internal.Util;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
@@ -132,6 +135,93 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         this.monitor = monitor;
     }
 
+    @Override
+    public void run(IMarker[] markers, IProgressMonitor multipleFixMonitor) {
+        List<PendingRewrite> pendingRewrites = new ArrayList<>(markers.length);
+        for (int i = 0; i < markers.length; i++) {
+            multipleFixMonitor.subTask(Util.getProperty(IMarker.MESSAGE, markers[i]));
+            pendingRewrites.add(resolveWithoutWriting(markers[i]));
+        }
+
+        for(PendingRewrite pendingRewrite:pendingRewrites) {
+            completeRewrite(pendingRewrite);
+        }
+    }
+
+    @CheckForNull
+    private IRegion completeRewrite(PendingRewrite p) {
+        try {
+            if (p != null) {
+                return rewriteCompilationUnit(p.rewrite, p.doc, p.originalUnit);
+            }
+        } catch (JavaModelException | BadLocationException e) {
+            reportException(e);
+        }
+        return null;
+    }
+
+    private static class PendingRewrite {
+        public ICompilationUnit originalUnit;
+        public Document doc;
+        public ASTRewrite rewrite;
+
+        public PendingRewrite(ASTRewrite rewrite, Document doc, ICompilationUnit originalUnit) {
+            this.rewrite = rewrite;
+            this.doc = doc;
+            this.originalUnit = originalUnit;
+        }
+
+    }
+
+    @CheckForNull
+    private PendingRewrite resolveWithoutWriting(IMarker marker) {
+        checkForNull(marker, "marker");
+        ICompilationUnit originalUnit = null;
+        try {
+            BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
+            if (bug == null) {
+                throw new BugResolutionException(MISSING_BUG_INSTANCE);
+            }
+
+            IProject project = marker.getResource().getProject();
+            originalUnit = getCompilationUnit(marker);
+            if (originalUnit == null) {
+                throw new BugResolutionException("No compilation unit found for marker " + marker.getType() + " (" + marker.getId()
+                        + ')');
+            }
+
+            Document doc = new Document(originalUnit.getBuffer().getContents());
+            CompilationUnit workingUnit = createWorkingCopy(originalUnit);
+
+            ASTRewrite rewrite = ASTRewrite.create(workingUnit.getAST());
+
+            repairBug(rewrite, workingUnit, bug);
+            marker.delete();
+            FindbugsPlugin.getBugCollection(project, monitor).remove(bug);
+            return new PendingRewrite(rewrite, doc, originalUnit);
+
+//                IRegion region = rewriteCompilationUnit(rewrite, doc, originalUnit);
+//                FindbugsPlugin.getBugCollection(project, monitor).remove(bug);
+//                marker.delete();
+//
+//                IEditorPart part = EditorUtility.isOpenInEditor(originalUnit);
+//                if (part instanceof ITextEditor) {
+//                    ((ITextEditor) part).selectAndReveal(region.getOffset(), region.getLength());
+//                }
+        } catch (BugResolutionException | CoreException e) {
+                try {
+                    if (originalUnit != null) {
+                        originalUnit.discardWorkingCopy();
+                    }
+                } catch (JavaModelException e1) {
+                    reportException(e1);
+                }
+            reportException(e);
+            return null;
+        }
+    }
+
+
     /**
      * Runs the <CODE>BugResolution</CODE> on the given <CODE>IMarker</CODE>.
      * The <CODE>IMarker</CODE> has to be a FindBugs marker. The
@@ -193,6 +283,12 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         }
     }
 
+    /**
+     * Returns if TypeBindings should be resolved.  This is a mildly expensive operation,
+     * so if the resolutions don't require knowing about Types, return false.  Otherwise,
+     * return true.
+     * @return
+     */
     protected abstract boolean resolveBindings();
 
     protected abstract void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug)
