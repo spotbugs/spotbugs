@@ -7,5 +7,6 @@
 	<classpathentry kind="src" path="quickfixScenario"/>
 	<classpathentry kind="src" path="jdtScenario"/>
 	<classpathentry kind="src" path="secondSrcScenario"/>
+	<classpathentry kind="src" path="multiQuickfixScenario"/>
 	<classpathentry kind="output" path="bin_eclipse"/>
 </classpath>
