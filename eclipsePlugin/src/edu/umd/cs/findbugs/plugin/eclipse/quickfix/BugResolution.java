@@ -72,7 +72,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
 
     private IMarker currentMarker;
 
-    private final Map<IJavaElement, ASTRewrite> reusableRewrites = new HashMap<>();
+    private final Map<CompilationUnit, ASTRewrite> reusableRewrites = new HashMap<>();
 
     private final Map<ICompilationUnit, CompilationUnit>  reusableCompilationUnits = new HashMap<>();
 
@@ -144,11 +144,13 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     public void run(IMarker[] markers, IProgressMonitor multipleFixMonitor) {
         List<PendingRewrite> pendingRewrites = new ArrayList<>(markers.length);
         for (int i = 0; i < markers.length; i++) {
+            // this was done in the superclass implementation
             multipleFixMonitor.subTask(Util.getProperty(IMarker.MESSAGE, markers[i]));
             pendingRewrites.add(resolveWithoutWriting(markers[i]));
         }
 
-        for(PendingRewrite pendingRewrite:pendingRewrites) {
+        // fully commit all changes
+        for (PendingRewrite pendingRewrite : pendingRewrites) {
             completeRewrite(pendingRewrite);
         }
     }
@@ -165,19 +167,6 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         return null;
     }
 
-    private static class PendingRewrite {
-        public ICompilationUnit originalUnit;
-        public Document doc;
-        public ASTRewrite rewrite;
-
-        public PendingRewrite(ASTRewrite rewrite, Document doc, ICompilationUnit originalUnit) {
-            this.rewrite = rewrite;
-            this.doc = doc;
-            this.originalUnit = originalUnit;
-        }
-
-    }
-
     @CheckForNull
     private PendingRewrite resolveWithoutWriting(IMarker marker) {
         checkForNull(marker, "marker");
@@ -191,8 +180,8 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             IProject project = marker.getResource().getProject();
             originalUnit = getCompilationUnit(marker);
             if (originalUnit == null) {
-                throw new BugResolutionException("No compilation unit found for marker " + marker.getType() + " (" + marker.getId()
-                        + ')');
+                throw new BugResolutionException("No compilation unit found for marker " + marker.getType() + " ("
+                        + marker.getId() + ')');
             }
 
             Document doc = new Document(originalUnit.getBuffer().getContents());
@@ -205,13 +194,13 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             FindbugsPlugin.getBugCollection(project, monitor).remove(bug);
             return new PendingRewrite(rewrite, doc, originalUnit);
         } catch (BugResolutionException | CoreException e) {
-                try {
-                    if (originalUnit != null) {
-                        originalUnit.discardWorkingCopy();
-                    }
-                } catch (JavaModelException e1) {
-                    reportException(e1);
+            try {
+                if (originalUnit != null) {
+                    originalUnit.discardWorkingCopy();
                 }
+            } catch (JavaModelException e1) {
+                reportException(e1);
+            }
             reportException(e);
             return null;
         }
@@ -228,12 +217,18 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     }
 
     private ASTRewrite makeOrReuseRewrite(CompilationUnit workingUnit) {
-        ASTRewrite rewrite = reusableRewrites.get(workingUnit.getJavaElement());
+        // since we are caching compilation units as well, the hashcode won't
+        // change even if rewrites are applied. It would change, however, if
+        // makeOrReuseWorkingCopy wasn't used. Finally, both the working copy
+        // and the rewrite need to be cached otherwise, nodes could be created
+        // that belonged to the wrong CompilationUnit which causes problems for
+        // moveTargets and copyTargets
+        ASTRewrite rewrite = reusableRewrites.get(workingUnit);
         if (rewrite != null) {
             return rewrite;
         }
         rewrite = ASTRewrite.create(workingUnit.getAST());
-        reusableRewrites.put(workingUnit.getJavaElement(), rewrite);
+        reusableRewrites.put(workingUnit, rewrite);
         return rewrite;
     }
 
@@ -391,6 +386,19 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     public void setMarker(IMarker initialMarker) {
         Objects.requireNonNull(initialMarker);
         this.currentMarker = initialMarker;
+    }
+
+    private static class PendingRewrite {
+        public ICompilationUnit originalUnit;
+        public Document doc;
+        public ASTRewrite rewrite;
+
+        public PendingRewrite(ASTRewrite rewrite, Document doc, ICompilationUnit originalUnit) {
+            this.rewrite = rewrite;
+            this.doc = doc;
+            this.originalUnit = originalUnit;
+        }
+
     }
 
 }
