@@ -8,7 +8,7 @@ public class TwoProblemsHere {
 
     public TwoProblemsHere(String s) {
         if (s == "bar") {                       //should fix (broken)
-            Double d = new Double(7.1);         //should fix (broken)
+            Double d = Double.valueOf(7.1);         //should fix (broken)
             Double d2 = returnQuick();
 
             System.out.printf("%s %s", d, d2);
@@ -17,7 +17,7 @@ public class TwoProblemsHere {
     }
 
     private Double returnQuick() {
-        return new Double(7.2);        //should fix (broken)
+        return Double.valueOf(7.2);        //should fix (broken)
     }
 
     private boolean check(String otherValue) {

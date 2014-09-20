@@ -138,7 +138,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         }
     }
 
-    private void assertEqualFiles(URL expectedFile, ICompilationUnit compilationUnit) throws IOException, JavaModelException {
+    protected void assertEqualFiles(URL expectedFile, ICompilationUnit compilationUnit) throws IOException, JavaModelException {
         String expectedSource = readFileContents(expectedFile);
         assertEquals(expectedSource, compilationUnit.getSource());
     }
@@ -159,12 +159,14 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         }
     }
 
-    private URL getExpectedOutputFile(String filename) {
-        URL url = FindbugsTestPlugin.getDefault().getBundle().getEntry("/quickfixOutput/" + filename);
+    protected URL getExpectedOutputFile(String filename) {
+        URL url = FindbugsTestPlugin.getDefault().getBundle().getEntry(getOutputFolderName() + filename);
         return url;
     }
 
-    private ICompilationUnit getInputCompilationUnit(String classFileName) throws JavaModelException {
+    protected abstract String getOutputFolderName();
+
+    protected ICompilationUnit getInputCompilationUnit(String classFileName) throws JavaModelException {
         ICompilationUnit compilationUnit = (ICompilationUnit) getJavaProject().findElement(new Path(classFileName));
         return compilationUnit;
     }

@@ -20,19 +20,20 @@ package de.tobject.findbugs.quickfix.test;
 
 import java.io.IOException;
 
+import de.tobject.findbugs.test.AbstractQuickfixTest;
+import de.tobject.findbugs.test.TestScenario;
+
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateAndOddnessCheckResolution;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateRemainderOddnessCheckResolution;
+
 import org.eclipse.core.runtime.CoreException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.tobject.findbugs.test.AbstractQuickfixTest;
-import de.tobject.findbugs.test.TestScenario;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateAndOddnessCheckResolution;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateRemainderOddnessCheckResolution;
-
 /**
  * This class tests the quickfix resolutions.
- * 
+ *
  * @author Tomás Pollak
  */
 public class QuickfixTest extends AbstractQuickfixTest {
@@ -112,6 +113,11 @@ public class QuickfixTest extends AbstractQuickfixTest {
     @Test
     public void testUseValueOfResolution() throws CoreException, IOException {
         doTestQuickfixResolution("UseValueOfResolutionExample.java", "DM_BOOLEAN_CTOR", "DM_NUMBER_CTOR");
+    }
+
+    @Override
+    protected String getOutputFolderName()  {
+        return "/quickfixOutput/";
     }
 
 }

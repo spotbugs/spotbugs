@@ -20,17 +20,17 @@ package de.tobject.findbugs.quickfix.test;
 
 import java.io.IOException;
 
+import de.tobject.findbugs.test.AbstractQuickfixTest;
+import de.tobject.findbugs.test.TestScenario;
+
 import org.eclipse.core.runtime.CoreException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.tobject.findbugs.test.AbstractQuickfixTest;
-import de.tobject.findbugs.test.TestScenario;
-
 /**
  * This class tests the quickfix resolutions for examples that use JUnit.
- * 
+ *
  * @author Tomás Pollak
  */
 public class QuickfixWithJUnitTest extends AbstractQuickfixTest {
@@ -53,5 +53,10 @@ public class QuickfixWithJUnitTest extends AbstractQuickfixTest {
     @Override
     protected TestScenario getTestScenario() {
         return TestScenario.QUICKFIX_WITH_JUNIT;
+    }
+
+    @Override
+    protected String getOutputFolderName()  {
+        return "/quickfixOutput/";
     }
 }

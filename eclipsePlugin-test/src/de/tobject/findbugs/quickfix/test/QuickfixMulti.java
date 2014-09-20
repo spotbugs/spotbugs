@@ -22,20 +22,27 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.test.AbstractQuickfixTest;
 import de.tobject.findbugs.test.TestScenario;
 
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.views.markers.WorkbenchMarkerResolution;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  *  Tests the ability to fix multiple bugs at once from the Problems view
@@ -44,6 +51,7 @@ import org.junit.BeforeClass;
  *
  */
 public class QuickfixMulti extends AbstractQuickfixTest {
+
 
     @Override
     protected TestScenario getTestScenario() {
@@ -60,6 +68,23 @@ public class QuickfixMulti extends AbstractQuickfixTest {
         //tearDownTestProject();
     }
 
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+
+        ProjectFilterSettings settings = getProjectPreferences().getFilterSettings();
+        settings.setMinPriority("Low");
+        settings.setMinRank(20);
+    }
+
+
+    @Test
+    public void testMultiUseValueOf() throws Exception {
+        doTestMultiQuickfixResolution(getJavaProject().getProject(), "DM_FP_NUMBER_CTOR");
+
+    }
+
+
     protected void doTestMultiQuickfixResolution(IProject project, String expectedPattern) throws CoreException, IOException {
         // Run FindBugs on the entire project
         work(createFindBugsWorker(), project);
@@ -75,15 +100,29 @@ public class QuickfixMulti extends AbstractQuickfixTest {
 
         markers = filterMarkers(markers, expectedPattern);
 
+        System.out.println(Arrays.toString(markers));
+
         // Apply resolution to each marker
         applyMultiResolutionToAllMarkers(markers);
 
-
-
-        // TODO Assert output file
-        //assertEqualFiles(getExpectedOutputFile(classFileName), getInputCompilationUnit(classFileName));
-        //assertEquals(0, getInputFileMarkers(classFileName).length);
+        //check project inputs and outputs
+        checkJavaFiles(project.members());
     }
+
+    private void checkJavaFiles(IResource[] iResources) throws CoreException, IOException, JavaModelException {
+        for (IResource resource : iResources) {
+            if (resource instanceof IFile) {
+                String fileName = resource.getName();
+                if (fileName.endsWith(".java")) {
+                    assertEqualFiles(getExpectedOutputFile(fileName), getInputCompilationUnit(fileName));
+                }
+            }
+            else if (resource instanceof IFolder) {
+                checkJavaFiles(((IFolder) resource).members());
+            }
+        }
+    }
+
 
     private void applyMultiResolutionToAllMarkers(IMarker[] markers) {
         IMarkerResolution[] resolutions = getResolutionGenerator().getResolutions(markers[0]);
@@ -114,6 +153,11 @@ public class QuickfixMulti extends AbstractQuickfixTest {
         }
 
         return filteredMarkers.toArray(new IMarker[filteredMarkers.size()]);
+    }
+
+    @Override
+    protected String getOutputFolderName() {
+        return "/multiQuickfixOutput/";
     }
 
 }
