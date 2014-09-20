@@ -204,16 +204,36 @@
             verticalRulerPreferenceValue="true"/>
       <specification
             annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationTroubling"
+            colorPreferenceKey="findbugs.troubling.color"
+            colorPreferenceValue="248,218,49"
             icon="icons/buggy-tiny-yellow.png"
             includeOnPreferencePage="true"
-            label="fbWarningTroubling"
-            quickFixIcon="icons/buggy-tiny-yellow.png"/>
+            label="FindBugs Troubling"
+            overviewRulerPreferenceKey="findbugs.troubling.overview"
+            overviewRulerPreferenceValue="true"
+            quickFixIcon="icons/buggy-tiny-yellow.png"
+            textPreferenceKey="findbugs.troubling.text"
+            textPreferenceValue="true"
+            textStylePreferenceKey="findbugs.troubling.textstyle"
+            textStylePreferenceValue="UNDERLINE"
+            verticalRulerPreferenceKey="findbugs.troubling.vertical"
+            verticalRulerPreferenceValue="true"/>
       <specification
             annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationOfConcern"
+            colorPreferenceKey="findbugs.ofconcern.color"
+            colorPreferenceValue="146,209,120"
             icon="icons/buggy-tiny-yellow2.png"
             includeOnPreferencePage="true"
-            label="fbWarningOfConcern"
-            quickFixIcon="icons/buggy-tiny-yellow2.png"/>
+            label="FindBugs Of Concern"
+            overviewRulerPreferenceKey="findbugs.ofconcern.overview"
+            overviewRulerPreferenceValue="true"
+            quickFixIcon="icons/buggy-tiny-yellow2.png"
+            textPreferenceKey="findbugs.ofconcern.text"
+            textPreferenceValue="true"
+            textStylePreferenceKey="findbugs.ofconcern.textstyle"
+            textStylePreferenceValue="UNDERLINE"
+            verticalRulerPreferenceKey="findbugs.ofconcern.vertical"
+            verticalRulerPreferenceValue="true"/>
 
    </extension>
 
