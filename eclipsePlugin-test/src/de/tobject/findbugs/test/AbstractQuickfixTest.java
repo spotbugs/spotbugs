@@ -25,6 +25,13 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URL;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.FindbugsTestPlugin;
+import de.tobject.findbugs.reporter.MarkerUtil;
+
+import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -33,18 +40,13 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.IMarkerResolutionGenerator2;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.FindbugsTestPlugin;
-import de.tobject.findbugs.reporter.MarkerUtil;
-import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator;
-
 /**
  * Base class for FindBugs quickfix tests.
- * 
+ *
  * @author Tomás Pollak
  */
 public abstract class AbstractQuickfixTest extends AbstractPluginTest {
@@ -59,12 +61,12 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         resolutionGenerator = new BugResolutionGenerator();
 
         // We need to enable project settings, because some tests need to modify
-        // the
-        // reporting preferences
+        // the reporting preferences
         FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);
     }
 
     @Override
+    @After
     public void tearDown() throws CoreException {
         resolutionGenerator = null;
 
@@ -130,7 +132,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         Assert.fail("No resolution of class " + resolutionClass);
     }
 
-    private void assertAllMarkersHaveResolutions(IMarker[] markers) {
+    protected void assertAllMarkersHaveResolutions(IMarker[] markers) {
         for (int i = 0; i < markers.length; i++) {
             assertTrue(getResolutionGenerator().hasResolutions(markers[i]));
         }
@@ -141,7 +143,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         assertEquals(expectedSource, compilationUnit.getSource());
     }
 
-    private void assertPresentBugPattern(String bugPatternType, IMarker[] markers) {
+    protected void assertPresentBugPattern(String bugPatternType, IMarker[] markers) {
         for (int i = 0; i < markers.length; i++) {
             BugPattern pattern = MarkerUtil.findBugPatternForMarker(markers[i]);
             if (pattern.getType().equals(bugPatternType)) {
@@ -151,7 +153,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         fail("Couldn't find pattern " + bugPatternType);
     }
 
-    private void assertPresentBugPatterns(String[] expectedPatterns, IMarker[] markers) {
+    protected void assertPresentBugPatterns(String[] expectedPatterns, IMarker[] markers) {
         for (int i = 0; i < expectedPatterns.length; i++) {
             assertPresentBugPattern(expectedPatterns[i], markers);
         }
@@ -175,7 +177,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         return getInputCompilationUnit(classFileName).getResource();
     }
 
-    private IMarkerResolutionGenerator2 getResolutionGenerator() {
+    protected IMarkerResolutionGenerator2 getResolutionGenerator() {
         return resolutionGenerator;
     }
 

@@ -145,7 +145,9 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         List<PendingRewrite> pendingRewrites = new ArrayList<>(markers.length);
         for (int i = 0; i < markers.length; i++) {
             // this was done in the superclass implementation
-            multipleFixMonitor.subTask(Util.getProperty(IMarker.MESSAGE, markers[i]));
+            if (multipleFixMonitor != null) {
+                multipleFixMonitor.subTask(Util.getProperty(IMarker.MESSAGE, markers[i]));
+            }
             pendingRewrites.add(resolveWithoutWriting(markers[i]));
         }
 
