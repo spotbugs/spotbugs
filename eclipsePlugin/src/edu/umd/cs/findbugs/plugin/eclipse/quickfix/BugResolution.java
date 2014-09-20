@@ -261,38 +261,20 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
      *
      * @see #run(IMarker)
      */
-    private void runInternal(IMarker marker) throws BugResolutionException, BadLocationException, CoreException {
+    private void runInternal(IMarker marker) throws CoreException {
         Assert.isNotNull(marker);
 
-        BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
-        if (bug == null) {
-            throw new BugResolutionException(MISSING_BUG_INSTANCE);
-        }
-
-        IProject project = marker.getResource().getProject();
-        ICompilationUnit originalUnit = getCompilationUnit(marker);
-        if (originalUnit == null) {
-            throw new BugResolutionException("No compilation unit found for marker " + marker.getType() + " (" + marker.getId()
-                    + ')');
-        }
-
-        Document doc = new Document(originalUnit.getBuffer().getContents());
-        CompilationUnit workingUnit = createWorkingCopy(originalUnit);
-
-        ASTRewrite rewrite = ASTRewrite.create(workingUnit.getAST());
+       PendingRewrite pending = resolveWithoutWriting(marker);
 
         try {
-            repairBug(rewrite, workingUnit, bug);
-            IRegion region = rewriteCompilationUnit(rewrite, doc, originalUnit);
-            FindbugsPlugin.getBugCollection(project, monitor).remove(bug);
-            marker.delete();
+            IRegion region = completeRewrite(pending);
 
-            IEditorPart part = EditorUtility.isOpenInEditor(originalUnit);
+            IEditorPart part = EditorUtility.isOpenInEditor(pending.originalUnit);
             if (part instanceof ITextEditor) {
                 ((ITextEditor) part).selectAndReveal(region.getOffset(), region.getLength());
             }
         } finally {
-            originalUnit.discardWorkingCopy();
+            pending.originalUnit.discardWorkingCopy();
         }
     }
 
