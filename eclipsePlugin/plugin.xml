@@ -172,16 +172,36 @@
   <extension point="org.eclipse.ui.editors.markerAnnotationSpecification">
       <specification
             annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationScariest"
+            colorPreferenceKey="findbugs.scariest.color"
+            colorPreferenceValue="212,6,28"
             icon="icons/buggy-tiny.png"
             includeOnPreferencePage="true"
-            label="fbWarningScariest"
-            quickFixIcon="icons/buggy-tiny.png"/>
+            label="FindBugs Scariest"
+            overviewRulerPreferenceKey="findbugs.scariest.overview"
+            overviewRulerPreferenceValue="true"
+            quickFixIcon="icons/buggy-tiny.png"
+            textPreferenceKey="findbugs.scariest.text"
+            textPreferenceValue="true"
+            textStylePreferenceKey="findbugs.scariest.textstyle"
+            textStylePreferenceValue="UNDERLINE"
+            verticalRulerPreferenceKey="findbugs.scariest.vertical"
+            verticalRulerPreferenceValue="true"/>
       <specification
             annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationScary"
+            colorPreferenceKey="findbugs.scary.color"
+            colorPreferenceValue="248,77,06"
             icon="icons/buggy-tiny-orange.png"
             includeOnPreferencePage="true"
-            label="fbWarningScary"
-            quickFixIcon="icons/buggy-tiny-orange.png"/>
+            label="FindBugs Scary"
+            overviewRulerPreferenceKey="findbugs.scary.overview"
+            overviewRulerPreferenceValue="true"
+            quickFixIcon="icons/buggy-tiny-orange.png"
+            textPreferenceKey="findbugs.scary.text"
+            textPreferenceValue="true"
+            textStylePreferenceKey="findbugs.scary.textstyle"
+            textStylePreferenceValue="UNDERLINE"
+            verticalRulerPreferenceKey="findbugs.scary.vertical"
+            verticalRulerPreferenceValue="true"/>
       <specification
             annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationTroubling"
             icon="icons/buggy-tiny-yellow.png"
