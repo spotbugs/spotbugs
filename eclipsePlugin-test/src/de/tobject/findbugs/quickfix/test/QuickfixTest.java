@@ -112,6 +112,8 @@ public class QuickfixTest extends AbstractQuickfixTest {
 
     @Test
     public void testUseEqualsResolution() throws CoreException, IOException {
+        getProjectPreferences().getFilterSettings().setMinPriority("Low");
+
         doTestQuickfixResolution("UseEqualsResolutionExample.java", "ES_COMPARING_STRINGS_WITH_EQ", "ES_COMPARING_PARAMETER_STRING_WITH_EQ");
     }
 

@@ -8,7 +8,7 @@ public class UseEqualsResolutionExample {
     }
 
     protected boolean check(String s) {
-        return "foo".equals(s);
+        return ("foo").equals(s);
     }
 
 }

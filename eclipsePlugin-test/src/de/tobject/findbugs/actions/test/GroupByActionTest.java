@@ -23,6 +23,11 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.List;
 
+import de.tobject.findbugs.actions.GroupByAction;
+import de.tobject.findbugs.test.AbstractFindBugsTest;
+import de.tobject.findbugs.test.TestScenario;
+import de.tobject.findbugs.view.explorer.GroupType;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -30,11 +35,6 @@ import org.eclipse.ui.PartInitException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import de.tobject.findbugs.actions.GroupByAction;
-import de.tobject.findbugs.test.AbstractFindBugsTest;
-import de.tobject.findbugs.test.TestScenario;
-import de.tobject.findbugs.view.explorer.GroupType;
 
 /**
  * This class tests the GroupByAction.
