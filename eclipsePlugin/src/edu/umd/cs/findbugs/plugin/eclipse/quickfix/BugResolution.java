@@ -263,25 +263,28 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
      */
     private void runInternal(IMarker marker) throws CoreException {
         Assert.isNotNull(marker);
+        PendingRewrite pending = resolveWithoutWriting(marker);
 
-       PendingRewrite pending = resolveWithoutWriting(marker);
+        if (pending != null) {
+            try {
 
-        try {
-            IRegion region = completeRewrite(pending);
+                IRegion region = completeRewrite(pending);
 
-            IEditorPart part = EditorUtility.isOpenInEditor(pending.originalUnit);
-            if (part instanceof ITextEditor) {
-                ((ITextEditor) part).selectAndReveal(region.getOffset(), region.getLength());
+                IEditorPart part = EditorUtility.isOpenInEditor(pending.originalUnit);
+                if (part instanceof ITextEditor) {
+                    ((ITextEditor) part).selectAndReveal(region.getOffset(), region.getLength());
+                }
+            } finally {
+                pending.originalUnit.discardWorkingCopy();
             }
-        } finally {
-            pending.originalUnit.discardWorkingCopy();
         }
     }
 
     /**
-     * Returns if TypeBindings should be resolved.  This is a mildly expensive operation,
-     * so if the resolutions don't require knowing about Types, return false.  Otherwise,
-     * return true.
+     * Returns if TypeBindings should be resolved. This is a mildly expensive
+     * operation, so if the resolutions don't require knowing about Types,
+     * return false. Otherwise, return true.
+     *
      * @return
      */
     protected abstract boolean resolveBindings();
