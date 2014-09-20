@@ -250,7 +250,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         try {
             // do NOT inline this method invocation
             runInternal(marker);
-        } catch (BugResolutionException | BadLocationException | CoreException e) {
+        } catch (CoreException e) {
             reportException(e);
         }
     }
