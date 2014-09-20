@@ -111,6 +111,11 @@ public class QuickfixTest extends AbstractQuickfixTest {
     }
 
     @Test
+    public void testUseEqualsResolution() throws CoreException, IOException {
+        doTestQuickfixResolution("UseEqualsResolutionExample.java", "ES_COMPARING_STRINGS_WITH_EQ", "ES_COMPARING_PARAMETER_STRING_WITH_EQ");
+    }
+
+    @Test
     public void testUseValueOfResolution() throws CoreException, IOException {
         doTestQuickfixResolution("UseValueOfResolutionExample.java", "DM_BOOLEAN_CTOR", "DM_NUMBER_CTOR");
     }
