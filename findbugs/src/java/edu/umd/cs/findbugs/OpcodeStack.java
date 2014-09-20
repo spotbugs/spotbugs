@@ -1186,16 +1186,28 @@ public class OpcodeStack implements Constants2 {
         } else if (isReachOnlyByBranch() && !stackUpdated) {
             stack.clear();
 
+            Item item = null;
             for (CodeException e : dbc.getCode().getExceptionTable()) {
                 if (e.getHandlerPC() == dbc.getPC()) {
-                    push(new Item(getExceptionSig(dbc, e)));
-                    setReachOnlyByBranch(false);
-                    setTop(false);
-                    return;
+                    Item newItem = new Item(getExceptionSig(dbc, e));
+                    if (item == null) {
+                        item = newItem;
+                    } else {
+                        item = Item.merge(item, newItem);
+                    }
+
 
                 }
             }
-            setTop(true);
+
+            if (item != null) {
+                push(item);
+                setReachOnlyByBranch(false);
+                setTop(false);
+            } else {
+
+                setTop(true);
+            }
 
 
         }
