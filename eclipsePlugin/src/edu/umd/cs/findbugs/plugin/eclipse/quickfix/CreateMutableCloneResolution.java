@@ -24,6 +24,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 
 /**
@@ -49,7 +50,12 @@ public class CreateMutableCloneResolution extends BugResolution {
         TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
         MethodDeclaration method = getMethodDeclaration(type, bug.getPrimaryMethod());
 
-        String fieldName = bug.getPrimaryField().getFieldName();
+
+        FieldAnnotation primaryField = bug.getPrimaryField();
+        if (primaryField == null) {
+            throw new BugResolutionException("No original field found.");
+        }
+        String fieldName = primaryField.getFieldName();
         SimpleName original = null;
 
         for (Statement stmt : (List<Statement>) method.getBody().statements()) {
