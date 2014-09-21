@@ -284,9 +284,10 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     }
 
     /**
-     * Returns if TypeBindings should be resolved.  This is a mildly expensive operation,
-     * so if the resolutions don't require knowing about Types, return false.  Otherwise,
-     * return true.
+     * Returns if TypeBindings should be resolved. This is a mildly expensive
+     * operation, so if the resolutions don't require knowing about Types,
+     * return false. Otherwise, return true.
+     *
      * @return
      */
     protected abstract boolean resolveBindings();
