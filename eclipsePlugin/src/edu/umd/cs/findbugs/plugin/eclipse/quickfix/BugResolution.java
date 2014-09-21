@@ -1,6 +1,6 @@
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
-import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ConditionCheck.checkForNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,7 +98,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     }
 
     public void setLabel(String label) {
-        checkForNull(label, "label");
+        requireNonNull(label, "label");
         this.label = label;
     }
 
@@ -171,7 +171,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
 
     @CheckForNull
     private PendingRewrite resolveWithoutWriting(IMarker marker) {
-        checkForNull(marker, "marker");
+        requireNonNull(marker, "marker");
         ICompilationUnit originalUnit = null;
         try {
             BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
@@ -246,7 +246,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
      */
     @Override
     public void run(IMarker marker) {
-        checkForNull(marker, "marker");
+        requireNonNull(marker, "marker");
         try {
             // do NOT inline this method invocation
             runInternal(marker);
@@ -265,10 +265,15 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         Assert.isNotNull(marker);
 
        PendingRewrite pending = resolveWithoutWriting(marker);
+       if(pending == null){
+           return;
+       }
 
         try {
             IRegion region = completeRewrite(pending);
-
+            if(region == null){
+                return;
+            }
             IEditorPart part = EditorUtility.isOpenInEditor(pending.originalUnit);
             if (part instanceof ITextEditor) {
                 ((ITextEditor) part).selectAndReveal(region.getOffset(), region.getLength());
