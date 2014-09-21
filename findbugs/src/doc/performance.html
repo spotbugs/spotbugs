@@ -26,29 +26,29 @@
                 <h2>Important Request</h2>
                 <p> If you are seeing any significant performance regressions in FindBugs 2.0,
                 I very much need your help. Please either email <a href="mailto:findbugs@cs.umd.edu">findbugs@cs.umd.edu</a>
-                or file <a href="http://sourceforge.net/tracker/?atid=614693&amp;group_id=96405&amp;func=browse">a
+                or file <a href="http://sourceforge.net/p/findbugs/_list/tickets?source=navbar">a
                     bug report</a>.&nbsp;with the following information from the xml file for your project (from both the
                 1.3.9 and 2.0.0 version if possible). Sending me your code or pointing me to a open source repository
                 would be great, but I know that isn't feasible for a lot of projects. The information I'm requesting
                 doesn't include any information about the code being analyzed other than the total size of the code
                 being analyzed and the total number of issues found at the different confidence levels. The
                 &lt;FindBugsSummary ... &gt; start tag. For example: <quote> <pre>
-   &lt;FindBugsSummary timestamp="Tue, 30 Dec 2008 21:29:52 -0500" 
-      total_classes="206" referenced_classes="325" total_bugs="72" total_size="7654" num_packages="21" 
-      vm_version="20.4-b02-402" cpu_seconds="62.52" clock_seconds="22.01" 
-      peak_mbytes="112.21" alloc_mbytes="1683.38" gc_seconds="1.19" 
+   &lt;FindBugsSummary timestamp="Tue, 30 Dec 2008 21:29:52 -0500"
+      total_classes="206" referenced_classes="325" total_bugs="72" total_size="7654" num_packages="21"
+      vm_version="20.4-b02-402" cpu_seconds="62.52" clock_seconds="22.01"
+      peak_mbytes="112.21" alloc_mbytes="1683.38" gc_seconds="1.19"
       priority_3="56" priority_2="14" priority_1="2"&gt;
 </pre> </quote> The &lt;FindBugsProfile&gt;...&lt;/FindBugsProfile&gt; element. For example: <quote>
                 <pre>
    &lt;FindBugsProfile&gt;
-      &lt;ClassProfile name="edu.umd.cs.findbugs.detect.IncompatMask" totalMilliseconds="11" 
-        invocations="206" avgMicrosecondsPerInvocation="55" maxMicrosecondsPerInvocation="475" 
+      &lt;ClassProfile name="edu.umd.cs.findbugs.detect.IncompatMask" totalMilliseconds="11"
+        invocations="206" avgMicrosecondsPerInvocation="55" maxMicrosecondsPerInvocation="475"
         standardDeviationMircosecondsPerInvocation="75"/&gt;
-      &lt;ClassProfile name="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" totalMilliseconds="11" 
-        invocations="206" avgMicrosecondsPerInvocation="55" maxMicrosecondsPerInvocation="402" 
+      &lt;ClassProfile name="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" totalMilliseconds="11"
+        invocations="206" avgMicrosecondsPerInvocation="55" maxMicrosecondsPerInvocation="402"
         standardDeviationMircosecondsPerInvocation="69"/&gt;
-      &lt;ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LockDataflowFactory" totalMilliseconds="11" 
-        invocations="23" avgMicrosecondsPerInvocation="515" maxMicrosecondsPerInvocation="2637" 
+      &lt;ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LockDataflowFactory" totalMilliseconds="11"
+        invocations="23" avgMicrosecondsPerInvocation="515" maxMicrosecondsPerInvocation="2637"
         standardDeviationMircosecondsPerInvocation="639"/&gt;
    ...
  &lt;/FindBugsProfile&gt;
