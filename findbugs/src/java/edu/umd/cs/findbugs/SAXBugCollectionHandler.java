@@ -492,7 +492,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             addMatcher(new BugMatcher(getOptionalAttribute(attributes, "code"), getOptionalAttribute(attributes, "pattern"),
                     getOptionalAttribute(attributes, "category")));
         } else if (qName.equals("Class")) {
-            addMatcher(new ClassMatcher(getRequiredAttribute(attributes, "name", qName)));
+            String role = getOptionalAttribute(attributes, "role");
+            addMatcher(new ClassMatcher(getRequiredAttribute(attributes, "name", qName), role));
         } else if (qName.equals("FirstVersion")) {
             addMatcher(new FirstVersionMatcher(getRequiredAttribute(attributes, "value", qName), getRequiredAttribute(attributes,
                     "relOp", qName)));
@@ -526,7 +527,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         } else if (qName.equals("Field")) {
             String name = getOptionalAttribute(attributes, "name");
             String type = getOptionalAttribute(attributes, "type");
-            addMatcher(new FieldMatcher(name, type));
+            String role = getOptionalAttribute(attributes, "role");
+            addMatcher(new FieldMatcher(name, type, role));
         } else if (qName.equals("Or")) {
             CompoundMatcher matcher = new OrMatcher();
             pushCompoundMatcherAsChild(matcher);
@@ -646,10 +648,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         }
 
         if (bugAnnotation != null) {
-            String role = getOptionalAttribute(attributes, "role");
-            if (role != null) {
-                bugAnnotation.setDescription(role);
-            }
             setAnnotationRole(attributes, bugAnnotation);
             bugInstance.add(bugAnnotation);
         }

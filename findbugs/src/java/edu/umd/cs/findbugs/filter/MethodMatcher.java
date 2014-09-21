@@ -80,9 +80,9 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec());
         if (signature != null) {
-            attributes
-            .addOptionalAttribute("signature", signature.getSpec()).addOptionalAttribute("role", role);
+            attributes.addOptionalAttribute("signature", signature.getSpec());
         }
+        attributes.addOptionalAttribute("role", role);
         if (disabled) {
             attributes.addAttribute("disabled", "true");
         }

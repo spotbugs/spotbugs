@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.filter;
 
 import java.io.IOException;
 
+import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -32,19 +33,34 @@ public class ClassMatcher implements Matcher {
 
     private final NameMatch className;
 
+    private final String role;
+
     @Override
     public String toString() {
         return "Class(class=\"" + className.getValue() + "\")";
     }
 
     public ClassMatcher(String className) {
+        this(className, null);
+    }
+
+    public ClassMatcher(String className, String role) {
         this.className = new NameMatch(className);
+        this.role = role;
     }
 
     @Override
     public boolean match(BugInstance bugInstance) {
-        ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
-        String bugClassName = primaryClassAnnotation.getClassName();
+        ClassAnnotation classAnnotation = bugInstance.getPrimaryClass();
+        if (role != null && !role.equals("")) {
+            for (BugAnnotation a : bugInstance.getAnnotations()) {
+                if (a instanceof ClassAnnotation && role.equals(a.getDescription())) {
+                    classAnnotation = (ClassAnnotation) a;
+                    break;
+                }
+            }
+        }
+        String bugClassName = classAnnotation.getClassName();
         boolean result = className.match(bugClassName);
         if (DEBUG) {
             System.out.println("Matching " + bugClassName + " with " + className + ", result = " + result);
@@ -58,6 +74,7 @@ public class ClassMatcher implements Matcher {
         if (disabled) {
             attributes.addAttribute("disabled", "true");
         }
+        attributes.addOptionalAttribute("role", role);
         xmlOutput.openCloseTag("Class", attributes);
     }
 }

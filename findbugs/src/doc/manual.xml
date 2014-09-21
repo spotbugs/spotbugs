@@ -1984,7 +1984,7 @@ In other words, each of the children must be true for the predicate to be true.
         <para>
             This element matches warnings associated with a particular class. The
             <literal>name</literal> attribute is used to specify the exact or regex match pattern
-            for the class name.
+            for the class name.  The <literal>role</literal> attribute is the class role.
         </para>
 
         <para>
@@ -2021,7 +2021,8 @@ In other words, each of the children must be true for the predicate to be true.
    the exact or regex match pattern for the method name.
    The <literal>params</literal> attribute is a comma-separated list
    of the types of the method's parameters.  The <literal>returns</literal> attribute is
-   the method's return type.  In <literal>params</literal> and <literal>returns</literal>, class names
+   the method's return type. The <literal>role</literal> attribute is
+   the method role. In <literal>params</literal> and <literal>returns</literal>, class names
    must be fully qualified. (E.g., "java.lang.String" instead of just
    "String".) If one of the latter attributes is specified the other is required for creating a method signature.
    Note that you can provide either <literal>name</literal> attribute or <literal>params</literal>
@@ -2036,7 +2037,8 @@ In other words, each of the children must be true for the predicate to be true.
    <listitem><para>This element specifies a field. The <literal>name</literal> attribute is is used to specify
    the exact or regex match pattern for the field name. You can also filter fields according to their signature -
    use <literal>type</literal> attribute to specify fully qualified type of the field. You can specify eiter or both
-   of these attributes in order to perform name / signature based matches.
+   of these attributes in order to perform name / signature based matches. The <literal>role</literal> attribute is
+   the field role.
    </para></listitem>
  </varlistentry>
 

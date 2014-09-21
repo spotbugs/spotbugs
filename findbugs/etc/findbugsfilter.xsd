@@ -159,6 +159,10 @@
             <annotation>
                 <documentation>The exact or regex match pattern for a class name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
             </annotation></attribute>
+        <attribute name="role" type="string">
+            <annotation>
+                <documentation>The class role</documentation>
+            </annotation></attribute>
     </complexType>
 
     <complexType name="SourceType">
@@ -182,6 +186,10 @@
         <attribute name="type" type="string">
             <annotation>
                 <documentation>Fully qualified type of the field</documentation>
+            </annotation></attribute>
+        <attribute name="role" type="string">
+            <annotation>
+                <documentation>The field's role</documentation>
             </annotation></attribute>
     </complexType>
 
@@ -209,6 +217,10 @@
         <attribute name="returns" type="string">
             <annotation>
                 <documentation>The method's fully qualified return type</documentation>
+            </annotation></attribute>
+        <attribute name="role" type="string">
+            <annotation>
+                <documentation>The method's role</documentation>
             </annotation></attribute>
     </complexType>
 

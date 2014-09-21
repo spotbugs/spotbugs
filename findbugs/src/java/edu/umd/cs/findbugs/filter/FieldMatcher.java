@@ -37,7 +37,11 @@ public class FieldMatcher extends MemberMatcher implements Matcher {
     }
 
     public FieldMatcher(String name, String type) {
-        super(name, SignatureUtil.createFieldSignature(type));
+        this(name, SignatureUtil.createFieldSignature(type), null);
+    }
+
+    public FieldMatcher(String name, String type, String role) {
+        super(name, SignatureUtil.createFieldSignature(type), role);
     }
 
     @Override
@@ -74,9 +78,9 @@ public class FieldMatcher extends MemberMatcher implements Matcher {
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec());
         if (signature != null) {
-            attributes.addOptionalAttribute(
-                    "signature", signature.getSpec());
+            attributes.addOptionalAttribute("signature", signature.getSpec());
         }
+        attributes.addOptionalAttribute("role", role);
         if (disabled) {
             attributes.addAttribute("disabled", "true");
         }
