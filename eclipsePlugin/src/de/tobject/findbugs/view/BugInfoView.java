@@ -18,6 +18,8 @@
  */
 package de.tobject.findbugs.view;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -93,6 +95,8 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * @author Andrei
@@ -134,10 +138,12 @@ public class BugInfoView extends AbstractFindbugsView {
     public BugInfoView() {
         super();
         expansionListener = new IExpansionListener() {
+            @Override
             public void expansionStateChanging(ExpansionEvent e) {
                 // noop
             }
 
+            @Override
             public void expansionStateChanged(ExpansionEvent e) {
                 rootComposite.layout(true, true);
                 rootComposite.redraw();
@@ -184,15 +190,18 @@ public class BugInfoView extends AbstractFindbugsView {
             browser.setLayoutData(data);
             browser.setBackground(parent.getBackground());
             browser.addOpenWindowListener(new OpenWindowListener() {
+                @Override
                 public void open(WindowEvent event) {
                     event.required = true; // Cancel opening of new windows
                 }
             });
             browser.addLocationListener(new LocationListener() {
+                @Override
                 public void changed(LocationEvent event) {
                     // ignore
                 }
 
+                @Override
                 public void changing(LocationEvent event) {
                     // fix for SWT code on Won32 platform: it uses "about:blank"
                     // before
@@ -253,11 +262,13 @@ public class BugInfoView extends AbstractFindbugsView {
         item.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_COPY));
         item.setText("Copy To Clipboard");
         item.addListener(SWT.Selection, new Listener() {
+            @Override
             public void handleEvent(Event e) {
                 copyInfoToClipboard();
             }
         });
         menu.addListener(SWT.Show, new Listener() {
+            @Override
             public void handleEvent(Event event) {
                 item.setEnabled(bug != null);
             }
@@ -304,9 +315,30 @@ public class BugInfoView extends AbstractFindbugsView {
         text.append(getBugDetails());
         text.append("<br>");
         text.append(getPatternDetails());
+        addXmlOutput(text);
         addDetectorInfo(text);
         String html = "<b>Bug</b>: " + toSafeHtml(bug.getMessageWithoutPrefix()) + "<br>\n" + text.toString();
         return html;
+    }
+
+    private void addXmlOutput(StringBuilder text) {
+        StringWriter stringWriter = new StringWriter();
+        XMLOutput xmlOutput = new OutputStreamXMLOutput(stringWriter);
+        try {
+            bug.writeXML(xmlOutput);
+        } catch (IOException e) {
+            // ignore
+        } finally {
+            try {
+                xmlOutput.finish();
+            } catch (IOException e) {
+                // ignore
+            }
+        }
+        text.append("<hr size=\"1\" /><p><b>XML output:</b>");
+        text.append("<pre>");
+        text.append(toSafeHtml(stringWriter.toString()));
+        text.append("</pre></p><hr size=\"1\" />");
     }
 
     private String getBugDetails() {
@@ -687,6 +719,7 @@ public class BugInfoView extends AbstractFindbugsView {
         }
     }
 
+    @Override
     public IWorkbenchPart getContributingPart() {
         return contributingPart;
     }
