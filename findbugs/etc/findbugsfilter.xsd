@@ -59,6 +59,12 @@
         </annotation>
     </element>
 
+    <element name="Type" type="fb:TypeType">
+        <annotation>
+            <documentation>This element matches warnings associated with a particular type.</documentation>
+        </annotation>
+    </element>
+
     <element name="Source" type="fb:SourceType">
         <annotation>
             <documentation>This element matches warnings associated with a particular source file name.</documentation>
@@ -162,6 +168,24 @@
         <attribute name="role" type="string">
             <annotation>
                 <documentation>The class role</documentation>
+            </annotation></attribute>
+    </complexType>
+
+    <complexType name="TypeType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <attribute name="descriptor" type="string">
+            <annotation>
+                <documentation>The exact or regex match pattern for type descriptor. If the descriptor starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
+            </annotation></attribute>
+        <attribute name="role" type="string">
+            <annotation>
+                <documentation>The type role</documentation>
+            </annotation></attribute>
+        <attribute name="typeParameters" type="string">
+            <annotation>
+                <documentation>The type parameters</documentation>
             </annotation></attribute>
     </complexType>
 

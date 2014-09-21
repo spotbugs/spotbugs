@@ -58,6 +58,7 @@ import edu.umd.cs.findbugs.filter.OrMatcher;
 import edu.umd.cs.findbugs.filter.PriorityMatcher;
 import edu.umd.cs.findbugs.filter.RankMatcher;
 import edu.umd.cs.findbugs.filter.SourceMatcher;
+import edu.umd.cs.findbugs.filter.TypeMatcher;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.util.MapCache;
 import edu.umd.cs.findbugs.util.Strings;
@@ -494,6 +495,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         } else if (qName.equals("Class")) {
             String role = getOptionalAttribute(attributes, "role");
             addMatcher(new ClassMatcher(getRequiredAttribute(attributes, "name", qName), role));
+        } else if (qName.equals("Type")) {
+            String role = getOptionalAttribute(attributes, "role");
+            String typeParameters = getOptionalAttribute(attributes, "typeParameters");
+            addMatcher(new TypeMatcher(getRequiredAttribute(attributes, "descriptor", qName), role, typeParameters));
         } else if (qName.equals("FirstVersion")) {
             addMatcher(new FirstVersionMatcher(getRequiredAttribute(attributes, "value", qName), getRequiredAttribute(attributes,
                     "relOp", qName)));

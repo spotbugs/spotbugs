@@ -143,6 +143,10 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
         this.typeParameters = typeParameters;
     }
 
+    public String getTypeParameters() {
+        return typeParameters;
+    }
+
     @Override
     public int hashCode() {
         return descriptor.hashCode();

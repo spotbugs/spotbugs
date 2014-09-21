@@ -95,6 +95,10 @@
                                     </xs:complexType>
                                 </xs:element>
                                 <xs:element name="Type">
+                                    <xs:annotation>
+                                        <xs:documentation>This annotation describes a
+                                        type</xs:documentation>
+                                    </xs:annotation>
                                     <xs:complexType>
                                         <xs:sequence>
                                             <xs:element ref="SourceLine" minOccurs="0"/>
@@ -474,6 +478,7 @@
 
 <xs:element name="Bug" substitutionGroup="Matcher" type="BugMatcherType" />
 <xs:element name="Class" substitutionGroup="Matcher" type="ClassMatcherType" />
+<xs:element name="Type" substitutionGroup="Matcher" type="TypeMatcherType" />
 <xs:element name="FirstVersion" substitutionGroup="Matcher" type="FirstVersionMatcherType" />
 <xs:element name="LastVersion" substitutionGroup="Matcher" type="LastVersionMatcherType" />
 <xs:element name="Designation" substitutionGroup="Matcher" type="DesignationMatcherType" />
@@ -509,6 +514,16 @@
             <xs:extension base="MatcherType">
                 <xs:attribute name="name" type="xs:string" use="required" />
                 <xs:attribute name="role" type="xs:string" use="optional" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="TypeMatcherType">
+        <xs:complexContent>
+            <xs:extension base="MatcherType">
+                <xs:attribute name="descriptor" type="xs:string" use="required" />
+                <xs:attribute name="role" type="xs:string" use="optional" />
+                <xs:attribute name="typeParameters" type="xs:string" use="optional" />
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
