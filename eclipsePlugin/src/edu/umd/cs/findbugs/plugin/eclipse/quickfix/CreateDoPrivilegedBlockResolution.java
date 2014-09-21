@@ -23,7 +23,7 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.addImports;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getASTNode;
-import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ConditionCheck.checkForNull;
+import static java.util.Objects.requireNonNull;
 import static org.eclipse.jdt.core.dom.Modifier.ModifierKeyword.PUBLIC_KEYWORD;
 
 import java.security.AccessController;
@@ -159,7 +159,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
     }
 
     public void setImportComparator(Comparator<ImportDeclaration> importComparator) {
-        checkForNull(importComparator, "import comparator");
+        requireNonNull(importComparator, "import comparator");
         this.importComparator = importComparator;
     }
 

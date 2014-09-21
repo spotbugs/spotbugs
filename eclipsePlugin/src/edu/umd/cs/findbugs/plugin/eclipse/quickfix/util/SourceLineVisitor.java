@@ -21,7 +21,7 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix.util;
 
-import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ConditionCheck.checkForNull;
+import static java.util.Objects.requireNonNull;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -44,7 +44,7 @@ public class SourceLineVisitor extends ASTVisitor {
 
     public SourceLineVisitor(CompilationUnit compilationUnit, int startLine, int endLine) {
         super();
-        checkForNull(compilationUnit, "compilation unit");
+        requireNonNull(compilationUnit, "compilation unit");
         this.compilationUnit = compilationUnit;
         this.startLine = startLine;
         this.endLine = endLine;

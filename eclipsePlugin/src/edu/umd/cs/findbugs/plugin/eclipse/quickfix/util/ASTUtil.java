@@ -21,7 +21,7 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix.util;
 
-import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ConditionCheck.checkForNull;
+import static java.util.Objects.requireNonNull;
 import static org.eclipse.core.runtime.Assert.isTrue;
 
 import java.util.Comparator;
@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -114,8 +115,8 @@ public class ASTUtil {
 
     public static void addImports(ASTRewrite rewrite, CompilationUnit compilationUnit,
             Comparator<? super ImportDeclaration> comparator, boolean staticImports, String... imports) {
-        checkForNull(comparator, "import comparator");
-        checkForNull(imports, "imports");
+        requireNonNull(comparator, "import comparator");
+        requireNonNull(imports, "imports");
 
         final AST ast = rewrite.getAST();
         SortedSet<ImportDeclaration> importDeclarations = new TreeSet<ImportDeclaration>(comparator);
@@ -143,9 +144,9 @@ public class ASTUtil {
      *            the new <CODE>ImportDeclaration</CODE>s to add.
      */
     public static void addImports(ASTRewrite rewrite, CompilationUnit compilationUnit, SortedSet<ImportDeclaration> imports) {
-        checkForNull(rewrite, "ast-rewrite");
-        checkForNull(compilationUnit, "compilation-unit");
-        checkForNull(imports, "imports");
+        requireNonNull(rewrite, "ast-rewrite");
+        requireNonNull(compilationUnit, "compilation-unit");
+        requireNonNull(imports, "imports");
         ListRewrite importRewrite = rewrite.getListRewrite(compilationUnit, CompilationUnit.IMPORTS_PROPERTY);
         addImports(importRewrite, imports.comparator(), imports.iterator());
     }
@@ -177,7 +178,7 @@ public class ASTUtil {
 
     public static ASTNode getASTNode(CompilationUnit compilationUnit, SourceLineAnnotation sourceLineAnno)
             throws ASTNodeNotFoundException {
-        checkForNull(sourceLineAnno, "source line annotation");
+        requireNonNull(sourceLineAnno, "source line annotation");
         return getASTNode(compilationUnit, sourceLineAnno.getStartLine(), sourceLineAnno.getEndLine());
     }
 
@@ -199,7 +200,7 @@ public class ASTUtil {
      *             and end line.
      */
     public static ASTNode getASTNode(CompilationUnit compilationUnit, int startLine, int endLine) throws ASTNodeNotFoundException {
-        checkForNull(compilationUnit, "compilation unit");
+        requireNonNull(compilationUnit, "compilation unit");
 
         ASTNode node = searchASTNode(compilationUnit, startLine, endLine);
         if (node == null) {
@@ -226,7 +227,7 @@ public class ASTUtil {
      */
     public static TypeDeclaration getTypeDeclaration(CompilationUnit compilationUnit, ClassAnnotation classAnno)
             throws TypeDeclarationNotFoundException {
-        checkForNull(classAnno, "class annotation");
+        requireNonNull(classAnno, "class annotation");
         return getTypeDeclaration(compilationUnit, classAnno.getClassName());
     }
 
@@ -246,8 +247,8 @@ public class ASTUtil {
      */
     public static TypeDeclaration getTypeDeclaration(CompilationUnit compilationUnit, String typeName)
             throws TypeDeclarationNotFoundException {
-        checkForNull(compilationUnit, "compilation unit");
-        checkForNull(typeName, "class name");
+        requireNonNull(compilationUnit, "compilation unit");
+        requireNonNull(typeName, "class name");
 
         int index = typeName.lastIndexOf('.');
         String packageName = index > 0 ? typeName.substring(0, index) : "";
@@ -281,7 +282,7 @@ public class ASTUtil {
      */
     public static FieldDeclaration getFieldDeclaration(TypeDeclaration type, FieldAnnotation fieldAnno)
             throws FieldDeclarationNotFoundException {
-        checkForNull(fieldAnno, "field annotation");
+        requireNonNull(fieldAnno, "field annotation");
 
         return getFieldDeclaration(type, fieldAnno.getFieldName());
     }
@@ -303,8 +304,8 @@ public class ASTUtil {
      */
     public static FieldDeclaration getFieldDeclaration(TypeDeclaration type, String fieldName)
             throws FieldDeclarationNotFoundException {
-        checkForNull(type, "type declaration");
-        checkForNull(fieldName, "field name");
+        requireNonNull(type, "type declaration");
+        requireNonNull(fieldName, "field name");
 
         for (FieldDeclaration field : type.getFields()) {
             for (Object fragObj : field.fragments()) {
@@ -336,7 +337,7 @@ public class ASTUtil {
      */
     public static MethodDeclaration getMethodDeclaration(TypeDeclaration type, MethodAnnotation methodAnno)
             throws MethodDeclarationNotFoundException {
-        checkForNull(methodAnno, "method annotation");
+        Objects.requireNonNull(methodAnno, "method annotation");
 
         return getMethodDeclaration(type, methodAnno.getMethodName(), methodAnno.getMethodSignature());
     }
@@ -360,9 +361,9 @@ public class ASTUtil {
      */
     public static MethodDeclaration getMethodDeclaration(TypeDeclaration type, String methodName, String methodSignature)
             throws MethodDeclarationNotFoundException {
-        checkForNull(type, "type declaration");
-        checkForNull(methodName, "method name");
-        checkForNull(methodSignature, "method signature");
+        requireNonNull(type, "type declaration");
+        requireNonNull(methodName, "method name");
+        requireNonNull(methodSignature, "method signature");
 
         MethodDeclaration method = searchMethodDeclaration(type.getAST(), type.getMethods(), methodName, methodSignature);
         if (method == null) {
@@ -373,7 +374,7 @@ public class ASTUtil {
 
     public static Statement getStatement(CompilationUnit compilationUnit, MethodDeclaration method,
             SourceLineAnnotation sourceLineAnno) throws StatementNotFoundException {
-        checkForNull(sourceLineAnno, "source line annotation");
+        requireNonNull(sourceLineAnno, "source line annotation");
 
         return getStatement(compilationUnit, method, sourceLineAnno.getStartLine(), sourceLineAnno.getEndLine());
     }
@@ -392,8 +393,8 @@ public class ASTUtil {
      */
     public static Statement getStatement(CompilationUnit compilationUnit, MethodDeclaration method, int startLine, int endLine)
             throws StatementNotFoundException {
-        checkForNull(compilationUnit, "compilation unit");
-        checkForNull(method, "method declaration");
+        requireNonNull(compilationUnit, "compilation unit");
+        requireNonNull(method, "method declaration");
 
         Statement statement = searchStatement(compilationUnit, method.getBody().statements(), startLine, endLine);
         if (statement == null) {
