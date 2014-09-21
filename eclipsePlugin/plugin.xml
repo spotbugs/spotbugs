@@ -171,54 +171,6 @@
   </extension>
   <extension point="org.eclipse.ui.editors.markerAnnotationSpecification">
       <specification
-            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationScariest"
-            colorPreferenceKey="findbugs.scariest.color"
-            colorPreferenceValue="212,6,28"
-            icon="icons/buggy-tiny.png"
-            includeOnPreferencePage="true"
-            label="FindBugs Scariest"
-            overviewRulerPreferenceKey="findbugs.scariest.overview"
-            overviewRulerPreferenceValue="true"
-            quickFixIcon="icons/buggy-tiny.png"
-            textPreferenceKey="findbugs.scariest.text"
-            textPreferenceValue="true"
-            textStylePreferenceKey="findbugs.scariest.textstyle"
-            textStylePreferenceValue="UNDERLINE"
-            verticalRulerPreferenceKey="findbugs.scariest.vertical"
-            verticalRulerPreferenceValue="true"/>
-      <specification
-            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationScary"
-            colorPreferenceKey="findbugs.scary.color"
-            colorPreferenceValue="248,77,06"
-            icon="icons/buggy-tiny-orange.png"
-            includeOnPreferencePage="true"
-            label="FindBugs Scary"
-            overviewRulerPreferenceKey="findbugs.scary.overview"
-            overviewRulerPreferenceValue="true"
-            quickFixIcon="icons/buggy-tiny-orange.png"
-            textPreferenceKey="findbugs.scary.text"
-            textPreferenceValue="true"
-            textStylePreferenceKey="findbugs.scary.textstyle"
-            textStylePreferenceValue="UNDERLINE"
-            verticalRulerPreferenceKey="findbugs.scary.vertical"
-            verticalRulerPreferenceValue="true"/>
-      <specification
-            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationTroubling"
-            colorPreferenceKey="findbugs.troubling.color"
-            colorPreferenceValue="248,218,49"
-            icon="icons/buggy-tiny-yellow.png"
-            includeOnPreferencePage="true"
-            label="FindBugs Troubling"
-            overviewRulerPreferenceKey="findbugs.troubling.overview"
-            overviewRulerPreferenceValue="true"
-            quickFixIcon="icons/buggy-tiny-yellow.png"
-            textPreferenceKey="findbugs.troubling.text"
-            textPreferenceValue="true"
-            textStylePreferenceKey="findbugs.troubling.textstyle"
-            textStylePreferenceValue="UNDERLINE"
-            verticalRulerPreferenceKey="findbugs.troubling.vertical"
-            verticalRulerPreferenceValue="true"/>
-      <specification
             annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationOfConcern"
             colorPreferenceKey="findbugs.ofconcern.color"
             colorPreferenceValue="146,209,120"
@@ -235,6 +187,56 @@
             verticalRulerPreferenceKey="findbugs.ofconcern.vertical"
             verticalRulerPreferenceValue="true"/>
 
+      <specification
+            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationTroubling"
+            colorPreferenceKey="findbugs.troubling.color"
+            colorPreferenceValue="248,218,49"
+            icon="icons/buggy-tiny-yellow.png"
+            includeOnPreferencePage="true"
+            label="FindBugs Troubling"
+            overviewRulerPreferenceKey="findbugs.troubling.overview"
+            overviewRulerPreferenceValue="true"
+            quickFixIcon="icons/buggy-tiny-yellow.png"
+            textPreferenceKey="findbugs.troubling.text"
+            textPreferenceValue="true"
+            textStylePreferenceKey="findbugs.troubling.textstyle"
+            textStylePreferenceValue="UNDERLINE"
+            verticalRulerPreferenceKey="findbugs.troubling.vertical"
+            verticalRulerPreferenceValue="true"/>
+
+       <specification
+            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationScary"
+            colorPreferenceKey="findbugs.scary.color"
+            colorPreferenceValue="248,77,06"
+            icon="icons/buggy-tiny-orange.png"
+            includeOnPreferencePage="true"
+            label="FindBugs Scary"
+            overviewRulerPreferenceKey="findbugs.scary.overview"
+            overviewRulerPreferenceValue="true"
+            quickFixIcon="icons/buggy-tiny-orange.png"
+            textPreferenceKey="findbugs.scary.text"
+            textPreferenceValue="true"
+            textStylePreferenceKey="findbugs.scary.textstyle"
+            textStylePreferenceValue="UNDERLINE"
+            verticalRulerPreferenceKey="findbugs.scary.vertical"
+            verticalRulerPreferenceValue="true"/>
+
+      <specification
+            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationScariest"
+            colorPreferenceKey="findbugs.scariest.color"
+            colorPreferenceValue="212,6,28"
+            icon="icons/buggy-tiny.png"
+            includeOnPreferencePage="true"
+            label="FindBugs Scariest"
+            overviewRulerPreferenceKey="findbugs.scariest.overview"
+            overviewRulerPreferenceValue="true"
+            quickFixIcon="icons/buggy-tiny.png"
+            textPreferenceKey="findbugs.scariest.text"
+            textPreferenceValue="true"
+            textStylePreferenceKey="findbugs.scariest.textstyle"
+            textStylePreferenceValue="UNDERLINE"
+            verticalRulerPreferenceKey="findbugs.scariest.vertical"
+            verticalRulerPreferenceValue="true"/>
    </extension>
 
    <extension
