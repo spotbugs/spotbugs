@@ -13,8 +13,13 @@ public class OneProblemHere {
 
     public OneProblemHere(String s) {
         if (s == "foo") {                   //should not fix (broken, but test case selects not to fix)
-            System.out.println("OMG FOO");
+            dump("OMG FOO");
         }
+    }
+
+
+    private void dump(String string) {
+        //
     }
 
 }

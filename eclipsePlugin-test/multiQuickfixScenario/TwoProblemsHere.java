@@ -11,9 +11,13 @@ public class TwoProblemsHere {
             Double d = new Double(7.1);         //should fix (broken)
             Double d2 = returnQuick();
 
-            System.out.printf("%s %s", d, d2);
+            dump(d, d2);
         }
         this.string = s;
+    }
+
+    private void dump(Double d, Double d2) {
+        System.out.printf("%s %s", d, d2);
     }
 
     private Double returnQuick() {

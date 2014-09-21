@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tomás Pollak
+ * Copyright (C) 2009, Tomï¿½s Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,19 +18,14 @@
  */
 package de.tobject.findbugs.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URL;
-
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.FindbugsTestPlugin;
-import de.tobject.findbugs.reporter.MarkerUtil;
-
-import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -44,10 +39,16 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.FindbugsTestPlugin;
+import de.tobject.findbugs.reporter.MarkerUtil;
+import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator;
+
 /**
  * Base class for FindBugs quickfix tests.
  *
- * @author Tomás Pollak
+ * @author Tomï¿½s Pollak
  */
 public abstract class AbstractQuickfixTest extends AbstractPluginTest {
 
@@ -134,7 +135,13 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
 
     protected void assertAllMarkersHaveResolutions(IMarker[] markers) {
         for (int i = 0; i < markers.length; i++) {
-            assertTrue(getResolutionGenerator().hasResolutions(markers[i]));
+            IMarker marker = markers[i];
+            boolean hasResolutions = getResolutionGenerator().hasResolutions(marker);
+            if(!hasResolutions){
+                String pattern = MarkerUtil.getBugPatternString(marker);
+                fail("no resolution for: " + pattern);
+            }
+            assertTrue(hasResolutions);
         }
     }
 
