@@ -2633,7 +2633,7 @@ be used to make the prepared statement do something unexpected and undesirable.
     <Details>
 <![CDATA[
   <p> This finalizer nulls out fields.  This is usually an error, as it does not aid garbage collection,
-  and the object is going to be garbage collected anyway.
+  and the object is going to be garbage collected anyway.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2644,7 +2644,7 @@ be used to make the prepared statement do something unexpected and undesirable.
 <![CDATA[
   <p> This finalizer does nothing except null out fields. This is completely pointless, and requires that
 the object be garbage collected, finalized, and then garbage collected again. You should just remove the finalize
-method.
+method.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2714,7 +2714,7 @@ method.
 <p>If a connected set of objects beings finalizable, then the VM will invoke the
 finalize method on all the finalizable object, possibly at the same time in different threads.
 Thus, it is a particularly bad idea, in the finalize method for a class X, invoke finalize
-on objects referenced by X, because they may already be getting finalized in a separate thread.
+on objects referenced by X, because they may already be getting finalized in a separate thread.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3046,7 +3046,7 @@ the recommended <code>hashCode</code> implementation to use is:</p>
     equals returns true. If this is violated, weird and unpredictable
     failures will occur in classes such as PriorityQueue.
     In Java 5 the PriorityQueue.remove method uses the compareTo method,
-    while in Java 6 it uses the equals method.
+    while in Java 6 it uses the equals method.</p>
 
 <p>From the JavaDoc for the compareTo method in the Comparable interface:
 <blockquote>
@@ -3054,7 +3054,7 @@ It is strongly recommended, but not strictly required that <code>(x.compareTo(y)
 Generally speaking, any class that implements the Comparable interface and violates this condition
 should clearly indicate this fact. The recommended language
 is "Note: this class has a natural ordering that is inconsistent with equals."
-</blockquote>
+</blockquote></p>
 ]]>
     </Details>
   </BugPattern>
@@ -5014,7 +5014,7 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
               </p>
         <p>Note that a check such as
             <code>if (x == null) throw new NullPointerException();</code>
-            is treated as a dereference of <code>x</code>.
+            is treated as a dereference of <code>x</code>.</p>
           ]]>
       </Details>
   </BugPattern>
