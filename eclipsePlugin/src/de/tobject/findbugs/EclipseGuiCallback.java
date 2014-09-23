@@ -55,13 +55,16 @@ public class EclipseGuiCallback implements IGuiCallback {
         this.iproject = iproject;
     }
 
+    @Override
     public void registerCloud(Project project, BugCollection collection, final Cloud cloud) {
         cloudListener = new CloudListener() {
+            @Override
             public void statusUpdated() {
                 final String statusMsg = cloud.getStatusMsg();
 
                 final IWorkbenchWindow win = FindbugsPlugin.getActiveWorkbenchWindow();
                 win.getShell().getDisplay().asyncExec(new Runnable() {
+                    @Override
                     public void run() {
                         IWorkbenchPage page = win.getActivePage();
                         IWorkbenchPart part = page.getActivePart();
@@ -70,7 +73,7 @@ public class EclipseGuiCallback implements IGuiCallback {
                             IEditorPart epart = (IEditorPart) part;
                             Image image = FindbugsPlugin.getDefault().getImageRegistry().get("buggy-tiny-gray.png");
                             IStatusLineManager statusLineManager = epart.getEditorSite().getActionBars().getStatusLineManager();
-                            if (statusMsg.equals("")) {
+                            if (statusMsg.isEmpty()) {
                                 statusLineManager.setMessage("");
                             } else {
                                 statusLineManager.setMessage(image, statusMsg);
@@ -80,9 +83,11 @@ public class EclipseGuiCallback implements IGuiCallback {
                 });
             }
 
+            @Override
             public void issueUpdated(BugInstance bug) { // ok
             }
 
+            @Override
             public void taskStarted(final CloudTask task) {
                 task.setUseDefaultListener(false);
                 Job job = new Job(task.getName()) {
@@ -102,6 +107,7 @@ public class EclipseGuiCallback implements IGuiCallback {
                         final AtomicBoolean success = new AtomicBoolean(false);
                         task.addListener(new CloudTaskListener() {
 
+                            @Override
                             public void taskStatusUpdated(String statusLine, double percentCompleted) {
                                 monitor.subTask(statusLine);
                                 monitor.worked((int) (percentCompleted * 10)); // out
@@ -111,11 +117,13 @@ public class EclipseGuiCallback implements IGuiCallback {
                                                                                // units
                             }
 
+                            @Override
                             public void taskFinished() {
                                 latch.countDown();
                                 success.set(true);
                             }
 
+                            @Override
                             public void taskFailed(String message) {
                                 latch.countDown();
                                 success.set(false);
@@ -138,6 +146,7 @@ public class EclipseGuiCallback implements IGuiCallback {
         cloud.addListener(cloudListener);
     }
 
+    @Override
     public void unregisterCloud(Project project, BugCollection collection, Cloud cloud) {
         cloud.removeListener(cloudListener);
     }
@@ -158,6 +167,7 @@ public class EclipseGuiCallback implements IGuiCallback {
         return getProjectName() + ": " + title;
     }
 
+    @Override
     public String showQuestionDialog(String message, String title, final String defaultValue) {
         final AtomicReference<Text> textBoxRef = new AtomicReference<Text>();
         MessageDialog dlg = new MessageDialog(FindbugsPlugin.getShell(), getDialogTitle(title), null, message, MessageDialog.QUESTION,
@@ -176,29 +186,36 @@ public class EclipseGuiCallback implements IGuiCallback {
         return textBoxRef.get().getText();
     }
 
+    @Override
     public void showMessageDialogAndWait(String message) throws InterruptedException {
         MessageDialog.openInformation(FindbugsPlugin.getShell(), getDialogTitle(), message);
     }
 
+    @Override
     public void showMessageDialog(final String message) {
         FindbugsPlugin.getShell().getDisplay().asyncExec(new Runnable() {
+            @Override
             public void run() {
                 MessageDialog.openInformation(FindbugsPlugin.getShell(), getDialogTitle(), message);
             }
         });
     }
 
+    @Override
     public List<String> showForm(String message, String title, List<FormItem> labels) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean showDocument(URL u) {
         return Program.launch(u.toExternalForm());
     }
 
+    @Override
     public int showConfirmDialog(final String message, final String title, final String ok, final String cancel) {
         final AtomicInteger result = new AtomicInteger(-1);
         FindbugsPlugin.getShell().getDisplay().syncExec(new Runnable() {
+            @Override
             public void run() {
                 MessageDialog dialog = new MessageDialog(FindbugsPlugin.getShell(), getDialogTitle(title), null, message, MessageDialog.NONE,
                         new String[] { ok, cancel }, 0) /*
@@ -214,28 +231,35 @@ public class EclipseGuiCallback implements IGuiCallback {
         return result.get();
     }
 
+    @Override
     public void setErrorMessage(String errorMsg) {
         showMessageDialog(errorMsg);
     }
 
+    @Override
     public boolean isHeadless() {
         return false;
     }
 
+    @Override
     public void invokeInGUIThread(Runnable r) {
         FindbugsPlugin.getShell().getDisplay().asyncExec(r);
     }
 
+    @Override
     public InputStream getProgressMonitorInputStream(InputStream in, int length, String msg) {
         return in;
     }
 
+    @Override
     public ExecutorService getBugUpdateExecutor() {
         return guiExecutor;
     }
 
+    @Override
     public void displayNonmodelMessage(final String title, final String message) {
         invokeInGUIThread(new Runnable() {
+            @Override
             public void run() {
                 MessageDialog.openInformation(FindbugsPlugin.getShell(), getDialogTitle(title), message);
             }
@@ -243,26 +267,32 @@ public class EclipseGuiCallback implements IGuiCallback {
     }
 
     private final static class EclipseDisplayThreadExecutor extends AbstractExecutorService {
+        @Override
         public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
             return false;
         }
 
+        @Override
         public boolean isShutdown() {
             return false;
         }
 
+        @Override
         public boolean isTerminated() {
             return false;
         }
 
+        @Override
         public void shutdown() {
             return;
         }
 
+        @Override
         public List<Runnable> shutdownNow() {
             return null;
         }
 
+        @Override
         public void execute(Runnable command) {
             Display.getDefault().asyncExec(command);
         }
