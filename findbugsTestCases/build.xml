@@ -15,6 +15,10 @@
 
     -->
     <property file="local.properties" />
+    <condition property="javacExecutableDefined">
+	<isset property="javac.executable"/>
+	</condition>
+    <property name="java.executable" value="" />
     <property name="fb-ant.jar" value="${findbugs.home}/lib/findbugs-ant.jar" />
     <property name="fb-baseline-ant.jar" value="${findbugs-baseline.home}/lib/findbugs-ant.jar" />
     <property name="history.dir" value="history"/>
@@ -52,9 +56,11 @@
         <ant dir="${findbugs.home}" inheritall="false" target="build" />
     </target>
 
-    <target name="errorprone" depends="clean">
+    <target name="errorprone0" depends="clean" if="javac.executable">
         <mkdir dir="build/classes"/>
-        <javac destdir="build/classes" source="1.7" target="1.7" debug="on" includeantruntime="false"
+        <javac destdir="build/classes" source="1.8" target="1.8" debug="on" includeantruntime="false"
+		   fork="yes"
+		   executable="${javac.executable}"
         	   compiler="com.google.errorprone.ErrorProneAntCompilerAdapter">
             <src path="src/java"/>
             <src path="src/fakeAnnotations"/>
@@ -66,15 +72,10 @@
         </javac>
     </target>
 
-    <target name="classes">
-        <echo>Requires JDK 7.x (not 8!), using: ${ant.java.version}</echo>
-        <fail message="Requires JDK 7.x (not 8!), using: ${ant.java.version}">
-             <condition>
-                 <equals arg1="1.8" arg2="${ant.java.version}"/>
-             </condition>
-         </fail>
+    <target name="errorprone1" depends="clean" unless="javac.executable">
         <mkdir dir="build/classes"/>
-        <javac destdir="build/classes" source="1.7" target="1.7" debug="on" encoding="UTF-8" includeantruntime="false">
+        <javac destdir="build/classes" debug="on" includeantruntime="false"
+        	   compiler="com.google.errorprone.ErrorProneAntCompilerAdapter">
             <src path="src/java"/>
             <src path="src/fakeAnnotations"/>
             <src path="src/fakeLibraries"/>
@@ -84,6 +85,38 @@
             <compilerarg value="-Xlint:none"/>
         </javac>
     </target>
+    <target name="errorprone" depends="errorprone0,errorprone1"/>
+
+    <target name="classes0" if="javac.executable">
+	<echo message="Compiling with ${javac.executable}"/>
+        <mkdir dir="build/classes"/>
+        <javac destdir="build/classes" source="1.8" target="1.8" debug="on" encoding="UTF-8" includeantruntime="false"
+		   fork="yes"
+		   executable="${javac.executable}"
+		>
+            <src path="src/java"/>
+            <src path="src/fakeAnnotations"/>
+            <src path="src/fakeLibraries"/>
+            <classpath>
+                <path refid="build.classpath"/>
+            </classpath>
+            <compilerarg value="-Xlint:none"/>
+        </javac>
+    </target>
+    <target name="classes1" unless="javac.executable">
+        <mkdir dir="build/classes"/>
+        <javac destdir="build/classes" debug="on" encoding="UTF-8" includeantruntime="false"
+		>
+            <src path="src/java"/>
+            <src path="src/fakeAnnotations"/>
+            <src path="src/fakeLibraries"/>
+            <classpath>
+                <path refid="build.classpath"/>
+            </classpath>
+            <compilerarg value="-Xlint:none"/>
+        </javac>
+    </target>
+    <target name="classes" depends="classes0,classes1"/>
 
     <target name="jarFile" depends ="classes">
         <delete quiet="true">
@@ -117,6 +150,7 @@
         <echo>fb-ant jar is ${fb-baseline-ant.jar}</echo>
         <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${fb-baseline-ant.jar}"/>
         <findbugs home="${findbugs-baseline.home}"  jvmargs="-ea ${maxHeap}"
+		   jvm="${java.executable}"
              output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="${enabledExtraVisitors}" outputFile="build/baseline.xml">
             <sourcePath path="${basedir}/src/java" />
             <auxclasspath refid="build.classpath"/>
@@ -127,6 +161,7 @@
     <target name="runEffort" depends="classes,defineTasks">
         <echo>Test expected warnings with *min* effort</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
+		   jvm="${java.executable}"
         	   output="xml:withMessages" timestampNow="true" reportLevel="low" effort="min"
         	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/minEffort.xml">
             <sourcePath path="${basedir}/src/java" />
@@ -148,6 +183,7 @@
 
         <echo>Test expected warnings with *less* effort</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
+		   jvm="${java.executable}"
         	   output="xml:withMessages" timestampNow="true" reportLevel="low" effort="less"
         	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/lessEffort.xml">
             <sourcePath path="${basedir}/src/java" />
@@ -169,6 +205,7 @@
 
         <echo>Test expected warnings with *more* effort</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
+		   jvm="${java.executable}"
         	   output="xml:withMessages" timestampNow="true" reportLevel="low" effort="more"
         	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/moreEffort.xml">
             <sourcePath path="${basedir}/src/java" />
@@ -191,6 +228,7 @@
 
         <echo>Test expected warnings with *max* effort</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
+		   jvm="${java.executable}"
         	   output="xml:withMessages" timestampNow="true" reportLevel="low" effort="max"
         	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/maxEffort.xml">
             <sourcePath path="${basedir}/src/java" />
@@ -223,6 +261,7 @@
         <echo>Test expected warnings with javac bytecode</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap} -Dfindbugs.sf.comment=false"
                output="xml:withMessages" timestampNow="true" reportLevel="low"
+		   jvm="${java.executable}"
         	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/normal.xml">
             <sourcePath path="${basedir}/src/java" />
             <auxclasspath refid="build.classpath"/>
@@ -244,6 +283,7 @@
 
         <echo>Test expected warnings with javac bytecode and source</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap} -Dfindbugs.sf.comment=true"
+		   jvm="${java.executable}"
                output="xml:withMessages" timestampNow="true" reportLevel="low"
         	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/analyzeSource.xml">
             <sourcePath path="${basedir}/src/java" />
@@ -266,6 +306,7 @@
 
         <echo>Test expected warnings with ecj bytecode</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
+		   jvm="${java.executable}"
                output="xml:withMessages" timestampNow="true" reportLevel="low"
         	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/normalEclipse.xml"
             noClassOk="true">

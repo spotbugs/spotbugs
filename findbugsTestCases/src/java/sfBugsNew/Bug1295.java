@@ -8,13 +8,12 @@ import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 public class Bug1295 {
 
     public List<AncestorNodeReference> getAncestors() {
-        List<AncestorNodeReference> ancestorNodes = new ArrayList<>();
-
-        // TODO we should compile FB with 1.8
-//        ancestorNodes = new ArrayList<AncesterNodeReferenceDTO>()
-//                .stream()
-//                .map(this::createAncestorNodeReference)
-//                .collect(java.util.stream.Collectors.toList());
+        List<AncestorNodeReference> ancestorNodes;
+        
+        ancestorNodes = new ArrayList<AncesterNodeReferenceDTO>()
+                .stream()
+                .map(this::createAncestorNodeReference)
+                .collect(java.util.stream.Collectors.toList());
 
         return ancestorNodes;
     }
