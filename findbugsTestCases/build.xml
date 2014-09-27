@@ -74,7 +74,7 @@
 
     <target name="errorprone1" depends="clean" unless="javac.executable">
         <mkdir dir="build/classes"/>
-        <javac destdir="build/classes" debug="on" includeantruntime="false"
+        <javac destdir="build/classes" source="1.8" target="1.8" debug="on" includeantruntime="false"
         	   compiler="com.google.errorprone.ErrorProneAntCompilerAdapter">
             <src path="src/java"/>
             <src path="src/fakeAnnotations"/>
@@ -105,7 +105,7 @@
     </target>
     <target name="classes1" unless="javac.executable">
         <mkdir dir="build/classes"/>
-        <javac destdir="build/classes" debug="on" encoding="UTF-8" includeantruntime="false"
+        <javac destdir="build/classes" source="1.8" target="1.8" debug="on" encoding="UTF-8" includeantruntime="false"
 		>
             <src path="src/java"/>
             <src path="src/fakeAnnotations"/>
