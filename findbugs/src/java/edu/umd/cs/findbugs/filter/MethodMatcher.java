@@ -24,6 +24,7 @@ import java.io.IOException;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -79,8 +80,22 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec());
-        if (signature != null) {
-            attributes.addOptionalAttribute("signature", signature.getSpec());
+        if (signature != null && signature.getSpec() != null) {
+            StringBuilder paramsBuilder = new StringBuilder();
+            SignatureConverter converter = new SignatureConverter(signature.getSpec());
+            converter.skip();
+            while (converter.getFirst() != ')') {
+                if (paramsBuilder.length() > 1) {
+                    paramsBuilder.append(", ");
+                }
+                paramsBuilder.append(converter.parseNext());
+            }
+            converter.skip();
+
+            String params = paramsBuilder.toString();
+            String returns = converter.parseNext();
+            attributes.addAttribute("params", params);
+            attributes.addAttribute("returns", returns);
         }
         attributes.addOptionalAttribute("role", role);
         if (disabled) {
