@@ -267,14 +267,21 @@
               <filter token="FEATURE_VERSION" value="${plugin.version}"/>
         </filterset>
 
-        <mkdir dir="${site.dir}"/>
-        <mkdir dir="${site.dir}/features"/>
-        <mkdir dir="${site.dir}/features-candidate"/>
-        <mkdir dir="${site.dir}/features-daily"/>
-        <mkdir dir="${site.dir}/plugins"/>
+        <mkdir dir="${site.dir}/eclipse/plugins"/>
+        <mkdir dir="${site.dir}/eclipse/features"/>
+        <mkdir dir="${site.dir}/eclipse-candidate/plugins"/>
+        <mkdir dir="${site.dir}/eclipse-candidate/features"/>
+        <mkdir dir="${site.dir}/eclipse-daily/plugins"/>
+        <mkdir dir="${site.dir}/eclipse-daily/features"/>
 
         <!-- plugin.jar: can't rename the .zip file from the 'dist' target because of the prefix -->
-        <zip destfile="${site.dir}/plugins/${plugin.id}_${plugin.version}.jar">
+        <zip destfile="${site.dir}/eclipse/plugins/${plugin.id}_${plugin.version}.jar">
+            <fileset dir="${dist.dir}" includes="**"/>
+        </zip>
+        <zip destfile="${site.dir}/eclipse-candidate/plugins/${plugin.id}_${plugin.version}.jar">
+            <fileset dir="${dist.dir}" includes="**"/>
+        </zip>
+        <zip destfile="${site.dir}/eclipse-daily/plugins/${plugin.id}_${plugin.version}.jar">
             <fileset dir="${dist.dir}" includes="**"/>
         </zip>
 
@@ -283,7 +290,7 @@
           <filterset refid="sitevars"/>
         </copy>
         <!-- use zip task, not jar task, since we don't want a manifest -->
-        <zip destfile="${site.dir}/features/${plugin.id}_${plugin.version}.jar" compress="false">
+        <zip destfile="${site.dir}/eclipse/features/${plugin.id}_${plugin.version}.jar" compress="false">
             <fileset file="${site.dir}/feature.xml"/>
         </zip>
         <move file="${site.dir}/feature.xml" tofile="${site.dir}/.feature.xml"/>
@@ -294,7 +301,7 @@
           <filterset refid="sitevars"/>
         </copy>
         <!-- use zip task, not jar task, since we don't want a manifest -->
-        <zip destfile="${site.dir}/features-candidate/${plugin.id}_${plugin.version}.jar" compress="false">
+        <zip destfile="${site.dir}/eclipse-candidate/features/${plugin.id}_${plugin.version}.jar" compress="false">
             <fileset file="${site.dir}/feature.xml"/>
         </zip>
         <move file="${site.dir}/feature.xml" tofile="${site.dir}/.feature.xml"/>
@@ -305,7 +312,7 @@
           <filterset refid="sitevars"/>
         </copy>
         <!-- use zip task, not jar task, since we don't want a manifest -->
-        <zip destfile="${site.dir}/features-daily/${plugin.id}_${plugin.version}.jar" compress="false">
+        <zip destfile="${site.dir}/eclipse-daily/features/${plugin.id}_${plugin.version}.jar" compress="false">
             <fileset file="${site.dir}/feature.xml"/>
         </zip>
         <move file="${site.dir}/feature.xml" tofile="${site.dir}/.feature.xml"/>
@@ -314,15 +321,62 @@
         <!-- site.xml -->
         <echo level="info" message="copying site.xml to ${site.dir}"/>
 
-        <copy file="${fbeclipse.dir}/plugin_site.xml" toFile="${site.dir}/site.xml">
+        <copy file="${fbeclipse.dir}/plugin_site.xml" toFile="${site.dir}/eclipse/site.xml">
           <filterset refid="sitevars"/>
         </copy>
-        <copy file="${fbeclipse.dir}/plugin_site-candidate.xml" toFile="${site.dir}/site-candidate.xml">
+        <copy file="${fbeclipse.dir}/plugin_site-candidate.xml" toFile="${site.dir}/eclipse-candidate/site.xml">
           <filterset refid="sitevars"/>
         </copy>
-        <copy file="${fbeclipse.dir}/plugin_site-daily.xml" toFile="${site.dir}/site-daily.xml">
+        <copy file="${fbeclipse.dir}/plugin_site-daily.xml" toFile="${site.dir}/eclipse-daily/site.xml">
           <filterset refid="sitevars"/>
         </copy>
+
+        <!-- Generate p2 metadata -->
+        <property name="release.dir" location="${site.dir}/eclipse"/>
+        <property name="release.category" location="${site.dir}/category.xml"/>
+        <exec executable="${eclipsePlugin.dir}/../eclipse">
+            <arg value="-nosplash"/>
+            <arg value="-application"/>
+            <arg value="org.eclipse.equinox.p2.publisher.UpdateSitePublisher"/>
+            <arg value="-metadataRepository"/>
+            <!-- TODO May not work under Windows -->
+            <arg value="file:${release.dir}"/>
+            <arg value="-artifactRepository"/>
+            <!-- TODO May not work under Windows -->
+            <arg value="file:${release.dir}"/>
+            <arg value="-source"/>
+            <arg file="${site.dir}/eclipse"/>
+        </exec>
+
+        <property name="candidate.dir" location="${site.dir}/eclipse-candidate"/>
+        <exec executable="${eclipsePlugin.dir}/../eclipse">
+            <arg value="-nosplash"/>
+            <arg value="-application"/>
+            <arg value="org.eclipse.equinox.p2.publisher.UpdateSitePublisher"/>
+            <arg value="-metadataRepository"/>
+            <!-- TODO May not work under Windows -->
+            <arg value="file:${candidate.dir}"/>
+            <arg value="-artifactRepository"/>
+            <!-- TODO May not work under Windows -->
+            <arg value="file:${candidate.dir}"/>
+            <arg value="-source"/>
+            <arg file="${site.dir}/eclipse-candidate"/>
+        </exec>
+
+        <property name="daily.dir" location="${site.dir}/eclipse-daily"/>
+        <exec executable="${eclipsePlugin.dir}/../eclipse">
+            <arg value="-nosplash"/>
+            <arg value="-application"/>
+            <arg value="org.eclipse.equinox.p2.publisher.UpdateSitePublisher"/>
+            <arg value="-metadataRepository"/>
+            <!-- TODO May not work under Windows -->
+            <arg value="file:${daily.dir}"/>
+            <arg value="-artifactRepository"/>
+            <!-- TODO May not work under Windows -->
+            <arg value="file:${daily.dir}"/>
+            <arg value="-source"/>
+            <arg file="${site.dir}/eclipse-daily"/>
+        </exec>
     </target>
 
     <!-- Copy required jar files from the main findbugs project (which should be a sibling of this project) -->
