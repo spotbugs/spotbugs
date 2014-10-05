@@ -98,7 +98,7 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
                 state = SEEN_NOTHING;
                 if (seen == NEW) {
                     String cName = getClassConstantOperand();
-                    if (cName.equals("java/lang/AssertionError")) {
+                    if ("java/lang/AssertionError".equals(cName)) {
                         break;
                     }
                 }

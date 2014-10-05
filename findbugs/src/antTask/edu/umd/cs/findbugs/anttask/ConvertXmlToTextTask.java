@@ -118,7 +118,7 @@ public class ConvertXmlToTextTask extends AbstractFindBugsTask {
         if (input == null) {
             throw new BuildException("input attribute is required", getLocation());
         }
-        if (!format.equals("text") && !(format.equals("html") || format.startsWith("html:"))) {
+        if (!"text".equals(format) && !("html".equals(format) || format.startsWith("html:"))) {
             throw new BuildException("invalid value " + format + " for format attribute", getLocation());
         }
 

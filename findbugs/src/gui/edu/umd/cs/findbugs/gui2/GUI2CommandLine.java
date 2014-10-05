@@ -51,24 +51,24 @@ public class GUI2CommandLine extends FindBugsCommandLine {
 
     @Override
     protected void handleOption(String option, String optionExtraPart) {
-        if (option.equals("-clear")) {
+        if ("-clear".equals(option)) {
             GUISaveState.clear();
             System.exit(0);
-        } else if (option.equals("-d") || option.equals("--nodock")) {
+        } else if ("-d".equals(option) || "--nodock".equals(option)) {
             docking = false;
-        } else if (option.equals("-look")) {
+        } else if ("-look".equals(option)) {
             String arg = optionExtraPart;
             String theme = null;
 
-            if (arg.equals("plastic")) {
+            if ("plastic".equals(arg)) {
                 // You can get the Plastic look and feel from jgoodies.com:
                 // http://www.jgoodies.com/downloads/libraries.html
                 // Just put "plastic.jar" in the lib directory, right next
                 // to the other jar files.
                 theme = "com.jgoodies.plaf.plastic.PlasticXPLookAndFeel";
-            } else if (arg.equals("gtk")) {
+            } else if ("gtk".equals(arg)) {
                 theme = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
-            } else if (arg.equals("native")) {
+            } else if ("native".equals(arg)) {
                 theme = UIManager.getSystemLookAndFeelClassName();
             } else {
                 System.err.println("Style '" + arg + "' not supported");
@@ -88,20 +88,20 @@ public class GUI2CommandLine extends FindBugsCommandLine {
 
     @Override
     protected void handleOptionWithArgument(String option, String argument) throws IOException {
-        if (option.equals("-f")) {
+        if ("-f".equals(option)) {
             try {
                 fontSize = Float.parseFloat(argument);
                 fontSizeSpecified = true;
             } catch (NumberFormatException e) {
                 // ignore
             }
-        } else if (option.equals("-priority")) {
+        } else if ("-priority".equals(option)) {
             try {
                 priority = Integer.parseInt(argument);
             } catch (NumberFormatException e) {
                 // ignore
             }
-        } else if (option.equals("-loadBugs") || option.equals("-loadbugs")) {
+        } else if ("-loadBugs".equals(option) || "-loadbugs".equals(option)) {
             saveFile = new File(argument);
             if (!saveFile.exists()) {
                 System.err.println("Bugs file \"" + argument + "\" could not be found");

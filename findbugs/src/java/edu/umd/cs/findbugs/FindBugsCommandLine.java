@@ -103,28 +103,28 @@ public abstract class FindBugsCommandLine extends CommandLine {
 
     @Override
     protected void handleOption(String option, String optionExtraPart) {
-        if (option.equals("-effort")) {
-            if (optionExtraPart.equals("min")) {
+        if ("-effort".equals(option)) {
+            if ("min".equals(optionExtraPart)) {
                 settingList = FindBugs.MIN_EFFORT;
-            } else if (optionExtraPart.equals("less")) {
+            } else if ("less".equals(optionExtraPart)) {
                 settingList = FindBugs.LESS_EFFORT;
-            } else if (optionExtraPart.equals("default")) {
+            } else if ("default".equals(optionExtraPart)) {
                 settingList = FindBugs.DEFAULT_EFFORT;
-            } else if (optionExtraPart.equals("more")) {
+            } else if ("more".equals(optionExtraPart)) {
                 settingList = FindBugs.MORE_EFFORT;
-            } else if (optionExtraPart.equals("max")) {
+            } else if ("max".equals(optionExtraPart)) {
                 settingList = FindBugs.MAX_EFFORT;
             } else {
                 throw new IllegalArgumentException("-effort:<value> must be one of min,default,more,max");
             }
-        } else if (option.equals("-workHard")) {
+        } else if ("-workHard".equals(option)) {
             if (settingList != FindBugs.MAX_EFFORT) {
                 settingList = FindBugs.MORE_EFFORT;
             }
 
-        } else if (option.equals("-conserveSpace")) {
+        } else if ("-conserveSpace".equals(option)) {
             settingList = FindBugs.MIN_EFFORT;
-        } else if (option.equals("-adjustExperimental")) {
+        } else if ("-adjustExperimental".equals(option)) {
             BugInstance.setAdjustExperimental(true);
         } else {
             throw new IllegalArgumentException("Don't understand option " + option);
@@ -133,9 +133,9 @@ public abstract class FindBugsCommandLine extends CommandLine {
 
     @Override
     protected void handleOptionWithArgument(String option, String argument) throws IOException {
-        if (option.equals("-home")) {
+        if ("-home".equals(option)) {
             FindBugs.setHome(argument);
-        } else if (option.equals("-pluginList")) {
+        } else if ("-pluginList".equals(option)) {
             String pluginListStr = argument;
             Map<String, Boolean> customPlugins = getProject().getConfiguration().getCustomPlugins();
             StringTokenizer tok = new StringTokenizer(pluginListStr, File.pathSeparator);
@@ -152,7 +152,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
                     }
                 }
             }
-        } else if (option.equals("-project")) {
+        } else if ("-project".equals(option)) {
             loadProject(argument);
         } else {
             throw new IllegalStateException();

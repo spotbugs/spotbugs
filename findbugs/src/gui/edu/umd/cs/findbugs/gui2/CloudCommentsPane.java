@@ -367,7 +367,7 @@ public abstract class CloudCommentsPane extends JPanel {
     protected void signInOrOutClicked() {
         if (_bugCollection != null) {
             final Cloud cloud = _bugCollection.getCloud();
-            if (cloud.getPlugin().getId().equals("edu.umd.cs.findbugs.cloud.doNothingCloud")) {
+            if ("edu.umd.cs.findbugs.cloud.doNothingCloud".equals(cloud.getPlugin().getId())) {
                 changeClicked();
             }
             SigninState state = cloud.getSigninState();
@@ -473,7 +473,7 @@ public abstract class CloudCommentsPane extends JPanel {
                     return;
                 }
                 Cloud plugin = _bugCollection != null ? _bugCollection.getCloud() : null;
-                if (plugin != null && key.equals("I_WILL_FIX") && plugin.supportsClaims()) {
+                if (plugin != null && "I_WILL_FIX".equals(key) && plugin.supportsClaims()) {
                     String claimedBy = plugin.claimedBy(bug);
                     if (claimedBy != null && !plugin.getUser().equals(claimedBy)) {
                         int result = JOptionPane.showConfirmDialog(null,
@@ -804,7 +804,7 @@ public abstract class CloudCommentsPane extends JPanel {
         final Cloud.SigninState state = cloud.getSigninState();
         final String stateStr = state == Cloud.SigninState.NO_SIGNIN_REQUIRED ? "" : "" + state;
         final String userStr = cloud.getUser() == null ? "" : cloud.getUser();
-        if (plugin.getId().equals("edu.umd.cs.findbugs.cloud.doNothingCloud")) {
+        if ("edu.umd.cs.findbugs.cloud.doNothingCloud".equals(plugin.getId())) {
             titleLabel.setText("<html><b>No cloud selected");
         } else {
             titleLabel.setText("<html><b>Reviews - " + cloud.getCloudName() + "</b>"
@@ -827,7 +827,7 @@ public abstract class CloudCommentsPane extends JPanel {
             }
             break;
         }
-        if (cloud.getPlugin().getId().equals("edu.umd.cs.findbugs.cloud.doNothingCloud")) {
+        if ("edu.umd.cs.findbugs.cloud.doNothingCloud".equals(cloud.getPlugin().getId())) {
             setSignInOutText("enable cloud plugin...");
             signInOutLink.setVisible(true);
         }

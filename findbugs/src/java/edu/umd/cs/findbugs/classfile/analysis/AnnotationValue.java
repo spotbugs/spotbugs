@@ -101,7 +101,7 @@ public class AnnotationValue {
     }
 
     private static String canonicalString(String s) {
-        if (s.equals("value")) {
+        if ("value".equals(s)) {
             return "value";
         }
         return s;

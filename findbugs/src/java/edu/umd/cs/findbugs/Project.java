@@ -707,9 +707,9 @@ public class Project implements XMLWriteable {
         try {
             String tag = Util.getXMLType(in);
             SAXBugCollectionHandler handler;
-            if (tag.equals("Project")) {
+            if ("Project".equals(tag)) {
                 handler = new SAXBugCollectionHandler(project, f);
-            } else if (tag.equals("BugCollection")) {
+            } else if ("BugCollection".equals(tag)) {
                 SortedBugCollection bugs = new SortedBugCollection(project);
                 handler = new SAXBugCollectionHandler(bugs, f);
             } else {

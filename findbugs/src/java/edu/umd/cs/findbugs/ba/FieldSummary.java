@@ -243,7 +243,7 @@ public class FieldSummary {
         if (constructorInSuperClass == null || from == null) {
             return;
         }
-        if (constructorInSuperClass.getSignature().equals("()V")) {
+        if ("()V".equals(constructorInSuperClass.getSignature())) {
             return;
         }
         nonVoidSuperConstructorsCalled.put(from, constructorInSuperClass);

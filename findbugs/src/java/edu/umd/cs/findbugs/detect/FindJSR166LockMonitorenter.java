@@ -139,9 +139,9 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 
                 String methodName = iv.getMethodName(cpg);
                 String methodSig = iv.getSignature(cpg);
-                if (methodName.equals("wait")
-                        && (methodSig.equals("()V") || methodSig.equals("(J)V") || methodSig.equals("(JI)V"))
-                        || (methodName.equals("notify") || methodName.equals("notifyAll")) && methodSig.equals("()V")) {
+                if ("wait".equals(methodName)
+                        && ("()V".equals(methodSig) || "(J)V".equals(methodSig) || "(JI)V".equals(methodSig))
+                        || ("notify".equals(methodName) || "notifyAll".equals(methodName)) && "()V".equals(methodSig)) {
                     try {
                         TypeFrame frame = typeDataflow.getFactAtLocation(location);
                         if (!frame.isValid()) {
@@ -166,15 +166,15 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
                         XClass c = Lookup.getXClass(classDescriptor);
                         XMethod m;
                         int priority = NORMAL_PRIORITY;
-                        if (methodName.equals("wait")) {
+                        if ("wait".equals(methodName)) {
                             m = c.findMethod("await", "()V", false);
                             priority = HIGH_PRIORITY;
-                        } else if (methodName.equals("notify")) {
+                        } else if ("notify".equals(methodName)) {
                             m = c.findMethod("signal", "()V", false);
                             if (m == null) {
                                 m = c.findMethod("countDown", "()V", false);
                             }
-                        } else if (methodName.equals("notifyAll")) {
+                        } else if ("notifyAll".equals(methodName)) {
                             m = c.findMethod("signalAll", "()V", false);
                             if (m == null) {
                                 m = c.findMethod("countDown", "()V", false);

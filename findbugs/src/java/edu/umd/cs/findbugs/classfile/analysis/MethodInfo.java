@@ -621,7 +621,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     @Override
     public ElementType getElementType() {
-        if (getName().equals("<init>")) {
+        if ("<init>".equals(getName())) {
             return ElementType.CONSTRUCTOR;
         }
         return ElementType.METHOD;

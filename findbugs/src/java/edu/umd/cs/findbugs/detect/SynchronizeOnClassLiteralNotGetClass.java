@@ -106,8 +106,8 @@ public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
             }
             break;
         case 1:
-            if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("getClass")
-            && getSigConstantOperand().equals("()Ljava/lang/Class;")) {
+            if (seen == INVOKEVIRTUAL && "getClass".equals(getNameConstantOperand())
+            && "()Ljava/lang/Class;".equals(getSigConstantOperand())) {
                 state = 2;
             } else {
                 state = 0;

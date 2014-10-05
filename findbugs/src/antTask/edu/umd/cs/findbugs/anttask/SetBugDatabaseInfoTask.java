@@ -93,7 +93,7 @@ public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
             return;
         }
         attrVal = attrVal.toLowerCase();
-        if (!attrVal.equals("true") && !attrVal.equals("false")) {
+        if (!"true".equals(attrVal) && !"false".equals(attrVal)) {
             throw new BuildException("attribute " + attrName + " requires boolean value", getLocation());
         }
     }
@@ -147,7 +147,7 @@ public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
         addOption("-findSource", findSource);
         addOption("-suppress", suppress);
         addBoolOption("-withMessages", withMessages);
-        if (resetSource != null && resetSource.equals("true")) {
+        if (resetSource != null && "true".equals(resetSource)) {
             addArg("-resetSource");
         }
         addArg(inputFile);

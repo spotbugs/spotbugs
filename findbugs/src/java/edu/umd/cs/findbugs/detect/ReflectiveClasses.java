@@ -57,8 +57,8 @@ public class ReflectiveClasses extends BytecodeScanningDetector implements NonRe
         if (seen == INVOKESTATIC) {
             // System.out.println(getClassConstantOperand()+ "." +
             // getNameConstantOperand());
-            if (constantString != null && getClassConstantOperand().equals("java/lang/Class")
-                    && getNameConstantOperand().equals("forName")) {
+            if (constantString != null && "java/lang/Class".equals(getClassConstantOperand())
+                    && "forName".equals(getNameConstantOperand())) {
                 process(ClassName.toSlashedClassName(constantString));
             }
 

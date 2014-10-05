@@ -327,13 +327,11 @@ public class FindBadCast2 implements Detector {
 
             if (refSig2.charAt(0) != 'L' || castSig2.charAt(0) != 'L') {
                 if (castSig2.charAt(0) == '['
-                        && (refSig2.equals("Ljava/io/Serializable;") || refSig2.equals("Ljava/lang/Object;") || refSig2
-                                .equals("Ljava/lang/Cloneable;"))) {
+                        && ("Ljava/io/Serializable;".equals(refSig2) || "Ljava/lang/Object;".equals(refSig2) || "Ljava/lang/Cloneable;".equals(refSig2))) {
                     continue;
                 }
                 if (refSig2.charAt(0) == '['
-                        && (castSig2.equals("Ljava/io/Serializable;") || castSig2.equals("Ljava/lang/Object;") || castSig2
-                                .equals("Ljava/lang/Cloneable;"))) {
+                        && ("Ljava/io/Serializable;".equals(castSig2) || "Ljava/lang/Object;".equals(castSig2) || "Ljava/lang/Cloneable;".equals(castSig2))) {
                     continue;
                 }
                 int priority = HIGH_PRIORITY;
@@ -349,7 +347,7 @@ public class FindBadCast2 implements Detector {
                 continue;
             }
 
-            if (!operandTypeIsExact && refSig2.equals("Ljava/lang/Object;")) {
+            if (!operandTypeIsExact && "Ljava/lang/Object;".equals(refSig2)) {
                 continue;
             }
             /*
@@ -390,7 +388,7 @@ public class FindBadCast2 implements Detector {
                     boolean castMayThrow = !Repository.instanceOf(refJavaClass, castJavaClass);
                     boolean downCast = Repository.instanceOf(castJavaClass, refJavaClass);
 
-                    if (!operandTypeIsExact && refName.equals("java.lang.Object")) {
+                    if (!operandTypeIsExact && "java.lang.Object".equals(refName)) {
                         continue;
                     }
                     double rank = 0.0;
@@ -455,9 +453,9 @@ public class FindBadCast2 implements Detector {
                         String bugPattern;
                         if (isCast) {
                             if (downCast && operandTypeIsExact) {
-                                if (refSig.equals("[Ljava/lang/Object;") && source instanceof MethodAnnotation
-                                        && ((MethodAnnotation) source).getMethodName().equals("toArray")
-                                        && ((MethodAnnotation) source).getMethodSignature().equals("()[Ljava/lang/Object;")) {
+                                if ("[Ljava/lang/Object;".equals(refSig) && source instanceof MethodAnnotation
+                                        && "toArray".equals(((MethodAnnotation) source).getMethodName())
+                                        && "()[Ljava/lang/Object;".equals(((MethodAnnotation) source).getMethodSignature())) {
                                     bugPattern = "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY";
                                 } else {
                                     bugPattern = "BC_IMPOSSIBLE_DOWNCAST";
@@ -534,7 +532,7 @@ public class FindBadCast2 implements Detector {
                         if (DEBUG) {
                             System.out.println(" ref name: " + refName);
                         }
-                        if (methodGen.getName().equals("compareTo")) {
+                        if ("compareTo".equals(methodGen.getName())) {
                             priority++;
                         } else if (methodGen.isPublic() && isParameter && !castName.equals(oldCheck)) {
                             priority--;
@@ -606,9 +604,9 @@ public class FindBadCast2 implements Detector {
                 if (DEBUG) {
                     e.printStackTrace(System.out);
                 }
-                if (isCast && refSig.equals("[Ljava/lang/Object;") && source instanceof MethodAnnotation
-                        && ((MethodAnnotation) source).getMethodName().equals("toArray")
-                        && ((MethodAnnotation) source).getMethodSignature().equals("()[Ljava/lang/Object;")) {
+                if (isCast && "[Ljava/lang/Object;".equals(refSig) && source instanceof MethodAnnotation
+                        && "toArray".equals(((MethodAnnotation) source).getMethodName())
+                        && "()[Ljava/lang/Object;".equals(((MethodAnnotation) source).getMethodSignature())) {
                     bugReporter.reportBug(new BugInstance(this,  "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY", isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
                     .addClassAndMethod(methodGen, sourceFile)
                     .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(valueSource, source)

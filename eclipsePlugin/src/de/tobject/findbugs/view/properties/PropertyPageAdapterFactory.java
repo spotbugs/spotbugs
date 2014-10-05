@@ -170,7 +170,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
             if (method.getParameterTypes().length == 0) {
                 String name = method.getName();
                 if ((name.startsWith("get") || name.startsWith("is") || name.startsWith("has"))
-                        && (!name.equals("getClass") && !name.equals("hashCode"))) {
+                        && (!"getClass".equals(name) && !"hashCode".equals(name))) {
                     methodList.add(method);
                 }
             }

@@ -94,7 +94,7 @@ public class IntAnnotation implements BugAnnotation {
 
     @Override
     public String format(String key, ClassAnnotation primaryClass) {
-        if (key.equals("hash")) {
+        if ("hash".equals(key)) {
             if (isSignificant()) {
                 return Integer.toString(value);
             } else {
@@ -189,7 +189,7 @@ public class IntAnnotation implements BugAnnotation {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("value", String.valueOf(value));
 
         String role = getDescription();
-        if (!role.equals(DEFAULT_ROLE)) {
+        if (!DEFAULT_ROLE.equals(role)) {
             attributeList.addAttribute("role", role);
         }
 
@@ -198,7 +198,7 @@ public class IntAnnotation implements BugAnnotation {
 
     @Override
     public boolean isSignificant() {
-        return !description.equals(INT_SYNC_PERCENT) && !description.equals(INT_OCCURRENCES);
+        return !INT_SYNC_PERCENT.equals(description) && !INT_OCCURRENCES.equals(description);
     }
 
     @Override

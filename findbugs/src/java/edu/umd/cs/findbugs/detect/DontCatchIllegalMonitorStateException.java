@@ -54,7 +54,7 @@ public class DontCatchIllegalMonitorStateException extends PreorderVisitor imple
         if (DEBUG) {
             String names[] = obj.getExceptionNames();
             for (String name : names) {
-                if (name.equals("java.lang.Exception") || name.equals("java.lang.Throwable")) {
+                if ("java.lang.Exception".equals(name) || "java.lang.Throwable".equals(name)) {
                     System.out.println(name + " thrown by " + getFullyQualifiedMethodName());
                 }
             }
@@ -74,7 +74,7 @@ public class DontCatchIllegalMonitorStateException extends PreorderVisitor imple
                 System.out.println(msg);
             }
         }
-        if (name.equals("java.lang.IllegalMonitorStateException")) {
+        if ("java.lang.IllegalMonitorStateException".equals(name)) {
             bugReporter.reportBug(new BugInstance(this, "IMSE_DONT_CATCH_IMSE", HIGH_PRIORITY).addClassAndMethod(this)
                     .addSourceLine(this.classContext, this, obj.getHandlerPC()));
         }

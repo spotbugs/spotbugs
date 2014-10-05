@@ -112,7 +112,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
         try {
             String methodName = getMethodName();
 
-            if (!methodName.equals("<init>") && !methodName.equals("clone")
+            if (!"<init>".equals(methodName) && !"clone".equals(methodName)
                     && ((getMethod().getAccessFlags() & (Constants.ACC_STATIC | Constants.ACC_SYNTHETIC)) == 0)) {
 
                 /*
@@ -286,7 +286,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
             }
         }
 
-        if (!superclassName.equals("Object")) {
+        if (!"Object".equals(superclassName)) {
             @DottedClassName String superSuperClassName = superClass.getSuperclassName();
             if (superSuperClassName.equals(superclassName)) {
                 throw new ClassNotFoundException("superclass of " + superclassName + " is itself");

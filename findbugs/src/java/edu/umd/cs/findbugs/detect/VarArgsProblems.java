@@ -138,7 +138,7 @@ public class VarArgsProblems extends BytecodeScanningDetector implements Statele
                         break;
                     }
                     int priority = NORMAL_PRIORITY;
-                    if (getNameConstantOperand().equals("asList") && getClassConstantOperand().equals("java/util/Arrays")) {
+                    if ("asList".equals(getNameConstantOperand()) && "java/util/Arrays".equals(getClassConstantOperand())) {
                         priority = HIGH_PRIORITY;
                     }
                     bugReporter.reportBug(new BugInstance(this, "VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG", priority)

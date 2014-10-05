@@ -117,13 +117,13 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
     @Override
     public String format(String key, ClassAnnotation primaryClass) {
         String name = new SignatureConverter(descriptor).parseNext().replace("java.lang.", "");
-        if (key.equals("givenClass")) {
+        if ("givenClass".equals(key)) {
             name = PackageMemberAnnotation.shorten(primaryClass.getPackageName(), name);
-        } else if (key.equals("excludingPackage")) {
+        } else if ("excludingPackage".equals(key)) {
             name = PackageMemberAnnotation.removePackage(name);
         }
 
-        if (typeParameters != null && !key.equals("hash")) {
+        if (typeParameters != null && !"hash".equals(key)) {
             name = name + typeParameters;
         }
         return name;
@@ -196,7 +196,7 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("descriptor", descriptor);
 
         String role = getDescription();
-        if (!role.equals(DEFAULT_ROLE)) {
+        if (!DEFAULT_ROLE.equals(role)) {
             attributeList.addAttribute("role", role);
         }
         if (typeParameters != null) {

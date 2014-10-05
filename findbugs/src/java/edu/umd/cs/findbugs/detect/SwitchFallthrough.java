@@ -243,11 +243,11 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         }
 
 
-        if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("ordinal") && getSigConstantOperand().equals("()I")) {
+        if (seen == INVOKEVIRTUAL && "ordinal".equals(getNameConstantOperand()) && "()I".equals(getSigConstantOperand())) {
             XClass c = getXClassOperand();
             if (c != null) {
                 ClassDescriptor superclassDescriptor = c.getSuperclassDescriptor();
-                if (superclassDescriptor != null && superclassDescriptor.getClassName().equals("java/lang/Enum")) {
+                if (superclassDescriptor != null && "java/lang/Enum".equals(superclassDescriptor.getClassName())) {
                     enumType = c;
                 }
                 if (DEBUG) {
@@ -303,7 +303,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             reachable = true;
         }
 
-        justSawHashcode =   seen == INVOKEVIRTUAL && getNameConstantOperand().equals("hashCode") && getSigConstantOperand().equals("()I");
+        justSawHashcode =   seen == INVOKEVIRTUAL && "hashCode".equals(getNameConstantOperand()) && "()I".equals(getSigConstantOperand());
         lastPC = getPC();
         fallthroughDistance++;
     }

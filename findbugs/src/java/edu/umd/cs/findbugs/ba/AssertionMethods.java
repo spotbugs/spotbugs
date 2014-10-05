@@ -140,14 +140,14 @@ public class AssertionMethods implements Constants {
                             || (voidReturnType || boolReturnType)
                             && (classNameLC.indexOf("assert") >= 0 || methodNameLC.startsWith("throw")
                             || methodName.startsWith("affirm") || methodName.startsWith("panic")
-                            || methodName.equals("logTerminal") || methodName.startsWith("logAndThrow")
-                            || methodNameLC.equals("insist") || methodNameLC.equals("usage")
-                            || methodNameLC.equals("exit") || methodNameLC.startsWith("fail")
+                            || "logTerminal".equals(methodName) || methodName.startsWith("logAndThrow")
+                            || "insist".equals(methodNameLC) || "usage".equals(methodNameLC)
+                            || "exit".equals(methodNameLC) || methodNameLC.startsWith("fail")
                             || methodNameLC.startsWith("fatal") || methodNameLC.indexOf("assert") >= 0
                             || methodNameLC.indexOf("legal") >= 0 || methodNameLC.indexOf("error") >= 0
                             || methodNameLC.indexOf("abort") >= 0
                             // || methodNameLC.indexOf("check") >= 0
-                            || methodNameLC.indexOf("failed") >= 0) || methodName.equals("addOrThrowException")) {
+                            || methodNameLC.indexOf("failed") >= 0) || "addOrThrowException".equals(methodName)) {
                         assertionMethodRefSet.set(i);
                         if (DEBUG) {
                             System.out.println("==> YES");
@@ -187,7 +187,7 @@ public class AssertionMethods implements Constants {
                     INVOKEINTERFACE iInterface = (INVOKEINTERFACE) next;
                     String className = iInterface.getClassName(cpg);
                     String fieldName = iInterface.getMethodName(cpg);
-                    if (className.equals("javax.servlet.http.HttpServletResponse") && fieldName.equals("setStatus")) {
+                    if ("javax.servlet.http.HttpServletResponse".equals(className) && "setStatus".equals(fieldName)) {
                         return true;
                     }
 
@@ -215,10 +215,10 @@ public class AssertionMethods implements Constants {
             GETSTATIC getStatic = (GETSTATIC) ins;
             String className = getStatic.getClassName(cpg);
             String fieldName = getStatic.getFieldName(cpg);
-            if (className.equals("java.util.logging.Level") && fieldName.equals("SEVERE")) {
+            if ("java.util.logging.Level".equals(className) && "SEVERE".equals(fieldName)) {
                 return true;
             }
-            if (className.equals("org.apache.log4j.Level") && (fieldName.equals("ERROR") || fieldName.equals("FATAL"))) {
+            if ("org.apache.log4j.Level".equals(className) && ("ERROR".equals(fieldName) || "FATAL".equals(fieldName))) {
                 return true;
             }
             return false;

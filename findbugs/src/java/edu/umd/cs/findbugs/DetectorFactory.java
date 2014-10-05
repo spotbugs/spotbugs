@@ -241,7 +241,7 @@ public class DetectorFactory {
      *         false if it is too old
      */
     public boolean isEnabledForCurrentJRE() {
-        if (requireJRE.equals("")) {
+        if ("".equals(requireJRE)) {
             return true;
         }
         try {

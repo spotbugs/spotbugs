@@ -68,19 +68,19 @@ enum SaveType {
     public static SaveType forFile(File f) {
         String extension = Util.getFileExtension(f);
 
-        if (extension.equals("html") || extension.equals("htm")) {
+        if ("html".equals(extension) || "htm".equals(extension)) {
             return HTML_OUTPUT;
         }
-        if (extension.equals("fba")) {
+        if ("fba".equals(extension)) {
             return FBA_FILE;
         }
-        if (extension.equals("fbp")) {
+        if ("fbp".equals(extension)) {
             return FBP_FILE;
         }
-        if (extension.equals("xml")) {
+        if ("xml".equals(extension)) {
             return XML_ANALYSIS;
         }
-        if (extension.equals("html")) {
+        if ("html".equals(extension)) {
             return XML_ANALYSIS;
         }
         if (f.getName().toLowerCase().endsWith("xml.gz")) {

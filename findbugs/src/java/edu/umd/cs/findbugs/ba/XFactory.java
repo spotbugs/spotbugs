@@ -134,7 +134,7 @@ public class XFactory {
     }
 
     public boolean isCalled(XMethod m) {
-        if (m.getName().equals("<clinit>")) {
+        if ("<clinit>".equals(m.getName())) {
             return true;
         }
         return calledMethods.contains(m);
@@ -167,7 +167,7 @@ public class XFactory {
         if (isCalled(m)) {
             return true;
         }
-        if (m.isStatic() || m.isPrivate() || m.getName().equals("<init>")) {
+        if (m.isStatic() || m.isPrivate() || "<init>".equals(m.getName())) {
             return false;
         }
         try {
@@ -406,7 +406,7 @@ public class XFactory {
                      * obligation. If strict checking is performed, // weak
                      * entries are ignored.
                      */
-                    if (methodName.equals("<init>") || methodName.startsWith("access$") || xmethod.isStatic()
+                    if ("<init>".equals(methodName) || methodName.startsWith("access$") || xmethod.isStatic()
                             || methodName.toLowerCase().indexOf("close") >= 0
                             || xmethod.getSignature().toLowerCase().indexOf("Closeable") >= 0) {
                         ObligationPolicyDatabaseEntry entry = database.addParameterDeletesObligationDatabaseEntry(xmethod,

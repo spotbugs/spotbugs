@@ -49,7 +49,7 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
         if (DEBUG) {
             System.out.println("FFI: visiting " + getFullyQualifiedMethodName());
         }
-        if (getMethodName().equals("finalize") && getMethodSig().equals("()V") && (obj.getAccessFlags() & (ACC_PUBLIC)) != 0) {
+        if ("finalize".equals(getMethodName()) && "()V".equals(getMethodSig()) && (obj.getAccessFlags() & (ACC_PUBLIC)) != 0) {
             bugReporter
             .reportBug(new BugInstance(this, "FI_PUBLIC_SHOULD_BE_PROTECTED", NORMAL_PRIORITY).addClassAndMethod(this));
         }
@@ -60,11 +60,11 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
         sawSuperFinalize = false;
         super.visit(obj);
         bugAccumulator.reportAccumulatedBugs();
-        if (!getMethodName().equals("finalize") || !getMethodSig().equals("()V")) {
+        if (!"finalize".equals(getMethodName()) || !"()V".equals(getMethodSig())) {
             return;
         }
         String overridesFinalizeIn = Lookup.findSuperImplementor(getDottedClassName(), "finalize", "()V", bugReporter);
-        boolean superHasNoFinalizer = overridesFinalizeIn.equals("java.lang.Object");
+        boolean superHasNoFinalizer = "java.lang.Object".equals(overridesFinalizeIn);
         // System.out.println("superclass: " + superclassName);
         if (obj.getCode().length == 1) {
             if (superHasNoFinalizer) {
@@ -85,14 +85,14 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("finalize") && getSigConstantOperand().equals("()V")) {
+        if (seen == INVOKEVIRTUAL && "finalize".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
             bugAccumulator.accumulateBug(
-                    new BugInstance(this, "FI_EXPLICIT_INVOCATION", getMethodName().equals("finalize")
-                            && getMethodSig().equals("()V") ? HIGH_PRIORITY : NORMAL_PRIORITY).addClassAndMethod(this)
+                    new BugInstance(this, "FI_EXPLICIT_INVOCATION", "finalize".equals(getMethodName())
+                            && "()V".equals(getMethodSig()) ? HIGH_PRIORITY : NORMAL_PRIORITY).addClassAndMethod(this)
                             .addCalledMethod(this), this);
 
         }
-        if (seen == INVOKESPECIAL && getNameConstantOperand().equals("finalize")) {
+        if (seen == INVOKESPECIAL && "finalize".equals(getNameConstantOperand())) {
             sawSuperFinalize = true;
         }
     }

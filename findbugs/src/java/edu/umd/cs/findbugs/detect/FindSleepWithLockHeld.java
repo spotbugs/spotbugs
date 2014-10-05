@@ -130,13 +130,13 @@ public class FindSleepWithLockHeld implements Detector {
 
     private boolean isSleep(INVOKESTATIC ins, ConstantPoolGen cpg) {
         String className = ins.getClassName(cpg);
-        if (!className.equals("java.lang.Thread")) {
+        if (!"java.lang.Thread".equals(className)) {
             return false;
         }
         String methodName = ins.getMethodName(cpg);
         String signature = ins.getSignature(cpg);
 
-        return methodName.equals("sleep") && (signature.equals("(J)V") || signature.equals("(JI)V"));
+        return "sleep".equals(methodName) && ("(J)V".equals(signature) || "(JI)V".equals(signature));
     }
 
     @Override

@@ -314,7 +314,7 @@ public class DiscoverSourceDirectories {
             String packageName = classDesc.getPackageName();
             String sourceFile = classInfo.getSource();
 
-            if (!packageName.equals("")) {
+            if (!"".equals(packageName)) {
                 packageName = packageName.replace('.', '/');
                 packageName += "/";
             }

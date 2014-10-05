@@ -78,8 +78,8 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
     @Override
     public void visit(Code obj) {
-        if (getMethodName().equals(EQUALS_NAME) && !getMethod().isStatic() && getMethod().isPublic()
-                && getMethodSig().equals(EQUALS_SIGNATURE)) {
+        if (EQUALS_NAME.equals(getMethodName()) && !getMethod().isStatic() && getMethod().isPublic()
+                && EQUALS_SIGNATURE.equals(getMethodSig())) {
             sawCheckedCast = sawSuperEquals = sawInstanceOf = sawGetClass = sawReturnSuper = sawCompare = sawReturnNonSuper = prevWasSuperEquals = sawGoodEqualsClass = sawBadEqualsClass = dangerDanger = sawInstanceOfSupertype = alwaysTrue = alwaysFalse = sawStaticDelegate = sawEqualsBuilder = false;
             sawInitialIdentityCheck = obj.getCode().length == 11 || obj.getCode().length == 9;
             equalsCalls = 0;
@@ -154,7 +154,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             }
 
             String superClassName = getSuperclassName().replace('/', '.');
-            if (!superClassName.equals("java.lang.Object")) {
+            if (!"java.lang.Object".equals(superClassName)) {
                 parentMap.put(classAnnotation, new ClassAnnotation(superClassName));
             }
             equalsMethod.put(classAnnotation, getMethodDescriptor());
@@ -218,8 +218,8 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
         }
 
         if ((seen == INVOKESTATIC || seen == INVOKESPECIAL || seen == INVOKEVIRTUAL)
-                && (getClassConstantOperand().equals("org/apache/commons/lang/builder/EqualsBuilder")
-                        || getClassConstantOperand().equals("org/apache/commons/lang3/builder/EqualsBuilder"))) {
+                && ("org/apache/commons/lang/builder/EqualsBuilder".equals(getClassConstantOperand())
+                        || "org/apache/commons/lang3/builder/EqualsBuilder".equals(getClassConstantOperand()))) {
             sawEqualsBuilder = true;
         }
 
@@ -251,7 +251,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             }
         }
 
-        if ((seen == INVOKEINTERFACE || seen == INVOKEVIRTUAL) && getNameConstantOperand().equals("compare")
+        if ((seen == INVOKEINTERFACE || seen == INVOKEVIRTUAL) && "compare".equals(getNameConstantOperand())
                 && stack.getStackDepth() >= 2) {
             Item left = stack.getStackItem(1);
             Item right = stack.getStackItem(0);
@@ -261,20 +261,20 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
         }
         dangerDanger = false;
 
-        if (seen == INVOKEVIRTUAL && getClassConstantOperand().equals("java/lang/Class")
-                && getNameConstantOperand().equals("getName") && getSigConstantOperand().equals("()Ljava/lang/String;")
+        if (seen == INVOKEVIRTUAL && "java/lang/Class".equals(getClassConstantOperand())
+                && "getName".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand())
                 && stack.getStackDepth() >= 2) {
             Item left = stack.getStackItem(1);
             XMethod leftM = left.getReturnValueOf();
             Item right = stack.getStackItem(0);
             XMethod rightM = right.getReturnValueOf();
-            if (leftM != null && rightM != null && leftM.getName().equals("getName") && rightM.getName().equals("getClass")) {
+            if (leftM != null && rightM != null && "getName".equals(leftM.getName()) && "getClass".equals(rightM.getName())) {
                 dangerDanger = true;
             }
 
         }
-        if (seen == INVOKESPECIAL && getNameConstantOperand().equals(EQUALS_NAME)
-                && getSigConstantOperand().equals(EQUALS_SIGNATURE)) {
+        if (seen == INVOKESPECIAL && EQUALS_NAME.equals(getNameConstantOperand())
+                && EQUALS_SIGNATURE.equals(getSigConstantOperand())) {
             sawSuperEquals = prevWasSuperEquals = true;
         } else {
             if (seen == IRETURN) {
@@ -315,8 +315,8 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
                 sawCheckedCast = true;
             }
         }
-        if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("getClass")
-                && getSigConstantOperand().equals("()Ljava/lang/Class;")) {
+        if (seen == INVOKEVIRTUAL && "getClass".equals(getNameConstantOperand())
+                && "()Ljava/lang/Class;".equals(getSigConstantOperand())) {
             sawGetClass = true;
         }
 
@@ -324,7 +324,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
     private boolean callToInvoke(int seen) {
         if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE || seen == INVOKESPECIAL) {
-            return invokesMethodWithEqualLikeName() && getSigConstantOperand().equals(EQUALS_SIGNATURE);
+            return invokesMethodWithEqualLikeName() && EQUALS_SIGNATURE.equals(getSigConstantOperand());
         }
         if (seen == INVOKESTATIC) {
             String sig = getSigConstantOperand();
@@ -348,9 +348,9 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             XMethod leftM = left.getReturnValueOf();
             Item right = stack.getStackItem(0);
             XMethod rightM = right.getReturnValueOf();
-            if (left.getSignature().equals("Ljava/lang/Class;") && right.getSignature().equals("Ljava/lang/Class;")) {
-                boolean leftMatch = leftM != null && leftM.getName().equals("getClass");
-                boolean rightMatch = rightM != null && rightM.getName().equals("getClass");
+            if ("Ljava/lang/Class;".equals(left.getSignature()) && "Ljava/lang/Class;".equals(right.getSignature())) {
+                boolean leftMatch = leftM != null && "getClass".equals(leftM.getName());
+                boolean rightMatch = rightM != null && "getClass".equals(rightM.getName());
                 if (leftMatch && rightMatch) {
                     sawGoodEqualsClass = true;
                 } else {

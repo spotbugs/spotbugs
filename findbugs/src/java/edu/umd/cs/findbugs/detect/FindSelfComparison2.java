@@ -64,12 +64,12 @@ public class FindSelfComparison2 implements Detector {
     }
 
     static boolean booleanComparisonMethod(String methodName) {
-        return methodName.equals("equals") ||methodName.equals("endsWith") || methodName.equals("startsWith")
-                || methodName.equals("contains") || methodName.equals("equalsIgnoreCase");
+        return "equals".equals(methodName) ||"endsWith".equals(methodName) || "startsWith".equals(methodName)
+                || "contains".equals(methodName) || "equalsIgnoreCase".equals(methodName);
     }
 
     static boolean comparatorMethod(String methodName) {
-        return  methodName.equals("compareTo") || methodName.equals("compareToIgnoreCase");
+        return  "compareTo".equals(methodName) || "compareToIgnoreCase".equals(methodName);
     }
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
         CFG cfg = classContext.getCFG(method);

@@ -66,7 +66,7 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
         ObjectType exceptionSupertype = (ObjectType) commonSupertype;
 
         String className = exceptionSupertype.getClassName();
-        if (className.equals("java.lang.Throwable")) {
+        if ("java.lang.Throwable".equals(className)) {
             return exceptionSupertype;
         }
         return new ExceptionObjectType(className, exceptionSet);

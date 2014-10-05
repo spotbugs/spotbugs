@@ -278,7 +278,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             this.priority += factory.getPriorityAdjustment();
             boundPriority();
             BugPattern bugPattern = getBugPattern();
-            if (SystemProperties.ASSERTIONS_ENABLED && !bugPattern.getCategory().equals("EXPERIMENTAL")
+            if (SystemProperties.ASSERTIONS_ENABLED && !"EXPERIMENTAL".equals(bugPattern.getCategory())
                     && !factory.getReportedBugPatterns().contains(bugPattern)) {
                 AnalysisContext.logError(factory.getShortName() + " doesn't note that it reports "
                         + bugPattern + " in category " + bugPattern.getCategory());
@@ -526,7 +526,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         // Highest priority: return the first top level source line annotation
         for (BugAnnotation annotation : annotationList) {
             if (annotation instanceof SourceLineAnnotation
-                    && annotation.getDescription().equals(SourceLineAnnotation.DEFAULT_ROLE)
+                    && SourceLineAnnotation.DEFAULT_ROLE.equals(annotation.getDescription())
                     && !((SourceLineAnnotation) annotation).isUnknown()) {
                 return (SourceLineAnnotation) annotation;
             }
@@ -559,7 +559,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         Collection<SourceLineAnnotation> result = new ArrayList<SourceLineAnnotation>();
         for (BugAnnotation annotation : annotationList) {
             if (annotation instanceof SourceLineAnnotation
-                    && annotation.getDescription().equals(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE)
+                    && SourceLineAnnotation.ROLE_ANOTHER_INSTANCE.equals(annotation.getDescription())
                     && !((SourceLineAnnotation) annotation).isUnknown()) {
                 result.add((SourceLineAnnotation) annotation);
             }
@@ -853,7 +853,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     }
 
     public boolean hasSomeUserAnnotation() {
-        return !getAnnotationText().equals("")
+        return !"".equals(getAnnotationText())
                 || !getUserDesignationKey().equals(BugDesignation.UNCLASSIFIED);
     }
 
@@ -2799,11 +2799,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         optionalAdd(primaryAnnotations, primeField);
         optionalAdd(primaryAnnotations, primeClass);
 
-        if ((showContext || !primarySourceLineAnnotation.getDescription().equals(SourceLineAnnotation.DEFAULT_ROLE))) {
+        if ((showContext || !SourceLineAnnotation.DEFAULT_ROLE.equals(primarySourceLineAnnotation.getDescription()))) {
             result.add(primarySourceLineAnnotation);
         }
 
-        if (primeMethod != null && (showContext || !primeMethod.getDescription().equals(MethodAnnotation.DEFAULT_ROLE))) {
+        if (primeMethod != null && (showContext || !MethodAnnotation.DEFAULT_ROLE.equals(primeMethod.getDescription()))) {
             result.add(primeMethod);
         }
 

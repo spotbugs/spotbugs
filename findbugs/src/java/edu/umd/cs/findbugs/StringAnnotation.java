@@ -172,7 +172,7 @@ public class StringAnnotation implements BugAnnotation {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("value", value);
 
         String role = getDescription();
-        if (!role.equals(DEFAULT_ROLE)) {
+        if (!DEFAULT_ROLE.equals(role)) {
             attributeList.addAttribute("role", role);
         }
 

@@ -320,7 +320,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
             if (findbugsJarCodeBase != null) {
                 File findbugsJar = new File(findbugsJarCodeBase);
                 File libDir = findbugsJar.getParentFile();
-                if (libDir.getName().equals("lib")) {
+                if ("lib".equals(libDir.getName())) {
                     String fbHome = libDir.getParent();
                     FindBugs.setHome(fbHome);
                     return fbHome;
@@ -329,7 +329,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         }
         String classFilePath = FindBugs.class.getName().replaceAll("\\.", "/") + ".class";
         URL resource = FindBugs.class.getClassLoader().getResource(classFilePath);
-        if (resource != null && resource.getProtocol().equals("file")) {
+        if (resource != null && "file".equals(resource.getProtocol())) {
             try {
                 String classfile = URLDecoder.decode(resource.getPath(), Charset.defaultCharset().name());
                 Matcher m = Pattern.compile("(.*)/.*?/edu/umd.*").matcher(classfile);

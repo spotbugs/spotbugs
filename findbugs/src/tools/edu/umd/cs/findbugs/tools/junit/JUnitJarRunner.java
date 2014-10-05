@@ -125,9 +125,9 @@ public class JUnitJarRunner {
     }
 
     public void run(TestSuite suite, String how) {
-        if (how.equals("-textui")) {
+        if ("-textui".equals(how)) {
             junit.textui.TestRunner.run(suite);
-        } else if (how.equals("-swingui")) {
+        } else if ("-swingui".equals(how)) {
             // junit.swingui.TestRunner.run(suite);
             throw new UnsupportedOperationException("I don't know how to run the Swing UI on a test suite yet");
         } else {

@@ -113,7 +113,7 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
     public void widgetSelected(SelectionEvent e) {
         Widget widget = e.widget;
         String buttonId = widget.getData() + "";
-        if (buttonId.equals("add")) {
+        if ("add".equals(buttonId)) {
             addFiles(e.display.getActiveShell());
         } else {
             Iterator<?> selectionIter = ((IStructuredSelection) viewer.getSelection()).iterator();

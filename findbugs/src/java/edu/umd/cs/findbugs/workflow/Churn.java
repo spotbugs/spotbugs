@@ -57,7 +57,7 @@ public class Churn {
             return b.getType();
         }
         String result = b.getCategoryAbbrev();
-        if (result.equals("C") || result.equals("N")) {
+        if ("C".equals(result) || "N".equals(result)) {
             return result;
         }
         return "O";
@@ -211,7 +211,7 @@ public class Churn {
 
         @Override
         public void handleOptionWithArgument(String option, String argument) {
-            if (option.equals("-fixRate")) {
+            if ("-fixRate".equals(option)) {
                 fixRate = Integer.parseInt(argument);
             } else {
                 throw new IllegalArgumentException("unknown option: " + option);

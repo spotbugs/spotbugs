@@ -184,7 +184,7 @@ public final class SourceCodeDisplay implements Runnable {
             StyledDocument document = src.getDocument();
             frame.getSourceCodeTextPane().setDocument(document);
             String sourceFile = mySourceLine.getSourceFile();
-            if (sourceFile == null || sourceFile.equals("<Unknown>")) {
+            if (sourceFile == null || "<Unknown>".equals(sourceFile)) {
                 sourceFile = mySourceLine.getSimpleClassName();
             }
             int startLine = mySourceLine.getStartLine();

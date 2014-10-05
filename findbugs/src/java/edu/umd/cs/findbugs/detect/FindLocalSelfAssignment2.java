@@ -73,7 +73,7 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
                     if (previousLoadOf == getRegisterOperand() && gotoCount < 2 && getPC() != previousGotoTarget) {
                         int priority = NORMAL_PRIORITY;
                         String methodName = getMethodName();
-                        if (methodName.equals("<init>") || methodName.startsWith("set") && getCode().getCode().length <= 5
+                        if ("<init>".equals(methodName) || methodName.startsWith("set") && getCode().getCode().length <= 5
                                 || !previousStores.get(getRegisterOperand())) {
                             priority = HIGH_PRIORITY;
                         }
@@ -81,7 +81,7 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
                         XClass c = getXClass();
                         LocalVariableAnnotation local = LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),
                                 getRegisterOperand(), getPC(), getPC());
-                        if (local.getName().equals("?")) {
+                        if ("?".equals(local.getName())) {
                             priority++;
                         } else {
                             for (XField f : c.getXFields()) {

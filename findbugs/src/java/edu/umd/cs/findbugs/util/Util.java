@@ -163,7 +163,7 @@ public class Util {
     static Collection<Runnable> runAtShutdown;
 
     public static String getNetworkErrorMessage(Throwable e) {
-        if (e.getClass().getSimpleName().equals("InvalidProtocolBufferException")) {
+        if ("InvalidProtocolBufferException".equals(e.getClass().getSimpleName())) {
             return "Your Internet provider may require you to log in via your web browser.";
         }
         if (e instanceof UnknownHostException) {

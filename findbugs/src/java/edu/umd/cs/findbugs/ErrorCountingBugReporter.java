@@ -69,7 +69,7 @@ public class ErrorCountingBugReporter extends DelegatingBugReporter {
     @Override
     public void reportMissingClass(ClassNotFoundException ex) {
         String missing = AbstractBugReporter.getMissingClassName(ex);
-        if (missing == null || missing.startsWith("[") || missing.equals("java.lang.Synthetic")) {
+        if (missing == null || missing.startsWith("[") || "java.lang.Synthetic".equals(missing)) {
             return;
         }
         if (missingClassSet.add(missing)) {

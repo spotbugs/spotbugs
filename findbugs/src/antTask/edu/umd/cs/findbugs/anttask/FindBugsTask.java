@@ -431,7 +431,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
         String[] elementList = src.list();
         for (String anElementList : elementList) {
-            if (!anElementList.equals("")) {
+            if (!"".equals(anElementList)) {
                 nonEmpty = true;
                 break;
             }
@@ -474,7 +474,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
         String[] elementList = src.list();
         for (String anElementList : elementList) {
-            if (!anElementList.equals("")) {
+            if (!"".equals(anElementList)) {
                 nonEmpty = true;
                 break;
             }
@@ -583,16 +583,16 @@ public class FindBugsTask extends AbstractFindBugsTask {
         }
 
         if (outputFormat != null
-                && !(outputFormat.trim().equalsIgnoreCase("xml") || outputFormat.trim().equalsIgnoreCase("xml:withMessages")
-                        || outputFormat.trim().equalsIgnoreCase("html") || outputFormat.trim().equalsIgnoreCase("text")
-                        || outputFormat.trim().equalsIgnoreCase("xdocs") || outputFormat.trim().equalsIgnoreCase("emacs"))) {
+                && !("xml".equalsIgnoreCase(outputFormat.trim()) || "xml:withMessages".equalsIgnoreCase(outputFormat.trim())
+                        || "html".equalsIgnoreCase(outputFormat.trim()) || "text".equalsIgnoreCase(outputFormat.trim())
+                        || "xdocs".equalsIgnoreCase(outputFormat.trim()) || "emacs".equalsIgnoreCase(outputFormat.trim()))) {
             throw new BuildException("output attribute must be either " + "'text', 'xml', 'html', 'xdocs' or 'emacs' for task <"
                     + getTaskName() + "/>", getLocation());
         }
 
         if (reportLevel != null
-                && !(reportLevel.trim().equalsIgnoreCase("experimental") || reportLevel.trim().equalsIgnoreCase("low")
-                        || reportLevel.trim().equalsIgnoreCase("medium") || reportLevel.trim().equalsIgnoreCase("high"))) {
+                && !("experimental".equalsIgnoreCase(reportLevel.trim()) || "low".equalsIgnoreCase(reportLevel.trim())
+                        || "medium".equalsIgnoreCase(reportLevel.trim()) || "high".equalsIgnoreCase(reportLevel.trim()))) {
             throw new BuildException("reportlevel attribute must be either "
                     + "'experimental' or 'low' or 'medium' or 'high' for task <" + getTaskName() + "/>", getLocation());
         }
@@ -685,7 +685,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
             addArg("-timestampNow");
         }
 
-        if (outputFormat != null && !outputFormat.trim().equalsIgnoreCase("text")) {
+        if (outputFormat != null && !"text".equalsIgnoreCase(outputFormat.trim())) {
             outputFormat = outputFormat.trim();
             String outputArg = "-";
             int colon = outputFormat.indexOf(':');

@@ -120,7 +120,7 @@ public class DeepSubtypeAnalysis {
         }
 
         String refName = getComponentClass(refSig);
-        if (refName.equals("java.lang.Object")) {
+        if ("java.lang.Object".equals(refName)) {
             return 0.99;
         }
 
@@ -138,7 +138,7 @@ public class DeepSubtypeAnalysis {
         }
 
         String refName = getComponentClass(refSig);
-        if (refName.equals("java.lang.Object")) {
+        if ("java.lang.Object".equals(refName)) {
             return 0.99;
         }
 
@@ -187,7 +187,7 @@ public class DeepSubtypeAnalysis {
             throw storedException;
         }
 
-        if (x.getClassName().equals("java.lang.Object")) {
+        if ("java.lang.Object".equals(x.getClassName())) {
             return 0.4;
         }
 

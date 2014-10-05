@@ -56,19 +56,19 @@ public class EmptyZipFileEntry extends BytecodeScanningDetector implements State
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("putNextEntry")) {
+        if (seen == INVOKEVIRTUAL && "putNextEntry".equals(getNameConstantOperand())) {
             streamType = getClassConstantOperand();
-            if (streamType.equals("java/util/zip/ZipOutputStream") || streamType.equals("java/util/jar/JarOutputStream")) {
+            if ("java/util/zip/ZipOutputStream".equals(streamType) || "java/util/jar/JarOutputStream".equals(streamType)) {
                 sawPutEntry = getPC();
             } else {
                 streamType = "";
             }
         } else {
-            if (getPC() - sawPutEntry <= 7 && seen == INVOKEVIRTUAL && getNameConstantOperand().equals("closeEntry")
+            if (getPC() - sawPutEntry <= 7 && seen == INVOKEVIRTUAL && "closeEntry".equals(getNameConstantOperand())
                     && getClassConstantOperand().equals(streamType)) {
                 bugReporter
                 .reportBug(new BugInstance(this,
-                        streamType.equals("java/util/zip/ZipOutputStream") ? "AM_CREATES_EMPTY_ZIP_FILE_ENTRY"
+                        "java/util/zip/ZipOutputStream".equals(streamType) ? "AM_CREATES_EMPTY_ZIP_FILE_ENTRY"
                                 : "AM_CREATES_EMPTY_JAR_FILE_ENTRY", NORMAL_PRIORITY).addClassAndMethod(this)
                                 .addSourceLine(this));
             }

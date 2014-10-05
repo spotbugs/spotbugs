@@ -155,7 +155,7 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
 
                     if (!foundMatch) {
 
-                        String type = methodName.equals("wait") ? "MWN_MISMATCHED_WAIT" : "MWN_MISMATCHED_NOTIFY";
+                        String type = "wait".equals(methodName) ? "MWN_MISMATCHED_WAIT" : "MWN_MISMATCHED_NOTIFY";
                         String sourceFile = classContext.getJavaClass().getSourceFileName();
                         // Report as medium priority only if the method is
                         // public.

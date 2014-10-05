@@ -103,7 +103,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
         for (Constant constantEntry : pool.getConstantPool()) {
             if (constantEntry instanceof ConstantNameAndType) {
                 ConstantNameAndType nt = (ConstantNameAndType) constantEntry;
-                if (nt.getName(pool).equals("putIfAbsent")) {
+                if ("putIfAbsent".equals(nt.getName(pool))) {
                     found = true;
                     break;
                 }
@@ -163,7 +163,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
             if (superclassDescriptor != null) {
                 @SlashedClassName
                 String superClassName = superclassDescriptor.getClassName();
-                if (superClassName.equals("java/lang/Enum")) {
+                if ("java/lang/Enum".equals(superClassName)) {
                     return Priorities.LOW_PRIORITY;
                 }
             }
@@ -231,9 +231,9 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
                 InvokeInstruction invoke = (InvokeInstruction) ins;
                 String className = invoke.getClassName(cpg);
 
-                if (invoke.getMethodName(cpg).equals("putIfAbsent")) {
+                if ("putIfAbsent".equals(invoke.getMethodName(cpg))) {
                     String signature = invoke.getSignature(cpg);
-                    if (signature.equals("(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
+                    if ("(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;".equals(signature)
                             && !(invoke instanceof INVOKESTATIC) && extendsConcurrentMap(className)) {
                         InstructionHandle next = handle.getNext();
                         boolean isIgnored = next != null && next.getInstruction() instanceof POP;
@@ -305,7 +305,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     }
 
     private boolean extendsConcurrentMap(@DottedClassName String className) {
-        if (className.equals("java.util.concurrent.ConcurrentHashMap")
+        if ("java.util.concurrent.ConcurrentHashMap".equals(className)
                 || className.equals(concurrentMapDescriptor.getDottedClassName())) {
             return true;
         }

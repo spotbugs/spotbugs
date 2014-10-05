@@ -298,7 +298,7 @@ public class Filter {
             }
             long numVersions = currentSeqNum + 1;
 
-            if (val.equals("last") || val.equals("lastVersion")) {
+            if ("last".equals(val) || "lastVersion".equals(val)) {
                 return numVersions - 1;
             }
 
@@ -606,66 +606,66 @@ public class Filter {
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
 
-            if (option.equals("-priority") || option.equals("-confidence")) {
+            if ("-priority".equals(option) || "-confidence".equals(option)) {
                 priority = parsePriority(argument);
             }
 
-            else if (option.equals("-maxRank")) {
+            else if ("-maxRank".equals(option)) {
                 maxRank = Integer.parseInt(argument);
-            } else if (option.equals("-first")) {
+            } else if ("-first".equals(option)) {
                 firstAsString = argument;
-            } else if (option.equals("-maybeMutated")) {
+            } else if ("-maybeMutated".equals(option)) {
                 maybeMutatedAsString = argument;
-            } else if (option.equals("-last")) {
+            } else if ("-last".equals(option)) {
                 lastAsString = argument;
-            } else if (option.equals("-trimToVersion")) {
+            } else if ("-trimToVersion".equals(option)) {
                 trimToVersionAsString = argument;
-            } else if (option.equals("-maxDuration")) {
+            } else if ("-maxDuration".equals(option)) {
                 duration = Integer.parseInt(argument);
-            } else if (option.equals("-fixed")) {
+            } else if ("-fixed".equals(option)) {
                 fixedAsString = argument;
-            } else if (option.equals("-after")) {
+            } else if ("-after".equals(option)) {
                 afterAsString = argument;
-            } else if (option.equals("-before")) {
+            } else if ("-before".equals(option)) {
                 beforeAsString = argument;
-            } else if (option.equals("-present")) {
+            } else if ("-present".equals(option)) {
                 presentAsString = argument;
-            } else if (option.equals("-absent")) {
+            } else if ("-absent".equals(option)) {
                 absentAsString = argument;
-            } else if (option.equals("-category")) {
+            } else if ("-category".equals(option)) {
                 addCategoryKey(argument);
-            } else if (option.equals("-designation")) {
+            } else if ("-designation".equals(option)) {
                 addDesignationKey(argument);
-            } else if (option.equals("-class")) {
+            } else if ("-class".equals(option)) {
                 classPattern = Pattern.compile(argument.replace(',', '|'));
-            } else if (option.equals("-calls")) {
+            } else if ("-calls".equals(option)) {
                 callsPattern = Pattern.compile(argument.replace(',', '|'));
-            } else if (option.equals("-bugPattern")) {
+            } else if ("-bugPattern".equals(option)) {
                 bugPattern = Pattern.compile(argument);
-            } else if (option.equals("-annotation")) {
+            } else if ("-annotation".equals(option)) {
                 annotation = argument;
-            } else if (option.equals("-excludeBugs")) {
+            } else if ("-excludeBugs".equals(option)) {
                 try {
                     ExcludingHashesBugReporter.addToExcludedInstanceHashes(excludedInstanceHashes, argument);
                 } catch (DocumentException e) {
                     throw new IllegalArgumentException("Error processing include file: " + argument, e);
                 }
-            } else if (option.equals("-include")) {
+            } else if ("-include".equals(option)) {
                 try {
                     includeFilter.add(new edu.umd.cs.findbugs.filter.Filter(argument));
                 } catch (FilterException e) {
                     throw new IllegalArgumentException("Error processing include file: " + argument, e);
                 }
-            } else if (option.equals("-exclude")) {
+            } else if ("-exclude".equals(option)) {
                 try {
                     excludeFilter.add(new edu.umd.cs.findbugs.filter.Filter(argument));
                 } catch (FilterException e) {
                     throw new IllegalArgumentException("Error processing include file: " + argument, e);
                 }
-            } else if (option.equals("-maxAge")) {
+            } else if ("-maxAge".equals(option)) {
                 maxAge = Integer.parseInt(argument);
                 maxAgeSpecified = true;
-            } else if (option.equals("-hashes")) {
+            } else if ("-hashes".equals(option)) {
                 hashesFromFile = new HashSet<String>();
                 BufferedReader in = null;
                 try {

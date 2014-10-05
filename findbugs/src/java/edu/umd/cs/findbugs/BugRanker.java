@@ -159,11 +159,11 @@ public class BugRanker {
                 String rank = parts[0];
                 String kind = parts[1];
                 String what = parts[2];
-                if (kind.equals("BugPattern")) {
+                if ("BugPattern".equals(kind)) {
                     bugPatterns.storeAdjustment(what, rank);
-                } else if (kind.equals("BugKind")) {
+                } else if ("BugKind".equals(kind)) {
                     bugKinds.storeAdjustment(what, rank);
-                } else if (kind.equals("Category")) {
+                } else if ("Category".equals(kind)) {
                     bugCategories.storeAdjustment(what, rank);
                 } else {
                     AnalysisContext.logError("Can't parse rank kind from line: '" + s + "'. "

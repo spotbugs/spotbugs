@@ -138,7 +138,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
             if (constant instanceof ConstantClass) {
                 ConstantClass cc = (ConstantClass) constant;
                 @SlashedClassName String className = cc.getBytes(pool);
-                if (className.equals("java/util/Calendar") || className.equals("java/text/DateFormat")) {
+                if ("java/util/Calendar".equals(className) || "java/text/DateFormat".equals(className)) {
                     sawDateClass = true;
                     break;
                 }
@@ -175,7 +175,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
             return;
         }
         String superclassName = getSuperclassName();
-        if (!aField.isStatic() && !superclassName.equals("java/lang/Enum")) {
+        if (!aField.isStatic() && !"java/lang/Enum".equals(superclassName)) {
             return;
         }
         if (!aField.isPublic() && !aField.isProtected()) {
@@ -295,14 +295,14 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
                 return;
             }
 
-            if (getMethodName().equals("<clinit>") && field.getClassName().equals(getDottedClassName())) {
+            if ("<clinit>".equals(getMethodName()) && field.getClassName().equals(getDottedClassName())) {
                 return;
             }
             String invokedName = getNameConstantOperand();
             if (invokedName.startsWith("get")) {
                 return;
             }
-            if (invokedName.equals("equals") && numArguments == 1) {
+            if ("equals".equals(invokedName) && numArguments == 1) {
                 OpcodeStack.Item passedAsArgument = stack.getStackItem(0);
                 field = passedAsArgument.getXField();
                 if (field == null || !field.isStatic()) {
@@ -336,8 +336,8 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
                 } else {
                     priority = LOW_PRIORITY;
                 }
-                if (invokedName.startsWith("set") || invokedName.equals("format") || invokedName.equals("add")
-                        || invokedName.equals("clear") || invokedName.equals("parse") || invokedName.equals("applyPattern")) {
+                if (invokedName.startsWith("set") || "format".equals(invokedName) || "add".equals(invokedName)
+                        || "clear".equals(invokedName) || "parse".equals(invokedName) || "applyPattern".equals(invokedName)) {
                     priority--;
                 }
             }

@@ -57,7 +57,7 @@ public class SignatureParser {
         while (i.hasNext()) {
             String s = i.next();
 
-            if (s.equals("D") || s.equals("J")) {
+            if ("D".equals(s) || "J".equals(s)) {
                 totalSize += 2;
             } else {
                 totalSize += 1;
@@ -266,7 +266,7 @@ public class SignatureParser {
      * @return number of stack frame slots a value of the given type will occupy
      */
     public static int getNumSlotsForType(String sig) {
-        if (sig.equals("J") || sig.equals("D")) {
+        if ("J".equals(sig) || "D".equals(sig)) {
             return 2;
         } else {
             return 1;

@@ -44,7 +44,7 @@ public class RedundantInterfaces extends PreorderVisitor implements Detector, St
         JavaClass obj = classContext.getJavaClass();
 
         String superClassName = obj.getSuperclassName();
-        if (superClassName.equals("java.lang.Object")) {
+        if ("java.lang.Object".equals(superClassName)) {
             return;
         }
 

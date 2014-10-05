@@ -136,8 +136,8 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
                     TypeQualifierAnnotation typeQualifierAnnotation = TypeQualifierApplications
                             .getEffectiveTypeQualifierAnnotation(xmethod, i, nonnullTypeQualifierValue);
                     boolean implicitNullCheckForEquals = false;
-                    if (directTypeQualifierAnnotation == null && method.getName().equals("equals")
-                            && method.getSignature().equals("(Ljava/lang/Object;)Z") && !method.isStatic()) {
+                    if (directTypeQualifierAnnotation == null && "equals".equals(method.getName())
+                            && "(Ljava/lang/Object;)Z".equals(method.getSignature()) && !method.isStatic()) {
                         implicitNullCheckForEquals = true;
                         Code code = method.getCode();
                         ConstantPool cp = jclass.getConstantPool();
@@ -170,7 +170,7 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
                         if (typeQualifierAnnotation.when != When.UNKNOWN) {
                             priority--;
                         }
-                        if (xmethod.isStatic() || xmethod.isFinal() || xmethod.isPrivate() || xmethod.getName().equals("<init>")
+                        if (xmethod.isStatic() || xmethod.isFinal() || xmethod.isPrivate() || "<init>".equals(xmethod.getName())
                                 || jclass.isFinal()) {
                             priority--;
                         }
@@ -184,7 +184,7 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
                     }
                 }
                 i++;
-                if (paramSig.equals("D") || paramSig.equals("J")) {
+                if ("D".equals(paramSig) || "J".equals(paramSig)) {
                     paramLocalOffset += 2;
                 } else {
                     paramLocalOffset += 1;

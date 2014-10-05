@@ -128,9 +128,9 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
             String sig = inv.getSignature(methodGen.getConstantPool());
             ValueNumberFrame frame = vnaDataflow.getFactAtLocation(new Location(handle, basicBlock));
 
-            if (sig.equals("()V") && (name.equals("lock") || name.equals("lockInterruptibly"))) {
+            if ("()V".equals(sig) && ("lock".equals(name) || "lockInterruptibly".equals(name))) {
                 modifyLock(frame, fact, 1);
-            } else if (sig.equals("()V") && (name.equals("unlock"))) {
+            } else if ("()V".equals(sig) && ("unlock".equals(name))) {
                 modifyLock(frame, fact, -1);
             }
 

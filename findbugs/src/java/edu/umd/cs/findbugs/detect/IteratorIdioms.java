@@ -63,7 +63,7 @@ public class IteratorIdioms extends BytecodeScanningDetector implements Stateles
 
     @Override
     public void visit(Method method) {
-        if(method.isPublic() && method.getName().equals("next") && method.getArgumentTypes().length == 0){
+        if(method.isPublic() && "next".equals(method.getName()) && method.getArgumentTypes().length == 0){
             shouldVisitCode = true;
             super.visit(method);
         } else {
@@ -88,7 +88,7 @@ public class IteratorIdioms extends BytecodeScanningDetector implements Stateles
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == NEW && getClassConstantOperand().equals("java/util/NoSuchElementException")) {
+        if (seen == NEW && "java/util/NoSuchElementException".equals(getClassConstantOperand())) {
             sawNoSuchElement = true;
         } else if (seen == INVOKESPECIAL || seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
             sawCall = true;

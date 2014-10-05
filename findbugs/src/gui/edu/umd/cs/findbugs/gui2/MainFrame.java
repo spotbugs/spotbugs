@@ -746,14 +746,14 @@ public class MainFrame extends FBFrame implements LogSync {
     public void updateTitle() {
         Project project = getProject();
         String name = project.getProjectName();
-        if ((name == null || name.trim().equals("")) && saveFile != null) {
+        if ((name == null || "".equals(name.trim())) && saveFile != null) {
             name = saveFile.getAbsolutePath();
         }
         if (name == null) {
             name = "";//Project.UNNAMED_PROJECT;
         }
         String oldTitle = this.getTitle();
-        String newTitle = TITLE_START_TXT + (name.trim().equals("") ? "" : " - " + name);
+        String newTitle = TITLE_START_TXT + ("".equals(name.trim()) ? "" : " - " + name);
         if (oldTitle.equals(newTitle)) {
             return;
         }

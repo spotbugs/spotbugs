@@ -93,8 +93,8 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
             System.out.println(getPC() + " : " + OPCODE_NAMES[seen]);
         }
 
-        if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) && getNameConstantOperand().equals("add")
-                && getSigConstantOperand().equals("(Ljava/lang/Object;)Z") && stack.getStackDepth() >= 2) {
+        if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) && "add".equals(getNameConstantOperand())
+                && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand()) && stack.getStackDepth() >= 2) {
             OpcodeStack.Item it0 = stack.getStackItem(0);
             int r0 = it0.getRegisterNumber();
             OpcodeStack.Item it1 = stack.getStackItem(1);
@@ -109,8 +109,7 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
                 && getNameConstantOperand().equals(getMethodName())
                 && getSigConstantOperand().equals(getMethodSig())
                 && (seen == INVOKESTATIC) == getMethod().isStatic()
-                && (seen == INVOKESPECIAL) == (getMethod().isPrivate() && !getMethod().isStatic() || getMethodName().equals(
-                        "<init>"))) {
+                && (seen == INVOKESPECIAL) == (getMethod().isPrivate() && !getMethod().isStatic() || "<init>".equals(getMethodName()))) {
             Type arguments[] = getMethod().getArgumentTypes();
             // stack.getStackDepth() >= parameters
             int parameters = arguments.length;
@@ -128,7 +127,7 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
                 // Invocation of same method
                 // Now need to see if parameters are the same
                 int firstParameter = 0;
-                if (getMethodName().equals("<init>")) {
+                if ("<init>".equals(getMethodName())) {
                     firstParameter = 1;
                 }
 
@@ -148,7 +147,7 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
                     }
                 }
 
-                boolean sameMethod = seen == INVOKESTATIC || getNameConstantOperand().equals("<init>");
+                boolean sameMethod = seen == INVOKESTATIC || "<init>".equals(getNameConstantOperand());
                 if (!sameMethod) {
                     // Have to check if first parmeter is the same
                     // know there must be a this argument
@@ -221,8 +220,8 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
         case INVOKESPECIAL:
         case INVOKEINTERFACE:
         case INVOKESTATIC:
-            if (getNameConstantOperand().equals("print") || getNameConstantOperand().equals("println")
-                    || getNameConstantOperand().equals("log") || getNameConstantOperand().equals("toString")) {
+            if ("print".equals(getNameConstantOperand()) || "println".equals(getNameConstantOperand())
+                    || "log".equals(getNameConstantOperand()) || "toString".equals(getNameConstantOperand())) {
                 break;
             }
             seenStateChange = true;

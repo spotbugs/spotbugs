@@ -110,7 +110,7 @@ public class FindBugsNature implements IProjectNature {
     private ICommand getFindBugsCommand(IProjectDescription description) {
         ICommand[] commands = description.getBuildSpec();
         for (int i = 0; i < commands.length; ++i) {
-            if (commands[i].getBuilderName().equals(FindbugsPlugin.BUILDER_ID)) {
+            if (FindbugsPlugin.BUILDER_ID.equals(commands[i].getBuilderName())) {
                 return commands[i];
             }
         }

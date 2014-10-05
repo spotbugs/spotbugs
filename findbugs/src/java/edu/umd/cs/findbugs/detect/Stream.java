@@ -210,7 +210,7 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
             // (Basically, we may not see the exact original stream class,
             // even though it's the same instance.)
 
-            return inv.getName(cpg).equals("close") && inv.getSignature(cpg).equals("()V");
+            return "close".equals(inv.getName(cpg)) && "()V".equals(inv.getSignature(cpg));
 
         }
 
@@ -243,9 +243,9 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
                 if (relatedType(classClosed) ) {
                     return true;
                 }
-                if (classClosed.equals("java.io.ObjectOutput")) {
+                if ("java.io.ObjectOutput".equals(classClosed)) {
                     return relatedType("java.io.ObjectOutputStream");
-                } else if (classClosed.equals("java.io.ObjectInput")) {
+                } else if ("java.io.ObjectInput".equals(classClosed)) {
                     return relatedType("java.io.ObjectInputStream");
                 }
                 return false;

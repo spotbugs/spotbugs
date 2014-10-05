@@ -91,13 +91,13 @@ public class TrainLongInstantfParams extends PreorderVisitor implements Detector
             LocalVariable localVariable = t.getLocalVariable(index, 0);
             if (localVariable != null) {
                 String name = localVariable.getName();
-                if (s.equals("J") && (name.toLowerCase().indexOf("instant") >= 0 || name.startsWith("date"))) {
+                if ("J".equals(s) && (name.toLowerCase().indexOf("instant") >= 0 || name.startsWith("date"))) {
 
                     // System.out.println(getFullyQualifiedMethodName() + " " + s + " " + index + " " + name);
                     property.setParamWithProperty(parameterNumber, true);
                 }
             }
-            if (s.equals("J") || s.equals("D")) {
+            if ("J".equals(s) || "D".equals(s)) {
                 index += 2;
             } else {
                 index += 1;

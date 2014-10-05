@@ -822,7 +822,7 @@ public class PluginLoader {
                         throw new PluginException("Class " + className + " does not implement Detector or Detector2");
                     }
                 }
-                DetectorFactory factory = new DetectorFactory(plugin, className, detectorClass, !disabled.equals("true"), speed,
+                DetectorFactory factory = new DetectorFactory(plugin, className, detectorClass, !"true".equals(disabled), speed,
                         reports, requireJRE);
                 if (Boolean.valueOf(hidden).booleanValue()) {
                     factory.setHidden(true);
@@ -866,7 +866,7 @@ public class PluginLoader {
                 constraint.setSingleSource(earlierSelector instanceof SingleDetectorFactorySelector);
 
                 // Add the constraint to the plugin
-                if (constraintElement.getName().equals("SplitPass")) {
+                if ("SplitPass".equals(constraintElement.getName())) {
                     plugin.addInterPassOrderingConstraint(constraint);
                 } else {
                     plugin.addIntraPassOrderingConstraint(constraint);
@@ -879,7 +879,7 @@ public class PluginLoader {
         List<Node> categoryNodeListGlobal = XMLUtil.selectNodes(pluginDescriptor, "/FindbugsPlugin/BugCategory");
         for(Node categoryNode : categoryNodeListGlobal) {
             String key = categoryNode.valueOf("@category");
-            if (key.equals("")) {
+            if ("".equals(key)) {
                 throw new PluginException("BugCategory element with missing category attribute");
             }
             BugCategory bc = plugin.addOrCreateBugCategory(key);
@@ -898,7 +898,7 @@ public class PluginLoader {
             }
             for (Node categoryNode : categoryNodeList) {
                 String key = categoryNode.valueOf("@category");
-                if (key.equals("")) {
+                if ("".equals(key)) {
                     throw new PluginException("BugCategory element with missing category attribute");
                 }
                 BugCategory bc = plugin.addOrCreateBugCategory(key);
@@ -989,7 +989,7 @@ public class PluginLoader {
             List<Node> bugCodeNodeList = XMLUtil.selectNodes(messageCollection, "/MessageCollection/BugCode");
             for (Node bugCodeNode : bugCodeNodeList) {
                 String abbrev = bugCodeNode.valueOf("@abbrev");
-                if (abbrev.equals("")) {
+                if ("".equals(abbrev)) {
                     throw new PluginException("BugCode element with missing abbrev attribute");
                 }
                 if (definedBugCodes.contains(abbrev)) {
@@ -1059,7 +1059,7 @@ public class PluginLoader {
         // Get the unique plugin id (or generate one, if none is present)
         // Unique plugin id
         String pluginId = pluginDescriptor.valueOf(XPATH_PLUGIN_PLUGINID);
-        if (pluginId.equals("")) {
+        if ("".equals(pluginId)) {
             synchronized (PluginLoader.class) {
                 pluginId = "plugin" + nextUnknownId++;
             }
@@ -1067,7 +1067,7 @@ public class PluginLoader {
         cannotDisable = Boolean.parseBoolean(pluginDescriptor.valueOf("/FindbugsPlugin/@cannotDisable"));
 
         String de = pluginDescriptor.valueOf("/FindbugsPlugin/@defaultenabled");
-        if (de != null && de.toLowerCase().trim().equals("false")) {
+        if (de != null && "false".equals(de.toLowerCase().trim())) {
             optionalPlugin = true;
         }
         if (optionalPlugin) {
@@ -1097,11 +1097,11 @@ public class PluginLoader {
         Plugin constructedPlugin = new Plugin(pluginId, version, parsedDate, this, !optionalPlugin, cannotDisable);
         // Set provider and website, if specified
         String provider = pluginDescriptor.valueOf(XPATH_PLUGIN_PROVIDER).trim();
-        if (!provider.equals("")) {
+        if (!"".equals(provider)) {
             constructedPlugin.setProvider(provider);
         }
         String website = pluginDescriptor.valueOf(XPATH_PLUGIN_WEBSITE).trim();
-        if (!website.equals("")) {
+        if (!"".equals(website)) {
             try {
                 constructedPlugin.setWebsite(website);
             } catch (URISyntaxException e1) {
@@ -1110,7 +1110,7 @@ public class PluginLoader {
         }
 
         String updateUrl = pluginDescriptor.valueOf("/FindbugsPlugin/@update-url").trim();
-        if (!updateUrl.equals("")) {
+        if (!"".equals(updateUrl)) {
             try {
                 constructedPlugin.setUpdateUrl(updateUrl);
             } catch (URISyntaxException e1) {
@@ -1267,12 +1267,12 @@ public class PluginLoader {
             boolean spanPlugins = Boolean.valueOf(node.valueOf("@spanplugins")).booleanValue();
 
             String categoryName = node.valueOf("@name");
-            if (!categoryName.equals("")) {
-                if (categoryName.equals("reporting")) {
+            if (!"".equals(categoryName)) {
+                if ("reporting".equals(categoryName)) {
                     return new ReportingDetectorFactorySelector(spanPlugins ? null : plugin);
-                } else if (categoryName.equals("training")) {
+                } else if ("training".equals(categoryName)) {
                     return new ByInterfaceDetectorFactorySelector(spanPlugins ? null : plugin, TrainingDetector.class);
-                } else if (categoryName.equals("interprocedural")) {
+                } else if ("interprocedural".equals(categoryName)) {
                     return new ByInterfaceDetectorFactorySelector(spanPlugins ? null : plugin,
                             InterproceduralFirstPassDetector.class);
                 } else {
@@ -1286,7 +1286,7 @@ public class PluginLoader {
             boolean spanPlugins = Boolean.valueOf(node.valueOf("@spanplugins")).booleanValue();
 
             String superName = node.valueOf("@super");
-            if (!superName.equals("")) {
+            if (!"".equals(superName)) {
                 try {
                     Class<?> superClass = Class.forName(superName);
                     return new ByInterfaceDetectorFactorySelector(spanPlugins ? null : plugin, superClass);

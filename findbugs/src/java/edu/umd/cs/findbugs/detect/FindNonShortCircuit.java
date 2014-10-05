@@ -116,7 +116,7 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
             break;
 
         case INVOKEVIRTUAL:
-            if (getNameConstantOperand().equals("length") && getClassConstantOperand().equals("java/lang/String")) {
+            if ("length".equals(getNameConstantOperand()) && "java/lang/String".equals(getClassConstantOperand())) {
                 break;
             }
             sawDanger = true;

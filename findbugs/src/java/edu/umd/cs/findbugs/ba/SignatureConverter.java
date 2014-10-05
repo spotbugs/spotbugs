@@ -270,7 +270,7 @@ public class SignatureConverter {
         int index = typeName.lastIndexOf('.');
         if (index >= 0) {
             String otherPkg = typeName.substring(0, index);
-            if (otherPkg.equals(pkgName) || otherPkg.equals("java.lang")) {
+            if (otherPkg.equals(pkgName) || "java.lang".equals(otherPkg)) {
                 typeName = typeName.substring(index + 1);
             }
         }

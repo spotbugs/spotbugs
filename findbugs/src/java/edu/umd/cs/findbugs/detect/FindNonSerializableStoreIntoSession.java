@@ -98,11 +98,11 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 
             INVOKEINTERFACE invoke = (INVOKEINTERFACE) ins;
             String mName = invoke.getMethodName(cpg);
-            if (!mName.equals("setAttribute")) {
+            if (!"setAttribute".equals(mName)) {
                 continue;
             }
             String cName = invoke.getClassName(cpg);
-            if (!cName.equals("javax.servlet.http.HttpSession")) {
+            if (!"javax.servlet.http.HttpSession".equals(cName)) {
                 continue;
             }
 

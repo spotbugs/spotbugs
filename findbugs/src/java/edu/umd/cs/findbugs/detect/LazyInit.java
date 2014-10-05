@@ -122,7 +122,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 
     @Override
     public boolean prescreen(Method method, ClassContext classContext) {
-        if (method.getName().equals("<clinit>")) {
+        if ("<clinit>".equals(method.getName())) {
             return false;
         }
 
@@ -197,7 +197,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
         }
 
         // Strings are (mostly) safe to pass by data race in 1.5
-        if (signature.equals("Ljava/lang/String;")) {
+        if ("Ljava/lang/String;".equals(signature)) {
             return;
         }
 
@@ -218,7 +218,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
                 if (name.startsWith("java/awt") || name.startsWith("javax/swing")) {
                     return;
                 }
-                if (name.equals("java/lang/Object")) {
+                if ("java/lang/Object".equals(name)) {
                     break;
                 }
                 fieldType = fieldClass.getSuperclassDescriptor();

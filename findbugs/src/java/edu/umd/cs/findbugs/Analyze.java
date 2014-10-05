@@ -66,7 +66,7 @@ public class Analyze {
         }
 
         String refName = getComponentClass(refSig);
-        if (refName.equals("java.lang.Object")) {
+        if ("java.lang.Object".equals(refName)) {
             return 0.99;
         }
 
@@ -80,7 +80,7 @@ public class Analyze {
         }
 
         String refName = getComponentClass(refSig);
-        if (refName.equals("java.lang.Object")) {
+        if ("java.lang.Object".equals(refName)) {
             return 0.99;
         }
 
@@ -177,7 +177,7 @@ public class Analyze {
         if (x.equals(y)) {
             return 1.0;
         }
-        if (y.getClassName().equals("java.lang.Object")) {
+        if ("java.lang.Object".equals(y.getClassName())) {
             return 1.0;
         }
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();

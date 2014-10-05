@@ -63,9 +63,9 @@ public class FindUnconditionalWait extends BytecodeScanningDetector implements S
             }
             break;
         case 1:
-            if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("wait")) {
+            if (seen == INVOKEVIRTUAL && "wait".equals(getNameConstantOperand())) {
                 bugReporter.reportBug(new BugInstance(this, "UW_UNCOND_WAIT",
-                        getSigConstantOperand().equals("()V") ? NORMAL_PRIORITY : LOW_PRIORITY).addClassAndMethod(this)
+                        "()V".equals(getSigConstantOperand()) ? NORMAL_PRIORITY : LOW_PRIORITY).addClassAndMethod(this)
                         .addSourceLine(this));
                 stage = 2;
             }

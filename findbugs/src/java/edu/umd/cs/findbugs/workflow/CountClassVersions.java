@@ -84,11 +84,11 @@ public class CountClassVersions {
 
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
-            if (option.equals("-prefix")) {
+            if ("-prefix".equals(option)) {
                 prefix = argument;
-            } else if (option.equals("-inputFileList")) {
+            } else if ("-inputFileList".equals(option)) {
                 inputFileList = argument;
-            } else if (option.equals("-maxAge")) {
+            } else if ("-maxAge".equals(option)) {
                 maxAge = System.currentTimeMillis() - (24 * 60 * 60 * 1000L) * Integer.parseInt(argument);
             } else {
                 throw new IllegalArgumentException("Unknown option : " + option);

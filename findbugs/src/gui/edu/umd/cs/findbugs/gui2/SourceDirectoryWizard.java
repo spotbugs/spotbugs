@@ -171,7 +171,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                     for (File selectedFile : selectedFiles) {
                         sourceRootBox.setText(selectedFile.getAbsolutePath());
                     }
-                    nextButton.setEnabled(!sourceRootBox.getText().equals(""));
+                    nextButton.setEnabled(!"".equals(sourceRootBox.getText()));
                 }
             }
         });
@@ -448,7 +448,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
         }
         this.step = step;
         previousButton.setEnabled(step != MIN_STEP);
-        nextButton.setEnabled(step != MAX_STEP && !sourceRootBox.getText().equals(""));
+        nextButton.setEnabled(step != MAX_STEP && !"".equals(sourceRootBox.getText()));
 
         CardLayout cards = (CardLayout) contentPanel.getLayout();
         cards.show(contentPanel, "card" + step);

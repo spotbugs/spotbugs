@@ -300,7 +300,7 @@ Debug, ValueNumberAnalysisFeatures {
             System.out.println("GETSTATIC of " + fieldName + " : " + fieldSig);
         }
         // Is this an access of a Class object?
-        if (fieldName.startsWith("class$") && fieldSig.equals("Ljava/lang/Class;")) {
+        if (fieldName.startsWith("class$") && "Ljava/lang/Class;".equals(fieldSig)) {
             String className = fieldName.substring("class$".length()).replace('$', '.');
             if (RLE_DEBUG) {
                 System.out.println("[found load of class object " + className + "]");
@@ -347,8 +347,8 @@ Debug, ValueNumberAnalysisFeatures {
             String methodName = obj.getName(cpg);
             String methodSig = obj.getSignature(cpg);
 
-            if ((methodName.equals("forName") && targetClassName.equals("java.lang.Class") || methodName.equals("class$"))
-                    && methodSig.equals("(Ljava/lang/String;)Ljava/lang/Class;")) {
+            if (("forName".equals(methodName) && "java.lang.Class".equals(targetClassName) || "class$".equals(methodName))
+                    && "(Ljava/lang/String;)Ljava/lang/Class;".equals(methodSig)) {
                 // Access of a Class object
                 ValueNumberFrame frame = getFrame();
                 try {
@@ -485,7 +485,7 @@ Debug, ValueNumberAnalysisFeatures {
     public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
         // Don't know what this method invocation is doing.
         // Kill all loads.
-        if (obj.getMethodName(cpg).equals("lock")) {
+        if ("lock".equals(obj.getMethodName(cpg))) {
             getFrame().killAllLoads();
         } else {
             killLoadsOfObjectsPassed(obj);
@@ -496,7 +496,7 @@ Debug, ValueNumberAnalysisFeatures {
     @Override
     public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
 
-        if (obj.getMethodName(cpg).equals("cast") && obj.getClassName(cpg).equals("java.lang.Class")) {
+        if ("cast".equals(obj.getMethodName(cpg)) && "java.lang.Class".equals(obj.getClassName(cpg))) {
             // treat as no-op
             try {
                 ValueNumberFrame frame = getFrame();

@@ -45,14 +45,14 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
     @Override
     public boolean parameterMustBeNonNull(XMethod m, int param) {
         if (param == 0) {
-            if (m.getName().equals("equals") && m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic()) {
+            if ("equals".equals(m.getName()) && "(Ljava/lang/Object;)Z".equals(m.getSignature()) && !m.isStatic()) {
                 return false;
-            } else if (m.getName().equals("main") && m.getSignature().equals("([Ljava/lang/String;)V") && m.isStatic()
+            } else if ("main".equals(m.getName()) && "([Ljava/lang/String;)V".equals(m.getSignature()) && m.isStatic()
                     && m.isPublic()) {
                 return true;
             } else if (TypeQualifierNullnessAnnotationDatabase.assertsFirstParameterIsNonnull(m)) {
                 return true;
-            } else if (m.getName().equals("compareTo") && m.getSignature().endsWith(";)Z") && !m.isStatic()) {
+            } else if ("compareTo".equals(m.getName()) && m.getSignature().endsWith(";)Z") && !m.isStatic()) {
                 return true;
             }
         }
@@ -80,14 +80,14 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
                 // bug code for it
                 int parameterNumber = mp.getParameterNumber();
                 if (parameterNumber == 0) {
-                    if (m.getName().equals("equals") && m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic()) {
+                    if ("equals".equals(m.getName()) && "(Ljava/lang/Object;)Z".equals(m.getSignature()) && !m.isStatic()) {
                         return NullnessAnnotation.CHECK_FOR_NULL;
-                    } else if (m.getName().equals("main") && m.getSignature().equals("([Ljava/lang/String;)V") && m.isStatic()
+                    } else if ("main".equals(m.getName()) && "([Ljava/lang/String;)V".equals(m.getSignature()) && m.isStatic()
                             && m.isPublic()) {
                         return NullnessAnnotation.NONNULL;
                     } else if (TypeQualifierNullnessAnnotationDatabase.assertsFirstParameterIsNonnull(m)) {
                         return NullnessAnnotation.NONNULL;
-                    } else if (m.getName().equals("compareTo") && m.getSignature().endsWith(";)Z") && !m.isStatic()) {
+                    } else if ("compareTo".equals(m.getName()) && m.getSignature().endsWith(";)Z") && !m.isStatic()) {
                         return NullnessAnnotation.NONNULL;
                     }
                 }
@@ -96,9 +96,9 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
                 String name = m.getName();
                 String signature = m.getSignature();
                 if (!m.isStatic()
-                        && (name.equals("clone") && signature.equals("()Ljava/lang/Object;") || name.equals("toString")
-                                && signature.equals("()Ljava/lang/String;") || m.isPrivate() && name.equals("readResolve")
-                                && signature.equals("()Ljava/lang/Object;"))) {
+                        && ("clone".equals(name) && "()Ljava/lang/Object;".equals(signature) || "toString".equals(name)
+                                && "()Ljava/lang/String;".equals(signature) || m.isPrivate() && "readResolve".equals(name)
+                                && "()Ljava/lang/Object;".equals(signature))) {
                     NullnessAnnotation result = super.getDirectAnnotation(m);
                     if (result != null) {
                         return result;

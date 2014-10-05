@@ -48,13 +48,13 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
         }
 
         if ((prevOpCode == I2D || prevOpCode == L2D) && seen == INVOKESTATIC && ClassName.isMathClass(getClassConstantOperand())
-                && getNameConstantOperand().equals("ceil")) {
+                && "ceil".equals(getNameConstantOperand())) {
             bugAccumulator
             .accumulateBug(new BugInstance(this, "ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", HIGH_PRIORITY)
             .addClassAndMethod(this), this);
             pendingIdivCastToDivBugLocation = null;
         } else if ((prevOpCode == I2F || prevOpCode == L2F) && seen == INVOKESTATIC
-                && ClassName.isMathClass(getClassConstantOperand()) && getNameConstantOperand().equals("round")) {
+                && ClassName.isMathClass(getClassConstantOperand()) && "round".equals(getNameConstantOperand())) {
             bugAccumulator.accumulateBug(
                     new BugInstance(this, "ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND", NORMAL_PRIORITY).addClassAndMethod(this),
                     this);

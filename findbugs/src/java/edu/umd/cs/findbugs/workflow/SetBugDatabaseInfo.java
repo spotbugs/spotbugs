@@ -109,19 +109,19 @@ public class SetBugDatabaseInfo {
 
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
-            if (option.equals("-withMessages")) {
+            if ("-withMessages".equals(option)) {
                 withMessages = true;
-            } else if (option.equals("-resetSource")) {
+            } else if ("-resetSource".equals(option)) {
                 resetSource = true;
-            } else if (option.equals("-resetProject")) {
+            } else if ("-resetProject".equals(option)) {
                 resetProject = true;
-            } else if (option.equals("-purgeStats")) {
+            } else if ("-purgeStats".equals(option)) {
                 purgeStats = true;
-            } else if (option.equals("-purgeDesignations")) {
+            } else if ("-purgeDesignations".equals(option)) {
                 purgeDesignations = true;
-            } else if (option.equals("-purgeClassStats")) {
+            } else if ("-purgeClassStats".equals(option)) {
                 purgeClassStats = true;
-            } else if (option.equals("-purgeMissingClasses")) {
+            } else if ("-purgeMissingClasses".equals(option)) {
                 purgeMissingClasses = true;
             } else {
                 throw new IllegalArgumentException("no option " + option);
@@ -131,11 +131,11 @@ public class SetBugDatabaseInfo {
 
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
-            if (option.equals("-name")) {
+            if ("-name".equals(option)) {
                 revisionName = argument;
-            } else if (option.equals("-cloud")) {
+            } else if ("-cloud".equals(option)) {
                 cloudId = argument;
-            } else if (option.equals("-cloudProperty")) {
+            } else if ("-cloudProperty".equals(option)) {
                 int e = argument.indexOf('=');
                 if (e == -1) {
                     throw new IllegalArgumentException("Bad cloud property: " + argument);
@@ -144,17 +144,17 @@ public class SetBugDatabaseInfo {
                 String value = argument.substring(e + 1);
                 cloudProperties.put(key, value);
 
-            } else if (option.equals("-projectName")) {
+            } else if ("-projectName".equals(option)) {
                 projectName = argument;
-            } else if (option.equals("-suppress")) {
+            } else if ("-suppress".equals(option)) {
                 exclusionFilterFile = argument;
-            } else if (option.equals("-timestamp")) {
+            } else if ("-timestamp".equals(option)) {
                 revisionTimestamp = Date.parse(argument);
-            } else if (option.equals("-source")) {
+            } else if ("-source".equals(option)) {
                 sourcePaths.add(argument);
-            } else if (option.equals("-lastVersion")) {
+            } else if ("-lastVersion".equals(option)) {
                 lastVersion = argument;
-            } else if (option.equals("-findSource")) {
+            } else if ("-findSource".equals(option)) {
                 searchSourcePaths.add(argument);
             } else {
                 throw new IllegalArgumentException("Can't handle option " + option);

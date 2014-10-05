@@ -95,8 +95,8 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
             state = 1;
             break;
         case INVOKEVIRTUAL:
-            if (getClassConstantOperand().equals("java/lang/Class")
-                    && (getNameConstantOperand().equals("getResource") || getNameConstantOperand().equals("getResourceAsStream"))
+            if ("java/lang/Class".equals(getClassConstantOperand())
+                    && ("getResource".equals(getNameConstantOperand()) || "getResourceAsStream".equals(getNameConstantOperand()))
                     && sawGetClass + 10 >= getPC()) {
                 int priority = NORMAL_PRIORITY;
                 if (prevOpcode == LDC && stringConstant != null && stringConstant.length() > 0 && stringConstant.charAt(0) == '/') {
@@ -109,7 +109,7 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
                 reportedForThisClass = true;
 
             } else if (state == 1 && !methodIsStatic && !classIsFinal && classIsVisibleToOtherPackages
-                    && getNameConstantOperand().equals("getClass") && getSigConstantOperand().equals("()Ljava/lang/Class;")) {
+                    && "getClass".equals(getNameConstantOperand()) && "()Ljava/lang/Class;".equals(getSigConstantOperand())) {
                 sawGetClass = getPC();
             }
             state = 0;

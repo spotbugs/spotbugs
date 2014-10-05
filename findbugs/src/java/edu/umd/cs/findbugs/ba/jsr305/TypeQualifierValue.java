@@ -113,7 +113,7 @@ public class TypeQualifierValue<A extends Annotation> {
                 isStrict1 = true;
             }
             for (XMethod xmethod : xclass.getXMethods()) {
-                if (xmethod.getName().equals("value") && xmethod.getSignature().startsWith("()")) {
+                if ("value".equals(xmethod.getName()) && xmethod.getSignature().startsWith("()")) {
                     isExhaustive1 = xmethod.getAnnotation(EXHAUSTIVE_ANNOTATION) != null;
                     if (isExhaustive1) {
                         // exhaustive qualifiers are automatically exclusive

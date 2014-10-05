@@ -51,7 +51,7 @@ class JAIFToken {
      */
     @Override
     public String toString() {
-        if (lexeme.equals("\n")) {
+        if ("\n".equals(lexeme)) {
             return "<newline>";
         } else {
             return lexeme;

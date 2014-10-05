@@ -246,7 +246,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
             if (value instanceof Type) {
                 String className = ((Type) value).getClassName();
-                if (className.equals("java.lang.NullPointerException")) {
+                if ("java.lang.NullPointerException".equals(className)) {
                     return;
                 }
             }
@@ -384,7 +384,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         // Don't check equals() calls.
         // If an equals() call unconditionally dereferences the parameter,
         // it is the fault of the method, not the caller.
-        if (methodName.equals("equals") && signature.equals("(Ljava/lang/Object;)Z")) {
+        if ("equals".equals(methodName) && "(Ljava/lang/Object;)Z".equals(signature)) {
             return;
         }
 
@@ -394,7 +394,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         }
         String paramList = signature.substring(0, returnTypeStart + 1);
 
-        if (paramList.equals("()") || (paramList.indexOf('L') < 0 && paramList.indexOf('[') < 0)) {
+        if ("()".equals(paramList) || (paramList.indexOf('L') < 0 && paramList.indexOf('[') < 0)) {
             // Method takes no arguments, or takes no reference arguments
             return;
         }
@@ -546,10 +546,10 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                 priority = HIGH_PRIORITY;
             }
             String methodName = method.getName();
-            if (methodName.equals("clone")) {
+            if ("clone".equals(methodName)) {
                 bugPattern = "NP_CLONE_COULD_RETURN_NULL";
                 priority = NORMAL_PRIORITY;
-            } else if (methodName.equals("toString")) {
+            } else if ("toString".equals(methodName)) {
                 bugPattern = "NP_TOSTRING_COULD_RETURN_NULL";
                 priority = NORMAL_PRIORITY;
             }
@@ -606,7 +606,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     private boolean safeCallToPrimateParseMethod(XMethod calledMethod, Location location) {
         int position = location.getHandle().getPosition();
 
-        if (calledMethod.getClassName().equals("java.lang.Integer")) {
+        if ("java.lang.Integer".equals(calledMethod.getClassName())) {
 
             ConstantPool constantPool = classContext.getJavaClass().getConstantPool();
             Code code = method.getCode();
@@ -764,7 +764,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         // Check which params might be null
         addParamAnnotations(location, definitelyNullArgSet, unconditionallyDereferencedNullArgSet, propertySet, warning);
 
-        if (bugType.equals("NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS")) {
+        if ("NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS".equals(bugType)) {
             // Add annotations for dangerous method call targets
             for (JavaClassAndMethod dangerousCallTarget : veryDangerousCallTargetList) {
                 warning.addMethod(dangerousCallTarget).describe(MethodAnnotation.METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL);
@@ -953,8 +953,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         Instruction ins = location.getHandle().getInstruction();
         if (ins instanceof InvokeInstruction && refValue.isDefinitelyNull()) {
             InvokeInstruction iins = (InvokeInstruction) ins;
-            if (iins.getMethodName(classContext.getConstantPoolGen()).equals("close")
-                    && iins.getSignature(classContext.getConstantPoolGen()).equals("()V")) {
+            if ("close".equals(iins.getMethodName(classContext.getConstantPoolGen()))
+                    && "()V".equals(iins.getSignature(classContext.getConstantPoolGen()))) {
                 propertySet.addProperty(NullDerefProperty.CLOSING_NULL);
             }
         }
@@ -991,7 +991,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                 priority++;
             }
 
-            if (method.getName().equals("equals") && method.getSignature().equals("(Ljava/lang/Object;)Z")) {
+            if ("equals".equals(method.getName()) && "(Ljava/lang/Object;)Z".equals(method.getSignature())) {
                 if (caught) {
                     return;
                 }
@@ -1251,7 +1251,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                 if (variableAnnotation instanceof LocalVariableAnnotation) {
                     LocalVariableAnnotation local = (LocalVariableAnnotation) variableAnnotation;
                     if (!local.isNamed()) {
-                        if (warning.equals("RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE")) {
+                        if ("RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE".equals(warning)) {
                             return;
                         }
                         priority++;
@@ -1271,7 +1271,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                 BugInstance.getFieldOrMethodValueSource(item1), BugInstance.getFieldOrMethodValueSource(item2));
 
         if (!foundSource) {
-            if (warning.equals("RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE")) {
+            if ("RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE".equals(warning)) {
                 return;
             }
             bugInstance.setPriority(priority+1);
@@ -1527,10 +1527,10 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                 bugType = "NP_NONNULL_RETURN_VIOLATION";
                 String methodName = method.getName();
                 String methodSig = method.getSignature();
-                if (methodName.equals("clone") && methodSig.equals("()Ljava/lang/Object;")) {
+                if ("clone".equals(methodName) && "()Ljava/lang/Object;".equals(methodSig)) {
                     bugType = "NP_CLONE_COULD_RETURN_NULL";
                     priority = NORMAL_PRIORITY;
-                } else if (methodName.equals("toString") && methodSig.equals("()Ljava/lang/String;")) {
+                } else if ("toString".equals(methodName) && "()Ljava/lang/String;".equals(methodSig)) {
                     bugType = "NP_TOSTRING_COULD_RETURN_NULL";
                     priority = NORMAL_PRIORITY;
                 }
@@ -1568,7 +1568,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             }
         }
         if (hasManyNullTests) {
-            if (bugType.equals("NP_NULL_ON_SOME_PATH") || bugType.equals("NP_GUARANTEED_DEREF")) {
+            if ("NP_NULL_ON_SOME_PATH".equals(bugType) || "NP_GUARANTEED_DEREF".equals(bugType)) {
                 bugType = "NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE";
             } else {
                 priority++;
@@ -1606,7 +1606,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
         propertySet.decorateBugInstance(bugInstance);
 
-        if (bugType.equals("NP_DEREFERENCE_OF_READLINE_VALUE")) {
+        if ("NP_DEREFERENCE_OF_READLINE_VALUE".equals(bugType)) {
 
             int source = -9999;
             if (knownNullLocations.size() == 1) {

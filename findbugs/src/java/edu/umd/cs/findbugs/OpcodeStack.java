@@ -316,7 +316,7 @@ public class OpcodeStack implements Constants2 {
         }
 
         public int getSize() {
-            if (signature.equals("J") || signature.equals("D")) {
+            if ("J".equals(signature) || "D".equals(signature)) {
                 return 2;
             }
             return 1;
@@ -606,17 +606,17 @@ public class OpcodeStack implements Constants2 {
             this.signature = DescriptorFactory.canonicalizeString(signature);
             if (constValue instanceof Number) {
                 Number constantNumericValue = (Number) constValue;
-                if (signature.equals("B")) {
+                if ("B".equals(signature)) {
                     this.constValue = constantNumericValue.byteValue();
-                } else if (signature.equals("S")) {
+                } else if ("S".equals(signature)) {
                     this.constValue = constantNumericValue.shortValue();
-                } else if (signature.equals("C")) {
+                } else if ("C".equals(signature)) {
                     this.constValue = (char) constantNumericValue.intValue();
-                } else if (signature.equals("I")) {
+                } else if ("I".equals(signature)) {
                     this.constValue = constantNumericValue.intValue();
-                } else if (signature.equals("D")) {
+                } else if ("D".equals(signature)) {
                     this.constValue = constantNumericValue.doubleValue();
-                } else if (signature.equals("F")) {
+                } else if ("F".equals(signature)) {
                     this.constValue = constantNumericValue.floatValue();
                 }
 
@@ -720,9 +720,9 @@ public class OpcodeStack implements Constants2 {
                 return;
             }
              */
-            if (signature.equals("B")) {
+            if ("B".equals(signature)) {
                 specialKind = SIGNED_BYTE;
-            } else if (signature.equals("C")) {
+            } else if ("C".equals(signature)) {
                 specialKind = NON_NEGATIVE;
             }
         }
@@ -920,14 +920,14 @@ public class OpcodeStack implements Constants2 {
             if (getSpecialKind() == Item.SERVLET_OUTPUT) {
                 return true;
             }
-            if (getSignature().equals("Ljavax/servlet/ServletOutputStream;")) {
+            if ("Ljavax/servlet/ServletOutputStream;".equals(getSignature())) {
                 return true;
             }
             XMethod writingToSource = getReturnValueOf();
 
 
-            return writingToSource != null && writingToSource.getClassName().equals("javax.servlet.http.HttpServletResponse")
-                    && (writingToSource.getName().equals("getWriter") || writingToSource.getName().equals("getOutputStream"));
+            return writingToSource != null && "javax.servlet.http.HttpServletResponse".equals(writingToSource.getClassName())
+                    && ("getWriter".equals(writingToSource.getName()) || "getOutputStream".equals(writingToSource.getName()));
         }
 
         public boolean valueCouldBeNegative() {
@@ -1395,7 +1395,7 @@ public class OpcodeStack implements Constants2 {
                 }
                 FieldAnnotation field = FieldAnnotation.fromReferencedField(dbc);
                 Item i = new Item(dbc.getSigConstantOperand(), field, Integer.MAX_VALUE);
-                if (field.getFieldName().equals("separator") && field.getClassName().equals("java.io.File")) {
+                if ("separator".equals(field.getFieldName()) && "java.io.File".equals(field.getClassName())) {
                     i.setSpecialKind(Item.FILE_SEPARATOR_STRING);
                 }
                 i.setPC(dbc.getPC());
@@ -2290,7 +2290,7 @@ public class OpcodeStack implements Constants2 {
 
         it2 = pop();
         signature = it.getSignature();
-        if (signature.equals("J") || signature.equals("D")) {
+        if ("J".equals(signature) || "D".equals(signature)) {
             push(it);
             push(it2);
             push(it);
@@ -2348,7 +2348,7 @@ public class OpcodeStack implements Constants2 {
         it = pop();
         it2 = pop();
         signature = it2.getSignature();
-        if (signature.equals("J") || signature.equals("D")) {
+        if ("J".equals(signature) || "D".equals(signature)) {
             push(it);
             push(it2);
             push(it);
@@ -2405,7 +2405,7 @@ public class OpcodeStack implements Constants2 {
 
         if (boxedTypes.containsKey(clsName)
                 && topItem != null
-                && (methodName.equals("valueOf") && !signature.contains("String") || methodName.equals(boxedTypes.get(clsName)
+                && ("valueOf".equals(methodName) && !signature.contains("String") || methodName.equals(boxedTypes.get(clsName)
                         + "Value"))) {
             // boxing/unboxing conversion
             Item value = pop();
@@ -2415,9 +2415,9 @@ public class OpcodeStack implements Constants2 {
                 newValue.source = XFactory.createReferencedXMethod(dbc);
             }
             if (newValue.specialKind == Item.NOT_SPECIAL) {
-                if (newSignature.equals("B") || newSignature.equals("Ljava/lang/Boolean;")) {
+                if ("B".equals(newSignature) || "Ljava/lang/Boolean;".equals(newSignature)) {
                     newValue.specialKind = Item.SIGNED_BYTE;
-                } else if (newSignature.equals("C") || newSignature.equals("Ljava/lang/Character;")) {
+                } else if ("C".equals(newSignature) || "Ljava/lang/Character;".equals(newSignature)) {
                     newValue.specialKind = Item.NON_NEGATIVE;
                 }
             }
@@ -2432,12 +2432,12 @@ public class OpcodeStack implements Constants2 {
             }
             Item item = getStackItem(i);
             String itemSignature = item.getSignature();
-            if (itemSignature.equals("Ljava/lang/StringBuilder;") || itemSignature.equals("Ljava/lang/StringBuffer;")) {
+            if ("Ljava/lang/StringBuilder;".equals(itemSignature) || "Ljava/lang/StringBuffer;".equals(itemSignature)) {
                 markConstantValueUnknown(item);
             }
         }
         boolean initializingServletWriter = false;
-        if (seen == INVOKESPECIAL && methodName.equals("<init>") && clsName.startsWith("java/io") && clsName.endsWith("Writer")
+        if (seen == INVOKESPECIAL && "<init>".equals(methodName) && clsName.startsWith("java/io") && clsName.endsWith("Writer")
                 && numberArguments > 0) {
             Item firstArg = getStackItem(numberArguments-1);
             if (firstArg.isServletWriter()) {
@@ -2491,25 +2491,25 @@ public class OpcodeStack implements Constants2 {
                     sawUnknownAppend = true;
                 }
             }
-        } else if (seen == INVOKESPECIAL && clsName.equals("java/io/FileOutputStream") && methodName.equals("<init>")
-                && (signature.equals("(Ljava/io/File;Z)V") || signature.equals("(Ljava/lang/String;Z)V")) && stack.size() > 3) {
+        } else if (seen == INVOKESPECIAL && "java/io/FileOutputStream".equals(clsName) && "<init>".equals(methodName)
+                && ("(Ljava/io/File;Z)V".equals(signature) || "(Ljava/lang/String;Z)V".equals(signature)) && stack.size() > 3) {
             OpcodeStack.Item item = getStackItem(0);
             Object value = item.getConstant();
             if (value instanceof Integer && ((Integer) value).intValue() == 1) {
                 pop(3);
                 Item newTop = getStackItem(0);
-                if (newTop.signature.equals("Ljava/io/FileOutputStream;")) {
+                if ("Ljava/io/FileOutputStream;".equals(newTop.signature)) {
                     newTop.setSpecialKind(Item.FILE_OPENED_IN_APPEND_MODE);
                     newTop.source = XFactory.createReferencedXMethod(dbc);
                     newTop.setPC(dbc.getPC());
                 }
                 return;
             }
-        } else if (seen == INVOKESPECIAL && clsName.equals("java/io/BufferedOutputStream") && methodName.equals("<init>")
-                && signature.equals("(Ljava/io/OutputStream;)V")) {
+        } else if (seen == INVOKESPECIAL && "java/io/BufferedOutputStream".equals(clsName) && "<init>".equals(methodName)
+                && "(Ljava/io/OutputStream;)V".equals(signature)) {
 
             if (getStackItem(0).getSpecialKind() == Item.FILE_OPENED_IN_APPEND_MODE
-                    && getStackItem(2).signature.equals("Ljava/io/BufferedOutputStream;")) {
+                    && "Ljava/io/BufferedOutputStream;".equals(getStackItem(2).signature)) {
 
                 pop(2);
                 Item newTop = getStackItem(0);
@@ -2518,8 +2518,8 @@ public class OpcodeStack implements Constants2 {
                 newTop.setPC(dbc.getPC());
                 return;
             }
-        } else if (seen == INVOKEINTERFACE && methodName.equals("getParameter")
-                && clsName.equals("javax/servlet/http/HttpServletRequest") || clsName.equals("javax/servlet/http/ServletRequest")) {
+        } else if (seen == INVOKEINTERFACE && "getParameter".equals(methodName)
+                && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
             Item requestParameter = pop();
             pop();
             Item result = new Item("Ljava/lang/String;");
@@ -2534,8 +2534,8 @@ public class OpcodeStack implements Constants2 {
             result.setPC(dbc.getPC());
             push(result);
             return;
-        } else if (seen == INVOKEINTERFACE && methodName.equals("getQueryString")
-                && clsName.equals("javax/servlet/http/HttpServletRequest") || clsName.equals("javax/servlet/http/ServletRequest")) {
+        } else if (seen == INVOKEINTERFACE && "getQueryString".equals(methodName)
+                && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
             pop();
             Item result = new Item("Ljava/lang/String;");
             result.setServletParameterTainted();
@@ -2543,8 +2543,8 @@ public class OpcodeStack implements Constants2 {
             result.setPC(dbc.getPC());
             push(result);
             return;
-        } else if (seen == INVOKEINTERFACE && methodName.equals("getHeader")
-                && clsName.equals("javax/servlet/http/HttpServletRequest") || clsName.equals("javax/servlet/http/ServletRequest")) {
+        } else if (seen == INVOKEINTERFACE && "getHeader".equals(methodName)
+                && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
             /* Item requestParameter = */pop();
             pop();
             Item result = new Item("Ljava/lang/String;");
@@ -2553,15 +2553,15 @@ public class OpcodeStack implements Constants2 {
             result.setPC(dbc.getPC());
             push(result);
             return;
-        } else if (seen == INVOKESTATIC && methodName.equals("asList") && clsName.equals("java/util/Arrays")) {
+        } else if (seen == INVOKESTATIC && "asList".equals(methodName) && "java/util/Arrays".equals(clsName)) {
             /* Item requestParameter = */pop();
             Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
             push(result);
             return;
-        } else if (seen == INVOKESTATIC && signature.equals("(Ljava/util/List;)Ljava/util/List;")
-                && clsName.equals("java/util/Collections")) {
+        } else if (seen == INVOKESTATIC && "(Ljava/util/List;)Ljava/util/List;".equals(signature)
+                && "java/util/Collections".equals(clsName)) {
             Item requestParameter = pop();
-            if (requestParameter.getSignature().equals(JAVA_UTIL_ARRAYS_ARRAY_LIST)) {
+            if (JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
                 Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
                 push(result);
                 return;
@@ -2595,21 +2595,21 @@ public class OpcodeStack implements Constants2 {
             return;
         }
 
-        if ((clsName.equals("java/util/Random") || clsName.equals("java/security/SecureRandom")) &&
-                (methodName.equals("nextInt")  && signature.equals("()I")
-                        || methodName.equals("nextLong")  && signature.equals("()J"))
+        if (("java/util/Random".equals(clsName) || "java/security/SecureRandom".equals(clsName)) &&
+                ("nextInt".equals(methodName)  && "()I".equals(signature)
+                        || "nextLong".equals(methodName)  && "()J".equals(signature))
                 ) {
             Item i = new Item(pop());
             i.setSpecialKind(Item.RANDOM_INT);
             push(i);
-        } else if (methodName.equals("size") && signature.equals("()I")
+        } else if ("size".equals(methodName) && "()I".equals(signature)
                 && Subtypes2.instanceOf(ClassName.toDottedClassName(clsName), "java.util.Collection")) {
             Item i = new Item(pop());
             if (i.getSpecialKind() == Item.NOT_SPECIAL) {
                 i.setSpecialKind(Item.NON_NEGATIVE);
             }
             push(i);
-        } else if (ClassName.isMathClass(clsName) && methodName.equals("abs")) {
+        } else if (ClassName.isMathClass(clsName) && "abs".equals(methodName)) {
             Item i = new Item(pop());
             if (i.getSpecialKind() == Item.HASHCODE_INT) {
                 i.setSpecialKind(Item.MATH_ABS_OF_HASHCODE);
@@ -2619,15 +2619,14 @@ public class OpcodeStack implements Constants2 {
                 i.setSpecialKind(Item.MATH_ABS);
             }
             push(i);
-        } else if (seen == INVOKEVIRTUAL && methodName.equals("hashCode") && signature.equals("()I") || seen == INVOKESTATIC
-                && clsName.equals("java/lang/System") && methodName.equals("identityHashCode")
-                && signature.equals("(Ljava/lang/Object;)I")) {
+        } else if (seen == INVOKEVIRTUAL && "hashCode".equals(methodName) && "()I".equals(signature) || seen == INVOKESTATIC
+                && "java/lang/System".equals(clsName) && "identityHashCode".equals(methodName)
+                && "(Ljava/lang/Object;)I".equals(signature)) {
             Item i = new Item(pop());
             i.setSpecialKind(Item.HASHCODE_INT);
             push(i);
         } else if (topIsTainted
-                && (methodName.startsWith("encode") && clsName.equals("javax/servlet/http/HttpServletResponse") || methodName
-                        .equals("trim") && clsName.equals("java/lang/String"))) {
+                && (methodName.startsWith("encode") && "javax/servlet/http/HttpServletResponse".equals(clsName) || "trim".equals(methodName) && "java/lang/String".equals(clsName))) {
             Item i = new Item(pop());
             i.setSpecialKind(Item.SERVLET_REQUEST_TAINTED);
             i.injection = injection;
@@ -3389,7 +3388,7 @@ public class OpcodeStack implements Constants2 {
 
     private void pushByInvoke(DismantleBytecode dbc, boolean popThis) {
         String signature = dbc.getSigConstantOperand();
-        if (dbc.getNameConstantOperand().equals("<init>") && signature.endsWith(")V") && popThis) {
+        if ("<init>".equals(dbc.getNameConstantOperand()) && signature.endsWith(")V") && popThis) {
             pop(PreorderVisitor.getNumberArguments(signature));
             Item constructed = pop();
             if (getStackDepth() > 0) {
@@ -3476,7 +3475,7 @@ public class OpcodeStack implements Constants2 {
         Item oldItem = new Item(getLVValue(register));
 
         Item newItem = oldItem;
-        if (newItem.signature.equals("Ljava/lang/Object;") && !signature.equals("Ljava/lang/Object;")) {
+        if ("Ljava/lang/Object;".equals(newItem.signature) && !"Ljava/lang/Object;".equals(signature)) {
             newItem = new Item(oldItem);
             newItem.signature = signature;
         }

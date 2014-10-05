@@ -97,7 +97,7 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
         initializedFields.clear();
 
         thisOnTOS = false;
-        inConstructor = getMethodName().equals("<init>") && getMethodSig().indexOf(getClassName()) == -1;
+        inConstructor = "<init>".equals(getMethodName()) && getMethodSig().indexOf(getClassName()) == -1;
 
     }
 
@@ -181,12 +181,11 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
                 }
                 initializedFields.add(f);
             }
-        } else if ((seen == INVOKESPECIAL && !(getNameConstantOperand().equals("<init>") && !getClassConstantOperand().equals(
+        } else if ((seen == INVOKESPECIAL && !("<init>".equals(getNameConstantOperand()) && !getClassConstantOperand().equals(
                 getClassName())))
-                || (seen == INVOKESTATIC && getNameConstantOperand().equals("doPrivileged") && getClassConstantOperand().equals(
-                        "java/security/AccessController"))
+                || (seen == INVOKESTATIC && "doPrivileged".equals(getNameConstantOperand()) && "java/security/AccessController".equals(getClassConstantOperand()))
                         || (seen == INVOKEVIRTUAL && getClassConstantOperand().equals(getClassName()))
-                        || (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("start"))) {
+                        || (seen == INVOKEVIRTUAL && "start".equals(getNameConstantOperand()))) {
 
             inConstructor = false;
         }

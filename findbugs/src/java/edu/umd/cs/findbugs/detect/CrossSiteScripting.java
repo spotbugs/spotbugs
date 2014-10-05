@@ -97,7 +97,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
             String calledMethodName = getNameConstantOperand();
             String calledMethodSig = getSigConstantOperand();
 
-            if (calledClassName.startsWith("java/io/File") && calledMethodSig.equals("(Ljava/lang/String;)V")) {
+            if (calledClassName.startsWith("java/io/File") && "(Ljava/lang/String;)V".equals(calledMethodSig)) {
                 OpcodeStack.Item path = stack.getStackItem(0);
                 if (isTainted(path)) {
                     String bugPattern = taintPriority(path) == Priorities.HIGH_PRIORITY ? "PT_ABSOLUTE_PATH_TRAVERSAL"
@@ -109,8 +109,8 @@ public class CrossSiteScripting extends OpcodeStackDetector {
             }
 
 
-            if (calledClassName.equals("javax/servlet/http/Cookie") && calledMethodName.equals("<init>")
-                    && calledMethodSig.equals("(Ljava/lang/String;Ljava/lang/String;)V")) {
+            if ("javax/servlet/http/Cookie".equals(calledClassName) && "<init>".equals(calledMethodName)
+                    && "(Ljava/lang/String;Ljava/lang/String;)V".equals(calledMethodSig)) {
                 OpcodeStack.Item value = stack.getStackItem(0);
                 OpcodeStack.Item name = stack.getStackItem(1);
                 if (value.isServletParameterTainted() || name.isServletParameterTainted()) {
@@ -125,12 +125,12 @@ public class CrossSiteScripting extends OpcodeStackDetector {
             String calledClassName = getClassConstantOperand();
             String calledMethodName = getNameConstantOperand();
             String calledMethodSig = getSigConstantOperand();
-            if (calledClassName.equals("javax/servlet/http/HttpServletResponse") && calledMethodName.equals("setContentType")) {
+            if ("javax/servlet/http/HttpServletResponse".equals(calledClassName) && "setContentType".equals(calledMethodName)) {
                 OpcodeStack.Item writing = stack.getStackItem(0);
                 if ("text/plain".equals(writing.getConstant())) {
                     isPlainText = true;
                 }
-            } else if (calledClassName.equals("javax/servlet/http/HttpSession") && calledMethodName.equals("setAttribute")) {
+            } else if ("javax/servlet/http/HttpSession".equals(calledClassName) && "setAttribute".equals(calledMethodName)) {
 
                 OpcodeStack.Item value = stack.getStackItem(0);
                 OpcodeStack.Item name = stack.getStackItem(1);
@@ -138,7 +138,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
                 if (nameConstant instanceof String) {
                     map.put((String) nameConstant, value);
                 }
-            } else if (calledClassName.equals("javax/servlet/http/HttpSession") && calledMethodName.equals("getAttribute")) {
+            } else if ("javax/servlet/http/HttpSession".equals(calledClassName) && "getAttribute".equals(calledMethodName)) {
                 OpcodeStack.Item name = stack.getStackItem(0);
                 Object nameConstant = name.getConstant();
                 if (nameConstant instanceof String) {
@@ -148,13 +148,13 @@ public class CrossSiteScripting extends OpcodeStackDetector {
                         replaceTop = top;
                     }
                 }
-            } else if (calledClassName.equals("javax/servlet/http/HttpServletResponse")
+            } else if ("javax/servlet/http/HttpServletResponse".equals(calledClassName)
                     && (calledMethodName.startsWith("send") || calledMethodName.endsWith("Header"))
                     && calledMethodSig.endsWith("Ljava/lang/String;)V")) {
 
                 OpcodeStack.Item writing = stack.getStackItem(0);
                 if (isTainted(writing)) {
-                    if (calledMethodName.equals("sendError")) {
+                    if ("sendError".equals(calledMethodName)) {
                         annotateAndReport(
                                 new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_SEND_ERROR", taintPriority(writing))
                                 .addClassAndMethod(this),
@@ -173,9 +173,9 @@ public class CrossSiteScripting extends OpcodeStackDetector {
             String calledMethodName = getNameConstantOperand();
             String calledMethodSig = getSigConstantOperand();
 
-            if ((calledMethodName.startsWith("print") || calledMethodName.equals("write"))
-                    && calledClassName.equals("javax/servlet/jsp/JspWriter")
-                    && (calledMethodSig.equals("(Ljava/lang/Object;)V") || calledMethodSig.equals("(Ljava/lang/String;)V"))) {
+            if ((calledMethodName.startsWith("print") || "write".equals(calledMethodName))
+                    && "javax/servlet/jsp/JspWriter".equals(calledClassName)
+                    && ("(Ljava/lang/Object;)V".equals(calledMethodSig) || "(Ljava/lang/String;)V".equals(calledMethodSig))) {
                 OpcodeStack.Item writing = stack.getStackItem(0);
                 // System.out.println(SourceLineAnnotation.fromVisitedInstruction(this)
                 // + " writing " + writing);
@@ -192,7 +192,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
                 }
             } else if (calledClassName.startsWith("java/io/") && calledClassName.endsWith("Writer")
                     && (calledMethodName.startsWith("print") || calledMethodName.startsWith("write"))
-                    && (calledMethodSig.equals("(Ljava/lang/Object;)V") || calledMethodSig.equals("(Ljava/lang/String;)V"))) {
+                    && ("(Ljava/lang/Object;)V".equals(calledMethodSig) || "(Ljava/lang/String;)V".equals(calledMethodSig))) {
                 OpcodeStack.Item writing = stack.getStackItem(0);
                 OpcodeStack.Item writingTo = stack.getStackItem(1);
                 if (isTainted(writing) && writingTo.isServletWriter()) {
@@ -239,8 +239,8 @@ public class CrossSiteScripting extends OpcodeStackDetector {
             return Priorities.NORMAL_PRIORITY;
         }
         XMethod method = writing.getReturnValueOf();
-        if (method != null && method.getName().equals("getParameter")
-                && method.getClassName().equals("javax.servlet.http.HttpServletRequest")) {
+        if (method != null && "getParameter".equals(method.getName())
+                && "javax.servlet.http.HttpServletRequest".equals(method.getClassName())) {
             return Priorities.HIGH_PRIORITY;
         }
         return Priorities.NORMAL_PRIORITY;

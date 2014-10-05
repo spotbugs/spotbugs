@@ -135,7 +135,7 @@ public enum Sortables implements Comparator<String> {
         @Override
         public String formatValue(String value) {
             // System.out.println("Formatting last version value");
-            if (value.equals("-1")) {
+            if ("-1".equals(value)) {
                 return "";
             }
             int seqNum = Integer.parseInt(value);
@@ -261,7 +261,7 @@ public enum Sortables implements Comparator<String> {
 
         @Override
         public String formatValue(String value) {
-            if (value.equals("")) {
+            if ("".equals(value)) {
                 return "(Default)";
             }
             return value;
@@ -305,10 +305,10 @@ public enum Sortables implements Comparator<String> {
             if (compare == 0) {
                 return 0;
             }
-            if (catOne.equals("CORRECTNESS")) {
+            if ("CORRECTNESS".equals(catOne)) {
                 return -1;
             }
-            if (catTwo.equals("CORRECTNESS")) {
+            if ("CORRECTNESS".equals(catTwo)) {
                 return 1;
             }
             return compare;

@@ -164,7 +164,7 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
         int argCount = 0;
         boolean unabridged = false;
 
-        if (argCount < args.length && args[argCount].equals("-unabridged")) {
+        if (argCount < args.length && "-unabridged".equals(args[argCount])) {
             ++argCount;
             // Unabridged mode: emit all warnings reported by at least one
             // detector, even for disabled detectors.

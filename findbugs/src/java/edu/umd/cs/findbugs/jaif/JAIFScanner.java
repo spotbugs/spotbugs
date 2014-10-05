@@ -202,7 +202,7 @@ public class JAIFScanner {
         // System.out.println("Consumed " + wsCount +
         // " characters of horizontal whitespace");
 
-        if (lineBuf.equals("")) {
+        if ("".equals(lineBuf)) {
             // Reached end of line.
             next = new JAIFToken(JAIFTokenKind.NEWLINE, "\n", lineNum);
             lineBuf = null;

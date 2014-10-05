@@ -127,7 +127,7 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
             }
 
             String streamClass = type.getClassName();
-            if (streamClass.equals("java.sql.CallableStatement")) {
+            if ("java.sql.CallableStatement".equals(streamClass)) {
                 streamClass = "java.sql.PreparedStatement";
             }
             Stream result = new Stream(location, streamClass, streamClass).setIgnoreImplicitExceptions(true).setIsOpenOnCreation(

@@ -59,7 +59,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 
     @Override
     public void sawOpcode(int seen) {
-        if (getMethodName().equals("<init>") && seen == INVOKEVIRTUAL) {
+        if ("<init>".equals(getMethodName()) && seen == INVOKEVIRTUAL) {
             XMethod m = getXMethodOperand();
             if (m != null && !m.isPrivate() && !m.isFinal()) {
                 int args = PreorderVisitor.getNumberArguments(m.getSignature());
@@ -85,7 +85,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 
         }
 
-        if (seen == INVOKESPECIAL && getMethodName().equals("<init>") && getNameConstantOperand().equals("<init>")) {
+        if (seen == INVOKESPECIAL && "<init>".equals(getMethodName()) && "<init>".equals(getNameConstantOperand())) {
 
             String classOperand = getClassConstantOperand();
             OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);
@@ -110,11 +110,11 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
             } else if (seen == PUTFIELD) {
                 OpcodeStack.Item addr = stack.getStackItem(1);
                 {
-                    if (addr.getRegisterNumber() != 0 || !getMethodName().equals("<init>")) {
+                    if (addr.getRegisterNumber() != 0 || !"<init>".equals(getMethodName())) {
                         fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
                     }
                 }
-            } else if (seen == PUTSTATIC && !getMethodName().equals("<clinit>")) {
+            } else if (seen == PUTSTATIC && !"<clinit>".equals(getMethodName())) {
                 fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
             }
             OpcodeStack.Item top = stack.getStackItem(0);
@@ -128,7 +128,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
         sawInitializeSuper = false;
         super.visit(obj);
         fieldSummary.setFieldsWritten(getXMethod(), touched);
-        if (getMethodName().equals("<init>") && sawInitializeSuper) {
+        if ("<init>".equals(getMethodName()) && sawInitializeSuper) {
             XClass thisClass = getXClass();
             for (XField f : thisClass.getXFields()) {
                 if (!f.isStatic() && !f.isFinal() && !touched.contains(f)) {

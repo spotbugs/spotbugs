@@ -64,9 +64,9 @@ public class FindUseOfNonSerializableValue implements Detector {
                 @DottedClassName String clazz = m.getClass(constantPool);
                 ConstantNameAndType nt = (ConstantNameAndType) constantPool.getConstant(m.getNameAndTypeIndex(), Constants.CONSTANT_NameAndType);
                 String name = nt.getName(constantPool);
-                if (name.equals("setAttribute") && clazz.equals("javax.servlet.http.HttpSession") || (name.equals("writeObject")
-                        && (clazz.equals("java.io.ObjectOutput")
-                                || clazz.equals("java.io.ObjectOutputStream")))) {
+                if ("setAttribute".equals(name) && "javax.servlet.http.HttpSession".equals(clazz) || ("writeObject".equals(name)
+                        && ("java.io.ObjectOutput".equals(clazz)
+                                || "java.io.ObjectOutputStream".equals(clazz)))) {
                     if (DEBUG) {
                         System.out.println("Found call to " + clazz + "." + name);
                     }
@@ -111,12 +111,12 @@ public class FindUseOfNonSerializableValue implements Detector {
             String mName = invoke.getMethodName(cpg);
             String cName = invoke.getClassName(cpg);
 
-            if (mName.equals("setAttribute") && cName.equals("javax.servlet.http.HttpSession")) {
+            if ("setAttribute".equals(mName) && "javax.servlet.http.HttpSession".equals(cName)) {
                 return Use.STORE_INTO_HTTP_SESSION;
             }
-            if (mName.equals("writeObject")
-                    && (cName.equals("java.io.ObjectOutput")
-                            || cName.equals("java.io.ObjectOutputStream"))) {
+            if ("writeObject".equals(mName)
+                    && ("java.io.ObjectOutput".equals(cName)
+                            || "java.io.ObjectOutputStream".equals(cName))) {
                 return Use.PASSED_TO_WRITE_OBJECT;
             }
         }

@@ -283,11 +283,11 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
 
     public String getJavaSourceMethodName() {
-        if (methodName.equals("<clinit>")) {
+        if ("<clinit>".equals(methodName)) {
             return "<static initializer for " + getSimpleClassName() + ">";
         }
 
-        if (methodName.equals("<init>")) {
+        if ("<init>".equals(methodName)) {
             return getSimpleClassName();
         }
         return methodName;
@@ -329,10 +329,10 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
     @Override
     protected String formatPackageMember(String key, ClassAnnotation primaryClass) {
-        if (key.equals("")) {
+        if ("".equals(key)) {
             return UGLY_METHODS ? getUglyMethod() : getFullMethod(primaryClass);
-        } else if (key.equals("givenClass")) {
-            if (methodName.equals("<init>")) {
+        } else if ("givenClass".equals(key)) {
+            if ("<init>".equals(methodName)) {
                 return "new " + shorten(primaryClass.getPackageName(), className) + getSignatureInClass(primaryClass);
             }
             if (className.equals(primaryClass.getClassName())) {
@@ -340,17 +340,17 @@ public class MethodAnnotation extends PackageMemberAnnotation {
             } else {
                 return shorten(primaryClass.getPackageName(), className) + "." + getNameInClass(primaryClass);
             }
-        } else if (key.equals("name")) {
+        } else if ("name".equals(key)) {
             return methodName;
-        } else if (key.equals("nameAndSignature")) {
+        } else if ("nameAndSignature".equals(key)) {
             return getNameInClass(primaryClass);
-        } else if (key.equals("shortMethod")) {
+        } else if ("shortMethod".equals(key)) {
             return className + "." + methodName + "(...)";
-        } else if (key.equals("hash")) {
+        } else if ("hash".equals(key)) {
             String tmp = getNameInClass(false, true, true);
 
             return className + "." + tmp;
-        } else if (key.equals("returnType")) {
+        } else if ("returnType".equals(key)) {
             int i = methodSig.indexOf(')');
             String returnType = methodSig.substring(i + 1);
             String pkgName = primaryClass == null ? "" : primaryClass.getPackageName();
@@ -437,7 +437,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
      */
     public String getFullMethod(ClassAnnotation primaryClass) {
         if (fullMethod == null) {
-            if (methodName.equals("<init>")) {
+            if ("<init>".equals(methodName)) {
                 fullMethod = "new " + stripJavaLang(className) + getSignatureInClass(primaryClass);
             } else {
                 fullMethod = stripJavaLang(className) + "." + getNameInClass(primaryClass);
@@ -514,7 +514,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         }
 
         String role = getDescription();
-        if (!role.equals(DEFAULT_ROLE)) {
+        if (!DEFAULT_ROLE.equals(role)) {
             attributeList.addAttribute("role", role);
         }
 

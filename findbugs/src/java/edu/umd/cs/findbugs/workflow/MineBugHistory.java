@@ -434,13 +434,13 @@ public class MineBugHistory {
 
         @Override
         public void handleOption(String option, String optionalExtraPart) {
-            if (option.equals("-formatDates")) {
+            if ("-formatDates".equals(option)) {
                 setFormatDates(true);
-            } else if (option.equals("-noTabs")) {
+            } else if ("-noTabs".equals(option)) {
                 setNoTabs();
-            } else if (option.equals("-xml")) {
+            } else if ("-xml".equals(option)) {
                 setXml();
-            } else if (option.equals("-summary")) {
+            } else if ("-summary".equals(option)) {
                 setSummary();
             } else {
                 throw new IllegalArgumentException("unknown option: " + option);

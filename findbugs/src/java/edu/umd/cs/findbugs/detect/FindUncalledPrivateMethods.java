@@ -54,16 +54,16 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
         }
         super.visitMethod(obj);
         String methodName = getMethodName();
-        if (!methodName.equals("writeReplace") && !methodName.equals("readResolve")
-                && !methodName.equals("readObject") && !methodName.equals("readObjectNoData")
-                && !methodName.equals("writeObject")
+        if (!"writeReplace".equals(methodName) && !"readResolve".equals(methodName)
+                && !"readObject".equals(methodName) && !"readObjectNoData".equals(methodName)
+                && !"writeObject".equals(methodName)
                 && methodName.indexOf("debug") == -1 && methodName.indexOf("Debug") == -1
                 && methodName.indexOf("trace") == -1 && methodName.indexOf("Trace") == -1
-                && !methodName.equals("<init>") && !methodName.equals("<clinit>")) {
+                && !"<init>".equals(methodName) && !"<clinit>".equals(methodName)) {
             for(AnnotationEntry a : obj.getAnnotationEntries()) {
                 String typeName =  a.getAnnotationType();
-                if (typeName.equals("Ljavax/annotation/PostConstruct;")
-                        || typeName.equals("Ljavax/annotation/PreDestroy;")) {
+                if ("Ljavax/annotation/PostConstruct;".equals(typeName)
+                        || "Ljavax/annotation/PreDestroy;".equals(typeName)) {
                     return;
                 }
             }
@@ -108,7 +108,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
             // System.out.println("Checking " + m);
             int priority = LOW_PRIORITY;
             String methodName = m.getMethodName();
-            if (methodName.equals(simpleClassName) && m.getMethodSignature().equals("()V")) {
+            if (methodName.equals(simpleClassName) && "()V".equals(m.getMethodSignature())) {
                 continue;
             }
             if (methodName.length() > 1 && calledMethodNames.contains(methodName.toLowerCase())) {

@@ -40,15 +40,15 @@ public class InefficientIndexOf extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL && stack.getStackDepth() > 0 && getClassConstantOperand().equals("java/lang/String")) {
+        if (seen == INVOKEVIRTUAL && stack.getStackDepth() > 0 && "java/lang/String".equals(getClassConstantOperand())) {
 
-            boolean lastIndexOf = getNameConstantOperand().equals("lastIndexOf");
-            if (lastIndexOf || getNameConstantOperand().equals("indexOf")) {
+            boolean lastIndexOf = "lastIndexOf".equals(getNameConstantOperand());
+            if (lastIndexOf || "indexOf".equals(getNameConstantOperand())) {
 
                 int stackOff = -1;
-                if (getSigConstantOperand().equals("(Ljava/lang/String;)I")) { // sig: String
+                if ("(Ljava/lang/String;)I".equals(getSigConstantOperand())) { // sig: String
                     stackOff = 0;
-                } else if (getSigConstantOperand().equals("(Ljava/lang/String;I)I")) { // sig: String, int
+                } else if ("(Ljava/lang/String;I)I".equals(getSigConstantOperand())) { // sig: String, int
                     stackOff = 1;
                 }
                 if (stackOff > -1) {

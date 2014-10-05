@@ -71,7 +71,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
     @Override
     public void visit(Field obj) {
-        if (obj.getName().equals("this$0")) {
+        if ("this$0".equals(obj.getName())) {
             isInnerClass = true;
         }
         if (!obj.isFinal() && !obj.isStatic() && !BCELUtil.isSynthetic(obj)) {
@@ -244,12 +244,12 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 returnSelf++;
                 break;
             }
-            if (xMethod.getName().equals("<init>")) {
+            if ("<init>".equals(xMethod.getName())) {
                 String sig = xMethod.getSignature();
                 // returning a newly constructed value
                 boolean voidConstructor;
                 if (!isInnerClass) {
-                    voidConstructor = sig.equals("()V");
+                    voidConstructor = "()V".equals(sig);
                 } else {
                     SignatureParser parser = new SignatureParser(sig);
                     voidConstructor = parser.getNumParameters()  <= 1;
@@ -269,12 +269,12 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 returnUnknown++;
                 break;
             }
-            if (xMethod.getName().equals("<init>") || doNotIgnoreHigh.contains(xMethod)) {
+            if ("<init>".equals(xMethod.getName()) || doNotIgnoreHigh.contains(xMethod)) {
                 returnOther++;
                 // System.out.println("  calls " + xMethod);
                 // System.out.println("  at " +
                 // MethodAnnotation.fromXMethod(xMethod).getSourceLines());
-                if (xMethod.getName().equals("<init>") || doNotIgnore.contains(xMethod)) {
+                if ("<init>".equals(xMethod.getName()) || doNotIgnore.contains(xMethod)) {
                     returnNew++;
                 }
             } else if (doNotIgnore.contains(xMethod)) {

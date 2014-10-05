@@ -232,7 +232,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
         XMethod m = (XMethod) o;
         if (m.getName().startsWith("access$")) {
             return null;
-        } else if (m.getName().equals("<init>")) {
+        } else if ("<init>".equals(m.getName())) {
             try {
                 if (throwableClass != null && Repository.instanceOf(m.getClassName(), throwableClass)) {
                     return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_VERY_HIGH;
@@ -240,7 +240,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
             } catch (ClassNotFoundException e) {
                 AnalysisContext.reportMissingClass(e);
             }
-            if (m.getClassName().equals("java.lang.Thread")) {
+            if ("java.lang.Thread".equals(m.getClassName())) {
                 return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_VERY_HIGH;
             }
             try {
@@ -251,10 +251,10 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
             } catch (ClassNotFoundException e) {
                 AnalysisContext.reportMissingClass(e);
             }
-        } else if (m.getName().equals("equals") && m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic()) {
+        } else if ("equals".equals(m.getName()) && "(Ljava/lang/Object;)Z".equals(m.getSignature()) && !m.isStatic()) {
             return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
         } else if (m.getSignature().endsWith(")Ljava/lang/String;")
-                && (m.getClassName().equals("java.lang.StringBuffer") || m.getClassName().equals("java.lang.StringBuilder"))) {
+                && ("java.lang.StringBuffer".equals(m.getClassName()) || "java.lang.StringBuilder".equals(m.getClassName()))) {
             return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
         }
         return super.getResolvedAnnotation(o, getMinimal);

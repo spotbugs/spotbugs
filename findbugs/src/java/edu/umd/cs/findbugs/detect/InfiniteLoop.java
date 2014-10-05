@@ -507,7 +507,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
                 bug.lowerPriorityALot();
             } else {
                 LocalVariableAnnotation lv = bug.getPrimaryLocalVariableAnnotation();
-                if (lv == null && getMethodName().equals("run")) {
+                if (lv == null && "run".equals(getMethodName())) {
                     bug.lowerPriority();
                 }
             }

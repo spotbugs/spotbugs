@@ -201,7 +201,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
             return false;
         }
         final ObjectType loadClassType = ((NEW) newInstruction).getLoadClassType(cpg);
-        if (!loadClassType.getClassName().equals("java.lang.NullPointerException")) {
+        if (!"java.lang.NullPointerException".equals(loadClassType.getClassName())) {
             return false;
         }
         h = h.getNext();
@@ -575,7 +575,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
                 int catchSizeNFE = Util.getSizeOfSurroundingTryBlock(method, "java/lang/NumberFormatException", location
                         .getHandle().getPosition());
                 if (catchSizeNPE == Integer.MAX_VALUE
-                        && (!called.getClassName().equals("java.lang.Integer") || catchSizeNFE == Integer.MAX_VALUE)) {
+                        && (!"java.lang.Integer".equals(called.getClassName()) || catchSizeNFE == Integer.MAX_VALUE)) {
                     // Get the corresponding value number
                     ValueNumber vn = vnaFrame.getArgument(inv, constantPool, i, sigParser);
                     result.add(vn);

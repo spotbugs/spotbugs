@@ -46,7 +46,7 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
         found.clear();
         // Solution to sourceforge bug 1765925; returning null is the
         // convention used by java.io.File.listFiles()
-        if (getMethodName().equals("listFiles")) {
+        if ("listFiles".equals(getMethodName())) {
             return;
         }
         String returnType = getMethodSig().substring(getMethodSig().indexOf(')') + 1);

@@ -42,9 +42,9 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
         @CheckForNull
         public static NullnessAnnotation parse(@DottedClassName String className) {
             className = ClassName.toDottedClassName(className);
-            if (className.equals("com.google.common.base.Nullable")
-                    || className.equals("org.eclipse.jdt.annotation.Nullable")
-                    || className.equals("org.jetbrains.annotations.Nullable")) {
+            if ("com.google.common.base.Nullable".equals(className)
+                    || "org.eclipse.jdt.annotation.Nullable".equals(className)
+                    || "org.jetbrains.annotations.Nullable".equals(className)) {
                 return CHECK_FOR_NULL;
             }
             // Unfortunately there are mixed case Nonnull and NonNull annotations (JSR305, FB and JDT)

@@ -262,10 +262,10 @@ public class FindSelfComparison extends OpcodeStackDetector {
             OpcodeStack.Item item0 = stack.getStackItem(0);
             OpcodeStack.Item item1 = stack.getStackItem(1);
 
-            if (item0.getSignature().equals("D") || item0.getSignature().equals("F")) {
+            if ("D".equals(item0.getSignature()) || "F".equals(item0.getSignature())) {
                 return;
             }
-            if (item1.getSignature().equals("D") || item1.getSignature().equals("F")) {
+            if ("D".equals(item1.getSignature()) || "F".equals(item1.getSignature())) {
                 return;
             }
 

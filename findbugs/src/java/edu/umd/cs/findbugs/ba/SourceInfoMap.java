@@ -360,7 +360,7 @@ public class SourceInfoMap {
                     if (version != null) {
                         // Check to see if version is supported.
                         // Only 1.0 supported for now.
-                        if (!version.equals("1.0")) {
+                        if (!"1.0".equals(version)) {
                             throw new IOException("Unsupported sourceInfo version " + version);
                         }
 
@@ -385,9 +385,9 @@ public class SourceInfoMap {
                     String methodName = next.substring(0, lparen);
                     String methodSignature = next.substring(lparen);
 
-                    if (methodName.equals("init^")) {
+                    if ("init^".equals(methodName)) {
                         methodName = "<init>";
-                    } else if (methodName.equals("clinit^")) {
+                    } else if ("clinit^".equals(methodName)) {
                         methodName = "<clinit>";
                     }
 

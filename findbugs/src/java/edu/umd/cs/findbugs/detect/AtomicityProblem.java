@@ -77,8 +77,8 @@ public class AtomicityProblem extends OpcodeStackDetector {
                 System.out.println("Stack top: " + top);
             }
             XMethod m = top.getReturnValueOf();
-            if (m != null && m.getClassName().equals("java.util.concurrent.ConcurrentHashMap")
-                    && m.getName().equals("containsKey")) {
+            if (m != null && "java.util.concurrent.ConcurrentHashMap".equals(m.getClassName())
+                    && "containsKey".equals(m.getName())) {
                 lastQuestionableCheckTarget = getBranchTarget();
                 if (seen == IFEQ) {
                     priority = LOW_PRIORITY;
@@ -98,7 +98,7 @@ public class AtomicityProblem extends OpcodeStackDetector {
             if (DEBUG) {
                 System.out.println("Found null check");
             }
-            if (m != null && m.getClassName().equals("java.util.concurrent.ConcurrentHashMap") && m.getName().equals("get")) {
+            if (m != null && "java.util.concurrent.ConcurrentHashMap".equals(m.getClassName()) && "get".equals(m.getName())) {
                 lastQuestionableCheckTarget = getBranchTarget();
                 if (seen == IFNULL) {
                     priority = LOW_PRIORITY;
@@ -110,10 +110,10 @@ public class AtomicityProblem extends OpcodeStackDetector {
         }
         case INVOKEVIRTUAL:
         case INVOKEINTERFACE: {
-            if (getDottedClassConstantOperand().equals("java.util.concurrent.ConcurrentHashMap")) {
+            if ("java.util.concurrent.ConcurrentHashMap".equals(getDottedClassConstantOperand())) {
                 String methodName = getNameConstantOperand();
                 XClass xClass = getXClassOperand();
-                if (xClass != null && methodName.equals("put")) {
+                if (xClass != null && "put".equals(methodName)) {
                     if ((getPC() < lastQuestionableCheckTarget) && (lastQuestionableCheckTarget != -1)) {
                         bugReporter.reportBug(new BugInstance(this, "AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION", priority)
                         .addClassAndMethod(this).addType(xClass.getClassDescriptor()).addCalledMethod(this)

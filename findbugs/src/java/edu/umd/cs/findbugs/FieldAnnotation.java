@@ -264,18 +264,18 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
     @Override
     protected String formatPackageMember(String key, ClassAnnotation primaryClass) {
-        if (key.equals("") || key.equals("hash")) {
+        if ("".equals(key) || "hash".equals(key)) {
             return className + "." + fieldName;
-        } else if (key.equals("givenClass")) {
+        } else if ("givenClass".equals(key)) {
             String primaryClassName = primaryClass.getClassName();
             if (className.equals(primaryClassName)) {
                 return getNameInClass(primaryClass);
             } else {
                 return shorten(primaryClass.getPackageName(), className) + "." + fieldName;
             }
-        } else if (key.equals("name")) {
+        } else if ("name".equals(key)) {
             return fieldName;
-        } else if (key.equals("fullField")) {
+        } else if ("fullField".equals(key)) {
             SignatureConverter converter = new SignatureConverter(fieldSig);
             StringBuilder result = new StringBuilder();
             if (isStatic) {
@@ -390,7 +390,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
         }
 
         String role = getDescription();
-        if (!role.equals(DEFAULT_ROLE)) {
+        if (!DEFAULT_ROLE.equals(role)) {
             attributeList.addAttribute("role", role);
         }
 

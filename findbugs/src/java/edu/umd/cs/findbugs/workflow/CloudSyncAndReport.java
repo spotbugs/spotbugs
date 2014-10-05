@@ -87,11 +87,11 @@ public class CloudSyncAndReport {
          */
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
-            if (option.equals("-cloud")) {
+            if ("-cloud".equals(option)) {
                 options.cloudId = argument;
-            } else if (option.equals("-recent")) {
+            } else if ("-recent".equals(option)) {
                 options.ageInHours = Integer.parseInt(argument);
-            } else if (option.equals("-cloudSummary")) {
+            } else if ("-cloudSummary".equals(option)) {
                 options.cloudSummary = argument;
             } else {
                 throw new IllegalArgumentException("Unknown option : " + option);

@@ -133,8 +133,8 @@ public class CFGFactory extends AnalysisFactory<CFG> {
                         if (prevInstruction instanceof GETSTATIC && lastInstruction instanceof IFNE) {
                             GETSTATIC getStatic = (GETSTATIC) prevInstruction;
 
-                            if (getStatic.getFieldName(methodGen.getConstantPool()).equals("$assertionsDisabled")
-                                    && getStatic.getSignature(methodGen.getConstantPool()).equals("Z")) {
+                            if ("$assertionsDisabled".equals(getStatic.getFieldName(methodGen.getConstantPool()))
+                                    && "Z".equals(getStatic.getSignature(methodGen.getConstantPool()))) {
                                 edgesToRemove.add(e);
                             }
                         }

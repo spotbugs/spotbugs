@@ -642,7 +642,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      * Is the source file known?
      */
     public boolean isSourceFileKnown() {
-        return !sourceFile.equals(UNKNOWN_SOURCE_FILE);
+        return !UNKNOWN_SOURCE_FILE.equals(sourceFile);
     }
 
     /**
@@ -714,22 +714,22 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     @Override
     public String format(String key, ClassAnnotation primaryClass) {
-        if (key.equals("hash")) {
+        if ("hash".equals(key)) {
             return "";
         }
-        if (key.equals("")) {
+        if ("".equals(key)) {
             StringBuilder buf = new StringBuilder();
             buf.append(sourceFile);
             appendLines(buf);
             return buf.toString();
-        } else if (key.equals("lineNumber")) {
+        } else if ("lineNumber".equals(key)) {
             StringBuilder buf = new StringBuilder();
             appendLinesRaw(buf);
             return buf.toString();
-        } else if (key.equals("full")) {
+        } else if ("full".equals(key)) {
             StringBuilder buf = new StringBuilder();
             String pkgName = getPackageName();
-            if (!pkgName.equals("")) {
+            if (!"".equals(pkgName)) {
                 buf.append(pkgName.replace('.', CANONICAL_PACKAGE_SEPARATOR));
                 buf.append(CANONICAL_PACKAGE_SEPARATOR);
             }
@@ -779,7 +779,7 @@ public class SourceLineAnnotation implements BugAnnotation {
     @Override
     public String toString() {
         String desc = description;
-        if (desc.equals(DEFAULT_ROLE) && isUnknown()) {
+        if (DEFAULT_ROLE.equals(desc) && isUnknown()) {
             desc = DEFAULT_ROLE_UNKNOWN_LINE;
         }
         String pattern = I18N.instance().getAnnotationDescription(desc);
@@ -915,7 +915,7 @@ public class SourceLineAnnotation implements BugAnnotation {
         }
 
         String role = getDescription();
-        if (!role.equals(DEFAULT_ROLE)) {
+        if (!DEFAULT_ROLE.equals(role)) {
             attributeList.addAttribute("role", getDescription());
         }
         if (synthetic) {

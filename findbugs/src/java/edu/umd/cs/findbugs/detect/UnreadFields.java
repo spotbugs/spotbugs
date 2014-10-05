@@ -206,9 +206,9 @@ public class UnreadFields extends OpcodeStackDetector {
         // Does this class directly implement Serializable?
         String[] interface_names = obj.getInterfaceNames();
         for (String interface_name : interface_names) {
-            if (interface_name.equals("java.io.Externalizable")) {
+            if ("java.io.Externalizable".equals(interface_name)) {
                 isSerializable = true;
-            } else if (interface_name.equals("java.io.Serializable")) {
+            } else if ("java.io.Serializable".equals(interface_name)) {
                 isSerializable = true;
                 break;
             }
@@ -267,10 +267,10 @@ public class UnreadFields extends OpcodeStackDetector {
         XField f = XFactory.createXField(this);
         data.allMyFields.add(f);
         String signature = obj.getSignature();
-        if (!getFieldName().equals("serialVersionUID")) {
+        if (!"serialVersionUID".equals(getFieldName())) {
 
             data.myFields.add(f);
-            if (obj.getName().equals("_jspx_dependants")) {
+            if ("_jspx_dependants".equals(obj.getName())) {
                 data.containerFields.add(f);
             }
         }
@@ -280,8 +280,8 @@ public class UnreadFields extends OpcodeStackDetector {
     }
 
     public static boolean isSeleniumWebElement(String signature) {
-        return signature.equals("Lorg/openqa/selenium/RenderedWebElement;")
-                || signature.equals("Lorg/openqa/selenium/WebElement;");
+        return "Lorg/openqa/selenium/RenderedWebElement;".equals(signature)
+                || "Lorg/openqa/selenium/WebElement;".equals(signature);
     }
 
     @Override
@@ -301,17 +301,17 @@ public class UnreadFields extends OpcodeStackDetector {
     public static boolean isInjectionAttribute(@DottedClassName String annotationClass) {
         if (annotationClass.startsWith("javax.annotation.")
                 || annotationClass.startsWith("javax.ejb")
-                || annotationClass.equals("org.apache.tapestry5.annotations.Persist")
-                || annotationClass.equals("org.jboss.seam.annotations.In")
+                || "org.apache.tapestry5.annotations.Persist".equals(annotationClass)
+                || "org.jboss.seam.annotations.In".equals(annotationClass)
                 || annotationClass.startsWith("javax.persistence")
                 || annotationClass.endsWith("SpringBean")
-                || annotationClass.equals("com.google.inject.Inject")
+                || "com.google.inject.Inject".equals(annotationClass)
                 || annotationClass.startsWith("com.google.") && annotationClass.endsWith(".Bind")
                 && annotationClass.hashCode() == -243168318
                 || annotationClass.startsWith("org.nuxeo.common.xmap.annotation")
                 || annotationClass.startsWith("com.google.gwt.uibinder.client")
                 || annotationClass.startsWith("org.springframework.beans.factory.annotation")
-                || annotationClass.equals("javax.ws.rs.core.Context")) {
+                || "javax.ws.rs.core.Context".equals(annotationClass)) {
             return true;
         }
         int lastDot = annotationClass.lastIndexOf('.');
@@ -347,7 +347,7 @@ public class UnreadFields extends OpcodeStackDetector {
         seenMonitorEnter = getMethod().isSynchronized();
         data.staticFieldsReadInThisMethod.clear();
         super.visit(obj);
-        if (getMethodName().equals("<init>") && count_aload_1 > 1
+        if ("<init>".equals(getMethodName()) && count_aload_1 > 1
                 && (getClassName().indexOf('$') >= 0 || getClassName().indexOf('+') >= 0)) {
             data.needsOuterObjectInConstructor.add(getDottedClassName());
             // System.out.println(betterClassName +
@@ -361,7 +361,7 @@ public class UnreadFields extends OpcodeStackDetector {
         if (DEBUG) {
             System.out.println("Checking " + getClassName() + "." + obj.getName());
         }
-        if (getMethodName().equals("<init>") && (obj.isPublic() || obj.isProtected())) {
+        if ("<init>".equals(getMethodName()) && (obj.isPublic() || obj.isProtected())) {
             publicOrProtectedConstructor = true;
         }
         pendingGetField = null;
@@ -435,8 +435,8 @@ public class UnreadFields extends OpcodeStackDetector {
             saState = 0;
         }
 
-        if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicReferenceFieldUpdater")
-                && getNameConstantOperand().equals("newUpdater")) {
+        if (seen == INVOKESTATIC && "java/util/concurrent/atomic/AtomicReferenceFieldUpdater".equals(getClassConstantOperand())
+                && "newUpdater".equals(getNameConstantOperand())) {
             String fieldName = (String) stack.getStackItem(0).getConstant();
             String fieldSignature = (String) stack.getStackItem(1).getConstant();
             String fieldClass = (String) stack.getStackItem(2).getConstant();
@@ -447,8 +447,8 @@ public class UnreadFields extends OpcodeStackDetector {
             }
 
         }
-        if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicIntegerFieldUpdater")
-                && getNameConstantOperand().equals("newUpdater")) {
+        if (seen == INVOKESTATIC && "java/util/concurrent/atomic/AtomicIntegerFieldUpdater".equals(getClassConstantOperand())
+                && "newUpdater".equals(getNameConstantOperand())) {
             String fieldName = (String) stack.getStackItem(0).getConstant();
             String fieldClass = (String) stack.getStackItem(1).getConstant();
             if (fieldName != null && fieldClass != null) {
@@ -457,8 +457,8 @@ public class UnreadFields extends OpcodeStackDetector {
             }
 
         }
-        if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicLongFieldUpdater")
-                && getNameConstantOperand().equals("newUpdater")) {
+        if (seen == INVOKESTATIC && "java/util/concurrent/atomic/AtomicLongFieldUpdater".equals(getClassConstantOperand())
+                && "newUpdater".equals(getNameConstantOperand())) {
             String fieldName = (String) stack.getStackItem(0).getConstant();
             String fieldClass = (String) stack.getStackItem(1).getConstant();
             if (fieldName != null && fieldClass != null) {
@@ -533,14 +533,14 @@ public class UnreadFields extends OpcodeStackDetector {
 
                 // Decrease priority for boolean fields used to control
                 // debug/test settings
-                if (f.getName().indexOf("DEBUG") >= 0 || f.getName().indexOf("VERBOSE") >= 0 && f.getSignature().equals("Z")) {
+                if (f.getName().indexOf("DEBUG") >= 0 || f.getName().indexOf("VERBOSE") >= 0 && "Z".equals(f.getSignature())) {
                     priority++;
                     priority++;
                 }
                 // Eclipse bundles which implements start/stop *very* often
                 // assigns static instances there
-                if ((getMethodName().equals("start") || getMethodName().equals("stop"))
-                        && getMethodSig().equals("(Lorg/osgi/framework/BundleContext;)V")) {
+                if (("start".equals(getMethodName()) || "stop".equals(getMethodName()))
+                        && "(Lorg/osgi/framework/BundleContext;)V".equals(getMethodSig())) {
                     try {
                         JavaClass bundleClass = Repository.lookupClass("org.osgi.framework.BundleActivator");
                         if (getThisClass().instanceOf(bundleClass)) {
@@ -575,7 +575,7 @@ public class UnreadFields extends OpcodeStackDetector {
             String sig = getSigConstantOperand();
             String invokedClassName = getClassConstantOperand();
             if (invokedClassName.equals(getClassName())
-                    && (getMethodName().equals("<init>") || getMethodName().equals("<clinit>"))) {
+                    && ("<init>".equals(getMethodName()) || "<clinit>".equals(getMethodName()))) {
 
                 data.calledFromConstructors.add(getNameConstantOperand() + ":" + sig);
             }
@@ -589,7 +589,7 @@ public class UnreadFields extends OpcodeStackDetector {
                 }
 
                 boolean selfCall = item.getRegisterNumber() == 0 && !superCall;
-                if (selfCall && getMethodName().equals("<init>")) {
+                if (selfCall && "<init>".equals(getMethodName())) {
                     sawSelfCallInConstructor = true;
                     if (DEBUG) {
                         System.out.println("Saw self call in " + getFullyQualifiedMethodName() + " to " + invokedClassName + "."
@@ -702,7 +702,7 @@ public class UnreadFields extends OpcodeStackDetector {
         } else if (seen == GETFIELD || seen == GETSTATIC) {
             XField f = XFactory.createReferencedXField(this);
             pendingGetField = f;
-            if (getMethodName().equals("readResolve") && seen == GETFIELD) {
+            if ("readResolve".equals(getMethodName()) && seen == GETFIELD) {
                 data.writtenFields.add(f);
                 data.writtenNonNullFields.add(f);
             }
@@ -740,15 +740,15 @@ public class UnreadFields extends OpcodeStackDetector {
                 data.fieldAccess.put(f, SourceLineAnnotation.fromVisitedInstruction(this));
             }
 
-            boolean isConstructor = getMethodName().equals("<init>") || getMethodName().equals("<clinit>");
+            boolean isConstructor = "<init>".equals(getMethodName()) || "<clinit>".equals(getMethodName());
             if (getMethod().isStatic() == f.isStatic()
                     && (isConstructor || data.calledFromConstructors.contains(getMethodName() + ":" + getMethodSig())
-                            || getMethodName().equals("init") || getMethodName().equals("init")
-                            || getMethodName().equals("initialize") || getMethod().isPrivate())) {
+                            || "init".equals(getMethodName()) || "init".equals(getMethodName())
+                            || "initialize".equals(getMethodName()) || getMethod().isPrivate())) {
 
                 if (isConstructor) {
                     data.writtenInConstructorFields.add(f);
-                    if (f.getSignature().equals("Ljava/lang/ThreadLocal;") && item != null && item.isNewlyAllocated()) {
+                    if ("Ljava/lang/ThreadLocal;".equals(f.getSignature()) && item != null && item.isNewlyAllocated()) {
                         data.threadLocalAssignedInConstructor.put(f, new ProgramPoint(this));
                     }
                 } else {
@@ -1080,7 +1080,7 @@ public class UnreadFields extends OpcodeStackDetector {
                     for (XField of : outerXClass.getXFields()) {
                         if (!of.isStatic()) {
                             String sourceSignature = of.getSourceSignature();
-                            if (sourceSignature != null && of.getSignature().equals("Ljava/lang/ThreadLocal;")) {
+                            if (sourceSignature != null && "Ljava/lang/ThreadLocal;".equals(of.getSignature())) {
                                 Type ofType = GenericUtilities.getType(sourceSignature);
                                 if (ofType instanceof GenericObjectType) {
                                     GenericObjectType gType = (GenericObjectType) ofType;
@@ -1108,7 +1108,7 @@ public class UnreadFields extends OpcodeStackDetector {
 
                     boolean outerClassIsInnerClass = false;
                     for (Field field : outerClass.getFields()) {
-                        if (field.getName().equals("this$0")) {
+                        if ("this$0".equals(field.getName())) {
                             outerClassIsInnerClass = true;
                         }
                     }

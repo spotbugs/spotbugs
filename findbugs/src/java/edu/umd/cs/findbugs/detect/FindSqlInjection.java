@@ -193,7 +193,7 @@ public class FindSqlInjection implements Detector {
         if (ins instanceof INVOKEVIRTUAL) {
             INVOKEVIRTUAL invoke = (INVOKEVIRTUAL) ins;
 
-            if (invoke.getMethodName(cpg).equals("append") && invoke.getClassName(cpg).startsWith("java.lang.StringB")) {
+            if ("append".equals(invoke.getMethodName(cpg)) && invoke.getClassName(cpg).startsWith("java.lang.StringB")) {
                 String sig = invoke.getSignature(cpg);
                 char firstChar = sig.charAt(1);
                 return firstChar == '[' || firstChar == 'L';
@@ -262,7 +262,7 @@ public class FindSqlInjection implements Detector {
         String methodName = invoke.getMethodName(cpg);
         String methodSignature = invoke.getSignature(cpg);
         String interfaceName = invoke.getClassName(cpg);
-        if (methodName.equals("prepareStatement") && interfaceName.equals("java.sql.Connection")
+        if ("prepareStatement".equals(methodName) && "java.sql.Connection".equals(interfaceName)
                 && methodSignature.startsWith("(Ljava/lang/String;")) {
             return true;
         }
@@ -280,7 +280,7 @@ public class FindSqlInjection implements Detector {
         String methodName = invoke.getMethodName(cpg);
         String methodSignature = invoke.getSignature(cpg);
         String interfaceName = invoke.getClassName(cpg);
-        if (methodName.startsWith("execute") && interfaceName.equals("java.sql.Statement")
+        if (methodName.startsWith("execute") && "java.sql.Statement".equals(interfaceName)
                 && methodSignature.startsWith("(Ljava/lang/String;")) {
             return true;
         }
@@ -322,8 +322,8 @@ public class FindSqlInjection implements Detector {
                 if (sig2.indexOf("java/lang/String") >= 0) {
                     String methodName = inv.getMethodName(cpg);
                     String className = inv.getClassName(cpg);
-                    if (methodName.equals("valueOf") && className.equals("java.lang.String")
-                            && sig1.equals("(Ljava/lang/Object;)Ljava/lang/String;")) {
+                    if ("valueOf".equals(methodName) && "java.lang.String".equals(className)
+                            && "(Ljava/lang/Object;)Ljava/lang/String;".equals(sig1)) {
                         try {
                             TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
                             TypeFrame frame = typeDataflow.getFactAtLocation(location);
@@ -337,16 +337,16 @@ public class FindSqlInjection implements Detector {
                                 continue;
                             }
                             String sig3 = operandType.getSignature();
-                            if (!sig3.equals("Ljava/lang/String;")) {
+                            if (!"Ljava/lang/String;".equals(sig3)) {
                                 stringAppendState.setSawTaint(handle);
                             }
                         } catch (CheckedAnalysisException e) {
                             stringAppendState.setSawTaint(handle);
                         }
-                    } else if (className.startsWith("java.lang.String") || className.equals("java.lang.Long")
-                            || className.equals("java.lang.Integer") || className.equals("java.lang.Float")
-                            || className.equals("java.lang.Double") || className.equals("java.lang.Short")
-                            || className.equals("java.lang.Byte") || className.equals("java.lang.Character")) {
+                    } else if (className.startsWith("java.lang.String") || "java.lang.Long".equals(className)
+                            || "java.lang.Integer".equals(className) || "java.lang.Float".equals(className)
+                            || "java.lang.Double".equals(className) || "java.lang.Short".equals(className)
+                            || "java.lang.Byte".equals(className) || "java.lang.Character".equals(className)) {
                         // ignore it
                         assert true;
                     } else if (methodName.startsWith("to") && methodName.endsWith("String") && methodName.length() > 8) {
@@ -391,7 +391,7 @@ public class FindSqlInjection implements Detector {
                 Location prev2 = getPreviousLocation(cfg, prev, true);
                 if (prev2 != null && prev2.getHandle().getInstruction() instanceof GETSTATIC) {
                     GETSTATIC getStatic = (GETSTATIC) prev2.getHandle().getInstruction();
-                    if (getStatic.getSignature(cpg).equals("[Ljava/lang/String;")) {
+                    if ("[Ljava/lang/String;".equals(getStatic.getSignature(cpg))) {
                         return true;
                     }
                 }
@@ -464,7 +464,7 @@ public class FindSqlInjection implements Detector {
 
         BugInstance bug = new BugInstance(this, description, priority);
         bug.addClassAndMethod(methodGen, javaClass.getSourceFileName());
-        if (description.equals("TESTING")) {
+        if ("TESTING".equals(description)) {
             bug.addString("Incomplete report invoking non-constant SQL string");
         }
         if (sawSeriousTaint) {

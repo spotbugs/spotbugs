@@ -73,9 +73,9 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
             while ((ze = zis.getNextEntry()) != null) {
                 String name = ze.getName();
                 if (!ze.isDirectory()
-                        && (name.equals("META-INF/MANIFEST.MF") || name.endsWith(".class") || Archive.isArchiveFileName(name))) {
+                        && ("META-INF/MANIFEST.MF".equals(name) || name.endsWith(".class") || Archive.isArchiveFileName(name))) {
                     entries.add(name);
-                    if (name.equals("META-INF/MANIFEST.MF")) {
+                    if ("META-INF/MANIFEST.MF".equals(name)) {
                         map.put(name, build(zis, ze));
                     }
                 }

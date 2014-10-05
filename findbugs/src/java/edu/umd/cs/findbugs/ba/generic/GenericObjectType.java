@@ -114,16 +114,16 @@ public class GenericObjectType extends ObjectType {
             return GenericUtilities.TypeCategory.PARAMETERIZED;
 
         } else if (!hasParameters() && variable != null && extension == null) {
-            if (variable.equals("*")) {
+            if ("*".equals(variable)) {
                 return GenericUtilities.TypeCategory.WILDCARD;
             } else {
                 return GenericUtilities.TypeCategory.TYPE_VARIABLE;
             }
 
         } else if (!hasParameters() && variable != null && extension != null) {
-            if (variable.equals("+")) {
+            if ("+".equals(variable)) {
                 return GenericUtilities.TypeCategory.WILDCARD_EXTENDS;
-            } else if (variable.equals("-")) {
+            } else if ("-".equals(variable)) {
                 return GenericUtilities.TypeCategory.WILDCARD_SUPER;
             }
 

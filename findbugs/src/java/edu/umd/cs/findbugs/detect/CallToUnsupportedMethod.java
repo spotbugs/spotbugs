@@ -119,7 +119,7 @@ public class CallToUnsupportedMethod implements Detector {
                 continue;
             }
             String methodSig = inv.getSignature(constantPoolGen);
-            if (methodSig.equals("()Ljava/lang/UnsupportedOperationException;")) {
+            if ("()Ljava/lang/UnsupportedOperationException;".equals(methodSig)) {
                 continue;
             }
 

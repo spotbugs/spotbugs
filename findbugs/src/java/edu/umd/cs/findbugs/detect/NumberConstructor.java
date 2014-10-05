@@ -158,7 +158,7 @@ public class NumberConstructor extends OpcodeStackDetector {
 
         int prio;
         String type;
-        if (cls.equals("java/lang/Float") || cls.equals("java/lang/Double")) {
+        if ("java/lang/Float".equals(cls) || "java/lang/Double".equals(cls)) {
             prio = LOW_PRIORITY;
             type = "DM_FP_NUMBER_CTOR";
         } else {

@@ -108,7 +108,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
         this.pc = pc;
         this.line = -1;
         this.description = DEFAULT_ROLE;
-        this.setDescription(name.equals("?") ? "LOCAL_VARIABLE_UNKNOWN" : "LOCAL_VARIABLE_NAMED");
+        this.setDescription("?".equals(name) ? "LOCAL_VARIABLE_UNKNOWN" : "LOCAL_VARIABLE_NAMED");
     }
 
     /**
@@ -128,7 +128,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
         this.pc = pc;
         this.line = line;
         this.description = DEFAULT_ROLE;
-        this.setDescription(name.equals("?") ? "LOCAL_VARIABLE_UNKNOWN" : "LOCAL_VARIABLE_NAMED");
+        this.setDescription("?".equals(name) ? "LOCAL_VARIABLE_UNKNOWN" : "LOCAL_VARIABLE_NAMED");
     }
 
     public static LocalVariableAnnotation getLocalVariableAnnotation(Method method, Location location, IndexedInstruction ins) {
@@ -154,7 +154,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
             } else {
                 for (LocalVariable lv : localVariableTable.getLocalVariableTable()) {
                     if (lv.getIndex() == local) {
-                        if (!localName.equals("?") && !localName.equals(lv.getName())) {
+                        if (!"?".equals(localName) && !localName.equals(lv.getName())) {
                             // not a single consistent name
                             localName = "?";
                             break;
@@ -209,7 +209,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
     public String format(String key, ClassAnnotation primaryClass) {
         // System.out.println("format: " + key + " reg: " + register + " name: "
         // + value);
-        if (key.equals("hash")) {
+        if ("hash".equals(key)) {
             if (register < 0) {
                 return "??";
             }
@@ -218,13 +218,13 @@ public class LocalVariableAnnotation implements BugAnnotation {
         if (register < 0) {
             return "?";
         }
-        if (key.equals("register")) {
+        if ("register".equals(key)) {
             return String.valueOf(register);
-        } else if (key.equals("pc")) {
+        } else if ("pc".equals(key)) {
             return String.valueOf(pc);
-        } else if (key.equals("name") || key.equals("givenClass")) {
+        } else if ("name".equals(key) || "givenClass".equals(key)) {
             return name;
-        } else if (!name.equals("?")) {
+        } else if (!"?".equals(name)) {
             return name;
         }
         return "$L" + register;
@@ -289,7 +289,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
                 .addAttribute("register", String.valueOf(register)).addAttribute("pc", String.valueOf(pc));
 
         String role = getDescription();
-        if (!role.equals(DEFAULT_ROLE)) {
+        if (!DEFAULT_ROLE.equals(role)) {
             attributeList.addAttribute("role", role);
         }
 
@@ -297,7 +297,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
     }
 
     public boolean isNamed() {
-        return register >= 0 && !name.equals("?");
+        return register >= 0 && !"?".equals(name);
     }
 
     /**
@@ -317,7 +317,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 
     @Override
     public boolean isSignificant() {
-        return !name.equals("?");
+        return !"?".equals(name);
     }
 
     public static @CheckForNull

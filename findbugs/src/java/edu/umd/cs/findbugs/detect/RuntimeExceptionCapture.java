@@ -131,14 +131,14 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
                 }
             }
             int catchClauses = 0;
-            if (caughtException.exceptionClass.equals("java.lang.Exception") && !caughtException.seen) {
+            if ("java.lang.Exception".equals(caughtException.exceptionClass) && !caughtException.seen) {
                 // Now we have a case where Exception is caught, but not thrown
                 boolean rteCaught = false;
                 for (ExceptionCaught otherException : catchList) {
                     if (otherException.startOffset == caughtException.startOffset
                             && otherException.endOffset == caughtException.endOffset) {
                         catchClauses++;
-                        if (otherException.exceptionClass.equals("java.lang.RuntimeException")) {
+                        if ("java.lang.RuntimeException".equals(otherException.exceptionClass)) {
                             rteCaught = true;
                         }
                     }

@@ -74,8 +74,8 @@ public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implem
         }
         switch (state) {
         case SEEN_NOTHING:
-            if ((seen == INVOKESTATIC) && getClassConstantOperand().equals("java/lang/Thread")
-                    && getNameConstantOperand().equals("currentThread") && getSigConstantOperand().equals("()Ljava/lang/Thread;")) {
+            if ((seen == INVOKESTATIC) && "java/lang/Thread".equals(getClassConstantOperand())
+                    && "currentThread".equals(getNameConstantOperand()) && "()Ljava/lang/Thread;".equals(getSigConstantOperand())) {
                 state = SEEN_CURRENTTHREAD;
             } else if ((seen == INVOKESTATIC || seen == INVOKEINTERFACE || seen == INVOKEVIRTUAL || seen == INVOKESPECIAL)
                     && getSigConstantOperand().endsWith("Ljava/lang/Thread;")) {
@@ -92,7 +92,7 @@ public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implem
                 } else {
                     state = SEEN_POSSIBLE_THREAD;
                 }
-            } else if ((seen == GETFIELD || seen == GETSTATIC) && getSigConstantOperand().equals("Ljava/lang/Thread;")) {
+            } else if ((seen == GETFIELD || seen == GETSTATIC) && "Ljava/lang/Thread;".equals(getSigConstantOperand())) {
                 state = SEEN_POSSIBLE_THREAD;
             }
             break;
@@ -112,8 +112,8 @@ public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implem
             break;
 
         default:
-            if ((seen == INVOKESTATIC) && getClassConstantOperand().equals("java/lang/Thread")
-                    && getNameConstantOperand().equals("interrupted") && getSigConstantOperand().equals("()Z")) {
+            if ((seen == INVOKESTATIC) && "java/lang/Thread".equals(getClassConstantOperand())
+                    && "interrupted".equals(getNameConstantOperand()) && "()Z".equals(getSigConstantOperand())) {
                 if (state == SEEN_POP_AFTER_CURRENTTHREAD) {
                     bugReporter.reportBug(new BugInstance(this, "STI_INTERRUPTED_ON_CURRENTTHREAD", LOW_PRIORITY)
                     .addClassAndMethod(this).addSourceLine(this));

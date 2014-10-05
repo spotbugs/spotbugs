@@ -97,25 +97,25 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
-            if (option.equals("-longBugCodes")) {
+            if ("-longBugCodes".equals(option)) {
                 setUseLongBugCodes(true);
-            } else if (option.equals("-rank")) {
+            } else if ("-rank".equals(option)) {
                 setShowRank(true);
-            } else if (option.equals("-designations")) {
+            } else if ("-designations".equals(option)) {
                 setReportUserDesignations(true);
-            } else if (option.equals("-applySuppression")) {
+            } else if ("-applySuppression".equals(option)) {
                 setApplySuppressions(true);
-            } else if (option.equals("-history")) {
+            } else if ("-history".equals(option)) {
                 setReportHistory(true);
-            } else if (option.equals("-annotationUpload")) {
+            } else if ("-annotationUpload".equals(option)) {
                 annotationUploadFormat = true;
-            } else if (option.equals("-html")) {
-                if (!optionExtraPart.equals("")) {
+            } else if ("-html".equals(option)) {
+                if (!"".equals(optionExtraPart)) {
                     stylesheet = optionExtraPart;
                 } else {
                     stylesheet = "default.xsl";
                 }
-            } else if (option.equals("-exitcode")) {
+            } else if ("-exitcode".equals(option)) {
                 setExitCode = true;
             } else {
                 throw new IllegalArgumentException("Unknown option '" + option + "'");
@@ -124,7 +124,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
-            if (option.equals("-pluginList")) {
+            if ("-pluginList".equals(option)) {
                 String pluginListStr = argument;
                 Map<String, Boolean> customPlugins = getProject().getConfiguration().getCustomPlugins();
                 StringTokenizer tok = new StringTokenizer(pluginListStr, File.pathSeparator);
@@ -141,9 +141,9 @@ public class PrintingBugReporter extends TextUIBugReporter {
                         }
                     }
                 }
-            } else if (option.equals("-maxRank")) {
+            } else if ("-maxRank".equals(option)) {
                 maxRank = Integer.parseInt(argument);
-            } else if (option.equals("-summarizeMaxRank")) {
+            } else if ("-summarizeMaxRank".equals(option)) {
                 summarizeMaxRank = Integer.parseInt(argument);
             } else {
                 throw new IllegalStateException();
@@ -190,9 +190,9 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
                     System.out.print("#" + fHash);
                     String key = warning.getUserDesignationKey();
-                    if (key.equals(BugDesignation.UNCLASSIFIED) || key.equals("NEEDS_FURTHER_STUDY")) {
+                    if (key.equals(BugDesignation.UNCLASSIFIED) || "NEEDS_FURTHER_STUDY".equals(key)) {
                         System.out.print("#-1#" + key);
-                    } else if (key.equals("MUST_FIX") || key.equals("SHOULD_FIX") || key.equals("I_WILL_FIX")) {
+                    } else if ("MUST_FIX".equals(key) || "SHOULD_FIX".equals(key) || "I_WILL_FIX".equals(key)) {
                         System.out.print("#7#" + key);
                     } else {
                         System.out.print("#0#" + key);

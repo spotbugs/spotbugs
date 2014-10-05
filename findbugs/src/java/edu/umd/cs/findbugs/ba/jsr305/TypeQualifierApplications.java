@@ -620,7 +620,7 @@ public class TypeQualifierApplications {
 
             // If it's an instance method, check for an inherited annotation
             if (tqa == null && (o instanceof XMethod) && !((XMethod) o).isStatic() && !((XMethod) o).isPrivate()
-                    && !((XMethod) o).getName().equals("<init>")) {
+                    && !"<init>".equals(((XMethod) o).getName())) {
                 tqa = getInheritedTypeQualifierAnnotation((XMethod) o, typeQualifierValue);
             }
 
@@ -847,7 +847,7 @@ public class TypeQualifierApplications {
                 }
 
                 // If it's an instance method, check for inherited annotation
-                if (tqa == null && !xmethod.isStatic() && !xmethod.isPrivate() && !xmethod.getName().equals("<init>")) {
+                if (tqa == null && !xmethod.isStatic() && !xmethod.isPrivate() && !"<init>".equals(xmethod.getName())) {
                     if (DEBUG) {
                         System.out.print("  (2) Checking inherited...");
                     }
@@ -990,7 +990,7 @@ public class TypeQualifierApplications {
         }
         // System.out.println("Looking for default " + typeQualifierValue +
         // " annotation of parameters of " + xmethod);
-        if (xmethod.getName().equals("<init>") && xmethod.getClassDescriptor().isAnonymousClass())
+        if ("<init>".equals(xmethod.getName()) && xmethod.getClassDescriptor().isAnonymousClass())
         {
             return null; // constructors for anonymous inner classes don't get
             // default annotations
@@ -1003,7 +1003,7 @@ public class TypeQualifierApplications {
 
         boolean stopAtClassScope = false;
 
-        if (!xmethod.isPublic() && !xmethod.isProtected() && (xmethod.isStatic() || xmethod.getName().equals("<init>"))) {
+        if (!xmethod.isPublic() && !xmethod.isProtected() && (xmethod.isStatic() || "<init>".equals(xmethod.getName()))) {
             try {
                 XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, xmethod.getClassDescriptor());
                 stopAtClassScope = xclass.isPrivate();

@@ -173,7 +173,7 @@ public class JAIFParser {
 
         while (!scanner.atEOF()) {
             t = scanner.peekToken();
-            if (t.lexeme.equals("package")) {
+            if ("package".equals(t.lexeme)) {
                 break;
             }
 
@@ -322,9 +322,9 @@ public class JAIFParser {
     private void parseAnnotationDefinitionOrClassDefinition() throws IOException, JAIFSyntaxException {
         JAIFToken t = scanner.peekToken();
 
-        if (t.lexeme.equals("annotation")) {
+        if ("annotation".equals(t.lexeme)) {
             parseAnnotationDefinition();
-        } else if (t.lexeme.equals("class")) {
+        } else if ("class".equals(t.lexeme)) {
             parseClassDefinition();
         } else {
             throw new JAIFSyntaxException(this, "Unexpected token " + t + " (expected `annotation' or `class')");
@@ -337,7 +337,7 @@ public class JAIFParser {
         String retention = null;
 
         JAIFToken t = scanner.peekToken();
-        if (t.lexeme.equals("visible") || t.lexeme.equals("invisible") || t.lexeme.equals("source")) {
+        if ("visible".equals(t.lexeme) || "invisible".equals(t.lexeme) || "source".equals(t.lexeme)) {
             retention = t.lexeme;
             scanner.nextToken();
         }

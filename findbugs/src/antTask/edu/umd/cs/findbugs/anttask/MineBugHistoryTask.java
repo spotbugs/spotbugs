@@ -80,7 +80,7 @@ public class MineBugHistoryTask extends AbstractFindBugsTask {
             return;
         }
         attrVal = attrVal.toLowerCase();
-        if (!attrVal.equals("true") && !attrVal.equals("false")) {
+        if (!"true".equals(attrVal) && !"false".equals(attrVal)) {
             throw new BuildException("attribute " + attrName + " requires boolean value", getLocation());
         }
     }

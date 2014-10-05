@@ -265,7 +265,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 System.out.println("option " + option);
             }
         }
-        if (option.equals("-showPlugins")) {
+        if ("-showPlugins".equals(option)) {
             System.out.println("Available plugins:");
             int count = 0;
             for (Iterator<Plugin> i = DetectorFactoryCollection.instance().pluginIterator(); i.hasNext();) {
@@ -287,65 +287,65 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 System.out.println("  No plugins are available (FindBugs installed incorrectly?)");
             }
             System.exit(0);
-        } else if (option.equals("-experimental")) {
+        } else if ("-experimental".equals(option)) {
             priorityThreshold = Priorities.EXP_PRIORITY;
-        } else if (option.equals("-longBugCodes")) {
+        } else if ("-longBugCodes".equals(option)) {
             useLongBugCodes = true;
-        } else if (option.equals("-progress")) {
+        } else if ("-progress".equals(option)) {
             showProgress = true;
-        } else if (option.equals("-timestampNow")) {
+        } else if ("-timestampNow".equals(option)) {
             project.setTimestamp(System.currentTimeMillis());
-        } else if (option.equals("-low")) {
+        } else if ("-low".equals(option)) {
             priorityThreshold = Priorities.LOW_PRIORITY;
-        } else if (option.equals("-medium")) {
+        } else if ("-medium".equals(option)) {
             priorityThreshold = Priorities.NORMAL_PRIORITY;
-        } else if (option.equals("-high")) {
+        } else if ("-high".equals(option)) {
             priorityThreshold = Priorities.HIGH_PRIORITY;
-        } else if (option.equals("-dontCombineWarnings")) {
+        } else if ("-dontCombineWarnings".equals(option)) {
             mergeSimilarWarnings = false;
-        } else if (option.equals("-sortByClass")) {
+        } else if ("-sortByClass".equals(option)) {
             bugReporterType = SORTING_REPORTER;
-        } else if (option.equals("-xml")) {
+        } else if ("-xml".equals(option)) {
             bugReporterType = XML_REPORTER;
-            if (!optionExtraPart.equals("")) {
-                if (optionExtraPart.equals("withMessages")) {
+            if (!"".equals(optionExtraPart)) {
+                if ("withMessages".equals(optionExtraPart)) {
                     xmlWithMessages = true;
-                } else if (optionExtraPart.equals("withAbridgedMessages")) {
+                } else if ("withAbridgedMessages".equals(optionExtraPart)) {
                     xmlWithMessages = true;
                     xmlWithAbridgedMessages = true;
-                } else if (optionExtraPart.equals("minimal")) {
+                } else if ("minimal".equals(optionExtraPart)) {
                     xmlWithMessages = false;
                     xmlMinimal = true;
                 } else {
                     throw new IllegalArgumentException("Unknown option: -xml:" + optionExtraPart);
                 }
             }
-        } else if (option.equals("-emacs")) {
+        } else if ("-emacs".equals(option)) {
             bugReporterType = EMACS_REPORTER;
-        } else if (option.equals("-relaxed")) {
+        } else if ("-relaxed".equals(option)) {
             relaxedReportingMode = true;
-        } else if (option.equals("-train")) {
-            trainingOutputDir = !optionExtraPart.equals("") ? optionExtraPart : ".";
-        } else if (option.equals("-useTraining")) {
-            trainingInputDir = !optionExtraPart.equals("") ? optionExtraPart : ".";
-        } else if (option.equals("-html")) {
+        } else if ("-train".equals(option)) {
+            trainingOutputDir = !"".equals(optionExtraPart) ? optionExtraPart : ".";
+        } else if ("-useTraining".equals(option)) {
+            trainingInputDir = !"".equals(optionExtraPart) ? optionExtraPart : ".";
+        } else if ("-html".equals(option)) {
             bugReporterType = HTML_REPORTER;
-            if (!optionExtraPart.equals("")) {
+            if (!"".equals(optionExtraPart)) {
                 stylesheet = optionExtraPart;
             } else {
                 stylesheet = "default.xsl";
             }
-        } else if (option.equals("-xdocs")) {
+        } else if ("-xdocs".equals(option)) {
             bugReporterType = XDOCS_REPORTER;
-        } else if (option.equals("-applySuppression")) {
+        } else if ("-applySuppression".equals(option)) {
             applySuppression = true;
-        } else if (option.equals("-quiet")) {
+        } else if ("-quiet".equals(option)) {
             quiet = true;
-        } else if (option.equals("-nested")) {
-            scanNestedArchives = optionExtraPart.equals("") || Boolean.valueOf(optionExtraPart).booleanValue();
-        } else if (option.equals("-exitcode")) {
+        } else if ("-nested".equals(option)) {
+            scanNestedArchives = "".equals(optionExtraPart) || Boolean.valueOf(optionExtraPart).booleanValue();
+        } else if ("-exitcode".equals(option)) {
             setExitCode = true;
-        } else if (option.equals("-auxclasspathFromInput")) {
+        } else if ("-auxclasspathFromInput".equals(option)) {
             try {
                 BufferedReader in = UTF8.bufferedReader(System.in);
                 while (true) {
@@ -359,15 +359,15 @@ public class TextUICommandLine extends FindBugsCommandLine {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        } else if (option.equals("-noClassOk")) {
+        } else if ("-noClassOk".equals(option)) {
             noClassOk = true;
-        } else if (option.equals("-xargs")) {
+        } else if ("-xargs".equals(option)) {
             xargs = true;
-        } else if (option.equals("-justListOptions")) {
+        } else if ("-justListOptions".equals(option)) {
             throw new RuntimeException("textui options are: " + parsedOptions);
-        } else if (option.equals("-printConfiguration")) {
+        } else if ("-printConfiguration".equals(option)) {
             printConfiguration = true;
-        } else if (option.equals("-version")) {
+        } else if ("-version".equals(option)) {
             printVersion = true;
         } else {
             if(DEBUG) {
@@ -386,7 +386,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         if (DEBUG) {
             System.out.println("option " + option + " is " + argument);
         }
-        if (option.equals("-outputFile") || option.equals("-output")) {
+        if ("-outputFile".equals(option) || "-output".equals(option)) {
             if (outputFile != null) {
                 throw new IllegalArgumentException("output set twice; to " + outputFile + " and to " + argument);
             }
@@ -394,7 +394,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
             String fileName = outputFile.getName();
             String extension = Util.getFileExtensionIgnoringGz(outputFile);
-            if (bugReporterType == PRINTING_REPORTER && (extension.equals("xml") || extension.equals("fba"))) {
+            if (bugReporterType == PRINTING_REPORTER && ("xml".equals(extension) || "fba".equals(extension))) {
                 bugReporterType = XML_REPORTER;
             }
 
@@ -408,9 +408,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 System.err.println("Couldn't open " + outputFile + " for output: " + e.toString());
                 System.exit(1);
             }
-        } else if (option.equals("-cloud")) {
+        } else if ("-cloud".equals(option)) {
             project.setCloudId(argument);
-        } else if (option.equals("-cloudProperty")) {
+        } else if ("-cloudProperty".equals(option)) {
             int e = argument.indexOf('=');
             if (e == -1) {
                 throw new IllegalArgumentException("Bad cloud property: " + argument);
@@ -419,7 +419,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
             String value = argument.substring(e + 1);
             project.getCloudProperties().setProperty(key, value);
 
-        } else if (option.equals("-bugReporters")) {
+        } else if ("-bugReporters".equals(option)) {
             for (String s : argument.split(",")) {
                 if (s.charAt(0) == '-') {
                     disabledBugReporterDecorators.add(s.substring(1));
@@ -430,18 +430,18 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 }
             }
 
-        } else if (option.equals("-maxRank")) {
+        } else if ("-maxRank".equals(option)) {
             this.rankThreshold = Integer.parseInt(argument);
-        } else if (option.equals("-projectName")) {
+        } else if ("-projectName".equals(option)) {
             this.projectName = argument;
-        } else if (option.equals("-release")) {
+        } else if ("-release".equals(option)) {
             this.releaseName = argument;
-        } else if (option.equals("-redoAnalysis")) {
+        } else if ("-redoAnalysis".equals(option)) {
             redoAnalysisFile = argument;
-        } else if (option.equals("-sourceInfo")) {
+        } else if ("-sourceInfo".equals(option)) {
             sourceInfoFile = argument;
-        } else if (option.equals("-visitors") || option.equals("-omitVisitors")) {
-            boolean omit = option.equals("-omitVisitors");
+        } else if ("-visitors".equals(option) || "-omitVisitors".equals(option)) {
+            boolean omit = "-omitVisitors".equals(option);
 
             if (!omit) {
                 // Selecting detectors explicitly, so start out by
@@ -460,7 +460,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 }
                 getUserPreferences().enableDetector(factory, !omit);
             }
-        } else if (option.equals("-chooseVisitors")) {
+        } else if ("-chooseVisitors".equals(option)) {
             // This is like -visitors and -omitVisitors, but
             // you can selectively enable and disable detectors,
             // starting from the default set (or whatever set
@@ -479,7 +479,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
                     getUserPreferences().enableDetector(factory, enabled);
                 }
             });
-        } else if (option.equals("-choosePlugins")) {
+        } else if ("-choosePlugins".equals(option)) {
             // Selectively enable/disable plugins
             choose(argument, "Plugin choices", new Chooser() {
                 @Override
@@ -491,7 +491,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
                     plugin.setGloballyEnabled(enabled);
                 }
             });
-        } else if (option.equals("-adjustPriority")) {
+        } else if ("-adjustPriority".equals(option)) {
             // Selectively raise or lower the priority of warnings
             // produced by specified detectors.
 
@@ -507,11 +507,11 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 String adjustment = token.substring(eq + 1);
 
                 int adjustmentAmount;
-                if (adjustment.equals("raise")) {
+                if ("raise".equals(adjustment)) {
                     adjustmentAmount = -1;
-                } else if (adjustment.equals("lower")) {
+                } else if ("lower".equals(adjustment)) {
                     adjustmentAmount = +1;
-                } else if (adjustment.equals("suppress")) {
+                } else if ("suppress".equals(adjustment)) {
                     adjustmentAmount = +100;
                 } else {
                     throw new IllegalArgumentException("Illegal priority adjustment value: " + adjustment);
@@ -531,9 +531,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 }
 
             }
-        } else if (option.equals("-bugCategories")) {
+        } else if ("-bugCategories".equals(option)) {
             this.bugCategorySet = FindBugs.handleBugCategories(argument);
-        } else if (option.equals("-onlyAnalyze")) {
+        } else if ("-onlyAnalyze".equals(option)) {
             // The argument is a comma-separated list of classes and packages
             // to select to analyze. (If a list item ends with ".*",
             // it specifies a package, otherwise it's a class.)
@@ -548,24 +548,24 @@ public class TextUICommandLine extends FindBugsCommandLine {
                     classScreener.addAllowedClass(item);
                 }
             }
-        } else if (option.equals("-exclude")) {
+        } else if ("-exclude".equals(option)) {
             project.getConfiguration().getExcludeFilterFiles().put(argument, true);
-        } else if (option.equals("-excludeBugs")) {
+        } else if ("-excludeBugs".equals(option)) {
             project.getConfiguration().getExcludeBugsFiles().put(argument, true);
-        } else if (option.equals("-include")) {
+        } else if ("-include".equals(option)) {
             project.getConfiguration().getIncludeFilterFiles().put(argument, true);
-        } else if (option.equals("-auxclasspathFromFile")) {
+        } else if ("-auxclasspathFromFile".equals(option)) {
             handleAuxClassPathFromFile(argument);
-        } else if (option.equals("-analyzeFromFile")) {
+        } else if ("-analyzeFromFile".equals(option)) {
             handleAnalyzeFromFile(argument);
-        } else if (option.equals("-auxclasspath")) {
+        } else if ("-auxclasspath".equals(option)) {
             addAuxClassPathEntries(argument);
-        } else if (option.equals("-sourcepath")) {
+        } else if ("-sourcepath".equals(option)) {
             StringTokenizer tok = new StringTokenizer(argument, File.pathSeparator);
             while (tok.hasMoreTokens()) {
                 project.addSourceDir(new File(tok.nextToken()).getAbsolutePath());
             }
-        } else if(option.equals("-userPrefs")){
+        } else if("-userPrefs".equals(option)){
             UserPreferences prefs = UserPreferences.createDefaultUserPreferences();
             prefs.read(new FileInputStream(argument));
             project.setConfiguration(prefs);

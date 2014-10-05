@@ -164,9 +164,9 @@ public class RejarClassesForAnalysis {
          */
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
-            if (option.equals("-analyzeOnly")) {
+            if ("-analyzeOnly".equals(option)) {
                 onlyAnalyze = true;
-            } else  if (option.equals("-ignoreTimestamps")) {
+            } else  if ("-ignoreTimestamps".equals(option)) {
                 ignoreTimestamps = true;
             } else {
                 throw new IllegalArgumentException("Unknown option : " + option);
@@ -182,21 +182,21 @@ public class RejarClassesForAnalysis {
          */
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
-            if (option.equals("-prefix")) {
+            if ("-prefix".equals(option)) {
                 prefix = new PrefixMatcher(argument);
-            } else if (option.equals("-exclude")) {
+            } else if ("-exclude".equals(option)) {
                 exclude = new PrefixMatcher(argument);
-            } else if (option.equals("-inputFileList")) {
+            } else if ("-inputFileList".equals(option)) {
                 inputFileList = argument;
-            } else if (option.equals("-auxFileList")) {
+            } else if ("-auxFileList".equals(option)) {
                 auxFileList = argument;
-            } else if (option.equals("-maxClasses")) {
+            } else if ("-maxClasses".equals(option)) {
                 maxClasses = Integer.parseInt(argument);
-            } else if (option.equals("-maxAge")) {
+            } else if ("-maxAge".equals(option)) {
                 maxAge = System.currentTimeMillis() - (24 * 60 * 60 * 1000L) * Integer.parseInt(argument);
-            } else if (option.equals("-outputDir")) {
+            } else if ("-outputDir".equals(option)) {
                 outputDir = new File(argument);
-            } else if (option.equals("-excludePattern")) {
+            } else if ("-excludePattern".equals(option)) {
                 excludePatterns = new PatternMatcher(argument);
             } else {
                 throw new IllegalArgumentException("Unknown option : " + option);

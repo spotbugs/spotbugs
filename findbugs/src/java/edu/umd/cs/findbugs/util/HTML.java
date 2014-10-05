@@ -51,12 +51,12 @@ public class HTML {
         protected void startTag(Element elem) throws IOException {
             String name = elem.getName();
             startingParagraph = true;
-            if (name.equals("ul")) {
+            if ("ul".equals(name)) {
                 super.incrIndent();
                 write("  ");
-            } else if (name.equals("pre")) {
+            } else if ("pre".equals(name)) {
                 inPre = true;
-            } else if (name.equals("li")) {
+            } else if ("li".equals(name)) {
                 super.incrIndent();
                 write("* ");
             } /*else if (name.equals("p")) {
@@ -72,16 +72,16 @@ public class HTML {
         @Override
         protected void endTag(Element elem) throws IOException {
             String name = elem.getName();
-            if (name.equals("p")) {
+            if ("p".equals(name)) {
                 writeLineSeparator();
                 indent();
-            } else if (name.equals("pre")) {
+            } else if ("pre".equals(name)) {
                 inPre = false;
-            } else if (name.equals("ul")) {
+            } else if ("ul".equals(name)) {
                 super.decrIndent();
                 writeLineSeparator();
                 indent();
-            } else if (name.equals("li")) {
+            } else if ("li".equals(name)) {
                 super.decrIndent();
                 writeLineSeparator();
                 indent();
@@ -98,7 +98,7 @@ public class HTML {
 
         @Override
         protected void emptyTag(Element elem) throws IOException, BadLocationException {
-            if (elem.getName().equals("content")) {
+            if ("content".equals(elem.getName())) {
                 super.emptyTag(elem);
             }
         }

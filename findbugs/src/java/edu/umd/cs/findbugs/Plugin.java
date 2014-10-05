@@ -117,7 +117,7 @@ public class Plugin {
         this.pluginId = pluginId;
         if (version == null) {
             version = "";
-        } else if (version.equals(USE_FINDBUGS_VERSION)) {
+        } else if (USE_FINDBUGS_VERSION.equals(version)) {
             version = Version.COMPUTED_RELEASE;
             releaseDate = Version.getReleaseDate();
         }

@@ -50,8 +50,8 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
             return;
         }
         String regex = (String) value;
-        boolean dotIsUsed = regex.equals(".");
-        if (!dotIsUsed && !regex.equals("|")) {
+        boolean dotIsUsed = ".".equals(regex);
+        if (!dotIsUsed && !"|".equals(regex)) {
             return;
         }
         int priority = HIGH_PRIORITY;
@@ -61,8 +61,8 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
             Object topValue = top.getConstant();
             if (topValue instanceof String) {
                 String replacementString = (String) topValue;
-                if (replacementString.toLowerCase().equals("x") || replacementString.equals("-") || replacementString.equals("*")
-                        || replacementString.equals(" ") || replacementString.equals("\\*")) {
+                if ("x".equals(replacementString.toLowerCase()) || "-".equals(replacementString) || "*".equals(replacementString)
+                        || " ".equals(replacementString) || "\\*".equals(replacementString)) {
                     return;
                 }
                 if (replacementString.length() == 1 && getMethodName().toLowerCase().indexOf("pass") >= 0) {
@@ -129,29 +129,29 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/regex/Pattern")
-                && getNameConstantOperand().equals("compile") && getSigConstantOperand().startsWith("(Ljava/lang/String;I)")) {
+        if (seen == INVOKESTATIC && "java/util/regex/Pattern".equals(getClassConstantOperand())
+                && "compile".equals(getNameConstantOperand()) && getSigConstantOperand().startsWith("(Ljava/lang/String;I)")) {
             sawRegExPattern(1, getIntValue(0, 0));
-        } else if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/regex/Pattern")
-                && getNameConstantOperand().equals("compile") && getSigConstantOperand().startsWith("(Ljava/lang/String;)")) {
+        } else if (seen == INVOKESTATIC && "java/util/regex/Pattern".equals(getClassConstantOperand())
+                && "compile".equals(getNameConstantOperand()) && getSigConstantOperand().startsWith("(Ljava/lang/String;)")) {
             sawRegExPattern(0);
-        } else if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/regex/Pattern")
-                && getNameConstantOperand().equals("matches")) {
+        } else if (seen == INVOKESTATIC && "java/util/regex/Pattern".equals(getClassConstantOperand())
+                && "matches".equals(getNameConstantOperand())) {
             sawRegExPattern(1);
-        } else if (seen == INVOKEVIRTUAL && getClassConstantOperand().equals("java/lang/String")
-                && getNameConstantOperand().equals("replaceAll")) {
+        } else if (seen == INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
+                && "replaceAll".equals(getNameConstantOperand())) {
             sawRegExPattern(1);
             singleDotPatternWouldBeSilly(1, true);
-        } else if (seen == INVOKEVIRTUAL && getClassConstantOperand().equals("java/lang/String")
-                && getNameConstantOperand().equals("replaceFirst")) {
+        } else if (seen == INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
+                && "replaceFirst".equals(getNameConstantOperand())) {
             sawRegExPattern(1);
             singleDotPatternWouldBeSilly(1, false);
-        } else if (seen == INVOKEVIRTUAL && getClassConstantOperand().equals("java/lang/String")
-                && getNameConstantOperand().equals("matches")) {
+        } else if (seen == INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
+                && "matches".equals(getNameConstantOperand())) {
             sawRegExPattern(0);
             singleDotPatternWouldBeSilly(0, false);
-        } else if (seen == INVOKEVIRTUAL && getClassConstantOperand().equals("java/lang/String")
-                && getNameConstantOperand().equals("split")) {
+        } else if (seen == INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
+                && "split".equals(getNameConstantOperand())) {
             sawRegExPattern(0);
             singleDotPatternWouldBeSilly(0, false);
         }

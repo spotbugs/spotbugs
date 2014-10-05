@@ -437,8 +437,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                         continue;
                     }
                 } catch (ClassNotFoundException e) {
-                    if (info.interfaceForCall.getClassName().equals("java/util/Collection")
-                            && invokedMethod.getClassName().equals("com.google.common.collect.Multiset")) {
+                    if ("java/util/Collection".equals(info.interfaceForCall.getClassName())
+                            && "com.google.common.collect.Multiset".equals(invokedMethod.getClassName())) {
                         assert true;
                         // we know this is OK without needing to find definition of Multiset
                     } else {
@@ -500,7 +500,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 if (objectVN.equals(argVN)) {
                     String bugPattern = "DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES";
                     int priority = HIGH_PRIORITY;
-                    if (invokedMethodName.equals("removeAll")) {
+                    if ("removeAll".equals(invokedMethodName)) {
                         bugPattern = "DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION";
                         priority = NORMAL_PRIORITY;
                     } else if (invokedMethodName.endsWith("All")) {
@@ -514,7 +514,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
                             if (nextIns instanceof InvokeInstruction) {
                                 XMethod nextMethod = XFactory.createXMethod((InvokeInstruction) nextIns, cpg);
-                                if (nextMethod.getName().equals("assertFalse")) {
+                                if ("assertFalse".equals(nextMethod.getName())) {
                                     continue;
                                 }
                             }
@@ -540,9 +540,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
                 int expectedTypeParameters = 1;
                 String simpleName = info.interfaceForCall.getSimpleName();
-                if ( simpleName.toLowerCase().endsWith("map") || simpleName.equals("Hashtable")) {
+                if ( simpleName.toLowerCase().endsWith("map") || "Hashtable".equals(simpleName)) {
                     expectedTypeParameters = 2;
-                } else if (simpleName.equals("Table")) {
+                } else if ("Table".equals(simpleName)) {
                     expectedTypeParameters = 3;
                 }
 
@@ -581,7 +581,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
                 IncompatibleTypes matchResult = compareTypes(expectedType, actualType, allMethod);
 
-                boolean parmIsObject = expectedType.getSignature().equals("Ljava/lang/Object;");
+                boolean parmIsObject = "Ljava/lang/Object;".equals(expectedType.getSignature());
                 boolean selfOperation = !allMethod && operand.equals(actualType) && !parmIsObject;
                 if (!allMethod && !parmIsObject && actualType instanceof GenericObjectType) {
 
@@ -596,33 +596,33 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                     continue;
                 }
 
-                if (invokedMethodName.startsWith("contains") || invokedMethodName.equals("remove")) {
+                if (invokedMethodName.startsWith("contains") || "remove".equals(invokedMethodName)) {
                     InstructionHandle next = handle.getNext();
                     if (next != null) {
                         Instruction nextIns = next.getInstruction();
 
                         if (nextIns instanceof InvokeInstruction) {
                             XMethod nextMethod = XFactory.createXMethod((InvokeInstruction) nextIns, cpg);
-                            if (nextMethod.getName().equals("assertFalse")) {
+                            if ("assertFalse".equals(nextMethod.getName())) {
                                 continue;
                             }
                         }
                     }
-                } else if (invokedMethodName.equals("get") || invokedMethodName.equals("remove")) {
+                } else if ("get".equals(invokedMethodName) || "remove".equals(invokedMethodName)) {
                     InstructionHandle next = handle.getNext();
                     if (next != null) {
                         Instruction nextIns = next.getInstruction();
 
                         if (nextIns instanceof InvokeInstruction) {
                             XMethod nextMethod = XFactory.createXMethod((InvokeInstruction) nextIns, cpg);
-                            if (nextMethod.getName().equals("assertNull")) {
+                            if ("assertNull".equals(nextMethod.getName())) {
                                 continue;
                             }
                         }
                     }
                 }
                 boolean noisy = false;
-                if (invokedMethodName.equals("get")) {
+                if ("get".equals(invokedMethodName)) {
                     UnconditionalValueDerefDataflow unconditionalValueDerefDataflow = classContext
                             .getUnconditionalValueDerefDataflow(method);
 

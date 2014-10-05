@@ -395,7 +395,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                     if (xfield.isFinal() && summary.isNull()) {
                         return TypeFrame.getNullType();
                     }
-                    if (!summary.getSignature().equals("Ljava/lang/Object;")) {
+                    if (!"Ljava/lang/Object;".equals(summary.getSignature())) {
                         loadType = (ReferenceType) Type.getType(summary
                                 .getSignature());
                     }
@@ -418,8 +418,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         String methodName = obj.getMethodName(cpg);
         String signature = obj.getSignature(cpg);
         String className = obj.getClassName(cpg);
-        if (methodName.equals("asList") && className.equals("java.util.Arrays")
-                && signature.equals("([Ljava/lang/Object;)Ljava/util/List;")) {
+        if ("asList".equals(methodName) && "java.util.Arrays".equals(className)
+                && "([Ljava/lang/Object;)Ljava/util/List;".equals(signature)) {
             consumeStack(obj);
             Type returnType = Type.getType("Ljava/util/Arrays$ArrayList;");
             pushValue(returnType);
@@ -505,13 +505,13 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         String className = obj.getClassName(cpg);
 
         String returnValueSignature = new SignatureParser(signature).getReturnTypeSignature();
-        if (returnValueSignature.equals("V")) {
+        if ("V".equals(returnValueSignature)) {
             consumeStack(obj);
             return;
         }
 
-        if (methodName.equals("isInstance")) {
-            if (className.equals("java.lang.Class") && valueNumberDataflow != null) {
+        if ("isInstance".equals(methodName)) {
+            if ("java.lang.Class".equals(className) && valueNumberDataflow != null) {
                 // Record the value number of the value checked by this
                 // instruction,
                 // and the type the value was compared to.
@@ -548,7 +548,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             return;
         }
 
-        if (methodName.equals("cast") && className.equals("java.lang.Class")) {
+        if ("cast".equals(methodName) && "java.lang.Class".equals(className)) {
             try {
                 Type resultType = frame.popValue();
                 frame.popValue();
@@ -560,7 +560,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             return;
         }
 
-        mapGetCheck: if (methodName.equals("get") && signature.equals("(Ljava/lang/Object;)Ljava/lang/Object;")
+        mapGetCheck: if ("get".equals(methodName) && "(Ljava/lang/Object;)Ljava/lang/Object;".equals(signature)
                 && className.endsWith("Map") && Subtypes2.instanceOf(className, "java.util.Map")
                 && frame.getStackDepth() >= 2) {
             try {
@@ -592,14 +592,14 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
         }
 
-        if (className.equals("java.util.Map$Entry")) {
-            if (methodName.equals("getKey") && getResultTypeFromGenericType(frame, 0, 2) || methodName.equals("getValue")
+        if ("java.util.Map$Entry".equals(className)) {
+            if ("getKey".equals(methodName) && getResultTypeFromGenericType(frame, 0, 2) || "getValue".equals(methodName)
                     && getResultTypeFromGenericType(frame, 1, 2)) {
                 return;
             }
         }
 
-        if (methodName.equals("entrySet") && signature.equals("()Ljava/util/Set;") && className.startsWith("java.util")
+        if ("entrySet".equals(methodName) && "()Ljava/util/Set;".equals(signature) && className.startsWith("java.util")
                 && className.endsWith("Map")) {
             Type argType;
             try {
@@ -623,23 +623,23 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
         }
         if (className.startsWith("java.util") && className.endsWith("Map")) {
-            if (methodName.equals("keySet") && signature.equals("()Ljava/util/Set;")
-                    && handleGetMapView(frame, "java.util.Set", 0, 2) || methodName.equals("values")
-                    && signature.equals("()Ljava/util/Collection;") && handleGetMapView(frame, "java.util.Collection", 1, 2)) {
+            if ("keySet".equals(methodName) && "()Ljava/util/Set;".equals(signature)
+                    && handleGetMapView(frame, "java.util.Set", 0, 2) || "values".equals(methodName)
+                    && "()Ljava/util/Collection;".equals(signature) && handleGetMapView(frame, "java.util.Collection", 1, 2)) {
                 return;
             }
         }
 
-        if (methodName.equals("iterator") && signature.equals("()Ljava/util/Iterator;") && className.startsWith("java.util")
+        if ("iterator".equals(methodName) && "()Ljava/util/Iterator;".equals(signature) && className.startsWith("java.util")
                 && handleGetMapView(frame, "java.util.Iterator", 0, 1)) {
             return;
         }
-        if (className.equals("java.util.Iterator") && methodName.equals("next") && signature.equals("()Ljava/lang/Object;")
+        if ("java.util.Iterator".equals(className) && "next".equals(methodName) && "()Ljava/lang/Object;".equals(signature)
                 && getResultTypeFromGenericType(frame, 0, 1)) {
             return;
         }
 
-        if (methodName.equals("initCause") && signature.equals("(Ljava/lang/Throwable;)Ljava/lang/Throwable;")
+        if ("initCause".equals(methodName) && "(Ljava/lang/Throwable;)Ljava/lang/Throwable;".equals(signature)
                 && (className.endsWith("Exception")
                         || className.endsWith("Error"))) {
             try {
@@ -782,10 +782,10 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                 return false;
             }
             Type topValue = frame.getTopValue();
-            if (obj.getName(getCPG()).equals("toArray")) {
+            if ("toArray".equals(obj.getName(getCPG()))) {
                 ReferenceType target = obj.getReferenceType(getCPG());
                 String signature = obj.getSignature(getCPG());
-                if (signature.equals("([Ljava/lang/Object;)[Ljava/lang/Object;") && Subtypes2.isCollection(target)) {
+                if ("([Ljava/lang/Object;)[Ljava/lang/Object;".equals(signature) && Subtypes2.isCollection(target)) {
 
                     boolean topIsExact = frame.isExact(frame.getStackLocation(0));
                     Type resultType = frame.popValue();
@@ -793,8 +793,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                     frame.pushValue(resultType);
                     frame.setExact(frame.getStackLocation(0), topIsExact);
                     return true;
-                } else if (signature.equals("()[Ljava/lang/Object;") && Subtypes2.isCollection(target)
-                        && !topValue.getSignature().equals("Ljava/util/Arrays$ArrayList;")) {
+                } else if ("()[Ljava/lang/Object;".equals(signature) && Subtypes2.isCollection(target)
+                        && !"Ljava/util/Arrays$ArrayList;".equals(topValue.getSignature())) {
                     consumeStack(obj);
                     pushReturnType(obj);
                     frame.setExact(frame.getStackLocation(0), true);

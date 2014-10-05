@@ -324,7 +324,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
     }
 
     public static boolean isMainMethod(Method method) {
-        return method.isStatic() && method.getName().equals("main") && method.getSignature().equals("([Ljava/lang/String;)V");
+        return method.isStatic() && "main".equals(method.getName()) && "([Ljava/lang/String;)V".equals(method.getSignature());
     }
 
     @Override

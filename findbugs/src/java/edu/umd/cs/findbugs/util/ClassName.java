@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 public abstract class ClassName {
 
     public static boolean isMathClass(@SlashedClassName String className) {
-        return className.equals("java/lang/Math") || className.equals("java/lang/StrictMath");
+        return "java/lang/Math".equals(className) || "java/lang/StrictMath".equals(className);
     }
 
     public static @DottedClassName String assertIsDotted(@DottedClassName String className) {
@@ -61,28 +61,28 @@ public abstract class ClassName {
             return null;
         }
         cls = cls.substring(10);
-        if (cls.equals("Integer")) {
+        if ("Integer".equals(cls)) {
             return "I";
         }
-        if (cls.equals("Float")) {
+        if ("Float".equals(cls)) {
             return "F";
         }
-        if (cls.equals("Double")) {
+        if ("Double".equals(cls)) {
             return "D";
         }
-        if (cls.equals("Long")) {
+        if ("Long".equals(cls)) {
             return "J";
         }
-        if (cls.equals("Byte")) {
+        if ("Byte".equals(cls)) {
             return "B";
         }
-        if (cls.equals("Character")) {
+        if ("Character".equals(cls)) {
             return "C";
         }
-        if (cls.equals("Short")) {
+        if ("Short".equals(cls)) {
             return "S";
         }
-        if (cls.equals("Boolean")) {
+        if ("Boolean".equals(cls)) {
             return "Z";
         }
         return null;

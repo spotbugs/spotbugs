@@ -729,9 +729,9 @@ public class UserPreferences implements Cloneable {
      *         setting.
      */
     public AnalysisFeatureSetting[] getAnalysisFeatureSettings() {
-        if (effort.equals(EFFORT_DEFAULT)) {
+        if (EFFORT_DEFAULT.equals(effort)) {
             return FindBugs.DEFAULT_EFFORT;
-        } else if (effort.equals(EFFORT_MIN)) {
+        } else if (EFFORT_MIN.equals(effort)) {
             return FindBugs.MIN_EFFORT;
         }
         return FindBugs.MAX_EFFORT;

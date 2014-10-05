@@ -146,7 +146,7 @@ public class Naming extends PreorderVisitor implements Detector {
         if (m.isStatic()) {
             return false;
         }
-        if (m.getName().equals("<init>") || m.getName().equals("<clinit>")) {
+        if ("<init>".equals(m.getName()) || "<clinit>".equals(m.getName())) {
             return false;
         }
         for (XMethod m2 : others) {
@@ -323,7 +323,7 @@ public class Naming extends PreorderVisitor implements Detector {
         }
 
         String superClassName = obj.getSuperclassName();
-        if (!name.equals("java.lang.Object")) {
+        if (!"java.lang.Object".equals(name)) {
             if (sameSimpleName(superClassName, name)) {
                 bugReporter.reportBug(new BugInstance(this, "NM_SAME_SIMPLE_NAME_AS_SUPERCLASS", HIGH_PRIORITY).addClass(name)
                         .addClass(superClassName));
@@ -339,7 +339,7 @@ public class Naming extends PreorderVisitor implements Detector {
             return;
         }
 
-        if (superClassName.equals("java.lang.Object") && !visited.contains(superClassName)) {
+        if ("java.lang.Object".equals(superClassName) && !visited.contains(superClassName)) {
             try {
                 visitJavaClass(obj.getSuperClass());
             } catch (ClassNotFoundException e) {
@@ -442,7 +442,7 @@ public class Naming extends PreorderVisitor implements Detector {
 
         if (isEclipseNLS) {
             int flags = obj.getAccessFlags();
-            if ((flags & ACC_STATIC) != 0 && ((flags & ACC_PUBLIC) != 0) && getFieldSig().equals("Ljava/lang/String;")) {
+            if ((flags & ACC_STATIC) != 0 && ((flags & ACC_PUBLIC) != 0) && "Ljava/lang/String;".equals(getFieldSig())) {
                 // ignore "public statis String InstallIUCommandTooltip;"
                 // messages from Eclipse NLS bundles
                 return;
@@ -519,11 +519,11 @@ public class Naming extends PreorderVisitor implements Detector {
         if (mName.length() == 1) {
             return;
         }
-        if (mName.equals("isRequestedSessionIdFromURL") || mName.equals("isRequestedSessionIdFromUrl")) {
+        if ("isRequestedSessionIdFromURL".equals(mName) || "isRequestedSessionIdFromUrl".equals(mName)) {
             return;
         }
         String sig = getMethodSig();
-        if (mName.equals(baseClassName) && sig.equals("()V")) {
+        if (mName.equals(baseClassName) && "()V".equals(sig)) {
             Code code = obj.getCode();
             Method realVoidConstructor = findVoidConstructor(getThisClass());
             if (code != null && !markedAsNotUsable(obj)) {
@@ -544,7 +544,7 @@ public class Naming extends PreorderVisitor implements Detector {
                         instanceMembers = true;
                     }
                 }
-                if (!codeDoesSomething(code) && !instanceMembers && getSuperclassName().equals("java/lang/Object")) {
+                if (!codeDoesSomething(code) && !instanceMembers && "java/lang/Object".equals(getSuperclassName())) {
                     priority += 2;
                 }
                 if (hasBadMethodNames) {
@@ -574,23 +574,23 @@ public class Naming extends PreorderVisitor implements Detector {
             return;
         }
 
-        if (mName.equals("equal") && sig.equals("(Ljava/lang/Object;)Z")) {
+        if ("equal".equals(mName) && "(Ljava/lang/Object;)Z".equals(sig)) {
             bugReporter.reportBug(new BugInstance(this, "NM_BAD_EQUAL", HIGH_PRIORITY).addClassAndMethod(this)
                     .lowerPriorityIfDeprecated());
             return;
         }
-        if (mName.equals("hashcode") && sig.equals("()I")) {
+        if ("hashcode".equals(mName) && "()I".equals(sig)) {
             bugReporter.reportBug(new BugInstance(this, "NM_LCASE_HASHCODE", HIGH_PRIORITY).addClassAndMethod(this)
                     .lowerPriorityIfDeprecated());
             return;
         }
-        if (mName.equals("tostring") && sig.equals("()Ljava/lang/String;")) {
+        if ("tostring".equals(mName) && "()Ljava/lang/String;".equals(sig)) {
             bugReporter.reportBug(new BugInstance(this, "NM_LCASE_TOSTRING", HIGH_PRIORITY).addClassAndMethod(this)
                     .lowerPriorityIfDeprecated());
             return;
         }
 
-        if (obj.isPrivate() || obj.isStatic() || mName.equals("<init>")) {
+        if (obj.isPrivate() || obj.isStatic() || "<init>".equals(mName)) {
             return;
         }
 
@@ -614,7 +614,7 @@ public class Naming extends PreorderVisitor implements Detector {
         if (outerClassSignature == null) {
             outerClassSignature = "";
         }
-        return m.getName().equals("<init>") && m.getSignature().equals("(" + outerClassSignature + ")V");
+        return "<init>".equals(m.getName()) && m.getSignature().equals("(" + outerClassSignature + ")V");
     }
 
     private boolean badMethodName(String mName) {

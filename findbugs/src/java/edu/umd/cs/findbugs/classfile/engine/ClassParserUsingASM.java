@@ -325,7 +325,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 this.accessForField = false;
             }
             if (stubState == StubState.LOADED_STUB && opcode == Opcodes.INVOKESPECIAL
-                    && owner.equals("java/lang/RuntimeException") && name.equals("<init>")) {
+                    && "java/lang/RuntimeException".equals(owner) && "<init>".equals(name)) {
                 stubState = StubState.INITIALIZE_RUNTIME;
             } else {
                 stubState = StubState.INITIAL;
@@ -341,12 +341,12 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 // primitive array
                 return;
             }
-            if (opcode == Opcodes.INVOKESTATIC && owner.equals("java/lang/System") && name.equals("exit")
+            if (opcode == Opcodes.INVOKESTATIC && "java/lang/System".equals(owner) && "exit".equals(name)
                     && !sawReturn) {
                 sawSystemExit = true;
             }
             justSawInitializationOfUnsupportedOperationException = opcode == Opcodes.INVOKESPECIAL
-                    && owner.equals("java/lang/UnsupportedOperationException") && name.equals("<init>");
+                    && "java/lang/UnsupportedOperationException".equals(owner) && "<init>".equals(name);
 
             if (isBridge && bridgedMethodSignature == null) {
                 switch (opcode) {

@@ -263,8 +263,8 @@ public class DroppedException extends PreorderVisitor implements Detector {
                 }
             }
 
-            if (end - start >= 4 && drops && !causeName.equals("java.lang.InterruptedException")
-                    && !causeName.equals("java.lang.CloneNotSupportedException")) {
+            if (end - start >= 4 && drops && !"java.lang.InterruptedException".equals(causeName)
+                    && !"java.lang.CloneNotSupportedException".equals(causeName)) {
                 int priority = NORMAL_PRIORITY;
                 if (exitInTryBlock) {
                     priority++;
@@ -285,8 +285,8 @@ public class DroppedException extends PreorderVisitor implements Detector {
                         priority += 2;
                     }
                 }
-                if (causeName.equals("java.lang.Error") || causeName.equals("java.lang.Exception") || causeName.equals("java.lang.Throwable")
-                        || causeName.equals("java.lang.RuntimeException")) {
+                if ("java.lang.Error".equals(causeName) || "java.lang.Exception".equals(causeName) || "java.lang.Throwable".equals(causeName)
+                        || "java.lang.RuntimeException".equals(causeName)) {
                     priority--;
                     if (end - start > 30) {
                         priority--;
@@ -447,7 +447,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
 
             while (iter.hasPrevious()) {
                 Token token = iter.previous();
-                if (token.getKind() == Token.WORD && token.getLexeme().equals("catch")) {
+                if (token.getKind() == Token.WORD && "catch".equals(token.getLexeme())) {
                     foundCatch = true;
                     break;
                 }
@@ -492,33 +492,33 @@ public class DroppedException extends PreorderVisitor implements Detector {
                     }
                     switch (state) {
                     case START:
-                        if (value.equals("catch")) {
+                        if ("catch".equals(value)) {
                             state = CATCH;
                         }
                         break;
                     case CATCH:
-                        if (value.equals("(")) {
+                        if ("(".equals(value)) {
                             state = OPEN_PAREN;
                         }
                         break;
                     case OPEN_PAREN:
-                        if (value.equals(")")) {
+                        if (")".equals(value)) {
                             if (level == 0) {
                                 state = CLOSE_PAREN;
                             } else {
                                 --level;
                             }
-                        } else if (value.equals("(")) {
+                        } else if ("(".equals(value)) {
                             ++level;
                         }
                         break;
                     case CLOSE_PAREN:
-                        if (value.equals("{")) {
+                        if ("{".equals(value)) {
                             state = OPEN_BRACE;
                         }
                         break;
                     case OPEN_BRACE:
-                        boolean closeBrace = value.equals("}");
+                        boolean closeBrace = "}".equals(value);
                         if (DEBUG && !closeBrace) {
                             System.out.println("Found a comment in catch block: " + value);
                         }

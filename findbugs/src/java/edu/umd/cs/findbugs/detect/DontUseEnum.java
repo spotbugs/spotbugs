@@ -52,7 +52,7 @@ public class DontUseEnum extends PreorderDetector {
     }
 
     private boolean isReservedName(String name) {
-        return name.equals("enum") || name.equals("assert");
+        return "enum".equals(name) || "assert".equals(name);
     }
 
     @Override

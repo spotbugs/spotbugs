@@ -57,7 +57,7 @@ public class UnionResults {
          */
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
-            if (option.equals("-withMessages")) {
+            if ("-withMessages".equals(option)) {
                 withMessages = true;
             } else {
                 throw new IllegalArgumentException("Unknown option : " + option);
@@ -73,7 +73,7 @@ public class UnionResults {
          */
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
-            if (option.equals("-output")) {
+            if ("-output".equals(option)) {
                 outputFile = argument;
             } else {
                 throw new IllegalArgumentException("Unknown option : " + option);

@@ -40,15 +40,15 @@ class NumberedViewFactory implements ViewFactory {
         String kind = elem.getName();
         // System.out.println("Kind: " + kind);
         if (kind != null) {
-            if (kind.equals(AbstractDocument.ContentElementName)) {
+            if (AbstractDocument.ContentElementName.equals(kind)) {
                 return new LabelView(elem);
-            } else if (kind.equals(AbstractDocument.ParagraphElementName)) {
+            } else if (AbstractDocument.ParagraphElementName.equals(kind)) {
                 return new NumberedParagraphView(elem, highlight);
-            } else if (kind.equals(AbstractDocument.SectionElementName)) {
+            } else if (AbstractDocument.SectionElementName.equals(kind)) {
                 return new NoWrapBoxView(elem, View.Y_AXIS);
-            } else if (kind.equals(StyleConstants.ComponentElementName)) {
+            } else if (StyleConstants.ComponentElementName.equals(kind)) {
                 return new ComponentView(elem);
-            } else if (kind.equals(StyleConstants.IconElementName)) {
+            } else if (StyleConstants.IconElementName.equals(kind)) {
                 return new IconView(elem);
             }
         }

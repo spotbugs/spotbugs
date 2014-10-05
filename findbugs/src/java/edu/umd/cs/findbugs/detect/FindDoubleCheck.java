@@ -90,7 +90,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
                 System.out.println("\t" + pendingFieldLoad);
             }
             String sig = getSigConstantOperand();
-            if (sig.equals("Z")) {
+            if ("Z".equals(sig)) {
                 countSinceGetBoolean = 0;
                 countSinceGetReference++;
             } else if (sig.startsWith("L") || sig.startsWith("[")) {
@@ -158,7 +158,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
                     System.out.println("\t" + f);
                 }
                 if (twice.contains(f) && !getNameConstantOperand().startsWith("class$")
-                        && !getSigConstantOperand().equals("Ljava/lang/String;")) {
+                        && !"Ljava/lang/String;".equals(getSigConstantOperand())) {
                     Field declaration = findField(getClassConstantOperand(), getNameConstantOperand());
                     /*
                      * System.out.println(f); System.out.println(declaration);

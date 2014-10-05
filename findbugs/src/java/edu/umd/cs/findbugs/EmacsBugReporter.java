@@ -80,7 +80,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
         try {
             fullPath = sourceFinder.findSourceFile(pkgName, line.getSourceFile()).getFullFileName();
         } catch (IOException e) {
-            if (pkgName.equals("")) {
+            if ("".equals(pkgName)) {
                 fullPath = line.getSourceFile();
             } else {
                 fullPath = pkgName.replace('.', '/') + "/" + line.getSourceFile();

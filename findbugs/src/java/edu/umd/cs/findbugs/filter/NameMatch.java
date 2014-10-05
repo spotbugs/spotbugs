@@ -66,7 +66,7 @@ public class NameMatch {
         if (spec == null) {
             return true;
         }
-        return spec.equals("~.*");
+        return "~.*".equals(spec);
     }
 
     @Override

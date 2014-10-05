@@ -56,7 +56,7 @@ public class ListBugDatabaseInfo {
 
         @Override
         public void handleOption(String option, String optionalExtraPart) {
-            if (option.equals("-formatDates")) {
+            if ("-formatDates".equals(option)) {
                 formatDates = true;
             } else {
                 throw new IllegalArgumentException("unknown option: " + option);

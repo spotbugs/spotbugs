@@ -127,7 +127,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         if (!obj.isClass()) {
             return;
         }
-        if (getDottedClassName().equals("java.lang.Object")) {
+        if ("java.lang.Object".equals(getDottedClassName())) {
             return;
         }
         int accessFlags = obj.getAccessFlags();
@@ -156,7 +156,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
                 }
             }
         }
-        boolean usesDefaultEquals = whereEqual.equals("java.lang.Object");
+        boolean usesDefaultEquals = "java.lang.Object".equals(whereEqual);
         String whereHashCode = getDottedClassName();
         if (!hasHashCode) {
             XClass wh = Lookup.findSuperImplementor(getXClass(), "hashCode", "()I", false, bugReporter);
@@ -170,7 +170,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
                 }
             }
         }
-        boolean usesDefaultHashCode = whereHashCode.equals("java.lang.Object");
+        boolean usesDefaultHashCode = "java.lang.Object".equals(whereHashCode);
         /*
         if (false && (usesDefaultEquals || usesDefaultHashCode)) {
             try {
@@ -217,7 +217,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
                 }
                 String bugPattern = "EQ_SELF_NO_OBJECT";
                 String superclassName = obj.getSuperclassName();
-                if (superclassName.equals("java.lang.Enum")) {
+                if ("java.lang.Enum".equals(superclassName)) {
                     bugPattern = "EQ_DONT_DEFINE_EQUALS_FOR_ENUM";
                     priority = HIGH_PRIORITY;
                 }
@@ -324,7 +324,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         if (!hasEqualsObject && !hasEqualsSelf && !usesDefaultEquals && !obj.isAbstract() && hasFields && inheritedEquals != null
                 && !inheritedEqualsIsFinal && !inheritedEqualsFromAbstractClass
                 && !inheritedEquals.getClassDescriptor().getSimpleName().contains("Abstract")
-                && !inheritedEquals.getClassDescriptor().getClassName().equals("java/lang/Enum")) {
+                && !"java/lang/Enum".equals(inheritedEquals.getClassDescriptor().getClassName())) {
 
             BugInstance bug = new BugInstance(this, "EQ_DOESNT_OVERRIDE_EQUALS", NORMAL_PRIORITY);
 
@@ -338,7 +338,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
 
     @Override
     public void visit(JavaClass obj) {
-        extendsObject = getDottedSuperclassName().equals("java.lang.Object");
+        extendsObject = "java.lang.Object".equals(getDottedSuperclassName());
         hasFields = false;
         hasHashCode = false;
         hasCompareToObject = false;
@@ -366,7 +366,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
             return true;
         }
         String name = getMethod().getName();
-        if (name.equals("hashCode") || name.equals("equals")) {
+        if ("hashCode".equals(name) || "equals".equals(name)) {
             return true;
         }
         return false;
@@ -398,23 +398,23 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         String name = obj.getName();
         String sig = obj.getSignature();
         if ((accessFlags & ACC_ABSTRACT) != 0) {
-            if (name.equals("equals") && sig.equals("(L" + getClassName() + ";)Z")) {
+            if ("equals".equals(name) && sig.equals("(L" + getClassName() + ";)Z")) {
                 bugReporter.reportBug(new BugInstance(this, "EQ_ABSTRACT_SELF", LOW_PRIORITY).addClass(getDottedClassName()));
                 return;
-            } else if (name.equals("compareTo") && sig.equals("(L" + getClassName() + ";)I")) {
+            } else if ("compareTo".equals(name) && sig.equals("(L" + getClassName() + ";)I")) {
                 bugReporter.reportBug(new BugInstance(this, "CO_ABSTRACT_SELF", LOW_PRIORITY).addClass(getDottedClassName()));
                 return;
             }
         }
-        boolean sigIsObject = sig.equals("(Ljava/lang/Object;)Z");
-        if (name.equals("hashCode") && sig.equals("()I")) {
+        boolean sigIsObject = "(Ljava/lang/Object;)Z".equals(sig);
+        if ("hashCode".equals(name) && "()I".equals(sig)) {
             hasHashCode = true;
             if (obj.isAbstract()) {
                 hashCodeIsAbstract = true;
             }
             hashCodeMethod = MethodAnnotation.fromVisitedMethod(this);
             // System.out.println("Found hashCode for " + betterClassName);
-        } else if (obj.isPublic() && name.equals("equals")) {
+        } else if (obj.isPublic() && "equals".equals(name)) {
             Matcher m = predicateOverAnInstance.matcher(sig);
             if (m.matches()) {
                 if (sigIsObject) {
@@ -475,12 +475,12 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
 
                 }
             }
-        } else if (name.equals("compareTo") && sig.endsWith(")I") && !obj.isStatic()) {
+        } else if ("compareTo".equals(name) && sig.endsWith(")I") && !obj.isStatic()) {
             MethodAnnotation tmp = MethodAnnotation.fromVisitedMethod(this);
             if (BCELUtil.isSynthetic(obj)) {
                 hasCompareToBridgeMethod = true;
             }
-            if (sig.equals("(Ljava/lang/Object;)I")) {
+            if ("(Ljava/lang/Object;)I".equals(sig)) {
                 hasCompareToObject = true;
                 compareToObjectMethod = compareToMethod = tmp;
             } else if (sig.equals("(L" + getClassName() + ";)I")) {
@@ -504,22 +504,22 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
     public void sawOpcode(int seen) {
         if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
             String className = getClassConstantOperand();
-            if (className.equals("java/util/Map") || className.equals("java/util/HashMap")
-                    || className.equals("java/util/LinkedHashMap") || className.equals("java/util/concurrent/ConcurrentHashMap")
+            if ("java/util/Map".equals(className) || "java/util/HashMap".equals(className)
+                    || "java/util/LinkedHashMap".equals(className) || "java/util/concurrent/ConcurrentHashMap".equals(className)
                     || className.contains("Hash")
                     && Subtypes2.instanceOf(ClassName.toDottedClassName(className), "java.util.Map")) {
-                if (getNameConstantOperand().equals("put")
-                        && getSigConstantOperand().equals("(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
+                if ("put".equals(getNameConstantOperand())
+                        && "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;".equals(getSigConstantOperand())
                         && stack.getStackDepth() >= 3) {
                     check(1);
-                } else if ((getNameConstantOperand().equals("get") || getNameConstantOperand().equals("remove"))
+                } else if (("get".equals(getNameConstantOperand()) || "remove".equals(getNameConstantOperand()))
                         && getSigConstantOperand().startsWith("(Ljava/lang/Object;)") && stack.getStackDepth() >= 2) {
                     check(0);
                 }
-            } else if (className.equals("java/util/Set") || className.equals("java/util/HashSet") || className.contains("Hash")
+            } else if ("java/util/Set".equals(className) || "java/util/HashSet".equals(className) || className.contains("Hash")
                     && Subtypes2.instanceOf(ClassName.toDottedClassName(className), "java.util.Set")) {
-                if (getNameConstantOperand().equals("add") || getNameConstantOperand().equals("contains")
-                        || getNameConstantOperand().equals("remove") && getSigConstantOperand().equals("(Ljava/lang/Object;)Z")
+                if ("add".equals(getNameConstantOperand()) || "contains".equals(getNameConstantOperand())
+                        || "remove".equals(getNameConstantOperand()) && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())
                         && stack.getStackDepth() >= 2) {
                     check(0);
                 }

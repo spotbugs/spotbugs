@@ -113,7 +113,7 @@ public class Version {
             suffix = "preview" + PREVIEW;
         } else {
             suffix = "dev-" + COMPUTED_ECLIPSE_DATE;
-            if (!GIT_REVISION.equals("Unknown")) {
+            if (!"Unknown".equals(GIT_REVISION)) {
                 suffix += "-" + GIT_REVISION;
             }
         }
@@ -140,7 +140,7 @@ public class Version {
     static {
         Class<Version> c = Version.class;
         URL u = c.getResource(c.getSimpleName() + ".class");
-        boolean fromFile = u.getProtocol().equals("file");
+        boolean fromFile = "file".equals(u.getProtocol());
         InputStream in = null;
         String release = null;
         String date = null;
@@ -229,11 +229,11 @@ public class Version {
 
         String arg = argv[0];
 
-        if (arg.equals("-release")) {
+        if ("-release".equals(arg)) {
             System.out.println(RELEASE);
-        } else if (arg.equals("-date")) {
+        } else if ("-date".equals(arg)) {
             System.out.println(DATE);
-        } else if (arg.equals("-props")) {
+        } else if ("-props".equals(arg)) {
             System.out.println("release.base=" + RELEASE_BASE);
             System.out.println("release.number=" + COMPUTED_RELEASE);
             System.out.println("release.date=" + COMPUTED_DATE);
@@ -242,7 +242,7 @@ public class Version {
             System.out.println("findbugs.website=" + WEBSITE);
             System.out.println("findbugs.downloads.website=" + DOWNLOADS_WEBSITE);
             System.out.println("findbugs.git.revision=" + GIT_REVISION);
-        } else if (arg.equals("-plugins")) {
+        } else if ("-plugins".equals(arg)) {
             DetectorFactoryCollection.instance();
             for(Plugin p : Plugin.getAllPlugins()) {
                 System.out.println("Plugin: " + p.getPluginId());
@@ -258,7 +258,7 @@ public class Version {
                 }
                 System.out.println();
             }
-        } else if (arg.equals("-configuration")){
+        } else if ("-configuration".equals(arg)){
             printVersion(true);
         } else {
 

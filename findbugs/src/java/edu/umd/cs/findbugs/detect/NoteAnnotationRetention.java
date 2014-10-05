@@ -44,7 +44,7 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements Detect
     @Override
     public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
 
-        if (!annotationClass.equals("java.lang.annotation.Retention")) {
+        if (!"java.lang.annotation.Retention".equals(annotationClass)) {
             return;
         }
         EnumElementValue v = (EnumElementValue) map.get("value");
@@ -62,7 +62,7 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements Detect
     @Override
     public void visitAfter(JavaClass obj) {
         for (String i : obj.getInterfaceNames()) {
-            if (i.equals("java.lang.annotation.Annotation")) {
+            if ("java.lang.annotation.Annotation".equals(i)) {
                 AnalysisContext.currentAnalysisContext().getAnnotationRetentionDatabase()
                 .setRuntimeRetention(getDottedClassName(), runtimeRetention);
             }

@@ -304,7 +304,7 @@ public abstract class AbstractFindBugsTask extends Task {
             // Use findbugs.home to locate findbugs.jar and the standard
             // plugins. This is the usual means of initialization.
             File findbugsLib = new File(homeDir, "lib");
-            if (!findbugsLib.exists() && homeDir.getName().equals("lib")) {
+            if (!findbugsLib.exists() && "lib".equals(homeDir.getName())) {
                 findbugsLib = homeDir;
                 homeDir = homeDir.getParentFile();
             }

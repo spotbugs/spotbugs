@@ -314,10 +314,10 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
         if (!method.isStatic()) {
             return false;
         }
-        if (!getMethodName().equals("main")) {
+        if (!"main".equals(getMethodName())) {
             return false;
         }
-        if (!getMethodSig().equals("([Ljava/lang/String;)V")) {
+        if (!"([Ljava/lang/String;)V".equals(getMethodSig())) {
             return false;
         }
         return true;

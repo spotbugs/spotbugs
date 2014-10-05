@@ -112,15 +112,15 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
 
 
         if (m.isStatic() || !m.isResolved()) {
-            if (name.equals("compare") && m.getClassName().startsWith("com.google.common.primitives.")) {
+            if ("compare".equals(name) && m.getClassName().startsWith("com.google.common.primitives.")) {
                 return true;
             }
         }
         if (!m.isStatic() || !m.isResolved()) {
-            if (name.equals("compareTo") && m.getSignature().equals("(Ljava/lang/Object;)I")) {
+            if ("compareTo".equals(name) && "(Ljava/lang/Object;)I".equals(m.getSignature())) {
                 return true;
             }
-            if (name.equals("compare") && m.getSignature().equals("(Ljava/lang/Object;Ljava/lang/Object;)I")) {
+            if ("compare".equals(name) && "(Ljava/lang/Object;Ljava/lang/Object;)I".equals(m.getSignature())) {
                 return true;
             }
         }
@@ -157,10 +157,10 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
             break;
         }
 
-        checkForInitWithoutCopyOnStack: if (seen == INVOKESPECIAL && getNameConstantOperand().equals("<init>")) {
+        checkForInitWithoutCopyOnStack: if (seen == INVOKESPECIAL && "<init>".equals(getNameConstantOperand())) {
             int arguments = PreorderVisitor.getNumberArguments(getSigConstantOperand());
             OpcodeStack.Item invokedOn = stack.getStackItem(arguments);
-            if (invokedOn.isNewlyAllocated() && (!getMethodName().equals("<init>") || invokedOn.getRegisterNumber() != 0)) {
+            if (invokedOn.isNewlyAllocated() && (!"<init>".equals(getMethodName()) || invokedOn.getRegisterNumber() != 0)) {
 
                 for (int i = arguments + 1; i < stack.getStackDepth(); i++) {
                     OpcodeStack.Item item = stack.getStackItem(i);
@@ -246,11 +246,11 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                 if (callSeen.isPrivate()) {
                     priority++;
                 }
-                if (callSeen.getName().equals("clone") || callSeen.getName().startsWith("get")) {
+                if ("clone".equals(callSeen.getName()) || callSeen.getName().startsWith("get")) {
                     priority++;
                 }
                 String pattern = annotation.getPattern();
-                if (callSeen.getName().equals("<init>")
+                if ("<init>".equals(callSeen.getName())
                         && (callSeen.getClassName().endsWith("Exception") || callSeen.getClassName().endsWith("Error"))) {
                     pattern = "RV_EXCEPTION_NOT_THROWN";
                 }

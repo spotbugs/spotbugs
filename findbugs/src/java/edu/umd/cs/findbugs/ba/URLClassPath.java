@@ -310,7 +310,7 @@ public class URLClassPath implements Serializable {
         boolean isArchive = fileExtension != null && URLClassPath.isArchiveExtension(fileExtension);
 
         Entry entry;
-        if (protocol.equals("file")) {
+        if ("file".equals(protocol)) {
             String localFileName = fileName.substring("file:".length());
 
             if (fileName.endsWith("/") || new File(localFileName).isDirectory()) {

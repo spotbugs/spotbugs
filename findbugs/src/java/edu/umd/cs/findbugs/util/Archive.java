@@ -70,6 +70,6 @@ public class Archive {
 
     public static boolean isLibraryFileName(String fileName) {
         String extension = getExtension(fileName);
-        return extension.equals(".jar");
+        return ".jar".equals(extension);
     }
 }

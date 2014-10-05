@@ -89,7 +89,7 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
         }
         switch (seen) {
         case INVOKESTATIC:
-            if (getClassConstantOperand().equals("java/util/logging/Logger") && getNameConstantOperand().equals("getLogger")) {
+            if ("java/util/logging/Logger".equals(getClassConstantOperand()) && "getLogger".equals(getNameConstantOperand())) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 if (!"".equals(item.getConstant())) {
                     sawGetLogger = getPC();
@@ -99,10 +99,10 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
             checkForImport();
             break;
         case INVOKEVIRTUAL:
-            if (getClassConstantOperand().equals("java/util/logging/Logger")
+            if ("java/util/logging/Logger".equals(getClassConstantOperand())
                     && namesOfSetterMethods.contains(getNameConstantOperand())) {
                 int priority = HIGH_PRIORITY;
-                if (getMethod().isStatic() && getMethodName().equals("main") && getMethodSig().equals("([Ljava/lang/String;)V")) {
+                if (getMethod().isStatic() && "main".equals(getMethodName()) && "([Ljava/lang/String;)V".equals(getMethodSig())) {
                     priority = NORMAL_PRIORITY;
                 }
 

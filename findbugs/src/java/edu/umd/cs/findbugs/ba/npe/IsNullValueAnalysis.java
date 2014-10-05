@@ -434,8 +434,8 @@ IsNullValueAnalysisFeatures {
                     ObjectType catchType = handler.getCatchType();
                     if (catchType != null) {
                         String catchClass = catchType.getClassName();
-                        if (catchClass.equals("java.lang.CloneNotSupportedException")
-                                || catchClass.equals("java.lang.InterruptedException")) {
+                        if ("java.lang.CloneNotSupportedException".equals(catchClass)
+                                || "java.lang.InterruptedException".equals(catchClass)) {
                             for (int i = 0; i < tmpFact.getNumSlots(); ++i) {
                                 IsNullValue value = tmpFact.getValue(i);
                                 if (value.isDefinitelyNull() || value.isNullOnSomePath()) {

@@ -51,7 +51,7 @@ public class TypeMatcher implements Matcher {
     @Override
     public boolean match(BugInstance bugInstance) {
         TypeAnnotation typeAnnotation = bugInstance.getPrimaryType();
-        if (role != null && !role.equals("")) {
+        if (role != null && !"".equals(role)) {
             for (BugAnnotation a : bugInstance.getAnnotations()) {
                 if (a instanceof TypeAnnotation && role.equals(a.getDescription())) {
                     typeAnnotation = (TypeAnnotation) a;

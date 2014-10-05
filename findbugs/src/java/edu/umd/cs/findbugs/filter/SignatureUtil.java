@@ -76,23 +76,23 @@ public class SignatureUtil {
     }
 
     private static String scalarTypeToSiganture(String type) {
-        if (type.equals("boolean")) {
+        if ("boolean".equals(type)) {
             return "Z";
-        } else if (type.equals("byte")) {
+        } else if ("byte".equals(type)) {
             return "B";
-        } else if (type.equals("char")) {
+        } else if ("char".equals(type)) {
             return "C";
-        } else if (type.equals("short")) {
+        } else if ("short".equals(type)) {
             return "S";
-        } else if (type.equals("int")) {
+        } else if ("int".equals(type)) {
             return "I";
-        } else if (type.equals("long")) {
+        } else if ("long".equals(type)) {
             return "J";
-        } else if (type.equals("float")) {
+        } else if ("float".equals(type)) {
             return "F";
-        } else if (type.equals("double")) {
+        } else if ("double".equals(type)) {
             return "D";
-        } else if (type.equals("void")) {
+        } else if ("void".equals(type)) {
             return "V";
         } else {
             return "L" + type.replace('.', '/') + ";";

@@ -343,7 +343,7 @@ public class MainFrameComponentFactory implements Serializable {
                     srcStr = " [" + summaryLines + " " + start + " - " + end + "]";
                 }
 
-                if (!srcStr.equals("")) {
+                if (!"".equals(srcStr)) {
                     label.setToolTipText(clickToGoToText + " " + srcStr);
                     label.addMouseListener(new BugSummaryMouseListener(bug, label, link));
                 }
@@ -427,7 +427,7 @@ public class MainFrameComponentFactory implements Serializable {
                 // (as in sourceforge bug 1899648). In an attempt to recover
                 // gracefully, this code reverts to the cross-platform look-
                 // and-feel and attempts again to initialize the layout.
-                if (!UIManager.getLookAndFeel().getName().equals("Metal")) {
+                if (!"Metal".equals(UIManager.getLookAndFeel().getName())) {
                     System.err.println("Exception caught initializing GUI; reverting to CrossPlatformLookAndFeel");
                     try {
                         UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());

@@ -66,7 +66,7 @@ public class BadAppletConstructor extends BytecodeScanningDetector {
 
     @Override
     public void visit(Method obj) {
-        inConstructor = obj.getName().equals("<init>");
+        inConstructor = "<init>".equals(obj.getName());
     }
 
     @Override
@@ -81,9 +81,9 @@ public class BadAppletConstructor extends BytecodeScanningDetector {
         if (seen == INVOKEVIRTUAL) {
             String method = getNameConstantOperand();
             String signature = getSigConstantOperand();
-            if (((method.equals("getDocumentBase") || method.equals("getCodeBase")) && signature.equals("()Ljava/net/URL;"))
-                    || (method.equals("getAppletContext") && signature.equals("()Ljava/applet/AppletContext;"))
-                    || (method.equals("getParameter") && signature.equals("(Ljava/lang/String;)Ljava/lang/String;"))) {
+            if ((("getDocumentBase".equals(method) || "getCodeBase".equals(method)) && "()Ljava/net/URL;".equals(signature))
+                    || ("getAppletContext".equals(method) && "()Ljava/applet/AppletContext;".equals(signature))
+                    || ("getParameter".equals(method) && "(Ljava/lang/String;)Ljava/lang/String;".equals(signature))) {
                 bugReporter.reportBug(new BugInstance(this, "BAC_BAD_APPLET_CONSTRUCTOR", NORMAL_PRIORITY)
                 .addClassAndMethod(this).addSourceLine(this));
             }

@@ -101,7 +101,7 @@ public class UpdateChecker {
         Plugin setter = dfc.getGlobalOptionSetter(KEY_REDIRECT_ALL_UPDATE_CHECKS);
         URI redirectUri = null;
         String pluginName = setter == null ? "<unknown plugin>" : setter.getShortDescription();
-        if (redirect != null && !redirect.trim().equals("")) {
+        if (redirect != null && !"".equals(redirect.trim())) {
             try {
                 redirectUri = new URI(redirect);
                 logError(Level.INFO, "Redirecting all plugin update checks to " + redirectUri + " (" + pluginName + ")");
@@ -120,7 +120,7 @@ public class UpdateChecker {
         Preferences prefs = Preferences.userNodeForPackage(UpdateChecker.class);
 
         String oldSeen = prefs.get("last-plugin-update-seen", "");
-        if (oldSeen == null || oldSeen.equals("")) {
+        if (oldSeen == null || "".equals(oldSeen)) {
             return 0;
         }
         try {
@@ -202,7 +202,7 @@ public class UpdateChecker {
         final String entryPoint = getEntryPoint();
         if ((entryPoint.contains("edu.umd.cs.findbugs.FindBugsTestCase")
                 || entryPoint.contains("edu.umd.cs.findbugs.cloud.appEngine.AbstractWebCloudTest"))
-                && (url.getScheme().equals("http") || url.getScheme().equals("https"))) {
+                && ("http".equals(url.getScheme()) || "https".equals(url.getScheme()))) {
             LOGGER.fine("Skipping update check because we're running in FindBugsTestCase and using "
                     + url.getScheme());
             return;
@@ -270,7 +270,7 @@ public class UpdateChecker {
             xmlOutput.startTag("findbugs-invocation");
             xmlOutput.addAttribute("version", Version.RELEASE);
             String applicationName = Version.getApplicationName();
-            if (applicationName == null || applicationName.equals("")) {
+            if (applicationName == null || "".equals(applicationName)) {
                 int lastDot = entryPoint.lastIndexOf('.');
                 if (lastDot == -1) {
                     applicationName = entryPoint;

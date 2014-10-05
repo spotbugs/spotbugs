@@ -161,7 +161,7 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
         String methodName = ins.getName(constPoolGen);
         String methodSig = ins.getSignature(constPoolGen);
 
-        if (className.equals("java.lang.System") && methodName.equals("exit") && methodSig.equals("(I)V")) {
+        if ("java.lang.System".equals(className) && "exit".equals(methodName) && "(I)V".equals(methodSig)) {
             isExit = true;
         }
     }

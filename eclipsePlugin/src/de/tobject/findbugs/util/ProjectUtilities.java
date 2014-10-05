@@ -60,7 +60,7 @@ public class ProjectUtilities {
         IProjectDescription description = project.getDescription();
         String[] prevNatures = description.getNatureIds();
         for (int i = 0; i < prevNatures.length; i++) {
-            if (prevNatures[i].equals(FindbugsPlugin.NATURE_ID)) {
+            if (FindbugsPlugin.NATURE_ID.equals(prevNatures[i])) {
                 // nothing to do
                 return;
             }
@@ -126,7 +126,7 @@ public class ProjectUtilities {
         String[] prevNatures = description.getNatureIds();
         ArrayList<String> newNaturesList = new ArrayList<String>();
         for (int i = 0; i < prevNatures.length; i++) {
-            if (!prevNatures[i].equals(FindbugsPlugin.NATURE_ID)) {
+            if (!FindbugsPlugin.NATURE_ID.equals(prevNatures[i])) {
                 newNaturesList.add(prevNatures[i]);
             }
         }

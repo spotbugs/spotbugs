@@ -213,7 +213,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
             String methodSig = inv.getSignature(cpg);
 
             try {
-                if (methodName.equals("lock") && methodSig.equals("()V")
+                if ("lock".equals(methodName) && "()V".equals(methodSig)
                         && Hierarchy.isSubtype(className, "java.util.concurrent.locks.Lock")) {
 
                     Location location = new Location(handle, basicBlock);
@@ -246,7 +246,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
             String methodSig = inv.getSignature(cpg);
 
             try {
-                if (methodName.equals("unlock") && methodSig.equals("()V")
+                if ("unlock".equals(methodName) && "()V".equals(methodSig)
                         && Hierarchy.isSubtype(className, "java.util.concurrent.locks.Lock")) {
 
                     return true;
@@ -300,7 +300,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
                     }
                     // Ignore exceptions from getfield instructions where the
                     // object reference is known not to be null
-                    if (fieldName.equals("lock")) {
+                    if ("lock".equals(fieldName)) {
                         return true;
                     }
                     IsNullValueFrame frame = isNullDataflow.getFactAtLocation(location);
@@ -320,10 +320,10 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
                     if (methodName.startsWith("access$")) {
                         return true;
                     }
-                    if (methodName.equals("readLock") || methodName.equals("writeLock")) {
+                    if ("readLock".equals(methodName) || "writeLock".equals(methodName)) {
                         return true;
                     }
-                    if (methodName.equals("lock") || methodName.equals("unlock")) {
+                    if ("lock".equals(methodName) || "unlock".equals(methodName)) {
                         return true;
                     }
                 }

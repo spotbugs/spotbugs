@@ -54,7 +54,7 @@ public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackD
 
     @Override
     public void visit(Code obj) {
-        if (getMethodName().equals("equals") && getMethodSig().equals("(Ljava/lang/Object;)Z")) {
+        if ("equals".equals(getMethodName()) && "(Ljava/lang/Object;)Z".equals(getMethodSig())) {
             super.visit(obj);
             if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass())) {
                 bugAccumulator.reportAccumulatedBugs();
@@ -72,15 +72,15 @@ public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackD
     @Override
     public void sawOpcode(int seen) {
         if (seen == INVOKEVIRTUAL) {
-            if (getNameConstantOperand().equals("equals") && getSigConstantOperand().equals("(Ljava/lang/Object;)Z")) {
+            if ("equals".equals(getNameConstantOperand()) && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())) {
                 OpcodeStack.Item item = stack.getStackItem(1);
                 ClassDescriptor c = DescriptorFactory.createClassDescriptorFromSignature(item.getSignature());
                 check(c);
 
-            } else if (getClassConstantOperand().equals("java/lang/Class")
-                    && (getNameConstantOperand().equals("isInstance") || getNameConstantOperand().equals("cast"))) {
+            } else if ("java/lang/Class".equals(getClassConstantOperand())
+                    && ("isInstance".equals(getNameConstantOperand()) || "cast".equals(getNameConstantOperand()))) {
                 OpcodeStack.Item item = stack.getStackItem(1);
-                if (item.getSignature().equals("Ljava/lang/Class;")) {
+                if ("Ljava/lang/Class;".equals(item.getSignature())) {
                     Object value = item.getConstant();
                     if (value instanceof String) {
                         ClassDescriptor c = DescriptorFactory.createClassDescriptor((String) value);

@@ -135,19 +135,19 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
      */
     @Override
     public final String format(String key, ClassAnnotation primaryClass) {
-        if (key.equals("class.givenClass")) {
+        if ("class.givenClass".equals(key)) {
             return shorten(primaryClass.getPackageName(), className);
         }
-        if (key.equals("simpleClass")) {
+        if ("simpleClass".equals(key)) {
             return ClassName.extractSimpleName(className);
         }
-        if (key.equals("class")) {
+        if ("class".equals(key)) {
             return className;
         }
-        if (key.equals("package")) {
+        if ("package".equals(key)) {
             return getPackageName();
         }
-        if (key.equals("") && FindBugsDisplayFeatures.isAbridgedMessages() && primaryClass != null) {
+        if ("".equals(key) && FindBugsDisplayFeatures.isAbridgedMessages() && primaryClass != null) {
             return formatPackageMember("givenClass", primaryClass);
         }
         return formatPackageMember(key, primaryClass);
@@ -172,7 +172,7 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
         int index = typeName.lastIndexOf('.');
         if (index >= 0) {
             String otherPkg = typeName.substring(0, index);
-            if (otherPkg.equals(pkgName) || otherPkg.equals("java.lang")) {
+            if (otherPkg.equals(pkgName) || "java.lang".equals(otherPkg)) {
                 typeName = typeName.substring(index + 1);
             }
         }

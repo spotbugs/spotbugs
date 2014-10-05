@@ -110,37 +110,37 @@ public class Update {
 
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
-            if (option.equals("-overrideRevisionNames")) {
+            if ("-overrideRevisionNames".equals(option)) {
                 if (optionExtraPart.length() == 0) {
                     overrideRevisionNames = true;
                 } else {
                     overrideRevisionNames = Boolean.parseBoolean(optionExtraPart);
                 }
-            } else if (option.equals("-noPackageMoves")) {
+            } else if ("-noPackageMoves".equals(option)) {
                 if (optionExtraPart.length() == 0) {
                     noPackageMoves = true;
                 } else {
                     noPackageMoves = Boolean.parseBoolean(optionExtraPart);
                 }
-            } else if (option.equals("-noResurrections")) {
+            } else if ("-noResurrections".equals(option)) {
                 if (optionExtraPart.length() == 0) {
                     noResurrections = true;
                 } else {
                     noResurrections = Boolean.parseBoolean(optionExtraPart);
                 }
-            } else if (option.equals("-preciseMatch")) {
+            } else if ("-preciseMatch".equals(option)) {
                 preciseMatch = true;
-            } else if (option.equals("-sloppyMatch")) {
+            } else if ("-sloppyMatch".equals(option)) {
                 sloppyMatch = true;
-            } else if (option.equals("-precisePriorityMatch")) {
+            } else if ("-precisePriorityMatch".equals(option)) {
                 versionInsensitiveBugComparator.setComparePriorities(true);
                 fuzzyBugPatternMatcher.setComparePriorities(true);
                 precisePriorityMatch = true;
-            } else if (option.equals("-quiet")) {
+            } else if ("-quiet".equals(option)) {
                 verbose = false;
-            } else if (option.equals("-useAnalysisTimes")) {
+            } else if ("-useAnalysisTimes".equals(option)) {
                 useAnalysisTimes = true;
-            } else if (option.equals("-withMessages")) {
+            } else if ("-withMessages".equals(option)) {
                 withMessages = true;
             } else {
                 throw new IllegalArgumentException("no option " + option);
@@ -150,11 +150,11 @@ public class Update {
 
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
-            if (option.equals("-output")) {
+            if ("-output".equals(option)) {
                 outputFilename = argument;
-            } else if (option.equals("-maxRank")) {
+            } else if ("-maxRank".equals(option)) {
                 maxRank = Integer.parseInt(argument);
-            } else if (option.equals("-onlyMostRecent")) {
+            } else if ("-onlyMostRecent".equals(option)) {
                 mostRecent = Integer.parseInt(argument);
             } else {
                 throw new IllegalArgumentException("Can't handle option " + option);

@@ -107,12 +107,11 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
         String methodName = inv.getMethodName(cpg);
         String methodSig = inv.getSignature(cpg);
         if (inv.getOpcode() == Constants.INVOKEVIRTUAL
-                && (methodName.equals("load") || methodName.equals("loadFromXml") || methodName.equals("store") || methodName
-                        .equals("save")) && className.equals("java.util.Properties")) {
+                && ("load".equals(methodName) || "loadFromXml".equals(methodName) || "store".equals(methodName) || "save".equals(methodName)) && "java.util.Properties".equals(className)) {
             escapes = false;
         }
-        if (inv.getOpcode() == Constants.INVOKEVIRTUAL && (methodName.equals("load") || methodName.equals("store"))
-                && className.equals("java.security.KeyStore")) {
+        if (inv.getOpcode() == Constants.INVOKEVIRTUAL && ("load".equals(methodName) || "store".equals(methodName))
+                && "java.security.KeyStore".equals(className)) {
             escapes = false;
         }
         if (inv.getOpcode() == Constants.INVOKEVIRTUAL && "getChannel".equals(methodName)

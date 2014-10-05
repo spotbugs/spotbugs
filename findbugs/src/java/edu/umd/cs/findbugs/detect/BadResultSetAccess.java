@@ -75,10 +75,10 @@ public class BadResultSetAccess extends OpcodeStackDetector {
         if (seen == INVOKEINTERFACE) {
             String methodName = getNameConstantOperand();
             String clsConstant = getClassConstantOperand();
-            if ((clsConstant.equals("java/sql/ResultSet") && ((methodName.startsWith("get") && dbFieldTypesSet
+            if (("java/sql/ResultSet".equals(clsConstant) && ((methodName.startsWith("get") && dbFieldTypesSet
                     .contains(methodName.substring(3))) || (methodName.startsWith("update") && dbFieldTypesSet
                             .contains(methodName.substring(6)))))
-                            || ((clsConstant.equals("java/sql/PreparedStatement") && ((methodName.startsWith("set") && dbFieldTypesSet
+                            || (("java/sql/PreparedStatement".equals(clsConstant) && ((methodName.startsWith("set") && dbFieldTypesSet
                                     .contains(methodName.substring(3))))))) {
                 String signature = getSigConstantOperand();
                 int numParms = PreorderVisitor.getNumberArguments(signature);
@@ -87,7 +87,7 @@ public class BadResultSetAccess extends OpcodeStackDetector {
 
                     if ("I".equals(item.getSignature()) && item.couldBeZero()) {
                         bugReporter.reportBug(new BugInstance(this,
-                                clsConstant.equals("java/sql/PreparedStatement") ? "SQL_BAD_PREPARED_STATEMENT_ACCESS"
+                                "java/sql/PreparedStatement".equals(clsConstant) ? "SQL_BAD_PREPARED_STATEMENT_ACCESS"
                                         : "SQL_BAD_RESULTSET_ACCESS", item.mustBeZero() ? HIGH_PRIORITY : NORMAL_PRIORITY)
                         .addClassAndMethod(this).addSourceLine(this));
                     }

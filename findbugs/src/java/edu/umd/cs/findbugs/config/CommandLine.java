@@ -230,7 +230,7 @@ public abstract class CommandLine {
                 continue;
             }
 
-            if (ignoreBlankLines && line.equals("")) {
+            if (ignoreBlankLines && "".equals(line)) {
                 continue;
             }
             if (line.length() >= 2 && line.charAt(0) == '"' && line.charAt(line.length() - 1) == '"') {
@@ -312,7 +312,7 @@ public abstract class CommandLine {
 
         while (arg < argv.length) {
             String option = argv[arg];
-            if (option.equals("-help") || option.equals("-h")) {
+            if ("-help".equals(option) || "-h".equals(option)) {
                 throw new HelpRequestedException();
             }
             if (!option.startsWith("-")) {

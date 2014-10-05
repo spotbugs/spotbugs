@@ -57,27 +57,27 @@ public class AppendingToAnObjectOutputStream extends OpcodeStackDetector {
         String calledMethodName = getNameConstantOperand();
         String calledMethodSig = getSigConstantOperand();
         if (!sawOpenInAppendMode) {
-            if (calledClassName.equals("java/io/ObjectOutputStream") && calledMethodName.equals("<init>")
-                    && calledMethodSig.equals("(Ljava/io/OutputStream;)V")
+            if ("java/io/ObjectOutputStream".equals(calledClassName) && "<init>".equals(calledMethodName)
+                    && "(Ljava/io/OutputStream;)V".equals(calledMethodSig)
                     && stack.getStackItem(0).getSpecialKind() == OpcodeStack.Item.FILE_OPENED_IN_APPEND_MODE) {
                 bugReporter.reportBug(new BugInstance(this, "IO_APPENDING_TO_OBJECT_OUTPUT_STREAM", Priorities.HIGH_PRIORITY)
                 .addClassAndMethod(this).addSourceLine(this));
             }
             return;
         }
-        if (calledClassName.equals("java/io/FileOutputStream") && calledMethodName.equals("<init>")
-                && (calledMethodSig.equals("(Ljava/io/File;Z)V") || calledMethodSig.equals("(Ljava/lang/String;Z)V"))) {
+        if ("java/io/FileOutputStream".equals(calledClassName) && "<init>".equals(calledMethodName)
+                && ("(Ljava/io/File;Z)V".equals(calledMethodSig) || "(Ljava/lang/String;Z)V".equals(calledMethodSig))) {
             OpcodeStack.Item item = stack.getStackItem(0);
             Object value = item.getConstant();
             sawOpenInAppendMode = value instanceof Integer && ((Integer) value).intValue() == 1;
         } else if (!sawOpenInAppendMode) {
             return;
-        } else if (calledClassName.equals("java/io/BufferedOutputStream") && calledMethodName.equals("<init>")
-                && calledMethodSig.equals("(Ljava/io/OutputStream;)V")) {
+        } else if ("java/io/BufferedOutputStream".equals(calledClassName) && "<init>".equals(calledMethodName)
+                && "(Ljava/io/OutputStream;)V".equals(calledMethodSig)) {
             // do nothing
 
-        } else if (calledClassName.equals("java/io/ObjectOutputStream") && calledMethodName.equals("<init>")
-                && calledMethodSig.equals("(Ljava/io/OutputStream;)V")) {
+        } else if ("java/io/ObjectOutputStream".equals(calledClassName) && "<init>".equals(calledMethodName)
+                && "(Ljava/io/OutputStream;)V".equals(calledMethodSig)) {
             bugReporter.reportBug(new BugInstance(this, "IO_APPENDING_TO_OBJECT_OUTPUT_STREAM", Priorities.HIGH_PRIORITY)
             .addClassAndMethod(this).addSourceLine(this));
             sawOpenInAppendMode = false;

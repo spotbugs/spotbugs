@@ -102,7 +102,7 @@ public class MergeSummarizeAndView {
          */
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
-            if (option.equals("-gui")) {
+            if ("-gui".equals(option)) {
                 options.alwaysShowGui = true;
             } else {
                 throw new IllegalArgumentException("Unknown option : " + option);
@@ -118,17 +118,17 @@ public class MergeSummarizeAndView {
          */
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
-            if (option.equals("-workingDir")) {
+            if ("-workingDir".equals(option)) {
                 options.workingDirList = Arrays.asList(argument.split(","));
-            } else if (option.equals("-srcDir")) {
+            } else if ("-srcDir".equals(option)) {
                 options.srcDirList = Arrays.asList(argument.split(","));
-            } else if (option.equals("-maxRank")) {
+            } else if ("-maxRank".equals(option)) {
                 options.maxRank = Integer.parseInt(argument);
-            } else if (option.equals("-maxAge")) {
+            } else if ("-maxAge".equals(option)) {
                 options.maxAge = Integer.parseInt(argument);
-            } else if (option.equals("-cloud")) {
+            } else if ("-cloud".equals(option)) {
                 options.cloudId = argument;
-            } else if (option.equals("-baseline")) {
+            } else if ("-baseline".equals(option)) {
                 try {
                     options.baselineDate = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH).parse(argument);
                 } catch (ParseException e) {

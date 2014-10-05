@@ -243,7 +243,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
                      * obligation. If strict checking is performed, // weak
                      * entries are ignored.
                      */
-                    if (xmethod.getName().equals("<init>") || xmethod.isStatic()
+                    if ("<init>".equals(xmethod.getName()) || xmethod.isStatic()
                             || xmethod.getName().toLowerCase().indexOf("close") >= 0
                             || xmethod.getSignature().toLowerCase().indexOf("Closeable") >= 0) {
                         addParameterDeletesObligationDatabaseEntry(xmethod, obligationType,
@@ -388,7 +388,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 
         // See what type of obligation is being created.
         Obligation createdObligation = null;
-        if (xmethod.getName().equals("<init>")) {
+        if ("<init>".equals(xmethod.getName())) {
             // Constructor - obligation type is the type of object being created
             // (or some supertype)
             createdObligation = database.getFactory().getObligationByType(xmethod.getClassDescriptor());

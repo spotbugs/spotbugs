@@ -166,13 +166,13 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
     }
 
     public static boolean assertsFirstParameterIsNonnull(XMethod m) {
-        return (m.getName().equalsIgnoreCase("checkNonNull")
-                || m.getName().equalsIgnoreCase("checkNotNull")
+        return ("checkNonNull".equalsIgnoreCase(m.getName())
+                || "checkNotNull".equalsIgnoreCase(m.getName())
                 // JDK 7 java.util.Objects.requireNonNull(Object)
-                || m.getName().equals("requireNonNull")
+                || "requireNonNull".equals(m.getName())
                 // org.eclipse.core.runtime.Assert(Object)
-                || m.getName().equalsIgnoreCase("isNotNull")
-                || m.getName().equalsIgnoreCase("assertNotNull"))
+                || "isNotNull".equalsIgnoreCase(m.getName())
+                || "assertNotNull".equalsIgnoreCase(m.getName()))
                 && m.getSignature().startsWith("(Ljava/lang/Object;");
     }
 
@@ -187,11 +187,11 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         if (tqa == null && param == 0) {
             String name = m.getName();
             String signature = m.getSignature();
-            if (name.equals("main") && signature.equals("([Ljava/lang/String;)V") && m.isStatic() && m.isPublic()) {
+            if ("main".equals(name) && "([Ljava/lang/String;)V".equals(signature) && m.isStatic() && m.isPublic()) {
                 return true;
             } else if (assertsFirstParameterIsNonnull(m)) {
                 return true;
-            } else if (name.equals("compareTo") && signature.substring(signature.indexOf(';') + 1).equals(")Z") && !m.isStatic()) {
+            } else if ("compareTo".equals(name) && ")Z".equals(signature.substring(signature.indexOf(';') + 1)) && !m.isStatic()) {
                 return true;
             }
         }

@@ -118,8 +118,8 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
             break;
 
         case SEEN_ANEWARRAY:
-            if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && (getNameConstantOperand().equals("toArray"))
-                    && (getSigConstantOperand().equals("([Ljava/lang/Object;)[Ljava/lang/Object;"))) {
+            if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && ("toArray".equals(getNameConstantOperand()))
+                    && ("([Ljava/lang/Object;)[Ljava/lang/Object;".equals(getSigConstantOperand()))) {
                 try {
                     String clsName = getDottedClassConstantOperand();
                     JavaClass cls = Repository.lookupClass(clsName);

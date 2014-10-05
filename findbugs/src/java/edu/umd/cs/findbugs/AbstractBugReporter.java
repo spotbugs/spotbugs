@@ -254,7 +254,7 @@ public abstract class AbstractBugReporter implements BugReporter {
             return false;
         }
 
-        if (message.equals("")) {
+        if ("".equals(message)) {
             // Subtypes2 throws ClassNotFoundExceptions with no message in
             // some cases. Ignore them (the missing classes will already
             // have been reported).
@@ -265,7 +265,7 @@ public abstract class AbstractBugReporter implements BugReporter {
             // we ignore all "package-info" issues
             return false;
         }
-        if (message.equals("java.lang.Synthetic")) {
+        if ("java.lang.Synthetic".equals(message)) {
             return false;
         }
         return true;

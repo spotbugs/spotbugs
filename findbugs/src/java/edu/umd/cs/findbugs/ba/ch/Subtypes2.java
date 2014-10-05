@@ -199,7 +199,7 @@ public class Subtypes2 {
         if (subtype.getClassName().equals(dottedSupertype) || subtype.getSuperclassName().equals(dottedSupertype)) {
             return true;
         }
-        if (subtype.getSuperclassName().equals("java.lang.Object") && subtype.getInterfaceIndices().length == 0) {
+        if ("java.lang.Object".equals(subtype.getSuperclassName()) && subtype.getInterfaceIndices().length == 0) {
             return false;
         }
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
@@ -441,11 +441,11 @@ public class Subtypes2 {
             return true;
         }
         String superName = superDesc.getClassName();
-        if (superName.equals("java/lang/Object")) {
+        if ("java/lang/Object".equals(superName)) {
             return true;
         }
         String subName = subDesc.getClassName();
-        if (subName.equals("java/lang/Object")) {
+        if ("java/lang/Object".equals(subName)) {
             return false;
         }
 
@@ -462,7 +462,7 @@ public class Subtypes2 {
                 if (xSuper == null) {
                     return false;
                 }
-                if (xSuper.getClassName().equals("java/lang/Object")) {
+                if ("java/lang/Object".equals(xSuper.getClassName())) {
                     return false;
                 }
             } else {

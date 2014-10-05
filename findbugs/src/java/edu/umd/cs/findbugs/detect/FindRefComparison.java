@@ -404,7 +404,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 consumeStack(obj);
 
                 String className = obj.getClassName(getCPG());
-                if (className.equals("java.lang.String")) {
+                if ("java.lang.String".equals(className)) {
                     pushValue(dynamicStringTypeInstance);
                 } else {
                     pushReturnType(obj);
@@ -455,10 +455,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             String methodName = obj.getName(getCPG());
             // System.out.println(className + "." + methodName);
 
-            if (methodName.equals("intern") && className.equals("java.lang.String")) {
+            if ("intern".equals(methodName) && "java.lang.String".equals(className)) {
                 sawStringIntern = true;
                 pushValue(staticStringTypeInstance);
-            } else if (methodName.equals("toString") || className.equals("java.lang.String")) {
+            } else if ("toString".equals(methodName) || "java.lang.String".equals(className)) {
                 pushValue(dynamicStringTypeInstance);
                 // System.out.println("  dynamic");
             } else {
@@ -489,7 +489,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         }
 
         private boolean isString(Type type) {
-            return type.getSignature().equals(STRING_SIGNATURE);
+            return STRING_SIGNATURE.equals(type.getSignature());
         }
 
         @Override
@@ -516,7 +516,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 }
 
             }
-            if (type.getSignature().equals(STRING_SIGNATURE)) {
+            if (STRING_SIGNATURE.equals(type.getSignature())) {
                 handleLoad(obj);
             } else {
                 super.visitGETSTATIC(obj);
@@ -526,7 +526,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         @Override
         public void visitGETFIELD(GETFIELD obj) {
             Type type = obj.getType(getCPG());
-            if (type.getSignature().equals(STRING_SIGNATURE)) {
+            if (STRING_SIGNATURE.equals(type.getSignature())) {
                 handleLoad(obj);
             } else {
                 XField xf = XFactory.createXField(obj, cpg);
@@ -558,7 +558,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             consumeStack(obj);
 
             Type type = obj.getType(getCPG());
-            if (!type.getSignature().equals(STRING_SIGNATURE)) {
+            if (!STRING_SIGNATURE.equals(type.getSignature())) {
                 throw new IllegalArgumentException("type is not String: " + type);
             }
             try {
@@ -850,10 +850,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             @DottedClassName String className = inv.getClassName(cpg);
             String methodName = inv.getMethodName(cpg);
             String methodSig = inv.getSignature(cpg);
-            if ( methodName.equals("assertSame") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)V")) {
+            if ( "assertSame".equals(methodName) && "(Ljava/lang/Object;Ljava/lang/Object;)V".equals(methodSig)) {
                 checkRefComparison(location, jclass, method, methodGen, visitor, typeDataflow, stringComparisonList,
                         refComparisonList);
-            } else if ( methodName.equals("assertFalse") && methodSig.equals("(Z)V")) {
+            } else if ( "assertFalse".equals(methodName) && "(Z)V".equals(methodSig)) {
                 SourceLineAnnotation lastLocation = bugAccumulator.getLastBugLocation();
                 InstructionHandle prevHandle = location.getHandle().getPrev();
                 if (lastLocation != null && prevHandle != null && lastLocation.getEndBytecode() == prevHandle.getPosition()){
@@ -864,13 +864,13 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 }
 
             } else {
-                boolean equalsMethod = !isStatic && methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z")
-                        || isStatic &&  methodName.equals("assertEquals")
-                        && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)V")
-                        || isStatic && methodName.equals("equal") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)Z")
-                        && className.equals("com.google.common.base.Objects")
-                        || isStatic && methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;Ljava/lang/Object;)Z")
-                        && className.equals("java.util.Objects");
+                boolean equalsMethod = !isStatic && "equals".equals(methodName) && "(Ljava/lang/Object;)Z".equals(methodSig)
+                        || isStatic &&  "assertEquals".equals(methodName)
+                        && "(Ljava/lang/Object;Ljava/lang/Object;)V".equals(methodSig)
+                        || isStatic && "equal".equals(methodName) && "(Ljava/lang/Object;Ljava/lang/Object;)Z".equals(methodSig)
+                        && "com.google.common.base.Objects".equals(className)
+                        || isStatic && "equals".equals(methodName) && "(Ljava/lang/Object;Ljava/lang/Object;)Z".equals(methodSig)
+                        && "java.util.Objects".equals(className);
 
                 if (equalsMethod) {
                     checkEqualsComparison(location, jclass, method, methodGen, cpg, typeDataflow);
@@ -970,7 +970,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             String lhs = SignatureConverter.convert(lhsType.getSignature());
             String rhs = SignatureConverter.convert(rhsType.getSignature());
 
-            if (lhs.equals("java.lang.String") || rhs.equals("java.lang.String")) {
+            if ("java.lang.String".equals(lhs) || "java.lang.String".equals(rhs)) {
                 handleStringComparison(jclass, method, methodGen, visitor, stringComparisonList, location, lhsType, rhsType);
             } else if (suspiciousSet.contains(lhs)) {
                 handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, lhs,
@@ -1049,7 +1049,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         String sourceFile = jclass.getSourceFileName();
         String bugPattern = "RC_REF_COMPARISON";
         int priority = Priorities.HIGH_PRIORITY;
-        if (lhs.equals("java.lang.Boolean")) {
+        if ("java.lang.Boolean".equals(lhs)) {
             bugPattern = "RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN";
             priority = Priorities.NORMAL_PRIORITY;
         } else if (xf != null && xf.isStatic() && xf.isFinal()) {
@@ -1088,7 +1088,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         InstructionHandle next = handle.getNext();
         if (next != null && next.getInstruction() instanceof INVOKESTATIC) {
             INVOKESTATIC is = (INVOKESTATIC) next.getInstruction();
-            if (is.getMethodName(cpg).equals("assertFalse")) {
+            if ("assertFalse".equals(is.getMethodName(cpg))) {
                 return;
             }
         }
@@ -1136,7 +1136,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                         }
                         BugInstance bug = new BugInstance(this, type, priority + priorityModifier).addClassAndMethod(methodGen, sourceFile)
                                 .addOptionalAnnotation(calledMethodAnnotation);
-                        if (type.equals("DMI_DOH")) {
+                        if ("DMI_DOH".equals(type)) {
                             bug.addString("Use \"== null\" to check for a value being null");
                         }
                         bugAccumulator.accumulateBug(
@@ -1167,7 +1167,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             IncompatibleTypes result2 = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_, true);
             if (result2.getPriority() <= Priorities.NORMAL_PRIORITY) {
                 pattern = "EC_INCOMPATIBLE_ARRAY_COMPARE";
-            } else if (calledMethodAnnotation != null && calledMethodAnnotation.getClassName().equals("org.testng.Assert")) {
+            } else if (calledMethodAnnotation != null && "org.testng.Assert".equals(calledMethodAnnotation.getClassName())) {
                 return;
             }
             bugAccumulator.accumulateBug(new BugInstance(this, pattern, NORMAL_PRIORITY).addClassAndMethod(methodGen, sourceFile)
@@ -1257,8 +1257,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
     public @CheckForNull MethodAnnotation getMethodCalledAnnotation(ConstantPoolGen cpg, InvokeInstruction inv) {
         MethodDescriptor invokedMethod = getInvokedMethod(cpg, inv);
-        boolean standardEquals = invokedMethod.getName().equals("equals")
-                && invokedMethod.getSignature().equals("(Ljava/lang/Object;)Z") && !invokedMethod.isStatic();
+        boolean standardEquals = "equals".equals(invokedMethod.getName())
+                && "(Ljava/lang/Object;)Z".equals(invokedMethod.getSignature()) && !invokedMethod.isStatic();
         return standardEquals ? null : MethodAnnotation.fromMethodDescriptor(invokedMethod);
     }
 

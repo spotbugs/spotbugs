@@ -121,10 +121,10 @@ public class Obfuscate {
         String methodName = m.getMethodName();
         String methodSignature = m.getMethodSignature();
 
-        if (methodName.equals("hashCode") && methodSignature.equals("()I") || methodName.equals("equals")
-                && methodSignature.equals("(Ljava/lang/Object;)Z") || methodName.equals("compareTo")
-                && methodSignature.equals("(Ljava/lang/Object;)I") || methodName.equals("<init>")
-                || methodName.equals("<clinit>")) {
+        if ("hashCode".equals(methodName) && "()I".equals(methodSignature) || "equals".equals(methodName)
+                && "(Ljava/lang/Object;)Z".equals(methodSignature) || "compareTo".equals(methodName)
+                && "(Ljava/lang/Object;)I".equals(methodSignature) || "<init>".equals(methodName)
+                || "<clinit>".equals(methodName)) {
             // don't need to obfuscate method name
         } else {
             methodName = hashData(methodName);

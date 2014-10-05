@@ -65,7 +65,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
         }
 
         String superclassName2 = getSuperclassName();
-        boolean weird = superclassName2.equals("java.lang.Object") && obj.getInterfaceIndices().length == 0;
+        boolean weird = "java.lang.Object".equals(superclassName2) && obj.getInterfaceIndices().length == 0;
         boolean hasAnonymousName = ClassName.isAnonymous(obj.getClassName());
         boolean isAnonymousInnerClass = hasAnonymousName && !weird;
         if (isAnonymousInnerClass) {
@@ -157,13 +157,13 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 
         String methodName = obj.getName();
         String sig = obj.getSignature();
-        if (methodName.equals("<init>")) {
+        if ("<init>".equals(methodName)) {
             return true;
         }
-        if (methodName.equals("<clinit>")) {
+        if ("<clinit>".equals(methodName)) {
             return true;
         }
-        if (sig.equals("()Ljava/lang/Object;") && (methodName.equals("readResolve") || methodName.equals("writeReplace"))) {
+        if ("()Ljava/lang/Object;".equals(sig) && ("readResolve".equals(methodName) || "writeReplace".equals(methodName))) {
             return true;
         }
         if (methodName.startsWith("access$")) {
@@ -191,7 +191,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                 String role = ClassAnnotation.SUPERCLASS_ROLE;
 
                 @DottedClassName String superclassName =  ClassName.toDottedClassName(getSuperclassName());
-                if (superclassName.equals("java.lang.Object")) {
+                if ("java.lang.Object".equals(superclassName)) {
 
                     try {
                         JavaClass interfaces[] = getThisClass().getInterfaces();
@@ -261,7 +261,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                 int priority = NORMAL_PRIORITY;
                 JavaClass superClass = clazz.getSuperClass();
                 String superClassName = superClass.getClassName();
-                if (superClassName.equals("java.lang.Object")) {
+                if ("java.lang.Object".equals(superClassName)) {
                     priority = NORMAL_PRIORITY;
 
                 } else if (definedInClass(superClass).containsAll(definedInClass(clazz))) {

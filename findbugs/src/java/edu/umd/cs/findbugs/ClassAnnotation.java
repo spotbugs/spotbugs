@@ -93,13 +93,13 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 
     @Override
     protected String formatPackageMember(String key, ClassAnnotation primaryClass) {
-        if (key.equals("") || key.equals("hash")) {
+        if ("".equals(key) || "hash".equals(key)) {
             return className;
-        } else if (key.equals("givenClass")) {
+        } else if ("givenClass".equals(key)) {
             return shorten(primaryClass.getPackageName(), className);
-        } else if (key.equals("excludingPackage")) {
+        } else if ("excludingPackage".equals(key)) {
             return shorten(getPackageName(), className);
-        } else if (key.equals("simpleClass") || key.equals("simpleName")) {
+        } else if ("simpleClass".equals(key) || "simpleName".equals(key)) {
             return ClassName.extractSimpleName(className);
         } else {
             throw new IllegalArgumentException("unknown key " + key);
@@ -197,7 +197,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
         }
 
         String role = getDescription();
-        if (!role.equals(DEFAULT_ROLE)) {
+        if (!DEFAULT_ROLE.equals(role)) {
             attributeList.addAttribute("role", role);
         }
 

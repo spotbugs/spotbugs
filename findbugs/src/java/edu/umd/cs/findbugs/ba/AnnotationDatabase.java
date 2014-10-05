@@ -172,7 +172,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
                     isSyntheticMethod = m.isSynthetic();
                     className = m.getClassName();
                     kind = Target.PARAMETER;
-                    if (m.getName().equals("<init>")) {
+                    if ("<init>".equals(m.getName())) {
                         int i = className.lastIndexOf('$');
                         if (i + 1 < className.length() && Character.isDigit(className.charAt(i + 1))) {
                             isParameterToInitMethodofAnonymousInnerClass = true;
@@ -182,7 +182,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
                     throw new IllegalStateException("impossible");
                 }
 
-                if (!m.isStatic() && !m.getName().equals("<init>")) {
+                if (!m.isStatic() && !"<init>".equals(m.getName())) {
                     JavaClass c = Repository.lookupClass(className);
                     // get inherited annotation
                     TreeSet<AnnotationEnum> inheritedAnnotations = new TreeSet<AnnotationEnum>();

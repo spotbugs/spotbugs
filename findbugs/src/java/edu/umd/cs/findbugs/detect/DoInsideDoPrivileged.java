@@ -50,7 +50,7 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
 
     @Override
     public void visit(Code obj) {
-        if (isDoPrivileged && getMethodName().equals("run")) {
+        if (isDoPrivileged && "run".equals(getMethodName())) {
             return;
         }
         if (getMethod().isPrivate()) {
@@ -65,10 +65,10 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("setAccessible")) {
+        if (seen == INVOKEVIRTUAL && "setAccessible".equals(getNameConstantOperand())) {
             @DottedClassName
             String className = getDottedClassConstantOperand();
-            if (className.equals("java.lang.reflect.Field") || className.equals("java.lang.reflect.Method")) {
+            if ("java.lang.reflect.Field".equals(className) || "java.lang.reflect.Method".equals(className)) {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "DP_DO_INSIDE_DO_PRIVILEGED", LOW_PRIORITY).addClassAndMethod(this)
                         .addCalledMethod(this), this);
@@ -79,7 +79,7 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
             @DottedClassName
             String classOfConstructedClass = getDottedClassConstantOperand();
             if (Subtypes2.instanceOf(classOfConstructedClass, "java.lang.ClassLoader")
-                    && !(getMethodName().equals("main") && getMethodSig().equals("([Ljava/lang/String;)V") && getMethod()
+                    && !("main".equals(getMethodName()) && "([Ljava/lang/String;)V".equals(getMethodSig()) && getMethod()
                             .isStatic())) {
                 bugAccumulator.accumulateBug(new BugInstance(this, "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED", NORMAL_PRIORITY)
                 .addClassAndMethod(this).addClass(classOfConstructedClass), this);

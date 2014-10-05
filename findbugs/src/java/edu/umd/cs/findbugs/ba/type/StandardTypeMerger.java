@@ -172,10 +172,10 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
             if (isObjectType(aType) && isObjectType(bType)
                     && ((aType == T_EXCEPTION || isThrowable(aRef))  && (bType == T_EXCEPTION ||   isThrowable(bRef)))) {
                 ExceptionSet union = exceptionSetFactory.createExceptionSet();
-                if (aType == T_OBJECT && aRef.getSignature().equals("Ljava/lang/Throwable;")) {
+                if (aType == T_OBJECT && "Ljava/lang/Throwable;".equals(aRef.getSignature())) {
                     return aRef;
                 }
-                if (bType == T_OBJECT && bRef.getSignature().equals("Ljava/lang/Throwable;")) {
+                if (bType == T_OBJECT && "Ljava/lang/Throwable;".equals(bRef.getSignature())) {
                     return bRef;
                 }
 

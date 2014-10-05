@@ -74,13 +74,13 @@ public class MethodGenFactory extends AnalysisFactory<MethodGen> {
             String methodName = method.getName();
             int codeLength = method.getCode().getLength();
             String superclassName = jclass.getSuperclassName();
-            if (codeLength > 6000 && methodName.equals("<clinit>") && superclassName.equals("java.lang.Enum")) {
+            if (codeLength > 6000 && "<clinit>".equals(methodName) && "java.lang.Enum".equals(superclassName)) {
                 analysisContext.getLookupFailureCallback().reportSkippedAnalysis(
                         new JavaClassAndMethod(jclass, method).toMethodDescriptor());
                 return null;
             }
             if (analysisContext.getBoolProperty(AnalysisFeatures.SKIP_HUGE_METHODS)) {
-                if (codeLength > 6000 || (methodName.equals("<clinit>") || methodName.equals("getContents")) && codeLength > 2000) {
+                if (codeLength > 6000 || ("<clinit>".equals(methodName) || "getContents".equals(methodName)) && codeLength > 2000) {
                     analysisContext.getLookupFailureCallback().reportSkippedAnalysis(
                             new JavaClassAndMethod(jclass, method).toMethodDescriptor());
                     return null;

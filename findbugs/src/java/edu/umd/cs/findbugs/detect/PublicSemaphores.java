@@ -87,7 +87,7 @@ public class PublicSemaphores extends BytecodeScanningDetector implements Statel
             break;
 
         case SEEN_ALOAD_0:
-            if ((seen == INVOKEVIRTUAL) && getClassConstantOperand().equals("java/lang/Object")) {
+            if ((seen == INVOKEVIRTUAL) && "java/lang/Object".equals(getClassConstantOperand())) {
                 String methodName = getNameConstantOperand();
                 if ("wait".equals(methodName) || "notify".equals(methodName) || "notifyAll".equals(methodName)) {
                     bugReporter.reportBug(new BugInstance(this, "PS_PUBLIC_SEMAPHORES", NORMAL_PRIORITY).addClassAndMethod(this)

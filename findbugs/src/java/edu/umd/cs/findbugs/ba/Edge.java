@@ -278,33 +278,33 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
     int stringToEdgeType(String s) {
         s = s.toUpperCase(Locale.ENGLISH);
 
-        if (s.equals("FALL_THROUGH")) {
+        if ("FALL_THROUGH".equals(s)) {
             return FALL_THROUGH_EDGE;
-        } else if (s.equals("IFCMP")) {
+        } else if ("IFCMP".equals(s)) {
             return IFCMP_EDGE;
-        } else if (s.equals("SWITCH")) {
+        } else if ("SWITCH".equals(s)) {
             return SWITCH_EDGE;
-        } else if (s.equals("SWITCH_DEFAULT")) {
+        } else if ("SWITCH_DEFAULT".equals(s)) {
             return SWITCH_DEFAULT_EDGE;
-        } else if (s.equals("JSR")) {
+        } else if ("JSR".equals(s)) {
             return JSR_EDGE;
-        } else if (s.equals("RET")) {
+        } else if ("RET".equals(s)) {
             return RET_EDGE;
-        } else if (s.equals("GOTO")) {
+        } else if ("GOTO".equals(s)) {
             return GOTO_EDGE;
-        } else if (s.equals("RETURN")) {
+        } else if ("RETURN".equals(s)) {
             return RETURN_EDGE;
-        } else if (s.equals("UNHANDLED_EXCEPTION")) {
+        } else if ("UNHANDLED_EXCEPTION".equals(s)) {
             return UNHANDLED_EXCEPTION_EDGE;
-        } else if (s.equals("HANDLED_EXCEPTION")) {
+        } else if ("HANDLED_EXCEPTION".equals(s)) {
             return HANDLED_EXCEPTION_EDGE;
-        } else if (s.equals("START")) {
+        } else if ("START".equals(s)) {
             return START_EDGE;
-        } else if (s.equals("BACKEDGE_TARGET_EDGE")) {
+        } else if ("BACKEDGE_TARGET_EDGE".equals(s)) {
             return BACKEDGE_TARGET_EDGE;
-        } else if (s.equals("BACKEDGE_SOURCE_EDGE")) {
+        } else if ("BACKEDGE_SOURCE_EDGE".equals(s)) {
             return BACKEDGE_SOURCE_EDGE;
-        } else if (s.equals("EXIT_EDGE")) {
+        } else if ("EXIT_EDGE".equals(s)) {
             return EXIT_EDGE;
         } else {
             throw new IllegalArgumentException("Unknown edge type: " + s);

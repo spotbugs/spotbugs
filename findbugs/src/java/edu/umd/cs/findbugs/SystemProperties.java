@@ -152,7 +152,7 @@ public class SystemProperties {
     }
 
     private static boolean toBoolean(String name) {
-        return ((name != null) && name.equalsIgnoreCase("true"));
+        return ((name != null) && "true".equalsIgnoreCase(name));
     }
 
     /**

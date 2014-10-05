@@ -60,7 +60,7 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
         try {
             classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
         } catch (edu.umd.cs.findbugs.classfile.MissingClassException e) {
-            if (!descriptor.getSimpleName().equals("package-info")) {
+            if (!"package-info".equals(descriptor.getSimpleName())) {
                 throw e;
             }
 

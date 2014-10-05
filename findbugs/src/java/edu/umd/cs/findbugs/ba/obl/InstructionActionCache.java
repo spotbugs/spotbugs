@@ -124,7 +124,7 @@ public class InstructionActionCache {
                             for (int i = 0; i < parameters; i++) {
                                 String sig = signatureIterator.next();
                                 Collection<ClassDescriptor> annotations = invokedMethod.getParameterAnnotationDescriptors(i);
-                                if (annotations.contains(WILL_CLOSE) || sig.equals("Ljava/io/Closeable;") || methodName.startsWith("close")) {
+                                if (annotations.contains(WILL_CLOSE) || "Ljava/io/Closeable;".equals(sig) || methodName.startsWith("close")) {
                                     // closing this value
                                     if (factAtLocation == null) {
                                         factAtLocation = typeDataflow.getFactAtLocation( new Location(handle, block));
@@ -164,7 +164,7 @@ public class InstructionActionCache {
                             ObligationFactory factory = database.getFactory();
                             Obligation obligation = factory.getObligationByType((ObjectType) tosType);
                             if (obligation != null) {
-                                if (obligation.getClassName().equals("java.sql.ResultSet")) {
+                                if ("java.sql.ResultSet".equals(obligation.getClassName())) {
                                     ObjectType sType = ObjectTypeFactory.getInstance(java.sql.Statement.class);
                                     Obligation sObligation = factory.getObligationByType(sType);
                                     actionList = Arrays.asList(

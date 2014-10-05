@@ -79,14 +79,14 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 
     @Override
     public void visit(Code obj) {
-        if (getMethodName().equals("clone") && getMethodSig().startsWith("()")) {
+        if ("clone".equals(getMethodName()) && getMethodSig().startsWith("()")) {
             super.visit(obj);
         }
     }
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKESPECIAL && getNameConstantOperand().equals("clone") && getSigConstantOperand().startsWith("()")) {
+        if (seen == INVOKESPECIAL && "clone".equals(getNameConstantOperand()) && getSigConstantOperand().startsWith("()")) {
             /*
              * System.out.println("Saw call to " + nameConstant + ":" +
              * sigConstant + " in " + betterMethodName);
@@ -112,7 +112,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
         // Does this class directly implement Cloneable?
         String[] interface_names = obj.getInterfaceNames();
         for (String interface_name : interface_names) {
-            if (interface_name.equals("java.lang.Cloneable")) {
+            if ("java.lang.Cloneable".equals(interface_name)) {
                 implementsCloneableDirectly = true;
                 isCloneable = true;
                 break;
@@ -190,7 +190,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
     public void visit(ConstantNameAndType obj) {
         String methodName = obj.getName(getConstantPool());
         String methodSig = obj.getSignature(getConstantPool());
-        if (!methodName.equals("clone")) {
+        if (!"clone".equals(methodName)) {
             return;
         }
         if (!methodSig.startsWith("()")) {
@@ -207,7 +207,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
         if (!obj.isPublic()) {
             return;
         }
-        if (!getMethodName().equals("clone")) {
+        if (!"clone".equals(getMethodName())) {
             return;
         }
         if (!getMethodSig().startsWith("()")) {

@@ -311,8 +311,8 @@ public class FindUnsatisfiedObligation extends CFGDetector {
         private void reportWarning(Obligation obligation, State state, StateSet factAtExit) {
             String className = obligation.getClassName();
 
-            if (methodDescriptor.isStatic() && methodDescriptor.getName().equals("main")
-                    && methodDescriptor.getSignature().equals("([Ljava/lang/String;)V")
+            if (methodDescriptor.isStatic() && "main".equals(methodDescriptor.getName())
+                    && "([Ljava/lang/String;)V".equals(methodDescriptor.getSignature())
                     && (className.contains("InputStream") || className.contains("Reader") || factAtExit.isOnExceptionPath())) {
                 // Don't report unclosed input streams and readers in main()
                 // methods
@@ -514,7 +514,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                 }
 
                 String methodName = inv.getMethodName(cpg);
-                Type producedType = methodName.equals("<init>") ? inv.getReferenceType(cpg) : inv.getReturnType(cpg);
+                Type producedType = "<init>".equals(methodName) ? inv.getReferenceType(cpg) : inv.getReturnType(cpg);
 
                 if (DEBUG_FP && !(producedType instanceof ObjectType)) {
                     System.out.println("Produced type " + producedType + " not an ObjectType");

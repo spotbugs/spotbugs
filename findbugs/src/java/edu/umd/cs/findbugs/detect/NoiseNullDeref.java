@@ -274,7 +274,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
             cause = MethodAnnotation.fromXMethod(invokedMethod);
             cause.setDescription(MethodAnnotation.METHOD_CALLED);
 
-            if (iins.getMethodName(cpg).equals("close") && iins.getSignature(cpg).equals("()V")) {
+            if ("close".equals(iins.getMethodName(cpg)) && "()V".equals(iins.getSignature(cpg))) {
                 propertySet.addProperty(NullDerefProperty.CLOSING_NULL);
             }
         } else if (ins instanceof FieldInstruction) {

@@ -52,7 +52,7 @@ public class FinalizerNullsFields extends BytecodeScanningDetector {
 
     @Override
     public void visit(Method obj) {
-        if (obj.getName().equals("finalize")) {
+        if ("finalize".equals(obj.getName())) {
             inFinalize = true;
         } else {
             inFinalize = false;

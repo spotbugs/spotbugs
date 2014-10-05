@@ -236,7 +236,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 
         ForwardTypeQualifierDataflow forwardDataflow = forwardDataflowFactory.getDataflow(typeQualifierValue);
 
-        if (DEBUG_DATAFLOW && (DEBUG_DATAFLOW_MODE.startsWith("forward") || DEBUG_DATAFLOW_MODE.equals("both"))) {
+        if (DEBUG_DATAFLOW && (DEBUG_DATAFLOW_MODE.startsWith("forward") || "both".equals(DEBUG_DATAFLOW_MODE))) {
             System.out.println("********* Forwards analysis *********");
             DataflowCFGPrinter<TypeQualifierValueSet, ForwardTypeQualifierDataflowAnalysis> p = new DataflowCFGPrinter<TypeQualifierValueSet, ForwardTypeQualifierDataflowAnalysis>(
                     forwardDataflow);
@@ -245,7 +245,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 
         BackwardTypeQualifierDataflow backwardDataflow = backwardDataflowFactory.getDataflow(typeQualifierValue);
 
-        if (DEBUG_DATAFLOW && (DEBUG_DATAFLOW_MODE.startsWith("backward") || DEBUG_DATAFLOW_MODE.equals("both"))) {
+        if (DEBUG_DATAFLOW && (DEBUG_DATAFLOW_MODE.startsWith("backward") || "both".equals(DEBUG_DATAFLOW_MODE))) {
             System.out.println("********* Backwards analysis *********");
             DataflowCFGPrinter<TypeQualifierValueSet, BackwardTypeQualifierDataflowAnalysis> p = new DataflowCFGPrinter<TypeQualifierValueSet, BackwardTypeQualifierDataflowAnalysis>(
                     backwardDataflow);
@@ -328,7 +328,7 @@ public class CheckTypeQualifiers extends CFGDetector {
             isTest = true;
         }  else if (ins instanceof InvokeInstruction && ins.consumeStack(cpg) == 2) {
             InvokeInstruction invoke = (InvokeInstruction) ins;
-            isTest = invoke.getMethodName(cpg).equals("equals") &&invoke.getSignature(cpg).equals("(Ljava/lang/Object;)Z") ;
+            isTest = "equals".equals(invoke.getMethodName(cpg)) &&"(Ljava/lang/Object;)Z".equals(invoke.getSignature(cpg)) ;
         }
         if (isTest) {
             ValueNumber top = factAtLocation.getStackValue(0);

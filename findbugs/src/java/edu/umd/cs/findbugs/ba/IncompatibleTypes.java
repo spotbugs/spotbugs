@@ -180,7 +180,7 @@ public class IncompatibleTypes {
             return ARRAY_AND_OBJECT;
         }
         String sig = rhsType.getSignature();
-        if (sig.equals("Ljava/io/Serializable;") || sig.equals("Ljava/lang/Cloneable;")) {
+        if ("Ljava/io/Serializable;".equals(sig) || "Ljava/lang/Cloneable;".equals(sig)) {
             return SEEMS_OK;
         }
         return ARRAY_AND_NON_ARRAY;
@@ -279,10 +279,10 @@ public class IncompatibleTypes {
         XMethod rhsEquals = getInvokedMethod(rhs, "equals", "(Ljava/lang/Object;)Z", false);
         String lhsClassName = lhsEquals.getClassName();
         if (lhsEquals.equals(rhsEquals)) {
-            if (lhsClassName.equals("java.lang.Enum")) {
+            if ("java.lang.Enum".equals(lhsClassName)) {
                 return INCOMPATIBLE_CLASSES;
             }
-            if (!pointerEquality && !lhsClassName.equals("java.lang.Object")) {
+            if (!pointerEquality && !"java.lang.Object".equals(lhsClassName)) {
                 return SEEMS_OK;
             }
         }

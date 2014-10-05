@@ -104,20 +104,20 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
         }
 
         if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
-            if (getNameConstantOperand().equals("available") && getSigConstantOperand().equals("()I")
+            if ("available".equals(getNameConstantOperand()) && "()I".equals(getSigConstantOperand())
                     || getNameConstantOperand().startsWith("get") && getNameConstantOperand().endsWith("Length")
-                    && getSigConstantOperand().equals("()I") || getClassConstantOperand().equals("java/io/File")
-                    && getNameConstantOperand().equals("length") && getSigConstantOperand().equals("()J")) {
+                    && "()I".equals(getSigConstantOperand()) || "java/io/File".equals(getClassConstantOperand())
+                    && "length".equals(getNameConstantOperand()) && "()J".equals(getSigConstantOperand())) {
                 sawAvailable = 70;
                 return;
             }
         }
         sawAvailable--;
         if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-                && getNameConstantOperand().equals("read")
+                && "read".equals(getNameConstantOperand())
 
-                && (getSigConstantOperand().equals("([B)I") || getSigConstantOperand().equals("([BII)I")
-                        || getSigConstantOperand().equals("([C)I") || getSigConstantOperand().equals("([CII)I"))
+                && ("([B)I".equals(getSigConstantOperand()) || "([BII)I".equals(getSigConstantOperand())
+                        || "([C)I".equals(getSigConstantOperand()) || "([CII)I".equals(getSigConstantOperand()))
                         && isInputStream()) {
             sawRead = true;
             recentCallToAvailable = sawAvailable > 0;
@@ -125,8 +125,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
             return;
         }
         if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-                && (getNameConstantOperand().equals("skip") && getSigConstantOperand().equals("(J)J") || getNameConstantOperand()
-                        .equals("skipBytes") && getSigConstantOperand().equals("(I)I")) && isInputStream()
+                && ("skip".equals(getNameConstantOperand()) && "(J)J".equals(getSigConstantOperand()) || "skipBytes".equals(getNameConstantOperand()) && "(I)I".equals(getSigConstantOperand())) && isInputStream()
                         && !isImageIOInputStream()) {
             // if not ByteArrayInput Stream
             // and either no recent calls to length

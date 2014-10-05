@@ -131,7 +131,7 @@ public class CheckMessages {
             }
             Element element = (Element) node;
             String text = element.getText();
-            if (text.equals("")) {
+            if ("".equals(text)) {
                 throw new CheckMessagesException("Empty text in element", this, node);
             }
             return text;

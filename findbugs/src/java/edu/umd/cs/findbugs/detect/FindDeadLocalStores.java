@@ -281,7 +281,7 @@ public class FindDeadLocalStores implements Detector {
                 LocalVariableAnnotation lvAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(method, location, ins);
 
                 String sourceFileName = javaClass.getSourceFileName();
-                if (lvAnnotation.getName().equals("?")) {
+                if ("?".equals(lvAnnotation.getName())) {
                     if (sourceFileName.endsWith(".groovy")) {
                         continue;
                     }
@@ -374,7 +374,7 @@ public class FindDeadLocalStores implements Detector {
                         GETSTATIC getStatic = (GETSTATIC) prevIns;
                         ConstantPoolGen cpg = methodGen.getConstantPool();
                         foundDeadClassInitialization = getStatic.getFieldName(cpg).startsWith("class$")
-                                && getStatic.getSignature(cpg).equals("Ljava/lang/Class;");
+                                && "Ljava/lang/Class;".equals(getStatic.getSignature(cpg));
                         for (Iterator<Location> j = cfg.locationIterator(); j.hasNext();) {
                             Location location2 = j.next();
                             if (location2.getHandle().getPosition() + 15 == location.getHandle().getPosition()) {
@@ -394,7 +394,7 @@ public class FindDeadLocalStores implements Detector {
                     } else if (prevIns instanceof LDC) {
                         LDC ldc = (LDC) prevIns;
                         Type t = ldc.getType(methodGen.getConstantPool());
-                        if (t.getSignature().equals("Ljava/lang/Class;")) {
+                        if ("Ljava/lang/Class;".equals(t.getSignature())) {
                             Object value = ldc.getValue(methodGen.getConstantPool());
                             if (value instanceof ConstantClass) {
                                 ConstantClass v = (ConstantClass) value;
@@ -425,7 +425,7 @@ public class FindDeadLocalStores implements Detector {
                         }
                     }
                     if (foundDeadClassInitialization) {
-                        if (classContext.getJavaClass().getSuperclassName().equals("org.apache.axis.client.Stub")) {
+                        if ("org.apache.axis.client.Stub".equals(classContext.getJavaClass().getSuperclassName())) {
                             continue;
                         }
                         BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_STORE_OF_CLASS_LITERAL",
@@ -487,8 +487,8 @@ public class FindDeadLocalStores implements Detector {
                 if (ins instanceof IINC) {
                     // special handling of IINC
 
-                    if (method.getName().equals("main") && method.isStatic()
-                            && method.getSignature().equals("([Ljava/lang/String;)V")) {
+                    if ("main".equals(method.getName()) && method.isStatic()
+                            && "([Ljava/lang/String;)V".equals(method.getSignature())) {
                         propertySet.addProperty(DeadLocalStoreProperty.DEAD_INCREMENT_IN_MAIN);
                     }
 
@@ -508,8 +508,7 @@ public class FindDeadLocalStores implements Detector {
                     // Look for objects created but never used
 
                     Instruction prevIns = prev.getInstruction();
-                    if ((prevIns instanceof INVOKESPECIAL && ((INVOKESPECIAL) prevIns).getMethodName(methodGen.getConstantPool())
-                            .equals("<init>"))
+                    if ((prevIns instanceof INVOKESPECIAL && "<init>".equals(((INVOKESPECIAL) prevIns).getMethodName(methodGen.getConstantPool())))
                             || prevIns instanceof ANEWARRAY
                             || prevIns instanceof NEWARRAY
                             || prevIns instanceof MULTIANEWARRAY) {

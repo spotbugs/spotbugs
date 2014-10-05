@@ -52,7 +52,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnalysis<TypeQualifierValueSet> {
 
     static String primitiveType (String simpleClass) {
-        if (simpleClass.equals("Integer")) {
+        if ("Integer".equals(simpleClass)) {
             return "int";
         }
         return  simpleClass.toLowerCase();
@@ -66,7 +66,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
         String methodName = m.getName();
 
         if (m.isStatic()) {
-            if (!methodName.equals("valueOf")) {
+            if (!"valueOf".equals(methodName)) {
                 return false;
             }
             String signature = m.getSignature();

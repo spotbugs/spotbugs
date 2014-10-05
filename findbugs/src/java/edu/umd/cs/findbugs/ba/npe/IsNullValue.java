@@ -269,7 +269,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
         }
 
         int flag = RETURN_VAL;
-        if (methodInvoked.getName().equals("readLine") && methodInvoked.getSignature().equals("()Ljava/lang/String;")) {
+        if ("readLine".equals(methodInvoked.getName()) && "()Ljava/lang/String;".equals(methodInvoked.getSignature())) {
             flag = READLINE_VAL;
         }
         if (getBaseKind() == NO_KABOOM_NN) {

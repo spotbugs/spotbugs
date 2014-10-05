@@ -102,11 +102,11 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
             if (v instanceof EnumElementValue) {
                 EnumElementValue when = (EnumElementValue) v;
                 String w = simpleClassName(when.getEnumValueString());
-                if (w.equals("NEVER") || w.equals("UNKNOWN")) {
+                if ("NEVER".equals(w) || "UNKNOWN".equals(w)) {
                     n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE;
-                } else if (w.equals("MAYBE")) {
+                } else if ("MAYBE".equals(w)) {
                     n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE;
-                } else if (w.equals("ALWAYS")) {
+                } else if ("ALWAYS".equals(w)) {
                     n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH;
                 } else {
                     return;
@@ -117,7 +117,7 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 
         } else if (annotationClassName.equals(edu.umd.cs.findbugs.annotations.CheckReturnValue.class.getName())) {
             n = CheckReturnValueAnnotation.parse(getAnnotationParameterAsString(map, "priority"));
-        } else if (annotationClassSimpleName.equals("CheckReturnValue")) {
+        } else if ("CheckReturnValue".equals(annotationClassSimpleName)) {
             n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
         } else {
             return;
@@ -136,7 +136,7 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
     }
 
     private void handleClassElementValue(ClassElementValue value, Map<String, ElementValue> map, Target annotationTarget) {
-        if (simpleClassName(value.getClassString()).equals("CheckReturnValue")) {
+        if ("CheckReturnValue".equals(simpleClassName(value.getClassString()))) {
             CheckReturnValueAnnotation n = CheckReturnValueAnnotation.parse(getAnnotationParameterAsString(map, "priority"));
             if (n != null) {
                 AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase()

@@ -407,7 +407,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         }
         for (BugPattern b : DetectorFactoryCollection.instance().getBugPatterns()) {
             String category = b.getCategory();
-            if (!b.isDeprecated() && !category.equals("EXPERIMENTAL") && !claimedReported.contains(b)) {
+            if (!b.isDeprecated() && !"EXPERIMENTAL".equals(category) && !claimedReported.contains(b)) {
                 AnalysisContext.logError("No detector claims " + b.getType());
             }
         }

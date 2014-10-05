@@ -147,7 +147,7 @@ public class PropertyBundle {
     }
 
     private boolean toBoolean(String name) {
-        return ((name != null) && name.equalsIgnoreCase("true"));
+        return ((name != null) && "true".equalsIgnoreCase(name));
     }
 
     /**

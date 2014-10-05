@@ -94,11 +94,11 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
 
             InvokeInstruction invoke = (InvokeInstruction) ins;
             String mName = invoke.getMethodName(cpg);
-            if (!mName.equals("writeObject")) {
+            if (!"writeObject".equals(mName)) {
                 continue;
             }
             String cName = invoke.getClassName(cpg);
-            if (!cName.equals("java.io.ObjectOutput") && !cName.equals("java.io.ObjectOutputStream")) {
+            if (!"java.io.ObjectOutput".equals(cName) && !"java.io.ObjectOutputStream".equals(cName)) {
                 continue;
             }
 

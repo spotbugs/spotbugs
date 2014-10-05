@@ -78,7 +78,7 @@ public class URLProblems extends OpcodeStackDetector {
         }
         OpcodeStack.Item targetItem = stack.getStackItem(target);
         OpcodeStack.Item urlItem = stack.getStackItem(url);
-        if (!urlItem.getSignature().equals("Ljava/net/URL;")) {
+        if (!"Ljava/net/URL;".equals(urlItem.getSignature())) {
             return;
         }
         if (!targetItem.getSignature().equals(className)) {
@@ -99,9 +99,9 @@ public class URLProblems extends OpcodeStackDetector {
 
         }
 
-        if (seen == INVOKEVIRTUAL && getClassConstantOperand().equals("java/net/URL")) {
-            if (getNameConstantOperand().equals("equals") && getSigConstantOperand().equals("(Ljava/lang/Object;)Z")
-                    || getNameConstantOperand().equals("hashCode") && getSigConstantOperand().equals("()I")) {
+        if (seen == INVOKEVIRTUAL && "java/net/URL".equals(getClassConstantOperand())) {
+            if ("equals".equals(getNameConstantOperand()) && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())
+                    || "hashCode".equals(getNameConstantOperand()) && "()I".equals(getSigConstantOperand())) {
                 accumulator.accumulateBug(
                         new BugInstance(this, "DMI_BLOCKING_METHODS_ON_URL", HIGH_PRIORITY).addClassAndMethod(this)
                         .addCalledMethod(this), this);

@@ -226,7 +226,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
             } else if (lhsClass == LocalVariableAnnotation.class) {
                 String lhsName = ((LocalVariableAnnotation) lhsAnnotation).getName();
                 String rhsName = ((LocalVariableAnnotation) rhsAnnotation).getName();
-                if (lhsName.equals("?") || rhsName.equals("?")) {
+                if ("?".equals(lhsName) || "?".equals(rhsName)) {
                     continue;
                 }
                 cmp = lhsName.compareTo(rhsName);

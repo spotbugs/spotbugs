@@ -80,13 +80,13 @@ public class PrintClass {
          */
         for (int i = 0; i < argv.length; i++) {
             if (argv[i].charAt(0) == '-') { // command line switch
-                if (argv[i].equals("-constants")) {
+                if ("-constants".equals(argv[i])) {
                     constants = true;
-                } else if (argv[i].equals("-code")) {
+                } else if ("-code".equals(argv[i])) {
                     code = true;
-                } else if (argv[i].equals("-super")) {
+                } else if ("-super".equals(argv[i])) {
                     superClasses = true;
-                } else if (argv[i].equals("-zip")) {
+                } else if ("-zip".equals(argv[i])) {
                     zip_file = argv[++i];
                 }
             } else if (argv[i].endsWith(".zip") || argv[i].endsWith(".jar")) {

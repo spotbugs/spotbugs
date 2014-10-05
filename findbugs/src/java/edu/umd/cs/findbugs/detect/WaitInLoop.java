@@ -70,20 +70,20 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
     @Override
     public void sawOpcode(int seen) {
 
-        if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) && getNameConstantOperand().equals("notify")
-                && getSigConstantOperand().equals("()V")) {
+        if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) && "notify".equals(getNameConstantOperand())
+                && "()V".equals(getSigConstantOperand())) {
             sawNotify = true;
             notifyPC = getPC();
         }
         if (!(sawWait || sawAwait) && (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
                 && (isMonitorWait() || isConditionAwait())) {
 
-            if (getNameConstantOperand().equals("wait")) {
+            if ("wait".equals(getNameConstantOperand())) {
                 sawWait = true;
             } else {
                 sawAwait = true;
             }
-            waitHasTimeout = !getSigConstantOperand().equals("()V");
+            waitHasTimeout = !"()V".equals(getSigConstantOperand());
             waitAt = getPC();
             earliestJump = getPC() + 1;
             return;
@@ -98,7 +98,7 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
         String name = getNameConstantOperand();
         String sig = getSigConstantOperand();
 
-        if (!className.equals("java/util/concurrent/locks/Condition")) {
+        if (!"java/util/concurrent/locks/Condition".equals(className)) {
             return false;
         }
 
@@ -106,16 +106,16 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
             return false;
         }
 
-        if (name.equals("await") && (sig.equals("()V") || sig.equals("(JLjava/util/concurrent/TimeUnit;)V"))) {
+        if ("await".equals(name) && ("()V".equals(sig) || "(JLjava/util/concurrent/TimeUnit;)V".equals(sig))) {
             return true;
         }
-        if (name.equals("awaitNanos") && sig.equals("(J)V")) {
+        if ("awaitNanos".equals(name) && "(J)V".equals(sig)) {
             return true;
         }
-        if (name.equals("awaitUninterruptibly") && sig.equals("()V")) {
+        if ("awaitUninterruptibly".equals(name) && "()V".equals(sig)) {
             return true;
         }
-        if (name.equals("awaitUntil") && sig.equals("(Ljava/util/Date;)V")) {
+        if ("awaitUntil".equals(name) && "(Ljava/util/Date;)V".equals(sig)) {
             return true;
         }
 
@@ -126,7 +126,7 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
         String name = getNameConstantOperand();
         String sig = getSigConstantOperand();
 
-        return name.equals("wait") && (sig.equals("()V") || sig.equals("(J)V") || sig.equals("(JI)V"));
+        return "wait".equals(name) && ("()V".equals(sig) || "(J)V".equals(sig) || "(JI)V".equals(sig));
     }
 
 }

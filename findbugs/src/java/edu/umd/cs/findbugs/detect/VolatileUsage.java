@@ -93,7 +93,7 @@ public class VolatileUsage extends BytecodeScanningDetector {
         case ADD:
             if (seen == PUTFIELD && incrementField.equals(getXFieldOperand())) {
                 bugReporter.reportBug(new BugInstance(this, "VO_VOLATILE_INCREMENT",
-                        incrementField.getSignature().equals("J") ? Priorities.HIGH_PRIORITY : Priorities.NORMAL_PRIORITY)
+                        "J".equals(incrementField.getSignature()) ? Priorities.HIGH_PRIORITY : Priorities.NORMAL_PRIORITY)
                 .addClassAndMethod(this).addField(incrementField).addSourceLine(this));
             }
             resetIncrementState();
@@ -105,7 +105,7 @@ public class VolatileUsage extends BytecodeScanningDetector {
             if (!isVolatileArray(f)) {
                 return;
             }
-            if (getMethodName().equals("<clinit>")) {
+            if ("<clinit>".equals(getMethodName())) {
                 initializationWrites.add(f);
             } else {
                 otherWrites.add(f);
@@ -118,7 +118,7 @@ public class VolatileUsage extends BytecodeScanningDetector {
                 return;
             }
 
-            if (getMethodName().equals("<init>")) {
+            if ("<init>".equals(getMethodName())) {
                 initializationWrites.add(f);
             } else {
                 otherWrites.add(f);

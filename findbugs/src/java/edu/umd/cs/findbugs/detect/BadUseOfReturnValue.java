@@ -48,9 +48,9 @@ public class BadUseOfReturnValue extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("indexOf")
-                && getClassConstantOperand().equals("java/lang/String")
-                && getSigConstantOperand().equals("(Ljava/lang/String;)I")) {
+        if (seen == INVOKEVIRTUAL && "indexOf".equals(getNameConstantOperand())
+                && "java/lang/String".equals(getClassConstantOperand())
+                && "(Ljava/lang/String;)I".equals(getSigConstantOperand())) {
             stringIndexOfOnTOS = true;
         } else if (stringIndexOfOnTOS) {
             if (seen == IFLE || seen == IFGT) {
@@ -60,9 +60,9 @@ public class BadUseOfReturnValue extends BytecodeScanningDetector {
             stringIndexOfOnTOS = false;
         }
 
-        if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("readLine")
-                && getSigConstantOperand().equals("()Ljava/lang/String;") && getClassConstantOperand().startsWith("java/io")
-                && !getClassConstantOperand().equals("java/io/LineNumberReader")) {
+        if (seen == INVOKEVIRTUAL && "readLine".equals(getNameConstantOperand())
+                && "()Ljava/lang/String;".equals(getSigConstantOperand()) && getClassConstantOperand().startsWith("java/io")
+                && !"java/io/LineNumberReader".equals(getClassConstantOperand())) {
             readLineOnTOS = true;
         } else if (readLineOnTOS) {
             if (seen == IFNULL || seen == IFNONNULL) {

@@ -54,7 +54,7 @@ public class StartInConstructor extends BytecodeScanningDetector implements Stat
 
     @Override
     public void visit(Code obj) {
-        if (getMethodName().equals("<init>") && (getMethod().isPublic() || getMethod().isProtected())) {
+        if ("<init>".equals(getMethodName()) && (getMethod().isPublic() || getMethod().isProtected())) {
             super.visit(obj);
             bugAccumulator.reportAccumulatedBugs();
         }
@@ -62,7 +62,7 @@ public class StartInConstructor extends BytecodeScanningDetector implements Stat
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("start") && getSigConstantOperand().equals("()V")) {
+        if (seen == INVOKEVIRTUAL && "start".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
             try {
                 if (Hierarchy.isSubtype(getDottedClassConstantOperand(), "java.lang.Thread")) {
                     int priority = Priorities.NORMAL_PRIORITY;

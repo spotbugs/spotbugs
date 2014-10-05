@@ -40,23 +40,23 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
 
-        if ((seen == INVOKESPECIAL) && getNameConstantOperand().equals("<init>") && getSigConstantOperand().equals("()V")) {
+        if ((seen == INVOKESPECIAL) && "<init>".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
             XClass xClass = getXClassOperand();
             if (xClass == null) {
                 return;
             }
             String clsName = getClassConstantOperand();
-            if (clsName.equals("java/lang/Object")) {
+            if ("java/lang/Object".equals(clsName)) {
                 return;
             }
 
             // ignore superclass synthesized ctor calls
-            if (getMethodName().equals("<init>") && (getPC() == 1)) {
+            if ("<init>".equals(getMethodName()) && (getPC() == 1)) {
                 return;
             }
 
             // ignore the typesafe enumerated constant pattern
-            if (getMethodName().equals("<clinit>") && (getClassName().equals(clsName))) {
+            if ("<clinit>".equals(getMethodName()) && (getClassName().equals(clsName))) {
                 return;
             }
 
@@ -78,7 +78,7 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
             return false;
         }
         String superClassName = superclassDescriptor.getClassName();
-        if (!superClassName.equals("java/lang/Object")) {
+        if (!"java/lang/Object".equals(superClassName)) {
             return false;
         }
         int staticCount = 0;
@@ -88,7 +88,7 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
             // !m.isSynthetic(): bug #1282: No warning should be generated if only static methods are synthetic
             if (m.isStatic() && !m.isSynthetic()) {
                 staticCount++;
-            } else if (!m.getName().equals("<init>") || !m.getSignature().equals("()V")) {
+            } else if (!"<init>".equals(m.getName()) || !"()V".equals(m.getSignature())) {
                 return false;
             }
         }

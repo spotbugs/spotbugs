@@ -129,7 +129,7 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
             } else if (ins instanceof INVOKEVIRTUAL) {
                 INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
                 String methodName = inv.getMethodName(cpg);
-                if (methodName.equals("wait") || methodName.startsWith("notify")) {
+                if ("wait".equals(methodName) || methodName.startsWith("notify")) {
                     sawWaitOrNotify = true;
                 }
             }

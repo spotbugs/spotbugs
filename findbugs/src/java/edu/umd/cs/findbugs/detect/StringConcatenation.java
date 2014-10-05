@@ -257,9 +257,9 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
             break;
         }
 
-        if (seen == INVOKESTATIC && getNameConstantOperand().equals("valueOf")
-                && getClassConstantOperand().equals("java/lang/String")
-                && getSigConstantOperand().equals("(Ljava/lang/Object;)Ljava/lang/String;")) {
+        if (seen == INVOKESTATIC && "valueOf".equals(getNameConstantOperand())
+                && "java/lang/String".equals(getClassConstantOperand())
+                && "(Ljava/lang/Object;)Ljava/lang/String;".equals(getSigConstantOperand())) {
             // leave registerOnStack unchanged
         } else {
             registerOnStack = -1;

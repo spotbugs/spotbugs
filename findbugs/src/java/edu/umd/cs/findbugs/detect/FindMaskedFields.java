@@ -98,7 +98,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
         XClass c = getXClass();
         while (true) {
             ClassDescriptor s = c.getSuperclassDescriptor();
-            if (s == null || s.getClassName().equals("java/lang/Object")) {
+            if (s == null || "java/lang/Object".equals(s.getClassName())) {
                 break;
             }
             try {
@@ -113,13 +113,13 @@ public class FindMaskedFields extends BytecodeScanningDetector {
                     if (fieldName.length() == 1) {
                         continue;
                     }
-                    if (fieldName.equals("serialVersionUID")) {
+                    if ("serialVersionUID".equals(fieldName)) {
                         continue;
                     }
                     String superClassName = s.getClassName();
                     if (superClassName.startsWith("java/io")
-                            && (superClassName.endsWith("InputStream") && fieldName.equals("in") || superClassName
-                                    .endsWith("OutputStream") && fieldName.equals("out"))) {
+                            && (superClassName.endsWith("InputStream") && "in".equals(fieldName) || superClassName
+                                    .endsWith("OutputStream") && "out".equals(fieldName))) {
                         continue;
                     }
                     if (classFields.containsKey(fieldName)) {
@@ -188,7 +188,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
                     continue;
                 }
                 String varName = var.getName();
-                if (varName.equals("serialVersionUID")) {
+                if ("serialVersionUID".equals(varName)) {
                     continue;
                 }
                 Field f = classFields.get(varName);

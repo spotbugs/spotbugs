@@ -453,7 +453,7 @@ public class Hierarchy2 {
         // Is this a virtual call site?
         boolean virtualCall = (upperBound == null || !upperBound.isFinal()) && !receiverTypeIsExact && !invokeSpecial;
 
-        if (virtualCall && !receiverDesc.getClassName().equals("java/lang/Object")) {
+        if (virtualCall && !"java/lang/Object".equals(receiverDesc.getClassName())) {
 
             // This is a true virtual call: assume that any concrete
             // subtype method may be called.

@@ -396,9 +396,9 @@ public class FindInconsistentSync2 implements Detector {
 
             String name = method.getName();
 
-            boolean inConstructor = name.equals("<init>") || name.equals("<clinit>")
-                    || name.equals("readObject") || name.equals("clone") || name.equals("close")
-                    || name.equals("finalize");
+            boolean inConstructor = "<init>".equals(name) || "<clinit>".equals(name)
+                    || "readObject".equals(name) || "clone".equals(name) || "close".equals(name)
+                    || "finalize".equals(name);
 
             if (inConstructor) {
                 continue;
@@ -448,7 +448,7 @@ public class FindInconsistentSync2 implements Detector {
             ElementValue guardedByValue = jcipAnotationDatabase.getFieldAnnotation(xfield, "GuardedBy");
             boolean guardedByThis;
             if(guardedByValue != null){
-                guardedByThis = guardedByValue.stringifyValue().equals("this");
+                guardedByThis = "this".equals(guardedByValue.stringifyValue());
             } else {
                 guardedByThis = false;
             }
@@ -614,11 +614,11 @@ public class FindInconsistentSync2 implements Detector {
      */
 
     private static boolean isConstructor(String methodName) {
-        return methodName.equals("<init>") || methodName.equals("<clinit>") || methodName.equals("readObject")
-                || methodName.equals("clone") || methodName.equals("close") || methodName.equals("writeObject")
-                || methodName.equals("toString") || methodName.equals("init") || methodName.equals("initialize")
-                || methodName.equals("dispose") || methodName.equals("finalize") || methodName.equals("this")
-                || methodName.equals("_jspInit") || methodName.equals("_jspDestroy");
+        return "<init>".equals(methodName) || "<clinit>".equals(methodName) || "readObject".equals(methodName)
+                || "clone".equals(methodName) || "close".equals(methodName) || "writeObject".equals(methodName)
+                || "toString".equals(methodName) || "init".equals(methodName) || "initialize".equals(methodName)
+                || "dispose".equals(methodName) || "finalize".equals(methodName) || "this".equals(methodName)
+                || "_jspInit".equals(methodName) || "_jspDestroy".equals(methodName);
 
     }
 

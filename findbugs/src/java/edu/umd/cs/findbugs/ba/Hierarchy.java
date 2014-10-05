@@ -148,7 +148,7 @@ public class Hierarchy {
      * @return true if the method is a monitor wait, false if not
      */
     public static boolean isMonitorWait(String methodName, String methodSig) {
-        return methodName.equals("wait") && (methodSig.equals("()V") || methodSig.equals("(J)V") || methodSig.equals("(JI)V"));
+        return "wait".equals(methodName) && ("()V".equals(methodSig) || "(J)V".equals(methodSig) || "(JI)V".equals(methodSig));
     }
 
     /**
@@ -187,7 +187,7 @@ public class Hierarchy {
      * @return true if the method is a monitor notify, false if not
      */
     public static boolean isMonitorNotify(String methodName, String methodSig) {
-        return (methodName.equals("notify") || methodName.equals("notifyAll")) && methodSig.equals("()V");
+        return ("notify".equals(methodName) || "notifyAll".equals(methodName)) && "()V".equals(methodSig);
     }
 
     /**
@@ -840,7 +840,7 @@ public class Hierarchy {
                 && !receiverTypeIsExact;
 
         if (virtualCall) {
-            if (!receiverClassName.equals("java.lang.Object")) {
+            if (!"java.lang.Object".equals(receiverClassName)) {
 
                 // This is a true virtual call: assume that any concrete
                 // subtype method may be called.
