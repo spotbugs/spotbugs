@@ -3,6 +3,8 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -76,6 +78,11 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
 
     private final Map<ICompilationUnit, CompilationUnit>  reusableCompilationUnits = new HashMap<>();
 
+    //to save memory, we cache only one CompilationUnit.  We can do this because we sort multiple Imarkers by their associated resource
+    private ICompilationUnit cachedCompilationUnitKey;
+
+    private CompilationUnit cachedCompilationUnit;
+
     /**
      * Called by reflection!
      */
@@ -142,8 +149,30 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
 
     @Override
     public void run(IMarker[] markers, IProgressMonitor multipleFixMonitor) {
+
+        Arrays.sort(markers, new Comparator<IMarker>() {
+            @Override
+            public int compare(IMarker arg0, IMarker arg1) {
+                IResource resource0 = arg0.getResource();
+                IResource resource1 = arg1.getResource();
+                if (resource0 != null && resource1 != null) {
+                    return resource0.getName().compareTo(resource1.getName());
+                }
+                if (resource0 != null && resource1 == null) {
+                    return 1;
+                }
+                if (resource0 == null && resource1 != null) {
+                    return -1;
+                }
+                return 0;
+            }
+        });
+
+        System.out.println("Sorted Imarkers.  There are " + markers.length +" to do.");
+
         List<PendingRewrite> pendingRewrites = new ArrayList<>(markers.length);
         for (int i = 0; i < markers.length; i++) {
+            System.out.print(i + "    \r");
             // this was done in the superclass implementation
             if (multipleFixMonitor != null) {
                 multipleFixMonitor.subTask(Util.getProperty(IMarker.MESSAGE, markers[i]));
@@ -151,10 +180,18 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             pendingRewrites.add(resolveWithoutWriting(markers[i]));
         }
 
+        System.out.println("Committing them");
+        int i = 0;
         // fully commit all changes
+        //TODO disable automatically running FindBugs
         for (PendingRewrite pendingRewrite : pendingRewrites) {
             completeRewrite(pendingRewrite);
+            i++;
+            System.out.print(i + "    \r");
         }
+        //TODO reenable automatically running FindBugs
+
+        System.out.println("Done");
     }
 
     @CheckForNull
@@ -208,14 +245,15 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         }
     }
 
-    private CompilationUnit makeOrReuseWorkingCopy(ICompilationUnit originalUnit) throws JavaModelException {
-        CompilationUnit copy = reusableCompilationUnits.get(originalUnit);
-        if (copy != null) {
-            return copy;
+    private CompilationUnit makeOrReuseWorkingCopy(@Nonnull ICompilationUnit originalUnit) throws JavaModelException {
+        if (originalUnit.equals(cachedCompilationUnitKey)) {
+            return cachedCompilationUnit;
         }
-        copy = createWorkingCopy(originalUnit);
-        reusableCompilationUnits.put(originalUnit, copy);
-        return copy;
+
+        cachedCompilationUnit = createWorkingCopy(originalUnit);
+        cachedCompilationUnitKey = originalUnit;
+        return cachedCompilationUnit;
+
     }
 
     private ASTRewrite makeOrReuseRewrite(CompilationUnit workingUnit) {
