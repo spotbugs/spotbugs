@@ -147,31 +147,26 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
 
     @Override
     public void run(IMarker[] markers, IProgressMonitor multipleFixMonitor) {
-
+        //sort the markers to make the smaller cache work properly
         de.tobject.findbugs.util.Util.sortIMarkers(markers);
-
-        System.out.println("Sorted Imarkers.  There are " + markers.length +" to do.");
 
         List<PendingRewrite> pendingRewrites = new ArrayList<>(markers.length);
         for (int i = 0; i < markers.length; i++) {
-            System.out.print(i + "    \r");
-            // this was done in the superclass implementation
+            // this was done in the superclass implementation, copied here.
             if (multipleFixMonitor != null) {
                 multipleFixMonitor.subTask(Util.getProperty(IMarker.MESSAGE, markers[i]));
             }
             pendingRewrites.add(resolveWithoutWriting(markers[i]));
         }
 
-        System.out.println("Committing them");
         int i = 0;
         // fully commit all changes
-        //TODO disable automatically running FindBugs
+        //TODO disable automatically running FindBugs during this
         for (PendingRewrite pendingRewrite : pendingRewrites) {
             completeRewrite(pendingRewrite);
             i++;
-            System.out.print(i + "    \r");
         }
-        //TODO reenable automatically running FindBugs
+        //TODO reenable automatically running FindBugs if appropriate
 
         System.out.println("Done");
     }
