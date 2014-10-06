@@ -19,12 +19,15 @@
 
 package de.tobject.findbugs.util;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import javax.annotation.CheckForNull;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jdt.core.IClassFile;
@@ -38,7 +41,7 @@ import edu.umd.cs.findbugs.util.Archive;
 
 /**
  * Eclipse-specific utilities.
- * 
+ *
  * @author Phil Crosby
  * @author Peter Friese
  * @author Andrei Loskutov
@@ -47,7 +50,7 @@ public class Util {
 
     /**
      * Checks whether the given resource is a Java source file.
-     * 
+     *
      * @param resource
      *            The resource to check.
      * @return <code>true</code> if the given resource is a Java source file,
@@ -63,7 +66,7 @@ public class Util {
 
     /**
      * Checks whether the given resource is a Java source file.
-     * 
+     *
      * @param resource
      *            The resource to check.
      * @return <code>true</code> if the given resource is a Java source file,
@@ -79,7 +82,7 @@ public class Util {
 
     /**
      * Checks whether the given resource is a Java class file.
-     * 
+     *
      * @param resource
      *            The resource to check.
      * @return <code>true</code> if the given resource is a class file,
@@ -96,7 +99,7 @@ public class Util {
 
     /**
      * Checks whether the given java element is a Java class file.
-     * 
+     *
      * @param elt
      *            The resource to check.
      * @return <code>true</code> if the given resource is a class file,
@@ -113,7 +116,7 @@ public class Util {
     /**
      * Checks whether the given resource is a Java artifact (i.e. either a Java
      * source file or a Java class file).
-     * 
+     *
      * @param resource
      *            The resource to check.
      * @return <code>true</code> if the given resource is a Java artifact.
@@ -170,7 +173,7 @@ public class Util {
 
     /**
      * Copies given string to the system clipboard
-     * 
+     *
      * @param content
      *            non null String
      */
@@ -203,6 +206,30 @@ public class Util {
             return (V) adaptable.getAdapter(adapter);
         }
         return null;
+    }
+
+    /**
+     * Sorts an array of IMarkers based on their underlying resource name
+     * @param markers
+     */
+    public static void sortIMarkers(IMarker[] markers) {
+        Arrays.sort(markers, new Comparator<IMarker>() {
+            @Override
+            public int compare(IMarker arg0, IMarker arg1) {
+                IResource resource0 = arg0.getResource();
+                IResource resource1 = arg1.getResource();
+                if (resource0 != null && resource1 != null) {
+                    return resource0.getName().compareTo(resource1.getName());
+                }
+                if (resource0 != null && resource1 == null) {
+                    return 1;
+                }
+                if (resource0 == null && resource1 != null) {
+                    return -1;
+                }
+                return 0;
+            }
+        });
     }
 
 }
