@@ -19,9 +19,12 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 import org.objectweb.asm.Opcodes;
@@ -32,6 +35,10 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class RepeatedConditionals extends OpcodeStackDetector {
+    private static final Set<String> NO_SIDEEFFECT_CLASSES = new HashSet<>(Arrays.asList(
+            "java/lang/String", "java/lang/Integer", "java/lang/Long", "java/lang/Double",
+            "java/lang/Float", "java/lang/Byte", "java/lang/Short", "java/math/BigInteger",
+            "java/math/BigDecimal"));
 
     BugReporter bugReporter;
 
@@ -70,8 +77,7 @@ public class RepeatedConditionals extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (isRegisterStore() || isReturn(seen) || isSwitch(seen) || seen == INVOKEINTERFACE || seen == INVOKESPECIAL
-                || seen == INVOKESTATIC || seen == INVOKEVIRTUAL || seen == PUTFIELD || seen == PUTSTATIC) {
+        if (hasSideEffect(seen)) {
             reset();
         } else if (stack.getStackDepth() == 0) {
             check: if (emptyStackLocations.size() > 1) {
@@ -144,6 +150,21 @@ public class RepeatedConditionals extends OpcodeStackDetector {
 
         }
         oldPC = getPC();
+    }
+
+    private boolean hasSideEffect(int seen) {
+        if(seen == INVOKEVIRTUAL || seen == INVOKESTATIC) {
+            if(NO_SIDEEFFECT_CLASSES.contains(getClassDescriptorOperand().getClassName())) {
+                return false;
+            }
+            if(seen == INVOKEVIRTUAL && getMethodDescriptorOperand().getName().equals("equals") &&
+                    getMethodDescriptorOperand().getSignature().equals("(Ljava/lang/Object;)Z")) {
+                return false;
+            }
+            return true;
+        }
+        return isRegisterStore() || isReturn(seen) || isSwitch(seen) || seen == INVOKESPECIAL
+                || seen == INVOKEINTERFACE || seen == INVOKEDYNAMIC || seen == PUTFIELD || seen == PUTSTATIC;
     }
 
     private void reset() {
