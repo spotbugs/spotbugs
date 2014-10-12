@@ -32,14 +32,70 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 
 public class WrongMapIterator extends BytecodeScanningDetector implements StatelessDetector {
+    static enum LoadedVariableState {
+        NOTHING, LOCAL, FIELD
+    }
+
+    final LoadedVariable NONE = new LoadedVariable(LoadedVariableState.NOTHING, 0, null);
+
+    final class LoadedVariable {
+        private final LoadedVariableState lvState;
+        private final int num;
+        private final FieldDescriptor fd;
+
+        private LoadedVariable(LoadedVariableState state, int num, FieldDescriptor fd) {
+            this.lvState = state;
+            this.num = num;
+            this.fd = fd;
+        }
+
+        public boolean none() {
+            return lvState == LoadedVariableState.NOTHING;
+        }
+
+        public LoadedVariable seen(int opcode) {
+            switch(opcode) {
+            case ALOAD_0:
+            case ALOAD_1:
+            case ALOAD_2:
+            case ALOAD_3:
+                return new LoadedVariable(LoadedVariableState.LOCAL, opcode - ALOAD_0, null);
+            case ALOAD:
+                return new LoadedVariable(LoadedVariableState.LOCAL, getRegisterOperand(), null);
+            case GETSTATIC:
+                return new LoadedVariable(LoadedVariableState.FIELD, 0, getFieldDescriptorOperand());
+            case GETFIELD:
+                if(lvState == LoadedVariableState.LOCAL && num == 0) {
+                    // Ignore fields from other classes
+                    return new LoadedVariable(LoadedVariableState.FIELD, 0, getFieldDescriptorOperand());
+                }
+                return NONE;
+            default:
+                return NONE;
+            }
+        }
+
+        public boolean same(LoadedVariable other) {
+            if(other.lvState != lvState) {
+                return false;
+            }
+            if(lvState == LoadedVariableState.LOCAL && num != other.num) {
+                return false;
+            }
+            if ((lvState == LoadedVariableState.FIELD) && !fd.equals(other.fd)) {
+                return false;
+            }
+            return true;
+        }
+    }
+
     private final BugAccumulator bugAccumulator;
 
     private static final int SAW_NOTHING = 0;
-
-    private static final int SAW_MAP_LOAD1 = 1;
 
     private static final int SAW_KEYSET = 2;
 
@@ -59,15 +115,13 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
 
     private static final int NEED_KEYSET_LOAD = 10;
 
-    private static final int SAW_MAP_LOAD2 = 11;
-
     private static final int SAW_KEY_LOAD = 12;
 
     private int state;
 
-    private int loadedRegister;
+    private LoadedVariable loadedVariable = NONE;
 
-    private int mapRegister;
+    private LoadedVariable mapVariable = NONE;
 
     private int keySetRegister;
 
@@ -82,8 +136,8 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
     @Override
     public void visit(Method obj) {
         state = SAW_NOTHING;
-        loadedRegister = -1;
-        mapRegister = -1;
+        loadedVariable = NONE;
+        mapVariable = NONE;
         keySetRegister = -1;
         iteratorRegister = -1;
         keyRegister = -1;
@@ -129,19 +183,12 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
     public void sawOpcode(int seen) {
         switch (state) {
         case SAW_NOTHING:
-            loadedRegister = getLoadStoreRegister(seen, true);
-            if (loadedRegister >= 0) {
-                state = SAW_MAP_LOAD1;
-            }
-            break;
-
-        case SAW_MAP_LOAD1:
             // Doesn't check to see if the target object is a Map
-            if (((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL)) && ("keySet".equals(getNameConstantOperand()))
-                    && ("()Ljava/util/Set;".equals(getSigConstantOperand()))
+            if ((!loadedVariable.none()) && ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL)) &&
+                    ("keySet".equals(getNameConstantOperand())) && ("()Ljava/util/Set;".equals(getSigConstantOperand()))
                     // Following check solves sourceforge bug 1830576
                     && implementsMap(getClassDescriptorOperand())) {
-                mapRegister = loadedRegister;
+                mapVariable = loadedVariable;
                 state = SAW_KEYSET;
             } else {
                 state = SAW_NOTHING;
@@ -170,8 +217,7 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
             break;
 
         case NEED_KEYSET_LOAD:
-            loadedRegister = getLoadStoreRegister(seen, true);
-            if (loadedRegister == iteratorRegister) {
+            if (getLoadStoreRegister(seen, true) == iteratorRegister) {
                 state = SAW_ITERATOR;
             }
             break;
@@ -186,8 +232,7 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
             break;
 
         case SAW_ITERATOR_STORE:
-            loadedRegister = getLoadStoreRegister(seen, true);
-            if (loadedRegister == iteratorRegister) {
+            if (getLoadStoreRegister(seen, true) == iteratorRegister) {
                 state = SAW_ITERATOR_LOAD;
             }
             break;
@@ -222,21 +267,10 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
             break;
 
         case SAW_KEY_STORE:
-            loadedRegister = getLoadStoreRegister(seen, true);
-            if (loadedRegister == mapRegister) {
-                state = SAW_MAP_LOAD2;
-            }
-            break;
-
-        case SAW_MAP_LOAD2:
-            loadedRegister = getLoadStoreRegister(seen, true);
-            if (loadedRegister == keyRegister) {
+            if (loadedVariable.same(mapVariable) && getLoadStoreRegister(seen, true) == keyRegister) {
                 state = SAW_KEY_LOAD;
-            } else {
-                state = SAW_KEY_STORE;
             }
             break;
-
         case SAW_KEY_LOAD:
             if (((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL)) && ("get".equals(getNameConstantOperand()))
                     && ("(Ljava/lang/Object;)Ljava/lang/Object;".equals(getSigConstantOperand()))) {
@@ -249,6 +283,7 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
         default:
             break;
         }
+        loadedVariable = loadedVariable.seen(seen);
     }
 
     private int getLoadStoreRegister(int seen, boolean doLoad) {
