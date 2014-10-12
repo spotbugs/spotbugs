@@ -2,7 +2,7 @@ import java.io.File;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
-public class RepeatingConditionals {
+public class RepeatedConditionals {
     @ExpectWarning("RpC_REPEATED_CONDITIONAL_TEST")
     public boolean simple(int a, int b) {
         return a == b && a == b;
