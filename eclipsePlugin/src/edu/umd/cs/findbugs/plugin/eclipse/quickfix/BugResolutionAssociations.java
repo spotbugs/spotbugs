@@ -22,6 +22,7 @@
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -82,8 +83,13 @@ public class BugResolutionAssociations {
         }
 
         Set<BugResolution> fixes = instantiateBugResolutions(classes);
-        for (BugResolution fix : fixes) {
-            fix.setMarker(marker);
+        for (Iterator<BugResolution> iterator = fixes.iterator(); iterator.hasNext();) {
+            BugResolution fix = iterator.next();
+            if (fix.isApplicable(marker)) {
+                fix.setMarker(marker);
+            } else {
+                iterator.remove();
+            }
         }
         return fixes.toArray(new IMarkerResolution[fixes.size()]);
     }

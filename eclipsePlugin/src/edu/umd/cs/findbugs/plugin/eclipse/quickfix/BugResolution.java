@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
+import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getASTNode;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
@@ -45,6 +47,7 @@ import org.eclipse.ui.views.markers.internal.Util;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.ASTNodeNotFoundException;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 
 /**
@@ -64,6 +67,10 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             + "The bugs somehow got out of sync with the memory representation. "
             + "Try running FindBugs again. If that does not work, check the error log.";
 
+    protected static final String PLACEHOLDER_STRING = "YYY";
+
+    public static final String DEFAULT_REPLACEMENT = "XXX";
+
     private String label;
 
     private IProgressMonitor monitor;
@@ -78,6 +85,8 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     private ICompilationUnit cachedCompilationUnitKey;
 
     private CompilationUnit cachedCompilationUnit;
+
+    protected String customizedLabel;
 
     /**
      * Called by reflection!
@@ -94,10 +103,68 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         // noop
     }
 
+    /**
+     * Returns the short label that briefly describes the change that will be made.
+     *
+     * Typically, labels are static and defined in <code>plugin.xml</code>.
+     * For runtime-computed labels, define a base label in plugin.xml using the
+     * <code>PLACEHOLDER_STRING</code> "YYY" where any custom text should go.  Then,
+     * return a <code>CustomLabelVisitor</code> to scan the code and find the text to replace
+     * the placeholder.
+     *
+     * The visitor is only used to scan once, the result being cached on subsequent visits.
+     */
     @Override
     @Nonnull
     public String getLabel() {
+        CustomLabelVisitor labelFixingVisitor = getLabelFixingVisitor();
+        if (labelFixingVisitor != null) {
+            if (customizedLabel == null) {
+                String labelReplacement = findLabelReplacement(labelFixingVisitor);
+                customizedLabel = label.replace(BugResolution.PLACEHOLDER_STRING, labelReplacement);
+            }
+            return customizedLabel;
+        }
         return label;
+    }
+
+    @Nonnull
+    protected String findLabelReplacement(CustomLabelVisitor labelVisitor) {
+        IMarker marker = getMarker();
+        try {
+            ASTNode node = getNodeForMarker(marker);
+            if (node != null) {
+                node.accept(labelVisitor);
+                String retVal = labelVisitor.getLabelReplacement();
+                return retVal == null ? DEFAULT_REPLACEMENT: retVal;
+            }
+            // Catch all exceptions (explicit) so that the label creation won't fail
+            // FindBugs prefers this being explicit instead of just catching Exception
+        } catch (JavaModelException | ASTNodeNotFoundException | RuntimeException e) {
+            return DEFAULT_REPLACEMENT;
+        }
+        return DEFAULT_REPLACEMENT;
+    }
+
+    @CheckForNull
+    protected CustomLabelVisitor getLabelFixingVisitor() {
+        return null;
+    }
+
+    @CheckForNull
+    protected ASTNode getNodeForMarker(IMarker marker) throws JavaModelException, ASTNodeNotFoundException {
+        BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
+        if (bug == null) {
+            return null;
+        }
+        ICompilationUnit originalUnit = getCompilationUnit(marker);
+        if (originalUnit == null) {
+            return null;
+        }
+
+        CompilationUnit workingUnit = createWorkingCopy(originalUnit);
+
+        return getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation());
     }
 
     public void setLabel(String label) {
@@ -404,6 +471,11 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             this.originalUnit = originalUnit;
         }
 
+    }
+
+    public boolean isApplicable(IMarker marker) {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 }

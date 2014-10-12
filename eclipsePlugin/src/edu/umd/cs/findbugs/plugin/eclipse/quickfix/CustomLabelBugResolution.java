@@ -17,20 +17,6 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
-import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getASTNode;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-
-import de.tobject.findbugs.reporter.MarkerUtil;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.ASTNodeNotFoundException;
 
 /**
  * Like <code>BugResolution</code>, with additional support for a runtime-computed label.
@@ -43,59 +29,10 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.ASTNodeNotFoundExce
  *
  * The visitor is only used to scan once, the result being cached on subsequent visits.
  *
- * @author <a href="mailto:kjlubick@ncsu.edu">Kevin Lubick</a>
+ * @author <a href="mailto:kjlubick@ncsu.edu">Kevin Lubick</a>\
  */
 public abstract class CustomLabelBugResolution extends BugResolution {
 
-    private static final String PLACEHOLDER_STRING = "YYY";
-    public static final String DEFAULT_REPLACEMENT = "XXX";
 
-    protected String customizedLabel;
-
-    @Override
-    public String getLabel() {
-        if (customizedLabel == null) {
-            String labelReplacement = findLabelReplacement(getLabelFixingVisitor());
-            customizedLabel = super.getLabel().replace(CustomLabelBugResolution.PLACEHOLDER_STRING, labelReplacement);
-        }
-        return customizedLabel;
-    }
-
-    @Nonnull
-    protected abstract CustomLabelVisitor getLabelFixingVisitor();
-
-    @Nonnull
-    private String findLabelReplacement(CustomLabelVisitor labelVisitor) {
-        IMarker marker = getMarker();
-        try {
-            ASTNode node = getNodeForMarker(marker);
-            if (node != null) {
-                node.accept(labelVisitor);
-                String retVal = labelVisitor.getLabelReplacement();
-                return retVal == null ? DEFAULT_REPLACEMENT: retVal;
-            }
-            // Catch all exceptions (explicit) so that the label creation won't fail
-            // FindBugs prefers this being explicit instead of just catching Exception
-        } catch (JavaModelException | ASTNodeNotFoundException | RuntimeException e) {
-            return DEFAULT_REPLACEMENT;
-        }
-        return DEFAULT_REPLACEMENT;
-    }
-
-    @CheckForNull
-    private ASTNode getNodeForMarker(IMarker marker) throws JavaModelException, ASTNodeNotFoundException {
-        BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
-        if (bug == null) {
-            return null;
-        }
-        ICompilationUnit originalUnit = getCompilationUnit(marker);
-        if (originalUnit == null) {
-            return null;
-        }
-
-        CompilationUnit workingUnit = createWorkingCopy(originalUnit);
-
-        return getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation());
-    }
 
 }
