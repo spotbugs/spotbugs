@@ -460,6 +460,11 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         this.currentMarker = initialMarker;
     }
 
+    public boolean isApplicable(IMarker marker) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
     private static class PendingRewrite {
         public ICompilationUnit originalUnit;
         public Document doc;
@@ -471,11 +476,6 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             this.originalUnit = originalUnit;
         }
 
-    }
-
-    public boolean isApplicable(IMarker marker) {
-        // TODO Auto-generated method stub
-        return false;
     }
 
 }
