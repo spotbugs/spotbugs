@@ -91,6 +91,13 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
             }
             return true;
         }
+
+        public BugInstance annotate(BugInstance bug) {
+            if(lvState == LoadedVariableState.FIELD) {
+                bug.addField(fd);
+            }
+            return bug;
+        }
     }
 
     private final BugAccumulator bugAccumulator;
@@ -275,8 +282,8 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
             if (((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL)) && ("get".equals(getNameConstantOperand()))
                     && ("(Ljava/lang/Object;)Ljava/lang/Object;".equals(getSigConstantOperand()))) {
                 MethodAnnotation ma = MethodAnnotation.fromVisitedMethod(this);
-                bugAccumulator.accumulateBug(new BugInstance(this, "WMI_WRONG_MAP_ITERATOR", NORMAL_PRIORITY).addClass(this)
-                        .addMethod(ma), this);
+                bugAccumulator.accumulateBug(mapVariable.annotate(new BugInstance(this, "WMI_WRONG_MAP_ITERATOR", NORMAL_PRIORITY).addClass(this)
+                        .addMethod(ma)), this);
                 state = SAW_NOTHING;
             }
             break;
