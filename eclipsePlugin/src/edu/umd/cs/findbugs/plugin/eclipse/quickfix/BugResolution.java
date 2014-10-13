@@ -461,8 +461,31 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     }
 
     public boolean isApplicable(IMarker marker) {
-        // TODO Auto-generated method stub
-        return false;
+        ApplicabilityVisitor prescanVisitor = getApplicabilityVisitor();
+        if (prescanVisitor != null) {
+            return findApplicability(prescanVisitor);
+        }
+        return true;
+    }
+
+    private boolean findApplicability(ApplicabilityVisitor prescanVisitor) {
+        IMarker marker = getMarker();
+        try {
+            ASTNode node = getNodeForMarker(marker);
+            if (node != null) {
+                node.accept(prescanVisitor);
+                return prescanVisitor.isApplicable();
+            }
+            // Catch all exceptions (explicit) so that the label creation won't fail
+            // FindBugs prefers this being explicit instead of just catching Exception
+        } catch (JavaModelException | ASTNodeNotFoundException | RuntimeException e) {
+            return true;
+        }
+        return true;
+    }
+
+    protected ApplicabilityVisitor getApplicabilityVisitor() {
+        return null;
     }
 
     private static class PendingRewrite {

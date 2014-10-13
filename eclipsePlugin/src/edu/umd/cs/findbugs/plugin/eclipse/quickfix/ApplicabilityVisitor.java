@@ -17,21 +17,18 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
-import javax.annotation.CheckForNull;
-
 import org.eclipse.jdt.core.dom.ASTVisitor;
 
 /**
- * This visitor should traverse the AST as much as needed to determine if a proposed resolution
- * works for the given code, and then return it through <code>getLabelReplacement()</code>.
- *
+ * This visitor should traverse the AST as much as needed to determine the nature of the
+ * replacement string, and then return it through <code>isApplicable()</code>.
  *
  * This typically is the visitor that would be used anyway to perform the resolution, but
  * could be a more efficient variation.
  *
  * @author <a href="mailto:kjlubick@ncsu.edu">Kevin Lubick</a>
  */
-public abstract class CustomLabelVisitor extends ASTVisitor {
-    @CheckForNull
-    public abstract String getLabelReplacement();
+public abstract class ApplicabilityVisitor extends ASTVisitor {
+
+    public abstract boolean isApplicable();
 }
