@@ -28,6 +28,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
@@ -109,7 +110,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
      * Typically, labels are static and defined in <code>plugin.xml</code>.
      * For runtime-computed labels, define a base label in plugin.xml using the
      * <code>PLACEHOLDER_STRING</code> "YYY" where any custom text should go.  Then,
-     * return a <code>CustomLabelVisitor</code> to scan the code and find the text to replace
+     * override getLabelFixingVisitor() to scan the code and find the text to replace
      * the placeholder.
      *
      * The visitor is only used to scan once, the result being cached on subsequent visits.
@@ -117,8 +118,8 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     @Override
     @Nonnull
     public String getLabel() {
-        CustomLabelVisitor labelFixingVisitor = getLabelFixingVisitor();
-        if (labelFixingVisitor != null) {
+        ASTVisitor labelFixingVisitor = getLabelFixingVisitor();
+        if (labelFixingVisitor instanceof CustomLabelVisitor) {
             if (customizedLabel == null) {
                 String labelReplacement = findLabelReplacement(labelFixingVisitor);
                 customizedLabel = label.replace(BugResolution.PLACEHOLDER_STRING, labelReplacement);
@@ -129,13 +130,13 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     }
 
     @Nonnull
-    protected String findLabelReplacement(CustomLabelVisitor labelVisitor) {
+    protected String findLabelReplacement(ASTVisitor labelFixingVisitor) {
         IMarker marker = getMarker();
         try {
             ASTNode node = getNodeForMarker(marker);
             if (node != null) {
-                node.accept(labelVisitor);
-                String retVal = labelVisitor.getLabelReplacement();
+                node.accept(labelFixingVisitor);
+                String retVal = ((CustomLabelVisitor) labelFixingVisitor).getLabelReplacement();
                 return retVal == null ? DEFAULT_REPLACEMENT: retVal;
             }
             // Catch all exceptions (explicit) so that the label creation won't fail
@@ -147,7 +148,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     }
 
     @CheckForNull
-    protected CustomLabelVisitor getLabelFixingVisitor() {
+    protected ASTVisitor getLabelFixingVisitor() {
         return null;
     }
 
@@ -225,17 +226,12 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             }
             pendingRewrites.add(resolveWithoutWriting(markers[i]));
         }
-
-        int i = 0;
         // fully commit all changes
         //TODO disable automatically running FindBugs during this
         for (PendingRewrite pendingRewrite : pendingRewrites) {
             completeRewrite(pendingRewrite);
-            i++;
         }
         //TODO reenable automatically running FindBugs if appropriate
-
-        System.out.println("Done");
     }
 
     @CheckForNull
@@ -461,20 +457,20 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     }
 
     public boolean isApplicable(IMarker marker) {
-        ApplicabilityVisitor prescanVisitor = getApplicabilityVisitor();
-        if (prescanVisitor != null) {
-            return findApplicability(prescanVisitor);
+        ASTVisitor prescanVisitor = getApplicabilityVisitor();
+        if (prescanVisitor instanceof ApplicabilityVisitor) {       //this has an implicit null check
+            return findApplicability(prescanVisitor, marker);
         }
         return true;
     }
 
-    private boolean findApplicability(ApplicabilityVisitor prescanVisitor) {
-        IMarker marker = getMarker();
+    private boolean findApplicability(ASTVisitor prescanVisitor, IMarker marker) {
         try {
             ASTNode node = getNodeForMarker(marker);
             if (node != null) {
                 node.accept(prescanVisitor);
-                return prescanVisitor.isApplicable();
+                //this cast is safe because isApplicable checks the type before calling
+                return ((ApplicabilityVisitor)prescanVisitor).isApplicable();
             }
             // Catch all exceptions (explicit) so that the label creation won't fail
             // FindBugs prefers this being explicit instead of just catching Exception
@@ -484,7 +480,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         return true;
     }
 
-    protected ApplicabilityVisitor getApplicabilityVisitor() {
+    protected ASTVisitor getApplicabilityVisitor() {
         return null;
     }
 

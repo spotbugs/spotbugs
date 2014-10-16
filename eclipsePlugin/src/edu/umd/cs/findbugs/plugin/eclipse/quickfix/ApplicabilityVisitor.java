@@ -17,7 +17,6 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
-import org.eclipse.jdt.core.dom.ASTVisitor;
 
 /**
  * This visitor should traverse the AST as much as needed to determine the nature of the
@@ -28,7 +27,7 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
  *
  * @author <a href="mailto:kjlubick@ncsu.edu">Kevin Lubick</a>
  */
-public abstract class ApplicabilityVisitor extends ASTVisitor {
+public interface ApplicabilityVisitor {
 
     public abstract boolean isApplicable();
 }
