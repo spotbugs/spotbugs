@@ -57,15 +57,15 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
             return lvState == LoadedVariableState.NOTHING;
         }
 
+        public boolean isRegister(int register) {
+            return lvState == LoadedVariableState.LOCAL && num == register;
+        }
+
         public LoadedVariable seen(int opcode) {
-            switch(opcode) {
-            case ALOAD_0:
-            case ALOAD_1:
-            case ALOAD_2:
-            case ALOAD_3:
-                return new LoadedVariable(LoadedVariableState.LOCAL, opcode - ALOAD_0, null);
-            case ALOAD:
+            if(isRegisterLoad() && !isRegisterStore()) {
                 return new LoadedVariable(LoadedVariableState.LOCAL, getRegisterOperand(), null);
+            }
+            switch(opcode) {
             case GETSTATIC:
                 return new LoadedVariable(LoadedVariableState.FIELD, 0, getFieldDescriptorOperand());
             case GETFIELD:
@@ -102,29 +102,8 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
 
     private final BugAccumulator bugAccumulator;
 
-    private static final int SAW_NOTHING = 0;
-
-    private static final int SAW_KEYSET = 2;
-
-    private static final int SAW_KEYSET_STORE = 3;
-
-    private static final int SAW_ITERATOR = 4;
-
-    private static final int SAW_ITERATOR_STORE = 5;
-
-    private static final int SAW_ITERATOR_LOAD = 6;
-
-    private static final int SAW_NEXT = 7;
-
-    private static final int SAW_CHECKCAST_ON_NEXT = 8;
-
-    private static final int SAW_KEY_STORE = 9;
-
-    private static final int NEED_KEYSET_LOAD = 10;
-
-    private static final int SAW_KEY_LOAD = 12;
-
-    private int state;
+    private static final int NOT_FOUND = -2;
+    private static final int IN_STACK = -1;
 
     private LoadedVariable loadedVariable = NONE;
 
@@ -136,18 +115,24 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
 
     private int keyRegister;
 
+    private boolean mapAndKeyLoaded;
+
     public WrongMapIterator(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
     @Override
     public void visit(Method obj) {
-        state = SAW_NOTHING;
+        reset();
+    }
+
+    private void reset() {
         loadedVariable = NONE;
         mapVariable = NONE;
-        keySetRegister = -1;
-        iteratorRegister = -1;
-        keyRegister = -1;
+        mapAndKeyLoaded = false;
+        keySetRegister = NOT_FOUND;
+        iteratorRegister = NOT_FOUND;
+        keyRegister = NOT_FOUND;
     }
 
     @Override
@@ -186,146 +171,96 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
         return false;
     }
 
-    @Override
-    public void sawOpcode(int seen) {
-        switch (state) {
-        case SAW_NOTHING:
-            // Doesn't check to see if the target object is a Map
-            if ((!loadedVariable.none()) && ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL)) &&
-                    ("keySet".equals(getNameConstantOperand())) && ("()Ljava/util/Set;".equals(getSigConstantOperand()))
-                    // Following check solves sourceforge bug 1830576
-                    && implementsMap(getClassDescriptorOperand())) {
-                mapVariable = loadedVariable;
-                state = SAW_KEYSET;
-            } else {
-                state = SAW_NOTHING;
-            }
-            break;
-
-        case SAW_KEYSET:
-            keySetRegister = getLoadStoreRegister(seen, false);
-            if (keySetRegister >= 0) {
-                state = SAW_KEYSET_STORE;
-            } else if ((seen == INVOKEINTERFACE) && ("iterator".equals(getNameConstantOperand()))
-                    && ("()Ljava/util/Iterator;".equals(getSigConstantOperand()))) {
-                state = SAW_ITERATOR;
-            } else {
-                state = SAW_NOTHING;
-            }
-            break;
-
-        case SAW_KEYSET_STORE:
-            if ((seen == INVOKEINTERFACE) && ("iterator".equals(getNameConstantOperand()))
-                    && ("()Ljava/util/Iterator;".equals(getSigConstantOperand()))) {
-                state = SAW_ITERATOR;
-            } else {
-                state = NEED_KEYSET_LOAD;
-            }
-            break;
-
-        case NEED_KEYSET_LOAD:
-            if (getLoadStoreRegister(seen, true) == iteratorRegister) {
-                state = SAW_ITERATOR;
-            }
-            break;
-
-        case SAW_ITERATOR:
-            iteratorRegister = getLoadStoreRegister(seen, false);
-            if (iteratorRegister >= 0) {
-                state = SAW_ITERATOR_STORE;
-            } else {
-                state = SAW_NOTHING;
-            }
-            break;
-
-        case SAW_ITERATOR_STORE:
-            if (getLoadStoreRegister(seen, true) == iteratorRegister) {
-                state = SAW_ITERATOR_LOAD;
-            }
-            break;
-
-        case SAW_ITERATOR_LOAD:
-            if ((seen == INVOKEINTERFACE) && ("next".equals(getNameConstantOperand()))
-                    && ("()Ljava/lang/Object;".equals(getSigConstantOperand()))) {
-                state = SAW_NEXT;
-            } else {
-                state = SAW_ITERATOR_STORE;
-            }
-            break;
-
-        case SAW_NEXT:
-            if (seen == CHECKCAST) {
-                state = SAW_CHECKCAST_ON_NEXT;
-            } else {
-                keyRegister = getLoadStoreRegister(seen, false);
-                if (keyRegister >= 0) {
-                    state = SAW_KEY_STORE;
-                } else {
-                    state = SAW_NOTHING;
-                }
-            }
-            break;
-
-        case SAW_CHECKCAST_ON_NEXT:
-            keyRegister = getLoadStoreRegister(seen, false);
-            if (keyRegister >= 0) {
-                state = SAW_KEY_STORE;
-            }
-            break;
-
-        case SAW_KEY_STORE:
-            if (loadedVariable.same(mapVariable) && getLoadStoreRegister(seen, true) == keyRegister) {
-                state = SAW_KEY_LOAD;
-            }
-            break;
-        case SAW_KEY_LOAD:
-            if (((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL)) && ("get".equals(getNameConstantOperand()))
-                    && ("(Ljava/lang/Object;)Ljava/lang/Object;".equals(getSigConstantOperand()))) {
-                MethodAnnotation ma = MethodAnnotation.fromVisitedMethod(this);
-                bugAccumulator.accumulateBug(mapVariable.annotate(new BugInstance(this, "WMI_WRONG_MAP_ITERATOR", NORMAL_PRIORITY).addClass(this)
-                        .addMethod(ma)), this);
-                state = SAW_NOTHING;
-            }
-            break;
-        default:
-            break;
+    private int handleStore(int storeRegister, int current) {
+        if(storeRegister == current) {
+            return NOT_FOUND;
         }
-        loadedVariable = loadedVariable.seen(seen);
+        if(current == IN_STACK) {
+            return storeRegister;
+        }
+        return current;
     }
 
-    private int getLoadStoreRegister(int seen, boolean doLoad) {
-        switch (seen) {
-        case ALOAD_0:
-        case ALOAD_1:
-        case ALOAD_2:
-        case ALOAD_3:
-            if (doLoad) {
-                return seen - ALOAD_0;
-            }
-            break;
+    private void handleStore(int register) {
+        keySetRegister = handleStore(register, keySetRegister);
+        iteratorRegister = handleStore(register, iteratorRegister);
+        keyRegister = handleStore(register, keyRegister);
+    }
 
-        case ALOAD:
-            if (doLoad) {
-                return getRegisterOperand();
-            }
-            break;
-
-        case ASTORE_0:
-        case ASTORE_1:
-        case ASTORE_2:
-        case ASTORE_3:
-            if (!doLoad) {
-                return seen - ASTORE_0;
-            }
-            break;
-
-        case ASTORE:
-            if (!doLoad) {
-                return getRegisterOperand();
-            }
-            break;
+    private void removedFromStack(boolean includeKey) {
+        if(keySetRegister == IN_STACK) {
+            keySetRegister = NOT_FOUND;
         }
+        if(iteratorRegister == IN_STACK) {
+            iteratorRegister = NOT_FOUND;
+        }
+        if(keyRegister == IN_STACK && includeKey) {
+            keyRegister = NOT_FOUND;
+        }
+    }
 
-        return -1;
+    @Override
+    public void sawOpcode(int seen) {
+        boolean loadedPreserved = false;
+        if(isRegisterStore() && !isRegisterLoad()) {
+            handleStore(getRegisterOperand());
+        } else {
+            switch (seen) {
+            case INVOKEINTERFACE:
+            case INVOKEVIRTUAL:
+                if (!loadedVariable.none() &&
+                        "keySet".equals(getNameConstantOperand()) && "()Ljava/util/Set;".equals(getSigConstantOperand())
+                        // Following check solves sourceforge bug 1830576
+                        && implementsMap(getClassDescriptorOperand())) {
+                    mapVariable = loadedVariable;
+                    removedFromStack(true);
+                    keySetRegister = IN_STACK;
+                } else if ((keySetRegister == IN_STACK || loadedVariable.isRegister(keySetRegister))
+                        && "iterator".equals(getNameConstantOperand()) && "()Ljava/util/Iterator;".equals(getSigConstantOperand())) {
+                    removedFromStack(true);
+                    iteratorRegister = IN_STACK;
+                } else if ((iteratorRegister == IN_STACK || loadedVariable.isRegister(iteratorRegister))
+                        && "next".equals(getNameConstantOperand())
+                        && "()Ljava/lang/Object;".equals(getSigConstantOperand())) {
+                    removedFromStack(true);
+                    keyRegister = IN_STACK;
+                } else if (mapAndKeyLoaded && "get".equals(getNameConstantOperand())
+                        && "(Ljava/lang/Object;)Ljava/lang/Object;".equals(getSigConstantOperand())) {
+                    MethodAnnotation ma = MethodAnnotation.fromVisitedMethod(this);
+                    bugAccumulator.accumulateBug(mapVariable
+                            .annotate(new BugInstance(this, "WMI_WRONG_MAP_ITERATOR", NORMAL_PRIORITY).addClass(this).addMethod(ma)),
+                            this);
+                    reset();
+                } else if(("intValue".equals(getNameConstantOperand()) && "java/lang/Integer".equals(getClassConstantOperand())) ||
+                        ("longValue".equals(getNameConstantOperand()) && "java/lang/Long".equals(getClassConstantOperand())) ||
+                        ("doubleValue".equals(getNameConstantOperand()) && "java/lang/Double".equals(getClassConstantOperand())) ||
+                        ("floatValue".equals(getNameConstantOperand()) && "java/lang/Float".equals(getClassConstantOperand()))) {
+                    removedFromStack(false);
+                } else {
+                    removedFromStack(true);
+                }
+                break;
+            case INVOKESTATIC:
+                if ("valueOf".equals(getNameConstantOperand())
+                        && ("java/lang/Integer".equals(getClassConstantOperand())
+                                || "java/lang/Long".equals(getClassConstantOperand())
+                                || "java/lang/Double".equals(getClassConstantOperand()) || "java/lang/Float"
+                                .equals(getClassConstantOperand()))) {
+                    loadedPreserved = true;
+                }
+                removedFromStack(true);
+                break;
+            case CHECKCAST:
+                removedFromStack(false);
+                break;
+            default:
+                removedFromStack(true);
+            }
+        }
+        if(!loadedPreserved) {
+            boolean mapLoaded = !loadedVariable.none() && loadedVariable.same(mapVariable);
+            loadedVariable = loadedVariable.seen(seen);
+            mapAndKeyLoaded = mapLoaded && loadedVariable.isRegister(keyRegister);
+        }
     }
 }
