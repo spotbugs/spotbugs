@@ -63,19 +63,15 @@ public abstract class OverriddenMethodsVisitor implements SupertypeTraversalVisi
     @Override
     public boolean visitClass(ClassDescriptor classDescriptor, XClass xclass) {
         assert xclass != null;
-        String methodSignature;
+        String methodSignature = xmethod.getSignature();
         XMethod bridgedFrom = xmethod.bridgeFrom();
-        if (bridgedFrom != null && !classDescriptor.equals(xmethod.getClassDescriptor())) {
-            methodSignature = bridgedFrom.getSignature();
-        } else {
-            methodSignature = xmethod.getSignature();
-        }
         // See if this class has an overridden method
+
         XMethod xm = xclass.findMethod(xmethod.getName(), methodSignature, false);
-        if (xm == null && bridgedFrom != null && xclass.isInterface()) {
-            // if the method is bridged and the superclass is an interface,
-            // check the exact signature as well
-            xm = xclass.findMethod(xmethod.getName(), xmethod.getSignature(), false);
+
+        if (xm == null && bridgedFrom != null && !classDescriptor.equals(xmethod.getClassDescriptor())) {
+            methodSignature = bridgedFrom.getSignature();
+            xm = xclass.findMethod(xmethod.getName(), methodSignature, false);
         }
 
         if (xm != null) {

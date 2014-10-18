@@ -122,6 +122,11 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
     public boolean isReturnTypeReferenceType();
 
     /**
+     * Is this a bridge method?
+     */
+    public boolean isBridge();
+
+    /**
      * Get ClassDescriptors (annotation classes) of annotations applied directly
      * to this method's parameters.
      *

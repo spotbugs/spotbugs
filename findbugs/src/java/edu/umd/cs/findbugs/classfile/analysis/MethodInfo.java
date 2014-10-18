@@ -390,6 +390,11 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         return checkFlag(Constants.ACC_SYNCHRONIZED);
     }
 
+    @Override
+    public boolean isBridge() {
+        return checkFlag(Constants.ACC_BRIDGE);
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -552,7 +557,15 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     @Override
     public Collection<AnnotationValue> getAnnotations() {
-        return methodAnnotations.values();
+
+        Collection<AnnotationValue> result =  methodAnnotations.values();
+        if (result.isEmpty() && isBridge()) {
+            XMethod to = bridgeTo();
+            if (to != null) {
+                result = to.getAnnotations();
+            }
+        }
+        return result;
     }
 
     /**

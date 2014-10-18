@@ -48,6 +48,11 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
     }
 
     @Override
+    public boolean isBridge() {
+        return (getAccessFlags() & Constants.ACC_BRIDGE) != 0;
+    }
+
+    @Override
     public String toString() {
         return SignatureConverter.convertMethodSignature(this);
     }
