@@ -1,7 +1,10 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -23,8 +26,33 @@ import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.constant.Constant;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantFrame;
+import edu.umd.cs.findbugs.util.ClassMethodSignature;
 
 public class DumbMethodInvocations implements Detector {
+    private static final ClassMethodSignature DRIVER_GET_CONNECTION =
+            new ClassMethodSignature("java.sql.DriverManager", "getConnection", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;");
+    private static final ClassMethodSignature STRING_SUBSTRING =
+            new ClassMethodSignature("java.lang.String", "substring", "(I)Ljava/lang/String;");
+
+    private static final Set<ClassMethodSignature> FILENAME_STRING_METHODS = new HashSet<>(Arrays.asList(
+            new ClassMethodSignature("java.io.File", "<init>", "(Ljava/lang/String;)V"),
+            new ClassMethodSignature("java.io.File", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
+            new ClassMethodSignature("java.nio.file.Paths", "get", "(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;"),
+            new ClassMethodSignature("java.io.FileReader", "<init>", "(Ljava/lang/String;)V"),
+            new ClassMethodSignature("java.io.FileWriter", "<init>", "(Ljava/lang/String;)V"),
+            new ClassMethodSignature("java.io.FileWriter", "<init>", "(Ljava/lang/String;Z)V"),
+            new ClassMethodSignature("java.io.FileInputStream", "<init>", "(Ljava/lang/String;)V"),
+            new ClassMethodSignature("java.io.FileOutputStream", "<init>", "(Ljava/lang/String;)V"),
+            new ClassMethodSignature("java.io.FileOutputStream", "<init>", "(Ljava/lang/String;Z)V"),
+            new ClassMethodSignature("java.util.jar.JarFile", "<init>", "(Ljava/lang/String;)V"),
+            new ClassMethodSignature("java.util.jar.JarFile", "<init>", "(Ljava/lang/String;Z)V"),
+            new ClassMethodSignature("java.util.zip.ZipFile", "<init>", "(Ljava/lang/String;)V"),
+            new ClassMethodSignature("java.util.zip.ZipFile", "<init>", "(Ljava/lang/String;Ljava/nio/charset/Charset;)V"),
+            new ClassMethodSignature("java.io.PrintStream", "<init>", "(Ljava/lang/String;)V"),
+            new ClassMethodSignature("java.io.PrintStream", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
+            new ClassMethodSignature("java.io.PrintWriter", "<init>", "(Ljava/lang/String;)V"),
+            new ClassMethodSignature("java.io.PrintWriter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V")
+            ));
 
     private final BugReporter bugReporter;
 
@@ -83,10 +111,8 @@ public class DumbMethodInvocations implements Detector {
                 continue;
             }
 
-            if (iins.getName(cpg).equals("getConnection")
-                    && iins.getSignature(cpg).equals(
-                            "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;")
-                            && iins.getClassName(cpg).equals("java.sql.DriverManager")) {
+            ClassMethodSignature cms = new ClassMethodSignature(iins, cpg);
+            if (cms.equals(DRIVER_GET_CONNECTION)) {
                 Constant operandValue = frame.getTopValue();
                 if (operandValue.isConstantString()) {
                     String password = operandValue.getConstantString();
@@ -101,8 +127,7 @@ public class DumbMethodInvocations implements Detector {
                 }
             }
 
-            if (iins.getName(cpg).equals("substring") && iins.getSignature(cpg).equals("(I)Ljava/lang/String;")
-                    && iins.getClassName(cpg).equals("java.lang.String")) {
+            if (cms.equals(STRING_SUBSTRING)) {
 
                 Constant operandValue = frame.getTopValue();
                 if (!operandValue.isConstantInteger()) {
@@ -114,10 +139,9 @@ public class DumbMethodInvocations implements Detector {
                     .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
                 }
 
-            } else if (iins.getName(cpg).equals("<init>") && iins.getSignature(cpg).equals("(Ljava/lang/String;)V")
-                    && iins.getClassName(cpg).equals("java.io.File")) {
+            } else if (FILENAME_STRING_METHODS.contains(cms)) {
 
-                Constant operandValue = frame.getTopValue();
+                Constant operandValue = frame.getStackValue(iins.getArgumentTypes(cpg).length-1);
                 if (!operandValue.isConstantString()) {
                     continue;
                 }
