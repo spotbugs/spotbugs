@@ -117,10 +117,12 @@
     </target>
 
     <target name="classes1" unless="javac.executable">
+	<echo message="Compiling with ${ant.java.version}"/>
         <mkdir dir="build/classes"/>
-        <javac destdir="build/classes" source="1.8" target="1.8" debug="on" encoding="UTF-8" includeantruntime="false"
+        <javac destdir="build/classes" debug="on" encoding="UTF-8" includeantruntime="false"
 		>
             <src path="src/java"/>
+		<exclude name="sfBugsNew/Bug1295.java"/>
             <src path="src/fakeAnnotations"/>
             <src path="src/fakeLibraries"/>
             <classpath>
