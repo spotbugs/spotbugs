@@ -181,6 +181,12 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         if (DEBUG) {
             System.out.println("CEW: checking " + xclass.toString());
         }
+        if (xclass.isSynthetic()) {
+            if (DEBUG) {
+                System.out.println("Skipping synthetic classxclass " + xclass.toString());
+            }
+            return;
+        }
         check(xclass, expectWarning, true, HIGH_PRIORITY);
         check(xclass, desireWarning, true, NORMAL_PRIORITY);
         check(xclass, noWarning, false, HIGH_PRIORITY);
@@ -190,6 +196,12 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
             if (DEBUG) {
                 System.out.println("CEW: checking " + xmethod.toString());
             }
+            if (xmethod.isSynthetic()) {
+                if (DEBUG) {
+                    System.out.println("Skipping synthetic method " + xmethod.toString());
+                }
+                continue;
+            }
             check(xmethod, expectWarning, true, HIGH_PRIORITY);
             check(xmethod, desireWarning, true, NORMAL_PRIORITY);
             check(xmethod, noWarning, false, HIGH_PRIORITY);
@@ -198,6 +210,12 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         for (XField xfield : xclass.getXFields()) {
             if (DEBUG) {
                 System.out.println("CEW: checking " + xfield.toString());
+            }
+            if (xfield.isSynthetic()) {
+                if (DEBUG) {
+                    System.out.println("Skipping synthetic field " + xfield.toString());
+                }
+                continue;
             }
             check(xfield, expectWarning, true, HIGH_PRIORITY);
             check(xfield, desireWarning, true, NORMAL_PRIORITY);
