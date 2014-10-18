@@ -102,7 +102,20 @@
             </classpath>
             <compilerarg value="-Xlint:none"/>
         </javac>
+        <mkdir dir="build/classes-jdk7"/>
+        <javac destdir="build/classes-jdk7" source="1.7" target="1.7" debug="on" encoding="UTF-8" includeantruntime="false"
+		>
+            <src path="src/java"/>
+		<exclude name="sfBugsNew/Bug1295.java"/>
+            <src path="src/fakeAnnotations"/>
+            <src path="src/fakeLibraries"/>
+            <classpath>
+                <path refid="build.classpath"/>
+            </classpath>
+            <compilerarg value="-Xlint:none"/>
+        </javac>
     </target>
+
     <target name="classes1" unless="javac.executable">
         <mkdir dir="build/classes"/>
         <javac destdir="build/classes" source="1.8" target="1.8" debug="on" encoding="UTF-8" includeantruntime="false"
@@ -274,10 +287,33 @@
             inputFile="build/normal.xml"
             outputFile="build/unexpected.xml">
         </filterBugs>
-
     	<printBugs home="${findbugs.home}"
     		errorProperty="bugsReported"
             inputFile="build/unexpected.xml"
+            format="text">
+        </printBugs>
+
+
+        <echo>Test expected warnings with jdk7 javac bytecode</echo>
+        <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap} -Dfindbugs.sf.comment=false"
+               output="xml:withMessages" timestampNow="true" reportLevel="low"
+		   jvm="${java.executable}"
+        	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/normal-jdk7.xml">
+            <sourcePath path="${basedir}/src/java" />
+            <auxclasspath refid="build.classpath"/>
+            <class location="${basedir}/build/classes-jdk7" />
+        </findbugs>
+
+    	<filterBugs home="${findbugs.home}"
+            priority="1"
+            bugPattern="FB"
+            inputFile="build/normal-jdk7.xml"
+            outputFile="build/unexpected-jdk7.xml">
+        </filterBugs>
+
+    	<printBugs home="${findbugs.home}"
+    		errorProperty="bugsReported"
+            inputFile="build/unexpected-jdk7.xml"
             format="text">
         </printBugs>
 
