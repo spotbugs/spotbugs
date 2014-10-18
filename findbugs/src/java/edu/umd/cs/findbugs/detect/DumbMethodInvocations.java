@@ -26,36 +26,36 @@ import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.constant.Constant;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantFrame;
-import edu.umd.cs.findbugs.util.ClassMethodSignature;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 public class DumbMethodInvocations implements Detector {
-    private static final ClassMethodSignature DRIVER_GET_CONNECTION =
-            new ClassMethodSignature("java.sql.DriverManager", "getConnection", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;");
-    private static final ClassMethodSignature STRING_SUBSTRING =
-            new ClassMethodSignature("java.lang.String", "substring", "(I)Ljava/lang/String;");
+    private static final MethodDescriptor DRIVER_GET_CONNECTION =
+            new MethodDescriptor("java/sql/DriverManager", "getConnection", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;", true);
+    private static final MethodDescriptor STRING_SUBSTRING =
+            new MethodDescriptor("java/lang/String", "substring", "(I)Ljava/lang/String;");
 
-    private static final Set<ClassMethodSignature> FILENAME_STRING_METHODS = new HashSet<>(Arrays.asList(
-            new ClassMethodSignature("java.io.File", "<init>", "(Ljava/lang/String;)V"),
-            new ClassMethodSignature("java.io.File", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
-            new ClassMethodSignature("java.io.RandomAccessFile", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
-            new ClassMethodSignature("java.nio.file.Paths", "get", "(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;"),
-            new ClassMethodSignature("java.io.FileReader", "<init>", "(Ljava/lang/String;)V"),
-            new ClassMethodSignature("java.io.FileWriter", "<init>", "(Ljava/lang/String;)V"),
-            new ClassMethodSignature("java.io.FileWriter", "<init>", "(Ljava/lang/String;Z)V"),
-            new ClassMethodSignature("java.io.FileInputStream", "<init>", "(Ljava/lang/String;)V"),
-            new ClassMethodSignature("java.io.FileOutputStream", "<init>", "(Ljava/lang/String;)V"),
-            new ClassMethodSignature("java.io.FileOutputStream", "<init>", "(Ljava/lang/String;Z)V"),
-            new ClassMethodSignature("java.util.Formatter", "<init>", "(Ljava/lang/String;)V"),
-            new ClassMethodSignature("java.util.Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
-            new ClassMethodSignature("java.util.Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/util/Locale;)V"),
-            new ClassMethodSignature("java.util.jar.JarFile", "<init>", "(Ljava/lang/String;)V"),
-            new ClassMethodSignature("java.util.jar.JarFile", "<init>", "(Ljava/lang/String;Z)V"),
-            new ClassMethodSignature("java.util.zip.ZipFile", "<init>", "(Ljava/lang/String;)V"),
-            new ClassMethodSignature("java.util.zip.ZipFile", "<init>", "(Ljava/lang/String;Ljava/nio/charset/Charset;)V"),
-            new ClassMethodSignature("java.io.PrintStream", "<init>", "(Ljava/lang/String;)V"),
-            new ClassMethodSignature("java.io.PrintStream", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
-            new ClassMethodSignature("java.io.PrintWriter", "<init>", "(Ljava/lang/String;)V"),
-            new ClassMethodSignature("java.io.PrintWriter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V")
+    private static final Set<MethodDescriptor> FILENAME_STRING_METHODS = new HashSet<>(Arrays.asList(
+            new MethodDescriptor("java/io/File", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/File", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/RandomAccessFile", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
+            new MethodDescriptor("java/nio/file/Paths", "get", "(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;", true),
+            new MethodDescriptor("java/io/FileReader", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/FileWriter", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/FileWriter", "<init>", "(Ljava/lang/String;Z)V"),
+            new MethodDescriptor("java/io/FileInputStream", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/FileOutputStream", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/FileOutputStream", "<init>", "(Ljava/lang/String;Z)V"),
+            new MethodDescriptor("java/util/Formatter", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/util/Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
+            new MethodDescriptor("java/util/Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/util/Locale;)V"),
+            new MethodDescriptor("java/util/jar/JarFile", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/util/jar/JarFile", "<init>", "(Ljava/lang/String;Z)V"),
+            new MethodDescriptor("java/util/zip/ZipFile", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/util/zip/ZipFile", "<init>", "(Ljava/lang/String;Ljava/nio/charset/Charset;)V"),
+            new MethodDescriptor("java/io/PrintStream", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/PrintStream", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/PrintWriter", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/PrintWriter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V")
             ));
 
     private final BugReporter bugReporter;
@@ -115,8 +115,8 @@ public class DumbMethodInvocations implements Detector {
                 continue;
             }
 
-            ClassMethodSignature cms = new ClassMethodSignature(iins, cpg);
-            if (cms.equals(DRIVER_GET_CONNECTION)) {
+            MethodDescriptor md = new MethodDescriptor(iins, cpg);
+            if (md.equals(DRIVER_GET_CONNECTION)) {
                 Constant operandValue = frame.getTopValue();
                 if (operandValue.isConstantString()) {
                     String password = operandValue.getConstantString();
@@ -131,7 +131,7 @@ public class DumbMethodInvocations implements Detector {
                 }
             }
 
-            if (cms.equals(STRING_SUBSTRING)) {
+            if (md.equals(STRING_SUBSTRING)) {
 
                 Constant operandValue = frame.getTopValue();
                 if (!operandValue.isConstantInteger()) {
@@ -143,7 +143,7 @@ public class DumbMethodInvocations implements Detector {
                     .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
                 }
 
-            } else if (FILENAME_STRING_METHODS.contains(cms)) {
+            } else if (FILENAME_STRING_METHODS.contains(md)) {
 
                 Constant operandValue = frame.getStackValue(iins.getArgumentTypes(cpg).length-1);
                 if (!operandValue.isConstantString()) {
