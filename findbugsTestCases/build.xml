@@ -119,6 +119,7 @@
     <target name="classes1" unless="javac.executable">
 	<echo message="Compiling with ${ant.java.version}"/>
         <mkdir dir="build/classes"/>
+        <mkdir dir="build/classes-jdk7"/>
         <javac destdir="build/classes" debug="on" encoding="UTF-8" includeantruntime="false"
 		>
             <src path="src/java"/>
@@ -299,6 +300,7 @@
         <echo>Test expected warnings with jdk7 javac bytecode</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap} -Dfindbugs.sf.comment=false"
                output="xml:withMessages" timestampNow="true" reportLevel="low"
+		   noClassOk="true"
 		   jvm="${java.executable}"
         	   chooseVisitors="${enabledExtraVisitors}" outputFile="build/normal-jdk7.xml">
             <sourcePath path="${basedir}/src/java" />
