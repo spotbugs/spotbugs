@@ -31,6 +31,7 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
@@ -55,6 +56,8 @@ import edu.umd.cs.findbugs.util.Util;
  * @author David Hovemeyer
  */
 public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
+
+    private final static boolean DEBUG = SystemProperties.getBoolean("ci.debug");
     private final FieldInfo[] xFields;
 
     private final MethodInfo[] xMethods;
@@ -100,6 +103,14 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
         boolean hasStubs;
 
+        private static String arguments(String signature) {
+            int i = signature.indexOf('(');
+            if (i == -1) {
+                return signature;
+            }
+            return signature.substring(0,i+1);
+        }
+
         @Override
         public ClassInfo build() {
             AnalysisContext context = AnalysisContext.currentAnalysisContext();
@@ -111,17 +122,53 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
                 fields = fieldInfoList.toArray(new FieldInfo[fieldInfoList.size()]);
             }
 
+
+            for(MethodInfo m : methodInfoList) {
+                if (m.isBridge() && !bridgedSignatures.containsKey(m))  {
+
+                    if (DEBUG) {
+                        System.out.println("Have bridge method:" + m);
+                    }
+                    for(MethodInfo to : methodInfoList) {
+                        if (m != to) {
+                            if (!to.isBridge()
+                                    && m.getName().equals(to.getName())
+                                    && arguments( m.getSignature()).equals(arguments(to.getSignature()))) {
+                                if (DEBUG) {
+                                    System.out.println("  to method:" + to);
+                                }
+                                bridgedSignatures.put(m, to.getSignature());
+                            }
+
+                        }
+                    } // end  for(MethodInfo to
+                } // end  if (m.isBridge()
+            } // end  for(MethodInfo m : methodInfoList)
+
+
+
             for (Map.Entry<MethodInfo, String> e : bridgedSignatures.entrySet()) {
                 MethodInfo method = e.getKey();
                 String signature = e.getValue();
                 for (MethodInfo m : methodInfoList) {
                     if (m.getName().equals(method.getName()) && m.getSignature().equals(signature)) {
+                        if (DEBUG) {
+                            System.out.println("Found bridge method:");
+                            System.out.println("  " + method);
+                            if (!method.getAnnotations().isEmpty()) {
+                                System.out.println("    " + method.getAnnotations());
+                            }
+                            System.out.println("  " + m);
+                            if (!m.getAnnotations().isEmpty()) {
+                                System.out.println("    " + m.getAnnotations());
+                            }
+                        }
                         context.setBridgeMethod(method, m);
 
                     }
                 }
 
-            }
+            } // end for
 
             if (methodInfoList.size() == 0) {
                 methods = MethodInfo.EMPTY_ARRAY;
@@ -168,11 +215,11 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
             methodInfoList.add(method);
         }
 
-        public void addBridgeMethodDescriptor(MethodInfo method, String bridgedSignature) {
+        public void addBridgeMethodDescriptor(MethodInfo from, String bridgedSignature) {
             if (bridgedSignature != null) {
-                bridgedSignatures.put(method, bridgedSignature);
+                bridgedSignatures.put(from, bridgedSignature);
             }
-            addMethodDescriptor(method);
+            addMethodDescriptor(from);
         }
 
         public void setImmediateEnclosingClass(ClassDescriptor immediateEnclosingClass) {
