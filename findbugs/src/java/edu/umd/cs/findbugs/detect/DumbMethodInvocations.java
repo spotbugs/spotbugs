@@ -1,7 +1,10 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -23,8 +26,37 @@ import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.constant.Constant;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantFrame;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 public class DumbMethodInvocations implements Detector {
+    private static final MethodDescriptor DRIVER_GET_CONNECTION =
+            new MethodDescriptor("java/sql/DriverManager", "getConnection", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;", true);
+    private static final MethodDescriptor STRING_SUBSTRING =
+            new MethodDescriptor("java/lang/String", "substring", "(I)Ljava/lang/String;");
+
+    private static final Set<MethodDescriptor> FILENAME_STRING_METHODS = new HashSet<>(Arrays.asList(
+            new MethodDescriptor("java/io/File", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/File", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/RandomAccessFile", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
+            new MethodDescriptor("java/nio/file/Paths", "get", "(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;", true),
+            new MethodDescriptor("java/io/FileReader", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/FileWriter", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/FileWriter", "<init>", "(Ljava/lang/String;Z)V"),
+            new MethodDescriptor("java/io/FileInputStream", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/FileOutputStream", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/FileOutputStream", "<init>", "(Ljava/lang/String;Z)V"),
+            new MethodDescriptor("java/util/Formatter", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/util/Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
+            new MethodDescriptor("java/util/Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/util/Locale;)V"),
+            new MethodDescriptor("java/util/jar/JarFile", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/util/jar/JarFile", "<init>", "(Ljava/lang/String;Z)V"),
+            new MethodDescriptor("java/util/zip/ZipFile", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/util/zip/ZipFile", "<init>", "(Ljava/lang/String;Ljava/nio/charset/Charset;)V"),
+            new MethodDescriptor("java/io/PrintStream", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/PrintStream", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/PrintWriter", "<init>", "(Ljava/lang/String;)V"),
+            new MethodDescriptor("java/io/PrintWriter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V")
+            ));
 
     private final BugReporter bugReporter;
 
@@ -83,10 +115,8 @@ public class DumbMethodInvocations implements Detector {
                 continue;
             }
 
-            if (iins.getName(cpg).equals("getConnection")
-                    && iins.getSignature(cpg).equals(
-                            "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;")
-                            && iins.getClassName(cpg).equals("java.sql.DriverManager")) {
+            MethodDescriptor md = new MethodDescriptor(iins, cpg);
+            if (md.equals(DRIVER_GET_CONNECTION)) {
                 Constant operandValue = frame.getTopValue();
                 if (operandValue.isConstantString()) {
                     String password = operandValue.getConstantString();
@@ -101,8 +131,7 @@ public class DumbMethodInvocations implements Detector {
                 }
             }
 
-            if (iins.getName(cpg).equals("substring") && iins.getSignature(cpg).equals("(I)Ljava/lang/String;")
-                    && iins.getClassName(cpg).equals("java.lang.String")) {
+            if (md.equals(STRING_SUBSTRING)) {
 
                 Constant operandValue = frame.getTopValue();
                 if (!operandValue.isConstantInteger()) {
@@ -114,10 +143,9 @@ public class DumbMethodInvocations implements Detector {
                     .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
                 }
 
-            } else if (iins.getName(cpg).equals("<init>") && iins.getSignature(cpg).equals("(Ljava/lang/String;)V")
-                    && iins.getClassName(cpg).equals("java.io.File")) {
+            } else if (FILENAME_STRING_METHODS.contains(md)) {
 
-                Constant operandValue = frame.getTopValue();
+                Constant operandValue = frame.getStackValue(iins.getArgumentTypes(cpg).length-1);
                 if (!operandValue.isConstantString()) {
                     continue;
                 }

@@ -3783,6 +3783,31 @@ could be changed by malicious code or
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="MS_MUTABLE_COLLECTION">
+    <ShortDescription>Field is a mutable collection</ShortDescription>
+    <LongDescription>{1} is a mutable collection</LongDescription>
+    <Details>
+<![CDATA[
+ <p>A mutable collection instance is assigned to a final static field, 
+   thus can be changed by malicious code or by accident from another package.
+   Consider wrapping this field into Collections.unmodifiableSet/List/Map/etc.
+   to avoid this vulnerability.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="MS_MUTABLE_COLLECTION_PKGPROTECT">
+    <ShortDescription>Field is a mutable collection which should be package protected</ShortDescription>
+    <LongDescription>{1} is a mutable collection which should be package protected</LongDescription>
+    <Details>
+<![CDATA[
+ <p>A mutable collection instance is assigned to a final static field, 
+   thus can be changed by malicious code or by accident from another package.
+   The field could be made package protected to avoid this vulnerability. 
+   Alternatively you may wrap this field into Collections.unmodifiableSet/List/Map/etc.
+   to avoid this vulnerability.</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="MS_MUTABLE_ARRAY">
     <ShortDescription>Field is a mutable array</ShortDescription>
     <LongDescription>{1} is a mutable array</LongDescription>

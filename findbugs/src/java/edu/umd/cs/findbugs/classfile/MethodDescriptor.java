@@ -19,8 +19,13 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKESTATIC;
+import org.apache.bcel.generic.InvokeInstruction;
+
 import edu.umd.cs.findbugs.ba.ComparableMethod;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Descriptor uniquely identifying a method in a class.
@@ -44,6 +49,14 @@ public class MethodDescriptor extends FieldOrMethodDescriptor implements Compara
      */
     public MethodDescriptor(@SlashedClassName String className, String methodName, String methodSignature, boolean isStatic) {
         super(className, methodName, methodSignature, isStatic);
+    }
+
+    public MethodDescriptor(@SlashedClassName String className, String methodName, String methodSignature) {
+        super(className, methodName, methodSignature, false);
+    }
+
+    public MethodDescriptor(InvokeInstruction iins, ConstantPoolGen cpg) {
+        super(ClassName.toSlashedClassName(iins.getClassName(cpg)), iins.getMethodName(cpg), iins.getSignature(cpg), iins instanceof INVOKESTATIC);
     }
 
     @Override
