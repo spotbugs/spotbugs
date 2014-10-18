@@ -37,6 +37,7 @@ public class DumbMethodInvocations implements Detector {
     private static final Set<ClassMethodSignature> FILENAME_STRING_METHODS = new HashSet<>(Arrays.asList(
             new ClassMethodSignature("java.io.File", "<init>", "(Ljava/lang/String;)V"),
             new ClassMethodSignature("java.io.File", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
+            new ClassMethodSignature("java.io.RandomAccessFile", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
             new ClassMethodSignature("java.nio.file.Paths", "get", "(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;"),
             new ClassMethodSignature("java.io.FileReader", "<init>", "(Ljava/lang/String;)V"),
             new ClassMethodSignature("java.io.FileWriter", "<init>", "(Ljava/lang/String;)V"),
@@ -44,6 +45,9 @@ public class DumbMethodInvocations implements Detector {
             new ClassMethodSignature("java.io.FileInputStream", "<init>", "(Ljava/lang/String;)V"),
             new ClassMethodSignature("java.io.FileOutputStream", "<init>", "(Ljava/lang/String;)V"),
             new ClassMethodSignature("java.io.FileOutputStream", "<init>", "(Ljava/lang/String;Z)V"),
+            new ClassMethodSignature("java.util.Formatter", "<init>", "(Ljava/lang/String;)V"),
+            new ClassMethodSignature("java.util.Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
+            new ClassMethodSignature("java.util.Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/util/Locale;)V"),
             new ClassMethodSignature("java.util.jar.JarFile", "<init>", "(Ljava/lang/String;)V"),
             new ClassMethodSignature("java.util.jar.JarFile", "<init>", "(Ljava/lang/String;Z)V"),
             new ClassMethodSignature("java.util.zip.ZipFile", "<init>", "(Ljava/lang/String;)V"),
