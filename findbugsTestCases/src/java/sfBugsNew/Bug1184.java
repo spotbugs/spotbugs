@@ -3,11 +3,11 @@ package sfBugsNew;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug1184 {
-    @ExpectWarning("BX_UNBOXING_IMMEDIATELY_REBOXED")
+    @DesireWarning("BX_UNBOXING_IMMEDIATELY_REBOXED") // not generated under Jave 1.8
     public static void main(String[] args) {
         List<Integer> list = new ArrayList<>();
         list.add(1);
