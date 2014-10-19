@@ -399,6 +399,10 @@ public class DefaultNullnessAnnotations {
                 false, NullnessAnnotation.NONNULL);
         database.addMethodAnnotation("org.w3c.dom.Element","getAttributeNS", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
                 false, NullnessAnnotation.NONNULL);
+        database.addMethodAnnotation("org.w3c.dom.Element","getElementsByTagName", "(Ljava/lang/String;)Lorg/w3c/dom/NodeList;",
+                false, NullnessAnnotation.NONNULL);
+        database.addMethodAnnotation("org.w3c.dom.Element","getElementsByTagNameNS", "(Ljava/lang/String;Ljava/lang/String;)Lorg/w3c/dom/NodeList;",
+                false, NullnessAnnotation.NONNULL);
 
 
         addEclipseSpecificAnnotations(database);
