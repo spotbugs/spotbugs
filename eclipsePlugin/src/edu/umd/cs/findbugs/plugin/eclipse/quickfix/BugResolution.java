@@ -118,7 +118,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     @Override
     @Nonnull
     public String getLabel() {
-        ASTVisitor labelFixingVisitor = getLabelFixingVisitor();
+        ASTVisitor labelFixingVisitor = getCustomLabelVisitor();
         if (labelFixingVisitor instanceof CustomLabelVisitor) {
             if (customizedLabel == null) {
                 String labelReplacement = findLabelReplacement(labelFixingVisitor);
@@ -129,8 +129,9 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         return label;
     }
 
+
     @Nonnull
-    protected String findLabelReplacement(ASTVisitor labelFixingVisitor) {
+    private String findLabelReplacement(ASTVisitor labelFixingVisitor) {
         IMarker marker = getMarker();
         try {
             ASTNode node = getNodeForMarker(marker);
@@ -142,18 +143,26 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             // Catch all exceptions (explicit) so that the label creation won't fail
             // FindBugs prefers this being explicit instead of just catching Exception
         } catch (JavaModelException | ASTNodeNotFoundException | RuntimeException e) {
+            e.printStackTrace();
             return DEFAULT_REPLACEMENT;
         }
         return DEFAULT_REPLACEMENT;
     }
 
+    /**
+     * Returns an ASTVisitor that also implements CustomLabelVisitor or null
+     * if the label in plugin.xml will suffice.
+     *
+     * Override this to give a resolution a custom label.
+     * @return
+     */
     @CheckForNull
-    protected ASTVisitor getLabelFixingVisitor() {
+    protected ASTVisitor getCustomLabelVisitor() {
         return null;
     }
 
     @CheckForNull
-    protected ASTNode getNodeForMarker(IMarker marker) throws JavaModelException, ASTNodeNotFoundException {
+    private ASTNode getNodeForMarker(IMarker marker) throws JavaModelException, ASTNodeNotFoundException {
         BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
         if (bug == null) {
             return null;
@@ -456,6 +465,13 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         this.currentMarker = initialMarker;
     }
 
+    /**
+     * If getApplicabilityVisitor() is overwritten, this checks
+     * to see if this resolution applies to the code at the given marker.
+     *
+     * @param marker
+     * @return true if this resolution should be visible to the user at the given marker
+     */
     public boolean isApplicable(IMarker marker) {
         ASTVisitor prescanVisitor = getApplicabilityVisitor();
         if (prescanVisitor instanceof ApplicabilityVisitor) {       //this has an implicit null check
@@ -472,14 +488,23 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
                 //this cast is safe because isApplicable checks the type before calling
                 return ((ApplicabilityVisitor)prescanVisitor).isApplicable();
             }
-            // Catch all exceptions (explicit) so that the label creation won't fail
+            // Catch all exceptions (explicit) so that applicability check won't fail
             // FindBugs prefers this being explicit instead of just catching Exception
         } catch (JavaModelException | ASTNodeNotFoundException | RuntimeException e) {
+            e.printStackTrace();
             return true;
         }
         return true;
     }
 
+    /**
+     * Returns an ASTVisitor that also implements ApplicabilityVisitor or null
+     * if the resolution will always work as configured.
+     *
+     * Override this to basically prescan the code to see if a fix is valid
+     * before offering it to the user.
+     * @return
+     */
     protected ASTVisitor getApplicabilityVisitor() {
         return null;
     }

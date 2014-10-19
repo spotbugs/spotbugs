@@ -29,5 +29,10 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
  */
 public interface ApplicabilityVisitor {
 
+    /**
+     * This method will be called after the parent visitor was dropped into the AST that needs fixing.
+     *
+     * @return true if this resolution should be visible to the user at the given marker
+     */
     public abstract boolean isApplicable();
 }

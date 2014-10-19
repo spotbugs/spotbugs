@@ -30,6 +30,12 @@ import javax.annotation.CheckForNull;
  * @author <a href="mailto:kjlubick@ncsu.edu">Kevin Lubick</a>
  */
 public interface CustomLabelVisitor {
+
+    /**
+     * This method will be called after the parent visitor was dropped into the AST that needs fixing.
+     *
+     * @return the string that should replace YYY in the label to make a complete message.
+     */
     @CheckForNull
     public abstract String getLabelReplacement();
 }
