@@ -5664,11 +5664,11 @@ value of the result of the remainder operation (i.e., use
     </Details>
   </BugPattern>
   <BugPattern type="INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE">
-    <ShortDescription>Bad comparison of nonnegative value with negative constant</ShortDescription>
+    <ShortDescription>Bad comparison of nonnegative value with negative constant or zero</ShortDescription>
     <LongDescription>Bad comparison of nonnegative value with {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This code compares a value that is guaranteed to be non-negative with a negative constant.
+<p> This code compares a value that is guaranteed to be non-negative with a negative constant or zero.
 </p>
 ]]>
     </Details>
