@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tomás Pollak
+ * Copyright (C) 2009, Tomï¿½s Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,10 @@
 package de.tobject.findbugs.quickfix.test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import de.tobject.findbugs.test.AbstractQuickfixTest;
 import de.tobject.findbugs.test.TestScenario;
@@ -34,7 +38,7 @@ import org.junit.Test;
 /**
  * This class tests the quickfix resolutions.
  *
- * @author Tomás Pollak
+ * @author Tomï¿½s Pollak
  */
 public class QuickfixTest extends AbstractQuickfixTest {
     @BeforeClass
@@ -113,9 +117,14 @@ public class QuickfixTest extends AbstractQuickfixTest {
     @Test
     public void testUseEqualsResolution() throws CoreException, IOException {
         getProjectPreferences().getFilterSettings().setMinPriority("Low");
-
-        doTestQuickfixResolution("UseEqualsResolutionExample.java", "ES_COMPARING_STRINGS_WITH_EQ", "ES_COMPARING_PARAMETER_STRING_WITH_EQ");
+        QuickFixTestPackager pack = new QuickFixTestPackager();
+        pack.addBugPatterns("ES_COMPARING_STRINGS_WITH_EQ", "ES_COMPARING_PARAMETER_STRING_WITH_EQ");
+        pack.addExpectedLines(5, 11);
+        pack.setExpectedLabels(1,"Use equals(...) instead");
+        pack.setExpectedLabels(2,"Use equals(...) instead");
+        doTestQuickfixResolution("UseEqualsResolutionExample.java", pack.asList());
     }
+
 
     @Test
     public void testUseValueOfResolution() throws CoreException, IOException {
@@ -127,4 +136,49 @@ public class QuickfixTest extends AbstractQuickfixTest {
         return "/quickfixOutput/";
     }
 
+    private static class QuickFixTestPackager {
+
+        private final List<QuickFixTestPackage> packages = new ArrayList<>();
+
+        public void addBugPatterns(String... expectedPatterns) {
+            for (int i = 0; i < expectedPatterns.length; i++) {
+                String pattern = expectedPatterns[i];
+                if (packages.size() <= i) {
+                    packages.add(new QuickFixTestPackage());
+                }
+                packages.get(i).expectedPattern = pattern;
+            }
+        }
+
+        public List<QuickFixTestPackage> asList() {
+            return Collections.unmodifiableList(packages);
+        }
+
+        /*
+         * Could be more than one at a given index, so they need to be specified individually
+         */
+        public void setExpectedLabels(int index, String... expectedLabels) {
+            while (packages.size() <= index) {
+                packages.add(new QuickFixTestPackage());
+            }
+             packages.get(index).expectedLabels = Arrays.asList(expectedLabels);
+
+        }
+
+        public void addExpectedLines(int... lineNumbers) {
+            for (int i = 0; i < lineNumbers.length; i++) {
+                int lineNumber = lineNumbers[i];
+                if (packages.size() <= i) {
+                    packages.add(new QuickFixTestPackage());
+                }
+                packages.get(i).lineNumber = lineNumber;
+            }
+        }
+
+    }
+
 }
+
+
+
+

@@ -18,14 +18,21 @@
  */
 package de.tobject.findbugs.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
+
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.FindbugsTestPlugin;
+import de.tobject.findbugs.reporter.MarkerUtil;
+
+import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -38,12 +45,6 @@ import org.eclipse.ui.IMarkerResolutionGenerator2;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.FindbugsTestPlugin;
-import de.tobject.findbugs.reporter.MarkerUtil;
-import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator;
 
 /**
  * Base class for FindBugs quickfix tests.
@@ -84,6 +85,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         assertPresentBugPatterns(expectedPatterns, markers);
         assertEquals(expectedPatterns.length, markers.length);
 
+
         // Assert all markers have resolution
         assertAllMarkersHaveResolutions(markers);
 
@@ -101,6 +103,11 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
 
     protected void doTestQuickfixResolution(String classFileName, String... expectedPatterns) throws CoreException, IOException {
         doTestQuickfixResolution(classFileName, null, expectedPatterns);
+    }
+
+    protected void doTestQuickfixResolution(String classFileName, List<QuickFixTestPackage> packages) throws CoreException, IOException {
+        // TODO Auto-generated method stub
+
     }
 
     protected void enableBugCategory(String category) {
@@ -206,4 +213,13 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         }
         return writer.toString();
     }
+
+    public static class QuickFixTestPackage {
+
+        public String expectedPattern = null;
+        public List<String> expectedLabels = Collections.emptyList();
+        public int lineNumber = 0;
+    }
 }
+
+
