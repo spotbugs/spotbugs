@@ -130,7 +130,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
             @Override
             public int compare(IMarker marker1, IMarker marker2) {
                 String pattern1 = MarkerUtil.getBugPatternString(marker1);
-                String pattern2 = MarkerUtil.getBugPatternString(marker1);
+                String pattern2 = MarkerUtil.getBugPatternString(marker2);
                 if (pattern1 != null) {
                     if (pattern1.equals(pattern2)) {
                         return MarkerUtil.findPrimaryLineForMaker(marker1) -
@@ -207,7 +207,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
     protected void assertPresentBugPatterns(List<QuickFixTestPackage> packages, IMarker[] markers) {
         for (int i = 0; i < packages.size(); i++) {
             String actualBugpattern = MarkerUtil.getBugPatternString(markers[i]);
-            assertEquals("Bug Pattern should match", packages.get(i).expectedPattern, actualBugpattern);
+            assertEquals("Bug Pattern should match" , packages.get(i).expectedPattern, actualBugpattern);
         }
     }
 
@@ -255,6 +255,11 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         public String expectedPattern = null;
         public List<String> expectedLabels = null;
         public int lineNumber = -1;
+        @Override
+        public String toString() {
+            return "QuickFixTestPackage [expectedPattern=" + expectedPattern + ", expectedLabels=" + expectedLabels
+                    + ", lineNumber=" + lineNumber + "]";
+        }
     }
 
     protected static class QuickFixTestPackager {
