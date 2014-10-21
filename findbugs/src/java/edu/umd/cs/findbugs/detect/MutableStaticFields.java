@@ -239,8 +239,9 @@ public class MutableStaticFields extends BytecodeScanningDetector {
                      * Skip if there's at least one method is present
                      */
                     XClass xClass = classDescriptor.getXClass();
-                    if (xClass.getSuperclassDescriptor() != null
-                            && MUTABLE_COLLECTION_CLASSES.contains(xClass.getSuperclassDescriptor().getClassName())) {
+                    ClassDescriptor superclassDescriptor = xClass.getSuperclassDescriptor();
+                    if (superclassDescriptor != null
+                            && MUTABLE_COLLECTION_CLASSES.contains(superclassDescriptor.getClassName())) {
                         mutableCollectionJustCreated = true;
                         for (XMethod xMethod : xClass.getXMethods()) {
                             if (xMethod != null && !"<init>".equals(xMethod.getName()) && !"<clinit>".equals(xMethod.getName())) {
