@@ -24,8 +24,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.FindbugsTestPlugin;
@@ -75,16 +80,34 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         super.tearDown();
     }
 
-    protected void doTestQuickfixResolution(String classFileName, Class<? extends IMarkerResolution> resolutionClass,
-            String... expectedPatterns) throws CoreException, IOException {
+    protected void doTestQuickfixResolution(String classFileName, Class<? extends IMarkerResolution> resolutionClass, String... expectedPatterns) throws CoreException, IOException {
+        QuickFixTestPackager packager = new QuickFixTestPackager();
+        packager.addBugPatterns(expectedPatterns);
+
+        doTestQuickfixResolution(classFileName, resolutionClass, packager.asList());
+    }
+
+    protected void doTestQuickfixResolution(String classFileName, String... expectedPatterns) throws CoreException, IOException {
+        doTestQuickfixResolution(classFileName, null, expectedPatterns);
+    }
+
+    protected void doTestQuickfixResolution(String classFileName, List<QuickFixTestPackage> packages) throws CoreException, IOException {
+        doTestQuickfixResolution(classFileName, null, packages);
+    }
+
+    protected void doTestQuickfixResolution(String classFileName, Class<? extends IMarkerResolution> resolutionClass, List<QuickFixTestPackage> packages) throws CoreException, IOException {
         // Run FindBugs on the input class
         work(createFindBugsWorker(), getInputResource(classFileName));
 
         // Assert the expected markers are present
         IMarker[] markers = getInputFileMarkers(classFileName);
-        assertPresentBugPatterns(expectedPatterns, markers);
-        assertEquals(expectedPatterns.length, markers.length);
+        assertEquals("Too many or too few markers",packages.size(), markers.length);
 
+        sortMarkers(markers);
+
+        assertPresentBugPatterns(packages, markers);
+        //assertPresentLabels(packages, markers);
+        //assertPresentLineNumbers(packages, markers);
 
         // Assert all markers have resolution
         assertAllMarkersHaveResolutions(markers);
@@ -101,13 +124,27 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         assertEquals(0, getInputFileMarkers(classFileName).length);
     }
 
-    protected void doTestQuickfixResolution(String classFileName, String... expectedPatterns) throws CoreException, IOException {
-        doTestQuickfixResolution(classFileName, null, expectedPatterns);
-    }
+    private void sortMarkers(IMarker[] markers) {
+        Arrays.sort(markers, new Comparator<IMarker>() {
 
-    protected void doTestQuickfixResolution(String classFileName, List<QuickFixTestPackage> packages) throws CoreException, IOException {
-        // TODO Auto-generated method stub
-
+            @Override
+            public int compare(IMarker marker1, IMarker marker2) {
+                String pattern1 = MarkerUtil.getBugPatternString(marker1);
+                String pattern2 = MarkerUtil.getBugPatternString(marker1);
+                if (pattern1 != null) {
+                    if (pattern1.equals(pattern2)) {
+                        return MarkerUtil.findPrimaryLineForMaker(marker1) -
+                                MarkerUtil.findPrimaryLineForMaker(marker2);
+                    }
+                    return pattern1.compareTo(pattern2);
+                }
+                //else, perhaps fail because markers don't have bugPatternStrings?
+                else if (pattern2 == null) {
+                    return 0;       //neither is a bugPattern?
+                }
+                return MarkerUtil.findPrimaryLineForMaker(marker1) - MarkerUtil.findPrimaryLineForMaker(marker2);
+            }
+        });
     }
 
     protected void enableBugCategory(String category) {
@@ -157,32 +194,31 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         assertEquals(expectedSource, compilationUnit.getSource());
     }
 
-    protected void assertPresentBugPattern(String bugPatternType, IMarker[] markers) {
+    protected void assertPresentBugPattern(@Nonnull String bugPatternType, IMarker[] markers) {
         for (int i = 0; i < markers.length; i++) {
             BugPattern pattern = MarkerUtil.findBugPatternForMarker(markers[i]);
-            if (pattern.getType().equals(bugPatternType)) {
+            if (pattern != null && bugPatternType.equals(pattern.getType())) {
                 return;
             }
         }
         fail("Couldn't find pattern " + bugPatternType);
     }
 
-    protected void assertPresentBugPatterns(String[] expectedPatterns, IMarker[] markers) {
-        for (int i = 0; i < expectedPatterns.length; i++) {
-            assertPresentBugPattern(expectedPatterns[i], markers);
+    protected void assertPresentBugPatterns(List<QuickFixTestPackage> packages, IMarker[] markers) {
+        for (int i = 0; i < packages.size(); i++) {
+            String actualBugpattern = MarkerUtil.getBugPatternString(markers[i]);
+            assertEquals("Bug Pattern should match", packages.get(i).expectedPattern, actualBugpattern);
         }
     }
 
     protected URL getExpectedOutputFile(String filename) {
-        URL url = FindbugsTestPlugin.getDefault().getBundle().getEntry(getOutputFolderName() + filename);
-        return url;
+        return FindbugsTestPlugin.getDefault().getBundle().getEntry(getOutputFolderName() + filename);
     }
 
     protected abstract String getOutputFolderName();
 
     protected ICompilationUnit getInputCompilationUnit(String classFileName) throws JavaModelException {
-        ICompilationUnit compilationUnit = (ICompilationUnit) getJavaProject().findElement(new Path(classFileName));
-        return compilationUnit;
+        return (ICompilationUnit) getJavaProject().findElement(new Path(classFileName));
     }
 
     private IMarker[] getInputFileMarkers(String classFileName) throws JavaModelException {
@@ -217,8 +253,67 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
     public static class QuickFixTestPackage {
 
         public String expectedPattern = null;
-        public List<String> expectedLabels = Collections.emptyList();
-        public int lineNumber = 0;
+        public List<String> expectedLabels = null;
+        public int lineNumber = -1;
+    }
+
+    protected static class QuickFixTestPackager {
+
+        private final List<QuickFixTestPackage> packages = new ArrayList<>();
+
+        public QuickFixTestPackager() {
+            //made public to be seen by subclasses
+        }
+
+        public void addBugPatterns(String... expectedPatterns) {
+            for (int i = 0; i < expectedPatterns.length; i++) {
+                String pattern = expectedPatterns[i];
+                if (packages.size() <= i) {
+                    packages.add(new QuickFixTestPackage());
+                }
+                packages.get(i).expectedPattern = pattern;
+            }
+        }
+
+        /**
+         *
+         * @return a sorted list of QuickFixTestPackages to be used in assertions.
+         */
+        public List<QuickFixTestPackage> asList() {
+            Collections.sort(packages, new Comparator<QuickFixTestPackage>() {
+
+                @Override
+                public int compare(QuickFixTestPackage o1, QuickFixTestPackage o2) {
+                    if (o1.expectedPattern.equals(o2.expectedPattern)) {
+                        return o1.lineNumber - o2.lineNumber;
+                    }
+                    return o1.expectedPattern.compareTo(o2.expectedPattern);
+                }
+            });
+            return Collections.unmodifiableList(packages);
+        }
+
+        /*
+         * Could be more than one at a given index, so they need to be specified individually
+         */
+        public void setExpectedLabels(int index, String... expectedLabels) {
+            while (packages.size() <= index) {
+                packages.add(new QuickFixTestPackage());
+            }
+             packages.get(index).expectedLabels = Arrays.asList(expectedLabels);
+
+        }
+
+        public void addExpectedLines(int... lineNumbers) {
+            for (int i = 0; i < lineNumbers.length; i++) {
+                int lineNumber = lineNumbers[i];
+                if (packages.size() <= i) {
+                    packages.add(new QuickFixTestPackage());
+                }
+                packages.get(i).lineNumber = lineNumber;
+            }
+        }
+
     }
 }
 

@@ -19,10 +19,6 @@
 package de.tobject.findbugs.quickfix.test;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import de.tobject.findbugs.test.AbstractQuickfixTest;
 import de.tobject.findbugs.test.TestScenario;
@@ -120,8 +116,8 @@ public class QuickfixTest extends AbstractQuickfixTest {
         QuickFixTestPackager pack = new QuickFixTestPackager();
         pack.addBugPatterns("ES_COMPARING_STRINGS_WITH_EQ", "ES_COMPARING_PARAMETER_STRING_WITH_EQ");
         pack.addExpectedLines(5, 11);
+        pack.setExpectedLabels(0,"Use equals(...) instead");
         pack.setExpectedLabels(1,"Use equals(...) instead");
-        pack.setExpectedLabels(2,"Use equals(...) instead");
         doTestQuickfixResolution("UseEqualsResolutionExample.java", pack.asList());
     }
 
@@ -136,46 +132,7 @@ public class QuickfixTest extends AbstractQuickfixTest {
         return "/quickfixOutput/";
     }
 
-    private static class QuickFixTestPackager {
 
-        private final List<QuickFixTestPackage> packages = new ArrayList<>();
-
-        public void addBugPatterns(String... expectedPatterns) {
-            for (int i = 0; i < expectedPatterns.length; i++) {
-                String pattern = expectedPatterns[i];
-                if (packages.size() <= i) {
-                    packages.add(new QuickFixTestPackage());
-                }
-                packages.get(i).expectedPattern = pattern;
-            }
-        }
-
-        public List<QuickFixTestPackage> asList() {
-            return Collections.unmodifiableList(packages);
-        }
-
-        /*
-         * Could be more than one at a given index, so they need to be specified individually
-         */
-        public void setExpectedLabels(int index, String... expectedLabels) {
-            while (packages.size() <= index) {
-                packages.add(new QuickFixTestPackage());
-            }
-             packages.get(index).expectedLabels = Arrays.asList(expectedLabels);
-
-        }
-
-        public void addExpectedLines(int... lineNumbers) {
-            for (int i = 0; i < lineNumbers.length; i++) {
-                int lineNumber = lineNumbers[i];
-                if (packages.size() <= i) {
-                    packages.add(new QuickFixTestPackage());
-                }
-                packages.get(i).lineNumber = lineNumber;
-            }
-        }
-
-    }
 
 }
 

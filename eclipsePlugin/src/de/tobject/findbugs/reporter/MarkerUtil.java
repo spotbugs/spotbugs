@@ -589,6 +589,9 @@ public final class MarkerUtil {
         return marker.getAttribute(FindBugsMarker.RANK, BugRanker.VISIBLE_RANK_MAX);
     }
 
+    public static int findPrimaryLineForMaker(IMarker marker) {
+        return marker.getAttribute(FindBugsMarker.PRIMARY_LINE, DONT_KNOW_LINE);
+    }
     /**
      * @return priority (aka confidence)
      */
