@@ -30,10 +30,10 @@ import org.apache.bcel.classfile.ConstantFloat;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
-public class FindRoughConstants extends OpcodeStackDetector {
+public class FindRoughConstants extends BytecodeScanningDetector {
 
     static class BadConstant {
 
