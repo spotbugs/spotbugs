@@ -106,7 +106,7 @@ public class QuickfixMulti extends AbstractQuickfixTest {
         assertEquals("Too many or too few markers",packages.size(), markers.length);
 
         assertPresentBugPatterns(packages, markers);
-        //assertPresentLabels(packages, markers);
+        assertPresentLabels(packages, markers);
         assertPresentLineNumbers(packages, markers);
 
         // Assert all markers have resolution

@@ -37,6 +37,7 @@ import de.tobject.findbugs.FindbugsTestPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
 
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolution;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator;
 
 import org.eclipse.core.resources.IMarker;
@@ -106,7 +107,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         sortMarkers(markers);
 
         assertPresentBugPatterns(packages, markers);
-        //assertPresentLabels(packages, markers);
+        assertPresentLabels(packages, markers);
         assertPresentLineNumbers(packages, markers);
 
         // Assert all markers have resolution
@@ -217,6 +218,26 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
             int lineNumber = MarkerUtil.findPrimaryLineForMaker(markers[i]);
             if (packages.get(i).lineNumber != QuickFixTestPackage.LINE_NUMBER_NOT_SPECIFIED) {
                 assertEquals("Line number should match" , packages.get(i).lineNumber, lineNumber);
+            }
+        }
+    }
+
+    protected void assertPresentLabels(List<QuickFixTestPackage> packages, IMarker[] markers) {
+        for (int i = 0; i < packages.size(); i++) {
+            if (packages.get(i).expectedLabels == null) {
+                continue; //TODO migrate older tests to specify their labels
+            }
+            IMarker marker = markers[i];
+            List<String> expectedLabels = new ArrayList<>(packages.get(i).expectedLabels);
+            IMarkerResolution[] resolutions = getResolutionGenerator().getResolutions(marker);
+
+            assertEquals("The expected number of resolutions availible was wrong", expectedLabels.size(), resolutions.length);
+
+            for (int j = 0; j < resolutions.length; j++) {
+                BugResolution resolution = (BugResolution) resolutions[j];
+                String label = resolution.getLabel();
+                assertTrue(expectedLabels.contains(label));
+                expectedLabels.remove(label);
             }
         }
     }
