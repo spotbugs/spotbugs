@@ -171,6 +171,14 @@
                               />
                     </SplitPass>
                     <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph"/>
+                              <Later class="edu.umd.cs.findbugs.detect.DumbMethodInvocations"/>
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph"/>
+                              <Later class="edu.umd.cs.findbugs.detect.FindSqlInjection"/>
+                    </SplitPass>
+                    <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.CalledMethods"/>
                               <Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
                     </SplitPass>
@@ -283,6 +291,8 @@
           <Detector class="edu.umd.cs.findbugs.detect.ReflectiveClasses" speed="fast" reports=""
                     disabled="false" hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.CalledMethods" speed="fast" reports=""
+                    disabled="false" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph" speed="fast" reports=""
                     disabled="false" hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod"
                     speed="moderate" reports="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD"

@@ -314,6 +314,13 @@ by other detectors.</p>
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph">
+    <Details>
+<![CDATA[
+<p> Builds the database of string parameters passed from method to method unchanged.</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures">
     <Details>
 <![CDATA[
@@ -2579,11 +2586,11 @@ value from -99 to 0, use <code>-r.nextInt(100)</code>.
     </Details>
   </BugPattern>
   <BugPattern type="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE">
-    <ShortDescription>Nonconstant string passed to execute method on an SQL statement</ShortDescription>
-    <LongDescription>{1} passes a nonconstant String to an execute method on an SQL statement</LongDescription>
+    <ShortDescription>Nonconstant string passed to execute or addBatch method on an SQL statement</ShortDescription>
+    <LongDescription>{1} passes a nonconstant String to an execute or addBatch method on an SQL statement</LongDescription>
     <Details>
 <![CDATA[
-  <p>The method invokes the execute method on an SQL statement with a String that seems
+  <p>The method invokes the execute or addBatch method on an SQL statement with a String that seems
 to be dynamically generated. Consider using
 a prepared statement instead. It is more efficient and less vulnerable to
 SQL injection attacks.
