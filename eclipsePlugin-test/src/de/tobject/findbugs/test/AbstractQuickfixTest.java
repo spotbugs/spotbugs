@@ -124,7 +124,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         assertEquals(0, getInputFileMarkers(classFileName).length);
     }
 
-    private void sortMarkers(IMarker[] markers) {
+    protected void sortMarkers(IMarker[] markers) {
         Arrays.sort(markers, new Comparator<IMarker>() {
 
             @Override
@@ -212,9 +212,13 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         }
     }
 
-    private void assertPresentLineNumbers(List<QuickFixTestPackage> packages, IMarker[] markers) {
-        // TODO Auto-generated method stub
-
+    protected void assertPresentLineNumbers(List<QuickFixTestPackage> packages, IMarker[] markers) {
+        for (int i = 0; i < packages.size(); i++) {
+            int lineNumber = MarkerUtil.findPrimaryLineForMaker(markers[i]);
+            if (packages.get(i).lineNumber != QuickFixTestPackage.LINE_NUMBER_NOT_SPECIFIED) {
+                assertEquals("Line number should match" , packages.get(i).lineNumber, lineNumber);
+            }
+        }
     }
 
     protected URL getExpectedOutputFile(String filename) {
@@ -258,9 +262,10 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
 
     public static class QuickFixTestPackage {
 
+        public static final int LINE_NUMBER_NOT_SPECIFIED = -1; //TODO remove this after updating current tests
         public String expectedPattern = null;
         public List<String> expectedLabels = null;
-        public int lineNumber = -1;
+        public int lineNumber = LINE_NUMBER_NOT_SPECIFIED;
         @Override
         public String toString() {
             return "QuickFixTestPackage [expectedPattern=" + expectedPattern + ", expectedLabels=" + expectedLabels

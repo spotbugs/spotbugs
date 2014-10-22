@@ -93,19 +93,24 @@ public class QuickfixMulti extends AbstractQuickfixTest {
     }
 
 
-    protected void doTestMultiQuickfixResolution(IProject project, List<QuickFixTestPackage> list) throws CoreException, IOException {
+    protected void doTestMultiQuickfixResolution(IProject project, List<QuickFixTestPackage> packages) throws CoreException, IOException {
         // Run FindBugs on the entire project
         work(createFindBugsWorker(), project);
 
         // Assert the expected markers are present
         IMarker[] markers = MarkerUtil.getAllMarkers(project);
-        assertPresentBugPatterns(list, markers);
-        assertTrue(markers.length > 0);
+
+        markers = filterMarkers(markers, packages);
+        sortMarkers(markers);
+
+        assertEquals("Too many or too few markers",packages.size(), markers.length);
+
+        assertPresentBugPatterns(packages, markers);
+        //assertPresentLabels(packages, markers);
+        assertPresentLineNumbers(packages, markers);
 
         // Assert all markers have resolution
         assertAllMarkersHaveResolutions(markers);
-
-        markers = filterMarkers(markers, list);
 
         System.out.println(Arrays.toString(markers));
 
