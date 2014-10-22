@@ -107,7 +107,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
 
         assertPresentBugPatterns(packages, markers);
         //assertPresentLabels(packages, markers);
-        //assertPresentLineNumbers(packages, markers);
+        assertPresentLineNumbers(packages, markers);
 
         // Assert all markers have resolution
         assertAllMarkersHaveResolutions(markers);
@@ -194,6 +194,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         assertEquals(expectedSource, compilationUnit.getSource());
     }
 
+    @Deprecated
     protected void assertPresentBugPattern(@Nonnull String bugPatternType, IMarker[] markers) {
         for (int i = 0; i < markers.length; i++) {
             BugPattern pattern = MarkerUtil.findBugPatternForMarker(markers[i]);
@@ -209,6 +210,11 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
             String actualBugpattern = MarkerUtil.getBugPatternString(markers[i]);
             assertEquals("Bug Pattern should match" , packages.get(i).expectedPattern, actualBugpattern);
         }
+    }
+
+    private void assertPresentLineNumbers(List<QuickFixTestPackage> packages, IMarker[] markers) {
+        // TODO Auto-generated method stub
+
     }
 
     protected URL getExpectedOutputFile(String filename) {

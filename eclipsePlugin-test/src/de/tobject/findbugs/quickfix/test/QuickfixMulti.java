@@ -23,12 +23,14 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.test.AbstractQuickfixTest;
 import de.tobject.findbugs.test.TestScenario;
 
-import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 
 import org.eclipse.core.resources.IFile;
@@ -40,7 +42,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.views.markers.WorkbenchMarkerResolution;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -63,11 +64,6 @@ public class QuickfixMulti extends AbstractQuickfixTest {
         setUpTestProject(TestScenario.MULTIQUICKFIX);
     }
 
-    @AfterClass
-    public static void tearDownClass() throws CoreException {
-        //tearDownTestProject();
-    }
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -80,25 +76,36 @@ public class QuickfixMulti extends AbstractQuickfixTest {
 
     @Test
     public void testMultiUseValueOf() throws Exception {
-        doTestMultiQuickfixResolution(getJavaProject().getProject(), "DM_FP_NUMBER_CTOR");
+        QuickFixTestPackager packager = new QuickFixTestPackager();
+        packager.addBugPatterns("DM_FP_NUMBER_CTOR","DM_FP_NUMBER_CTOR","DM_FP_NUMBER_CTOR","DM_FP_NUMBER_CTOR","DM_FP_NUMBER_CTOR","DM_FP_NUMBER_CTOR");
+        packager.addExpectedLines(6, //OneProblemHere.java
+                11,24,   //TwoProblemsHere.java
+                7,9,16  //ThreeProblemsHere.java
+                );
+        packager.setExpectedLabels(0, "Use valueOf(...) instead");
+        packager.setExpectedLabels(1, "Use valueOf(...) instead");
+        packager.setExpectedLabels(2, "Use valueOf(...) instead");
+        packager.setExpectedLabels(3, "Use valueOf(...) instead");
+        packager.setExpectedLabels(4, "Use valueOf(...) instead");
+        packager.setExpectedLabels(5, "Use valueOf(...) instead");
+        doTestMultiQuickfixResolution(getJavaProject().getProject(), packager.asList());
 
     }
 
 
-    protected void doTestMultiQuickfixResolution(IProject project, String expectedPattern) throws CoreException, IOException {
+    protected void doTestMultiQuickfixResolution(IProject project, List<QuickFixTestPackage> list) throws CoreException, IOException {
         // Run FindBugs on the entire project
         work(createFindBugsWorker(), project);
 
         // Assert the expected markers are present
         IMarker[] markers = MarkerUtil.getAllMarkers(project);
-        assertPresentBugPattern(expectedPattern, markers);
+        assertPresentBugPatterns(list, markers);
         assertTrue(markers.length > 0);
-        //assertEquals(expectedBugsToFix, markers.length);
 
         // Assert all markers have resolution
         assertAllMarkersHaveResolutions(markers);
 
-        markers = filterMarkers(markers, expectedPattern);
+        markers = filterMarkers(markers, list);
 
         System.out.println(Arrays.toString(markers));
 
@@ -142,12 +149,17 @@ public class QuickfixMulti extends AbstractQuickfixTest {
     }
 
     //Filters out markers so that only markers with the expected pattern are in the array
-    private IMarker[] filterMarkers(IMarker[] markers, String bugPatternType) {
+    private IMarker[] filterMarkers(IMarker[] markers, List<QuickFixTestPackage> list) {
         ArrayList<IMarker> filteredMarkers = new ArrayList<>();
 
+        Set<String> bugPatternTypes = new HashSet<>();
+        for(QuickFixTestPackage pack : list) {
+            bugPatternTypes.add(pack.expectedPattern);
+        }
+
         for (int i = 0; i < markers.length; i++) {
-            BugPattern pattern = MarkerUtil.findBugPatternForMarker(markers[i]);
-            if (pattern.getType().equals(bugPatternType)) {
+            String pattern = MarkerUtil.getBugPatternString(markers[i]);
+            if (bugPatternTypes.contains(pattern)) {
                 filteredMarkers.add(markers[i]);
             }
         }
