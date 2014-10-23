@@ -22,7 +22,6 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -82,12 +81,12 @@ public class QuickfixMulti extends AbstractQuickfixTest {
                 11,24,   //TwoProblemsHere.java
                 7,9,16  //ThreeProblemsHere.java
                 );
-        packager.setExpectedLabels(0, "Use valueOf(...) instead");
-        packager.setExpectedLabels(1, "Use valueOf(...) instead");
-        packager.setExpectedLabels(2, "Use valueOf(...) instead");
-        packager.setExpectedLabels(3, "Use valueOf(...) instead");
-        packager.setExpectedLabels(4, "Use valueOf(...) instead");
-        packager.setExpectedLabels(5, "Use valueOf(...) instead");
+        packager.setExpectedLabels(0, "Use Double.valueOf(6.1) instead");
+        packager.setExpectedLabels(1, "Use Double.valueOf(7.1) instead");
+        packager.setExpectedLabels(2, "Use Double.valueOf(7.2) instead");
+        packager.setExpectedLabels(3, "Use Double.valueOf(8.1) instead");
+        packager.setExpectedLabels(4, "Use Float.valueOf(8.2f) instead");
+        packager.setExpectedLabels(5, "Use Double.valueOf(8.3) instead");
         doTestMultiQuickfixResolution(getJavaProject().getProject(), packager.asList());
 
     }
@@ -111,8 +110,6 @@ public class QuickfixMulti extends AbstractQuickfixTest {
 
         // Assert all markers have resolution
         assertAllMarkersHaveResolutions(markers);
-
-        System.out.println(Arrays.toString(markers));
 
         // Apply resolution to each marker
         applyMultiResolutionToAllMarkers(markers);

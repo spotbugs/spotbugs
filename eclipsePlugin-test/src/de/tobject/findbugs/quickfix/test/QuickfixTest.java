@@ -127,8 +127,8 @@ public class QuickfixTest extends AbstractQuickfixTest {
         QuickFixTestPackager pack = new QuickFixTestPackager();
         pack.addBugPatterns("DM_BOOLEAN_CTOR", "DM_NUMBER_CTOR");
         pack.addExpectedLines(3, 7);
-        pack.setExpectedLabels(0, "Use valueOf(...) instead");
-        pack.setExpectedLabels(1, "Use valueOf(...) instead");
+        pack.setExpectedLabels(0, "Use Boolean.valueOf(value) instead");
+        pack.setExpectedLabels(1, "Use Integer.valueOf(value) instead");
         doTestQuickfixResolution("UseValueOfResolutionExample.java", pack.asList());
     }
 
