@@ -116,15 +116,20 @@ public class QuickfixTest extends AbstractQuickfixTest {
         QuickFixTestPackager pack = new QuickFixTestPackager();
         pack.addBugPatterns("ES_COMPARING_STRINGS_WITH_EQ", "ES_COMPARING_PARAMETER_STRING_WITH_EQ");
         pack.addExpectedLines(5, 11);
-        pack.setExpectedLabels(0,"Use equals(...) instead");
-        pack.setExpectedLabels(1,"Use equals(...) instead");
+        pack.setExpectedLabels(0, "Use equals(...) instead");
+        pack.setExpectedLabels(1, "Use equals(...) instead");
         doTestQuickfixResolution("UseEqualsResolutionExample.java", pack.asList());
     }
 
 
     @Test
     public void testUseValueOfResolution() throws CoreException, IOException {
-        doTestQuickfixResolution("UseValueOfResolutionExample.java", "DM_BOOLEAN_CTOR", "DM_NUMBER_CTOR");
+        QuickFixTestPackager pack = new QuickFixTestPackager();
+        pack.addBugPatterns("DM_BOOLEAN_CTOR", "DM_NUMBER_CTOR");
+        pack.addExpectedLines(3, 7);
+        pack.setExpectedLabels(0, "Use valueOf(...) instead");
+        pack.setExpectedLabels(1, "Use valueOf(...) instead");
+        doTestQuickfixResolution("UseValueOfResolutionExample.java", pack.asList());
     }
 
     @Override
