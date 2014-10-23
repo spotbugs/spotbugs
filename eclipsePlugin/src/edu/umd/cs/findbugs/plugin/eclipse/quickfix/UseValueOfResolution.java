@@ -24,9 +24,13 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.addStaticImports;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getASTNode;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.AST;
@@ -60,23 +64,22 @@ public class UseValueOfResolution extends BugResolution {
 
     private static final String VALUE_OF_METHOD_NAME = "valueOf";
 
-    private boolean staticImport = false;
+    private static final Set<String> primativeClasses = new HashSet<>();
 
-    public UseValueOfResolution() {
-        super();
+    static {
+        primativeClasses.add("java.lang.Double");
+        primativeClasses.add("java.lang.Integer");
+        primativeClasses.add("java.lang.Boolean");
+        primativeClasses.add("java.lang.Float");
     }
 
-    public UseValueOfResolution(boolean staticImport) {
-        this();
-        this.staticImport = staticImport;
-    }
+    private boolean isDouble;
+
+    private boolean isFloatingPoint;
 
     public boolean isStaticImport() {
-        return staticImport;
-    }
-
-    public void setStaticImport(boolean staticImport) {
-        this.staticImport = staticImport;
+        // This can be changed to true to add the static import and base the fix on that.
+        return false;
     }
 
     @Override
@@ -131,7 +134,26 @@ public class UseValueOfResolution extends BugResolution {
         return true;
     }
 
-    protected static class PrimitiveTypeCreationFinder extends ASTVisitor {
+    @Override
+    protected ASTVisitor getCustomLabelVisitor() {
+        return new PrimitiveTypeCreationFinder();
+    }
+
+    @Override
+    public void setOptions(@Nonnull Map<String, String> options) {
+        // This setup (having two separate plugin.xml entries) is done to show off the
+        // ApplicabilityVisitor, although it could be done without, just by having a
+        // slightly fancier (and uglier) getLabelReplacement()
+        isFloatingPoint = Boolean.parseBoolean(options.get("isFloatingPoint"));
+        isDouble = Boolean.parseBoolean(options.get("isDouble"));
+    }
+
+    @Override
+    protected ASTVisitor getApplicabilityVisitor() {
+        return new PrimitiveTypeCreationFinder();
+    }
+
+    protected class PrimitiveTypeCreationFinder extends ASTVisitor implements CustomLabelVisitor, ApplicabilityVisitor {
 
         private ClassInstanceCreation primitiveTypeCreation = null;
 
@@ -150,10 +172,29 @@ public class UseValueOfResolution extends BugResolution {
             return primitiveTypeCreation;
         }
 
-        private boolean isPrimitiveTypeCreation(ClassInstanceCreation primitiveTypeCreation) {
-            // TODO check if the ClassInstanceCreation is a primitive type
-            // creation
-            return true;
+        private boolean isPrimitiveTypeCreation(ClassInstanceCreation node) {
+            ITypeBinding typeBinding = node.resolveTypeBinding();
+            return primativeClasses.contains(typeBinding.getQualifiedName());
+        }
+
+        @Override
+        public String getLabelReplacement() {
+            // returns what is in the constructor arguments
+            if (primitiveTypeCreation == null || primitiveTypeCreation.arguments().isEmpty()) {
+                return "...";   //safe return value
+            }
+            // can safely use toString() here because it's user facing, not being used as actual code
+            return primitiveTypeCreation.arguments().get(0).toString();
+        }
+
+        @Override
+        public boolean isApplicable() {
+            // we must have found a primativeTypeCreation.  If we are not dealing with
+            // DM_FP_NUMBER_CTOR, it's automatically applicable.  Otherwise,
+            // we must match the isDouble argument with actually resolving a double
+            return primitiveTypeCreation != null
+                    && (!isFloatingPoint || (isDouble == "java.lang.Double".equals(primitiveTypeCreation.resolveTypeBinding()
+                            .getQualifiedName())));
         }
 
     }

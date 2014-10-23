@@ -236,7 +236,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
             for (int j = 0; j < resolutions.length; j++) {
                 BugResolution resolution = (BugResolution) resolutions[j];
                 String label = resolution.getLabel();
-                assertTrue(expectedLabels.contains(label));
+                assertTrue("Should have seen label: "+label, expectedLabels.contains(label));
                 expectedLabels.remove(label);
             }
         }

@@ -1394,17 +1394,24 @@
     <quickFix
         pattern="DM_BOOLEAN_CTOR"
         class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution"
-        label="Use valueOf(...) instead"
+        label="Use Boolean.valueOf(YYY) instead"
     />
     <quickFix
+    	arguments="isFloatingPoint=true,isDouble=false"
         pattern="DM_FP_NUMBER_CTOR"
         class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution"
-        label="Use valueOf(...) instead"
+        label="Use Float.valueOf(YYY) instead"
+    />
+    <quickFix
+   	 	arguments="isFloatingPoint=true,isDouble=true"
+        pattern="DM_FP_NUMBER_CTOR"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution"
+        label="Use Double.valueOf(YYY) instead"
     />
     <quickFix
         pattern="DM_NUMBER_CTOR"
         class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution"
-        label="Use valueOf(...) instead"
+        label="Use Integer.valueOf(YYY) instead"
     />
     <quickFix
         pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"
