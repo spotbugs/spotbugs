@@ -419,7 +419,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     @Nonnull
     protected final CompilationUnit createWorkingCopy(@Nonnull ICompilationUnit unit) throws JavaModelException {
         unit.becomeWorkingCopy(monitor);
-        ASTParser parser = ASTParser.newParser(AST.JLS3);
+        ASTParser parser = ASTParser.newParser(AST.JLS4);
         parser.setSource(unit);
         parser.setResolveBindings(resolveBindings());
         return (CompilationUnit) parser.createAST(monitor);
