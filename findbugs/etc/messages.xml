@@ -1086,6 +1086,14 @@ on JSR166 locks.  It is a moderately fast detector.</p>
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.InefficientInitializationInsideLoop">
+    <Details>
+<![CDATA[
+<p> This detector looks for objects initialized within loop which can be moved outside for better performance.
+</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.InefficientIndexOf">
     <Details>
 <![CDATA[
@@ -6076,6 +6084,38 @@ a StringBuffer (or StringBuilder in Java 1.5) explicitly.</p>
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="IIL_PREPARE_STATEMENT_IN_LOOP">
+    <ShortDescription>Method calls prepareStatement in a loop</ShortDescription>
+    <LongDescription>{1} calls prepareStatement with the constant arguments in a loop</LongDescription>
+    <Details>
+<![CDATA[
+<p> The method calls Connection.prepareStatement inside the loop passing the constant arguments.
+If the PreparedStatement should be executed several times there's no reason to recreate it for each loop iteration.
+Move this call outside of the loop.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="IIL_PATTERN_COMPILE_IN_LOOP">
+    <ShortDescription>Method calls Pattern.compile in a loop</ShortDescription>
+    <LongDescription>{1} calls Pattern.compile with the constant arguments in a loop</LongDescription>
+    <Details>
+<![CDATA[
+<p> The method calls Pattern.compile inside the loop passing the constant arguments.
+If the Pattern should be used several times there's no reason to compile it for each loop iteration.
+Move this call outside of the loop or even into static final field.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT">
+    <ShortDescription>Method compiles the regular expression in a loop</ShortDescription>
+    <LongDescription>{1} compiles the regular expression in a loop</LongDescription>
+    <Details>
+<![CDATA[
+<p> The method creates the same regular expression inside the loop, so it will be compiled every iteration.
+It would be more optimal to precompile this regular expression using Pattern.compile outside of the loop.</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="IIO_INEFFICIENT_INDEX_OF">
     <ShortDescription>Inefficient use of String.indexOf(String)</ShortDescription>
     <LongDescription>{1} uses String.indexOf(String) instead of String.indexOf(int)</LongDescription>
@@ -8283,6 +8323,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="NS">Suspicious use of non-short-circuit boolean operator</BugCode>
   <BugCode abbrev="ODR">Database resource not closed on all paths</BugCode>
   <BugCode abbrev="SBSC">String concatenation in loop using + operator</BugCode>
+  <BugCode abbrev="IIL">Inefficient code which can be moved outside of the loop</BugCode>
   <BugCode abbrev="IIO">Inefficient use of String.indexOf(String) or String.lastIndexOf(String)</BugCode>
   <BugCode abbrev="ITA">Inefficient use of collection.toArray(new Foo[0])</BugCode>
   <BugCode abbrev="SW">Swing coding rules</BugCode>

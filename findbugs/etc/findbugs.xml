@@ -478,6 +478,8 @@
                     reports="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS"/>
           <Detector class="edu.umd.cs.findbugs.detect.StringConcatenation" speed="fast"
                     reports="SBSC_USE_STRINGBUFFER_CONCATENATION"/>
+          <Detector class="edu.umd.cs.findbugs.detect.InefficientInitializationInsideLoop" speed="fast"
+                    reports="IIL_PREPARE_STATEMENT_IN_LOOP,IIL_PATTERN_COMPILE_IN_LOOP,IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT"/>
           <Detector class="edu.umd.cs.findbugs.detect.InefficientIndexOf" speed="fast"
                     reports="IIO_INEFFICIENT_INDEX_OF,IIO_INEFFICIENT_LAST_INDEX_OF"/>
           <Detector class="edu.umd.cs.findbugs.detect.InefficientToArray" speed="fast"
@@ -1024,6 +1026,9 @@
                     category="BAD_PRACTICE"/>
           <BugPattern abbrev="SBSC" type="SBSC_USE_STRINGBUFFER_CONCATENATION"
                     category="PERFORMANCE"/>
+          <BugPattern abbrev="IIL" type="IIL_PREPARE_STATEMENT_IN_LOOP" category="PERFORMANCE"/>
+          <BugPattern abbrev="IIL" type="IIL_PATTERN_COMPILE_IN_LOOP" category="PERFORMANCE"/>
+          <BugPattern abbrev="IIL" type="IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT" category="PERFORMANCE"/>
           <BugPattern abbrev="IIO" type="IIO_INEFFICIENT_INDEX_OF" category="PERFORMANCE"/>
           <BugPattern abbrev="IIO" type="IIO_INEFFICIENT_LAST_INDEX_OF" category="PERFORMANCE"/>
           <BugPattern abbrev="ITA" type="ITA_INEFFICIENT_TO_ARRAY" category="PERFORMANCE"/>
