@@ -79,6 +79,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * <li>visitors (collection - comma seperated)
  * <li>chooseVisitors (selectively enable/disable visitors)
  * <li>workHard (boolean default false)
+ * <li>setSetExitCode (boolean default true)
  * </ul>
  * Of these arguments, the <b>home</b> is required. <b>projectFile</b> is
  * required if nested &lt;class&gt; or &lt;auxAnalyzepath&gt elements are not
@@ -164,6 +165,8 @@ public class FindBugsTask extends AbstractFindBugsTask {
     private boolean noClassOk;
 
     private boolean nested = true;
+    
+    private boolean setExitCode = true;
 
     private final List<FileSet> filesets = new ArrayList<FileSet>();
 
@@ -198,6 +201,17 @@ public class FindBugsTask extends AbstractFindBugsTask {
      */
     public void setWorkHard(boolean workHard) {
         this.workHard = workHard;
+    }
+
+    /**
+     * Set the exit code flag.
+     *
+     * @param setExitCode
+     *            If true then the exit code will be returned to
+     *            the main ant job
+     */
+    public void setSetExitCode(boolean setExitCode) {
+        this.setExitCode = setExitCode;
     }
 
     /**
@@ -774,7 +788,10 @@ public class FindBugsTask extends AbstractFindBugsTask {
             addArg(onlyAnalyze);
         }
 
-        addArg("-exitcode");
+        if (setExitCode) {
+            addArg("-exitcode");
+        }
+        
         for (ClassLocation classLocation : classLocations) {
             addArg(classLocation.toString());
         }

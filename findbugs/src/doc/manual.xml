@@ -1591,6 +1591,16 @@ using the &FindBugs; task.
       </listitem>
   </varlistentry>
 
+  <varlistentry>
+    <term><literal>setExitCode</literal></term>
+    <listitem>
+       <para>
+       Optional boolean attribute.  Whether the exit code will be returned to
+       the main ant job. Defaults to "true".
+       </para>
+    </listitem>
+  </varlistentry>
+
 </variablelist>
 
 
