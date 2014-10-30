@@ -143,7 +143,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             // Catch all exceptions (explicit) so that the label creation won't fail
             // FindBugs prefers this being explicit instead of just catching Exception
         } catch (JavaModelException | ASTNodeNotFoundException | RuntimeException e) {
-            e.printStackTrace();
+            FindbugsPlugin.getDefault().logException(e, e.getLocalizedMessage());
             return DEFAULT_REPLACEMENT;
         }
         return DEFAULT_REPLACEMENT;
@@ -491,7 +491,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             // Catch all exceptions (explicit) so that applicability check won't fail
             // FindBugs prefers this being explicit instead of just catching Exception
         } catch (JavaModelException | ASTNodeNotFoundException | RuntimeException e) {
-            e.printStackTrace();
+            FindbugsPlugin.getDefault().logException(e, e.getLocalizedMessage());
             return true;
         }
         return true;
