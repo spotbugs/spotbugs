@@ -64,13 +64,13 @@ public class UseValueOfResolution extends BugResolution {
 
     private static final String VALUE_OF_METHOD_NAME = "valueOf";
 
-    private static final Set<String> primativeClasses = new HashSet<>();
+    private static final Set<String> primitiveWrapperClasses = new HashSet<>();
 
     static {
-        primativeClasses.add("java.lang.Double");
-        primativeClasses.add("java.lang.Integer");
-        primativeClasses.add("java.lang.Boolean");
-        primativeClasses.add("java.lang.Float");
+        primitiveWrapperClasses.add("java.lang.Double");
+        primitiveWrapperClasses.add("java.lang.Integer");
+        primitiveWrapperClasses.add("java.lang.Boolean");
+        primitiveWrapperClasses.add("java.lang.Float");
     }
 
     private boolean isDouble;
@@ -174,7 +174,7 @@ public class UseValueOfResolution extends BugResolution {
 
         private boolean isPrimitiveTypeCreation(ClassInstanceCreation node) {
             ITypeBinding typeBinding = node.resolveTypeBinding();
-            return primativeClasses.contains(typeBinding.getQualifiedName());
+            return primitiveWrapperClasses.contains(typeBinding.getQualifiedName());
         }
 
         @Override
