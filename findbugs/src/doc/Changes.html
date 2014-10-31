@@ -18,6 +18,58 @@
 
                 <h1>FindBugs Change Log, Version @VERSION@</h1>
                 <ul>
+                    <li>New Bug patterns:
+                        <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#MS_MUTABLE_COLLECTION">MS_MUTABLE_COLLECTION</a>,
+                        <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#MS_MUTABLE_COLLECTION_PKGPROTECT">MS_MUTABLE_COLLECTION_PKGPROTECT</a>,
+                        <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#IIL_PREPARE_STATEMENT_IN_LOOP">IIL_PREPARE_STATEMENT_IN_LOOP</a>,
+                        <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#IIL_PATTERN_COMPILE_IN_LOOP">IIL_PATTERN_COMPILE_IN_LOOP</a>,
+                        <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT">IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT</a>
+                    </li>
+                    <li>Improved Bug patterns:
+                        <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#RpC_REPEATED_CONDITIONAL_TEST">RpC_REPEATED_CONDITIONAL_TEST</a>,
+                        <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#WMI_WRONG_MAP_ITERATOR">WMI_WRONG_MAP_ITERATOR</a>,
+                        <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_HARDCODED_ABSOLUTE_FILENAME">DMI_HARDCODED_ABSOLUTE_FILENAME</a>,
+                        <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_EMPTY_DB_PASSWORD">DMI_EMPTY_DB_PASSWORD</a>,
+                        <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_CONSTANT_DB_PASSWORD">DMI_CONSTANT_DB_PASSWORD</a>,
+                        <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE">SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE</a>,
+                        <a
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING">SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING</a>
+                    </li>
+
+
+               <!--
+                    <li>Fixed false positives for the following bug patterns (XXX occurrences in findbugsTestCases):
+                        <ul>
+                            <li><a
+                                href="http://findbugs.sourceforge.net/bugDescriptions.html#XXX">XXX</a>
+                        </ul>
+                    </li>
+
+                    <li>Fixed false negatives for the following bug patterns (XXX occurrences in findbugsTestCases):
+                        <ul>
+                            <li><a
+                                href="http://findbugs.sourceforge.net/bugDescriptions.html#XXX">XXX</a>
+                        </ul>
+                    </li>
+               -->
+
+                    <li>Various bug fixes, also many patches from community. Thanks for your contributions!
+                    </li>
+                </ul>
+
+                <h1>FindBugs Change Log, Version 3.0.0</h1>
+                <ul>
                     <li>FindBugs supports Java 8 now (both as runtime and target platform).
                     <li>FindBugs requires minimum Java 7 as runtime environment!
                     <li>FindBugs uses ASM 5 now which means that some 3rd party detectors based on FindBugs 2.x/ASM 3 has to be upgraded.
@@ -28,7 +80,7 @@
                         <a
                         href="http://findbugs.sourceforge.net/bugDescriptions.html#IIO_INEFFICIENT_INDEX_OF">IIO_INEFFICIENT_INDEX_OF</a>,
                         <a
-                        href="http://findbugs.sourceforge.net/bugDescriptions.html#IIO_INEFFICIENT_LAST_INDEX_OF">IIO_INEFFICIENT_LAST_INDEX_OF</a>
+                        href="http://findbugs.sourceforge.net/bugDescriptions.html#IIO_INEFFICIENT_LAST_INDEX_OF">IIO_INEFFICIENT_LAST_INDEX_OF</a>,
                         <a
                         href="http://findbugs.sourceforge.net/bugDescriptions.html#CNT_ROUGH_CONSTANT_VALUE">CNT_ROUGH_CONSTANT_VALUE</a>
                     </li>
