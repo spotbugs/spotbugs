@@ -479,7 +479,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.StringConcatenation" speed="fast"
                     reports="SBSC_USE_STRINGBUFFER_CONCATENATION"/>
           <Detector class="edu.umd.cs.findbugs.detect.InefficientInitializationInsideLoop" speed="fast"
-                    reports="IIL_PREPARE_STATEMENT_IN_LOOP,IIL_PATTERN_COMPILE_IN_LOOP,IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT"/>
+                    reports="IIL_PREPARE_STATEMENT_IN_LOOP,IIL_PATTERN_COMPILE_IN_LOOP,IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT,IIL_ELEMENTS_GET_LENGTH_IN_LOOP"/>
           <Detector class="edu.umd.cs.findbugs.detect.InefficientIndexOf" speed="fast"
                     reports="IIO_INEFFICIENT_INDEX_OF,IIO_INEFFICIENT_LAST_INDEX_OF"/>
           <Detector class="edu.umd.cs.findbugs.detect.InefficientToArray" speed="fast"
@@ -1026,6 +1026,7 @@
                     category="BAD_PRACTICE"/>
           <BugPattern abbrev="SBSC" type="SBSC_USE_STRINGBUFFER_CONCATENATION"
                     category="PERFORMANCE"/>
+          <BugPattern abbrev="IIL" type="IIL_ELEMENTS_GET_LENGTH_IN_LOOP" category="PERFORMANCE"/>
           <BugPattern abbrev="IIL" type="IIL_PREPARE_STATEMENT_IN_LOOP" category="PERFORMANCE"/>
           <BugPattern abbrev="IIL" type="IIL_PATTERN_COMPILE_IN_LOOP" category="PERFORMANCE"/>
           <BugPattern abbrev="IIL" type="IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT" category="PERFORMANCE"/>

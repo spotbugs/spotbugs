@@ -6095,6 +6095,18 @@ Move this call outside of the loop.</p>
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="IIL_ELEMENTS_GET_LENGTH_IN_LOOP">
+    <ShortDescription>NodeList.getLength() called in a loop</ShortDescription>
+    <LongDescription>{1} calls NodeList.getLength() in a loop for getElementsByTagName return value</LongDescription>
+    <Details>
+<![CDATA[
+<p> The method calls NodeList.getLength() inside the loop and NodeList was produced by getElementsByTagName call.
+This NodeList doesn't store its length, but computes it every time in not very optimal way.
+Consider storing the length to the variable before the loop.
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="IIL_PATTERN_COMPILE_IN_LOOP">
     <ShortDescription>Method calls Pattern.compile in a loop</ShortDescription>
     <LongDescription>{1} calls Pattern.compile with the constant arguments in a loop</LongDescription>

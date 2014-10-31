@@ -27,16 +27,23 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.StringAnnotation;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * @author Tagir Valeev
  */
 public class InefficientInitializationInsideLoop extends OpcodeStackDetector {
+    private static final MethodDescriptor NODELIST_GET_LENGTH = new MethodDescriptor("org/w3c/dom/NodeList", "getLength", "()I");
+
     private SortedMap<Integer, BugInstance> matched;
 
     private SortedMap<Integer, Integer> conditions;
+
+    private SortedMap<Integer, Integer> sources;
 
     private final BugReporter bugReporter;
 
@@ -48,6 +55,7 @@ public class InefficientInitializationInsideLoop extends OpcodeStackDetector {
     public void visitMethod(Method obj) {
         matched = new TreeMap<>();
         conditions = new TreeMap<>();
+        sources = new TreeMap<>();
         super.visitMethod(obj);
     }
 
@@ -70,6 +78,15 @@ public class InefficientInitializationInsideLoop extends OpcodeStackDetector {
                 && getMethodDescriptorOperand().getName().equals("prepareStatement") && hasConstantArguments()) {
             matched.put(getPC(), new BugInstance(this, "IIL_PREPARE_STATEMENT_IN_LOOP", NORMAL_PRIORITY).addClassAndMethod(this)
                     .addSourceLine(this, getPC()).addCalledMethod(this));
+        } else if (seen == INVOKEINTERFACE && getMethodDescriptorOperand().equals(NODELIST_GET_LENGTH)) {
+            Item item = getStack().getStackItem(0);
+            XMethod returnValueOf = item.getReturnValueOf();
+            if(returnValueOf != null && returnValueOf.getClassName().startsWith("org.w3c.dom.") && returnValueOf.getName().startsWith("getElementsByTagName")) {
+                matched.put(getPC(),
+                        new BugInstance(this, "IIL_ELEMENTS_GET_LENGTH_IN_LOOP", NORMAL_PRIORITY).addClassAndMethod(this)
+                        .addSourceLine(this, getPC()).addCalledMethod(this));
+                sources.put(getPC(), item.getPC());
+            }
         } else if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/regex/Pattern")
                 && getMethodDescriptorOperand().getName().equals("compile") && hasConstantArguments()) {
             String regex = getFirstArgument();
@@ -91,6 +108,11 @@ public class InefficientInitializationInsideLoop extends OpcodeStackDetector {
             conditions.put(getPC(), getBranchTarget());
         } else if (!matched.isEmpty() && isBranch(seen) && getBranchOffset() < 0) {
             for (Entry<Integer, BugInstance> entry : matched.tailMap(getBranchTarget()).entrySet()) {
+                Integer source = sources.get(entry.getKey());
+                if(source != null && (source > getBranchTarget() && source < getPC())) {
+                    // Object was created in the same loop: ignore
+                    return;
+                }
                 for (int target : conditions.subMap(getBranchTarget(), entry.getKey()).values()) {
                     if (target > entry.getKey() && target < getPC()) {
                         return;
