@@ -196,11 +196,15 @@ public class DumbMethodInvocations implements Detector {
         if (v.startsWith("/")) {
             return true;
         }
-        if (v.startsWith("C:")) {
+        if (v.startsWith("\\\\")) {
+            // UNC pathname like \\Server\share\...
             return true;
         }
-        if (v.startsWith("c:")) {
-            return true;
+        if (v.length() >= 2 && v.charAt(1) == ':') {
+            char driveletter = v.charAt(0);
+            if((driveletter >= 'A' && driveletter <= 'Z') || (driveletter >= 'a' && driveletter <= 'z')) {
+                return true;
+            }
         }
         try {
             File f = new File(v);
