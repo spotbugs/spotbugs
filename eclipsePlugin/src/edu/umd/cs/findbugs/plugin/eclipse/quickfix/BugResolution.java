@@ -162,7 +162,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     }
 
     @CheckForNull
-    private ASTNode getNodeForMarker(IMarker marker) throws JavaModelException, ASTNodeNotFoundException {
+    protected ASTNode getNodeForMarker(IMarker marker) throws JavaModelException, ASTNodeNotFoundException {
         BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
         if (bug == null) {
             return null;
