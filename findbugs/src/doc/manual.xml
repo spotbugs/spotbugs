@@ -3970,6 +3970,7 @@ some German improvements to findbugs_de.properties.</para>
 <para>Kevin Lubick contributed fixes and tests for multi-quick-fixes and customizable
 annotation colors for Eclipse plugin.</para>
 
+<para>Tagir Valeev contributed several new bug detectors and improved existing ones.</para>
 
 <para>If you have contributed to &FindBugs;, but aren't mentioned above,
 please send email to <email>findbugs@cs.umd.edu</email> (and also accept
