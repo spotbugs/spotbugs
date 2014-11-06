@@ -2018,6 +2018,7 @@ public class OpcodeStack implements Constants2 {
                 pop();
                 signature = "[" + BasicType.getType((byte) dbc.getIntConstant()).getSignature();
                 pushBySignature(signature, dbc);
+                getStackItem(0).setSpecialKind(Item.NEWLY_ALLOCATED);
                 break;
 
                 // According to the VM Spec 4.4.1, anewarray and multianewarray
@@ -2034,6 +2035,7 @@ public class OpcodeStack implements Constants2 {
                     signature = "[L" + signature + ";";
                 }
                 pushBySignature(signature, dbc);
+                getStackItem(0).setSpecialKind(Item.NEWLY_ALLOCATED);
                 break;
 
             case MULTIANEWARRAY:
@@ -2044,6 +2046,7 @@ public class OpcodeStack implements Constants2 {
 
                 signature = dbc.getClassConstantOperand();
                 pushBySignature(signature, dbc);
+                getStackItem(0).setSpecialKind(Item.NEWLY_ALLOCATED);
                 break;
 
             case AALOAD: {
@@ -2570,6 +2573,10 @@ public class OpcodeStack implements Constants2 {
         }
 
         pushByInvoke(dbc, seen != INVOKESTATIC);
+
+        if (sbItem != null && sbItem.isNewlyAllocated()) {
+            this.getStackItem(0).setSpecialKind(Item.NEWLY_ALLOCATED);
+        }
 
         if (initializingServletWriter) {
             this.getStackItem(0).setIsServletWriter();

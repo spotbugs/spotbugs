@@ -81,7 +81,9 @@ public class Ideas_2011_08_07 {
             return new Foo<T>(x + 2);
         }
 
-        @NoWarning("")
+        //This causes new warning RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT
+        //see feature#318
+        //@NoWarning("")
         public static void ignoredReturnValueOK() {
             Foo x = new Foo(42);
             x.plusOne();
