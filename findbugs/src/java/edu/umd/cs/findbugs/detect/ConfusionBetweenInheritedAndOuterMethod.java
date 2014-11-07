@@ -26,12 +26,12 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
-public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDetector {
+public class ConfusionBetweenInheritedAndOuterMethod extends OpcodeStackDetector {
 
     BugAccumulator bugAccumulator;
 
@@ -80,6 +80,10 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
                 getSigConstantOperand(), false);
         if (invokedMethod.isResolved() && invokedMethod.getClassName().equals(getDottedClassConstantOperand())
                 || invokedMethod.isSynthetic()) {
+            return;
+        }
+        if(getStack().getStackItem(getNumberArguments(getSigConstantOperand())).getRegisterNumber() != 0) {
+            // called not for this object
             return;
         }
         // method is inherited
