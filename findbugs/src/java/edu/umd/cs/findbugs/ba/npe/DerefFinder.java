@@ -152,7 +152,7 @@ public class DerefFinder {
                             if (unconditionallyDereferencedNullArgSet == null) {
                                 unconditionallyDereferencedNullArgSet = foo;
                             } else {
-                                unconditionallyDereferencedNullArgSet.intersects(foo);
+                                unconditionallyDereferencedNullArgSet.and(foo);
                             }
                             if (unconditionallyDereferencedNullArgSet.isEmpty()) {
                                 break;

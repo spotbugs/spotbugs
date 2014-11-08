@@ -528,7 +528,6 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
             throw new IllegalStateException("getFullyQualifiedMethodName called while not visiting method");
         }
         if (fullyQualifiedMethodName == null) {
-            getDottedSuperclassName();
             getMethodName();
             getDottedMethodSig();
             StringBuilder ref = new StringBuilder(5 + dottedClassName.length() + methodName.length() + dottedMethodSig.length());

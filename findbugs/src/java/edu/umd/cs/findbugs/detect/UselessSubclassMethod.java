@@ -324,7 +324,6 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
         if (!thrownExceptions(m1).equals(thrownExceptions(m2))) {
             return false;
         }
-        m1.getExceptionTable();
         return false;
     }
 }
