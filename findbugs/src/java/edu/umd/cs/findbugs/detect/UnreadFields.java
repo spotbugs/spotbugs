@@ -328,6 +328,7 @@ public class UnreadFields extends OpcodeStackDetector {
         // set during visitation of the Field are still valid here
         XField f = XFactory.createXField(this);
         data.constantFields.add(f);
+        data.writtenFields.add(f);
     }
 
     int count_aload_1;
