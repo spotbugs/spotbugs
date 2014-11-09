@@ -123,23 +123,22 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
 
         private Map<Integer, NullnessAnnotation> nonNullParameter;
 
-        private boolean checkForNullReturn;
+        private boolean relaxedNullReturn;
 
         DetectorNode(int access, String name, String desc, String signature, String[] exceptions, XMethod xmethod) {
             super(FindBugsASM.ASM_VERSION, access, name, desc, signature, exceptions);
             this.xmethod = xmethod;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public void visitEnd() {
             super.visitEnd();
             // 1 test if we have suspicious annotations on method or parameters
-            checkForNullReturn = containsCheckForNull(visibleAnnotations);
-            if(!checkForNullReturn){
-                checkForNullReturn = containsCheckForNull(invisibleAnnotations);
+            relaxedNullReturn = containsRelaxedNonNull(visibleAnnotations);
+            if(!relaxedNullReturn){
+                relaxedNullReturn = containsRelaxedNonNull(invisibleAnnotations);
             }
-            boolean needsCheck = checkForNullReturn;
+            boolean needsCheck = relaxedNullReturn;
             if (invisibleParameterAnnotations != null || visibleParameterAnnotations != null) {
                 nonNullParameter = getNonnullOrNullableParams(visibleParameterAnnotations);
                 Map<Integer, NullnessAnnotation> nnp = getNonnullOrNullableParams(invisibleParameterAnnotations);
@@ -186,7 +185,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
 
         private final boolean checkMethod(@Nonnull XMethod method) {
             boolean foundAny = false;
-            if (checkForNullReturn && containsNullness(method.getAnnotations(), NONNULL)) {
+            if (relaxedNullReturn && containsNullness(method.getAnnotations(), NONNULL)) {
                 BugInstance bug = new BugInstance(CheckRelaxingNullnessAnnotation.this, "NP_METHOD_RETURN_RELAXING_ANNOTATION",
                         HIGH_PRIORITY);
                 bug.addClassAndMethod(xmethod);
@@ -262,13 +261,13 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
         }
     }
 
-    static boolean containsCheckForNull(@CheckForNull List<AnnotationNode> methodAnnotations) {
+    static boolean containsRelaxedNonNull(@CheckForNull List<AnnotationNode> methodAnnotations) {
         if (methodAnnotations == null) {
             return false;
         }
         for (AnnotationNode annotation : methodAnnotations) {
             NullnessAnnotation nullness = getNullness(annotation.desc);
-            if (nullness == CHECK_FOR_NULL) {
+            if (nullness == CHECK_FOR_NULL || nullness == NULLABLE) {
                 return true;
             }
         }
