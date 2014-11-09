@@ -1864,14 +1864,6 @@ This section lists common problems with the plugin and (if known) how to resolve
 <para>
 Filter files may be used to include or exclude bug reports for particular classes
 and methods.  This chapter explains how to use filter files.
-
-<note>
-<title>Planned Features</title>
-<para>
-  Filters are currently only supported by the Command Line interface.
-  Eventually, filter support will be added to the GUI.
-</para>
-</note>
 </para>
 
 
