@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -335,6 +336,30 @@ public class FindPuzzlers extends OpcodeStackDetector {
                     this);
         }
 
+
+        if (seen == IADD  && isShift(getNextOpcode()) && stack.getStackDepth() >=3) {
+            OpcodeStack.Item v = stack.getStackItem(1);
+            Object constantValue = v.getConstant();
+            if (constantValue instanceof Integer) {
+                int c = ((Integer) constantValue).intValue();
+                int priority = LOW_PRIORITY;
+                if (c == 8) {
+                    priority--;
+                }
+                if (getPrevOpcode(1) == IAND) {
+                    priority--;
+                }
+                bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", priority)
+                .addClassAndMethod(this)
+                .addString("Possible bad parsing of shift operation; shift operator has lower precedence than +").describe(StringAnnotation.STRING_MESSAGE)
+                .addInt(c).describe(IntAnnotation.INT_SHIFT)
+                .addValueSource(stack.getStackItem(2), this)
+                .addValueSource(stack.getStackItem(1), this)
+                .addValueSource(stack.getStackItem(0), this)
+                , this);
+            }
+
+        }
         constantArgumentToShift = false;
         shiftOfNonnegativeValue = false;
         if ((seen == IUSHR || seen == ISHR || seen == ISHL)) {
@@ -464,7 +489,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
                         || "append".equals(getNameConstantOperand())
                         && "(Ljava/lang/Object;)Ljava/lang/StringBuffer;".equals(getSigConstantOperand())
                         && "java/lang/StringBuffer".equals(getClassConstantOperand()) || ("print".equals(getNameConstantOperand()) || "println".equals(getNameConstantOperand()))
-                                && "(Ljava/lang/Object;)V".equals(getSigConstantOperand()))) {
+                        && "(Ljava/lang/Object;)V".equals(getSigConstantOperand()))) {
             OpcodeStack.Item item = stack.getStackItem(0);
             String signature = item.getSignature();
             if (signature != null && signature.startsWith("[")) {

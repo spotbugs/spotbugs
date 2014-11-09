@@ -1063,6 +1063,19 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
             return false;
         }
     }
+    public boolean isShift(int opcode) {
+        switch (opcode) {
+        case IUSHR:
+        case ISHR:
+        case ISHL:
+        case LUSHR:
+        case LSHR:
+        case LSHL:
+            return true;
+        default:
+            return false;
+        }
+    }
 
     public static boolean areOppositeBranches(int opcode1, int opcode2) {
         if (!isBranch(opcode1)) {
