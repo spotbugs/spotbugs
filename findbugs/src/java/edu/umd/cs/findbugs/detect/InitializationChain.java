@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -218,13 +219,13 @@ public class InitializationChain extends BytecodeScanningDetector {
         compute();
         compute();
         compute();
-        Set<String> allClasses = classRequires.keySet();
 
-        for (String c : allClasses) {
+        for (Entry<String, Set<String>> entry : classRequires.entrySet()) {
+            String c = entry.getKey();
             if (DEBUG) {
                 System.out.println("Class " + c + " requires:");
             }
-            for (String needs : (classRequires.get(c))) {
+            for (String needs : entry.getValue()) {
                 if (DEBUG) {
                     System.out.println("  " + needs);
                 }

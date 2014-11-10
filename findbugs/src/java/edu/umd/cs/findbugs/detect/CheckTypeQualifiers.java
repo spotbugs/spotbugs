@@ -484,8 +484,6 @@ public class CheckTypeQualifiers extends CFGDetector {
 
             if (DEBUG) {
                 System.out.println("Check " + vn + ": forward=" + forward + ", backward=" + backward + " at " + checkLocation);
-                forwardsFact.getValue(vn);
-                backwardsFact.getValue(vn);
             }
 
             emitDataflowWarning(xMethod, typeQualifierValue, forwardsFact, backwardsFact, vn, forward, backward,

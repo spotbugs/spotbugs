@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.bcel.classfile.Method;
 
@@ -220,11 +221,12 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
                 // Next check: was the destination register clobbered
                 // elsewhere in this loop?
                 boolean clobberedInLoop = false;
-                for (int reg : clobberedRegisters.keySet()) {
+                for (Entry<Integer, Integer> entry : clobberedRegisters.entrySet()) {
+                    int reg = entry.getKey();
                     if (reg != stringSource) {
                         continue;
                     }
-                    int pc = clobberedRegisters.get(reg);
+                    int pc = entry.getValue();
                     if (pc >= getBranchTarget()) {
                         clobberedInLoop = true;
                         break;
