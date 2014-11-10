@@ -58,7 +58,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
  */
 public class BugSet implements Iterable<BugLeafNode> {
 
-    private final ArrayList<BugLeafNode> mainList;
+    private ArrayList<BugLeafNode> mainList;
 
     private final HashMap<SortableValue, BugSet> doneMap;
 
@@ -291,7 +291,9 @@ public class BugSet implements Iterable<BugLeafNode> {
 
             }
         };
-        Collections.sort(mainList, comparator);
+        ArrayList<BugLeafNode> copy = new ArrayList<BugLeafNode>(mainList);
+        Collections.sort(copy, comparator);
+        mainList = copy;
 
         if (SystemProperties.ASSERTIONS_ENABLED) {
             for(int i = 0; i < mainList.size(); i++) {
