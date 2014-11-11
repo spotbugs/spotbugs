@@ -19,12 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 import org.objectweb.asm.Opcodes;
@@ -33,17 +30,17 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.detect.FindNoSideEffectMethods.NoSideEffectMethodsDatabase;
 
 public class RepeatedConditionals extends OpcodeStackDetector {
-    private static final Set<String> NO_SIDEEFFECT_CLASSES = new HashSet<>(Arrays.asList(
-            "java/lang/String", "java/lang/Integer", "java/lang/Long", "java/lang/Double",
-            "java/lang/Float", "java/lang/Byte", "java/lang/Short", "java/math/BigInteger",
-            "java/math/BigDecimal"));
-
     BugReporter bugReporter;
+
+    private final NoSideEffectMethodsDatabase noSideEffectMethods;
 
     public RepeatedConditionals(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+        this.noSideEffectMethods = Global.getAnalysisCache().getDatabase(NoSideEffectMethodsDatabase.class);
         reset();
     }
 
@@ -153,18 +150,11 @@ public class RepeatedConditionals extends OpcodeStackDetector {
     }
 
     private boolean hasSideEffect(int seen) {
-        if(seen == INVOKEVIRTUAL || seen == INVOKESTATIC) {
-            if(NO_SIDEEFFECT_CLASSES.contains(getClassDescriptorOperand().getClassName())) {
-                return false;
-            }
-            if(seen == INVOKEVIRTUAL && getMethodDescriptorOperand().getName().equals("equals") &&
-                    getMethodDescriptorOperand().getSignature().equals("(Ljava/lang/Object;)Z")) {
-                return false;
-            }
-            return true;
+        if(seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKEINTERFACE || seen == INVOKESTATIC) {
+            return !noSideEffectMethods.hasNoSideEffect(getMethodDescriptorOperand());
         }
-        return isRegisterStore() || isReturn(seen) || isSwitch(seen) || seen == INVOKESPECIAL
-                || seen == INVOKEINTERFACE || seen == INVOKEDYNAMIC || seen == PUTFIELD || seen == PUTSTATIC;
+        return isRegisterStore() || isReturn(seen) || isSwitch(seen) || seen == INVOKEDYNAMIC || seen == PUTFIELD
+                || seen == PUTSTATIC;
     }
 
     private void reset() {

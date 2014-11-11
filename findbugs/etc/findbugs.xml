@@ -177,6 +177,12 @@
                               />
                     </SplitPass>
                     <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods"/>
+                              <Later
+                                        class="edu.umd.cs.findbugs.detect.RepeatedConditionals"
+                              />
+                    </SplitPass>
+                    <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph"/>
                               <Later class="edu.umd.cs.findbugs.detect.DumbMethodInvocations"/>
                     </SplitPass>
