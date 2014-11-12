@@ -1,12 +1,14 @@
 package sfBugsNew;
 
+import edu.umd.cs.findbugs.annotations.DesireNoWarning;
+
 public class Bug1325<P extends java.io.Serializable & Comparable<P>>
     implements java.io.Serializable, Comparable<Bug1325<P>> {
     private static final long serialVersionUID = 1L;
     private final P startPoint;
     private final P endPoint;
 
-    //@NoWarning("BC_UNCONFIRMED_CAST")
+    @DesireNoWarning("BC_UNCONFIRMED_CAST")
     public Bug1325(P start, P end) {
         startPoint = start;
         endPoint = end;
