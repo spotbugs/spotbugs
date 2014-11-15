@@ -10,7 +10,7 @@ public class Bug1325<P extends java.io.Serializable & Comparable<P>> implements 
 
     private final P endPoint;
 
-    @DesireNoWarning("BC_UNCONFIRMED_CAST")
+    @NoWarning("BC_UNCONFIRMED_CAST")
     public Bug1325(P start, P end) {
         startPoint = start;
         endPoint = end;
