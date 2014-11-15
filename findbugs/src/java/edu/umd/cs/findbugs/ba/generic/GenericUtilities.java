@@ -280,6 +280,13 @@ public class GenericUtilities {
                 return new GenericObjectType(baseType, parameters);
 
             } else if (signature.startsWith("T")) {
+                int i = signature.indexOf(';');
+                if (i > 0) {
+                    String var = signature.substring(1, i);
+                    if (var.indexOf('<') == -1) {
+                        return new GenericObjectType(var);
+                    }
+                }
                 // can't handle type variables
                 return null;
 
