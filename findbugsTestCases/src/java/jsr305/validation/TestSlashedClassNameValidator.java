@@ -1,4 +1,4 @@
-package jsr305;
+package jsr305.validation;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;

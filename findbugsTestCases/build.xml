@@ -90,6 +90,15 @@
     <target name="classes0" if="javac.executable">
   <echo message="Compiling with ${javac.executable}"/>
         <mkdir dir="build/classes"/>
+        <javac destdir="build/classes" source="1.7" target="1.7" debug="on" encoding="UTF-8" includeantruntime="false"
+        >
+            <src path="src/java"/>
+            <include name="jsr305/validation/*.java"/>
+            <classpath>
+                <path refid="build.classpath"/>
+            </classpath>
+            <compilerarg value="-Xlint:none"/>
+        </javac>
         <javac destdir="build/classes" source="1.8" target="1.8" debug="on" encoding="UTF-8" includeantruntime="false"
             fork="yes"
             executable="${javac.executable}"
@@ -97,6 +106,7 @@
             <src path="src/java"/>
             <src path="src/fakeAnnotations"/>
             <src path="src/fakeLibraries"/>
+            <exclude name="jsr305/validation/*.java"/>
             <classpath>
                 <path refid="build.classpath"/>
             </classpath>
