@@ -10,22 +10,12 @@ import java.nio.file.Paths;
 import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class TestNullReturnsInJdk {
 
     private static final Path PATH = Paths.get("");
     private static final File FILE = PATH.toFile();
-    private static final Pattern PATTERN = Pattern.compile("");
-
-    @ExpectWarning("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-    void npe1(){
-        use(PATTERN.matcher("").group(2).length());
-    }
-
-    @ExpectWarning("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-    void npe2(){
-        use(PATTERN.matcher("").group("bla").length());
-    }
 
     @ExpectWarning("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     void npe3() throws IOException{

@@ -49,12 +49,6 @@ public class DefaultNullnessAnnotations {
         database.addFieldAnnotation("java.math.BigInteger", "ONE", "Ljava/math/BigInteger;", true, NullnessAnnotation.NONNULL);
         database.addFieldAnnotation("java.math.BigInteger", "TEN", "Ljava/math/BigInteger;", true, NullnessAnnotation.NONNULL);
 
-
-        database.addMethodAnnotation("java.util.regex.Matcher", "group", "(Ljava/lang/String;)Ljava/lang/String;", false,
-                NullnessAnnotation.CHECK_FOR_NULL);
-        database.addMethodAnnotation("java.util.regex.Matcher", "group", "(I)Ljava/lang/String;", false,
-                NullnessAnnotation.CHECK_FOR_NULL);
-
         database.addMethodAnnotation("java.nio.file.Files", "probeContentType", "(Ljava/nio/file/Path;)Ljava/lang/String;", true,
                 NullnessAnnotation.CHECK_FOR_NULL);
 
