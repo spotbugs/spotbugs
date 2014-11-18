@@ -176,7 +176,7 @@ This plugin contains all of the standard FindBugs detectors.
   <Detector class="edu.umd.cs.findbugs.detect.InitializeNonnullFieldsInConstructor">
     <Details>
 <![CDATA[
-<p> Finds nonnull fields that are not written to in constructors.
+<p> Finds non-null fields that are not written to in constructors.
 </p>
 ]]>
      </Details>
@@ -375,7 +375,7 @@ literals.
     <Details>
       <![CDATA[
       <p>
-      Looks for @NonNull annotations on methods, fields, and parameters.
+      Looks for @Nonnull annotations on methods, fields, and parameters.
       These can be used by the FindNullDeref detector to generate warnings
       when a possibly-null value is used in a context where only
       non-null values should be used.
@@ -403,7 +403,7 @@ literals.
       <![CDATA[
       <p>
       Analyze all methods in the application to determine which
-    methods always return nonnull values.
+    methods always return non-null values.
       </p>
       ]]>
    </Details>
@@ -1504,7 +1504,7 @@ factory pattern to create these objects.</p>
     <Details>
       <![CDATA[
       <p>
-      TrainNonNullAnnotations collects @NonNull and @PossiblyNull annotations
+      TrainNonNullAnnotations collects @Nonnull and @PossiblyNull annotations
       and stores them to database files.  This is a fast detector.
       </p>
       ]]>
@@ -2023,11 +2023,11 @@ another package.</p>
        </Details>
   </BugPattern>
   <BugPattern type="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">
-    <ShortDescription>Nonnull field is not initialized</ShortDescription>
-    <LongDescription>Nonnull field {2.name} is not initialized by {1}</LongDescription>
+    <ShortDescription>Non-null field is not initialized</ShortDescription>
+    <LongDescription>Non-null field {2.name} is not initialized by {1}</LongDescription>
     <Details>
        <![CDATA[
-       <p> The field is marked as nonnull, but isn't written to by the constructor.
+       <p> The field is marked as non-null, but isn't written to by the constructor.
     The field might be initialized elsewhere during constructor, or might always
     be initialized before use.
        </p>
@@ -4609,7 +4609,7 @@ and generally bad practice.
   <p> The variable referenced at this point is known to be null due to an earlier
    check against null. Although this is valid, it might be a mistake (perhaps you
 intended to refer to a different variable, or perhaps the earlier check to see if the
-variable is null should have been a check to see if it was nonnull).
+variable is null should have been a check to see if it was non-null).
 </p>
 ]]>
     </Details>
@@ -4788,8 +4788,8 @@ inner object.&nbsp; This reference makes the instances
     </Details>
   </BugPattern>
   <BugPattern type="RV_DONT_JUST_NULL_CHECK_READLINE">
-    <ShortDescription>Method discards result of readLine after checking if it is nonnull</ShortDescription>
-    <LongDescription>{1} discards result of readLine after checking if it is nonnull</LongDescription>
+    <ShortDescription>Method discards result of readLine after checking if it is non-null</ShortDescription>
+    <LongDescription>{1} discards result of readLine after checking if it is non-null</LongDescription>
     <Details>
 <![CDATA[
    <p> The value returned by readLine is discarded after checking to see if the return
@@ -4944,11 +4944,11 @@ something that should be closed.
     </Details>
   </BugPattern>
   <BugPattern type="NP_STORE_INTO_NONNULL_FIELD">
-    <ShortDescription>Store of null value into field annotated NonNull</ShortDescription>
-    <LongDescription>Store of null value into field {2.givenClass} annotated NonNull in {1}</LongDescription>
+    <ShortDescription>Store of null value into field annotated @Nonnull</ShortDescription>
+    <LongDescription>Store of null value into field {2.givenClass} annotated @Nonnull in {1}</LongDescription>
     <Details>
       <![CDATA[
-<p> A value that could be null is stored into a field that has been annotated as NonNull. </p>
+<p> A value that could be null is stored into a field that has been annotated as @Nonnull. </p>
 ]]>
     </Details>
   </BugPattern>
@@ -4968,11 +4968,11 @@ be an exception path, since the default case is often infeasible.</p>
     </Details>
   </BugPattern>
   <BugPattern type="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE">
-    <ShortDescription>Parameter must be nonnull but is marked as nullable</ShortDescription>
-    <LongDescription>{2} must be nonnull but is marked as nullable</LongDescription>
+    <ShortDescription>Parameter must be non-null but is marked as nullable</ShortDescription>
+    <LongDescription>{2} must be non-null but is marked as nullable</LongDescription>
     <Details>
 <![CDATA[
-<p> This parameter is always used in a way that requires it to be nonnull,
+<p> This parameter is always used in a way that requires it to be non-null,
 but the parameter is explicitly annotated as being Nullable. Either the use
 of the parameter or the annotation is wrong.
 </p>
@@ -5038,56 +5038,56 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
    </Details>
   </BugPattern>
   <BugPattern type="NP_NULL_PARAM_DEREF_NONVIRTUAL">
-    <ShortDescription>Non-virtual method call passes null for nonnull parameter</ShortDescription>
-    <LongDescription>Non-virtual method call in {1} passes null for nonnull parameter of {2.givenClass}</LongDescription>
+    <ShortDescription>Non-virtual method call passes null for non-null parameter</ShortDescription>
+    <LongDescription>Non-virtual method call in {1} passes null for non-null parameter of {2.givenClass}</LongDescription>
     <Details>
       <![CDATA[
       <p>
-      A possibly-null value is passed to a nonnull method parameter.
+      A possibly-null value is passed to a non-null method parameter.
     Either the parameter is annotated as a parameter that should
-    always be nonnull, or analysis has shown that it will always be
+    always be non-null, or analysis has shown that it will always be
     dereferenced.
       </p>
       ]]>
    </Details>
   </BugPattern>
   <BugPattern type="NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS">
-    <ShortDescription>Method call passes null for nonnull parameter</ShortDescription>
-    <LongDescription>Null passed for nonnull parameter of {2.givenClass} in {1}</LongDescription>
+    <ShortDescription>Method call passes null for non-null parameter</ShortDescription>
+    <LongDescription>Null passed for non-null parameter of {2.givenClass} in {1}</LongDescription>
     <Details>
       <![CDATA[
       <p>
       A possibly-null value is passed at a call site where all known
-      target methods require the parameter to be nonnull.
+      target methods require the parameter to be non-null.
     Either the parameter is annotated as a parameter that should
-    always be nonnull, or analysis has shown that it will always be
+    always be non-null, or analysis has shown that it will always be
     dereferenced.
       </p>
       ]]>
    </Details>
   </BugPattern>
   <BugPattern type="NP_NULL_PARAM_DEREF">
-    <ShortDescription>Method call passes null for nonnull parameter</ShortDescription>
-    <LongDescription>Null passed for nonnull parameter of {2.givenClass} in {1}</LongDescription>
+    <ShortDescription>Method call passes null for non-null parameter</ShortDescription>
+    <LongDescription>Null passed for non-null parameter of {2.givenClass} in {1}</LongDescription>
     <Details>
       <![CDATA[
       <p>
-      This method call passes a null value for a nonnull method parameter.
+      This method call passes a null value for a non-null method parameter.
     Either the parameter is annotated as a parameter that should
-    always be nonnull, or analysis has shown that it will always be
+    always be non-null, or analysis has shown that it will always be
     dereferenced.
       </p>
       ]]>
    </Details>
   </BugPattern>
   <BugPattern type="NP_NONNULL_PARAM_VIOLATION">
-    <ShortDescription>Method call passes null to a nonnull parameter </ShortDescription>
-    <LongDescription>Null passed for nonnull parameter of {2.givenClass} in {1}</LongDescription>
+    <ShortDescription>Method call passes null to a non-null parameter </ShortDescription>
+    <LongDescription>Null passed for non-null parameter of {2.givenClass} in {1}</LongDescription>
     <Details>
       <![CDATA[
       <p>
       This method passes a null value as the parameter of a method which
-    must be nonnull. Either this parameter has been explicitly marked
+    must be non-null. Either this parameter has been explicitly marked
     as @Nonnull, or analysis has determined that this parameter is
     always dereferenced.
       </p>
@@ -5095,13 +5095,13 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
    </Details>
   </BugPattern>
   <BugPattern type="NP_NONNULL_RETURN_VIOLATION">
-    <ShortDescription>Method may return null, but is declared @NonNull</ShortDescription>
-    <LongDescription>{1} may return null, but is declared @NonNull</LongDescription>
+    <ShortDescription>Method may return null, but is declared @Nonnull</ShortDescription>
+    <LongDescription>{1} may return null, but is declared @Nonnull</LongDescription>
     <Details>
       <![CDATA[
       <p>
       This method may return a null value, but the method (or a superclass method
-      which it overrides) is declared to return @NonNull.
+      which it overrides) is declared to return @Nonnull.
       </p>
       ]]>
    </Details>
@@ -7030,7 +7030,7 @@ the String "1" is incompatible with the format specifier %d.
 <![CDATA[
 <p>
 An argument not of type Boolean is being formatted with a %b format specifier. This won't throw an
-exception; instead, it will print true for any nonnull value, and false for null.
+exception; instead, it will print true for any non-null value, and false for null.
 This feature of format strings is strange, and may not be what you intended.
 </p>
 ]]>
@@ -7292,7 +7292,7 @@ an indication of some misunderstanding or some other logic error.
   </BugPattern>
   <BugPattern type="BC_VACUOUS_INSTANCEOF">
     <ShortDescription>instanceof will always return true</ShortDescription>
-    <LongDescription>instanceof will always return true for all nonnull values in {1}, since all {2} are instances of {3}</LongDescription>
+    <LongDescription>instanceof will always return true for all non-null values in {1}, since all {2} are instances of {3}</LongDescription>
     <Details>
 <![CDATA[
 <p>
