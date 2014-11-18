@@ -332,7 +332,7 @@ by other detectors.</p>
     <Details>
 <![CDATA[
 <p> Looks for immutable classes with methods that return new instances of that class,
-where people might accidently think those methods mutate the instance they are invoked on.
+where people might accidentally think those methods mutate the instance they are invoked on.
 </p>
 ]]>
     </Details>
@@ -3952,7 +3952,7 @@ complain about a potential ambiguous invocation.
 that its superclass is in a different package (e.g., <code>alpha.Foo</code> extends <code>beta.Foo</code>).
 This can be exceptionally confusing, create lots of situations in which you have to look at import statements
 to resolve references and creates many
-opportunities to accidently define methods that do not override methods in their superclasses.
+opportunities to accidentally define methods that do not override methods in their superclasses.
 </p>
 ]]>
     </Details>
@@ -3966,7 +3966,7 @@ opportunities to accidently define methods that do not override methods in their
 that the interface is in a different package (e.g., <code>alpha.Foo</code> extends <code>beta.Foo</code>).
 This can be exceptionally confusing, create lots of situations in which you have to look at import statements
 to resolve references and creates many
-opportunities to accidently define methods that do not override methods in their superclasses.
+opportunities to accidentally define methods that do not override methods in their superclasses.
 </p>
 ]]>
     </Details>
@@ -4111,7 +4111,7 @@ removing or deprecating the method with the similar but not identical signature.
 <![CDATA[
   <p> This regular method has the same name as the class it is defined in. It is likely that this was intended to be a constructor.
       If it was intended to be a constructor, remove the declaration of a void return value.
-    If you had accidently defined this method, realized the mistake, defined a proper constructor
+    If you had accidentally defined this method, realized the mistake, defined a proper constructor
     but can't get rid of this method due to backwards compatibility, deprecate the method.
 </p>
 ]]>
