@@ -18,8 +18,7 @@ This plugin contains all of the standard FindBugs detectors.
     </Details>
   </Plugin>
   <FindBugsMain cmd="addMessages" class="edu.umd.cs.findbugs.AddMessages">
-    <Description>add msgs (e.g., textual descriptions of bugs) to analysis results
-         </Description>
+    <Description>Add msgs (e.g., textual descriptions of bugs) to analysis results</Description>
   </FindBugsMain>
   <FindBugsMain cmd="analyze" class="edu.umd.cs.findbugs.FindBugs2">
     <Description>Perform FindBugs Analysis</Description>
@@ -43,21 +42,20 @@ This plugin contains all of the standard FindBugs detectors.
     <Description>Set project configuration/options</Description>
   </FindBugsMain>
   <FindBugsMain cmd="history" class="edu.umd.cs.findbugs.workflow.MineBugHistory">
-    <Description>List details from  multi-version analysis results</Description>
+    <Description>List details from multi-version analysis results</Description>
   </FindBugsMain>
   <FindBugsMain cmd="union" class="edu.umd.cs.findbugs.workflow.UnionResults">
     <Description>Merge analysis results from disjoint components</Description>
   </FindBugsMain>
   <FindBugsMain cmd="merge" class="edu.umd.cs.findbugs.workflow.Update">
-    <Description>Combine analysis results from different versions of software to produce multi-version analysis results </Description>
+    <Description>Combine analysis results from different versions of software to produce multi-version analysis results</Description>
   </FindBugsMain>
 
   <FindBugsMain cmd="dis" class="edu.umd.cs.findbugs.workflow.PrintClass">
     <Description>Disassemble a class file</Description>
   </FindBugsMain>
   <FindBugsMain cmd="errors" class="edu.umd.cs.findbugs.workflowListErrors">
-    <Description>List analysis errors stored in results file
-         </Description>
+    <Description>List analysis errors stored in results file</Description>
   </FindBugsMain>
 
   <!-- On changing this, please also update default cloud id in FindbugsPlugin -->
@@ -168,7 +166,7 @@ This plugin contains all of the standard FindBugs detectors.
   <Detector class="edu.umd.cs.findbugs.detect.FindRoughConstants">
     <Details>
 <![CDATA[
-<p> Finds constants which roughly (but not precicely) equal to known values like Math.PI.
+<p> Finds constants which roughly (but not precisely) equal to known values like Math.PI.
 </p>
 ]]>
      </Details>
@@ -294,7 +292,7 @@ applied to method parameters and uses of those method parameters. </p>
   <Detector class="edu.umd.cs.findbugs.detect.Methods">
     <Details>
 <![CDATA[
-<p> Builds of database of all methods defined in analyzed classes, for use
+<p> Builds a database of all methods defined in analyzed classes, for use
 by other detectors.</p>
 ]]>
     </Details>
@@ -309,7 +307,7 @@ by other detectors.</p>
   <Detector class="edu.umd.cs.findbugs.detect.CalledMethods">
     <Details>
 <![CDATA[
-<p> Builds of database of all methods invoked in analyzed classes, for use
+<p> Builds a database of all methods invoked in analyzed classes, for use
 by other detectors.</p>
 ]]>
     </Details>
@@ -355,7 +353,7 @@ where people might accidentally think those methods mutate the instance they are
   <Detector class="edu.umd.cs.findbugs.detect.SynchronizeOnClassLiteralNotGetClass">
     <Details>
       <![CDATA[
-<p> Look for code that synchronizes on the results of getClass rather than on class
+<p> Looks for code that synchronizes on the results of getClass rather than on class
 literals.
 </p>
 ]]>
@@ -727,7 +725,7 @@ such as the no-argument String constructor.
   <Detector class="edu.umd.cs.findbugs.detect.CovariantArrayAssignment">
     <Details>
 <![CDATA[
-<p> This detector looks for covariant array assignments like Object[] array = new String[10] which may cause ArrayStoreException in runtime.
+<p> This detector looks for covariant array assignments like Object[] array = new String[10] which may cause ArrayStoreException at runtime.
 </p>
 ]]>
     </Details>
@@ -2167,7 +2165,7 @@ should be written to the JarFile between the calls to
     <LongDescription>Array of type {2} is assigned to the field of type {3}</LongDescription>
     <Details>
 <![CDATA[
-<p>Array of covariant type is assigned to a field. This is confusing and may lead to ArrayStoreException in runtime
+<p>Array of covariant type is assigned to a field. This is confusing and may lead to ArrayStoreException at runtime
 if the reference of some other type will be stored in this array later like in the following code:
 </p>
 <p><code>Number[] arr = new Integer[10];
@@ -2182,7 +2180,7 @@ arr[0] = 1.0;
     <LongDescription>Array of type {2} is assigned to the variable of type {3}</LongDescription>
     <Details>
 <![CDATA[
-<p>Array of covariant type is assigned to a local variable. This is confusing and may lead to ArrayStoreException in runtime
+<p>Array of covariant type is assigned to a local variable. This is confusing and may lead to ArrayStoreException at runtime
 if the reference of some other type will be stored in this array later like in the following code:
 </p>
 <p><code>Number[] arr = new Integer[10];
@@ -2197,7 +2195,7 @@ arr[0] = 1.0;
     <LongDescription>Array of type {2} is returned from the method which return type is {3}</LongDescription>
     <Details>
 <![CDATA[
-<p>Array of covariant type is returned from the method. This is confusing and may lead to ArrayStoreException in runtime
+<p>Array of covariant type is returned from the method. This is confusing and may lead to ArrayStoreException at runtime
 if the calling code will try to store the reference of some other type in the returned array.
 </p>
 <p>Consider changing the type of created array or the method return type.</p>   	
@@ -2212,7 +2210,7 @@ if the calling code will try to store the reference of some other type in the re
 <p>Value is stored into the array and the value type doesn't match the array type.
 It's known from the analysis that actual array type is narrower than the declared type of its variable or field
 and this assignment doesn't satisfy the original array type. This assignment may cause ArrayStoreException
-in runtime. 
+at runtime.
 </p>
 ]]>
     </Details>
