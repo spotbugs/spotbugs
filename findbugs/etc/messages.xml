@@ -724,6 +724,14 @@ such as the no-argument String constructor.
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.CovariantArrayAssignment">
+    <Details>
+<![CDATA[
+<p> This detector looks for covariant array assignments like Object[] array = new String[10] which may cause ArrayStoreException in runtime.
+</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.NumberConstructor">
     <Details>
 <![CDATA[
@@ -2151,6 +2159,61 @@ should be written to the JarFile between the calls to
    The method performs math operations using floating point precision.
    Floating point precision is very imprecise. For example,
    16777216.0f + 1.0f = 16777216.0f. Consider using double math instead.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="CAA_COVARIANT_ARRAY_FIELD">
+    <ShortDescription>Covariant array assignment to a field</ShortDescription>
+    <LongDescription>Array of type {2} is assigned to the field of type {3}</LongDescription>
+    <Details>
+<![CDATA[
+<p>Array of covariant type is assigned to a field. This is confusing and may lead to ArrayStoreException in runtime
+if the reference of some other type will be stored in this array later like in the following code:
+</p>
+<p><code>Number[] arr = new Integer[10];
+arr[0] = 1.0;
+</code></p>
+<p>Consider changing the type of created array or the field type.</p>   	
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="CAA_COVARIANT_ARRAY_LOCAL">
+    <ShortDescription>Covariant array assignment to a local variable</ShortDescription>
+    <LongDescription>Array of type {2} is assigned to the variable of type {3}</LongDescription>
+    <Details>
+<![CDATA[
+<p>Array of covariant type is assigned to a local variable. This is confusing and may lead to ArrayStoreException in runtime
+if the reference of some other type will be stored in this array later like in the following code:
+</p>
+<p><code>Number[] arr = new Integer[10];
+arr[0] = 1.0;
+</code></p>
+<p>Consider changing the type of created array or the local variable type.</p>   	
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="CAA_COVARIANT_ARRAY_RETURN">
+    <ShortDescription>Covariant array is returned from the method</ShortDescription>
+    <LongDescription>Array of type {2} is returned from the method which return type is {3}</LongDescription>
+    <Details>
+<![CDATA[
+<p>Array of covariant type is returned from the method. This is confusing and may lead to ArrayStoreException in runtime
+if the calling code will try to store the reference of some other type in the returned array.
+</p>
+<p>Consider changing the type of created array or the method return type.</p>   	
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="CAA_COVARIANT_ARRAY_ELEMENT_STORE">
+    <ShortDescription>Possibly incompatible element is stored in covariant array</ShortDescription>
+    <LongDescription>Value of type {2} is stored into array which element type is {3}</LongDescription>
+    <Details>
+<![CDATA[
+<p>Value is stored into the array and the value type doesn't match the array type.
+It's known from the analysis that actual array type is narrower than the declared type of its variable or field
+and this assignment doesn't satisfy the original array type. This assignment may cause ArrayStoreException
+in runtime. 
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -8293,6 +8356,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="TEST">Testing prototype and incomplete bug pattern</BugCode>
   <BugCode abbrev="IMSE">Dubious catching of IllegalMonitorStateException</BugCode>
   <BugCode abbrev="CN">Bad implementation of cloneable idiom</BugCode>
+  <BugCode abbrev="CAA">Covariant array assignment</BugCode>
   <BugCode abbrev="AT">Possible atomicity violation</BugCode>
   <BugCode abbrev="FI">Incorrect use of finalizers</BugCode>
   <BugCode abbrev="ES">Checking String equality using == or !=</BugCode>
