@@ -192,10 +192,6 @@
              outputFile="build/unexpectedMin.xml">
          </filterBugs>
 
-         <printBugs home="${findbugs.home}"
-             inputFile="build/unexpectedMin.xml"
-             format="text">
-         </printBugs>
 
         <echo>Test expected warnings with *less* effort</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
@@ -213,11 +209,6 @@
              inputFile="build/lessEffort.xml"
              outputFile="build/unexpectedLess.xml">
          </filterBugs>
-
-         <printBugs home="${findbugs.home}"
-             inputFile="build/unexpectedLess.xml"
-             format="text">
-         </printBugs>
 
         <echo>Test expected warnings with *more* effort</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
