@@ -184,7 +184,7 @@ This plugin contains all of the standard FindBugs detectors.
   <Detector class="edu.umd.cs.findbugs.detect.IntCast2LongAsInstant">
     <Details>
 <![CDATA[
-<p> Finds uses of 32-bit values to describe milliseconds since the epoc.
+<p> Finds uses of 32-bit values to describe milliseconds since the epoch.
 </p>
 ]]>
      </Details>
@@ -193,7 +193,7 @@ This plugin contains all of the standard FindBugs detectors.
     <Details>
 <![CDATA[
 <p> Builds database of parameters that take a 64 bit value describing
-milliseconds since the epoc.</p>
+milliseconds since the epoch.</p>
 ]]>
      </Details>
   </Detector>
@@ -6867,7 +6867,7 @@ This code converts a 32-bit int value to a 64-bit long value, and then
 passes that value for a method parameter that requires an absolute time value.
 An absolute time value is the number
 of milliseconds since the standard base time known as "the epoch", namely January 1, 1970, 00:00:00 GMT.
-For example, the following method, intended to convert seconds since the epoc into a Date, is badly
+For example, the following method, intended to convert seconds since the epoch into a Date, is badly
 broken:</p>
 <pre>
 Date getDate(int seconds) { return new Date(seconds * 1000); }
