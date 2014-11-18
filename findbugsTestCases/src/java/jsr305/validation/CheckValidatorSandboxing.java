@@ -1,4 +1,4 @@
-package jsr305;
+package jsr305.validation;
 
 import java.io.File;
 import java.lang.annotation.Documented;

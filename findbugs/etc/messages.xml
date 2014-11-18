@@ -18,8 +18,7 @@ This plugin contains all of the standard FindBugs detectors.
     </Details>
   </Plugin>
   <FindBugsMain cmd="addMessages" class="edu.umd.cs.findbugs.AddMessages">
-    <Description>add msgs (e.g., textual descriptions of bugs) to analysis results
-         </Description>
+    <Description>Add msgs (e.g., textual descriptions of bugs) to analysis results</Description>
   </FindBugsMain>
   <FindBugsMain cmd="analyze" class="edu.umd.cs.findbugs.FindBugs2">
     <Description>Perform FindBugs Analysis</Description>
@@ -43,21 +42,20 @@ This plugin contains all of the standard FindBugs detectors.
     <Description>Set project configuration/options</Description>
   </FindBugsMain>
   <FindBugsMain cmd="history" class="edu.umd.cs.findbugs.workflow.MineBugHistory">
-    <Description>List details from  multi-version analysis results</Description>
+    <Description>List details from multi-version analysis results</Description>
   </FindBugsMain>
   <FindBugsMain cmd="union" class="edu.umd.cs.findbugs.workflow.UnionResults">
     <Description>Merge analysis results from disjoint components</Description>
   </FindBugsMain>
   <FindBugsMain cmd="merge" class="edu.umd.cs.findbugs.workflow.Update">
-    <Description>Combine analysis results from different versions of software to produce multi-version analysis results </Description>
+    <Description>Combine analysis results from different versions of software to produce multi-version analysis results</Description>
   </FindBugsMain>
 
   <FindBugsMain cmd="dis" class="edu.umd.cs.findbugs.workflow.PrintClass">
     <Description>Disassemble a class file</Description>
   </FindBugsMain>
   <FindBugsMain cmd="errors" class="edu.umd.cs.findbugs.workflowListErrors">
-    <Description>List analysis errors stored in results file
-         </Description>
+    <Description>List analysis errors stored in results file</Description>
   </FindBugsMain>
 
   <!-- On changing this, please also update default cloud id in FindbugsPlugin -->
@@ -168,7 +166,7 @@ This plugin contains all of the standard FindBugs detectors.
   <Detector class="edu.umd.cs.findbugs.detect.FindRoughConstants">
     <Details>
 <![CDATA[
-<p> Finds constants which roughly (but not precicely) equal to known values like Math.PI.
+<p> Finds constants which roughly (but not precisely) equal to known values like Math.PI.
 </p>
 ]]>
      </Details>
@@ -176,7 +174,7 @@ This plugin contains all of the standard FindBugs detectors.
   <Detector class="edu.umd.cs.findbugs.detect.InitializeNonnullFieldsInConstructor">
     <Details>
 <![CDATA[
-<p> Finds nonnull fields that are not written to in constructors.
+<p> Finds non-null fields that are not written to in constructors.
 </p>
 ]]>
      </Details>
@@ -184,7 +182,7 @@ This plugin contains all of the standard FindBugs detectors.
   <Detector class="edu.umd.cs.findbugs.detect.IntCast2LongAsInstant">
     <Details>
 <![CDATA[
-<p> Finds uses of 32-bit values to describe milliseconds since the epoc.
+<p> Finds uses of 32-bit values to describe milliseconds since the epoch.
 </p>
 ]]>
      </Details>
@@ -193,7 +191,7 @@ This plugin contains all of the standard FindBugs detectors.
     <Details>
 <![CDATA[
 <p> Builds database of parameters that take a 64 bit value describing
-milliseconds since the epoc.</p>
+milliseconds since the epoch.</p>
 ]]>
      </Details>
   </Detector>
@@ -294,7 +292,7 @@ applied to method parameters and uses of those method parameters. </p>
   <Detector class="edu.umd.cs.findbugs.detect.Methods">
     <Details>
 <![CDATA[
-<p> Builds of database of all methods defined in analyzed classes, for use
+<p> Builds a database of all methods defined in analyzed classes, for use
 by other detectors.</p>
 ]]>
     </Details>
@@ -309,7 +307,7 @@ by other detectors.</p>
   <Detector class="edu.umd.cs.findbugs.detect.CalledMethods">
     <Details>
 <![CDATA[
-<p> Builds of database of all methods invoked in analyzed classes, for use
+<p> Builds a database of all methods invoked in analyzed classes, for use
 by other detectors.</p>
 ]]>
     </Details>
@@ -332,7 +330,7 @@ by other detectors.</p>
     <Details>
 <![CDATA[
 <p> Looks for immutable classes with methods that return new instances of that class,
-where people might accidently think those methods mutate the instance they are invoked on.
+where people might accidentally think those methods mutate the instance they are invoked on.
 </p>
 ]]>
     </Details>
@@ -355,7 +353,7 @@ where people might accidently think those methods mutate the instance they are i
   <Detector class="edu.umd.cs.findbugs.detect.SynchronizeOnClassLiteralNotGetClass">
     <Details>
       <![CDATA[
-<p> Look for code that synchronizes on the results of getClass rather than on class
+<p> Looks for code that synchronizes on the results of getClass rather than on class
 literals.
 </p>
 ]]>
@@ -375,7 +373,7 @@ literals.
     <Details>
       <![CDATA[
       <p>
-      Looks for @NonNull annotations on methods, fields, and parameters.
+      Looks for @Nonnull annotations on methods, fields, and parameters.
       These can be used by the FindNullDeref detector to generate warnings
       when a possibly-null value is used in a context where only
       non-null values should be used.
@@ -403,7 +401,7 @@ literals.
       <![CDATA[
       <p>
       Analyze all methods in the application to determine which
-    methods always return nonnull values.
+    methods always return non-null values.
       </p>
       ]]>
    </Details>
@@ -720,6 +718,14 @@ but nothing is done to handle the exception.  </p>
 <![CDATA[
 <p> This detector looks for calls to pointless methods,
 such as the no-argument String constructor.
+</p>
+]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.CovariantArrayAssignment">
+    <Details>
+<![CDATA[
+<p> This detector looks for covariant array assignments like Object[] array = new String[10] which may cause ArrayStoreException at runtime.
 </p>
 ]]>
     </Details>
@@ -1496,7 +1502,7 @@ factory pattern to create these objects.</p>
     <Details>
       <![CDATA[
       <p>
-      TrainNonNullAnnotations collects @NonNull and @PossiblyNull annotations
+      TrainNonNullAnnotations collects @Nonnull and @PossiblyNull annotations
       and stores them to database files.  This is a fast detector.
       </p>
       ]]>
@@ -2015,11 +2021,11 @@ another package.</p>
        </Details>
   </BugPattern>
   <BugPattern type="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">
-    <ShortDescription>Nonnull field is not initialized</ShortDescription>
-    <LongDescription>Nonnull field {2.name} is not initialized by {1}</LongDescription>
+    <ShortDescription>Non-null field is not initialized</ShortDescription>
+    <LongDescription>Non-null field {2.name} is not initialized by {1}</LongDescription>
     <Details>
        <![CDATA[
-       <p> The field is marked as nonnull, but isn't written to by the constructor.
+       <p> The field is marked as non-null, but isn't written to by the constructor.
     The field might be initialized elsewhere during constructor, or might always
     be initialized before use.
        </p>
@@ -2151,6 +2157,61 @@ should be written to the JarFile between the calls to
    The method performs math operations using floating point precision.
    Floating point precision is very imprecise. For example,
    16777216.0f + 1.0f = 16777216.0f. Consider using double math instead.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="CAA_COVARIANT_ARRAY_FIELD">
+    <ShortDescription>Covariant array assignment to a field</ShortDescription>
+    <LongDescription>Array of type {2} is assigned to the field of type {3}</LongDescription>
+    <Details>
+<![CDATA[
+<p>Array of covariant type is assigned to a field. This is confusing and may lead to ArrayStoreException at runtime
+if the reference of some other type will be stored in this array later like in the following code:
+</p>
+<p><code>Number[] arr = new Integer[10];
+arr[0] = 1.0;
+</code></p>
+<p>Consider changing the type of created array or the field type.</p>   	
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="CAA_COVARIANT_ARRAY_LOCAL">
+    <ShortDescription>Covariant array assignment to a local variable</ShortDescription>
+    <LongDescription>Array of type {2} is assigned to the variable of type {3}</LongDescription>
+    <Details>
+<![CDATA[
+<p>Array of covariant type is assigned to a local variable. This is confusing and may lead to ArrayStoreException at runtime
+if the reference of some other type will be stored in this array later like in the following code:
+</p>
+<p><code>Number[] arr = new Integer[10];
+arr[0] = 1.0;
+</code></p>
+<p>Consider changing the type of created array or the local variable type.</p>   	
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="CAA_COVARIANT_ARRAY_RETURN">
+    <ShortDescription>Covariant array is returned from the method</ShortDescription>
+    <LongDescription>Array of type {2} is returned from the method which return type is {3}</LongDescription>
+    <Details>
+<![CDATA[
+<p>Array of covariant type is returned from the method. This is confusing and may lead to ArrayStoreException at runtime
+if the calling code will try to store the reference of some other type in the returned array.
+</p>
+<p>Consider changing the type of created array or the method return type.</p>   	
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="CAA_COVARIANT_ARRAY_ELEMENT_STORE">
+    <ShortDescription>Possibly incompatible element is stored in covariant array</ShortDescription>
+    <LongDescription>Value of type {2} is stored into array which element type is {3}</LongDescription>
+    <Details>
+<![CDATA[
+<p>Value is stored into the array and the value type doesn't match the array type.
+It's known from the analysis that actual array type is narrower than the declared type of its variable or field
+and this assignment doesn't satisfy the original array type. This assignment may cause ArrayStoreException
+at runtime.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3889,7 +3950,7 @@ complain about a potential ambiguous invocation.
 that its superclass is in a different package (e.g., <code>alpha.Foo</code> extends <code>beta.Foo</code>).
 This can be exceptionally confusing, create lots of situations in which you have to look at import statements
 to resolve references and creates many
-opportunities to accidently define methods that do not override methods in their superclasses.
+opportunities to accidentally define methods that do not override methods in their superclasses.
 </p>
 ]]>
     </Details>
@@ -3903,7 +3964,7 @@ opportunities to accidently define methods that do not override methods in their
 that the interface is in a different package (e.g., <code>alpha.Foo</code> extends <code>beta.Foo</code>).
 This can be exceptionally confusing, create lots of situations in which you have to look at import statements
 to resolve references and creates many
-opportunities to accidently define methods that do not override methods in their superclasses.
+opportunities to accidentally define methods that do not override methods in their superclasses.
 </p>
 ]]>
     </Details>
@@ -4048,7 +4109,7 @@ removing or deprecating the method with the similar but not identical signature.
 <![CDATA[
   <p> This regular method has the same name as the class it is defined in. It is likely that this was intended to be a constructor.
       If it was intended to be a constructor, remove the declaration of a void return value.
-    If you had accidently defined this method, realized the mistake, defined a proper constructor
+    If you had accidentally defined this method, realized the mistake, defined a proper constructor
     but can't get rid of this method due to backwards compatibility, deprecate the method.
 </p>
 ]]>
@@ -4546,7 +4607,7 @@ and generally bad practice.
   <p> The variable referenced at this point is known to be null due to an earlier
    check against null. Although this is valid, it might be a mistake (perhaps you
 intended to refer to a different variable, or perhaps the earlier check to see if the
-variable is null should have been a check to see if it was nonnull).
+variable is null should have been a check to see if it was non-null).
 </p>
 ]]>
     </Details>
@@ -4725,8 +4786,8 @@ inner object.&nbsp; This reference makes the instances
     </Details>
   </BugPattern>
   <BugPattern type="RV_DONT_JUST_NULL_CHECK_READLINE">
-    <ShortDescription>Method discards result of readLine after checking if it is nonnull</ShortDescription>
-    <LongDescription>{1} discards result of readLine after checking if it is nonnull</LongDescription>
+    <ShortDescription>Method discards result of readLine after checking if it is non-null</ShortDescription>
+    <LongDescription>{1} discards result of readLine after checking if it is non-null</LongDescription>
     <Details>
 <![CDATA[
    <p> The value returned by readLine is discarded after checking to see if the return
@@ -4881,11 +4942,11 @@ something that should be closed.
     </Details>
   </BugPattern>
   <BugPattern type="NP_STORE_INTO_NONNULL_FIELD">
-    <ShortDescription>Store of null value into field annotated NonNull</ShortDescription>
-    <LongDescription>Store of null value into field {2.givenClass} annotated NonNull in {1}</LongDescription>
+    <ShortDescription>Store of null value into field annotated @Nonnull</ShortDescription>
+    <LongDescription>Store of null value into field {2.givenClass} annotated @Nonnull in {1}</LongDescription>
     <Details>
       <![CDATA[
-<p> A value that could be null is stored into a field that has been annotated as NonNull. </p>
+<p> A value that could be null is stored into a field that has been annotated as @Nonnull. </p>
 ]]>
     </Details>
   </BugPattern>
@@ -4905,11 +4966,11 @@ be an exception path, since the default case is often infeasible.</p>
     </Details>
   </BugPattern>
   <BugPattern type="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE">
-    <ShortDescription>Parameter must be nonnull but is marked as nullable</ShortDescription>
-    <LongDescription>{2} must be nonnull but is marked as nullable</LongDescription>
+    <ShortDescription>Parameter must be non-null but is marked as nullable</ShortDescription>
+    <LongDescription>{2} must be non-null but is marked as nullable</LongDescription>
     <Details>
 <![CDATA[
-<p> This parameter is always used in a way that requires it to be nonnull,
+<p> This parameter is always used in a way that requires it to be non-null,
 but the parameter is explicitly annotated as being Nullable. Either the use
 of the parameter or the annotation is wrong.
 </p>
@@ -4975,56 +5036,56 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
    </Details>
   </BugPattern>
   <BugPattern type="NP_NULL_PARAM_DEREF_NONVIRTUAL">
-    <ShortDescription>Non-virtual method call passes null for nonnull parameter</ShortDescription>
-    <LongDescription>Non-virtual method call in {1} passes null for nonnull parameter of {2.givenClass}</LongDescription>
+    <ShortDescription>Non-virtual method call passes null for non-null parameter</ShortDescription>
+    <LongDescription>Non-virtual method call in {1} passes null for non-null parameter of {2.givenClass}</LongDescription>
     <Details>
       <![CDATA[
       <p>
-      A possibly-null value is passed to a nonnull method parameter.
+      A possibly-null value is passed to a non-null method parameter.
     Either the parameter is annotated as a parameter that should
-    always be nonnull, or analysis has shown that it will always be
+    always be non-null, or analysis has shown that it will always be
     dereferenced.
       </p>
       ]]>
    </Details>
   </BugPattern>
   <BugPattern type="NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS">
-    <ShortDescription>Method call passes null for nonnull parameter</ShortDescription>
-    <LongDescription>Null passed for nonnull parameter of {2.givenClass} in {1}</LongDescription>
+    <ShortDescription>Method call passes null for non-null parameter</ShortDescription>
+    <LongDescription>Null passed for non-null parameter of {2.givenClass} in {1}</LongDescription>
     <Details>
       <![CDATA[
       <p>
       A possibly-null value is passed at a call site where all known
-      target methods require the parameter to be nonnull.
+      target methods require the parameter to be non-null.
     Either the parameter is annotated as a parameter that should
-    always be nonnull, or analysis has shown that it will always be
+    always be non-null, or analysis has shown that it will always be
     dereferenced.
       </p>
       ]]>
    </Details>
   </BugPattern>
   <BugPattern type="NP_NULL_PARAM_DEREF">
-    <ShortDescription>Method call passes null for nonnull parameter</ShortDescription>
-    <LongDescription>Null passed for nonnull parameter of {2.givenClass} in {1}</LongDescription>
+    <ShortDescription>Method call passes null for non-null parameter</ShortDescription>
+    <LongDescription>Null passed for non-null parameter of {2.givenClass} in {1}</LongDescription>
     <Details>
       <![CDATA[
       <p>
-      This method call passes a null value for a nonnull method parameter.
+      This method call passes a null value for a non-null method parameter.
     Either the parameter is annotated as a parameter that should
-    always be nonnull, or analysis has shown that it will always be
+    always be non-null, or analysis has shown that it will always be
     dereferenced.
       </p>
       ]]>
    </Details>
   </BugPattern>
   <BugPattern type="NP_NONNULL_PARAM_VIOLATION">
-    <ShortDescription>Method call passes null to a nonnull parameter </ShortDescription>
-    <LongDescription>Null passed for nonnull parameter of {2.givenClass} in {1}</LongDescription>
+    <ShortDescription>Method call passes null to a non-null parameter </ShortDescription>
+    <LongDescription>Null passed for non-null parameter of {2.givenClass} in {1}</LongDescription>
     <Details>
       <![CDATA[
       <p>
       This method passes a null value as the parameter of a method which
-    must be nonnull. Either this parameter has been explicitly marked
+    must be non-null. Either this parameter has been explicitly marked
     as @Nonnull, or analysis has determined that this parameter is
     always dereferenced.
       </p>
@@ -5032,13 +5093,13 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
    </Details>
   </BugPattern>
   <BugPattern type="NP_NONNULL_RETURN_VIOLATION">
-    <ShortDescription>Method may return null, but is declared @NonNull</ShortDescription>
-    <LongDescription>{1} may return null, but is declared @NonNull</LongDescription>
+    <ShortDescription>Method may return null, but is declared @Nonnull</ShortDescription>
+    <LongDescription>{1} may return null, but is declared @Nonnull</LongDescription>
     <Details>
       <![CDATA[
       <p>
       This method may return a null value, but the method (or a superclass method
-      which it overrides) is declared to return @NonNull.
+      which it overrides) is declared to return @Nonnull.
       </p>
       ]]>
    </Details>
@@ -6804,7 +6865,7 @@ This code converts a 32-bit int value to a 64-bit long value, and then
 passes that value for a method parameter that requires an absolute time value.
 An absolute time value is the number
 of milliseconds since the standard base time known as "the epoch", namely January 1, 1970, 00:00:00 GMT.
-For example, the following method, intended to convert seconds since the epoc into a Date, is badly
+For example, the following method, intended to convert seconds since the epoch into a Date, is badly
 broken:</p>
 <pre>
 Date getDate(int seconds) { return new Date(seconds * 1000); }
@@ -6967,7 +7028,7 @@ the String "1" is incompatible with the format specifier %d.
 <![CDATA[
 <p>
 An argument not of type Boolean is being formatted with a %b format specifier. This won't throw an
-exception; instead, it will print true for any nonnull value, and false for null.
+exception; instead, it will print true for any non-null value, and false for null.
 This feature of format strings is strange, and may not be what you intended.
 </p>
 ]]>
@@ -7229,7 +7290,7 @@ an indication of some misunderstanding or some other logic error.
   </BugPattern>
   <BugPattern type="BC_VACUOUS_INSTANCEOF">
     <ShortDescription>instanceof will always return true</ShortDescription>
-    <LongDescription>instanceof will always return true for all nonnull values in {1}, since all {2} are instances of {3}</LongDescription>
+    <LongDescription>instanceof will always return true for all non-null values in {1}, since all {2} are instances of {3}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -8293,6 +8354,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="TEST">Testing prototype and incomplete bug pattern</BugCode>
   <BugCode abbrev="IMSE">Dubious catching of IllegalMonitorStateException</BugCode>
   <BugCode abbrev="CN">Bad implementation of cloneable idiom</BugCode>
+  <BugCode abbrev="CAA">Covariant array assignment</BugCode>
   <BugCode abbrev="AT">Possible atomicity violation</BugCode>
   <BugCode abbrev="FI">Incorrect use of finalizers</BugCode>
   <BugCode abbrev="ES">Checking String equality using == or !=</BugCode>

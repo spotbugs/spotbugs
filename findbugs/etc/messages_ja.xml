@@ -90,8 +90,8 @@
 
   <PluginComponent
     id="edu.umd.cs.findbugs.bugReporter.SuppressMalicious">
-    <Description>悪質なコード脆弱性について警告を抑止する</Description>
-    <Details>悪質なコード脆弱性について警告を抑止します</Details>
+    <Description>悪意のあるコード脆弱性について警告を抑止する</Description>
+    <Details>悪意のあるコード脆弱性について警告を抑止します</Details>
     </PluginComponent>
     
   <!--
@@ -147,7 +147,7 @@
   </BugCategory>
 
   <BugCategory category="MALICIOUS_CODE">
-    <Description>悪質なコード脆弱性</Description>
+    <Description>悪意のあるコード脆弱性</Description>
     <Abbreviation>V</Abbreviation>
     <Details>信頼できないコードからの攻撃に脆弱であるコード</Details>
   </BugCategory>
@@ -364,6 +364,24 @@
 <![CDATA[
 <p>
 このディテクタは、他のディテクタが使用するために、解析されたクラスで呼び出されるすべてのメソッドのデータベースを構築します。
+</p>
+]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods">
+    <Details>
+<![CDATA[
+<p>
+値を返すだけの副作用を持たないメソッドを探します。
+</p>
+]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph">
+    <Details>
+<![CDATA[
+<p>
+このディテクタは、メソッドから変化していないメソッドに渡された文字列パラメータのデータベースを構築します。
 </p>
 ]]>
     </Details>
@@ -1046,7 +1064,7 @@ null の参照解除のためのノイズが多いディテクタです。コー
     <Details>
 <![CDATA[
 <p>
-このディテクタは、悪質なコードによって変更されるかもしれない static フィールドを探します。
+このディテクタは、悪意のあるコードによって変更されるかもしれない static フィールドを探します。
 </p>
 ]]>
     </Details>
@@ -1330,6 +1348,15 @@ null の参照解除のためのノイズが多いディテクタです。コー
 <![CDATA[
 <p>
 このディテクタは、+を使ったループによる文字列の連結を探します。
+</p>
+]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.InefficientInitializationInsideLoop">
+    <Details>
+<![CDATA[
+<p>
+このディテクタは、パフォーマンスを向上させるために外側に移動させることができるループ内で初期化するオブジェクトを探します。
 </p>
 ]]>
     </Details>
@@ -2340,7 +2367,7 @@ null 値が返されるなら NullPointerException が発生することにな�
 
   <BugPattern type="NP_OPTIONAL_RETURN_NULL">
     <ShortDescription>Optional の戻り型を持つメソッドが明示的に null を返す</ShortDescription>
-    <LongDescription>{1} は、Optional の戻り型を持っていて、 明示的に null　を返します。</LongDescription>
+    <LongDescription>{1} は、Optional の戻り型を持っていて、 明示的に null　を返しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3007,12 +3034,12 @@ static parseXXX メソッドを呼び出す方が効率的です。
   </BugPattern>
 
   <BugPattern type="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE">
-    <ShortDescription>SQL の Statement の  execute メソッドに定数でない文字列を渡している</ShortDescription>
-    <LongDescription>{1} は、SQL の Statement の execute メソッドに定数でない文字列を渡しています。</LongDescription>
+    <ShortDescription>SQL の Statement の  execute または addBatch メソッドに定数でない文字列を渡している</ShortDescription>
+    <LongDescription>{1} は、SQL の Statement の execute または addBatch メソッドに定数でない文字列を渡しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このメソッドは、動的に生成されるように思われる文字列で、 SQL の <code>Statement</code> の <code>execute</code> メソッドを呼び出しています。
+このメソッドは、動的に生成されるように思われる文字列で、 SQL 文 の <code>execute</code> または <code>addBatch</code> メソッドを呼び出しています。
 その代わりに <code>PreparedStatement</code> を使うことを検討してください。
 効率的で、SQL インジェクション攻撃に強いです。
 </p>
@@ -3027,7 +3054,7 @@ static parseXXX メソッドを呼び出す方が効率的です。
 <![CDATA[
 <p>
 このコードは、定数でない文字列から SQL の <code>PreparedStatement</code> を作成しています。
-ユーザからのチェックされていない汚染されたデータがこの文字列を作る際に使われるなら、PreparedStatement で予想外で望ましくない何かをするために SQL インジェクションが使われる可能性があります。
+ユーザからのチェックされていない汚染されたデータがこの文字列を作る際に使われるなら、<code>PreparedStatement</code> で予想外で望ましくない何かをするために SQL インジェクションが使われる可能性があります。
 </p>
 ]]>
     </Details>
@@ -3524,7 +3551,7 @@ Comparable インタフェースの compareTo メソッドの JavaDoc を以下�
 必須というわけではありませんが、<code>(x.compareTo(y)==0) == (x.equals(y))</code> であることが強く推奨されます。
 一般に、<code>Comparable</code> インタフェースを実装しているクラスで、この条件に違反するクラスは明確にこの事実を示す必要があります。
 「注:このクラスは <code>equals</code> と一貫性のない自然順序付けを持ちます」などと明示することをお勧めします。
-</p></blockquote>
+</blockquote></p>
 ]]>
     </Details>
   </BugPattern>
@@ -4196,7 +4223,7 @@ private Long getNotificationSequenceNumber() {
 <![CDATA[
 <p>
 インタフェースに定義された final static フィールドが、配列や Hashtable などの可変オブジェクトを参照しています。
-この可変オブジェクトは、悪質なコードや偶然別のパッケージによって変更される可能性があります。
+この可変オブジェクトは、悪意のあるコードや別のパッケージからの事故によって変更される可能性があります。
 これを解決するために、フィールドはクラスへ移動する必要があり、脆弱性を回避するためにパッケージプロテクテッドにします。
 </p>
 ]]>
@@ -4209,7 +4236,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-この可変 static フィールドは、悪質なコードや偶然別のパッケージによって変更される可能性があります。
+この可変 static フィールドは、悪意のあるコードや別のパッケージからの事故によって変更される可能性があります。
 フィールドは、脆弱性を回避するために final および/またはパッケージプロテクテッドにします。
 </p>
 ]]>
@@ -4222,7 +4249,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-final でない public static フィールドは、悪質なコードや偶然別のパッケージによって変更される可能性があります。
+final でない public static フィールドは、悪意のあるコードや別のパッケージからの事故によって変更される可能性があります。
 フィールドは、脆弱性を回避するために final にします。
 しかしながら、スタティックイニシャライザには複数のフィールドへの書き込みがあるので、何らかのリファクタリングを必要とするでしょう。
 </p>
@@ -4236,7 +4263,7 @@ final でない public static フィールドは、悪質なコードや偶然�
     <Details>
 <![CDATA[
 <p>
-final でない public static フィールドは、悪質なコードや偶然別のパッケージによって変更される可能性があります。
+final でない public static フィールドは、悪意のあるコードや別のパッケージからの事故によって変更される可能性があります。
 フィールドは、脆弱性を回避するために final にします。
 </p>
 ]]>
@@ -4249,7 +4276,7 @@ final でない public static フィールドは、悪質なコードや偶然�
     <Details>
 <![CDATA[
 <p>
-この可変 static フィールドは、悪質なコードや偶然別のパッケージによって変更される可能性があります。
+この可変 static フィールドは、悪意のあるコードや別のパッケージからの事故によって変更される可能性があります。
 フィールドは、脆弱性を回避するためにパッケージプロテクテッドにします。
 </p>
 ]]>
@@ -4262,8 +4289,37 @@ final でない public static フィールドは、悪質なコードや偶然�
     <Details>
 <![CDATA[
 <p>
-この final static フィールドは、Hashtable を参照しているので、悪質なコードや偶然別のパッケージによってアクセスされる可能性があります。
+この final static フィールドは、Hashtable を参照しているので、悪意のあるコードや別のパッケージからの事故によってアクセスされる可能性があります。
 このコードは、Hashtable のコンテンツを自由に変更できます。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="MS_MUTABLE_COLLECTION">
+    <ShortDescription>可変コレクションのフィールド</ShortDescription>
+    <LongDescription>{1} は可変コレクションです。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+可変コレクションのインスタンスが final static フィールドに割り当てられています。
+したがって、 悪意のあるコードや別のパッケージからの事故によって変更される可能性があります。
+脆弱性を避けるために  Collections.unmodifiableSet/List/Map などでこのフィールドをラップすることを検討してください。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="MS_MUTABLE_COLLECTION_PKGPROTECT">
+    <ShortDescription>パッケージプロテクテッドにすべき可変コレクションのフィールド</ShortDescription>
+    <LongDescription>{1} は、パッケージプロテクテッドにすべき可変コレクションです。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+可変コレクションのインスタンスが final static フィールドに割り当てられています。
+したがって、 悪意のあるコードや別のパッケージからの事故によって変更される可能性があります。
+フィールドは脆弱性を避けるためにパッケージプロテクテッドにできます。
+代わりに Collections.unmodifiableSet/List/Map などでこのフィールドをラップしても脆弱性を避けることができます。
 </p>
 ]]>
     </Details>
@@ -4275,7 +4331,7 @@ final でない public static フィールドは、悪質なコードや偶然�
     <Details>
 <![CDATA[
 <p>
-この final static フィールドは、配列を参照しているので、悪質なコードや偶然別のパッケージによってアクセスされる可能性があります。
+この final static フィールドは、配列を参照しているので、悪意のあるコードや別のパッケージからの事故によってアクセスされる可能性があります。
 このコードは、配列のコンテンツを自由に変更できます。
 </p>
 ]]>
@@ -4283,12 +4339,12 @@ final でない public static フィールドは、悪質なコードや偶然�
   </BugPattern>
 
   <BugPattern type="MS_CANNOT_BE_FINAL">
-    <ShortDescription>final でないフィールドは悪質なコードから保護できない</ShortDescription>
-    <LongDescription>{1} は、final でないので、悪質なコードから保護できません。 </LongDescription>
+    <ShortDescription>final でないフィールドは悪意のあるコードから保護できない</ShortDescription>
+    <LongDescription>{1} は、final でないので、悪意のあるコードから保護できません。 </LongDescription>
     <Details>
 <![CDATA[
 <p>
-この可変 static フィールドは、悪質なコードや偶然別のパッケージによって変更される可能性があります。
+この可変 static フィールドは、悪意のあるコードや別のパッケージからの事故によって変更される可能性があります。
 残念ながらこのような使い方は簡単に解決できません。
 </p>
 ]]>
@@ -4742,7 +4798,7 @@ public class B extends A {
 通常、default を用意する必要があります。
 </p>
 <p>
-解析は生成されたバイトコードを見るだけなので、default が  switch 文の終わりにあって、break 文で終わらないならば、誤警告のトリガーとなります。
+解析は生成されたバイトコードを見るだけなので、default が  switch 文の終わりにあって、他のケースに break 文が含まれていないなら誤検出のトリガーとなります。
 </p>
 ]]>
     </Details>
@@ -5243,6 +5299,36 @@ static フィールドにすることを検討してください。
 <code>readLine</code> メソッドの戻り値を null でないのか確かめた後で捨てています。
 ほとんどすべての状況で、結果が null でないなら戻り値を使用したいでしょう。
 再び <code>readLine</code> メソッドを呼び出すと異なる行が得られます。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT">
+    <ShortDescription>副作用がないメソッドの戻り値は無視される</ShortDescription>
+    <LongDescription>副作用がない {2.givenClass} の戻り値は無視されます。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このコードは、メソッドを呼び出して戻り値を無視しています。
+しかしながら、解析はメソッド (もしあればサブクラスの実装も含む) が戻り値以外の効果をもたらさないことを示しています。
+この呼び出しは除去できます。
+</p>
+<p>
+我々は、できる限り誤検出を減らそうとしていますが、いくつかのケースではこの警告が間違っているかもしれません。
+よくある誤検出です。
+</p>
+<p>
+- メソッドは、オーバライドされ解析対象外の他のプロジェクトで副作用がもたらされるように設計されている
+<p>
+<p>
+- メソッドは、副作用をもたらすかもしれないクラスローダをトリガーするように呼び出されている
+</p>
+<p>
+- メソッドは、例外を取得するために呼び出されている
+</p>
+<p>
+我々の仮定が正しくないと感じるなら、FindBugs にこのメソッドの戻り値が無視されることを許容するように指示する @CheckReturnValue アノテーションを使うことができます。
 </p>
 ]]>
     </Details>
@@ -6232,12 +6318,12 @@ public void foo() {
   </BugPattern>
 
   <BugPattern type="INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE">
-    <ShortDescription>負でない値と負の定数との間違った比較</ShortDescription>
+    <ShortDescription>負でない値と負の定数またはゼロとの間違った比較</ShortDescription>
     <LongDescription>負でない値 と {2} との間違った比較です。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このコードは、負でないことが保証されている値と負の定数とを比較しています。 
+このコードは、負でないことが保証されている値と負の定数またはゼロとを比較しています。 
 </p>
 ]]>
     </Details>
@@ -6638,6 +6724,59 @@ String s = buf.toString();
     </Details>
   </BugPattern>
 
+  <BugPattern type="IIL_PREPARE_STATEMENT_IN_LOOP">
+    <ShortDescription>ループの中で prepareStatement を呼び出しているメソッド</ShortDescription>
+    <LongDescription>{1} は、ループの中で不変の引数で prepareStatement を呼び出しています。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+メソッドは、ループの中で <code>Connection.prepareStatement</code> に不変の引数を渡して呼び出しています。
+<code>PreparedStatement</code> を複数回実行する必要があるなら、それぞれのループの繰り返しで再生成する理由がありません。
+ループの外に呼び出しを移動します。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="IIL_ELEMENTS_GET_LENGTH_IN_LOOP">
+    <ShortDescription>ループの中で NodeList.getLength() を呼び出しているメソッド</ShortDescription>
+    <LongDescription>{1} は、ループの中で getElementsByTagName の戻り値のために NodeList.getLength() を呼び出しています。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+メソッドは、ループの中で <code>NodeList.getLength()</code> を呼び出し、<code>NodeList</code> は、<code>getElementsByTagName</code> の呼び出しによって作られます。
+<code>NodeList</code> は長さを格納しませんが、毎回とても最適ではない方法で計算されます。
+ループの前に変数に長さを格納することを検討してください。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="IIL_PATTERN_COMPILE_IN_LOOP">
+    <ShortDescription>ループの中で Pattern.compile を呼び出しているメソッド</ShortDescription>
+    <LongDescription>{1} は、ループの中で不変の定数で Pattern.compile を呼び出しています。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+メソッドは、ループの中で <code>Pattern.compile</code> に不変の定数を渡して呼び出しています。
+<code>Pattern</code> を複数回使用する必要があるなら、それぞれのループの繰り返しでコンパイルする理由がありません。
+ループの外に呼び出しを移動するか static final フィールドにします。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT">
+    <ShortDescription>ループの中で正規表現をコンパイルしているメソッド</ShortDescription>
+    <LongDescription>{1} は、ループの中で正規表現のコンパイルをしています。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+メソッドは、ループの中で同じ正規表現を生成しているので、繰り返しごとにコンパイルされます。
+ループの外で <code>Pattern.compile</code> を使用して正規表現をプリコンパイルするのが最適でしょう。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="IIO_INEFFICIENT_INDEX_OF">
     <ShortDescription>String.indexOf(String) の非効率的な使用</ShortDescription>
     <LongDescription>{1} は、String.indexOf(int)　の代わりに　String.indexOf(String)　を使用しています。</LongDescription>
@@ -6645,7 +6784,7 @@ String s = buf.toString();
 <![CDATA[
 <p>
 このコードは、String.indexOf() に長さ1の文字列定数を渡しています。String.indexOf() の整数実装を使うほうが効率的です。
-たとえば、<code>myString.indexOf(".")　の代わりに <code>myString.indexOf('.')</code> を呼び出します。</code>
+たとえば、<code>myString.indexOf(".")</code>　の代わりに <code>myString.indexOf('.')</code> を呼び出します。
 </p>
 ]]>
     </Details>
@@ -6658,7 +6797,7 @@ String s = buf.toString();
 <![CDATA[
 <p>
 このコードは、String.lastIndexOf() に長さ1の文字列定数を渡しています。String.lastIndexOf() の整数実装を使うほうが効率的です。
-たとえば、<code>myString.lastIndexOf(".")　の代わりに <code>myString.lastIndexOf('.')</code> を呼び出します。</code>
+たとえば、<code>myString.lastIndexOf(".")</code>　の代わりに <code>myString.lastIndexOf('.')</code> を呼び出します。
 </p>
 ]]>
     </Details>
@@ -8179,7 +8318,7 @@ APIのどれも文書化していないか、保証もしていないが、<code
 <![CDATA[
 <p>
 この総称型コレクションメソッドへの呼び出しはコレクションに自分自身が含まれている (たとえば、<code>s.contains(s)</code> が true だとして) 場合にだけ意味があります。
-これは true である可能性が低くて、もし true なら問題の原因になります (たとえば、無限再帰になっているハッシュコードの計算)。
+これが本当であるとは思えないしく、もし本当なら問題の原因になります (たとえば、無限再帰になっているハッシュコードの計算)。
 間違ったパラメータが渡されている可能性が高いです。
 </p>
 ]]>
@@ -8785,6 +8924,7 @@ byte から String (または String から byte) への変換で、デフォル
   <BugCode abbrev="NS">疑わしい非短絡論理演算子の使用</BugCode>
   <BugCode abbrev="ODR">すべての経路でクローズされないデータベースリソース</BugCode>
   <BugCode abbrev="SBSC">ループの中で + 演算子を使用した文字列連結</BugCode>
+  <BugCode abbrev="IIL">ループの外に移動できる非効率なコード</BugCode>
   <BugCode abbrev="IIO">非効率な String.indexOf(String) または String.lastIndexOf(String) の使用</BugCode>
   <BugCode abbrev="ITA">効率が悪い collection.toArray(new Foo[0]) の使用</BugCode>
   <BugCode abbrev="SW">Swing コーディング規約</BugCode>

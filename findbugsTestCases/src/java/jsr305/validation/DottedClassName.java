@@ -17,50 +17,24 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package jsr305;
+package jsr305.validation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.regex.Pattern;
 
-import javax.annotation.meta.TypeQualifier;
-import javax.annotation.meta.TypeQualifierValidator;
+import javax.annotation.meta.TypeQualifierNickname;
 import javax.annotation.meta.When;
 
 /**
- * * Denotes a class name or package name where the / character is used to
+ * Denotes a class name or package name where the . character is used to
  * separate package/class name components.
  * 
  * @author pugh
  */
 @Documented
-@TypeQualifier(applicableTo = CharSequence.class)
+@SlashedClassName(when = When.NEVER)
+@TypeQualifierNickname
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SlashedClassName {
-
-    When when() default When.ALWAYS;
-
-    static class Checker implements TypeQualifierValidator<SlashedClassName> {
-        final static String simpleName = "(\\p{javaJavaIdentifierStart}(\\p{javaJavaIdentifierPart}|\\$)*)";
-
-        final static String slashedClassName = simpleName + "(/" + simpleName + ")*";
-
-        final static Pattern simplePattern = Pattern.compile(simpleName);
-
-        final static Pattern pattern = Pattern.compile(slashedClassName);
-
-        @Override
-        public When forConstantValue(SlashedClassName annotation, Object value) {
-            if (!(value instanceof String))
-                return When.NEVER;
-
-            if (pattern.matcher((String) value).matches())
-                return When.ALWAYS;
-
-            return When.NEVER;
-
-        }
-
-    }
+public @interface DottedClassName {
 }

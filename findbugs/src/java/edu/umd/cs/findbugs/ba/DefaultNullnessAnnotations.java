@@ -49,7 +49,27 @@ public class DefaultNullnessAnnotations {
         database.addFieldAnnotation("java.math.BigInteger", "ONE", "Ljava/math/BigInteger;", true, NullnessAnnotation.NONNULL);
         database.addFieldAnnotation("java.math.BigInteger", "TEN", "Ljava/math/BigInteger;", true, NullnessAnnotation.NONNULL);
 
+        database.addMethodAnnotation("java.nio.file.Files", "probeContentType", "(Ljava/nio/file/Path;)Ljava/lang/String;", true,
+                NullnessAnnotation.CHECK_FOR_NULL);
 
+        database.addMethodAnnotation("java.nio.file.Path", "getRoot", "()Ljava/nio/file/Path;", false,
+                NullnessAnnotation.CHECK_FOR_NULL);
+        database.addMethodAnnotation("java.nio.file.Path", "getFileName", "()Ljava/nio/file/Path;", false,
+                NullnessAnnotation.CHECK_FOR_NULL);
+        database.addMethodAnnotation("java.nio.file.Path", "getParent", "()Ljava/nio/file/Path;", false,
+                NullnessAnnotation.CHECK_FOR_NULL);
+
+
+        database.addMethodAnnotation("java.io.File", "list", "()[Ljava/lang/String;", false,
+                NullnessAnnotation.CHECK_FOR_NULL);
+        database.addMethodAnnotation("java.io.File", "list", "(Ljava/io/FilenameFilter;)[Ljava/lang/String;", false,
+                NullnessAnnotation.CHECK_FOR_NULL);
+        database.addMethodAnnotation("java.io.File", "listFiles", "()[Ljava/io/File;", false,
+                NullnessAnnotation.CHECK_FOR_NULL);
+        database.addMethodAnnotation("java.io.File", "listFiles", "(Ljava/io/FilenameFilter;)[Ljava/io/File;", false,
+                NullnessAnnotation.CHECK_FOR_NULL);
+        database.addMethodAnnotation("java.io.File", "listFiles", "(Ljava/io/FileFilter;)[Ljava/io/File;", false,
+                NullnessAnnotation.CHECK_FOR_NULL);
 
         database.addMethodAnnotation("java.lang.ref.ReferenceQueue", "poll", "()Ljava/lang/ref/Reference;", false,
                 NullnessAnnotation.CHECK_FOR_NULL);
