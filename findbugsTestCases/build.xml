@@ -116,7 +116,7 @@
         <javac destdir="build/classes-jdk7" source="1.7" target="1.7" debug="on" encoding="UTF-8" includeantruntime="false"
         >
             <src path="src/java"/>
-            <exclude name="sfBugsNew/Bug1295.java"/>
+            <exclude name="sfBugsNew/*jdk8.java"/>
             <src path="src/fakeAnnotations"/>
             <src path="src/fakeLibraries"/>
             <classpath>
@@ -133,7 +133,7 @@
         <javac destdir="build/classes" debug="on" encoding="UTF-8" includeantruntime="false"
         >
             <src path="src/java"/>
-            <exclude name="sfBugsNew/Bug1295.java"/>
+            <exclude name="sfBugsNew/*jdk8.java"/>
             <src path="src/fakeAnnotations"/>
             <src path="src/fakeLibraries"/>
             <classpath>
