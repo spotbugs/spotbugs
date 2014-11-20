@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
-public class Feature247jdk8 {
+public class Feature297jdk8 {
 
     @ExpectWarning("NP_OPTIONAL_RETURN_NULL")
     public static <T> Optional<T> returnOptional() {
