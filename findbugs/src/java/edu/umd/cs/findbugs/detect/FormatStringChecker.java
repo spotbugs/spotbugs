@@ -158,8 +158,10 @@ public class FormatStringChecker extends OpcodeStackDetector {
                             assert argDescriptor != null : "sig started with L, should get descriptor";
                             String arg = argDescriptor.toDottedClassName();
                             try {
-                                if (Hierarchy.isSubtype(arg,  java.util.Date.class.getName())
-                                        || Hierarchy.isSubtype(arg,  java.util.Calendar.class.getName())) {
+                                if (arg.equals("java.time.LocalDate")
+                                        || Hierarchy.isSubtype(arg,  java.util.Date.class.getName())
+                                        || Hierarchy.isSubtype(arg,  java.util.Calendar.class.getName())
+                                        || Hierarchy.isSubtype(arg,  "java.time.temporal.TemporalAccessor")) {
                                     return;
                                 }
                             } catch (ClassNotFoundException e1) {
