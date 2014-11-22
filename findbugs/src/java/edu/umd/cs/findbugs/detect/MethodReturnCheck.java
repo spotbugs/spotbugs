@@ -82,6 +82,8 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
 
     private final NoSideEffectMethodsDatabase noSideEffectMethods;
 
+    private boolean sawExcludedNSECall;
+
     public MethodReturnCheck(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
         this.noSideEffectMethods = Global.getAnalysisCache().getDatabase(NoSideEffectMethodsDatabase.class);
@@ -95,6 +97,13 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
 
     @Override
     public void visitAfter(Code code) {
+        if(bugAccumulator.getLastBugLocation() == null && !sawExcludedNSECall && noSideEffectMethods.useless(getMethodDescriptor())) {
+            // Do not report UC_USELESS_VOID_METHOD if something was already reported inside the current method
+        	// it's likely that UC_USELESS_VOID_METHOD is just the consequence of the previous report
+            bugAccumulator.accumulateBug(new BugInstance(this, "UC_USELESS_VOID_METHOD",
+                    code.getCode().length > 20 ? HIGH_PRIORITY : NORMAL_PRIORITY).addClassAndMethod(getMethodDescriptor()), this);
+        }
+        sawExcludedNSECall = false;
         bugAccumulator.reportAccumulatedBugs();
     }
 
@@ -228,6 +237,9 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
         {
             CheckReturnValueAnnotation annotation = checkReturnAnnotationDatabase.getResolvedAnnotation(callSeen, false);
             if (annotation == null) {
+                if (noSideEffectMethods.excluded(callSeen.getMethodDescriptor())) {
+                    sawExcludedNSECall = true;
+                }
                 if (noSideEffectMethods.hasNoSideEffect(callSeen.getMethodDescriptor())) {
                     int priority = NORMAL_PRIORITY;
                     Type callReturnType = Type.getReturnType(callSeen.getMethodDescriptor().getSignature());

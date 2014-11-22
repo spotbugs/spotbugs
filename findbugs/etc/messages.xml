@@ -4773,6 +4773,21 @@ inner object.&nbsp; This reference makes the instances
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="UC_USELESS_VOID_METHOD">
+    <ShortDescription>Useless non-empty void method</ShortDescription>
+    <LongDescription>Method {1} seems to be useless</LongDescription>
+    <Details>
+<![CDATA[
+<p>Our analysis shows that this non-empty void method does not actually perform any useful work.
+Please check it: probably there's a mistake in its code or its body can be fully removed.
+</p>
+<p>We are trying to reduce the false positives as much as possible, but in some cases this warning might be wrong.
+Common false-positive cases include:</p>
+<p>- The method is intended to trigger loading of some class which may have a side effect.</p>
+<p>- The method is intended to implicitly throw some obscure exception.</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="RV_CHECK_FOR_POSITIVE_INDEXOF">
     <ShortDescription>Method checks to see if result of String.indexOf is positive</ShortDescription>
     <LongDescription>{1} checks to see if result of String.indexOf is positive</LongDescription>
@@ -8444,6 +8459,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="REC">RuntimeException capture</BugCode>
   <BugCode abbrev="FE">Test for floating point equality</BugCode>
   <BugCode abbrev="UM">Unnecessary Math on constants</BugCode>
+  <BugCode abbrev="UC">Useless code</BugCode>
   <BugCode abbrev="CNT">Rough value of known constant</BugCode>
   <BugCode abbrev="CD">Circular Dependencies</BugCode>
   <BugCode abbrev="RI">Redundant Interfaces</BugCode>
