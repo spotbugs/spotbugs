@@ -62,7 +62,7 @@ public class DetectorsTest {
     /** detectors which are disabled by default but which must be used in test */
     private final String[] enabledDetectors = {"CheckExpectedWarnings","InefficientMemberAccess","EmptyZipFileEntry"};
 
-    public  File getFindbugsTestCases() throws IOException {
+    public  File getFindbugsTestCases()  {
         if (findbugsTestCases != null) {
             return findbugsTestCases;
         }
@@ -75,12 +75,12 @@ public class DetectorsTest {
         return f;
     }
 
-    public File getFindbugsTestCasesFile(String path) throws IOException {
+    public File getFindbugsTestCasesFile(String path) {
         File f = new File(getFindbugsTestCases(), path);
-        if (f.exists() && f.canRead()) {
-            return f;
-        }
-        throw new IOException("FindBugs test cases file " + path + " not available at " + f.getCanonicalPath());
+        Assume.assumeTrue(f.exists());
+        Assume.assumeTrue(f.canRead());
+
+        return f;
     }
 
     @Before
