@@ -2,7 +2,7 @@ package sfBugsNew;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
-public class FindRoughConstantsTest {
+public class Feature294 {
     private static final float PI_FLOAT = 3.14159f;
     private static final double PI_DOUBLE = 3.14159;
 

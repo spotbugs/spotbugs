@@ -539,7 +539,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue" speed="fast"
                     reports="RV_CHECK_FOR_POSITIVE_INDEXOF,RV_DONT_JUST_NULL_CHECK_READLINE"/>
           <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck" speed="fast"
-                    reports="RV_RETURN_VALUE_IGNORED,RV_RETURN_VALUE_IGNORED_BAD_PRACTICE,RV_EXCEPTION_NOT_THROWN,RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE,RV_RETURN_VALUE_IGNORED_INFERRED,RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT"/>
+                    reports="RV_RETURN_VALUE_IGNORED,RV_RETURN_VALUE_IGNORED_BAD_PRACTICE,RV_EXCEPTION_NOT_THROWN,RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE,RV_RETURN_VALUE_IGNORED_INFERRED,RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT,UC_USELESS_VOID_METHOD"/>
           <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble" speed="fast"
                     reports="ICAST_IDIV_CAST_TO_DOUBLE,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL,ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindBadCast2" speed="fast"
@@ -929,6 +929,7 @@
           <BugPattern abbrev="Wa" type="WA_NOT_IN_LOOP" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="Wa" type="WA_AWAIT_NOT_IN_LOOP" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="No" type="NO_NOTIFY_NOT_NOTIFYALL" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="UC" type="UC_USELESS_VOID_METHOD" category="STYLE"/>
           <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED" category="CORRECTNESS"/>
           <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED_INFERRED" category="STYLE"/>
           <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" category="STYLE"/>

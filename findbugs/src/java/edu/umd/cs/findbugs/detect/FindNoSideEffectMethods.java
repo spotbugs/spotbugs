@@ -59,6 +59,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonReportingDetector {
     private static final MethodDescriptor GET_CLASS = new MethodDescriptor("java/lang/Object", "getClass", "()Ljava/lang/Class;");
     private static final MethodDescriptor ARRAY_COPY = new MethodDescriptor("java/lang/System", "arraycopy", "(Ljava/lang/Object;ILjava/lang/Object;II)V", true);
+    private static final MethodDescriptor HASH_CODE = new MethodDescriptor("java/lang/Object", "hashCode", "()I");
     private static final MethodDescriptor CLASS_GET_NAME = new MethodDescriptor("java/lang/Class", "getName", "()Ljava/lang/String;");
     // Stub method to generalize array store
     private static final MethodDescriptor ARRAY_STORE_STUB_METHOD = new MethodDescriptor("java/lang/Array", "set", "(ILjava/lang/Object;)V");
@@ -90,6 +91,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
 
     // Usual implementation of stub methods which are expected to be more complex in derived classes
     private static final byte[][] STUB_METHODS = new byte[][] {
+        {(byte) RETURN},
         {ICONST_0, (byte) IRETURN},
         {ICONST_1, (byte) IRETURN},
         {ICONST_M1, (byte) IRETURN},
@@ -98,6 +100,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         {DCONST_0, (byte) DRETURN},
         {ACONST_NULL, (byte) ARETURN},
         {ALOAD_0, (byte) ARETURN},
+        {ALOAD_1, (byte) ARETURN},
     };
 
     /**
@@ -114,8 +117,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
      * Known methods which have no side-effect
      */
     private static final Set<MethodDescriptor> NO_SIDE_EFFECT_METHODS = new HashSet<>(Arrays.asList(
-            GET_CLASS, CLASS_GET_NAME,
-            new MethodDescriptor("java/lang/Object", "hashCode", "()I"),
+            GET_CLASS, CLASS_GET_NAME, HASH_CODE,
             new MethodDescriptor("java/lang/reflect/Array", "newInstance", "(Ljava/lang/Class;I)Ljava/lang/Object;"),
             new MethodDescriptor("java/lang/Class", "getResource", "(Ljava/lang/String;)Ljava/net/URL;"),
             new MethodDescriptor("java/lang/Class", "getSimpleName", "()Ljava/lang/String;"),
@@ -228,13 +230,31 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
 
     public static class NoSideEffectMethodsDatabase {
         private static final Set<MethodDescriptor> set = new HashSet<>();
+        private static final Set<MethodDescriptor> excluded = new HashSet<>();
+        private static final Set<MethodDescriptor> useless = new HashSet<>();
 
         void add(MethodDescriptor m) {
             set.add(m);
         }
 
+        void addUseless(MethodDescriptor m) {
+            useless.add(m);
+        }
+
+        void addExcluded(MethodDescriptor m) {
+            excluded.add(m);
+        }
+
         public boolean hasNoSideEffect(MethodDescriptor m) {
             return set.contains(m);
+        }
+
+        public boolean useless(MethodDescriptor m) {
+            return useless.contains(m);
+        }
+
+        public boolean excluded(MethodDescriptor m) {
+            return excluded.contains(m);
         }
     }
 
@@ -244,13 +264,14 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
     private final Map<MethodDescriptor, SideEffectStatus> statusMap = new HashMap<>();
     private final Map<MethodDescriptor, List<MethodCall>> callGraph = new HashMap<>();
     private final Set<MethodDescriptor> getStaticMethods = new HashSet<>();
-    private final Set<MethodDescriptor> stubMethods = new HashSet<>();
+    private final Set<MethodDescriptor> uselessVoidCandidates = new HashSet<>();
 
     private SideEffectStatus status;
     private ArrayList<MethodCall> calledMethods;
     private Set<ClassDescriptor> subtypes;
 
     private boolean constructor;
+    private boolean uselessVoidCandidate;
     private boolean classInit;
 
     private Set<FieldDescriptor> allowedFields;
@@ -311,7 +332,9 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             }
         }
         if (method.isAbstract() || method.isInterface()) {
-            if (!sawImplementation || getClassName().startsWith("java/sql/")
+            if (!sawImplementation
+                    || getClassName().endsWith("Visitor") || getClassName().endsWith("Listener")
+                    || getClassName().startsWith("java/sql/")
                     || (getClassName().equals("java/util/concurrent/Future") && !method.getName().startsWith("is"))) {
                 status = SideEffectStatus.SIDE_EFFECT;
             } else if(isObjectOnlyMethod(getMethodDescriptor())) {
@@ -399,16 +422,21 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
 
     @Override
     public void visit(Code obj) {
+        uselessVoidCandidate = !classInit && !constructor && !getXMethod().isSynthetic() && Type.getReturnType(getMethodSig()) == Type.VOID;
         byte[] code = obj.getCode();
         if(code.length == 4 && (code[0] & 0xFF) == GETSTATIC && (code[3] & 0xFF) == ARETURN) {
             getStaticMethods.add(getMethodDescriptor());
             handleStatus();
             return;
         }
-        if(code.length == 2 && !getMethodDescriptor().isStatic()) {
+
+        if (code.length <= 2 && !getXMethod().isStatic() && (getXMethod().isPublic() || getXMethod().isProtected())
+                && !getXMethod().isFinal() && (getXClass().isPublic() || getXClass().isProtected())) {
             for(byte[] stubMethod : STUB_METHODS) {
-                if(Arrays.equals(stubMethod, code)) {
-                    stubMethods.add(getMethodDescriptor());
+                if (Arrays.equals(stubMethod, code)
+                        && (getClassName().endsWith("Visitor") || getClassName().endsWith("Listener") || !hasOtherImplementations(getXMethod()))) {
+                    // stub method which can be extended: assume it can be extended with possible side-effect
+                    status = SideEffectStatus.SIDE_EFFECT;
                     handleStatus();
                     return;
                 }
@@ -421,6 +449,10 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             super.visit(obj);
         } catch (EarlyExitException e) {
             // Ignore
+        }
+        if (uselessVoidCandidate && code.length > 1
+                && (status == SideEffectStatus.UNSURE || status == SideEffectStatus.NO_SIDE_EFFECT)) {
+            uselessVoidCandidates.add(getMethodDescriptor());
         }
         handleStatus();
     }
@@ -447,6 +479,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         }
         switch (seen) {
         case ATHROW:
+            uselessVoidCandidate = false;
             try {
                 JavaClass javaClass = getStack().getStackItem(0).getJavaClass();
                 if (javaClass != null && ALLOWED_EXCEPTIONS.contains(javaClass.getClassName())) {
@@ -532,6 +565,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         }
         MethodDescriptor methodDescriptor = methodCall.getMethod();
         if (hasNoSideEffect(methodDescriptor)) {
+            sawNoSideEffectCall(methodDescriptor);
             return;
         }
         FieldDescriptor target = methodCall.getTarget();
@@ -543,6 +577,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         }
         switch(calledStatus) {
         case NO_SIDE_EFFECT:
+            sawNoSideEffectCall(methodDescriptor);
             return;
         case SIDE_EFFECT:
             status = SideEffectStatus.SIDE_EFFECT;
@@ -570,6 +605,22 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         case UNSURE:
             sawUnsureCall(methodCall);
             return;
+        }
+    }
+
+    /**
+     * @param methodDescriptor
+     */
+    private void sawNoSideEffectCall(MethodDescriptor methodDescriptor) {
+        if(uselessVoidCandidate && Type.getReturnType(methodDescriptor.getSignature()) == Type.VOID
+                && !methodDescriptor.getName().equals("<init>")) {
+            /* To reduce false-positives we do not mark method as useless void if it calls
+             * another useless void method. If that another method also in the scope of our project
+             * then we will report it instead. If there's a cycle of no-side-effect calls, then
+             * it's probably some delegation pattern and methods can be extended in future/derived
+             * projects to do something useful.
+             */
+            uselessVoidCandidate = false;
         }
     }
 
@@ -821,11 +872,14 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                             /* Skip static methods and constructors for classes which have
                              * side-effect class initializer
                              */
+                            noSideEffectMethods.addExcluded(m);
                             continue;
                         }
                     }
-                    if(m.equals(CLASS_GET_NAME)) {
-                        // used sometimes to trigger class loading
+                    if(m.equals(CLASS_GET_NAME) // used sometimes to trigger class loading
+                            || m.equals(HASH_CODE) // found intended hashCode call several times in different projects, need further research
+                            ) {
+                        noSideEffectMethods.addExcluded(m);
                         continue;
                     }
                     if (m.isStatic() && getStaticMethods.contains(m) && !m.getSlashedClassName().startsWith("java/")) {
@@ -836,58 +890,52 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                                 /* Skip methods which only retrieve static field from the same package
                                  * As they as often used to trigger class initialization
                                  */
+                                noSideEffectMethods.addExcluded(m);
                                 continue;
                             }
                         }
                     }
-                    if (m instanceof XMethod) {
-                        XMethod xMethod = (XMethod)m;
-                        if(isStub(xMethod)) {
-                            continue;
-                        }
-                    }
                     noSideEffectMethods.add(m);
+                } else {    // void methods
+                    if(uselessVoidCandidates.contains(m)) {
+                        noSideEffectMethods.addUseless(m);
+                    }
                 }
             }
         }
     }
 
     /**
-     * Tries to guess whether the method is a stub which is intended to be overloaded in future or in different projects
-     * @param xMethod method to check
-     * @return true if given method should be considered as stub
+     * @param xMethod
+     * @return true if this has other implementations
      */
-    private boolean isStub(XMethod xMethod) {
-        if (xMethod.isFinal()
-                || xMethod.isBridge()
-                || (!xMethod.isPublic() && !xMethod.isProtected())
-                || xMethod.getClassName().startsWith("java.")
-                || hasNoSideEffect(xMethod.getMethodDescriptor())
-                || (!xMethod.isAbstract() && !stubMethods.contains(xMethod.getMethodDescriptor()) || !Hierarchy2
-                        .findSuperMethods(xMethod).isEmpty())) {
-            return false;
-        }
-        try {
-            Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-            Set<ClassDescriptor> subtypes = subtypes2.getSubtypes(xMethod.getClassDescriptor());
-            subtypes.remove(getClassDescriptor());
-            for (ClassDescriptor subtype : subtypes) {
-                try {
-                    XClass xClass = subtype.getXClass();
-                    XMethod subMethod = xClass.findMatchingMethod(xMethod.getMethodDescriptor());
-                    if (subMethod != null) {
-                        if(!subMethod.isAbstract() && !stubMethods.contains(subMethod)) {
-                            return false;
-                        }
-                    }
-                } catch (CheckedAnalysisException e) {
-                    return false;
-                }
+    private static boolean hasOtherImplementations(XMethod xMethod) {
+        Set<XMethod> superMethods = Hierarchy2.findSuperMethods(xMethod);
+        superMethods.add(xMethod);
+        Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+        Set<ClassDescriptor> subtypes = new HashSet<>();
+        for(XMethod superMethod : superMethods) {
+            try {
+                subtypes.addAll(subtypes2.getSubtypes(superMethod.getClassDescriptor()));
+            } catch (ClassNotFoundException e) {
+                // ignore
             }
-        } catch (ClassNotFoundException e) {
-            return false;
         }
-        return true;
+        subtypes.remove(xMethod.getClassDescriptor());
+        for (ClassDescriptor subtype : subtypes) {
+            try {
+                XClass xClass = subtype.getXClass();
+                XMethod subMethod = xClass.findMatchingMethod(xMethod.getMethodDescriptor());
+                if (subMethod != null) {
+                    if(!subMethod.isAbstract() ) {
+                        return true;
+                    }
+                }
+            } catch (CheckedAnalysisException e) {
+                // ignore
+            }
+        }
+        return false;
     }
 
     private void computeFinalStatus() {
@@ -898,6 +946,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             while (iterator.hasNext()) {
                 Entry<MethodDescriptor, List<MethodCall>> entry = iterator.next();
                 MethodDescriptor method = entry.getKey();
+                uselessVoidCandidate = uselessVoidCandidates.contains(method);
                 SideEffectStatus prevStatus = statusMap.get(method);
                 status = prevStatus.toSure();
                 calledMethods = new ArrayList<>();
@@ -906,6 +955,9 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                     if(status == SideEffectStatus.SIDE_EFFECT) {
                         break;
                     }
+                }
+                if (!uselessVoidCandidate || (status != SideEffectStatus.UNSURE && status != SideEffectStatus.NO_SIDE_EFFECT)) {
+                    uselessVoidCandidates.remove(method);
                 }
                 if (status != prevStatus || !entry.getValue().equals(calledMethods)) {
                     statusMap.put(method, status);
@@ -932,6 +984,28 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                 }
                 if(safeCycle) {
                     statusMap.put(method, SideEffectStatus.NO_SIDE_EFFECT);
+                    uselessVoidCandidate = uselessVoidCandidates.contains(method);
+                    if(uselessVoidCandidate) {
+                        for(MethodCall call : entry.getValue()) {
+                            uselessVoidCandidate = false;
+                            if((call.getMethod().equals(method) && call.getTarget() == TARGET_THIS) || method.isStatic()) {
+                                uselessVoidCandidate = true;
+                            } else {
+                                if(call.getMethod() instanceof XMethod) {
+                                    XMethod xMethod = (XMethod) call.getMethod();
+                                    if(xMethod.isFinal() || (!xMethod.isPublic() && !xMethod.isProtected())) {
+                                        uselessVoidCandidate = true;
+                                    }
+                                }
+                            }
+                            if(!uselessVoidCandidate) {
+                                break;
+                            }
+                        }
+                        if(!uselessVoidCandidate) {
+                            uselessVoidCandidates.remove(method);
+                        }
+                    }
                 }
             }
         }

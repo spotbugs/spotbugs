@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
@@ -436,8 +437,9 @@ public class FindInconsistentSync2 implements Detector {
             return;
         }
         JCIPAnnotationDatabase jcipAnotationDatabase = AnalysisContext.currentAnalysisContext().getJCIPAnnotationDatabase();
-        for (XField xfield : statMap.keySet()) {
-            FieldStats stats = statMap.get(xfield);
+        for (Entry<XField, FieldStats> entry : statMap.entrySet()) {
+            XField xfield = entry.getKey();
+            FieldStats stats = entry.getValue();
             if (!stats.isInteresting()) {
                 continue;
             }
