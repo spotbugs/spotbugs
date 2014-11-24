@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,11 +67,12 @@ public class DetectorsTest {
             return findbugsTestCases;
         }
         File f = new File(SystemProperties.getProperty("findbugsTestCases.home", "../findbugsTestCases"));
-        if (f.exists() && f.isDirectory() && f.canRead()) {
-            findbugsTestCases = f;
-            return f;
-        }
-        throw new IOException("FindBugs test cases not available at " + f.getCanonicalPath());
+        Assume.assumeTrue(f.exists());
+        Assume.assumeTrue(f.isDirectory());
+        Assume.assumeTrue(f.canRead());
+
+        findbugsTestCases = f;
+        return f;
     }
 
     public File getFindbugsTestCasesFile(String path) throws IOException {
