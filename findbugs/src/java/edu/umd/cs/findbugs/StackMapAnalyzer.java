@@ -215,7 +215,8 @@ public  class StackMapAnalyzer {
         int pc = 0;
         for(StackMapTableEntry e : stackMapTable.getStackMapTable()) {
             pc += e.getByteCodeOffsetDelta();
-            StackFrameType stackFrameType = StackFrameType.get(getFrameType(e));
+            int rawFrameType = getFrameType(e);
+            StackFrameType stackFrameType = StackFrameType.get(rawFrameType);
             switch (stackFrameType) {
             case SAME_FRAME:
                 stack.clear();
@@ -226,7 +227,8 @@ public  class StackMapAnalyzer {
                 break;
             case CHOP_FRAME :
                 stack.clear();
-                for(int i = 0; i < e.getNumberOfLocals(); i++) {
+                int n = Constants.CHOP_FRAME_MAX+1-rawFrameType;
+                for(int i = 0; i < n; i++) {
                     Item it = locals.remove(locals.size()-1);
                     if (it == null) {
                         it = locals.remove(locals.size()-1);
