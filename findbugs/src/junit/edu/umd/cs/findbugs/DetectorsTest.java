@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -61,24 +62,25 @@ public class DetectorsTest {
     /** detectors which are disabled by default but which must be used in test */
     private final String[] enabledDetectors = {"CheckExpectedWarnings","InefficientMemberAccess","EmptyZipFileEntry"};
 
-    public  File getFindbugsTestCases() throws IOException {
+    public  File getFindbugsTestCases()  {
         if (findbugsTestCases != null) {
             return findbugsTestCases;
         }
         File f = new File(SystemProperties.getProperty("findbugsTestCases.home", "../findbugsTestCases"));
-        if (f.exists() && f.isDirectory() && f.canRead()) {
-            findbugsTestCases = f;
-            return f;
-        }
-        throw new IOException("FindBugs test cases not available at " + f.getCanonicalPath());
+        Assume.assumeTrue(f.exists());
+        Assume.assumeTrue(f.isDirectory());
+        Assume.assumeTrue(f.canRead());
+
+        findbugsTestCases = f;
+        return f;
     }
 
-    public File getFindbugsTestCasesFile(String path) throws IOException {
+    public File getFindbugsTestCasesFile(String path) {
         File f = new File(getFindbugsTestCases(), path);
-        if (f.exists() && f.canRead()) {
-            return f;
-        }
-        throw new IOException("FindBugs test cases file " + path + " not available at " + f.getCanonicalPath());
+        Assume.assumeTrue(f.exists());
+        Assume.assumeTrue(f.canRead());
+
+        return f;
     }
 
     @Before
