@@ -94,7 +94,7 @@ public class BugRenderer extends DefaultTreeCellRenderer {
                         return 16;
                     }
                 };
-                ((BugRenderer) toReturn).setLeafIcon(icon);
+                ((BugRenderer) toReturn).setIcon(icon);
             }
             return toReturn;
         }
