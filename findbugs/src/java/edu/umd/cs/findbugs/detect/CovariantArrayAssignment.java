@@ -44,8 +44,6 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 public class CovariantArrayAssignment extends OpcodeStackDetector {
     private final BugAccumulator accumulator;
 
-    private boolean emptyArrayOnTos = false;
-
     public CovariantArrayAssignment(BugReporter bugReporter) {
         accumulator = new BugAccumulator(bugReporter);
     }
@@ -91,9 +89,10 @@ public class CovariantArrayAssignment extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (!emptyArrayOnTos && ((isRegisterStore() && !isRegisterLoad()) || seen == PUTFIELD || seen == PUTSTATIC || seen == ARETURN)) {
+        if ((isRegisterStore() && !isRegisterLoad()) || seen == PUTFIELD || seen == PUTSTATIC || seen == ARETURN) {
             Item valueItem = getStack().getStackItem(0);
-            if(!valueItem.isNull() && valueItem.isNewlyAllocated() && valueItem.getSignature().startsWith("[L")) {
+            if(!valueItem.isNull() && valueItem.isNewlyAllocated() && valueItem.getSignature().startsWith("[L")
+                    && !((Integer)0).equals(valueItem.getConstant())) {
                 String valueClass = valueItem.getSignature().substring(2, valueItem.getSignature().length()-1);
                 String arraySignature = null;
                 int priority = LOW_PRIORITY;
@@ -184,14 +183,6 @@ public class CovariantArrayAssignment extends OpcodeStackDetector {
                         // Probably class was not supplied to the analysis: assume that everything is correct
                     }
                 }
-            }
-        }
-
-        emptyArrayOnTos = false;
-        if (seen == ANEWARRAY ) {
-            Item arrayLength = getStack().getStackItem(0);
-            if(Integer.valueOf(0).equals(arrayLength.getConstant())) {
-                emptyArrayOnTos = true;
             }
         }
     }

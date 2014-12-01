@@ -543,7 +543,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
                 boolean isPutOfDefaultValue = first.isNull(); // huh?? ||
                 // first.isInitialParameter();
-                if (!isPutOfDefaultValue && first.getConstant() != null) {
+                if (!isPutOfDefaultValue && first.getConstant() != null && !first.isArray()) {
                     Object constant = first.getConstant();
                     if (constant instanceof Number && ((Number) constant).intValue() == 0 || constant.equals(Boolean.FALSE)) {
                         isPutOfDefaultValue = true;

@@ -813,6 +813,7 @@ public class OpcodeStack implements Constants2 {
          * Returns a constant value for this Item, if known. NOTE: if the value
          * is a constant Class object, the constant value returned is the name
          * of the class.
+         * if the value is an array of known length, the constant value returned is its length (Integer)
          */
         public Object getConstant() {
             return constValue;
@@ -1776,8 +1777,8 @@ public class OpcodeStack implements Constants2 {
             break;
 
             case ARRAYLENGTH: {
-                pop();
-                Item newItem = new Item("I");
+                Item array = pop();
+                Item newItem = new Item("I", array.getConstant());
                 newItem.setSpecialKind(Item.NON_NEGATIVE);
                 push(newItem);
             }
@@ -2014,29 +2015,35 @@ public class OpcodeStack implements Constants2 {
             }
             break;
 
-            case NEWARRAY:
-                pop();
+            case NEWARRAY: {
+                Item length = pop();
                 signature = "[" + BasicType.getType((byte) dbc.getIntConstant()).getSignature();
-                pushBySignature(signature, dbc);
-                getStackItem(0).setSpecialKind(Item.NEWLY_ALLOCATED);
+                Item item = new Item(signature, length.getConstant());
+                item.setPC(dbc.getPC());
+                item.setSpecialKind(Item.NEWLY_ALLOCATED);
+                push(item);
                 break;
+            }
 
-                // According to the VM Spec 4.4.1, anewarray and multianewarray
-                // can refer to normal class/interface types (encoded in
-                // "internal form"), or array classes (encoded as signatures
-                // beginning with "[").
+            // According to the VM Spec 4.4.1, anewarray and multianewarray
+            // can refer to normal class/interface types (encoded in
+            // "internal form"), or array classes (encoded as signatures
+            // beginning with "[").
 
-            case ANEWARRAY:
-                pop();
+            case ANEWARRAY: {
+                Item length = pop();
                 signature = dbc.getClassConstantOperand();
                 if (signature.charAt(0) == '[') {
                     signature = "[" + signature;
                 } else {
                     signature = "[L" + signature + ";";
                 }
-                pushBySignature(signature, dbc);
-                getStackItem(0).setSpecialKind(Item.NEWLY_ALLOCATED);
+                Item item = new Item(signature, length.getConstant());
+                item.setPC(dbc.getPC());
+                item.setSpecialKind(Item.NEWLY_ALLOCATED);
+                push(item);
                 break;
+            }
 
             case MULTIANEWARRAY:
                 int dims = dbc.getIntConstant();
@@ -2616,6 +2623,26 @@ public class OpcodeStack implements Constants2 {
                 i.setSpecialKind(Item.NON_NEGATIVE);
             }
             push(i);
+        } else if("java/lang/String".equals(clsName) && numberArguments == 0 && topItem.getConstant() instanceof String) {
+            String input = (String) topItem.getConstant();
+            Object result = null;
+            switch(methodName) {
+            case "length":
+                result = input.length();
+                break;
+            case "trim":
+                result = input.trim();
+                break;
+            case "toString":
+            case "intern":
+                result = input;
+                break;
+            }
+            if(result != null) {
+                Item i = new Item(pop());
+                i.constValue = result;
+                push(i);
+            }
         } else if (ClassName.isMathClass(clsName) && "abs".equals(methodName)) {
             Item i = new Item(pop());
             if (i.getSpecialKind() == Item.HASHCODE_INT) {

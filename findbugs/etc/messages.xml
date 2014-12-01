@@ -4788,6 +4788,42 @@ Common false-positive cases include:</p>
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="RANGE_ARRAY_INDEX">
+    <ShortDescription>Array index is out of bounds</ShortDescription>
+    <LongDescription>Array index is out of bounds: {3}</LongDescription>
+    <Details>
+<![CDATA[
+   <p> Array operation is performed, but array index is out of bounds, which will result in ArrayIndexOutOfBoundsException at runtime.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="RANGE_ARRAY_OFFSET">
+    <ShortDescription>Array offset is out of bounds</ShortDescription>
+    <LongDescription>Array offset is out of bounds: {3}</LongDescription>
+    <Details>
+<![CDATA[
+   <p> Method is called with array parameter and offset parameter, but the offset is out of bounds. This will result in IndexOutOfBoundsException at runtime. </p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="RANGE_ARRAY_LENGTH">
+    <ShortDescription>Array length is out of bounds</ShortDescription>
+    <LongDescription>Array length is out of bounds: {3}</LongDescription>
+    <Details>
+<![CDATA[
+   <p> Method is called with array parameter and length parameter, but the length is out of bounds. This will result in IndexOutOfBoundsException at runtime. </p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="RANGE_STRING_INDEX">
+    <ShortDescription>String index is out of bounds</ShortDescription>
+    <LongDescription>String index is out of bounds when calling {5}: {3}</LongDescription>
+    <Details>
+<![CDATA[
+   <p> String method is called and specified string index is out of bounds. This will result in StringIndexOutOfBoundsException at runtime. </p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="RV_CHECK_FOR_POSITIVE_INDEXOF">
     <ShortDescription>Method checks to see if result of String.indexOf is positive</ShortDescription>
     <LongDescription>{1} checks to see if result of String.indexOf is positive</LongDescription>
@@ -8411,6 +8447,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="UwF">Unwritten field</BugCode>
   <BugCode abbrev="SIC">Inner class could be made static</BugCode>
   <BugCode abbrev="TLW">Wait with two locks held</BugCode>
+  <BugCode abbrev="RANGE">Range checks</BugCode>
   <BugCode abbrev="RV">Bad use of return value from method</BugCode>
   <BugCode abbrev="LG">Logger problem</BugCode>
   <BugCode abbrev="IA">Ambiguous invocation</BugCode>

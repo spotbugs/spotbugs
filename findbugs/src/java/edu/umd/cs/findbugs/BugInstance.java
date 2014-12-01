@@ -2490,7 +2490,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             a.setDescription(StringAnnotation.STRING_CONSTANT_ROLE);
             return a;
         }
-        if (c instanceof Integer) {
+        if (c instanceof Integer && !item.isArray()) {
             a = new IntAnnotation((Integer) c);
             a.setDescription(IntAnnotation.INT_VALUE);
             return a;
