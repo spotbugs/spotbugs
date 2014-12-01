@@ -27,6 +27,7 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -209,7 +210,7 @@ public class Profiler implements XMLWriteable {
 
     final Stack<Clock> startTimes;
 
-    final ConcurrentHashMap<Class<?>, Profile> profile;
+    final ConcurrentMap<Class<?>, Profile> profile;
 
     final Stack<Object> context = new Stack<Object>();
 
