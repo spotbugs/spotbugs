@@ -618,6 +618,11 @@ public class MainFrameTree implements Serializable {
                 return;
             }
 
+            if(currentSelectedBugLeaf == path.getLastPathComponent()) {
+                // sync mainFrame if user just clicks on the same bug
+                mainFrame.syncBugInformation();
+            }
+
             if ((e.getButton() == MouseEvent.BUTTON3) || (e.getButton() == MouseEvent.BUTTON1 && e.isControlDown())) {
 
                 if (tree.getModel().isLeaf(path.getLastPathComponent())) {
