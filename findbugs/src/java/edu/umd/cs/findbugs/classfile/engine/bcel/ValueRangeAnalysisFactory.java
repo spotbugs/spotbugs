@@ -23,6 +23,8 @@ import static org.apache.bcel.Constants.*;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -292,7 +294,6 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         public Location getDeadCodeLocation() {
             return deadCodeLocation;
         }
-
     }
 
     public static class ValueRangeAnalysis {
@@ -473,6 +474,12 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             }
         }
         if (!redundantConditions.isEmpty()) {
+            Collections.sort(redundantConditions, new Comparator<RedundantCondition>() {
+                @Override
+                public int compare(RedundantCondition o1, RedundantCondition o2) {
+                    return o1.location.compareTo(o2.location);
+                }
+            });
             return new ValueRangeAnalysis(redundantConditions);
         }
         return null;

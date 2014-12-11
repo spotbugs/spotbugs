@@ -116,11 +116,12 @@ public class RedundantConditions implements Detector {
                         ConstantPoolGen constantPool = methodGen.getConstantPool();
                         String methodName = ((InvokeInstruction)after.getInstruction()).getMethodName(constantPool);
                         // Ignore values conditions used in assertion methods
-                        if((methodName.equals("assertTrue") || methodName.equals("checkArgument") || methodName.equals("isLegal"))
+                        if((methodName.equals("assertTrue") || methodName.equals("checkArgument") || methodName.equals("isLegal")
+                                || methodName.equals("isTrue"))
                                 && liveValue == 1) {
                             return IGNORE_PRIORITY;
                         }
-                        if((methodName.equals("assertFalse"))
+                        if((methodName.equals("assertFalse") || methodName.equals("isFalse"))
                                 && liveValue == 0) {
                             return IGNORE_PRIORITY;
                         }
