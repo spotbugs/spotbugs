@@ -69,7 +69,8 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
         new BlockTypeAnalysisFactory(), new CallListDataflowFactory(), new UnconditionalValueDerefDataflowFactory(),
         new CompactLocationNumberingFactory(),  new ReturnPathTypeDataflowFactory(),
         new ForwardTypeQualifierDataflowFactoryFactory(), new BackwardTypeQualifierDataflowFactoryFactory(),
-        new OpcodeStack.JumpInfoFactory(), new StackMapAnalysisFactory(), new ObligationDataflowFactory(), };
+        new OpcodeStack.JumpInfoFactory(), new StackMapAnalysisFactory(), new ObligationDataflowFactory(),
+        new ValueRangeAnalysisFactory(), };
 
     private static final IDatabaseFactory<?>[] databaseFactoryList = {
         // new ReflectionDatabaseFactory<Subtypes>(Subtypes.class),

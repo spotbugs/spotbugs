@@ -81,6 +81,8 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     public static final String ROLE_LOCK_OBTAINED_AT = "SOURCE_LINE_LOCK_OBTAINED_AT";
 
+    public static final String ROLE_UNREACHABLE_CODE = "SOURCE_UNREACHABLE_CODE";
+
     /**
      * String returned if the source file is unknown. This must match what BCEL
      * uses when the source file is unknown.

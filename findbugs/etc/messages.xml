@@ -518,6 +518,13 @@ This does not help the garbage collector in any way, the nulling out of fields h
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.RedundantConditions">
+    <Details>
+<![CDATA[
+<p> This detector looks for code containing useless conditions like the second condition in this expression: (x >= 10 && x >= 5).
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.CallToUnsupportedMethod">
     <Details>
 <![CDATA[
@@ -4785,6 +4792,16 @@ Please check it: probably there's a mistake in its code or its body can be fully
 Common false-positive cases include:</p>
 <p>- The method is intended to trigger loading of some class which may have a side effect.</p>
 <p>- The method is intended to implicitly throw some obscure exception.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="UC_USELESS_CONDITION">
+    <ShortDescription>Condition has no effect</ShortDescription>
+    <LongDescription>Useless condition: it's known that {2} at this point</LongDescription>
+    <Details>
+<![CDATA[
+<p>This condition always produces the same result as the value of the involved variable was narrowed before. 
+Probably something else was meant or condition can be removed.</p>
 ]]>
     </Details>
   </BugPattern>
