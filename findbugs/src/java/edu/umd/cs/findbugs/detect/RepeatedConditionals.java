@@ -24,12 +24,17 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.generic.BranchInstruction;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
 import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.detect.FindNoSideEffectMethods.NoSideEffectMethodsDatabase;
 
@@ -77,76 +82,132 @@ public class RepeatedConditionals extends OpcodeStackDetector {
         if (hasSideEffect(seen)) {
             reset();
         } else if (stack.getStackDepth() == 0) {
-            check: if (emptyStackLocations.size() > 1) {
-                int first = emptyStackLocations.get(emptyStackLocations.size() - 2);
-                int second = emptyStackLocations.get(emptyStackLocations.size() - 1);
-                int third = getPC();
-                if (third - second == second - first) {
-                    int endOfFirstSegment = prevOpcodeLocations.get(emptyStackLocations.size() - 1);
-                    int endOfSecondSegment = oldPC;
-                    int opcodeAtEndOfFirst = getCodeByte(endOfFirstSegment);
-                    int opcodeAtEndOfSecond = getCodeByte(endOfSecondSegment);
+            if (emptyStackLocations.size() > 1) {
+                for(int n=1; n<=emptyStackLocations.size()/2; n++) {
+                    int first = emptyStackLocations.get(emptyStackLocations.size() - 2*n);
+                    int second = emptyStackLocations.get(emptyStackLocations.size() - n);
+                    int third = getPC();
+                    if (third - second == second - first) {
+                        int endOfFirstSegment = prevOpcodeLocations.get(emptyStackLocations.size() - n);
+                        int endOfSecondSegment = oldPC;
+                        int opcodeAtEndOfFirst = getCodeByte(endOfFirstSegment);
+                        int opcodeAtEndOfSecond = getCodeByte(endOfSecondSegment);
 
-                    if (!isBranch(opcodeAtEndOfFirst) || !isBranch(opcodeAtEndOfSecond)) {
-                        break check;
-                    }
-                    if (opcodeAtEndOfFirst == Opcodes.GOTO || opcodeAtEndOfSecond == Opcodes.GOTO) {
-                        break check;
-                    }
-                    if (opcodeAtEndOfFirst != opcodeAtEndOfSecond
-                            && !areOppositeBranches(opcodeAtEndOfFirst, opcodeAtEndOfSecond)) {
-                        break check;
-                    }
-
-                    byte[] code = getCode().getCode();
-                    if (first == endOfFirstSegment) {
-                        break check;
-                    }
-                    for (int i = first; i < endOfFirstSegment; i++) {
-                        if (code[i] != code[i - first + second]) {
-                            break check;
+                        if (!isBranch(opcodeAtEndOfFirst) || !isBranch(opcodeAtEndOfSecond)) {
+                            continue;
                         }
-                    }
-                    if (false) {
-                        System.out.println(getFullyQualifiedMethodName());
-                        System.out.println(first + " ... " + endOfFirstSegment + " : " + OPCODE_NAMES[opcodeAtEndOfFirst]);
-                        System.out.println(second + " ... " + endOfSecondSegment + " : " + OPCODE_NAMES[opcodeAtEndOfSecond]);
-                    }
-                    SourceLineAnnotation firstSourceLine = SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(),
-                            this, first, endOfFirstSegment - 1);
-                    SourceLineAnnotation secondSourceLine = SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(),
-                            this, second, endOfSecondSegment - 1);
+                        if (opcodeAtEndOfFirst == Opcodes.GOTO || opcodeAtEndOfSecond == Opcodes.GOTO) {
+                            continue;
+                        }
+                        if (opcodeAtEndOfFirst != opcodeAtEndOfSecond
+                                && !areOppositeBranches(opcodeAtEndOfFirst, opcodeAtEndOfSecond)) {
+                            continue;
+                        }
 
-                    int priority = HIGH_PRIORITY;
-                    if (firstSourceLine.getStartLine() == -1 || firstSourceLine.getStartLine() != secondSourceLine.getEndLine()) {
-                        priority++;
-                    }
-                    if (stack.isJumpTarget(second)) {
-                        priority++;
-                    }
-                    Integer firstTarget = branchTargets.get(endOfFirstSegment);
-                    Integer secondTarget = branchTargets.get(endOfSecondSegment);
-                    if (firstTarget == null || secondTarget == null) {
-                        break check;
-                    }
-                    if (firstTarget.equals(secondTarget) && opcodeAtEndOfFirst == opcodeAtEndOfSecond
-                            || firstTarget.intValue() == getPC()) {
-                        // identical checks;
-                    } else {
-                        // opposite checks
-                        priority += 2;
-                    }
+                        if (first == endOfFirstSegment) {
+                            continue;
+                        }
+                        Integer firstTarget = branchTargets.get(endOfFirstSegment);
+                        Integer secondTarget = branchTargets.get(endOfSecondSegment);
+                        if (firstTarget == null || secondTarget == null) {
+                            continue;
+                        }
+                        boolean identicalCheck = firstTarget.equals(secondTarget) && opcodeAtEndOfFirst == opcodeAtEndOfSecond
+                                || (firstTarget.intValue() == getPC() && opcodeAtEndOfFirst != opcodeAtEndOfSecond);
+                        if(!compareCode(first, endOfFirstSegment, second, endOfSecondSegment, !identicalCheck)) {
+                            continue;
+                        }
+                        SourceLineAnnotation firstSourceLine = SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(),
+                                this, first, endOfFirstSegment - 1);
+                        SourceLineAnnotation secondSourceLine = SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(),
+                                this, second, endOfSecondSegment - 1);
 
-                    BugInstance bug = new BugInstance(this, "RpC_REPEATED_CONDITIONAL_TEST", priority).addClassAndMethod(this)
-                            .add(firstSourceLine).add(secondSourceLine);
-                    bugReporter.reportBug(bug);
+                        int priority = HIGH_PRIORITY;
+                        if (firstSourceLine.getStartLine() == -1 || firstSourceLine.getStartLine() != secondSourceLine.getEndLine()) {
+                            priority++;
+                        }
+                        if (stack.isJumpTarget(second)) {
+                            priority++;
+                        }
+                        if (!identicalCheck) {
+                            // opposite checks
+                            priority += 2;
+                        }
+
+                        BugInstance bug = new BugInstance(this, "RpC_REPEATED_CONDITIONAL_TEST", priority).addClassAndMethod(this)
+                                .add(firstSourceLine).add(secondSourceLine);
+                        bugReporter.reportBug(bug);
+                    }
                 }
             }
-        emptyStackLocations.add(getPC());
-        prevOpcodeLocations.add(oldPC);
+            emptyStackLocations.add(getPC());
+            prevOpcodeLocations.add(oldPC);
 
         }
         oldPC = getPC();
+    }
+
+    private boolean compareCode(int first, int endOfFirstSegment, int second,
+            int endOfSecondSegment, boolean oppositeChecks) {
+        if(endOfFirstSegment-first != endOfSecondSegment-second) {
+            return false;
+        }
+        MethodGen methodGen = null;
+        try {
+            methodGen = Global.getAnalysisCache().getMethodAnalysis(MethodGen.class, getMethodDescriptor());
+        } catch (CheckedAnalysisException e) {
+            // Ignore
+        }
+        if(methodGen == null) {
+            // MethodGen is absent for some reason: fallback to byte-to-byte comparison
+            byte[] code = getCode().getCode();
+            for (int i = first; i < endOfFirstSegment; i++) {
+                if (code[i] != code[i - first + second]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        InstructionHandle firstHandle = methodGen.getInstructionList().findHandle(first);
+        InstructionHandle secondHandle = methodGen.getInstructionList().findHandle(second);
+        while(true) {
+            if(firstHandle == null || secondHandle == null) {
+                return false;
+            }
+            if(firstHandle.getPosition() >= endOfFirstSegment) {
+                return secondHandle.getPosition() >= endOfSecondSegment;
+            }
+            if(secondHandle.getPosition() >= endOfSecondSegment) {
+                return firstHandle.getPosition() >= endOfFirstSegment;
+            }
+            Instruction firstInstruction = firstHandle.getInstruction();
+            Instruction secondInstruction = secondHandle.getInstruction();
+            if(firstInstruction instanceof BranchInstruction && secondInstruction instanceof BranchInstruction) {
+                int firstOpcode = firstInstruction.getOpcode();
+                int secondOpcode = secondInstruction.getOpcode();
+                if(firstOpcode != secondOpcode) {
+                    return false;
+                }
+                int firstTarget = ((BranchInstruction)firstInstruction).getTarget().getPosition();
+                int secondTarget = ((BranchInstruction)secondInstruction).getTarget().getPosition();
+                if(firstTarget == second) {
+                    if(oppositeChecks || secondTarget <= endOfSecondSegment) {
+                        return false;
+                    }
+                } else {
+                    if(!((firstTarget >= first && firstTarget <= endOfFirstSegment && firstTarget - first == secondTarget - second)
+                            || firstTarget == secondTarget)) {
+                        return false;
+                    }
+                }
+            } else {
+                if(!firstInstruction.equals(secondInstruction)) {
+                    return false;
+                }
+            }
+            firstHandle = firstHandle.getNext();
+            secondHandle = secondHandle.getNext();
+        }
     }
 
     private boolean hasSideEffect(int seen) {
