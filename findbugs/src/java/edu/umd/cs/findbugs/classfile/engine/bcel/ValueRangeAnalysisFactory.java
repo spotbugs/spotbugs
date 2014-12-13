@@ -72,6 +72,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.engine.bcel.FinallyDuplicatesInfoFactory.FinallyDuplicatesInfo;
 
 /**
  * @author Tagir Valeev
@@ -214,8 +215,6 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         boolean trueReached = false;
 
         boolean falseReached = false;
-
-        boolean reachableNormally = false;
 
         final String trueCondition, falseCondition;
 
@@ -445,7 +444,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         for (VariableData data : analyzedArguments.values()) {
             if (data != null && data.edges.size() > 1) {
                 // System.err.println(descriptor+": arg"+data.index+": "+data.splitSet);
-                walkCFGNoException(cfg, cfg.getEntry(), data.edges, new BitSet());
+                FinallyDuplicatesInfo fi = analysisCache.getMethodAnalysis(FinallyDuplicatesInfo.class, descriptor);
                 BitSet reachableBlocks = new BitSet();
                 for (LongRangeSet subRange : data.splitSet) {
                     BitSet reachedBlocks = new BitSet();
@@ -453,12 +452,22 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                     reachableBlocks.or(reachedBlocks);
                 }
                 for (Entry<Edge, Branch> entry : data.edges.entrySet()) {
-                    // Do not report errors in blocks which are reachable only
-                    // by exception paths
-                    // otherwise errors may be reported in duplicated finally
-                    // sections
-                    // TODO: detect duplicated finally sections robustly
-                    if (entry.getValue().reachableNormally && entry.getValue().trueReached ^ entry.getValue().falseReached) {
+                    if (entry.getValue().trueReached ^ entry.getValue().falseReached) {
+                        List<Edge> duplicates = fi.getDuplicates(cfg, entry.getKey());
+                        if(!duplicates.isEmpty()) {
+                            boolean trueValue = entry.getValue().trueReached;
+                            boolean falseValue = entry.getValue().falseReached;
+                            for(Edge dup : duplicates) {
+                                Branch branch = data.edges.get(dup);
+                                if(branch != null) {
+                                    trueValue |= branch.trueReached;
+                                    falseValue |= branch.falseReached;
+                                }
+                            }
+                            if(trueValue && falseValue) {
+                                continue;
+                            }
+                        }
                         String condition = data.name
                                 + " "
                                 + (entry.getValue().trueReached ? entry.getValue().trueCondition
@@ -576,24 +585,6 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                     }
                 }
                 analyzedArguments.remove(index);
-            }
-        }
-    }
-
-    private void walkCFGNoException(CFG cfg, BasicBlock basicBlock, Map<Edge, Branch> edges, BitSet reachedBlocks) {
-        reachedBlocks.set(basicBlock.getLabel());
-        for (Iterator<Edge> iterator = cfg.outgoingEdgeIterator(basicBlock); iterator.hasNext();) {
-            Edge edge = iterator.next();
-            if (edge.getType() == EdgeTypes.HANDLED_EXCEPTION_EDGE) {
-                continue;
-            }
-            Branch branch = edges.get(edge);
-            if (branch != null) {
-                branch.reachableNormally = true;
-            }
-            BasicBlock target = edge.getTarget();
-            if (!reachedBlocks.get(target.getLabel())) {
-                walkCFGNoException(cfg, target, edges, reachedBlocks);
             }
         }
     }

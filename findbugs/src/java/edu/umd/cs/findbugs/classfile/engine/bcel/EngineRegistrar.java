@@ -70,7 +70,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
         new CompactLocationNumberingFactory(),  new ReturnPathTypeDataflowFactory(),
         new ForwardTypeQualifierDataflowFactoryFactory(), new BackwardTypeQualifierDataflowFactoryFactory(),
         new OpcodeStack.JumpInfoFactory(), new StackMapAnalysisFactory(), new ObligationDataflowFactory(),
-        new ValueRangeAnalysisFactory(), };
+        new ValueRangeAnalysisFactory(), new FinallyDuplicatesInfoFactory()};
 
     private static final IDatabaseFactory<?>[] databaseFactoryList = {
         // new ReflectionDatabaseFactory<Subtypes>(Subtypes.class),

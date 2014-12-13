@@ -107,4 +107,94 @@ public class Feature326 {
         Preconditions.checkArgument(x >= 0);
         System.out.println(x);
     }
+
+    boolean c1, d1;
+    
+    @NoWarning("UC_USELESS_CONDITION")
+    public int testFinally2(boolean c) {
+        try {
+            if(c) {
+                return 1;
+            }
+            if(c1) {
+                return 2;
+            }
+        }
+        catch(Throwable t) {
+            d1 = true;
+            try {
+                if(d1) {
+                    return 1;
+                }
+            }
+            finally {
+                d1 = false;
+            }
+        }
+        finally {
+            if(c)
+                c1 = true;
+            else
+                c1 = false;
+        }
+        return 0;
+    }
+
+    @ExpectWarning("UC_USELESS_CONDITION")
+    public int testFinallyUseless(boolean c, boolean d) {
+        if(!c) {
+            try {
+                System.out.println("before");
+                return 1;
+            }
+            catch(Throwable e) {
+                // ignore
+            }
+            finally {
+                try {
+                    if (c)
+                        c1 = true;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        return 0;
+    }
+
+    @ExpectWarning("UC_USELESS_CONDITION")
+    public int testUselessInCatch(boolean c, String d) {
+        try {
+            if(c) {
+                Integer.parseInt(d);
+            }
+        }
+        catch(NumberFormatException ex) {
+            if(!c) {
+                System.out.println("useless");
+            }
+        }
+        return 0;
+    }
+
+    @NoWarning("UC_USELESS_CONDITION")
+    public int testFinallyOk(boolean c) {
+        try {
+            System.out.println("before");
+            if (!c) {
+                return 1;
+            }
+            System.out.println("after");
+        } catch (Throwable e) {
+            // ignore
+        } finally {
+            try {
+                if (c)
+                    c1 = true;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return 0;
+    }
 }
