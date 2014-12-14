@@ -119,9 +119,10 @@ public class NewFilterFrame extends FBDialog {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 Sortables filterBy = (Sortables) comboBox.getSelectedItem();
-                String[] listData = filterBy.getAllSorted();
+                String[] rawValues = filterBy.getAllSorted();
+                String[] listData = new String[rawValues.length];
                 for (int i = 0; i < listData.length; i++) {
-                    listData[i] = filterBy.formatValue(listData[i]);
+                    listData[i] = filterBy.formatValue(rawValues[i]);
                 }
                 list.setListData(listData);
             }
