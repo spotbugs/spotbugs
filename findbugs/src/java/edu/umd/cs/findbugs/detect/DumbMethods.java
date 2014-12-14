@@ -1209,7 +1209,7 @@ public class DumbMethods extends OpcodeStackDetector {
             long value = ((Number) right.getConstant()).longValue();
             if ( (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE)) {
                 int priority  = Priorities.HIGH_PRIORITY;
-                if (value == Integer.MAX_VALUE+1 || value == Integer.MIN_VALUE -1) {
+                if (value == Integer.MAX_VALUE+1L || value == Integer.MIN_VALUE-1L) {
                     priority = Priorities.NORMAL_PRIORITY;
                 }
                 String stringValue = IntAnnotation.getShortInteger(value)+"L";
