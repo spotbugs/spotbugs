@@ -72,7 +72,7 @@ public class MethodGenFactory extends AnalysisFactory<MethodGen> {
             ConstantPoolGen cpg = getConstantPoolGen(analysisCache, descriptor.getClassDescriptor());
 
             String methodName = method.getName();
-            int codeLength = method.getCode().getLength();
+            int codeLength = method.getCode().getCode().length;
             String superclassName = jclass.getSuperclassName();
             if (codeLength > 6000 && "<clinit>".equals(methodName) && "java.lang.Enum".equals(superclassName)) {
                 analysisContext.getLookupFailureCallback().reportSkippedAnalysis(
