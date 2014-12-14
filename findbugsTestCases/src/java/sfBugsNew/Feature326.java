@@ -197,4 +197,70 @@ public class Feature326 {
         }
         return 0;
     }
+
+    @ExpectWarning("UC_USELESS_CONDITION")
+    public int testLong(long l) {
+        if(l < 0) {
+            return 1; 
+        }
+        if(l >= 0) {
+            return 2;
+        }
+        return 3;
+    }
+
+    @ExpectWarning("UC_USELESS_CONDITION")
+    public int testLongInverse(long l) {
+        if(10 < l) {
+            return 1; 
+        }
+        if(10 >= l) {
+            return 2;
+        }
+        return 3;
+    }
+
+    @NoWarning("UC_USELESS_CONDITION")
+    public int testLongInverseOk(long l) {
+        if(-10 < l) {
+            return 1; 
+        }
+        if(-10 > l) {
+            return 2;
+        }
+        return 3;
+    }
+
+    @ExpectWarning("UC_USELESS_CONDITION_TYPE")
+    public int testLongMax(long l) {
+        if(l > 0 && l <= Long.MAX_VALUE) {
+            return 1; 
+        }
+        return 0;
+    }
+    
+    @ExpectWarning("UC_USELESS_CONDITION_TYPE")
+    public int testLongMin(long l) {
+        if(l < 0 && l >= Long.MIN_VALUE) {
+            return 1; 
+        }
+        return 0;
+    }
+    
+    @ExpectWarning("UC_USELESS_CONDITION_TYPE")
+    public int testCharMax(char c) {
+        if(c < 0x10FFFF) {
+            return 1; 
+        }
+        return 0;
+    }
+    
+    @NoWarning("UC_USELESS_CONDITION_TYPE")
+    @ExpectWarning("INT_VACUOUS_COMPARISON")
+    public int testIntMax(int i) {
+        if(i > 0 && i <= Integer.MAX_VALUE) {
+            return 1;
+        }
+        return 0;
+    }
 }

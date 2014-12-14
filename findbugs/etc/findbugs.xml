@@ -349,7 +349,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.RepeatedConditionals" speed="fast"
                     reports="RpC_REPEATED_CONDITIONAL_TEST"/>
           <Detector class="edu.umd.cs.findbugs.detect.RedundantConditions" speed="fast"
-                    reports="UC_USELESS_CONDITION"/>
+                    reports="UC_USELESS_CONDITION,UC_USELESS_CONDITION_TYPE"/>
           <Detector class="edu.umd.cs.findbugs.detect.CallToUnsupportedMethod" speed="fast"
                     disabled="true" reports="DMI_UNSUPPORTED_METHOD"/>
           <Detector class="edu.umd.cs.findbugs.detect.FormatStringChecker" speed="fast"
@@ -934,6 +934,7 @@
           <BugPattern abbrev="No" type="NO_NOTIFY_NOT_NOTIFYALL" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="UC" type="UC_USELESS_VOID_METHOD" category="STYLE"/>
           <BugPattern abbrev="UC" type="UC_USELESS_CONDITION" category="STYLE"/>
+          <BugPattern abbrev="UC" type="UC_USELESS_CONDITION_TYPE" category="STYLE"/>
           <BugPattern abbrev="RANGE" type="RANGE_ARRAY_INDEX" category="CORRECTNESS"/>
           <BugPattern abbrev="RANGE" type="RANGE_ARRAY_OFFSET" category="CORRECTNESS"/>
           <BugPattern abbrev="RANGE" type="RANGE_ARRAY_LENGTH" category="CORRECTNESS"/>

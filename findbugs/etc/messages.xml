@@ -4805,6 +4805,16 @@ Probably something else was meant or condition can be removed.</p>
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="UC_USELESS_CONDITION_TYPE">
+    <ShortDescription>Condition has no effect due to the variable type</ShortDescription>
+    <LongDescription>Useless condition: it's always {2} because variable type is {3}</LongDescription>
+    <Details>
+<![CDATA[
+<p>This condition always produces the same result due to the type range of the involved variable. 
+Probably something else was meant or condition can be removed.</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="RANGE_ARRAY_INDEX">
     <ShortDescription>Array index is out of bounds</ShortDescription>
     <LongDescription>Array index is out of bounds: {3}</LongDescription>

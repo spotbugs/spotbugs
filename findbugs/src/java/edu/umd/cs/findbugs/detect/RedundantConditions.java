@@ -68,9 +68,12 @@ public class RedundantConditions implements Detector {
                 int priority = getPriority(methodDescriptor, condition);
                 SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, method,
                         condition.getLocation().getHandle().getPosition());
-                BugInstance bug = new BugInstance("UC_USELESS_CONDITION", priority)
+                BugInstance bug = new BugInstance(condition.isByType()?"UC_USELESS_CONDITION_TYPE":"UC_USELESS_CONDITION", priority)
                 .addClassAndMethod(methodDescriptor).addString(condition.getTrueCondition());
-                if(condition.isDeadCodeUnreachable() && condition.getDeadCodeLocation() != null) {
+                if(condition.isByType()) {
+                    bug.addType(condition.getSignature());
+                }
+                if(condition.isDeadCodeUnreachable() && condition.getDeadCodeLocation() != null && priority == HIGH_PRIORITY) {
                     bug.addSourceLine(methodDescriptor, condition.getDeadCodeLocation()).describe(SourceLineAnnotation.ROLE_UNREACHABLE_CODE);
                 }
                 bugAccumulator.accumulateBug(bug, sourceLineAnnotation);
@@ -81,6 +84,32 @@ public class RedundantConditions implements Detector {
     }
 
     private int getPriority(MethodDescriptor methodDescriptor, RedundantCondition condition) {
+        if(condition.isByType()) {
+            // Skip reports which should be reported by another detector
+            long number = condition.getNumber().longValue();
+            switch(condition.getSignature()) {
+            case "I":
+                if(number == Integer.MIN_VALUE || number == Integer.MAX_VALUE) {
+                    // Will be reported as INT_VACUOUS_COMPARISON
+                    return IGNORE_PRIORITY;
+                }
+                break;
+            case "C":
+                if(number <= 0) {
+                    // Will be reported as INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE
+                    return IGNORE_PRIORITY;
+                }
+                break;
+            case "B":
+                if(number <= Byte.MIN_VALUE || number >= Byte.MAX_VALUE) {
+                    // Will be reported as INT_BAD_COMPARISON_WITH_SIGNED_BYTE
+                    return IGNORE_PRIORITY;
+                }
+                break;
+            default:
+                break;
+            }
+        }
         int priority = condition.isDeadCodeUnreachable() ? HIGH_PRIORITY : NORMAL_PRIORITY;
         // check for boolean conversion
         if(condition.getDeadCodeLocation() != null && condition.getLiveCodeLocation() != null && condition.isDeadCodeUnreachable()) {

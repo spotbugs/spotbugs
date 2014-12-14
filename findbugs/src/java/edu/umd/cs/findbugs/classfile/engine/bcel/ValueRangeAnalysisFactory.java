@@ -36,6 +36,7 @@ import java.util.TreeMap;
 
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantObject;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
@@ -44,15 +45,12 @@ import org.apache.bcel.generic.CPInstruction;
 import org.apache.bcel.generic.ConstantPushInstruction;
 import org.apache.bcel.generic.DSTORE;
 import org.apache.bcel.generic.FSTORE;
-import org.apache.bcel.generic.IF_ICMPGE;
-import org.apache.bcel.generic.IF_ICMPGT;
-import org.apache.bcel.generic.IF_ICMPLE;
-import org.apache.bcel.generic.IF_ICMPLT;
 import org.apache.bcel.generic.IINC;
 import org.apache.bcel.generic.ISTORE;
 import org.apache.bcel.generic.IfInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.LCMP;
 import org.apache.bcel.generic.LSTORE;
 import org.apache.bcel.generic.LoadInstruction;
 import org.apache.bcel.generic.LocalVariableInstruction;
@@ -78,72 +76,98 @@ import edu.umd.cs.findbugs.classfile.engine.bcel.FinallyDuplicatesInfoFactory.Fi
  * @author Tagir Valeev
  */
 public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRangeAnalysisFactory.ValueRangeAnalysis> {
+    private static class TypeLongRange {
+        long min, max;
+        String signature;
+
+        public TypeLongRange(long min, long max, String signature) {
+            this.min = min;
+            this.max = max;
+            this.signature = signature;
+        }
+    }
+
+    private static final Map<String, TypeLongRange> typeRanges;
+
+    static {
+        typeRanges = new HashMap<>();
+        typeRanges.put("Z", new TypeLongRange(0, 1, "Z"));
+        typeRanges.put("B", new TypeLongRange(Byte.MIN_VALUE, Byte.MAX_VALUE, "B"));
+        typeRanges.put("S", new TypeLongRange(Short.MIN_VALUE, Short.MAX_VALUE, "S"));
+        typeRanges.put("I", new TypeLongRange(Integer.MIN_VALUE, Integer.MAX_VALUE, "I"));
+        typeRanges.put("J", new TypeLongRange(Long.MIN_VALUE, Long.MAX_VALUE, "J"));
+        typeRanges.put("C", new TypeLongRange(Character.MIN_VALUE, Character.MAX_VALUE, "C"));
+    }
+
     public static class LongRangeSet implements Iterable<LongRangeSet> {
         private final SortedMap<Long, Long> map = new TreeMap<>();
+        private final TypeLongRange range;
 
-        public LongRangeSet(char type) {
-            switch (type) {
-            case 'Z':
-                map.put(0l, 1l);
-                break;
-            case 'B':
-                map.put((long) Byte.MIN_VALUE, (long) Byte.MAX_VALUE);
-                break;
-            case 'S':
-                map.put((long) Short.MIN_VALUE, (long) Short.MAX_VALUE);
-                break;
-            case 'I':
-                map.put((long) Integer.MIN_VALUE, (long) Integer.MAX_VALUE);
-                break;
-            case 'J':
-                map.put(Long.MIN_VALUE, Long.MAX_VALUE);
-                break;
-            case 'C':
-                map.put((long) Character.MIN_VALUE, (long) Character.MAX_VALUE);
-                break;
-            default:
+        public LongRangeSet(String type) {
+            TypeLongRange range = typeRanges.get(type);
+            if(range == null) {
                 throw new IllegalArgumentException("Type is not supported: " + type);
             }
+            map.put(range.min, range.max);
+            this.range = range;
         }
 
-        private LongRangeSet(long from, long to) {
+        private LongRangeSet(TypeLongRange range, long from, long to) {
+            this.range = range;
+            if(from < range.min) {
+                from = range.min;
+            }
+            if(to > range.max) {
+                to = range.max;
+            }
             if (from <= to) {
                 map.put(from, to);
             }
         }
 
+        private LongRangeSet(TypeLongRange range) {
+            this.range = range;
+        }
+
         public LongRangeSet gt(long value) {
-            return new LongRangeSet(value + 1, map.get(map.lastKey()));
+            if(value == Long.MAX_VALUE) {
+                return new LongRangeSet(range);
+            }
+            return new LongRangeSet(range, value + 1, range.max);
         }
 
         public LongRangeSet ge(long value) {
-            return new LongRangeSet(value, map.get(map.lastKey()));
+            return new LongRangeSet(range, value, range.max);
         }
 
         public LongRangeSet lt(long value) {
-            return new LongRangeSet(map.firstKey(), value - 1);
+            if(value == Long.MIN_VALUE) {
+                return new LongRangeSet(range);
+            }
+            return new LongRangeSet(range, range.min, value - 1);
         }
 
         public LongRangeSet le(long value) {
-            return new LongRangeSet(map.firstKey(), value);
+            return new LongRangeSet(range, range.min, value);
         }
 
         public LongRangeSet eq(long value) {
-            return new LongRangeSet(value, value);
+            return new LongRangeSet(range, value, value);
         }
 
         public LongRangeSet ne(long value) {
             LongRangeSet rangeSet = lt(value);
-            Long last = map.get(map.lastKey());
-            if (value < last) {
-                rangeSet.map.put(value + 1, last);
+            if (value < range.max) {
+                rangeSet.map.put(value + 1, range.max);
             }
             return rangeSet;
         }
 
         public boolean intersects(LongRangeSet other) {
             for (Entry<Long, Long> entry : map.entrySet()) {
-                if (!other.map.subMap(entry.getKey(), entry.getValue() + 1).isEmpty()) {
+                SortedMap<Long, Long> subMap = entry.getValue() == Long.MAX_VALUE ? other.map.tailMap(entry.getKey()) : other.map
+                        .subMap(entry.getKey(), entry.getValue() + 1);
+                if (!subMap.isEmpty()) {
                     return true;
                 }
                 SortedMap<Long, Long> headMap = other.map.headMap(entry.getKey());
@@ -156,6 +180,9 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
 
         public void splitGreater(long number) {
             Long lNumber = number;
+            if(number == Long.MAX_VALUE) {
+                return;
+            }
             Long nextNumber = number + 1;
             SortedMap<Long, Long> headMap = map.headMap(nextNumber);
             if (headMap.isEmpty()) {
@@ -168,6 +195,23 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             }
             map.put(lastKey, lNumber);
             map.put(nextNumber, lastValue);
+        }
+
+        public String getSignature() {
+            return range.signature;
+        }
+
+        public boolean isEmpty() {
+            return map.isEmpty();
+        }
+
+        public boolean isFull() {
+            if(map.size() != 1) {
+                return false;
+            }
+            Long min = map.firstKey();
+            Long max = map.get(min);
+            return min <= range.min && max >= range.max;
         }
 
         @Override
@@ -198,7 +242,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                 @Override
                 public LongRangeSet next() {
                     Entry<Long, Long> entry = iterator.next();
-                    return new LongRangeSet(entry.getKey(), entry.getValue());
+                    return new LongRangeSet(range, entry.getKey(), entry.getValue());
                 }
 
                 @Override
@@ -211,17 +255,16 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
 
     private static class Branch {
         final LongRangeSet trueSet;
-
         boolean trueReached = false;
-
         boolean falseReached = false;
-
         final String trueCondition, falseCondition;
+        final Number number;
 
-        public Branch(String trueCondition, String falseCondition, LongRangeSet trueSet) {
+        public Branch(String trueCondition, String falseCondition, LongRangeSet trueSet, Number number) {
             this.trueSet = trueSet;
             this.trueCondition = fixCondition(trueCondition);
             this.falseCondition = fixCondition(falseCondition);
+            this.number = number;
         }
 
         private String fixCondition(String condition) {
@@ -235,6 +278,19 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         }
     }
 
+    private static class Condition {
+        short opcode;
+        int index;
+        Number number;
+
+        public Condition(short opcode, int index, Number number) {
+            super();
+            this.opcode = opcode;
+            this.index = index;
+            this.number = number;
+        }
+    }
+
     private static class VariableData {
         final LongRangeSet splitSet;
 
@@ -245,7 +301,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         final String signature;
 
         public VariableData(String name, String type) {
-            splitSet = new LongRangeSet(type.charAt(0));
+            splitSet = new LongRangeSet(type);
             this.name = name;
             this.signature = type;
         }
@@ -257,21 +313,24 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
 
     public static class RedundantCondition {
         private final Location location;
-
         private final String trueCondition;
-
+        private final String signature;
+        private final boolean byType;
         private final boolean hasDeadCode;
-
         private final Location deadCodeLocation;
-
         private final Location liveCodeLocation;
+        private final Number number;
 
-        public RedundantCondition(Location location, String trueCondition, boolean hasDeadCode, Location deadCodeLocation, Location liveCodeLocation) {
+        public RedundantCondition(Location location, String trueCondition, boolean hasDeadCode, Location deadCodeLocation,
+                Location liveCodeLocation, String signature, boolean byType, Number number) {
             this.location = location;
             this.trueCondition = trueCondition;
             this.hasDeadCode = hasDeadCode;
             this.deadCodeLocation = deadCodeLocation;
             this.liveCodeLocation = liveCodeLocation;
+            this.signature = signature;
+            this.byType = byType;
+            this.number = number;
         }
 
         public Location getLocation() {
@@ -286,12 +345,24 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             return hasDeadCode;
         }
 
+        public String getSignature() {
+            return signature;
+        }
+
+        public boolean isByType() {
+            return byType;
+        }
+
         public Location getLiveCodeLocation() {
             return liveCodeLocation;
         }
 
         public Location getDeadCodeLocation() {
             return deadCodeLocation;
+        }
+
+        public Number getNumber() {
+            return number;
         }
     }
 
@@ -336,115 +407,64 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             Edge edge = edgeIterator.next();
             if (edge.getType() == EdgeTypes.IFCMP_EDGE) {
                 BasicBlock source = edge.getSource();
-                Iterator<InstructionHandle> iterator = source.instructionReverseIterator();
-                Instruction comparisonInstruction = iterator.next().getInstruction();
-                if (comparisonInstruction instanceof IfInstruction) {
-                    int nargs = ((IfInstruction) comparisonInstruction).consumeStack(null);
-                    int index = -1;
-                    Number number = null;
-                    if (nargs == 2) {
-                        Instruction arg2 = iterator.hasNext() ? iterator.next().getInstruction() : null;
-                        Instruction arg1 = iterator.hasNext() ? iterator.next().getInstruction() : null;
-                        if (!(arg1 instanceof LoadInstruction) && !(arg2 instanceof LoadInstruction)) {
-                            continue;
-                        }
-                        if (!(arg1 instanceof LoadInstruction)) {
-                            Instruction tmp = arg1;
-                            arg1 = arg2;
-                            arg2 = tmp;
-                            switch (comparisonInstruction.getOpcode()) {
-                            case IF_ICMPGE:
-                                comparisonInstruction = new IF_ICMPLE(((IfInstruction) comparisonInstruction).getTarget());
-                                break;
-                            case IF_ICMPGT:
-                                comparisonInstruction = new IF_ICMPLT(((IfInstruction) comparisonInstruction).getTarget());
-                                break;
-                            case IF_ICMPLE:
-                                comparisonInstruction = new IF_ICMPGE(((IfInstruction) comparisonInstruction).getTarget());
-                                break;
-                            case IF_ICMPLT:
-                                comparisonInstruction = new IF_ICMPGT(((IfInstruction) comparisonInstruction).getTarget());
-                                break;
-                            default:
-                                break;
-                            }
-                        }
-                        index = ((LoadInstruction) arg1).getIndex();
-                        if (arg2 instanceof ConstantPushInstruction) {
-                            number = ((ConstantPushInstruction) arg2).getValue();
-                        }
-                        if (arg2 instanceof CPInstruction && arg2 instanceof PushInstruction) {
-                            Constant constant = jClass.getConstantPool().getConstant(((CPInstruction) arg2).getIndex());
-                            if (constant instanceof ConstantObject) {
-                                Object value = ((ConstantObject) constant).getConstantValue(jClass.getConstantPool());
-                                if (value instanceof Number) {
-                                    number = (Number) value;
-                                }
-                            }
-                        }
-                    } else if (nargs == 1) {
-                        Instruction arg = iterator.hasNext() ? iterator.next().getInstruction() : null;
-                        if (!(arg instanceof LoadInstruction)) {
-                            continue;
-                        }
-                        index = ((LoadInstruction) arg).getIndex();
-                        number = 0;
-                    }
-                    VariableData data = analyzedArguments.get(index);
-                    if (data == null || number == null) {
-                        continue;
-                    }
-                    String numberStr = convertNumber(data.signature, number);
-                    switch (comparisonInstruction.getOpcode()) {
-                    case IF_ICMPGT:
-                    case IFGT:
-                        data.addBranch(edge,
-                                new Branch("> " + numberStr, "<= " + numberStr, data.splitSet.gt(number.longValue())));
-                        data.splitSet.splitGreater(number.longValue());
-                        break;
-                    case IF_ICMPLE:
-                    case IFLE:
-                        data.addBranch(edge,
-                                new Branch("<= " + numberStr, "> " + numberStr, data.splitSet.le(number.longValue())));
-                        data.splitSet.splitGreater(number.longValue());
-                        break;
-                    case IF_ICMPGE:
-                    case IFGE:
-                        data.addBranch(edge,
-                                new Branch(">= " + numberStr, "< " + numberStr, data.splitSet.ge(number.longValue())));
-                        data.splitSet.splitGreater(number.longValue() - 1);
-                        break;
-                    case IF_ICMPLT:
-                    case IFLT:
-                        data.addBranch(edge,
-                                new Branch("< " + numberStr, ">= " + numberStr, data.splitSet.lt(number.longValue())));
-                        data.splitSet.splitGreater(number.longValue() - 1);
-                        break;
-                    case IF_ICMPEQ:
-                    case IFEQ:
-                        data.addBranch(edge,
-                                new Branch("== " + numberStr, "!= " + numberStr, data.splitSet.eq(number.longValue())));
-                        data.splitSet.splitGreater(number.longValue());
-                        data.splitSet.splitGreater(number.longValue() - 1);
-                        break;
-                    case IF_ICMPNE:
-                    case IFNE:
-                        data.addBranch(edge,
-                                new Branch("!= " + numberStr, "== " + numberStr, data.splitSet.ne(number.longValue())));
-                        data.splitSet.splitGreater(number.longValue());
-                        data.splitSet.splitGreater(number.longValue() - 1);
-                        break;
-                    default:
-                        break;
-                    }
+                Condition condition = extractCondition(source.instructionReverseIterator(), jClass.getConstantPool());
+                if(condition == null) {
+                    continue;
+                }
+                VariableData data = analyzedArguments.get(condition.index);
+                if (data == null) {
+                    continue;
+                }
+                Number number = condition.number;
+                String numberStr = convertNumber(data.signature, number);
+                switch (condition.opcode) {
+                case IF_ICMPGT:
+                case IFGT:
+                    data.addBranch(edge,
+                            new Branch("> " + numberStr, "<= " + numberStr, data.splitSet.gt(number.longValue()), number));
+                    data.splitSet.splitGreater(number.longValue());
+                    break;
+                case IF_ICMPLE:
+                case IFLE:
+                    data.addBranch(edge,
+                            new Branch("<= " + numberStr, "> " + numberStr, data.splitSet.le(number.longValue()), number));
+                    data.splitSet.splitGreater(number.longValue());
+                    break;
+                case IF_ICMPGE:
+                case IFGE:
+                    data.addBranch(edge,
+                            new Branch(">= " + numberStr, "< " + numberStr, data.splitSet.ge(number.longValue()), number));
+                    data.splitSet.splitGreater(number.longValue() - 1);
+                    break;
+                case IF_ICMPLT:
+                case IFLT:
+                    data.addBranch(edge,
+                            new Branch("< " + numberStr, ">= " + numberStr, data.splitSet.lt(number.longValue()), number));
+                    data.splitSet.splitGreater(number.longValue() - 1);
+                    break;
+                case IF_ICMPEQ:
+                case IFEQ:
+                    data.addBranch(edge,
+                            new Branch("== " + numberStr, "!= " + numberStr, data.splitSet.eq(number.longValue()), number));
+                    data.splitSet.splitGreater(number.longValue());
+                    data.splitSet.splitGreater(number.longValue() - 1);
+                    break;
+                case IF_ICMPNE:
+                case IFNE:
+                    data.addBranch(edge,
+                            new Branch("!= " + numberStr, "== " + numberStr, data.splitSet.ne(number.longValue()), number));
+                    data.splitSet.splitGreater(number.longValue());
+                    data.splitSet.splitGreater(number.longValue() - 1);
+                    break;
+                default:
+                    break;
                 }
             }
         }
+        FinallyDuplicatesInfo fi = null;
         List<RedundantCondition> redundantConditions = new ArrayList<>();
         for (VariableData data : analyzedArguments.values()) {
-            if (data != null && data.edges.size() > 1) {
-                // System.err.println(descriptor+": arg"+data.index+": "+data.splitSet);
-                FinallyDuplicatesInfo fi = analysisCache.getMethodAnalysis(FinallyDuplicatesInfo.class, descriptor);
+            if (data != null && !data.edges.isEmpty()) {
                 BitSet reachableBlocks = new BitSet();
                 for (LongRangeSet subRange : data.splitSet) {
                     BitSet reachedBlocks = new BitSet();
@@ -452,16 +472,21 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                     reachableBlocks.or(reachedBlocks);
                 }
                 for (Entry<Edge, Branch> entry : data.edges.entrySet()) {
-                    if (entry.getValue().trueReached ^ entry.getValue().falseReached) {
-                        List<Edge> duplicates = fi.getDuplicates(cfg, entry.getKey());
+                    Branch branch = entry.getValue();
+                    Edge edge = entry.getKey();
+                    if (branch.trueReached ^ branch.falseReached) {
+                        if(fi == null) {
+                            fi = analysisCache.getMethodAnalysis(FinallyDuplicatesInfo.class, descriptor);
+                        }
+                        List<Edge> duplicates = fi.getDuplicates(cfg, edge);
                         if(!duplicates.isEmpty()) {
-                            boolean trueValue = entry.getValue().trueReached;
-                            boolean falseValue = entry.getValue().falseReached;
+                            boolean trueValue = branch.trueReached;
+                            boolean falseValue = branch.falseReached;
                             for(Edge dup : duplicates) {
-                                Branch branch = data.edges.get(dup);
-                                if(branch != null) {
-                                    trueValue |= branch.trueReached;
-                                    falseValue |= branch.falseReached;
+                                Branch dupBranch = data.edges.get(dup);
+                                if(dupBranch != null) {
+                                    trueValue |= dupBranch.trueReached;
+                                    falseValue |= dupBranch.falseReached;
                                 }
                             }
                             if(trueValue && falseValue) {
@@ -470,14 +495,15 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                         }
                         String condition = data.name
                                 + " "
-                                + (entry.getValue().trueReached ? entry.getValue().trueCondition
-                                        : entry.getValue().falseCondition);
-                        BasicBlock trueTarget = entry.getKey().getTarget();
-                        BasicBlock falseTarget = cfg.getSuccessorWithEdgeType(entry.getKey().getSource(), EdgeTypes.FALL_THROUGH_EDGE);
-                        BasicBlock deadTarget = entry.getValue().falseReached ? trueTarget : falseTarget;
-                        BasicBlock aliveTarget = entry.getValue().falseReached ? falseTarget : trueTarget;
-                        redundantConditions.add(new RedundantCondition(Location.getLastLocation(entry.getKey().getSource()),
-                                condition, !reachableBlocks.get(deadTarget.getLabel()), Location.getFirstLocation(deadTarget), Location.getFirstLocation(aliveTarget)));
+                                + (branch.trueReached ? branch.trueCondition
+                                        : branch.falseCondition);
+                        BasicBlock trueTarget = edge.getTarget();
+                        BasicBlock falseTarget = cfg.getSuccessorWithEdgeType(edge.getSource(), EdgeTypes.FALL_THROUGH_EDGE);
+                        BasicBlock deadTarget = branch.falseReached ? trueTarget : falseTarget;
+                        BasicBlock aliveTarget = branch.falseReached ? falseTarget : trueTarget;
+                        redundantConditions.add(new RedundantCondition(Location.getLastLocation(edge.getSource()),
+                                condition, !reachableBlocks.get(deadTarget.getLabel()), Location.getFirstLocation(deadTarget), Location.getFirstLocation(aliveTarget),
+                                branch.trueSet.getSignature(), branch.trueSet.isEmpty() || branch.trueSet.isFull(), branch.number));
                     }
                 }
             }
@@ -492,6 +518,84 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             return new ValueRangeAnalysis(redundantConditions);
         }
         return null;
+    }
+
+    private Condition extractCondition(Iterator<InstructionHandle> iterator, ConstantPool cp) {
+        Instruction comparisonInstruction = iterator.next().getInstruction();
+        if (!(comparisonInstruction instanceof IfInstruction)) {
+            return null;
+        }
+        short cmpOpcode = comparisonInstruction.getOpcode();
+        int nargs = ((IfInstruction) comparisonInstruction).consumeStack(null);
+        if (nargs == 2) {
+            return extractTwoArgCondition(iterator, cp, cmpOpcode);
+        } else if (nargs == 1) {
+            Instruction arg = iterator.hasNext() ? iterator.next().getInstruction() : null;
+            if(arg instanceof LCMP) {
+                return extractTwoArgCondition(iterator, cp, cmpOpcode);
+            } else {
+                if (!(arg instanceof LoadInstruction)) {
+                    return null;
+                }
+                return new Condition(cmpOpcode, ((LoadInstruction) arg).getIndex(), 0);
+            }
+        }
+        return null;
+    }
+
+    private Condition extractTwoArgCondition(Iterator<InstructionHandle> iterator, ConstantPool cp, short cmpOpcode) {
+        Instruction arg2 = iterator.hasNext() ? iterator.next().getInstruction() : null;
+        Instruction arg1 = iterator.hasNext() ? iterator.next().getInstruction() : null;
+        if (!(arg1 instanceof LoadInstruction) && !(arg2 instanceof LoadInstruction)) {
+            return null;
+        }
+        if (!(arg1 instanceof LoadInstruction)) {
+            Instruction tmp = arg1;
+            arg1 = arg2;
+            arg2 = tmp;
+            cmpOpcode = revertOpcode(cmpOpcode);
+        }
+        Number number = null;
+        if (arg2 instanceof ConstantPushInstruction) {
+            number = ((ConstantPushInstruction) arg2).getValue();
+        }
+        if (arg2 instanceof CPInstruction && arg2 instanceof PushInstruction) {
+            Constant constant = cp.getConstant(((CPInstruction) arg2).getIndex());
+            if (constant instanceof ConstantObject) {
+                Object value = ((ConstantObject) constant).getConstantValue(cp);
+                if (value instanceof Number) {
+                    number = (Number) value;
+                }
+            }
+        }
+        return number == null ? null : new Condition(cmpOpcode, ((LoadInstruction) arg1).getIndex(), number);
+    }
+
+    /**
+     * @param opcode
+     * @return opcode which returns the same result when arguments are placed in opposite order
+     */
+    private short revertOpcode(short opcode) {
+        switch (opcode) {
+        case IF_ICMPGE:
+            return IF_ICMPLE;
+        case IF_ICMPGT:
+            return IF_ICMPLT;
+        case IF_ICMPLE:
+            return IF_ICMPGE;
+        case IF_ICMPLT:
+            return IF_ICMPGT;
+        case IFLE:
+            return IFGE;
+        case IFGE:
+            return IFLE;
+        case IFGT:
+            return IFLT;
+        case IFLT:
+            return IFGT;
+        default:
+            return opcode;
+        }
     }
 
     /**
@@ -513,10 +617,20 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             }
             //$FALL-THROUGH$
         default:
-            if (val > 128) {
-                return number + " (0x" + Long.toHexString(val) + ")";
+            if(val == Long.MIN_VALUE) {
+                return "Long.MIN_VALUE";
             }
-            return number.toString();
+            if(val == Long.MAX_VALUE) {
+                return "Long.MAX_VALUE";
+            }
+            String suffix = "";
+            if (val > Integer.MAX_VALUE || val < Integer.MIN_VALUE) {
+                suffix = "L";
+            }
+            if (val > 128) {
+                return number + suffix + " (0x" + Long.toHexString(val) + suffix + ")";
+            }
+            return number + suffix;
         }
     }
 
