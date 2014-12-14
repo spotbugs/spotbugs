@@ -101,7 +101,7 @@ public class RedundantConditions implements Detector {
                 }
                 break;
             case "B":
-                if(number <= Byte.MIN_VALUE || number >= Byte.MAX_VALUE) {
+                if(number < Byte.MIN_VALUE || number >= Byte.MAX_VALUE) {
                     // Will be reported as INT_BAD_COMPARISON_WITH_SIGNED_BYTE
                     return IGNORE_PRIORITY;
                 }
