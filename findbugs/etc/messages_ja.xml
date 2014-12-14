@@ -611,6 +611,16 @@ null かもしれない値が null でない値だけが使われるべき文脈
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.RedundantConditions">
+    <Details>
+<![CDATA[
+<p>
+このディテクタは、この式の2番目の条件のような役に立たない条件を含んでいるコードを探します (x >= 10 && x >= 5).
+</p>
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.CallToUnsupportedMethod">
     <Details>
 <![CDATA[
@@ -5134,7 +5144,7 @@ static フィールドにすることを検討してください。
 <![CDATA[
 <p>
 このフィールドに定数値 null を書き込みます。したがって、フィールドの読み出しは null を返します。
-誤りをチェックしてください。使わないなら除去してください。
+誤りをチェックしてください。役に立たないなら除去してください。
 </p>
 ]]>
     </Details>
@@ -5147,7 +5157,7 @@ static フィールドにすることを検討してください。
 <![CDATA[
 <p>
 この public または protected フィールドは書き込まれていません。このフィールドからの読み出しはデフォルト値を返します。
-誤りをチェックしてください (フィールドは初期化するべきでしたか？)。使わないなら除去してください。
+誤りをチェックしてください (フィールドは初期化するべきでしたか？)。役に立たないなら除去してください。
 </p>
 ]]>
     </Details>
@@ -5160,7 +5170,7 @@ static フィールドにすることを検討してください。
 <![CDATA[
 <p>
 このフィールドは決して書き込まれません。このフィールドからの読み出しはデフォルト値を返します。
-誤りをチェックしてください (フィールドは初期化するべきでしたか？)。使わないなら除去してください。
+誤りをチェックしてください (フィールドは初期化するべきでしたか？)。役に立たないなら除去してください。
 </p>
 ]]>
     </Details>
@@ -5375,6 +5385,70 @@ static フィールドにすることを検討してください。
 </p>
 <p>
 - メソッドは、暗黙のわかりにくい例外をスローするように意図されている
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="UC_USELESS_CONDITION">
+    <ShortDescription>効果のない条件</ShortDescription>
+    <LongDescription>役に立たない条件: この時点 {2} で知られていました。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+この条件は常に関係している変数の値が前に絞られたのと同じ結果を作り出します。
+おそらく何かほかの意味があったのかあるいは条件を除去できます。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="RANGE_ARRAY_INDEX">
+    <ShortDescription>配列インデックスは範囲外</ShortDescription>
+    <LongDescription>配列インデックスは範囲外です: {3}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+配列演算が行なわれますが、配列インデックスが範囲外なので実行時に ArrayIndexOutOfBoundsException が発生するでしょう。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="RANGE_ARRAY_OFFSET">
+    <ShortDescription>配列オフセットは範囲外</ShortDescription>
+    <LongDescription>配列オフセットは範囲外です: {3}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+メソッドは、配列パラメータとオフセットパラメータで呼び出されますが、オフセットは範囲外です。
+実行時に IndexOutOfBoundsException が発生するでしょう。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="RANGE_ARRAY_LENGTH">
+    <ShortDescription>配列の長さは範囲外</ShortDescription>
+    <LongDescription>配列の長さは範囲外です: {3}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+メソッドは、配列パラメータと長さパラメータで呼び出されますが、長さは範囲外です。
+実行時に IndexOutOfBoundsException が発生するでしょう。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="RANGE_STRING_INDEX">
+    <ShortDescription>文字列インデックスは範囲外</ShortDescription>
+    <LongDescription>文字列インデックスは {5} を呼び出すときに範囲外です: {3}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+文字列メソッドが呼び出されます。指定された文字列インデックスは範囲外です。
+実行時に StringIndexOutOfBoundsException が発生するでしょう。
 </p>
 ]]>
     </Details>
@@ -8999,6 +9073,7 @@ byte から String (または String から byte) への変換で、デフォル
   <BugCode abbrev="UwF">書き込まれないフィールド</BugCode>
   <BugCode abbrev="SIC">static にできる内部クラス</BugCode>
   <BugCode abbrev="TLW">2つのロックを保持する wait()</BugCode>
+  <BugCode abbrev="RANGE">範囲チェック</BugCode>
   <BugCode abbrev="RV">メソッドからの戻り値の間違った使用</BugCode>
   <BugCode abbrev="LG">Logger の問題</BugCode>
   <BugCode abbrev="IA">あいまいな呼び出し</BugCode>
