@@ -2625,7 +2625,7 @@ public class OpcodeStack implements Constants2 {
             push(i);
         } else if("java/lang/String".equals(clsName) && numberArguments == 0 && topItem.getConstant() instanceof String) {
             String input = (String) topItem.getConstant();
-            Object result = null;
+            Object result;
             switch(methodName) {
             case "length":
                 result = input.length();
@@ -2637,6 +2637,8 @@ public class OpcodeStack implements Constants2 {
             case "intern":
                 result = input;
                 break;
+            default:
+                result = null;
             }
             if(result != null) {
                 Item i = new Item(pop());
