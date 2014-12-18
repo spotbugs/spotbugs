@@ -1,0 +1,20 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.apache.ant" name="ant" rev="1.7.0"/>
+        <dependency org="org.apache.ant" name="ant-launcher" rev="1.7.0"/>
+        <dependency org="ant" name="ant-optional" rev="1.5.3-1"/>
+        <dependency org="ant" name="ant-junit" rev="1.6.5"/>
+        <dependency org="ant" name="ant-netrexx" rev="1.6.5"/>
+        <dependency org="ant" name="ant-weblogic" rev="1.6.5"/>
+        <dependency org="ant" name="ant-antlr" rev="1.6.5"/>
+        <dependency org="ant" name="ant-trax" rev="1.6.5"/>
+        <dependency org="ant" name="ant-vaj" rev="1.6.5"/>
+        <dependency org="ant" name="ant-jdepend" rev="1.6.5"/>
+        <dependency org="ant" name="ant-jmf" rev="1.6.5"/>
+        <dependency org="ant" name="ant-jai" rev="1.6.5"/>
+        <dependency org="ant" name="ant-nodeps" rev="1.6.5"/>
+        <dependency org="ant" name="ant-jsch" rev="1.6.5"/>
+        <dependency org="ant" name="ant-swing" rev="1.6.5"/>
+    </dependencies>
+</ivy-module>

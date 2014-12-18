@@ -1,3 +1,7 @@
+<!-- Prerequisites:
+  Apache Ivy: http://ant.apache.org/ivy/
+  git, unzip
+-->
 <project name="findbugsTestCasesOS" default="build" xmlns:ivy="antlib:org.apache.ivy.ant">
   <target name="build"/>
 
@@ -15,9 +19,20 @@
     ant retrieve -Dtestproject=commons-lang-2.0
   -->
   <target name="retrieve">
+    <local name="ivyfile"/>
+    <property name="ivyfile" value="projects/${testproject}/ivy.xml"/>
+    <available file="${ivyfile}" property="testproject.available"/>
+    <fail unless="testproject.available" message="unable to find ${ivyfile}"/>
     <echo message="Retrieving '${testproject}'"/>
-    <ivy:resolve file="projects/${testproject}/ivy.xml" conf="*" />
-    <ivy:retrieve pattern="projects/${testproject}/[type]/[artifact]-[revision].[ext]" type="jar,source" conf="*" />
+    <ivy:resolve file="${ivyfile}" transitive="true" conf="default" />
+    <ivy:retrieve pattern="projects/${testproject}/dep/[artifact]-[revision].[ext]" type="jar"/>
+    <ivy:resolve file="${ivyfile}" transitive="false" conf="default" />
+    <ivy:retrieve pattern="projects/${testproject}/dep/[artifact]-[revision].[ext]" type="jar" overwriteMode="never" setId="ivy-remove-from-deps"/>
+    <delete>
+      <fileset refid="ivy-remove-from-deps"/>
+    </delete>
+    <ivy:retrieve pattern="projects/${testproject}/[type]/[artifact]-[revision].[ext]" type="jar,source"/>
+    <!--ivy:fixdeps tofile="ivy-fixed.xml" /-->
   </target>
 
   <target name="export">
