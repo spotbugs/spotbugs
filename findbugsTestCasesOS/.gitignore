@@ -2,3 +2,4 @@
 /projects/*/jar
 /projects/*/dep
 /projects/*/source
+/projects/*/build

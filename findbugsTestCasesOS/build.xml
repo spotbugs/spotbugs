@@ -4,16 +4,39 @@
   git, unzip
 -->
 <project name="findbugsTestCasesOS" default="build" xmlns:ivy="antlib:org.apache.ivy.ant">
-  <target name="build"/>
+  <target name="build" depends="retrieve,run"/>
 
-  <!-- export and build some specific revision of findbugs.
-    usage examples:
-    $ ant build-revision -Drevision=3.0.0
-    $ ant build-revision -Drevision=master
-    $ ant build-revision -Drevision=d4c94995d235 
-  -->
-  <target name="build-revision" depends="export">
-    <ant dir="fbexport/findbugs"/>
+  <target name="initCurrent" unless="revision">
+    <property name="findbugs.home" value="../findbugs"/>
+    <property name="findbugs.filename" value="findbugs"/>
+  </target>
+
+  <target name="initBaseline" if="revision" depends="-buildBaseline">
+    <property name="findbugs.home" value="fbexport/findbugs"/>
+    <property name="findbugs.filename" value="findbugs.${revision}"/>
+  </target>
+
+  <target name="init" depends="initCurrent,initBaseline">
+    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="../findbugs/lib/findbugs-ant.jar"/>
+    <property name="java.executable" value="" />
+    <property name="enabledExtraVisitors" value="+CheckExpectedWarnings,+InefficientMemberAccess,+EmptyZipFileEntry"/>
+    <property name="maxHeap" value="-Xmx900m"/>
+  </target>
+
+  <target name="run" depends="init">
+    <fail unless="testproject" message="please specify testproject (one of subfolders in projects folder)"/>
+    <mkdir dir="projects/${testproject}/build"/>
+    <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
+         jvm="${java.executable}"
+         output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="${enabledExtraVisitors}" outputFile="projects/${testproject}/build/${findbugs.filename}.xml">
+        <fileset dir="projects/${testproject}/jar" includes="*.jar"/>
+        <sourcePath>
+           <fileset dir="projects/${testproject}/source" includes="*.jar"/>
+        </sourcePath>
+        <auxclasspath>
+           <fileset dir="projects/${testproject}/dep" includes="*.jar"/>
+        </auxclasspath>
+    </findbugs>
   </target>
 
   <!-- property testproject must be set 
@@ -27,6 +50,7 @@
     - dep: project dependencies
   -->
   <target name="retrieve">
+    <fail unless="testproject" message="please specify testproject (one of subfolders in projects folder)"/>
     <local name="ivyfile"/>
     <property name="ivyfile" value="projects/${testproject}/ivy.xml"/>
     <available file="${ivyfile}" property="testproject.available"/>
@@ -47,6 +71,21 @@
     <ivy:fixdeps tofile="ivy-fixed.xml" />
   </target>
 
+  <!-- export and build some specific revision of findbugs.
+    usage examples:
+    $ ant buildBaseline -Drevision=3.0.0
+    $ ant buildBaseline -Drevision=master
+    $ ant buildBaseline -Drevision=d4c94995d235 
+  -->
+  <target name="buildBaseline">
+    <fail unless="revision" message="please specify revision (git revision, branch or tag)"/>
+    <ant target="-buildBaseline"/>
+  </target>
+
+  <target name="-buildBaseline" depends="-export" if="revision">
+    <ant dir="fbexport/findbugs"/>
+  </target>
+
   <!-- export some specific revision of findbugs.
     usage examples:
     $ ant build-revision -Drevision=3.0.0
@@ -54,7 +93,11 @@
     $ ant build-revision -Drevision=d4c94995d235 
   -->
   <target name="export">
-    <property name="revision" value="master"/>
+    <fail unless="revision" message="please specify revision (git revision, branch or tag)"/>
+    <ant target="-export"/>
+  </target>
+
+  <target name="-export" if="revision">
     <mkdir dir="fbexport"/>
     <delete>
         <fileset dir="fbexport" includes="**"/>
