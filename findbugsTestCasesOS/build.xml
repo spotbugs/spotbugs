@@ -6,18 +6,21 @@
 <project name="findbugsTestCasesOS" default="build" xmlns:ivy="antlib:org.apache.ivy.ant">
   <target name="build"/>
 
-  <!-- usage examples:
-    ant build-revision -Drevision=3.0.0
-    ant build-revision -Drevision=master
-    ant build-revision -Drevision=d4c94995d235 
+  <!-- export and build some specific revision of findbugs.
+    usage examples:
+    $ ant build-revision -Drevision=3.0.0
+    $ ant build-revision -Drevision=master
+    $ ant build-revision -Drevision=d4c94995d235 
   -->
   <target name="build-revision" depends="export">
     <ant dir="fbexport/findbugs"/>
   </target>
 
   <!-- property testproject must be set 
+    if -Dretrieve-debug=true is specified then ivy-fixed.xml will be created in the current directory which contains all the dependencies
     usage examples:
-    ant retrieve -Dtestproject=commons-lang-2.0
+    $ ant retrieve -Dtestproject=commons-lang-2.0
+    $ ant retrieve -Dtestproject=ant-1.7.0
     three folders will be created inside project directory:
     - jar: project jars
     - source: project source
@@ -31,15 +34,25 @@
     <echo message="Retrieving '${testproject}'"/>
     <ivy:resolve file="${ivyfile}" transitive="true" conf="default" />
     <ivy:retrieve pattern="projects/${testproject}/dep/[artifact]-[revision].[ext]" type="jar"/>
+    <ant target="-retrieve-debug"/>
     <ivy:resolve file="${ivyfile}" transitive="false" conf="default" />
     <ivy:retrieve pattern="projects/${testproject}/dep/[artifact]-[revision].[ext]" type="jar" overwriteMode="never" setId="ivy-remove-from-deps"/>
     <delete>
       <fileset refid="ivy-remove-from-deps"/>
     </delete>
     <ivy:retrieve pattern="projects/${testproject}/[type]/[artifact]-[revision].[ext]" type="jar,source"/>
-    <!--ivy:fixdeps tofile="ivy-fixed.xml" /-->
   </target>
 
+  <target name="-retrieve-debug" if="retrieve-debug">
+    <ivy:fixdeps tofile="ivy-fixed.xml" />
+  </target>
+
+  <!-- export some specific revision of findbugs.
+    usage examples:
+    $ ant build-revision -Drevision=3.0.0
+    $ ant build-revision -Drevision=master
+    $ ant build-revision -Drevision=d4c94995d235 
+  -->
   <target name="export">
     <property name="revision" value="master"/>
     <mkdir dir="fbexport"/>
@@ -61,6 +74,8 @@
     <delete file="fbexport/fb.zip"/>
   </target>
 
+  <!-- remove testproject jars and previously exported findbugs revision code
+  -->
   <target name="clean">
     <delete includeemptydirs="true">
         <fileset dir="fbexport" includes="**"/>
