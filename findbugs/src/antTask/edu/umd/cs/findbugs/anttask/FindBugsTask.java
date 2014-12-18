@@ -165,7 +165,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
     private boolean noClassOk;
 
     private boolean nested = true;
-    
+
     private boolean setExitCode = true;
 
     private final List<FileSet> filesets = new ArrayList<FileSet>();
@@ -754,12 +754,14 @@ public class FindBugsTask extends AbstractFindBugsTask {
                 @SuppressWarnings("unused")
                 String unreadReference = auxClasspath.toString();
                 String auxClasspathString = auxClasspath.toString();
-                if (auxClasspathString.length() > 100) {
-                    addArg("-auxclasspathFromInput");
-                    setInputString(auxClasspathString);
-                } else {
-                    addArg("-auxclasspath");
-                    addArg(auxClasspathString);
+                if (!auxClasspathString.isEmpty()) {
+                    if (auxClasspathString.length() > 100) {
+                        addArg("-auxclasspathFromInput");
+                        setInputString(auxClasspathString);
+                    } else {
+                        addArg("-auxclasspath");
+                        addArg(auxClasspathString);
+                    }
                 }
             } catch (Throwable t) {
                 log("Warning: auxClasspath " + t + " not found.");
@@ -791,7 +793,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
         if (setExitCode) {
             addArg("-exitcode");
         }
-        
+
         for (ClassLocation classLocation : classLocations) {
             addArg(classLocation.toString());
         }
