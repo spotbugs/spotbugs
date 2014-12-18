@@ -1,5 +1,6 @@
 <!-- Prerequisites:
-  Apache Ivy: http://ant.apache.org/ivy/
+  Apache Ant 1.7+
+  Apache Ivy 2.4+: http://ant.apache.org/ivy/
   git, unzip
 -->
 <project name="findbugsTestCasesOS" default="build" xmlns:ivy="antlib:org.apache.ivy.ant">
@@ -17,6 +18,10 @@
   <!-- property testproject must be set 
     usage examples:
     ant retrieve -Dtestproject=commons-lang-2.0
+    three folders will be created inside project directory:
+    - jar: project jars
+    - source: project source
+    - dep: project dependencies
   -->
   <target name="retrieve">
     <local name="ivyfile"/>
@@ -59,6 +64,9 @@
   <target name="clean">
     <delete includeemptydirs="true">
         <fileset dir="fbexport" includes="**"/>
+        <fileset dir="projects" includes="*/source/**"/>
+        <fileset dir="projects" includes="*/dep/**"/>
+        <fileset dir="projects" includes="*/jar/**"/>
     </delete>
   </target>
 </project>
