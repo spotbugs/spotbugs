@@ -1,0 +1,28 @@
+<project name="findbugsTestCasesOS" default="build">
+  <target name="build"/>
+
+  <target name="build-revision" depends="export">
+    <ant dir="fbexport/findbugs"/>
+  </target>
+
+  <target name="export">
+    <property name="revision" value="master"/>
+    <mkdir dir="fbexport"/>
+    <delete>
+        <fileset dir="fbexport" includes="**"/>
+    </delete>
+    <echo message="Exporting '${revision}' into fbexport"/>
+    <exec executable="git" spawn="false" dir="..">
+            <arg value="archive"/>
+            <arg value="${revision}"/>
+            <arg value="findbugs"/>
+            <arg value="-o"/>
+            <arg value="findbugsTestCasesOS/fbexport/fb.zip"/>
+    </exec>
+    <exec executable="unzip" dir="fbexport">
+            <arg value="-q"/>
+            <arg value="fb.zip"/>
+    </exec>
+    <delete file="fbexport/fb.zip"/>
+  </target>
+</project>
