@@ -1,0 +1,22 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.apache.ant" name="ant" rev="1.9.4"/>
+        <dependency org="org.apache.ant" name="ant-launcher" rev="1.9.4"/>
+        <dependency org="org.apache.ant" name="ant-junit" rev="1.9.4"/>
+        <dependency org="org.apache.ant" name="ant-testutil" rev="1.9.4"/>
+        <dependency org="org.apache.ant" name="ant-jsch" rev="1.9.4"/>
+        <dependency org="org.apache.ant" name="ant-antlr" rev="1.9.4"/>
+        <dependency org="org.apache.ant" name="ant-commons-net" rev="1.9.4"/>
+        <dependency org="org.apache.ant" name="ant-apache-bsf" rev="1.9.4"/>
+        <dependency org="org.apache.ant" name="ant-apache-log4j" rev="1.9.4"/>
+        <dependency org="org.apache.ant" name="ant-apache-bcel" rev="1.9.4"/>
+        <dependency org="org.apache.ant" name="ant-apache-xalan2" rev="1.9.4"/>
+        <dependency org="org.apache.ant" name="ant-apache-regexp" rev="1.9.4"/>
+        <dependency org="org.apache.ant" name="ant-apache-oro" rev="1.9.4"/>
+        <dependency org="org.apache.ant" name="ant-jdepend" rev="1.9.4"/>
+        <dependency org="org.apache.ant" name="ant-netrexx" rev="1.9.4"/>
+        <dependency org="org.apache.ant" name="ant-swing" rev="1.9.4"/>
+        <dependency org="org.apache.ant" name="ant-jmf" rev="1.9.4"/>
+    </dependencies>
+</ivy-module>
