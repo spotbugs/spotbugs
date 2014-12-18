@@ -1,4 +1,4 @@
-<project name="findbugsTestCasesOS" default="build">
+<project name="findbugsTestCasesOS" default="build" xmlns:ivy="antlib:org.apache.ivy.ant">
   <target name="build"/>
 
   <!-- usage examples:
@@ -8,6 +8,16 @@
   -->
   <target name="build-revision" depends="export">
     <ant dir="fbexport/findbugs"/>
+  </target>
+
+  <!-- property testproject must be set 
+    usage examples:
+    ant retrieve -Dtestproject=commons-lang-2.0
+  -->
+  <target name="retrieve">
+    <echo message="Retrieving '${testproject}'"/>
+    <ivy:resolve file="projects/${testproject}/ivy.xml" conf="*" />
+    <ivy:retrieve pattern="projects/${testproject}/[type]/[artifact]-[revision].[ext]" type="jar,source" conf="*" />
   </target>
 
   <target name="export">
