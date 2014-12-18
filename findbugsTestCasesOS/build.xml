@@ -14,7 +14,7 @@
   </target>
 
   <target name="initBaseline" if="revision" depends="-buildBaseline">
-    <property name="findbugs.home" value="fbexport/findbugs"/>
+    <property name="findbugs.home" value="${revision.directory}/findbugs"/>
     <property name="findbugs.filename" value="findbugs.${revision}"/>
   </target>
 
@@ -84,8 +84,14 @@
     <ant target="-buildBaseline"/>
   </target>
 
-  <target name="-buildBaseline" depends="-export" if="revision">
-    <ant dir="fbexport/findbugs"/>
+  <target name="-buildBaseline" depends="-export" if="revision.directory" unless="revision.target.exists">
+    <ant dir="${revision.directory}/findbugs"/>
+  </target>
+
+  <target name="-prepareExport" if="revision">
+    <property name="revision.directory" value="fb-rev-${revision}"/>
+    <available file="${revision.directory}/findbugs/build.xml" property="revision.exists"/>
+    <available file="${revision.directory}/findbugs/lib/findbugs.jar" property="revision.target.exists"/>
   </target>
 
   <!-- export some specific revision of findbugs.
@@ -99,31 +105,31 @@
     <ant target="-export"/>
   </target>
 
-  <target name="-export" if="revision">
-    <mkdir dir="fbexport"/>
+  <target name="-export" depends="-prepareExport" if="revision.directory" unless="revision.exists">
+    <mkdir dir="${revision.directory}"/>
     <delete>
-        <fileset dir="fbexport" includes="**"/>
+        <fileset dir="${revision.directory}" includes="**"/>
     </delete>
-    <echo message="Exporting '${revision}' into fbexport"/>
+    <echo message="Exporting '${revision}' into ${revision.directory}"/>
     <exec executable="git" spawn="false" dir="..">
             <arg value="archive"/>
             <arg value="${revision}"/>
             <arg value="findbugs"/>
             <arg value="-o"/>
-            <arg value="findbugsTestCasesOS/fbexport/fb.zip"/>
+            <arg value="findbugsTestCasesOS/${revision.directory}/fb.zip"/>
     </exec>
-    <exec executable="unzip" dir="fbexport">
+    <exec executable="unzip" dir="${revision.directory}">
             <arg value="-q"/>
             <arg value="fb.zip"/>
     </exec>
-    <delete file="fbexport/fb.zip"/>
+    <delete file="${revision.directory}/fb.zip"/>
   </target>
 
   <!-- remove testproject jars and previously exported findbugs revision code
   -->
   <target name="clean">
     <delete includeemptydirs="true">
-        <fileset dir="fbexport" includes="**"/>
+        <fileset dir="." includes="fb-rev-*/**"/>
         <fileset dir="projects" includes="*/source/**"/>
         <fileset dir="projects" includes="*/dep/**"/>
         <fileset dir="projects" includes="*/jar/**"/>
