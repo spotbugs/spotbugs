@@ -4,6 +4,8 @@
   git, unzip
 -->
 <project name="findbugsTestCasesOS" default="build" xmlns:ivy="antlib:org.apache.ivy.ant">
+  <property file="local.properties" />
+
   <target name="build" depends="retrieve,run"/>
 
   <target name="initCurrent" unless="revision">
