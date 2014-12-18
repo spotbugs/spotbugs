@@ -1,6 +1,11 @@
 <project name="findbugsTestCasesOS" default="build">
   <target name="build"/>
 
+  <!-- usage examples:
+    ant build-revision -Drevision=3.0.0
+    ant build-revision -Drevision=master
+    ant build-revision -Drevision=d4c94995d235 
+  -->
   <target name="build-revision" depends="export">
     <ant dir="fbexport/findbugs"/>
   </target>
@@ -24,5 +29,11 @@
             <arg value="fb.zip"/>
     </exec>
     <delete file="fbexport/fb.zip"/>
+  </target>
+
+  <target name="clean">
+    <delete includeemptydirs="true">
+        <fileset dir="fbexport" includes="**"/>
+    </delete>
   </target>
 </project>
