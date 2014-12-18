@@ -1,0 +1,16 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.eclipse.jgit" name="org.eclipse.jgit" rev="3.6.0.201411121045-m1"/>
+        <dependency org="org.eclipse.jgit" name="org.eclipse.jgit.http.server" rev="3.6.0.201411121045-m1"/>
+        <dependency org="org.eclipse.jgit" name="org.eclipse.jgit.http.apache" rev="3.6.0.201411121045-m1"/>
+        <dependency org="org.eclipse.jgit" name="org.eclipse.jgit.console" rev="3.6.0.201411121045-m1"/>
+        <dependency org="org.eclipse.jgit" name="org.eclipse.jgit.ui" rev="3.6.0.201411121045-m1"/>
+        <dependency org="org.eclipse.jgit" name="org.eclipse.jgit.pgm" rev="3.6.0.201411121045-m1"/>
+        <dependency org="org.eclipse.jgit" name="org.eclipse.jgit.junit" rev="3.6.0.201411121045-m1"/>
+        <dependency org="org.eclipse.jgit" name="org.eclipse.jgit.junit.http" rev="3.6.0.201411121045-m1"/>
+        <dependency org="org.eclipse.jgit" name="org.eclipse.jgit.ant" rev="3.6.0.201411121045-m1"/>
+        <dependency org="org.eclipse.jgit" name="org.eclipse.jgit.archive" rev="3.6.0.201411121045-m1"/>
+        <dependency org="org.eclipse.jgit" name="org.eclipse.jgit.java7" rev="3.6.0.201411121045-m1"/>
+    </dependencies>
+</ivy-module>
