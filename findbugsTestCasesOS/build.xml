@@ -107,15 +107,16 @@
     <available file="${ivyfile}" property="testproject.available"/>
     <fail unless="testproject.available" message="unable to find ${ivyfile}"/>
     <echo message="Retrieving '${testproject}'"/>
-    <ivy:resolve file="${ivyfile}" transitive="true" conf="default" type="jar,source"/>
-    <ivy:retrieve pattern="projects/${testproject}/dep/[artifact]-[revision].[ext]" type="jar"/>
+    <ivy:resolve file="${ivyfile}" transitive="true" conf="default" type="jar,bundle"/>
+    <ivy:retrieve pattern="projects/${testproject}/dep/[artifact]-[revision].[ext]" type="jar,bundle"/>
     <ant target="-retrieve-debug"/>
-    <ivy:resolve file="${ivyfile}" transitive="false" conf="default" type="jar,source"/>
-    <ivy:retrieve pattern="projects/${testproject}/dep/[artifact]-[revision].[ext]" type="jar" overwriteMode="never" setId="ivy-remove-from-deps"/>
+    <ivy:resolve file="${ivyfile}" transitive="false" conf="default" type="jar,bundle,source"/>
+    <ivy:retrieve pattern="projects/${testproject}/dep/[artifact]-[revision].[ext]" type="jar,bundle" overwriteMode="never" setId="ivy-remove-from-deps"/>
     <delete>
       <fileset refid="ivy-remove-from-deps"/>
     </delete>
-    <ivy:retrieve pattern="projects/${testproject}/[type]/[artifact]-[revision].[ext]" type="jar,source"/>
+    <ivy:retrieve pattern="projects/${testproject}/jar/[artifact]-[revision].[ext]" type="jar,bundle"/>
+    <ivy:retrieve pattern="projects/${testproject}/source/[artifact]-[revision].[ext]" type="source"/>
   </target>
 
   <target name="-retrieve-debug" if="retrieve-debug">

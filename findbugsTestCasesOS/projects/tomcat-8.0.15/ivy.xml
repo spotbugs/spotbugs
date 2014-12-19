@@ -1,0 +1,28 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.apache.tomcat" name="tomcat-catalina" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-servlet-api" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-jdbc" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-coyote" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-jasper" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-juli" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-jasper-el" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-jsp-api" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-util" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-api" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-dbcp" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-catalina-ha" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-el-api" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-tribes" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-annotations-api" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-util-scan" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-websocket-api" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-jni" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-websocket" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-catalina-ant" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-catalina-ws" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-catalina-jmx-remote" rev="8.0.15"/>
+        <dependency org="org.apache.tomcat" name="tomcat-spdy" rev="8.0.15"/>
+    </dependencies>
+</ivy-module>
