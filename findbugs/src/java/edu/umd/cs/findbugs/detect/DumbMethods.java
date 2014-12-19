@@ -646,7 +646,7 @@ public class DumbMethods extends OpcodeStackDetector {
             case IFLT:
                 if(stack.getStackDepth() > 0 && stack.getStackItem(0).getSpecialKind() == OpcodeStack.Item.NON_NEGATIVE) {
                     accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE",
-                            HIGH_PRIORITY).addClassAndMethod(this).addInt(0).describe(IntAnnotation.INT_VALUE), this);
+                            NORMAL_PRIORITY).addClassAndMethod(this).addInt(0).describe(IntAnnotation.INT_VALUE), this);
                 }
                 break;
             case IAND:
