@@ -1,0 +1,33 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="net.sourceforge.pmd" name="pmd-core" rev="5.2.2"/>
+        <dependency org="net.sourceforge.pmd" name="pmd-test" rev="5.2.2"/>
+        <dependency org="net.sourceforge.pmd" name="pmd-java" rev="5.2.2"/>
+        <dependency org="net.sourceforge.pmd" name="pmd-javascript" rev="5.2.2"/>
+        <dependency org="net.sourceforge.pmd" name="pmd-jsp" rev="5.2.2"/>
+        <dependency org="net.sourceforge.pmd" name="pmd-ruby" rev="5.2.2"/>
+        <dependency org="net.sourceforge.pmd" name="pmd-plsql" rev="5.2.2"/>
+        <dependency org="net.sourceforge.pmd" name="pmd-vm" rev="5.2.2"/>
+        <dependency org="net.sourceforge.pmd" name="pmd-xml" rev="5.2.2"/>
+        <dependency org="net.sourceforge.pmd" name="pmd-cpp" rev="5.2.2"/>
+        <dependency org="net.sourceforge.pmd" name="pmd-cs" rev="5.2.2"/>
+        <dependency org="net.sourceforge.pmd" name="pmd-fortran" rev="5.2.2"/>
+        <dependency org="net.sourceforge.pmd" name="pmd-php" rev="5.2.2"/>
+        <dependency org="net.sourceforge.pmd" name="pmd-go" rev="5.2.2"/>
+        <dependency org="net.sourceforge.pmd" name="pmd-dist" rev="5.2.2"/>
+        <!-- TODO: fix indirect dependencies -->
+        <exclude module="jcommander"/>
+        <exclude module="commons-io"/>
+        <exclude module="jaxen"/>
+        <exclude module="javacc"/>
+        <exclude module="saxon"/>
+        <exclude module="commons-lang3"/>
+        <exclude module="asm"/>
+        <exclude module="ant"/>
+        <exclude module="junit"/>
+        <exclude module="ant-testutil"/>
+        <exclude module="xercesImpl"/>
+        <exclude module="rhino"/>
+    </dependencies>
+</ivy-module>
