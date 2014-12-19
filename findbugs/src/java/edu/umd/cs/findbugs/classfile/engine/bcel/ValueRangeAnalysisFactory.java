@@ -130,6 +130,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         }
 
         public LongRangeSet gt(long value) {
+            splitGreater(value);
             if(value == Long.MAX_VALUE) {
                 return new LongRangeSet(range);
             }
@@ -137,10 +138,12 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         }
 
         public LongRangeSet ge(long value) {
+            splitGreater(value-1);
             return new LongRangeSet(range, value, range.max);
         }
 
         public LongRangeSet lt(long value) {
+            splitGreater(value-1);
             if(value == Long.MIN_VALUE) {
                 return new LongRangeSet(range);
             }
@@ -148,19 +151,28 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         }
 
         public LongRangeSet le(long value) {
+            splitGreater(value);
             return new LongRangeSet(range, range.min, value);
         }
 
         public LongRangeSet eq(long value) {
+            splitGreater(value);
+            splitGreater(value-1);
             return new LongRangeSet(range, value, value);
         }
 
         public LongRangeSet ne(long value) {
+            splitGreater(value);
+            splitGreater(value-1);
             LongRangeSet rangeSet = lt(value);
             if (value < range.max) {
                 rangeSet.map.put(value + 1, range.max);
             }
             return rangeSet;
+        }
+
+        public LongRangeSet empty() {
+            return new LongRangeSet(range);
         }
 
         public boolean intersects(LongRangeSet other) {
@@ -251,12 +263,51 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                 }
             };
         }
+
+        private void add(Long start, Long end) {
+            SortedMap<Long, Long> headMap;
+            if (end < Long.MAX_VALUE) {
+                headMap = map.headMap(end + 1);
+                Long tailEnd = map.remove(end + 1);
+                if (tailEnd != null) {
+                    end = tailEnd;
+                }
+                if (!headMap.isEmpty()) {
+                    tailEnd = headMap.get(headMap.lastKey());
+                    if (tailEnd > end) {
+                        end = tailEnd;
+                    }
+                }
+            }
+            headMap = map.headMap(start);
+            if (!headMap.isEmpty()) {
+                Long headStart = headMap.lastKey();
+                Long headEnd = map.get(headStart);
+                if (headEnd >= start - 1) {
+                    map.remove(headStart);
+                    start = headStart;
+                }
+            }
+            map.subMap(start, end).clear();
+            map.remove(end);
+            map.put(start, end);
+        }
+
+        public LongRangeSet add(LongRangeSet rangeSet) {
+            for(Entry<Long, Long> entry : rangeSet.map.entrySet()) {
+                add(entry.getKey(), entry.getValue());
+            }
+            return this;
+        }
+
+        public boolean same(LongRangeSet rangeSet) {
+            return map.equals(rangeSet.map);
+        }
     }
 
     private static class Branch {
         final LongRangeSet trueSet;
-        boolean trueReached = false;
-        boolean falseReached = false;
+        final LongRangeSet trueReachedSet, falseReachedSet;
         final String trueCondition, falseCondition;
         final Number number;
 
@@ -264,6 +315,8 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             this.trueSet = trueSet;
             this.trueCondition = fixCondition(trueCondition);
             this.falseCondition = fixCondition(falseCondition);
+            this.trueReachedSet = trueSet.empty();
+            this.falseReachedSet = trueSet.empty();
             this.number = number;
         }
 
@@ -317,6 +370,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         private final String signature;
         private final boolean byType;
         private final boolean hasDeadCode;
+        private boolean border;
         private final Location deadCodeLocation;
         private final Location liveCodeLocation;
         private final Number number;
@@ -331,6 +385,10 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             this.signature = signature;
             this.byType = byType;
             this.number = number;
+        }
+
+        public boolean isBorder() {
+            return border;
         }
 
         public Location getLocation() {
@@ -397,6 +455,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
         LocalVariableTable lvTable = method.getCode().getLocalVariableTable();
         Map<Integer, VariableData> analyzedArguments = new HashMap<>();
+        Map<Number, List<Edge>> borders = new HashMap<>();
         int maxArgument = fillParameterMap(descriptor, lvTable, analyzedArguments);
         updateParameterMap(cfg, lvTable, analyzedArguments, maxArgument);
 
@@ -422,43 +481,41 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                 case IFGT:
                     data.addBranch(edge,
                             new Branch("> " + numberStr, "<= " + numberStr, data.splitSet.gt(number.longValue()), number));
-                    data.splitSet.splitGreater(number.longValue());
                     break;
                 case IF_ICMPLE:
                 case IFLE:
                     data.addBranch(edge,
                             new Branch("<= " + numberStr, "> " + numberStr, data.splitSet.le(number.longValue()), number));
-                    data.splitSet.splitGreater(number.longValue());
                     break;
                 case IF_ICMPGE:
                 case IFGE:
                     data.addBranch(edge,
                             new Branch(">= " + numberStr, "< " + numberStr, data.splitSet.ge(number.longValue()), number));
-                    data.splitSet.splitGreater(number.longValue() - 1);
                     break;
                 case IF_ICMPLT:
                 case IFLT:
                     data.addBranch(edge,
                             new Branch("< " + numberStr, ">= " + numberStr, data.splitSet.lt(number.longValue()), number));
-                    data.splitSet.splitGreater(number.longValue() - 1);
                     break;
                 case IF_ICMPEQ:
                 case IFEQ:
                     data.addBranch(edge,
                             new Branch("== " + numberStr, "!= " + numberStr, data.splitSet.eq(number.longValue()), number));
-                    data.splitSet.splitGreater(number.longValue());
-                    data.splitSet.splitGreater(number.longValue() - 1);
                     break;
                 case IF_ICMPNE:
                 case IFNE:
                     data.addBranch(edge,
                             new Branch("!= " + numberStr, "== " + numberStr, data.splitSet.ne(number.longValue()), number));
-                    data.splitSet.splitGreater(number.longValue());
-                    data.splitSet.splitGreater(number.longValue() - 1);
                     break;
                 default:
                     break;
                 }
+                List<Edge> borderEdges = borders.get(number);
+                if(borderEdges == null) {
+                    borderEdges = new ArrayList<>();
+                    borders.put(number, borderEdges);
+                }
+                borderEdges.add(edge);
             }
         }
         FinallyDuplicatesInfo fi = null;
@@ -474,41 +531,53 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                 for (Entry<Edge, Branch> entry : data.edges.entrySet()) {
                     Branch branch = entry.getValue();
                     Edge edge = entry.getKey();
-                    if (branch.trueReached ^ branch.falseReached) {
+                    if (branch.trueReachedSet.isEmpty() ^ branch.falseReachedSet.isEmpty()) {
                         if(fi == null) {
                             fi = analysisCache.getMethodAnalysis(FinallyDuplicatesInfo.class, descriptor);
                         }
                         List<Edge> duplicates = fi.getDuplicates(cfg, edge);
                         if(!duplicates.isEmpty()) {
-                            boolean trueValue = branch.trueReached;
-                            boolean falseValue = branch.falseReached;
+                            boolean trueValue = !branch.trueReachedSet.isEmpty();
+                            boolean falseValue = !branch.falseReachedSet.isEmpty();
                             for(Edge dup : duplicates) {
                                 Branch dupBranch = data.edges.get(dup);
                                 if(dupBranch != null) {
-                                    trueValue |= dupBranch.trueReached;
-                                    falseValue |= dupBranch.falseReached;
+                                    trueValue |= !dupBranch.trueReachedSet.isEmpty();
+                                    falseValue |= !dupBranch.falseReachedSet.isEmpty();
                                 }
                             }
                             if(trueValue && falseValue) {
                                 continue;
                             }
                         }
-                        String condition = data.name
-                                + " "
-                                + (branch.trueReached ? branch.trueCondition
-                                        : branch.falseCondition);
                         BasicBlock trueTarget = edge.getTarget();
                         BasicBlock falseTarget = cfg.getSuccessorWithEdgeType(edge.getSource(), EdgeTypes.FALL_THROUGH_EDGE);
-                        BasicBlock deadTarget = branch.falseReached ? trueTarget : falseTarget;
-                        BasicBlock aliveTarget = branch.falseReached ? falseTarget : trueTarget;
-                        redundantConditions.add(new RedundantCondition(Location.getLastLocation(edge.getSource()),
-                                condition, !reachableBlocks.get(deadTarget.getLabel()), Location.getFirstLocation(deadTarget), Location.getFirstLocation(aliveTarget),
-                                branch.trueSet.getSignature(), branch.trueSet.isEmpty() || branch.trueSet.isFull(), branch.number));
+                        String condition;
+                        BasicBlock deadTarget, aliveTarget;
+                        if(branch.trueReachedSet.isEmpty()) {
+                            condition = data.name + " " + branch.falseCondition;
+                            deadTarget = trueTarget;
+                            aliveTarget = falseTarget;
+                        } else {
+                            condition = data.name + " " + branch.trueCondition;
+                            deadTarget = falseTarget;
+                            aliveTarget = trueTarget;
+                        }
+                        redundantConditions.add(new RedundantCondition(Location.getLastLocation(edge.getSource()), condition,
+                                !reachableBlocks.get(deadTarget.getLabel()), Location.getFirstLocation(deadTarget), Location
+                                .getFirstLocation(aliveTarget), branch.trueSet.getSignature(), branch.trueSet.isEmpty()
+                                || branch.trueSet.isFull(), branch.number));
+                        borders.get(branch.number).remove(edge);
                     }
                 }
             }
         }
         if (!redundantConditions.isEmpty()) {
+            for(RedundantCondition condition : redundantConditions) {
+                if(!borders.get(condition.number).isEmpty()) {
+                    condition.border = true;
+                }
+            }
             Collections.sort(redundantConditions, new Comparator<RedundantCondition>() {
                 @Override
                 public int compare(RedundantCondition o1, RedundantCondition o2) {
@@ -710,9 +779,9 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             Branch branch = edges.get(edge);
             if (branch != null) {
                 if (branch.trueSet.intersects(subRange)) {
-                    branch.trueReached = true;
+                    branch.trueReachedSet.add(subRange);
                 } else {
-                    branch.falseReached = true;
+                    branch.falseReachedSet.add(subRange);
                     continue;
                 }
             }

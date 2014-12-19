@@ -110,7 +110,7 @@ public class RedundantConditions implements Detector {
                 break;
             }
         }
-        int priority = condition.isDeadCodeUnreachable() ? HIGH_PRIORITY : NORMAL_PRIORITY;
+        int priority = condition.isDeadCodeUnreachable() ? HIGH_PRIORITY : condition.isBorder() ? LOW_PRIORITY : NORMAL_PRIORITY;
         // check for boolean conversion
         if(condition.getDeadCodeLocation() != null && condition.getLiveCodeLocation() != null && condition.isDeadCodeUnreachable()) {
             InstructionHandle deadHandle = condition.getDeadCodeLocation().getHandle();
@@ -134,7 +134,7 @@ public class RedundantConditions implements Detector {
                     if(!(middle.getInstruction() instanceof GOTO) || ((GOTO)middle.getInstruction()).getTarget() != after) {
                         return priority;
                     }
-                    priority = NORMAL_PRIORITY;
+                    priority = LOW_PRIORITY;
                     if(after.getInstruction() instanceof InvokeInstruction) {
                         MethodGen methodGen;
                         try {
