@@ -3,3 +3,5 @@
 /projects/*/dep
 /projects/*/source
 /projects/*/build
+/local.properties
+/ivy-fixed.xml
