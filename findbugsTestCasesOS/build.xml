@@ -2,6 +2,15 @@
   Apache Ant 1.7+
   Apache Ivy 2.4+: http://ant.apache.org/ivy/
   git, unzip
+
+  Main tasks:
+  build -Dtestproject=<prjname> [-Drevision=<rev/tag/branch>] (default task) - test given OS project with current or specified FindBugs version
+  diff -Dtestproject=<prjname> -Drevision=<rev/tag/branch> - test given OS project with current and specified FindBugs version and compare the results
+
+  export -Drevision=<rev/tag/branch> - export given FB revision from Git repository
+  buildBaseline -Drevision=<rev/tag/branch> - export given FB revision from Git repository and build findbugs.jar
+  retrieve -Dtestproject=<prjname> - retrieve given OS project from maven central
+  clean - remove temporary files
 -->
 <project name="findbugsTestCasesOS" default="build" xmlns:ivy="antlib:org.apache.ivy.ant">
   <property file="local.properties" />
@@ -25,7 +34,10 @@
     <property name="maxHeap" value="-Xmx900m"/>
   </target>
 
-  <target name="run" depends="init">
+  <target name="run" depends="init,-run">
+  </target>
+
+  <target name="-run">
     <fail unless="testproject" message="please specify testproject (one of subfolders in projects folder)"/>
     <mkdir dir="projects/${testproject}/build"/>
     <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
@@ -39,6 +51,43 @@
            <fileset dir="projects/${testproject}/dep" includes="*.jar"/>
         </auxclasspath>
     </findbugs>
+  </target>
+
+  <target name="diff" depends="retrieve,init">
+    <fail unless="testproject" message="please specify testproject (one of subfolders in projects folder)"/>
+    <fail unless="revision" message="please specify revision (git revision, branch or tag)"/>
+    <ant target="-run">
+      <property name="testproject" value="${testproject}"/>
+      <property name="findbugs.home" value="../findbugs"/>
+      <property name="findbugs.filename" value="findbugs"/>
+    </ant>
+    <ant target="-run">
+      <property name="testproject" value="${testproject}"/>
+      <property name="revision" value="${revision}"/>
+      <property name="findbugs.home" value="${revision.directory}/findbugs"/>
+      <property name="findbugs.filename" value="findbugs.${revision}"/>
+    </ant>
+    <ant target="compare">
+      <property name="testproject" value="${testproject}"/>
+      <property name="revision" value="${revision}"/>
+    </ant>
+  </target>
+
+  <target name="compare">
+    <property name="file1" value="projects/${testproject}/build/findbugs.${revision}.xml"/>
+    <property name="file2" value="projects/${testproject}/build/findbugs.xml"/>
+    <taskdef name="computebugs" classname="edu.umd.cs.findbugs.anttask.ComputeBugHistoryTask" classpath="../findbugs/lib/findbugs-ant.jar"/>
+    <taskdef name="filterbugs" classname="edu.umd.cs.findbugs.anttask.FilterBugsTask" classpath="../findbugs/lib/findbugs-ant.jar"/>
+    <computebugs home="../findbugs" output="projects/${testproject}/build/new_since_${revision}.xml">
+      <datafile name="${file1}"/>
+      <datafile name="${file2}"/>
+    </computebugs>
+    <filterbugs home="../findbugs" inputFile="projects/${testproject}/build/new_since_${revision}.xml" outputFile="projects/${testproject}/build/new_since_${revision}.xml" first="last"/>
+    <computebugs home="../findbugs" output="projects/${testproject}/build/disappeared_since_${revision}.xml">
+      <datafile name="${file2}"/>
+      <datafile name="${file1}"/>
+    </computebugs>
+    <filterbugs home="../findbugs" inputFile="projects/${testproject}/build/disappeared_since_${revision}.xml" outputFile="projects/${testproject}/build/disappeared_since_${revision}.xml" first="last"/>
   </target>
 
   <!-- property testproject must be set 
