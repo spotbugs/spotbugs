@@ -347,6 +347,8 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
     private static class VariableData {
         final LongRangeSet splitSet;
 
+        final Map<Number, List<Edge>> borders = new HashMap<>();
+
         final Map<Edge, Branch> edges = new IdentityHashMap<>();
 
         final String name;
@@ -370,13 +372,13 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         private final String signature;
         private final boolean byType;
         private final boolean hasDeadCode;
-        private boolean border;
+        private final List<Edge> borders;
         private final Location deadCodeLocation;
         private final Location liveCodeLocation;
         private final Number number;
 
         public RedundantCondition(Location location, String trueCondition, boolean hasDeadCode, Location deadCodeLocation,
-                Location liveCodeLocation, String signature, boolean byType, Number number) {
+                Location liveCodeLocation, String signature, boolean byType, Number number, List<Edge> borders) {
             this.location = location;
             this.trueCondition = trueCondition;
             this.hasDeadCode = hasDeadCode;
@@ -385,10 +387,11 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             this.signature = signature;
             this.byType = byType;
             this.number = number;
+            this.borders = borders;
         }
 
         public boolean isBorder() {
-            return border;
+            return !borders.isEmpty();
         }
 
         public Location getLocation() {
@@ -455,7 +458,6 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
         LocalVariableTable lvTable = method.getCode().getLocalVariableTable();
         Map<Integer, VariableData> analyzedArguments = new HashMap<>();
-        Map<Number, List<Edge>> borders = new HashMap<>();
         int maxArgument = fillParameterMap(descriptor, lvTable, analyzedArguments);
         updateParameterMap(cfg, lvTable, analyzedArguments, maxArgument);
 
@@ -510,10 +512,10 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                 default:
                     break;
                 }
-                List<Edge> borderEdges = borders.get(number);
+                List<Edge> borderEdges = data.borders.get(number);
                 if(borderEdges == null) {
                     borderEdges = new ArrayList<>();
-                    borders.put(number, borderEdges);
+                    data.borders.put(number, borderEdges);
                 }
                 borderEdges.add(edge);
             }
@@ -563,21 +565,18 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                             deadTarget = falseTarget;
                             aliveTarget = trueTarget;
                         }
+                        List<Edge> borders = data.borders.get(branch.number);
                         redundantConditions.add(new RedundantCondition(Location.getLastLocation(edge.getSource()), condition,
                                 !reachableBlocks.get(deadTarget.getLabel()), Location.getFirstLocation(deadTarget), Location
                                 .getFirstLocation(aliveTarget), branch.trueSet.getSignature(), branch.trueSet.isEmpty()
-                                || branch.trueSet.isFull(), branch.number));
-                        borders.get(branch.number).remove(edge);
+                                || branch.trueSet.isFull(), branch.number, borders));
+                        borders.remove(edge);
+                        borders.removeAll(duplicates);
                     }
                 }
             }
         }
         if (!redundantConditions.isEmpty()) {
-            for(RedundantCondition condition : redundantConditions) {
-                if(!borders.get(condition.number).isEmpty()) {
-                    condition.border = true;
-                }
-            }
             Collections.sort(redundantConditions, new Comparator<RedundantCondition>() {
                 @Override
                 public int compare(RedundantCondition o1, RedundantCondition o2) {

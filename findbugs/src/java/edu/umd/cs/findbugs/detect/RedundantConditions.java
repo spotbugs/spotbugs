@@ -134,7 +134,7 @@ public class RedundantConditions implements Detector {
                     if(!(middle.getInstruction() instanceof GOTO) || ((GOTO)middle.getInstruction()).getTarget() != after) {
                         return priority;
                     }
-                    priority = LOW_PRIORITY;
+                    priority = Math.max(priority, NORMAL_PRIORITY);
                     if(after.getInstruction() instanceof InvokeInstruction) {
                         MethodGen methodGen;
                         try {
