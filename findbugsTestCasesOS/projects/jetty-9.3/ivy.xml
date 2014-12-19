@@ -1,0 +1,76 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.eclipse.jetty" name="jetty-server" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-servlet" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-webapp" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-util" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-security" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-http" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-continuation" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-servlets" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-io" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-jmx" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-plus" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-deploy" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-client" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-jsp" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-xml" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-annotations" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-jndi" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-rewrite" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-start" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-proxy" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="apache-jsp" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-jaspi" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="apache-jstl" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-quickstart" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-jaas" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-nosql" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-alpn-server" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-maven-plugin" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-util-ajax" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-distribution" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-monitor" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-alpn-client" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-spring" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-cdi" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="example-jetty-embedded" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-jspc-maven-plugin" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="example-async-rest" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-ant" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-http-spi" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty" name="jetty-project" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.fcgi" name="fcgi-server" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.fcgi" name="fcgi-client" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.http2" name="http2-common" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.http2" name="http2-server" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.http2" name="http2-hpack" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.http2" name="http2-client" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.spdy" name="spdy-http-server" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.spdy" name="spdy-core" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.spdy" name="spdy-http-common" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.spdy" name="spdy-example-webapp" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.spdy" name="spdy-http-client-transport" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.spdy" name="spdy-alpn-tests" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.websocket" name="websocket-server" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.websocket" name="javax-websocket-server-impl" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.websocket" name="websocket-client" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.websocket" name="websocket-servlet" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.websocket" name="websocket-api" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.websocket" name="websocket-common" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.websocket" name="javax-websocket-client-impl" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.osgi" name="jetty-osgi-boot" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.osgi" name="jetty-osgi-boot-jsp" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.osgi" name="jetty-osgi-alpn" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.osgi" name="jetty-httpservice" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.osgi" name="jetty-osgi-boot-warurl" rev="9.3.0.M1"/>
+        <dependency org="org.eclipse.jetty.osgi" name="jetty-osgi-project" rev="9.3.0.M1"/>
+        <exclude module="jetty-test-helper"/>
+        <exclude module="test-mock-resources"/>
+        <exclude module="jetty-jsp-jdt"/>
+        <exclude module="test-jetty-webapp"/>
+        <exclude module="test-proxy-webapp"/>
+        <exclude module="org.osgi.foundation"/>
+    </dependencies>
+</ivy-module>
