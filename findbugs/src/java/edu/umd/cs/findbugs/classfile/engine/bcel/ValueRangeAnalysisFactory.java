@@ -26,11 +26,13 @@ import java.util.BitSet;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -310,6 +312,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         final LongRangeSet trueReachedSet, falseReachedSet;
         final String trueCondition, falseCondition;
         final Number number;
+        final Set<Long> numbers = new HashSet<>();
 
         public Branch(String trueCondition, String falseCondition, LongRangeSet trueSet, Number number) {
             this.trueSet = trueSet;
@@ -347,8 +350,6 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
     private static class VariableData {
         final LongRangeSet splitSet;
 
-        final Map<Number, List<Edge>> borders = new HashMap<>();
-
         final Map<Edge, Branch> edges = new IdentityHashMap<>();
 
         final String name;
@@ -372,13 +373,13 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         private final String signature;
         private final boolean byType;
         private final boolean hasDeadCode;
-        private final List<Edge> borders;
+        private final boolean border;
         private final Location deadCodeLocation;
         private final Location liveCodeLocation;
         private final Number number;
 
         public RedundantCondition(Location location, String trueCondition, boolean hasDeadCode, Location deadCodeLocation,
-                Location liveCodeLocation, String signature, boolean byType, Number number, List<Edge> borders) {
+                Location liveCodeLocation, String signature, boolean byType, Number number, boolean border) {
             this.location = location;
             this.trueCondition = trueCondition;
             this.hasDeadCode = hasDeadCode;
@@ -387,11 +388,11 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             this.signature = signature;
             this.byType = byType;
             this.number = number;
-            this.borders = borders;
+            this.border = border;
         }
 
         public boolean isBorder() {
-            return !borders.isEmpty();
+            return border;
         }
 
         public Location getLocation() {
@@ -512,12 +513,6 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                 default:
                     break;
                 }
-                List<Edge> borderEdges = data.borders.get(number);
-                if(borderEdges == null) {
-                    borderEdges = new ArrayList<>();
-                    data.borders.put(number, borderEdges);
-                }
-                borderEdges.add(edge);
             }
         }
         FinallyDuplicatesInfo fi = null;
@@ -527,7 +522,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                 BitSet reachableBlocks = new BitSet();
                 for (LongRangeSet subRange : data.splitSet) {
                     BitSet reachedBlocks = new BitSet();
-                    walkCFG(cfg, cfg.getEntry(), subRange, data.edges, reachedBlocks);
+                    walkCFG(cfg, cfg.getEntry(), subRange, data.edges, reachedBlocks, new HashSet<Long>());
                     reachableBlocks.or(reachedBlocks);
                 }
                 for (Entry<Edge, Branch> entry : data.edges.entrySet()) {
@@ -565,13 +560,10 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                             deadTarget = falseTarget;
                             aliveTarget = trueTarget;
                         }
-                        List<Edge> borders = data.borders.get(branch.number);
                         redundantConditions.add(new RedundantCondition(Location.getLastLocation(edge.getSource()), condition,
                                 !reachableBlocks.get(deadTarget.getLabel()), Location.getFirstLocation(deadTarget), Location
                                 .getFirstLocation(aliveTarget), branch.trueSet.getSignature(), branch.trueSet.isEmpty()
-                                || branch.trueSet.isFull(), branch.number, borders));
-                        borders.remove(edge);
-                        borders.removeAll(duplicates);
+                                || branch.trueSet.isFull(), branch.number, branch.numbers.contains(branch.number.longValue())));
                     }
                 }
             }
@@ -771,12 +763,15 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         }
     }
 
-    private void walkCFG(CFG cfg, BasicBlock basicBlock, LongRangeSet subRange, Map<Edge, Branch> edges, BitSet reachedBlocks) {
+    private void walkCFG(CFG cfg, BasicBlock basicBlock, LongRangeSet subRange, Map<Edge, Branch> edges, BitSet reachedBlocks, Set<Long> numbers) {
         reachedBlocks.set(basicBlock.getLabel());
         for (Iterator<Edge> iterator = cfg.outgoingEdgeIterator(basicBlock); iterator.hasNext();) {
             Edge edge = iterator.next();
             Branch branch = edges.get(edge);
             if (branch != null) {
+                branch.numbers.addAll(numbers);
+                numbers = new HashSet<>(numbers);
+                numbers.add(branch.number.longValue());
                 if (branch.trueSet.intersects(subRange)) {
                     branch.trueReachedSet.add(subRange);
                 } else {
@@ -786,7 +781,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             }
             BasicBlock target = edge.getTarget();
             if (!reachedBlocks.get(target.getLabel())) {
-                walkCFG(cfg, target, subRange, edges, reachedBlocks);
+                walkCFG(cfg, target, subRange, edges, reachedBlocks, numbers);
             }
             if (branch != null) {
                 break;
