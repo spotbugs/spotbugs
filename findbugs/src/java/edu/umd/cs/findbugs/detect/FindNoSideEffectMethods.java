@@ -41,6 +41,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -836,8 +837,8 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         for(Entry<MethodDescriptor, SideEffectStatus> entry : statusMap.entrySet()) {
             MethodDescriptor m = entry.getKey();
             if (entry.getValue() == SideEffectStatus.NO_SIDE_EFFECT) {
-                Type returnType = Type.getReturnType(m.getSignature());
-                if (returnType != Type.VOID || m.getName().equals("<init>")) {
+                String returnType = new SignatureParser(m.getSignature()).getReturnTypeSignature();
+                if (!returnType.equals("V") || m.getName().equals("<init>")) {
                     if(m.equals(GET_CLASS)) {
                         /* We do not mark getClass() call as pure, because it can appear in code like this:
                             public class Outer {
@@ -884,9 +885,9 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                         continue;
                     }
                     if (m.isStatic() && getStaticMethods.contains(m) && !m.getSlashedClassName().startsWith("java/")) {
-                        String returnSignature = ClassName.fromFieldSignature(returnType.getSignature());
-                        if(returnSignature != null) {
-                            String returnClass = ClassName.toDottedClassName(returnSignature);
+                        String returnSlashedClassName = ClassName.fromFieldSignature(returnType);
+                        if(returnSlashedClassName != null) {
+                            String returnClass = ClassName.toDottedClassName(returnSlashedClassName);
                             if(ClassName.extractPackageName(returnClass).equals(m.getClassDescriptor().getPackageName())) {
                                 /* Skip methods which only retrieve static field from the same package
                                  * As they as often used to trigger class initialization

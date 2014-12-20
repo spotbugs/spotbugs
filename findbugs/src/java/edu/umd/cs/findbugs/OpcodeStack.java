@@ -61,6 +61,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ClassMember;
 import edu.umd.cs.findbugs.ba.FieldSummary;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -2419,7 +2420,7 @@ public class OpcodeStack implements Constants2 {
                         + "Value"))) {
             // boxing/unboxing conversion
             Item value = pop();
-            String newSignature = Type.getReturnType(signature).getSignature();
+            String newSignature = new SignatureParser(signature).getReturnTypeSignature();
             Item newValue = new Item(value, newSignature);
             if (newValue.source == null) {
                 newValue.source = XFactory.createReferencedXMethod(dbc);
@@ -2683,7 +2684,7 @@ public class OpcodeStack implements Constants2 {
         int numberArguments = PreorderVisitor.getNumberArguments(signature);
 
         pop(numberArguments);
-        pushBySignature(Type.getReturnType(signature).getSignature(), dbc);
+        pushBySignature(new SignatureParser(signature).getReturnTypeSignature(), dbc);
     }
 
     private boolean mergeLists(List<Item> mergeInto, List<Item> mergeFrom, boolean errorIfSizesDoNotMatch) {
@@ -3439,7 +3440,7 @@ public class OpcodeStack implements Constants2 {
             return;
         }
         pop(PreorderVisitor.getNumberArguments(signature) + (popThis ? 1 : 0));
-        pushBySignature(Type.getReturnType(signature).getSignature(), dbc);
+        pushBySignature(new SignatureParser(signature).getReturnTypeSignature(), dbc);
     }
 
     public Item getItemMethodInvokedOn(DismantleBytecode dbc) {

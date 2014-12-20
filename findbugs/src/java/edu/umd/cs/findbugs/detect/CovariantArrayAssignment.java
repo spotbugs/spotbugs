@@ -22,13 +22,13 @@ package edu.umd.cs.findbugs.detect;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
-import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
@@ -114,7 +114,7 @@ public class CovariantArrayAssignment extends OpcodeStackDetector {
                 } else if(seen == ARETURN) {
                     if(getXMethod().bridgeFrom() == null) {
                         pattern = "CAA_COVARIANT_ARRAY_RETURN";
-                        arraySignature = Type.getReturnType(getMethodSig()).getSignature();
+                        arraySignature = new SignatureParser(getMethodSig()).getReturnTypeSignature();
                         if((getXMethod().isPublic() || getXMethod().isProtected()) && getXClass().isPublic()) {
                             priority = NORMAL_PRIORITY;
                         }
