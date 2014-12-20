@@ -4,31 +4,32 @@
   git, unzip
 
   Main tasks:
-  build -Dtestproject=<prjname> [-Drevision=<rev/tag/branch>] (default task) - test given OS project with current or specified FindBugs version
-  diff -Dtestproject=<prjname> -Drevision=<rev/tag/branch> - test given OS project with current and specified FindBugs version and compare the results
+  diff -Dprj=<prjname> -Drevision=<rev/tag/branch> (default task) - test given OS project with current and specified FindBugs version and compare the results
+  build -Dprj=<prjname> [-Drevision=<rev/tag/branch>] - test given OS project with current or specified FindBugs version
 
   export -Drevision=<rev/tag/branch> - export given FB revision from Git repository
   buildBaseline -Drevision=<rev/tag/branch> - export given FB revision from Git repository and build findbugs.jar
-  retrieve -Dtestproject=<prjname> - retrieve given OS project from maven central
+  retrieve -Dprj=<prjname> - retrieve given OS project from maven central
   clean - remove temporary files
 -->
-<project name="findbugsTestCasesOS" default="build" xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="findbugsTestCasesOS" default="diff" xmlns:ivy="antlib:org.apache.ivy.ant">
   <property file="local.properties" />
+  <property name="findbugs.current.home" value="../findbugs"/>
 
   <target name="build" depends="retrieve,run"/>
 
   <target name="initCurrent" unless="revision">
-    <property name="findbugs.home" value="../findbugs"/>
-    <property name="findbugs.filename" value="findbugs"/>
+    <property name="findbugs.home" value="${findbugs.current.home}"/>
+    <property name="findbugs.filename" value="${prj}"/>
   </target>
 
   <target name="initBaseline" if="revision" depends="-buildBaseline">
     <property name="findbugs.home" value="${revision.directory}/findbugs"/>
-    <property name="findbugs.filename" value="findbugs.${revision}"/>
+    <property name="findbugs.filename" value="${prj}-fb-${revision}"/>
   </target>
 
   <target name="init" depends="initCurrent,initBaseline">
-    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="../findbugs/lib/findbugs-ant.jar"/>
+    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${findbugs.current.home}/lib/findbugs-ant.jar"/>
     <property name="java.executable" value="" />
     <property name="enabledExtraVisitors" value="+CheckExpectedWarnings,+InefficientMemberAccess,+EmptyZipFileEntry"/>
     <property name="maxHeap" value="-Xmx900m"/>
@@ -37,89 +38,85 @@
   <target name="run" depends="init,-run">
   </target>
 
-  <target name="-run">
-    <fail unless="testproject" message="please specify testproject (one of subfolders in projects folder)"/>
-    <mkdir dir="projects/${testproject}/build"/>
+  <target name="-run" depends="-requireProject,-uptodateCheck" unless="analysis.uptodate">
+    <mkdir dir="projects/${prj}/build"/>
     <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
          jvm="${java.executable}"
-         output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="${enabledExtraVisitors}" outputFile="projects/${testproject}/build/${findbugs.filename}.xml">
-        <fileset dir="projects/${testproject}/jar" includes="*.jar"/>
+         output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="${enabledExtraVisitors}" outputFile="projects/${prj}/build/${findbugs.filename}.xml">
+        <fileset dir="projects/${prj}/jar" includes="*.jar"/>
         <sourcePath>
-           <fileset dir="projects/${testproject}/source" includes="*.jar"/>
+           <fileset dir="projects/${prj}/source" includes="*.jar"/>
         </sourcePath>
         <auxclasspath>
-           <fileset dir="projects/${testproject}/dep" includes="*.jar"/>
+           <fileset dir="projects/${prj}/dep" includes="*.jar"/>
         </auxclasspath>
     </findbugs>
   </target>
 
-  <target name="diff" depends="retrieve,init">
-    <fail unless="testproject" message="please specify testproject (one of subfolders in projects folder)"/>
-    <fail unless="revision" message="please specify revision (git revision, branch or tag)"/>
+  <target name="diff" depends="-requireProject,-requireRevision,retrieve,init">
     <ant target="-run">
-      <property name="testproject" value="${testproject}"/>
-      <property name="findbugs.home" value="../findbugs"/>
-      <property name="findbugs.filename" value="findbugs"/>
+      <property name="prj" value="${prj}"/>
+      <property name="findbugs.home" value="${findbugs.current.home}"/>
+    <property name="findbugs.filename" value="${prj}"/>
     </ant>
     <ant target="-run">
-      <property name="testproject" value="${testproject}"/>
+      <property name="prj" value="${prj}"/>
       <property name="revision" value="${revision}"/>
       <property name="findbugs.home" value="${revision.directory}/findbugs"/>
-      <property name="findbugs.filename" value="findbugs.${revision}"/>
+    <property name="findbugs.filename" value="${prj}-fb-${revision}"/>
     </ant>
     <ant target="compare">
-      <property name="testproject" value="${testproject}"/>
+      <property name="prj" value="${prj}"/>
       <property name="revision" value="${revision}"/>
     </ant>
   </target>
 
   <target name="compare">
-    <property name="file1" value="projects/${testproject}/build/findbugs.${revision}.xml"/>
-    <property name="file2" value="projects/${testproject}/build/findbugs.xml"/>
-    <taskdef name="computebugs" classname="edu.umd.cs.findbugs.anttask.ComputeBugHistoryTask" classpath="../findbugs/lib/findbugs-ant.jar"/>
-    <taskdef name="filterbugs" classname="edu.umd.cs.findbugs.anttask.FilterBugsTask" classpath="../findbugs/lib/findbugs-ant.jar"/>
-    <computebugs home="../findbugs" output="projects/${testproject}/build/new_since_${revision}.xml">
+    <property name="file1" value="projects/${prj}/build/${prj}-fb-${revision}.xml"/>
+    <property name="file2" value="projects/${prj}/build/${prj}.xml"/>
+    <taskdef name="computebugs" classname="edu.umd.cs.findbugs.anttask.ComputeBugHistoryTask" classpath="${findbugs.current.home}/lib/findbugs-ant.jar"/>
+    <taskdef name="filterbugs" classname="edu.umd.cs.findbugs.anttask.FilterBugsTask" classpath="${findbugs.current.home}/lib/findbugs-ant.jar"/>
+    <computebugs home="${findbugs.current.home}" output="projects/${prj}/build/${prj}-new-since-${revision}.xml">
       <datafile name="${file1}"/>
       <datafile name="${file2}"/>
     </computebugs>
-    <filterbugs home="../findbugs" inputFile="projects/${testproject}/build/new_since_${revision}.xml" outputFile="projects/${testproject}/build/new_since_${revision}.xml" first="last"/>
-    <computebugs home="../findbugs" output="projects/${testproject}/build/disappeared_since_${revision}.xml">
+    <filterbugs home="${findbugs.current.home}" inputFile="projects/${prj}/build/${prj}-new-since-${revision}.xml" outputFile="projects/${prj}/build/${prj}-new-since-${revision}.xml" first="last"/>
+    <computebugs home="${findbugs.current.home}" output="projects/${prj}/build/${prj}-disappeared-since-${revision}.xml">
       <datafile name="${file2}"/>
       <datafile name="${file1}"/>
     </computebugs>
-    <filterbugs home="../findbugs" inputFile="projects/${testproject}/build/disappeared_since_${revision}.xml" outputFile="projects/${testproject}/build/disappeared_since_${revision}.xml" first="last"/>
+    <filterbugs home="${findbugs.current.home}" inputFile="projects/${prj}/build/${prj}-disappeared-since-${revision}.xml" outputFile="projects/${prj}/build/${prj}-disappeared-since-${revision}.xml" first="last"/>
   </target>
 
-  <!-- property testproject must be set 
+  <!-- property prj must be set 
     if -Dretrieve-debug=true is specified then ivy-fixed.xml will be created in the current directory which contains all the dependencies
     usage examples:
-    $ ant retrieve -Dtestproject=commons-lang-2.0
-    $ ant retrieve -Dtestproject=ant-1.7.0
+    $ ant retrieve -Dprj=commons-lang-2.0
+    $ ant retrieve -Dprj=ant-1.7.0
     three folders will be created inside project directory:
     - jar: project jars
     - source: project source
     - dep: project dependencies
   -->
-  <target name="retrieve">
-    <fail unless="testproject" message="please specify testproject (one of subfolders in projects folder)"/>
+  <target name="retrieve" depends="-requireProject">
     <local name="ivyfile"/>
-    <property name="ivyfile" value="projects/${testproject}/ivy.xml"/>
-    <available file="${ivyfile}" property="testproject.available"/>
-    <fail unless="testproject.available" message="unable to find ${ivyfile}"/>
-    <echo message="Retrieving '${testproject}'"/>
+    <property name="ivyfile" value="projects/${prj}/ivy.xml"/>
+    <available file="${ivyfile}" property="prj.available"/>
+    <fail unless="prj.available" message="unable to find ${ivyfile}"/>
+    <echo message="Retrieving '${prj}'"/>
     <ivy:resolve file="${ivyfile}" transitive="true" conf="default" type="jar,bundle"/>
-    <ivy:retrieve pattern="projects/${testproject}/dep/[artifact]-[revision].[ext]" type="jar,bundle"/>
-    <ant target="-retrieve-debug"/>
+    <ivy:retrieve pattern="projects/${prj}/dep/[artifact]-[revision].[ext]" type="jar,bundle"/>
+    <ant target="-retrieveDebug"/>
     <ivy:resolve file="${ivyfile}" transitive="false" conf="default" type="jar,bundle,source"/>
-    <ivy:retrieve pattern="projects/${testproject}/dep/[artifact]-[revision].[ext]" type="jar,bundle" overwriteMode="never" setId="ivy-remove-from-deps"/>
+    <ivy:retrieve pattern="projects/${prj}/dep/[artifact]-[revision].[ext]" type="jar,bundle" overwriteMode="never" setId="ivy-remove-from-deps"/>
     <delete>
       <fileset refid="ivy-remove-from-deps"/>
     </delete>
-    <ivy:retrieve pattern="projects/${testproject}/jar/[artifact]-[revision].[ext]" type="jar,bundle"/>
-    <ivy:retrieve pattern="projects/${testproject}/source/[artifact]-[revision].[ext]" type="source"/>
+    <ivy:retrieve pattern="projects/${prj}/jar/[artifact]-[revision].[ext]" type="jar,bundle"/>
+    <ivy:retrieve pattern="projects/${prj}/source/[artifact]-[revision].[ext]" type="source"/>
   </target>
 
-  <target name="-retrieve-debug" if="retrieve-debug">
+  <target name="-retrieveDebug" if="retrieve-debug">
     <ivy:fixdeps tofile="ivy-fixed.xml" />
   </target>
 
@@ -129,10 +126,7 @@
     $ ant buildBaseline -Drevision=master
     $ ant buildBaseline -Drevision=d4c94995d235 
   -->
-  <target name="buildBaseline">
-    <fail unless="revision" message="please specify revision (git revision, branch or tag)"/>
-    <ant target="-buildBaseline"/>
-  </target>
+  <target name="buildBaseline" depends="-requireRevision,-buildBaseline"/>
 
   <target name="-buildBaseline" depends="-export" if="revision.directory" unless="revision.target.exists">
     <ant dir="${revision.directory}/findbugs"/>
@@ -150,10 +144,7 @@
     $ ant build-revision -Drevision=master
     $ ant build-revision -Drevision=d4c94995d235 
   -->
-  <target name="export">
-    <fail unless="revision" message="please specify revision (git revision, branch or tag)"/>
-    <ant target="-export"/>
-  </target>
+  <target name="export" depends="-requireRevision,-export"/>
 
   <target name="-export" depends="-prepareExport" if="revision.directory" unless="revision.exists">
     <mkdir dir="${revision.directory}"/>
@@ -175,7 +166,25 @@
     <delete file="${revision.directory}/fb.zip"/>
   </target>
 
-  <!-- remove testproject jars and previously exported findbugs revision code
+  <target name="-requireProject">
+    <fail unless="prj" message="please specify -Dprj=&lt;test project&gt; (one of subfolders in projects folder)"/>
+  </target>
+
+  <target name="-requireRevision">
+    <fail unless="revision" message="please specify -Drevision=&lt;rev/tag/branch&gt; (example: -Drevision=3.0.0)"/>
+  </target>
+
+  <target name="-uptodateCheck" depends="-emptyCheck" unless="analysis.empty">
+    <uptodate property="analysis.uptodate" srcfile="${findbugs.home}/lib/findbugs.jar" targetfile="projects/${prj}/build/${findbugs.filename}.xml"/>
+  </target>
+
+  <target name="-emptyCheck">
+    <condition property="analysis.empty">
+      <length file="projects/${prj}/build/${findbugs.filename}.xml" when="equal" length="0"/>
+    </condition>
+  </target>
+
+  <!-- remove prj jars and previously exported findbugs revision code
   -->
   <target name="clean">
     <delete includeemptydirs="true">
