@@ -30,6 +30,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -2361,10 +2362,18 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         }
 
         if (propertyListHead != null) {
-            BugProperty prop = propertyListHead;
-            while (prop != null) {
+            List<BugProperty> props = new ArrayList<>();
+            for(BugProperty prop = propertyListHead; prop != null; prop = prop.getNext()) {
+                props.add(prop);
+            }
+            Collections.sort(props, new Comparator<BugProperty>() {
+                @Override
+                public int compare(BugProperty o1, BugProperty o2) {
+                    return o1.getName().compareTo(o2.getName());
+                }
+            });
+            for(BugProperty prop : props) {
                 prop.writeXML(xmlOutput);
-                prop = prop.getNext();
             }
         }
 
