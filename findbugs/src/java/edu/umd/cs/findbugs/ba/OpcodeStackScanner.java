@@ -87,12 +87,17 @@ public class OpcodeStackScanner {
 
         @Override
         public void sawOpcode(int seen) {
+        }
+
+        @Override
+        public void afterOpcode(int seen) {
             if(DEBUG) {
                 System.out.printf("%3d: %8s %s%n", getPC(), OPCODE_NAMES[seen], getStack());
             }
             if (getPC() == targetPC) {
                 throw new EarlyExitException(stack);
             }
+            super.afterOpcode(seen);
         }
 
         @Override
