@@ -1,0 +1,47 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="com.amazonaws" name="aws-java-sdk-support" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-simpledb" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-simpleworkflow" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-storagegateway" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-route53" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-s3" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-importexport" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-sts" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-sqs" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-rds" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-redshift" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-elasticbeanstalk" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-glacier" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-iam" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-datapipeline" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-elasticloadbalancing" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-emr" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-elasticache" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-elastictranscoder" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-ec2" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-dynamodb" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-sns" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-cloudtrail" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-cloudwatch" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-logs" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-cognitoidentity" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-cognitosync" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-directconnect" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-cloudformation" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-cloudfront" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-kinesis" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-opsworks" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-ses" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-autoscaling" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-cloudsearch" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-cloudwatchmetrics" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-swf-libraries" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-codedeploy" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-kms" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-config" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-lambda" rev="1.9.13"/>
+        <dependency org="com.amazonaws" name="aws-java-sdk-core" rev="1.9.13"/>
+    </dependencies>
+</ivy-module>

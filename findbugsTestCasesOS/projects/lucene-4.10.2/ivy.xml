@@ -1,0 +1,29 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.apache.lucene" name="lucene-core" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-analyzers-common" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-analyzers-icu" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-analyzers-kuromoji" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-analyzers-morfologik" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-analyzers-phonetic" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-analyzers-smartcn" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-analyzers-stempel" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-analyzers-uima" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-benchmark" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-classification" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-codecs" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-demo" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-expressions" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-facet" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-grouping" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-highlighter" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-join" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-memory" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-misc" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-queries" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-queryparser" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-spatial" rev="4.10.2"/>
+        <dependency org="org.apache.lucene" name="lucene-sandbox" rev="4.10.2"/>
+    </dependencies>
+</ivy-module>

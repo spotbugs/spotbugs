@@ -1,0 +1,6 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.freemarker" name="freemarker" rev="2.3.21"/>
+    </dependencies>
+</ivy-module>
