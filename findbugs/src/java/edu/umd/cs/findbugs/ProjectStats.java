@@ -219,6 +219,11 @@ public class ProjectStats implements XMLWriteable, Cloneable {
      * @param updatePackageStats TODO
      */
     public void addClass(@DottedClassName String className, @CheckForNull String sourceFile, boolean isInterface, int size, boolean updatePackageStats) {
+        if(!hasClassStats) {
+            // totalClasses/totalSize might be set from FindBugsSummary before when parsing XML: reset them
+            totalClasses = 0;
+            totalSize = 0;
+        }
         hasClassStats = true;
         String packageName;
         int lastDot = className.lastIndexOf('.');

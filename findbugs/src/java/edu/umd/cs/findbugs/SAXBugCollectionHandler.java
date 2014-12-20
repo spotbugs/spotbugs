@@ -589,8 +589,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
             } else {
                 String isStatic = getRequiredAttribute(attributes, "isStatic", qName);
+                String sourceSignature = getOptionalAttribute(attributes, "sourceSignature");
                 bugAnnotation = bugAnnotationWithSourceLines = new FieldAnnotation(classname, fieldOrMethodName, signature,
-                        Boolean.valueOf(isStatic));
+                        sourceSignature, Boolean.valueOf(isStatic));
             }
 
         } else if ("SourceLine".equals(qName)) {
