@@ -1,0 +1,12 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.apache.tika" name="tika-core" rev="1.6"/>
+        <dependency org="org.apache.tika" name="tika-parsers" rev="1.6"/>
+        <dependency org="org.apache.tika" name="tika-xmp" rev="1.6"/>
+        <dependency org="org.apache.tika" name="tika-serialization" rev="1.6"/>
+        <dependency org="org.apache.tika" name="tika-java7" rev="1.6"/>
+        <dependency org="org.apache.tika" name="tika-example" rev="1.6"/>
+        <dependency org="org.apache.tika" name="tika-translate" rev="1.6"/>
+    </dependencies>
+</ivy-module>

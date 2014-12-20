@@ -1,0 +1,7 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.jfree" name="jfreechart" rev="1.0.19"/>
+        <dependency org="org.jfree" name="jcommon" rev="1.0.23"/>
+    </dependencies>
+</ivy-module>
