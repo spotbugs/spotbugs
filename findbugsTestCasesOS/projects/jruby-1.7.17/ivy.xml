@@ -2,6 +2,6 @@
     <info organisation="findbugs" module="findbugsTestProject"/>
     <dependencies>
         <dependency org="org.jruby" name="jruby-core" rev="1.7.17"/>
-        <dependency org="org.jruby" name="jruby-stdlib" rev="1.7.17"/>
+        <exclude module="jsr292-mock-1.1.jar"/>
     </dependencies>
 </ivy-module>

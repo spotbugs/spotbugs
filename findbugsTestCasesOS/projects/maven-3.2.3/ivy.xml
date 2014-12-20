@@ -1,0 +1,15 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.apache.maven" name="maven-plugin-api" rev="3.2.3"/>
+        <dependency org="org.apache.maven" name="maven-core" rev="3.2.3"/>
+        <dependency org="org.apache.maven" name="maven-artifact" rev="3.2.3"/>
+        <dependency org="org.apache.maven" name="maven-model" rev="3.2.3"/>
+        <dependency org="org.apache.maven" name="maven-settings" rev="3.2.3"/>
+        <dependency org="org.apache.maven" name="maven-compat" rev="3.2.3"/>
+        <dependency org="org.apache.maven" name="maven-aether-provider" rev="3.2.3"/>
+        <dependency org="org.apache.maven" name="maven-embedder" rev="3.2.3"/>
+        <dependency org="org.apache.maven" name="maven-settings-builder" rev="3.2.3"/>
+        <dependency org="org.apache.maven" name="maven-model-builder" rev="3.2.3"/>
+    </dependencies>
+</ivy-module>
