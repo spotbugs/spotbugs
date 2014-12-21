@@ -350,8 +350,8 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
 
     private static class VariableData {
         final LongRangeSet splitSet;
-
         final Map<Edge, Branch> edges = new IdentityHashMap<>();
+        final BitSet reachableBlocks = new BitSet();
 
         public VariableData(String type) {
             splitSet = new LongRangeSet(type);
@@ -527,53 +527,52 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         FinallyDuplicatesInfo fi = null;
         List<RedundantCondition> redundantConditions = new ArrayList<>();
         for (VariableData data : analyzedArguments.values()) {
-            if (data != null && !data.edges.isEmpty()) {
-                BitSet reachableBlocks = new BitSet();
-                for (LongRangeSet subRange : data.splitSet) {
-                    BitSet reachedBlocks = new BitSet();
-                    walkCFG(cfg, cfg.getEntry(), subRange, data.edges, reachedBlocks, new HashSet<Long>());
-                    reachableBlocks.or(reachedBlocks);
-                }
-                for (Entry<Edge, Branch> entry : data.edges.entrySet()) {
-                    Branch branch = entry.getValue();
-                    Edge edge = entry.getKey();
-                    if (branch.trueReachedSet.isEmpty() ^ branch.falseReachedSet.isEmpty()) {
-                        if(fi == null) {
-                            fi = analysisCache.getMethodAnalysis(FinallyDuplicatesInfo.class, descriptor);
-                        }
-                        List<Edge> duplicates = fi.getDuplicates(cfg, edge);
-                        if(!duplicates.isEmpty()) {
-                            boolean trueValue = !branch.trueReachedSet.isEmpty();
-                            boolean falseValue = !branch.falseReachedSet.isEmpty();
-                            for(Edge dup : duplicates) {
-                                Branch dupBranch = allEdges.get(dup);
-                                if(dupBranch != null) {
-                                    trueValue |= !dupBranch.trueReachedSet.isEmpty();
-                                    falseValue |= !dupBranch.falseReachedSet.isEmpty();
-                                }
-                            }
-                            if(trueValue && falseValue) {
-                                continue;
-                            }
-                        }
-                        BasicBlock trueTarget = edge.getTarget();
-                        BasicBlock falseTarget = cfg.getSuccessorWithEdgeType(edge.getSource(), EdgeTypes.FALL_THROUGH_EDGE);
-                        String condition;
-                        BasicBlock deadTarget, aliveTarget;
-                        if(branch.trueReachedSet.isEmpty()) {
-                            condition = branch.varName + " " + branch.falseCondition;
-                            deadTarget = trueTarget;
-                            aliveTarget = falseTarget;
-                        } else {
-                            condition = branch.varName + " " + branch.trueCondition;
-                            deadTarget = falseTarget;
-                            aliveTarget = trueTarget;
-                        }
-                        redundantConditions.add(new RedundantCondition(Location.getLastLocation(edge.getSource()), condition,
-                                !reachableBlocks.get(deadTarget.getLabel()), Location.getFirstLocation(deadTarget), Location
-                                .getFirstLocation(aliveTarget), branch.trueSet.getSignature(), branch.trueSet.isEmpty()
-                                || branch.trueSet.isFull(), branch.number, branch.numbers.contains(branch.number.longValue())));
+            for (LongRangeSet subRange : data.splitSet) {
+                BitSet reachedBlocks = new BitSet();
+                walkCFG(cfg, cfg.getEntry(), subRange, data.edges, reachedBlocks, new HashSet<Long>());
+                data.reachableBlocks.or(reachedBlocks);
+            }
+        }
+        for (VariableData data : analyzedArguments.values()) {
+            for (Entry<Edge, Branch> entry : data.edges.entrySet()) {
+                Branch branch = entry.getValue();
+                Edge edge = entry.getKey();
+                if (branch.trueReachedSet.isEmpty() ^ branch.falseReachedSet.isEmpty()) {
+                    if(fi == null) {
+                        fi = analysisCache.getMethodAnalysis(FinallyDuplicatesInfo.class, descriptor);
                     }
+                    List<Edge> duplicates = fi.getDuplicates(cfg, edge);
+                    if(!duplicates.isEmpty()) {
+                        boolean trueValue = !branch.trueReachedSet.isEmpty();
+                        boolean falseValue = !branch.falseReachedSet.isEmpty();
+                        for(Edge dup : duplicates) {
+                            Branch dupBranch = allEdges.get(dup);
+                            if(dupBranch != null) {
+                                trueValue |= !dupBranch.trueReachedSet.isEmpty();
+                                falseValue |= !dupBranch.falseReachedSet.isEmpty();
+                            }
+                        }
+                        if(trueValue && falseValue) {
+                            continue;
+                        }
+                    }
+                    BasicBlock trueTarget = edge.getTarget();
+                    BasicBlock falseTarget = cfg.getSuccessorWithEdgeType(edge.getSource(), EdgeTypes.FALL_THROUGH_EDGE);
+                    String condition;
+                    BasicBlock deadTarget, aliveTarget;
+                    if(branch.trueReachedSet.isEmpty()) {
+                        condition = branch.varName + " " + branch.falseCondition;
+                        deadTarget = trueTarget;
+                        aliveTarget = falseTarget;
+                    } else {
+                        condition = branch.varName + " " + branch.trueCondition;
+                        deadTarget = falseTarget;
+                        aliveTarget = trueTarget;
+                    }
+                    redundantConditions.add(new RedundantCondition(Location.getLastLocation(edge.getSource()), condition,
+                            !data.reachableBlocks.get(deadTarget.getLabel()), getLocation(deadTarget), getLocation(aliveTarget),
+                            branch.trueSet.getSignature(), branch.trueSet.isEmpty() || branch.trueSet.isFull(),
+                            branch.number, branch.numbers.contains(branch.number.longValue())));
                 }
             }
         }
@@ -589,7 +588,15 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         return null;
     }
 
-    private Condition extractCondition(Iterator<InstructionHandle> iterator, ConstantPool cp) {
+    private static Location getLocation(BasicBlock block) {
+        InstructionHandle handle = block.getFirstInstruction();
+        if(handle == null) {
+            handle = block.getExceptionThrower();
+        }
+        return handle == null ? null : new Location(handle, block);
+    }
+
+    private static Condition extractCondition(Iterator<InstructionHandle> iterator, ConstantPool cp) {
         Instruction comparisonInstruction = iterator.next().getInstruction();
         if (!(comparisonInstruction instanceof IfInstruction)) {
             return null;
@@ -612,7 +619,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         return null;
     }
 
-    private Condition extractTwoArgCondition(Iterator<InstructionHandle> iterator, ConstantPool cp, short cmpOpcode, String signature) {
+    private static Condition extractTwoArgCondition(Iterator<InstructionHandle> iterator, ConstantPool cp, short cmpOpcode, String signature) {
         Instruction arg2 = iterator.hasNext() ? iterator.next().getInstruction() : null;
         Instruction arg1 = iterator.hasNext() ? iterator.next().getInstruction() : null;
         if (!(arg1 instanceof LoadInstruction) && !(arg2 instanceof LoadInstruction)) {
@@ -644,7 +651,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
      * @param opcode
      * @return opcode which returns the same result when arguments are placed in opposite order
      */
-    private short revertOpcode(short opcode) {
+    private static short revertOpcode(short opcode) {
         switch (opcode) {
         case IF_ICMPGE:
             return IF_ICMPLE;
@@ -672,7 +679,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
      * @param number
      * @return
      */
-    private String convertNumber(String signature, Number number) {
+    private static String convertNumber(String signature, Number number) {
         long val = number.longValue();
         switch (signature) {
         case "Z":
@@ -703,7 +710,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         }
     }
 
-    private Map<Integer, String> getParameterTypes(MethodDescriptor descriptor) {
+    private static Map<Integer, String> getParameterTypes(MethodDescriptor descriptor) {
         Type[] argumentTypes = Type.getArgumentTypes(descriptor.getSignature());
         int j = descriptor.isStatic() ? 0 : 1;
         Map<Integer, String> result = new HashMap<>();
@@ -714,7 +721,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         return result;
     }
 
-    private void walkCFG(CFG cfg, BasicBlock basicBlock, LongRangeSet subRange, Map<Edge, Branch> edges, BitSet reachedBlocks, Set<Long> numbers) {
+    private static void walkCFG(CFG cfg, BasicBlock basicBlock, LongRangeSet subRange, Map<Edge, Branch> edges, BitSet reachedBlocks, Set<Long> numbers) {
         reachedBlocks.set(basicBlock.getLabel());
         for (Iterator<Edge> iterator = cfg.outgoingEdgeIterator(basicBlock); iterator.hasNext();) {
             Edge edge = iterator.next();

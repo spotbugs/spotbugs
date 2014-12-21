@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.JSR;
 import org.apache.bcel.generic.LocalVariableInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.StoreInstruction;
 
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.Edge;
@@ -60,14 +62,16 @@ public class FinallyDuplicatesInfoFactory implements IMethodAnalysisEngine<Final
 
     public static class FinallyDuplicatesInfo {
         private final List<SortedMap<Integer, Integer>> duplicateBlocks;
+        private final int[] positions;
 
-        public FinallyDuplicatesInfo(List<SortedMap<Integer, Integer>> duplicateBlocks) {
-            super();
+        public FinallyDuplicatesInfo(int[] positions, List<SortedMap<Integer, Integer>> duplicateBlocks) {
+            this.positions = positions;
             this.duplicateBlocks = duplicateBlocks;
         }
 
         public FinallyDuplicatesInfo() {
-            duplicateBlocks = null;
+            this.duplicateBlocks = null;
+            this.positions = null;
         }
 
         public BitSet getDuplicates(int pos) {
@@ -81,16 +85,13 @@ public class FinallyDuplicatesInfoFactory implements IMethodAnalysisEngine<Final
                 changed = false;
                 for(SortedMap<Integer, Integer> duplicates : duplicateBlocks) {
                     for (int i = current.nextSetBit(0); i >= 0; i = current.nextSetBit(i+1)) {
-                        // Sometimes this works incorrectly when finally block contain catch blocks
-                        // which store Exception to a register using instruction of different length (e.g. astore_3 vs astore 4)
-                        // and interesting instruction is located inside or after such catch block
-                        // TODO: count instructions, not byte code length
                         int offset = getOffset(duplicates, i);
                         if(offset >= 0) {
                             for(Integer key : duplicates.keySet()) {
-                                if(!current.get(key+offset)) {
+                                int dupPosition = positions[getInstructionNumber(positions, key)+offset];
+                                if(!current.get(dupPosition)) {
                                     changed = true;
-                                    current.set(key+offset);
+                                    current.set(dupPosition);
                                 }
                             }
                         }
@@ -124,7 +125,7 @@ public class FinallyDuplicatesInfoFactory implements IMethodAnalysisEngine<Final
             return result;
         }
 
-        private static int getOffset(SortedMap<Integer, Integer> duplicates, int i) {
+        private int getOffset(SortedMap<Integer, Integer> duplicates, int i) {
             SortedMap<Integer, Integer> headMap = duplicates.headMap(i+1);
             if(headMap.isEmpty()) {
                 return -1;
@@ -133,7 +134,7 @@ public class FinallyDuplicatesInfoFactory implements IMethodAnalysisEngine<Final
             if(end <= i) {
                 return -1;
             }
-            return i-headMap.lastKey();
+            return getInstructionNumber(positions, i)-getInstructionNumber(positions, headMap.lastKey());
         }
 
         @Override
@@ -196,7 +197,7 @@ public class FinallyDuplicatesInfoFactory implements IMethodAnalysisEngine<Final
                 if(lastEnd > -1) {
                     if(entry.getKey() > lastEnd) {
                         int candidateStart = lastEnd;
-                        int block2end = equalBlocks(firstInstruction, il.findHandle(candidateStart), end-start, exceptionTargets);
+                        int block2end = equalBlocks(firstInstruction, il.findHandle(candidateStart), end-start, il.getInstructionPositions());
                         if(block2end > 0 && block2end <= entry.getKey()) {
                             duplicates.put(candidateStart, block2end);
                             while(true) {
@@ -209,7 +210,7 @@ public class FinallyDuplicatesInfoFactory implements IMethodAnalysisEngine<Final
                                     ih2 = ih2.getNext(); // Skip astore
                                 }
                                 candidateStart = ih2.getPosition();
-                                block2end = equalBlocks(firstInstruction, ih2, end-start, exceptionTargets);
+                                block2end = equalBlocks(firstInstruction, ih2, end-start, il.getInstructionPositions());
                                 if(block2end > 0 && block2end <= entry.getKey()) {
                                     duplicates.put(candidateStart, block2end);
                                 } else {
@@ -222,13 +223,13 @@ public class FinallyDuplicatesInfoFactory implements IMethodAnalysisEngine<Final
                 lastEnd = entry.getValue();
             }
             ih = ih.getNext();
-            int block2end = equalBlocks(firstInstruction, ih, end-start, exceptionTargets);
+            int block2end = equalBlocks(firstInstruction, ih, end-start, il.getInstructionPositions());
             if(block2end > 0) {
                 duplicates.put(ih.getPosition(), block2end);
             }
         }
 
-        private int equalBlocks(InstructionHandle ih1, InstructionHandle ih2, int length, BitSet exceptionTargets) {
+        private int equalBlocks(InstructionHandle ih1, InstructionHandle ih2, int length, int[] positions) {
             if(length == 0) {
                 return -1;
             }
@@ -237,6 +238,8 @@ public class FinallyDuplicatesInfoFactory implements IMethodAnalysisEngine<Final
             }
             int start1 = ih1.getPosition();
             int start2 = ih2.getPosition();
+            int startNum1 = getInstructionNumber(positions, start1);
+            int startNum2 = getInstructionNumber(positions, start2);
             Map<Integer, Integer> lvMap = new HashMap<>();
             while(true) {
                 if(ih1 == null || ih2 == null) {
@@ -249,18 +252,18 @@ public class FinallyDuplicatesInfoFactory implements IMethodAnalysisEngine<Final
                         if(inst1.getClass() != inst2.getClass()) {
                             return -1;
                         }
-                        int lv1 = ((LocalVariableInstruction)inst1).getIndex();
-                        int lv2 = ((LocalVariableInstruction)inst2).getIndex();
-                        if(exceptionTargets.get(ih1.getPosition()) && exceptionTargets.get(ih2.getPosition())) {
-                            if(!(inst1 instanceof ASTORE) || !(inst2 instanceof ASTORE)) {
+                        LocalVariableInstruction lvi1 = (LocalVariableInstruction)inst1;
+                        LocalVariableInstruction lvi2 = (LocalVariableInstruction)inst2;
+                        int lv1 = lvi1.getIndex();
+                        int lv2 = lvi2.getIndex();
+                        Integer targetLV = lvMap.get(lv1);
+                        if(targetLV == null) {
+                            if(!(lvi1 instanceof StoreInstruction)) {
                                 return -1;
                             }
                             lvMap.put(lv1, lv2);
-                        } else {
-                            Integer targetLV = lvMap.get(lv1);
-                            if(targetLV == null || targetLV != lv2) {
-                                return -1;
-                            }
+                        } else if(targetLV != lv2) {
+                            return -1;
                         }
                     } else {
                         if(inst1.getOpcode() != inst2.getOpcode()) {
@@ -271,7 +274,7 @@ public class FinallyDuplicatesInfoFactory implements IMethodAnalysisEngine<Final
                         }
                         int target1 = ((BranchInstruction)inst1).getTarget().getPosition();
                         int target2 = ((BranchInstruction)inst2).getTarget().getPosition();
-                        if(!(target1-start1 == target2-start2 || (target1 == start1+length))) {
+                        if(!(getInstructionNumber(positions, target1)-startNum1 == getInstructionNumber(positions, target2)-startNum2 || (target1 == start1+length))) {
                             return -1;
                         }
                     }
@@ -291,6 +294,10 @@ public class FinallyDuplicatesInfoFactory implements IMethodAnalysisEngine<Final
             }
             return duplicates.toString();
         }
+    }
+
+    private static int getInstructionNumber(int[] positions, int position) {
+        return Math.abs(Arrays.binarySearch(positions, position));
     }
 
     @Override
@@ -343,7 +350,7 @@ public class FinallyDuplicatesInfoFactory implements IMethodAnalysisEngine<Final
         if(duplicates.isEmpty()) {
             return NONE_FINALLY_INFO;
         }
-        return new FinallyDuplicatesInfo(duplicates);
+        return new FinallyDuplicatesInfo(il.getInstructionPositions(), duplicates);
     }
 
     @Override

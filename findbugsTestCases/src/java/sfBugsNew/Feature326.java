@@ -339,4 +339,28 @@ public class Feature326 {
         }
         return 2;
     }
+
+    @NoWarning("UC_USELESS_CONDITION")
+    public void testFinallyChangingVariable() {
+        boolean flag = c1;
+        try {
+            if(flag) {
+                System.out.println(1);
+                flag = d1;
+                if(!flag) {
+                    System.out.println(2);
+                    return;
+                }
+                return;
+            }
+            System.out.println(3);
+        }
+        finally {
+            if(flag) {
+                System.out.println(1);
+            } else {
+                System.out.println(2);
+            }
+        }
+    }
 }
