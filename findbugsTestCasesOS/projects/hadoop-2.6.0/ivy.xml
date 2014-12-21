@@ -1,0 +1,78 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.apache.hadoop" name="hadoop-common" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-sls" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-minicluster" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-client" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-aws" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-openstack" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-pipes" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-extras" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-ant" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-datajoin" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-gridmix" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-rumen" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-archives" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-distcp" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-streaming" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-mapreduce" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-mapreduce-examples" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-mapreduce-client-hs-plugins" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-mapreduce-client-jobclient" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-mapreduce-client-hs" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-mapreduce-client-app" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-mapreduce-client-shuffle" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-mapreduce-client-common" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-mapreduce-client-core" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-mapreduce-client" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-yarn-project" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-yarn-registry" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-yarn-site" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-yarn-applications-unmanaged-am-launcher" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-yarn-applications-distributedshell" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-yarn-applications" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-yarn-client" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-yarn-server-tests" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-yarn-server-resourcemanager" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-yarn-server-applicationhistoryservice" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-yarn-server-web-proxy" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-yarn-server-nodemanager" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-yarn-server-common" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-yarn-server" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-yarn-common" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-yarn-api" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-yarn" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-hdfs-nfs" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-hdfs-httpfs" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-hdfs" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-kms" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-nfs" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-common" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-auth" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-minikdc" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-maven-plugins" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-project-dist" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-assemblies" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-annotations" rev="2.6.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-project" rev="2.6.0"/>
+        <exclude module="apacheds-core-constants"/>
+        <exclude module="api-i18n"/>
+        <exclude module="api-ldap-client-api"/>
+        <exclude module="api-ldap-codec-core"/>
+        <exclude module="api-ldap-extras-aci"/>
+        <exclude module="api-ldap-extras-util"/>
+        <exclude module="api-ldap-model"/>
+        <exclude module="ehcache-core"/>
+        <exclude module="apacheds-core"/>
+        <exclude module="apacheds-core-shared"/>
+        <exclude module="apacheds-xdbm-partition"/>
+        <exclude module="apacheds-core-avl"/>
+        <exclude module="apacheds-jdbm1"/>
+        <exclude module="api-asn1-ber"/>
+        <exclude module="api-ldap-extras-codec-api"/>
+        <exclude module="api-ldap-extras-codec"/>
+        <exclude module="api-ldap-extras-sp"/>
+        <exclude module="bcprov-jdk15"/>
+    </dependencies>
+</ivy-module>
