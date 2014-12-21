@@ -45,29 +45,26 @@ import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.CPInstruction;
 import org.apache.bcel.generic.ConstantPushInstruction;
-import org.apache.bcel.generic.DSTORE;
-import org.apache.bcel.generic.FSTORE;
-import org.apache.bcel.generic.IINC;
-import org.apache.bcel.generic.ISTORE;
 import org.apache.bcel.generic.IfInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.LCMP;
-import org.apache.bcel.generic.LSTORE;
 import org.apache.bcel.generic.LoadInstruction;
-import org.apache.bcel.generic.LocalVariableInstruction;
 import org.apache.bcel.generic.PushInstruction;
-import org.apache.bcel.generic.StoreInstruction;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
@@ -313,14 +310,16 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         final String trueCondition, falseCondition;
         final Number number;
         final Set<Long> numbers = new HashSet<>();
+        final String varName;
 
-        public Branch(String trueCondition, String falseCondition, LongRangeSet trueSet, Number number) {
+        public Branch(String varName, String trueCondition, String falseCondition, LongRangeSet trueSet, Number number) {
             this.trueSet = trueSet;
             this.trueCondition = fixCondition(trueCondition);
             this.falseCondition = fixCondition(falseCondition);
             this.trueReachedSet = trueSet.empty();
             this.falseReachedSet = trueSet.empty();
             this.number = number;
+            this.varName = varName;
         }
 
         private String fixCondition(String condition) {
@@ -337,13 +336,15 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
     private static class Condition {
         short opcode;
         int index;
+        String signature;
         Number number;
 
-        public Condition(short opcode, int index, Number number) {
+        public Condition(short opcode, int index, Number number, String signature) {
             super();
             this.opcode = opcode;
             this.index = index;
             this.number = number;
+            this.signature = signature;
         }
     }
 
@@ -352,14 +353,8 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
 
         final Map<Edge, Branch> edges = new IdentityHashMap<>();
 
-        final String name;
-
-        final String signature;
-
-        public VariableData(String name, String type) {
+        public VariableData(String type) {
             splitSet = new LongRangeSet(type);
-            this.name = name;
-            this.signature = type;
         }
 
         public void addBranch(Edge edge, Branch branch) {
@@ -455,16 +450,14 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         if (cfg == null) {
             return null;
         }
-        JavaClass jClass = analysisCache.getClassAnalysis(JavaClass.class, descriptor.getClassDescriptor());
+        ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, descriptor.getClassDescriptor());
+        JavaClass jClass = classContext.getJavaClass();
         Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
+        ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
         LocalVariableTable lvTable = method.getCode().getLocalVariableTable();
-        Map<Integer, VariableData> analyzedArguments = new HashMap<>();
-        int maxArgument = fillParameterMap(descriptor, lvTable, analyzedArguments);
-        updateParameterMap(cfg, lvTable, analyzedArguments, maxArgument);
-
-        if (analyzedArguments.isEmpty()) {
-            return null;
-        }
+        Map<ValueNumber, VariableData> analyzedArguments = new HashMap<>();
+        Map<Edge, Branch> allEdges = new IdentityHashMap<>();
+        Map<Integer, String> types = getParameterTypes(descriptor);
         for (Iterator<Edge> edgeIterator = cfg.edgeIterator(); edgeIterator.hasNext();) {
             Edge edge = edgeIterator.next();
             if (edge.getType() == EdgeTypes.IFCMP_EDGE) {
@@ -473,45 +466,61 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                 if(condition == null) {
                     continue;
                 }
-                VariableData data = analyzedArguments.get(condition.index);
+                int index = condition.index;
+                LocalVariable localVariable = lvTable == null ? null : lvTable.getLocalVariable(index, source.getLastInstruction().getPosition());
+                String varName = localVariable == null ? "local$"+index : localVariable.getName();
+                Location location = new Location(source.getLastInstruction(), source);
+                ValueNumberFrame vnf = vnaDataflow.getFactAtLocation(location);
+                ValueNumber valueNumber = vnf.getValue(index);
+                VariableData data = analyzedArguments.get(valueNumber);
                 if (data == null) {
-                    continue;
+                    try {
+                        String signature = condition.signature;
+                        if(localVariable != null) {
+                            signature = localVariable.getSignature();
+                        } else if(types.containsKey(index)) {
+                            signature = types.get(index);
+                        }
+                        data = new VariableData(signature);
+                    } catch (IllegalArgumentException e) {
+                        continue;
+                    }
+                    analyzedArguments.put(valueNumber, data);
                 }
                 Number number = condition.number;
-                String numberStr = convertNumber(data.signature, number);
+                String numberStr = convertNumber(data.splitSet.getSignature(), number);
+                Branch branch = null;
                 switch (condition.opcode) {
                 case IF_ICMPGT:
                 case IFGT:
-                    data.addBranch(edge,
-                            new Branch("> " + numberStr, "<= " + numberStr, data.splitSet.gt(number.longValue()), number));
+                    branch = new Branch(varName, "> " + numberStr, "<= " + numberStr, data.splitSet.gt(number.longValue()), number);
                     break;
                 case IF_ICMPLE:
                 case IFLE:
-                    data.addBranch(edge,
-                            new Branch("<= " + numberStr, "> " + numberStr, data.splitSet.le(number.longValue()), number));
+                    branch = new Branch(varName, "<= " + numberStr, "> " + numberStr, data.splitSet.le(number.longValue()), number);
                     break;
                 case IF_ICMPGE:
                 case IFGE:
-                    data.addBranch(edge,
-                            new Branch(">= " + numberStr, "< " + numberStr, data.splitSet.ge(number.longValue()), number));
+                    branch = new Branch(varName, ">= " + numberStr, "< " + numberStr, data.splitSet.ge(number.longValue()), number);
                     break;
                 case IF_ICMPLT:
                 case IFLT:
-                    data.addBranch(edge,
-                            new Branch("< " + numberStr, ">= " + numberStr, data.splitSet.lt(number.longValue()), number));
+                    branch = new Branch(varName, "< " + numberStr, ">= " + numberStr, data.splitSet.lt(number.longValue()), number);
                     break;
                 case IF_ICMPEQ:
                 case IFEQ:
-                    data.addBranch(edge,
-                            new Branch("== " + numberStr, "!= " + numberStr, data.splitSet.eq(number.longValue()), number));
+                    branch = new Branch(varName, "== " + numberStr, "!= " + numberStr, data.splitSet.eq(number.longValue()), number);
                     break;
                 case IF_ICMPNE:
                 case IFNE:
-                    data.addBranch(edge,
-                            new Branch("!= " + numberStr, "== " + numberStr, data.splitSet.ne(number.longValue()), number));
+                    branch = new Branch(varName, "!= " + numberStr, "== " + numberStr, data.splitSet.ne(number.longValue()), number);
                     break;
                 default:
                     break;
+                }
+                if(branch != null) {
+                    data.addBranch(edge, branch);
+                    allEdges.put(edge, branch);
                 }
             }
         }
@@ -537,7 +546,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                             boolean trueValue = !branch.trueReachedSet.isEmpty();
                             boolean falseValue = !branch.falseReachedSet.isEmpty();
                             for(Edge dup : duplicates) {
-                                Branch dupBranch = data.edges.get(dup);
+                                Branch dupBranch = allEdges.get(dup);
                                 if(dupBranch != null) {
                                     trueValue |= !dupBranch.trueReachedSet.isEmpty();
                                     falseValue |= !dupBranch.falseReachedSet.isEmpty();
@@ -552,11 +561,11 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                         String condition;
                         BasicBlock deadTarget, aliveTarget;
                         if(branch.trueReachedSet.isEmpty()) {
-                            condition = data.name + " " + branch.falseCondition;
+                            condition = branch.varName + " " + branch.falseCondition;
                             deadTarget = trueTarget;
                             aliveTarget = falseTarget;
                         } else {
-                            condition = data.name + " " + branch.trueCondition;
+                            condition = branch.varName + " " + branch.trueCondition;
                             deadTarget = falseTarget;
                             aliveTarget = trueTarget;
                         }
@@ -588,22 +597,22 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         short cmpOpcode = comparisonInstruction.getOpcode();
         int nargs = ((IfInstruction) comparisonInstruction).consumeStack(null);
         if (nargs == 2) {
-            return extractTwoArgCondition(iterator, cp, cmpOpcode);
+            return extractTwoArgCondition(iterator, cp, cmpOpcode, "I");
         } else if (nargs == 1) {
             Instruction arg = iterator.hasNext() ? iterator.next().getInstruction() : null;
             if(arg instanceof LCMP) {
-                return extractTwoArgCondition(iterator, cp, cmpOpcode);
+                return extractTwoArgCondition(iterator, cp, cmpOpcode, "J");
             } else {
                 if (!(arg instanceof LoadInstruction)) {
                     return null;
                 }
-                return new Condition(cmpOpcode, ((LoadInstruction) arg).getIndex(), 0);
+                return new Condition(cmpOpcode, ((LoadInstruction) arg).getIndex(), 0, "I");
             }
         }
         return null;
     }
 
-    private Condition extractTwoArgCondition(Iterator<InstructionHandle> iterator, ConstantPool cp, short cmpOpcode) {
+    private Condition extractTwoArgCondition(Iterator<InstructionHandle> iterator, ConstantPool cp, short cmpOpcode, String signature) {
         Instruction arg2 = iterator.hasNext() ? iterator.next().getInstruction() : null;
         Instruction arg1 = iterator.hasNext() ? iterator.next().getInstruction() : null;
         if (!(arg1 instanceof LoadInstruction) && !(arg2 instanceof LoadInstruction)) {
@@ -628,7 +637,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                 }
             }
         }
-        return number == null ? null : new Condition(cmpOpcode, ((LoadInstruction) arg1).getIndex(), number);
+        return number == null ? null : new Condition(cmpOpcode, ((LoadInstruction) arg1).getIndex(), number, signature);
     }
 
     /**
@@ -694,73 +703,15 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         }
     }
 
-    private int fillParameterMap(MethodDescriptor descriptor, LocalVariableTable lvTable, Map<Integer, VariableData> analyzedArguments) {
+    private Map<Integer, String> getParameterTypes(MethodDescriptor descriptor) {
         Type[] argumentTypes = Type.getArgumentTypes(descriptor.getSignature());
         int j = descriptor.isStatic() ? 0 : 1;
+        Map<Integer, String> result = new HashMap<>();
         for (int i = 0; i < argumentTypes.length; i++) {
-            String name = "arg" + i;
-            if (lvTable != null) {
-                LocalVariable localVariable = lvTable.getLocalVariable(j, 0);
-                if (localVariable != null) {
-                    name = localVariable.getName();
-                }
-            }
-            try {
-                analyzedArguments.put(j, new VariableData(name, argumentTypes[i].getSignature()));
-            } catch (RuntimeException e) {
-                // Ignore
-            }
+            result.put(j, argumentTypes[i].getSignature());
             j += argumentTypes[i].getSize();
         }
-        return j;
-    }
-
-    /**
-     * Add write-once local variables and remove modified arguments
-     */
-    private void updateParameterMap(CFG cfg, LocalVariableTable lvTable, Map<Integer, VariableData> analyzedArguments, int maxArgument) {
-        BitSet writtenVariables = new BitSet();
-        for (Iterator<Location> locationIterator = cfg.locationIterator(); locationIterator.hasNext();) {
-            Location location = locationIterator.next();
-            Instruction inst = location.getHandle().getInstruction();
-            if (inst instanceof StoreInstruction || inst instanceof IINC) {
-                int index = ((LocalVariableInstruction) inst).getIndex();
-                if(index >= maxArgument) {
-                    if(!writtenVariables.get(index)) {
-                        writtenVariables.set(index);
-                        String name = "local$"+index;
-                        String signature = null;
-                        if(lvTable != null) {
-                            LocalVariable localVariable = lvTable.getLocalVariable(index, location.getHandle().getNext().getPosition());
-                            if (localVariable != null) {
-                                name = localVariable.getName();
-                                signature = localVariable.getSignature();
-                            }
-                        }
-                        if(signature == null) {
-                            if(inst instanceof DSTORE) {
-                                signature = "D";
-                            } else if(inst instanceof ISTORE) {
-                                signature = "I";
-                            } else if(inst instanceof FSTORE) {
-                                signature = "F";
-                            } else if(inst instanceof LSTORE) {
-                                signature = "L";
-                            } else {
-                                signature = "Ljava/lang/Object;";
-                            }
-                        }
-                        try {
-                            analyzedArguments.put(index, new VariableData(name, signature));
-                        } catch (RuntimeException e) {
-                            // Ignore
-                        }
-                        continue;
-                    }
-                }
-                analyzedArguments.remove(index);
-            }
-        }
+        return result;
     }
 
     private void walkCFG(CFG cfg, BasicBlock basicBlock, LongRangeSet subRange, Map<Edge, Branch> edges, BitSet reachedBlocks, Set<Long> numbers) {

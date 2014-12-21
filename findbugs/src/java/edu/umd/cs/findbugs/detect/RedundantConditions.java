@@ -46,8 +46,10 @@ import edu.umd.cs.findbugs.classfile.engine.bcel.ValueRangeAnalysisFactory.Value
  */
 public class RedundantConditions implements Detector {
     private final BugAccumulator bugAccumulator;
+    private final BugReporter bugReporter;
 
     public RedundantConditions(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
@@ -59,6 +61,7 @@ public class RedundantConditions implements Detector {
             try {
                 analysis = Global.getAnalysisCache().getMethodAnalysis(ValueRangeAnalysis.class, methodDescriptor);
             } catch (CheckedAnalysisException e) {
+                bugReporter.logError("ValueRangeAnalysis failed for "+methodDescriptor, e);
                 continue;
             }
             if(analysis == null) {

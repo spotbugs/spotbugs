@@ -263,4 +263,80 @@ public class Feature326 {
         }
         return 0;
     }
+    
+    @NoWarning("UC_USELESS_CONDITION_TYPE")
+    public int testChangingOk(int a) {
+        if(a > 0) {
+            return 1;
+        }
+        a = testLong(1);
+        if(a > 0) {
+            return 2;
+        }
+        return 3;
+    }
+    
+    @ExpectWarning("UC_USELESS_CONDITION")
+    public int testChanging(int a) {
+        if(a > 0) {
+            return 1;
+        }
+        a = testLong(1);
+        if(a > 0) {
+            return 2;
+        }
+        if(a <= 0) {
+            return 3;
+        }
+        return 4;
+    }
+    
+    @ExpectWarning("UC_USELESS_CONDITION")
+    public void testLoop() {
+        for(int i=0; i<10; i++) {
+            if(i < 10) {
+                System.out.println("i < 10");
+            }
+        }
+    }
+    
+    @ExpectWarning("UC_USELESS_CONDITION")
+    public void testLoop2() {
+        for(int i=0; i<10; i++) {
+            i++;
+            if(i < 3) {
+                if(i > 5) {
+                    System.out.println("i < 10");
+                }
+                i++;
+            }
+        }
+    }
+    
+    @NoWarning("UC_USELESS_CONDITION")
+    public void testReuseSlotOk(boolean b, int i1, int i2) {
+        if(b) {
+            int a = i1;
+            if(a > 0) {
+                System.out.println("i1 > 0");
+            }
+        } else {
+            int a = i2;
+            if(a <= 0) {
+                System.out.println("i2 <= 0");
+            }
+        }
+    }
+
+    @ExpectWarning("UC_USELESS_CONDITION")
+    public int testPassVariable(int a) {
+        if (a < 0) {
+            return a;
+        }
+        int b = a;
+        if (b >= 0) {
+            return 1;
+        }
+        return 2;
+    }
 }
