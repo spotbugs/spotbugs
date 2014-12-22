@@ -799,7 +799,8 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         if(className.startsWith("javax/xml/") && m.getName().startsWith("next")) {
             return true;
         }
-        if(className.startsWith("java/net/") && (m.getName().startsWith("remove") || m.getName().startsWith("add"))) {
+        if ((className.startsWith("java/net/") || className.startsWith("javax/servlet"))
+                && (m.getName().startsWith("remove") || m.getName().startsWith("add") || m.getName().startsWith("set"))) {
             return true;
         }
         if(OBJECT_ONLY_METHODS.contains(m)) {
