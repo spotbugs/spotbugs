@@ -1,0 +1,7 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <!-- Quite strange org, but normal ones (e.g. batik or org.apache.xmlgraphics) don't have the sources -->
+        <dependency org="fr.avianey.apache-xmlgraphics" name="batik" rev="1.8pre-20141006" />
+    </dependencies>
+</ivy-module>

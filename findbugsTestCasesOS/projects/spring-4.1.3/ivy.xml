@@ -1,0 +1,13 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.springframework" name="spring-web" rev="4.1.3.RELEASE"/>
+        <dependency org="org.springframework" name="spring-aop" rev="4.1.3.RELEASE"/>
+        <dependency org="org.springframework" name="spring-core" rev="4.1.3.RELEASE"/>
+        <dependency org="org.springframework" name="spring-beans" rev="4.1.3.RELEASE"/>
+        <dependency org="org.springframework" name="spring-context" rev="4.1.3.RELEASE"/>
+        <dependency org="org.springframework" name="spring-oxm" rev="4.1.3.RELEASE"/>
+        <dependency org="org.springframework" name="spring-expression" rev="4.1.3.RELEASE"/>
+        <dependency org="org.springframework" name="spring-instrument" rev="4.1.3.RELEASE"/>
+    </dependencies>
+</ivy-module>
