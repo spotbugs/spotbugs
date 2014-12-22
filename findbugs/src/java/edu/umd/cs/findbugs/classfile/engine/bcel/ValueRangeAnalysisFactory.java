@@ -37,19 +37,27 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantCP;
+import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantObject;
 import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ARRAYLENGTH;
 import org.apache.bcel.generic.CPInstruction;
 import org.apache.bcel.generic.ConstantPushInstruction;
+import org.apache.bcel.generic.GETSTATIC;
+import org.apache.bcel.generic.IFNE;
+import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.IfInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.LCMP;
 import org.apache.bcel.generic.LoadInstruction;
+import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PushInstruction;
 import org.apache.bcel.generic.Type;
 
@@ -333,18 +341,28 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         }
     }
 
-    private static class Condition {
-        short opcode;
+    private static class Value {
+        String name;
         int index;
         String signature;
+
+        public Value(String name, int index, String signature) {
+            this.name = name;
+            this.index = index;
+            this.signature = signature;
+        }
+    }
+
+    private static class Condition {
+        short opcode;
+        Value value;
         Number number;
 
-        public Condition(short opcode, int index, Number number, String signature) {
+        public Condition(short opcode, Value value, Number number) {
             super();
             this.opcode = opcode;
-            this.index = index;
+            this.value = value;
             this.number = number;
-            this.signature = signature;
         }
     }
 
@@ -462,26 +480,20 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             Edge edge = edgeIterator.next();
             if (edge.getType() == EdgeTypes.IFCMP_EDGE) {
                 BasicBlock source = edge.getSource();
-                Condition condition = extractCondition(source.instructionReverseIterator(), jClass.getConstantPool());
+                Condition condition = extractCondition(new BasicBlock.InstructionReverseIterator(source.getLastInstruction(), null),
+                        jClass.getConstantPool(), lvTable, types);
                 if(condition == null) {
                     continue;
                 }
-                int index = condition.index;
-                LocalVariable localVariable = lvTable == null ? null : lvTable.getLocalVariable(index, source.getLastInstruction().getPosition());
-                String varName = localVariable == null ? "local$"+index : localVariable.getName();
+                int index = condition.value.index;
+                String varName = condition.value.name;
                 Location location = new Location(source.getLastInstruction(), source);
                 ValueNumberFrame vnf = vnaDataflow.getFactAtLocation(location);
                 ValueNumber valueNumber = vnf.getValue(index);
                 VariableData data = analyzedArguments.get(valueNumber);
                 if (data == null) {
                     try {
-                        String signature = condition.signature;
-                        if(localVariable != null) {
-                            signature = localVariable.getSignature();
-                        } else if(types.containsKey(index)) {
-                            signature = types.get(index);
-                        }
-                        data = new VariableData(signature);
+                        data = new VariableData(condition.value.signature);
                     } catch (IllegalArgumentException e) {
                         continue;
                     }
@@ -577,6 +589,33 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             }
         }
         if (!redundantConditions.isEmpty()) {
+            BitSet assertionBlocks = new BitSet();
+            MethodGen methodGen = cfg.getMethodGen();
+            Iterator<InstructionHandle> iterator = methodGen.getInstructionList().iterator();
+            while(iterator.hasNext()) {
+                InstructionHandle ih = iterator.next();
+                if(ih.getInstruction() instanceof GETSTATIC) {
+                    Instruction next = ih.getNext().getInstruction();
+                    if(next instanceof IFNE) {
+                        GETSTATIC getStatic = (GETSTATIC)ih.getInstruction();
+                        if ("$assertionsDisabled".equals(getStatic.getFieldName(methodGen.getConstantPool()))
+                                && "Z".equals(getStatic.getSignature(methodGen.getConstantPool()))) {
+                            int end = ((IFNE)next).getTarget().getPosition();
+                            assertionBlocks.set(ih.getNext().getPosition(), end);
+                        }
+                    }
+                }
+            }
+            if(!assertionBlocks.isEmpty()) {
+                List<RedundantCondition> filtered = new ArrayList<>();
+                for(RedundantCondition condition : redundantConditions) {
+                    if(!(assertionBlocks.get(condition.getLocation().getHandle().getPosition()))) {
+                        // TODO: do not filter out failed asserts
+                        filtered.add(condition);
+                    }
+                }
+                redundantConditions = filtered;
+            }
             Collections.sort(redundantConditions, new Comparator<RedundantCondition>() {
                 @Override
                 public int compare(RedundantCondition o1, RedundantCondition o2) {
@@ -596,7 +635,86 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         return handle == null ? null : new Location(handle, block);
     }
 
-    private static Condition extractCondition(Iterator<InstructionHandle> iterator, ConstantPool cp) {
+    private static Object extractValue(Iterator<InstructionHandle> iterator, String defSignature, ConstantPool cp, LocalVariableTable lvTable, Map<Integer, String> types) {
+        if(!iterator.hasNext()) {
+            return null;
+        }
+        InstructionHandle ih = iterator.next();
+        Instruction inst = ih.getInstruction();
+        if (inst instanceof ConstantPushInstruction) {
+            return ((ConstantPushInstruction) inst).getValue();
+        }
+        if (inst instanceof CPInstruction && inst instanceof PushInstruction) {
+            Constant constant = cp.getConstant(((CPInstruction) inst).getIndex());
+            if (constant instanceof ConstantObject) {
+                Object value = ((ConstantObject) constant).getConstantValue(cp);
+                if (value instanceof Number) {
+                    return value;
+                }
+            }
+            return inst;
+        }
+        if(inst instanceof ARRAYLENGTH) {
+            Object valueObj = extractValue(iterator, defSignature, cp, lvTable, types);
+            if(valueObj instanceof Value) {
+                Value value = (Value)valueObj;
+                value.name+=".length";
+                value.signature="I";
+                return value;
+            }
+            return null;
+        }
+        if(inst instanceof INVOKEVIRTUAL) {
+            ConstantCP desc = (ConstantCP)cp.getConstant(((INVOKEVIRTUAL)inst).getIndex());
+            ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(desc.getNameAndTypeIndex());
+            String className = cp.getConstantString(desc.getClassIndex(), CONSTANT_Class);
+            String name = ((ConstantUtf8)cp.getConstant(nameAndType.getNameIndex())).getBytes();
+            String signature = ((ConstantUtf8)cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
+            if(className.equals("java/lang/Integer") && name.equals("intValue") && signature.equals("()I") ||
+                    className.equals("java/lang/Long") && name.equals("longValue") && signature.equals("()J") ||
+                    className.equals("java/lang/Short") && name.equals("shortValue") && signature.equals("()S") ||
+                    className.equals("java/lang/Byte") && name.equals("byteValue") && signature.equals("()B") ||
+                    className.equals("java/lang/Boolean") && name.equals("booleanValue") && signature.equals("()Z") ||
+                    className.equals("java/lang/Character") && name.equals("charValue") && signature.equals("()C")) {
+                Object valueObj = extractValue(iterator, defSignature, cp, lvTable, types);
+                if(valueObj instanceof Value) {
+                    Value value = (Value)valueObj;
+                    value.signature=String.valueOf(signature.charAt(signature.length()-1));
+                    return value;
+                }
+            }
+            if(className.equals("java/lang/String") && name.equals("length") && signature.equals("()I")) {
+                Object valueObj = extractValue(iterator, defSignature, cp, lvTable, types);
+                if(valueObj instanceof Value) {
+                    Value value = (Value)valueObj;
+                    value.name += ".length()";
+                    value.signature="I";
+                    return value;
+                }
+            }
+            return null;
+        }
+        if(inst instanceof LoadInstruction) {
+            int index = ((LoadInstruction)inst).getIndex();
+            LocalVariable lv = lvTable == null ? null : lvTable.getLocalVariable(index, ih.getPosition());
+            String name, signature;
+            if(lv == null) {
+                name = "local$"+index;
+                if(types.containsKey(index)) {
+                    signature = types.get(index);
+                } else {
+                    signature = defSignature;
+                }
+            } else {
+                name = lv.getName();
+                signature = lv.getSignature();
+            }
+            return new Value(name, index, signature);
+        }
+        return inst;
+    }
+
+    private static Condition extractCondition(Iterator<InstructionHandle> iterator, ConstantPool cp, LocalVariableTable lvTable, Map<Integer, String> types) {
         Instruction comparisonInstruction = iterator.next().getInstruction();
         if (!(comparisonInstruction instanceof IfInstruction)) {
             return null;
@@ -604,47 +722,40 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         short cmpOpcode = comparisonInstruction.getOpcode();
         int nargs = ((IfInstruction) comparisonInstruction).consumeStack(null);
         if (nargs == 2) {
-            return extractTwoArgCondition(iterator, cp, cmpOpcode, "I");
+            return extractTwoArgCondition(iterator, cp, cmpOpcode, "I", lvTable, types);
         } else if (nargs == 1) {
-            Instruction arg = iterator.hasNext() ? iterator.next().getInstruction() : null;
-            if(arg instanceof LCMP) {
-                return extractTwoArgCondition(iterator, cp, cmpOpcode, "J");
-            } else {
-                if (!(arg instanceof LoadInstruction)) {
-                    return null;
-                }
-                return new Condition(cmpOpcode, ((LoadInstruction) arg).getIndex(), 0, "I");
+            Object val = extractValue(iterator, "I", cp, lvTable, types);
+            if(val instanceof Value) {
+                return new Condition(cmpOpcode, (Value) val, 0);
+            } else if(val instanceof LCMP) {
+                return extractTwoArgCondition(iterator, cp, cmpOpcode, "J", lvTable, types);
             }
         }
         return null;
     }
 
-    private static Condition extractTwoArgCondition(Iterator<InstructionHandle> iterator, ConstantPool cp, short cmpOpcode, String signature) {
-        Instruction arg2 = iterator.hasNext() ? iterator.next().getInstruction() : null;
-        Instruction arg1 = iterator.hasNext() ? iterator.next().getInstruction() : null;
-        if (!(arg1 instanceof LoadInstruction) && !(arg2 instanceof LoadInstruction)) {
+    private static Condition extractTwoArgCondition(Iterator<InstructionHandle> iterator, ConstantPool cp, short cmpOpcode, String signature, LocalVariableTable lvTable, Map<Integer, String> types) {
+        Object val2 = extractValue(iterator, signature, cp, lvTable, types);
+        if(val2 instanceof Instruction) {
             return null;
         }
-        if (!(arg1 instanceof LoadInstruction)) {
-            Instruction tmp = arg1;
-            arg1 = arg2;
-            arg2 = tmp;
+        Object val1 = extractValue(iterator, signature, cp, lvTable, types);
+        if(val1 instanceof Instruction) {
+            return null;
+        }
+        if (!(val1 instanceof Value) && !(val2 instanceof Value)) {
+            return null;
+        }
+        if (!(val1 instanceof Value)) {
+            Object tmp = val1;
+            val1 = val2;
+            val2 = tmp;
             cmpOpcode = revertOpcode(cmpOpcode);
         }
-        Number number = null;
-        if (arg2 instanceof ConstantPushInstruction) {
-            number = ((ConstantPushInstruction) arg2).getValue();
+        if(!(val2 instanceof Number)) {
+            return null;
         }
-        if (arg2 instanceof CPInstruction && arg2 instanceof PushInstruction) {
-            Constant constant = cp.getConstant(((CPInstruction) arg2).getIndex());
-            if (constant instanceof ConstantObject) {
-                Object value = ((ConstantObject) constant).getConstantValue(cp);
-                if (value instanceof Number) {
-                    number = (Number) value;
-                }
-            }
-        }
-        return number == null ? null : new Condition(cmpOpcode, ((LoadInstruction) arg1).getIndex(), number, signature);
+        return new Condition(cmpOpcode, (Value)val1, (Number)val2);
     }
 
     /**

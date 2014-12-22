@@ -363,4 +363,77 @@ public class Feature326 {
             }
         }
     }
+
+    @NoWarning("UC_USELESS_CONDITION")
+    public void testIfAssert(int x, int y) {
+        if(x < 0) {
+            throw new IllegalArgumentException();
+        }
+        assert x >= 0;
+        assert x >= 0 && y >= 0;
+        assert y >= 0 && x >= 0;
+        System.out.println("test");
+    }
+    
+    @ExpectWarning("UC_USELESS_CONDITION")
+    public int arrayLengthTest(int[] x) {
+        if(x.length > 20) {
+            return 1;
+        }
+        if(x.length > 30) {
+            return 2;
+        }
+        return 0;
+    }
+    
+    @NoWarning("UC_USELESS_CONDITION")
+    public int arrayLengthTestOk(int[] x) {
+        if(x.length > 20) {
+            return 1;
+        }
+        x = new int[condition(1)];
+        if(x.length > 30) {
+            return 2;
+        }
+        return 0;
+    }
+    
+    @ExpectWarning("UC_USELESS_CONDITION")
+    public int stringLengthTest(String x) {
+        if(x.length() > 20) {
+            return 1;
+        }
+        if(x.length() > 30) {
+            return 2;
+        }
+        return 0;
+    }
+    
+    @ExpectWarning("UC_USELESS_CONDITION")
+    public int unboxingTest(Integer a) {
+        if(a > 20) {
+            return 1;
+        }
+        if(a < 30) {
+            return 2;
+        }
+        return 0;
+    }
+    
+    @ExpectWarning("UC_USELESS_CONDITION_TYPE")
+    public int unboxingByteTest(Byte b) {
+        if(b >= -128) {
+            return 1;
+        }
+        return 0;
+    }
+    
+    @NoWarning("UC_USELESS_CONDITION_TYPE")
+    @ExpectWarning("INT_BAD_COMPARISON_WITH_SIGNED_BYTE")
+    public int unboxingByteTest2(Byte b) {
+        if(b > -129) {
+            return 1;
+        }
+        return 0;
+    }
 }
