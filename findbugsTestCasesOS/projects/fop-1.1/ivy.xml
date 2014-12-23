@@ -1,0 +1,8 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.apache.xmlgraphics" name="fop" rev="1.1" />
+        <exclude module="avalon-framework-api"/>
+        <exclude module="avalon-framework-impl"/>
+    </dependencies>
+</ivy-module>
