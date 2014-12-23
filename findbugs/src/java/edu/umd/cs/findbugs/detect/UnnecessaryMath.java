@@ -20,6 +20,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +34,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * Find occurrences of Math using constants, where the result of the calculation
@@ -106,6 +108,13 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
 
     public UnnecessaryMath(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+    }
+
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        if(hasInterestingClass(classContext.getJavaClass().getConstantPool(), Collections.singleton("java/lang/Math"))) {
+            super.visitClassContext(classContext);
+        }
     }
 
     @Override

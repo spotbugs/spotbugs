@@ -20,6 +20,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -29,13 +32,17 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 public class WrongMapIterator extends BytecodeScanningDetector implements StatelessDetector {
+    private static final Set<MethodDescriptor> methods = Collections.singleton(new MethodDescriptor("", "keySet", "()Ljava/util/Set;"));
+
     static enum LoadedVariableState {
         NOTHING, LOCAL, FIELD
     }
@@ -119,6 +126,13 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
 
     public WrongMapIterator(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
+    }
+
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        if(hasInterestingMethod(classContext.getJavaClass().getConstantPool(), methods)) {
+            super.visitClassContext(classContext);
+        }
     }
 
     @Override

@@ -20,6 +20,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -33,6 +36,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Find occurrences of collection.toArray( new Foo[0] ); This causes another
@@ -43,6 +47,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class InefficientToArray extends BytecodeScanningDetector implements StatelessDetector {
     private static final boolean DEBUG = SystemProperties.getBoolean("ita.debug");
+
+    private static final List<MethodDescriptor> methods = Collections.singletonList(new MethodDescriptor("", "toArray",
+            "([Ljava/lang/Object;)[Ljava/lang/Object;"));
 
     static final int SEEN_NOTHING = 0;
 
@@ -75,7 +82,7 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if (collectionClass != null) {
+        if (collectionClass != null && hasInterestingMethod(classContext.getJavaClass().getConstantPool(), methods)) {
             classContext.getJavaClass().accept(this);
         }
     }

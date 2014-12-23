@@ -18,8 +18,10 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.util.regex.Pattern;
+import java.util.Arrays;
+import java.util.List;
 
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Signature;
 
@@ -27,7 +29,9 @@ import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * equals and hashCode are blocking methods on URL's. Warn about invoking equals
@@ -35,11 +39,30 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
  */
 public class URLProblems extends OpcodeStackDetector {
 
+    private static final MethodDescriptor URL_EQUALS = new MethodDescriptor("java/net/URL", "equals", "(Ljava/lang/Object;)Z");
+    private static final MethodDescriptor URL_HASHCODE = new MethodDescriptor("java/net/URL", "hashCode", "()I");
+
     final static String[] BAD_SIGNATURES = { "Hashtable<Ljava/net/URL", "Map<Ljava/net/URL", "Set<Ljava/net/URL" };
+
+    // Must be sorted
+    private static final String[] HASHSET_KEY_METHODS = {"add", "contains", "remove"};
+    private static final String[] HASHMAP_KEY_METHODS = {"containsKey", "get", "remove"};
+    private static final String[] HASHMAP_TWO_ARG_KEY_METHODS = {"put"};
+
+    private static final List<MethodDescriptor> methods = Arrays.asList(URL_EQUALS, URL_HASHCODE,
+            new MethodDescriptor("", "add", "(Ljava/lang/Object;)Z"),
+            new MethodDescriptor("", "contains", "(Ljava/lang/Object;)Z"),
+            new MethodDescriptor("", "remove", "(Ljava/lang/Object;)Z"),
+            new MethodDescriptor("", "containsKey", "(Ljava/lang/Object;)Z"),
+            new MethodDescriptor("", "get", "(Ljava/lang/Object;)Ljava/lang/Object;"),
+            new MethodDescriptor("", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;"),
+            new MethodDescriptor("", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"));
 
     final private BugReporter bugReporter;
 
     final private BugAccumulator accumulator;
+
+    private boolean hasInterestingMethodCalls;
 
     public URLProblems(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -47,8 +70,21 @@ public class URLProblems extends OpcodeStackDetector {
     }
 
     @Override
+    public void visitClassContext(ClassContext classContext) {
+        this.hasInterestingMethodCalls = hasInterestingMethod(classContext.getJavaClass().getConstantPool(), methods);
+        super.visitClassContext(classContext);
+    }
+
+    @Override
     public void visitAfter(JavaClass obj) {
         accumulator.reportAccumulatedBugs();
+    }
+
+    @Override
+    public void visit(Code obj) {
+        if(this.hasInterestingMethodCalls) {
+            super.visit(obj);
+        }
     }
 
     @Override
@@ -69,8 +105,8 @@ public class URLProblems extends OpcodeStackDetector {
         }
     }
 
-    void check(String className, Pattern name, int target, int url) {
-        if (!name.matcher(getNameConstantOperand()).matches()) {
+    void check(String className, String[] methodNames, int target, int url) {
+        if (Arrays.binarySearch(methodNames, getNameConstantOperand()) < 0) {
             return;
         }
         if (stack.getStackDepth() <= target) {
@@ -91,21 +127,17 @@ public class URLProblems extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
 
-        // System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stack);
         if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
-            check("Ljava/util/HashSet;", Pattern.compile("add|remove|contains"), 1, 0);
-            check("Ljava/util/HashMap;", Pattern.compile("remove|containsKey|get"), 1, 0);
-            check("Ljava/util/HashMap;", Pattern.compile("put"), 2, 1);
-
+            check("Ljava/util/HashSet;", HASHSET_KEY_METHODS, 1, 0);
+            check("Ljava/util/HashMap;", HASHMAP_KEY_METHODS, 1, 0);
+            check("Ljava/util/HashMap;", HASHMAP_TWO_ARG_KEY_METHODS, 2, 1);
         }
 
-        if (seen == INVOKEVIRTUAL && "java/net/URL".equals(getClassConstantOperand())) {
-            if ("equals".equals(getNameConstantOperand()) && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())
-                    || "hashCode".equals(getNameConstantOperand()) && "()I".equals(getSigConstantOperand())) {
-                accumulator.accumulateBug(
-                        new BugInstance(this, "DMI_BLOCKING_METHODS_ON_URL", HIGH_PRIORITY).addClassAndMethod(this)
-                        .addCalledMethod(this), this);
-            }
+        if (seen == INVOKEVIRTUAL && (getMethodDescriptorOperand().equals(URL_EQUALS)
+                || getMethodDescriptorOperand().equals(URL_HASHCODE))) {
+            accumulator.accumulateBug(
+                    new BugInstance(this, "DMI_BLOCKING_METHODS_ON_URL", HIGH_PRIORITY).addClassAndMethod(this)
+                    .addCalledMethod(this), this);
         }
     }
 }

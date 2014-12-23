@@ -19,11 +19,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Arrays;
+import java.util.List;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StringAnnotation;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Use whenever possible String.indexOf(int) instead of String.indexOf(String),
@@ -34,8 +39,22 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 public class InefficientIndexOf extends OpcodeStackDetector {
     private final BugReporter bugReporter;
 
+    private static final List<MethodDescriptor> methods = Arrays.asList(
+            new MethodDescriptor("java/lang/String", "indexOf", "(Ljava/lang/String;)I"),
+            new MethodDescriptor("java/lang/String", "lastIndexOf", "(Ljava/lang/String;)I"),
+            new MethodDescriptor("java/lang/String", "indexOf", "(Ljava/lang/String;I)I"),
+            new MethodDescriptor("java/lang/String", "lastIndexOf", "(Ljava/lang/String;I)I")
+            );
+
     public InefficientIndexOf(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+    }
+
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        if(hasInterestingMethod(classContext.getJavaClass().getConstantPool(), methods)) {
+            super.visitClassContext(classContext);
+        }
     }
 
     @Override

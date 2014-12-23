@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.CheckForNull;
@@ -30,11 +32,9 @@ import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
-import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Detector to find calls to Number constructors with base type argument in Java
@@ -56,14 +56,16 @@ import edu.umd.cs.findbugs.util.ClassName;
 public class NumberConstructor extends OpcodeStackDetector {
 
     static class Pair {
-        final XMethod boxingMethod;
-        public Pair(XMethod boxingMethod, XMethod parsingMethod) {
+        final MethodDescriptor boxingMethod;
+        final MethodDescriptor parsingMethod;
+        public Pair(MethodDescriptor boxingMethod, MethodDescriptor parsingMethod) {
             this.boxingMethod = boxingMethod;
             this.parsingMethod = parsingMethod;
         }
-        final XMethod parsingMethod;
     }
     private final Map<String, Pair> boxClasses = new HashMap<String, Pair>();
+
+    private final List<MethodDescriptor> methods = new ArrayList<>();
 
     private final BugAccumulator bugAccumulator;
 
@@ -86,9 +88,11 @@ public class NumberConstructor extends OpcodeStackDetector {
     }
 
     private void handle(@SlashedClassName String className, boolean isFloatingPoint, String sig) {
-        XMethod boxingMethod = XFactory.createXMethod(ClassName.toDottedClassName(className), "valueOf", sig + "L" + className +";", true);
-        XMethod parsingMethod = XFactory.createXMethod(ClassName.toDottedClassName(className), "valueOf", "(Ljava/lang/String;)" + "L" + className +";", true);
+        MethodDescriptor boxingMethod = new MethodDescriptor(className, "valueOf", sig + "L" + className +";", true);
+        MethodDescriptor parsingMethod = new MethodDescriptor(className, "valueOf", "(Ljava/lang/String;)" + "L" + className +";", true);
         boxClasses.put(className, new Pair(boxingMethod, parsingMethod));
+        methods.add(new MethodDescriptor(className, "<init>", "(Ljava/lang/String;)V"));
+        methods.add(new MethodDescriptor(className, "<init>", sig+"V"));
     }
 
     /**
@@ -100,7 +104,7 @@ public class NumberConstructor extends OpcodeStackDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         int majorVersion = classContext.getJavaClass().getMajor();
-        if (majorVersion >= MAJOR_1_5) {
+        if (majorVersion >= MAJOR_1_5 && hasInterestingMethod(classContext.getJavaClass().getConstantPool(), methods)) {
             super.visitClassContext(classContext);
         }
     }
@@ -117,13 +121,13 @@ public class NumberConstructor extends OpcodeStackDetector {
         return sig2.startsWith(args);
     }
 
-    private @CheckForNull XMethod  getShouldCall() {
+    private @CheckForNull MethodDescriptor getShouldCall() {
         String cls = getClassConstantOperand();
         Pair pair =  boxClasses.get(cls);
         if (pair == null) {
             return null;
         }
-        XMethod shouldCall ;
+        MethodDescriptor shouldCall;
         if (getSigConstantOperand().startsWith("(Ljava/lang/String;)")) {
             shouldCall = pair.parsingMethod;
         } else {
@@ -151,7 +155,7 @@ public class NumberConstructor extends OpcodeStackDetector {
             return;
         }
         @SlashedClassName String cls = getClassConstantOperand();
-        XMethod shouldCall = getShouldCall();
+        MethodDescriptor shouldCall = getShouldCall();
         if (shouldCall == null) {
             return;
         }

@@ -19,11 +19,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Collections;
+
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -47,6 +50,13 @@ public class AtomicityProblem extends OpcodeStackDetector {
 
     public AtomicityProblem(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+    }
+
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        if(hasInterestingClass(classContext.getJavaClass().getConstantPool(), Collections.singleton("java/util/concurrent/ConcurrentHashMap"))) {
+            super.visitClassContext(classContext);
+        }
     }
 
     @Override

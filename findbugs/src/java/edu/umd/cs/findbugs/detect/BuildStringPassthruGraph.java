@@ -30,7 +30,6 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
-import org.objectweb.asm.Type;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -237,7 +236,7 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
         case INVOKEINTERFACE:
         case INVOKEVIRTUAL:
             MethodDescriptor md = getMethodDescriptorOperand();
-            int callArgs = Type.getArgumentTypes(md.getSignature()).length;
+            int callArgs = getNumberArguments(md.getSignature());
             for (int i = 0; i < callArgs; i++) {
                 Item item = getStack().getStackItem(callArgs - 1 - i);
                 int param = item.getRegisterNumber() + shift;

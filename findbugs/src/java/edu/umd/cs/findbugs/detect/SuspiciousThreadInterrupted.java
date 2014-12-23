@@ -21,6 +21,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
+import java.util.Collections;
 
 import org.apache.bcel.classfile.Method;
 
@@ -28,6 +29,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * looks for calls to Thread.interrupted from a non static context, especially
@@ -52,6 +54,13 @@ public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implem
 
     public SuspiciousThreadInterrupted(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+    }
+
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        if(hasInterestingClass(classContext.getJavaClass().getConstantPool(), Collections.singleton("java/lang/Thread"))) {
+            super.visitClassContext(classContext);
+        }
     }
 
     @Override

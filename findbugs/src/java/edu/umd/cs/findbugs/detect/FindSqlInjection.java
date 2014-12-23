@@ -66,6 +66,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.detect.BuildStringPassthruGraph.MethodParameter;
 import edu.umd.cs.findbugs.detect.BuildStringPassthruGraph.StringPassthruDatabase;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
  * Find potential SQL injection vulnerabilities.
@@ -186,6 +187,7 @@ public class FindSqlInjection implements Detector {
 
     final Map<MethodDescriptor, int[]> preparedStatementMethods;
     final Map<MethodDescriptor, int[]> executeMethods;
+    final Set<MethodDescriptor> allMethods = new HashSet<>();
 
     private final boolean testingEnabled;
 
@@ -203,11 +205,16 @@ public class FindSqlInjection implements Detector {
             basePrepareMethods.add(new MethodParameter(new MethodDescriptor("java/sql/Connection", "prepareStatement", signature), 0));
         }
         preparedStatementMethods = Global.getAnalysisCache().getDatabase(StringPassthruDatabase.class).findLinkedMethods(basePrepareMethods);
+        allMethods.addAll(executeMethods.keySet());
+        allMethods.addAll(preparedStatementMethods.keySet());
     }
 
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
+        if(!PreorderVisitor.hasInterestingMethod(javaClass.getConstantPool(), allMethods)) {
+            return;
+        }
         Method[] methodList = javaClass.getMethods();
 
         for (Method method : methodList) {

@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.visitclass;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -31,7 +32,11 @@ import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantInterfaceMethodref;
+import org.apache.bcel.classfile.ConstantMethodref;
+import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.EnclosingMethod;
@@ -58,6 +63,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -616,6 +622,47 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
             }
         }
 
+    }
+
+    /**
+     * Returns true if given constant pool probably has a reference to any of supplied methods
+     * Useful to exclude from analysis uninteresting classes
+     * @param cp constant pool
+     * @param methods methods collection
+     * @return true if method is found
+     */
+    public static boolean hasInterestingMethod(ConstantPool cp, Collection<MethodDescriptor> methods) {
+        for(Constant c : cp.getConstantPool()) {
+            if(c instanceof ConstantMethodref || c instanceof ConstantInterfaceMethodref) {
+                ConstantCP desc = (ConstantCP)c;
+                ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(desc.getNameAndTypeIndex());
+                String className = cp.getConstantString(desc.getClassIndex(), CONSTANT_Class);
+                String name = ((ConstantUtf8)cp.getConstant(nameAndType.getNameIndex())).getBytes();
+                String signature = ((ConstantUtf8)cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
+                // We don't know whether method is static thus cannot use equals
+                int hash = FieldOrMethodDescriptor.getNameSigHashCode(name, signature);
+                for(MethodDescriptor method : methods) {
+                    if (method.getNameSigHashCode() == hash
+                            && (method.getSlashedClassName().isEmpty() || method.getSlashedClassName().equals(className))
+                            && method.getName().equals(name) && method.getSignature().equals(signature)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasInterestingClass(ConstantPool cp, Collection<String> classes) {
+        for(Constant c : cp.getConstantPool()) {
+            if(c instanceof ConstantClass) {
+                String className = ((ConstantUtf8)cp.getConstant(((ConstantClass)c).getNameIndex())).getBytes();
+                if(classes.contains(className)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public int getNumberMethodArguments() {

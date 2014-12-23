@@ -27,11 +27,13 @@ import java.util.Set;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantDouble;
 import org.apache.bcel.classfile.ConstantFloat;
+import org.apache.bcel.classfile.ConstantPool;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class FindRoughConstants extends BytecodeScanningDetector {
 
@@ -82,11 +84,11 @@ public class FindRoughConstants extends BytecodeScanningDetector {
         @SuppressFBWarnings("FE_FLOATING_POINT_EQUALITY")
         private void addApprox(BigDecimal roundFloor) {
             double approxDouble = roundFloor.doubleValue();
-            if (approxDouble != value && Math.abs(approxDouble - value) / value < 0.0001) {
+            if (approxDouble != value && Math.abs(approxDouble - value) / value < 0.001) {
                 approxSet.add(approxDouble);
             }
             float approxFloat = roundFloor.floatValue();
-            if (Math.abs(approxFloat - value) / value < 0.0001) {
+            if (Math.abs(approxFloat - value) / value < 0.001) {
                 approxSet.add(approxFloat);
                 approxSet.add((double) approxFloat);
             }
@@ -109,6 +111,13 @@ public class FindRoughConstants extends BytecodeScanningDetector {
     }
 
     @Override
+    public void visitClassContext(ClassContext classContext) {
+        if(hasInterestingConstant(classContext.getJavaClass().getConstantPool())) {
+            super.visitClassContext(classContext);
+        }
+    }
+
+    @Override
     public void sawOpcode(int seen) {
         if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
             Constant c = getConstantRefOperand();
@@ -120,35 +129,62 @@ public class FindRoughConstants extends BytecodeScanningDetector {
         }
     }
 
+    private boolean hasInterestingConstant(ConstantPool cp) {
+        for(Constant constant : cp.getConstantPool()) {
+            if(constant instanceof ConstantFloat) {
+                float val = ((ConstantFloat)constant).getBytes();
+                if(isInteresting(val, val)) {
+                    return true;
+                }
+            }
+            if(constant instanceof ConstantDouble) {
+                double val = ((ConstantDouble)constant).getBytes();
+                if(isInteresting(val, val)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isInteresting(Number constValue, double candidate) {
+        for (BadConstant badConstant : badConstants) {
+            if(getPriority(badConstant, constValue, candidate) < IGNORE_PRIORITY) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int getPriority(BadConstant badConstant, Number constValue, double candidate) {
+        if (badConstant.exact(constValue)) {
+            return IGNORE_PRIORITY;
+        }
+        double diff = badConstant.diff(candidate);
+        if (diff > 0.001) {
+            return IGNORE_PRIORITY;
+        }
+        if (badConstant.equalPrefix(constValue)) {
+            return NORMAL_PRIORITY;
+        }
+        if (diff > 0.0000001) {
+            return IGNORE_PRIORITY;
+        }
+        return LOW_PRIORITY;
+    }
+
     private void checkConst(Number constValue) {
         double candidate = constValue.doubleValue();
         if (Double.isNaN(candidate) || Double.isInfinite(candidate)) {
             return;
         }
         for (BadConstant badConstant : badConstants) {
-            if (badConstant.exact(constValue)) {
-                continue;
-            }
-            double diff = badConstant.diff(candidate);
-            if (diff > 0.0001) {
-                continue;
-            }
-            if (badConstant.equalPrefix(constValue)) {
-                bugReporter.reportBug(new BugInstance(this,
-                        "CNT_ROUGH_CONSTANT_VALUE", NORMAL_PRIORITY)
-                .addClassAndMethod(this).addSourceLine(this)
-                .addString(constValue.toString())
-                .addString(badConstant.replacement));
+            int priority = getPriority(badConstant, constValue, candidate);
+            if(priority < IGNORE_PRIORITY) {
+                bugReporter.reportBug(new BugInstance(this, "CNT_ROUGH_CONSTANT_VALUE", priority).addClassAndMethod(this)
+                        .addSourceLine(this).addString(constValue.toString()).addString(badConstant.replacement));
                 return;
             }
-            if (diff > 0.0000001) {
-                continue;
-            }
-            bugReporter.reportBug(new BugInstance(this,
-                    "CNT_ROUGH_CONSTANT_VALUE", LOW_PRIORITY)
-            .addClassAndMethod(this).addSourceLine(this)
-            .addString(constValue.toString())
-            .addString(badConstant.replacement));
         }
     }
 }

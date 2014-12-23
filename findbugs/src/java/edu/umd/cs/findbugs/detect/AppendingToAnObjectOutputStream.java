@@ -19,12 +19,15 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Collections;
+
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class AppendingToAnObjectOutputStream extends OpcodeStackDetector {
@@ -33,6 +36,13 @@ public class AppendingToAnObjectOutputStream extends OpcodeStackDetector {
 
     public AppendingToAnObjectOutputStream(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+    }
+
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        if(hasInterestingClass(classContext.getJavaClass().getConstantPool(), Collections.singleton("java/io/ObjectOutputStream"))) {
+            super.visitClassContext(classContext);
+        }
     }
 
     boolean sawOpenInAppendMode;
