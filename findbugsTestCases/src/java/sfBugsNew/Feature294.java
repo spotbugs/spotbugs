@@ -34,62 +34,91 @@ public class Feature294 {
 
     @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void testPi1() {
-        double a = 3.141592;
+        System.out.println(3.141592);
     }
 
     @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void testPi2() {
-        double a = 3.141592612345; // Something different, but too close to PI, thus suspicious
+        System.out.println(3.141592612345); // Something different, but too close to PI, thus suspicious
     }
 
     @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void testPi3() {
-        float a = 3.1415f;
+        System.out.println(3.1415f);
     }
 
     @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void testPi4() {
-        double a = PI_DOUBLE;
+        System.out.println(PI_DOUBLE);
     }
 
     @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void testPi5() {
-        double a = PI_FLOAT;
+        System.out.println(PI_FLOAT);
     }
 
     @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void testPi6() {
-        float a = PI_FLOAT;
+        System.out.println(PI_FLOAT);
     }
 
     @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void test2Pi1() {
-        double a = 2*3.141592;
+        System.out.println(2*3.141592);
     }
 
     @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void test2Pi2() {
-        double a = 2*3.1416;
+        System.out.println(2*3.1416);
     }
 
     @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void test2Pi3() {
-        double a = 2*3.1415;
+        System.out.println(2*3.1415);
     }
 
     @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void test2Pi4() {
-        double a = 6.2831;
+        System.out.println(6.2831);
     }
 
     @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void testE1() {
-        double a = 2.71828;
+        System.out.println(2.7183);
     }
 
     @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void testE2() {
-        float a = 2.71828f;
+        System.out.println(2.71828f);
     }
 
+    @NoWarning("CNT_ROUGH_CONSTANT_VALUE")
+    public void testE2Digits() {
+        // Too far away from real value and E is not very popular number
+        System.out.println(2.72);
+    }
+
+    @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
+    public void testPi2Digits() {
+        // Pi is more popular, thus likely a bug
+        System.out.println(3.14);
+    }
+
+    @NoWarning("CNT_ROUGH_CONSTANT_VALUE")
+    public void testDoubleArray() {
+        double[] arr = new double[] {2.7183, 2.7184, 2.7185};
+        System.out.println(arr[0]);
+    }
+
+    @NoWarning("CNT_ROUGH_CONSTANT_VALUE")
+    public void testDoubleArray2() {
+        Double[] arr = new Double[] {2.7183, 2.7184, 2.7185};
+        System.out.println(arr[0]);
+    }
+
+    @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
+    public void testDoubleArrayHighPrecision() {
+        Double[] arr = new Double[] {2.718281828, 2.719, 2.72};
+        System.out.println(arr[0]);
+    }
 }
