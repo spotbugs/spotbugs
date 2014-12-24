@@ -92,7 +92,7 @@ public class BugLoader {
     InterruptedException {
         StringWriter stringWriter = new StringWriter();
         BugCollectionBugReporter pcb = new BugCollectionBugReporter(p, new PrintWriter(stringWriter, true));
-        pcb.setPriorityThreshold(Priorities.NORMAL_PRIORITY);
+        pcb.setPriorityThreshold(Priorities.LOW_PRIORITY);
         IFindBugsEngine fb = createEngine(p, pcb);
         fb.setUserPreferences(getUserPreferences());
         fb.setProgressCallback(progressCallback);

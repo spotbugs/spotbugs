@@ -486,6 +486,26 @@ public class MainFrameMenu implements Serializable {
 
         viewMenu.addSeparator();
 
+        ButtonGroup priorityButtonGroup = new ButtonGroup();
+        for (final ViewFilter.PriorityFilter r : ViewFilter.PriorityFilter.values()) {
+            JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
+            priorityButtonGroup.add(rbMenuItem);
+            if (r == ViewFilter.PriorityFilter.ALL_BUGS) {
+                rbMenuItem.setSelected(true);
+            }
+            rbMenuItem.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    mainFrame.getViewFilter().setPriority(r);
+                    mainFrame.resetViewCache();
+                }
+            });
+            viewMenu.add(rbMenuItem);
+        }
+
+        viewMenu.addSeparator();
+
         if (cloud != null && cloud.getMode() == Cloud.Mode.COMMUNAL) {
             ButtonGroup overallClassificationButtonGroup = new ButtonGroup();
             for (final ViewFilter.OverallClassificationFilter r : ViewFilter.OverallClassificationFilter.values()) {

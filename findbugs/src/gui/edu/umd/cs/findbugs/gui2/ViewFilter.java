@@ -42,6 +42,28 @@ public class ViewFilter {
         boolean show(MainFrame mf, BugInstance b);
     }
 
+    enum PriorityFilter implements ViewFilterEnum {
+        HIGH_PRIORITY(1, "High priority only"), NORMAL_PRIORITY(2, "High and normal priority"), ALL_BUGS(10, "All bug priorities");
+
+        final int maxPriority;
+        final String displayName;
+
+        private PriorityFilter(int maxPriority, String displayName) {
+            this.maxPriority = maxPriority;
+            this.displayName = displayName;
+        }
+
+        @Override
+        public boolean show(MainFrame mf, BugInstance b) {
+            return b.getPriority() <= maxPriority;
+        }
+
+        @Override
+        public String toString() {
+            return displayName;
+        }
+    }
+
     enum RankFilter implements ViewFilterEnum {
         SCARIEST(4, "Scariest"), SCARY(9, "Scary"), TROUBLING(14, "Troubling"), ALL(Integer.MAX_VALUE, "All bug ranks");
         final int maxRank;
@@ -346,6 +368,8 @@ public class ViewFilter {
 
     RankFilter rank = RankFilter.ALL;
 
+    PriorityFilter priority = PriorityFilter.ALL_BUGS;
+
     CloudFilter eval = CloudFilter.ALL;
 
     OverallClassificationFilter classificationFilter = OverallClassificationFilter.ALL;
@@ -353,6 +377,7 @@ public class ViewFilter {
     FirstSeenFilter firstSeen = FirstSeenFilter.ALL;
 
     String[] classSearchStrings;
+
 
     static final Pattern legalClassSearchString = Pattern.compile("[\\p{javaLowerCase}\\p{javaUpperCase}0-9.$/_]*");
 
@@ -379,6 +404,16 @@ public class ViewFilter {
 
     public void setRank(RankFilter rank) {
         this.rank = rank;
+        FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
+
+    }
+
+    public PriorityFilter getPriority() {
+        return priority;
+    }
+
+    public void setPriority(PriorityFilter priority) {
+        this.priority = priority;
         FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
 
     }
@@ -424,6 +459,9 @@ public class ViewFilter {
             return false;
         }
         if (!rank.show(mf, b)) {
+            return false;
+        }
+        if (!priority.show(mf, b)) {
             return false;
         }
         if (!eval.show(mf, b)) {
