@@ -1792,11 +1792,13 @@ public class OpcodeStack implements Constants2 {
                 push(newItem);
                 break;
             }
-            case CALOAD:
+            case CALOAD: {
                 pop(2);
-                push(new Item("I"));
+                Item newItem = new Item("I");
+                newItem.setSpecialKind(Item.NON_NEGATIVE);
+                push(newItem);
                 break;
-
+            }
             case DALOAD:
                 pop(2);
                 push(new Item("D"));
