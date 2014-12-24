@@ -66,6 +66,17 @@ public class Feature327 {
         }
         return 0;
     }
+    
+    @NoWarning("RpC_REPEATED_CONDITIONAL_TEST")
+    public int testRepeatingConfusingOk(String s1, String s2) {
+        if(s1.equals("a") && 
+                s2.equals("b") || s1.equals("c") && 
+                s2.equals("b") || s1.equals("c") && 
+           s2.equals("d")) {
+            return 1;
+        }
+        return 0;
+    }
 
     @ExpectWarning("RpC_REPEATED_CONDITIONAL_TEST")
     public void testRepeatingMiddle(int a, int b, int c) {

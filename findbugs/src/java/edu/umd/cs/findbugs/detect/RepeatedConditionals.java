@@ -112,6 +112,10 @@ public class RepeatedConditionals extends OpcodeStackDetector {
                         if (firstTarget == null || secondTarget == null) {
                             continue;
                         }
+                        if (firstTarget >= second && firstTarget <= endOfSecondSegment) {
+                            // first jumps inside second
+                            continue;
+                        }
                         boolean identicalCheck = firstTarget.equals(secondTarget) && opcodeAtEndOfFirst == opcodeAtEndOfSecond
                                 || (firstTarget.intValue() == getPC() && opcodeAtEndOfFirst != opcodeAtEndOfSecond);
                         if(!compareCode(first, endOfFirstSegment, second, endOfSecondSegment, !identicalCheck)) {
