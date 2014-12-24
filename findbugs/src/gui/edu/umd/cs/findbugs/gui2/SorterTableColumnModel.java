@@ -221,7 +221,7 @@ public class SorterTableColumnModel implements TableColumnModel {
             for (TableColumnModelListener l : watchers) {
                 l.columnAdded(new TableColumnModelEvent(this, columnList.size() - 1, columnList.size() - 1));
             }
-        } else if (!on) {
+        } else {
             shown.remove(s);
             for (int x = 0; x < columnList.size(); x++) {
                 columnList.get(x).setModelIndex(x);
@@ -239,7 +239,6 @@ public class SorterTableColumnModel implements TableColumnModel {
                     for (TableColumnModelListener l : watchers) {
                         l.columnRemoved(new TableColumnModelEvent(this, counter, counter));
                     }
-
                 }
             }
         }

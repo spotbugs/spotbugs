@@ -305,58 +305,55 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
                         continue;
                     }
 
-                    if (needToRecompute) {
+                    analysis.makeFactTop(start);
+                    predEdgeIter = logicalPredecessorEdgeIterator(block);
+                    while (predEdgeIter.hasNext()) {
+                        Edge edge = predEdgeIter.next();
+                        BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getTarget();
 
-                        analysis.makeFactTop(start);
-                        predEdgeIter = logicalPredecessorEdgeIterator(block);
-                        while (predEdgeIter.hasNext()) {
-                            Edge edge = predEdgeIter.next();
-                            BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getTarget();
+                        // Get the predecessor result fact
+                        Fact predFact = analysis.getResultFact(logicalPred);
 
-                            // Get the predecessor result fact
-                            Fact predFact = analysis.getResultFact(logicalPred);
+                        // Apply the edge transfer function.
+                        Fact edgeFact = analysis.createFact();
+                        analysis.copy(predFact, edgeFact);
+                        analysis.edgeTransfer(edge, edgeFact);
 
-                            // Apply the edge transfer function.
-                            Fact edgeFact = analysis.createFact();
-                            analysis.copy(predFact, edgeFact);
-                            analysis.edgeTransfer(edge, edgeFact);
+                        if (DEBUG && !analysis.same(edgeFact, predFact)) {
+                            debug(block, logicalPred, edge, "Edge transfer " + analysis.factToString(predFact) + " ==> "
+                                    + analysis.factToString(edgeFact));
+                        }
 
-                            if (DEBUG && !analysis.same(edgeFact, predFact)) {
-                                debug(block, logicalPred, edge, "Edge transfer " + analysis.factToString(predFact) + " ==> "
-                                        + analysis.factToString(edgeFact));
-                            }
-
-                            // Merge the predecessor fact (possibly transformed
-                            // by the edge transfer function)
-                            // into the block's start fact.
-                            if (DEBUG) {
-                                if (analysis.isTop(start)) {
-                                    debug(block, logicalPred, edge, "\n  First pred is " + analysis.factToString(edgeFact)
-                                            + "\n   last updated at " + analysis.getLastUpdateTimestamp(predFact) + "\n");
-                                } else {
-                                    debug(block, logicalPred, edge, "\n  Meet " + analysis.factToString(start) + "\n   with "
-                                            + analysis.factToString(edgeFact)
-
-                                            + "\n   pred last updated at " + analysis.getLastUpdateTimestamp(predFact) + "\n");
-                                }
-                            }
-
-                            if (analysis instanceof UnconditionalValueDerefAnalysis) {
-                                ((UnconditionalValueDerefAnalysis) analysis).meetInto((UnconditionalValueDerefSet) edgeFact,
-                                        edge, (UnconditionalValueDerefSet) start, rawPredCount == 1);
+                        // Merge the predecessor fact (possibly transformed
+                        // by the edge transfer function)
+                        // into the block's start fact.
+                        if (DEBUG) {
+                            if (analysis.isTop(start)) {
+                                debug(block, logicalPred, edge, "\n  First pred is " + analysis.factToString(edgeFact)
+                                        + "\n   last updated at " + analysis.getLastUpdateTimestamp(predFact) + "\n");
                             } else {
-                                analysis.meetInto(edgeFact, edge, start);
-                            }
-                            analysis.setLastUpdateTimestamp(start, timestamp);
+                                debug(block, logicalPred, edge, "\n  Meet " + analysis.factToString(start) + "\n   with "
+                                        + analysis.factToString(edgeFact)
 
-                            int pos = -1;
-                            if (block.getFirstInstruction() != null) {
-                                pos = block.getFirstInstruction().getPosition();
+                                        + "\n   pred last updated at " + analysis.getLastUpdateTimestamp(predFact) + "\n");
                             }
-                            if (DEBUG) {
-                                System.out.println(" [" + pos + "]==> " + analysis.factToString(start) + " @ " + timestamp
-                                        + " \n");
-                            }
+                        }
+
+                        if (analysis instanceof UnconditionalValueDerefAnalysis) {
+                            ((UnconditionalValueDerefAnalysis) analysis).meetInto((UnconditionalValueDerefSet) edgeFact,
+                                    edge, (UnconditionalValueDerefSet) start, rawPredCount == 1);
+                        } else {
+                            analysis.meetInto(edgeFact, edge, start);
+                        }
+                        analysis.setLastUpdateTimestamp(start, timestamp);
+
+                        int pos = -1;
+                        if (block.getFirstInstruction() != null) {
+                            pos = block.getFirstInstruction().getPosition();
+                        }
+                        if (DEBUG) {
+                            System.out.println(" [" + pos + "]==> " + analysis.factToString(start) + " @ " + timestamp
+                                    + " \n");
                         }
                     }
                 }

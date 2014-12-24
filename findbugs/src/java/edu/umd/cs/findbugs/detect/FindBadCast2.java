@@ -607,7 +607,7 @@ public class FindBadCast2 implements Detector {
                 if (isCast && "[Ljava/lang/Object;".equals(refSig) && source instanceof MethodAnnotation
                         && "toArray".equals(((MethodAnnotation) source).getMethodName())
                         && "()[Ljava/lang/Object;".equals(((MethodAnnotation) source).getMethodSignature())) {
-                    bugReporter.reportBug(new BugInstance(this,  "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY", isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
+                    bugReporter.reportBug(new BugInstance(this,  "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY", HIGH_PRIORITY)
                     .addClassAndMethod(methodGen, sourceFile)
                     .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(valueSource, source)
                     .addSourceLine(sourceLineAnnotation));
