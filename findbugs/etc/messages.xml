@@ -1634,7 +1634,7 @@ factory pattern to create these objects.</p>
    -->
   <BugPattern type="CNT_ROUGH_CONSTANT_VALUE">
     <ShortDescription>Rough value of known constant found</ShortDescription>
-    <LongDescription>Rough value of {4} found: {3}</LongDescription>
+    <LongDescription>Rough value of {3} found: {2}</LongDescription>
     <Details>
       <![CDATA[
     <p>It's recommended to use the predefined library constant for code clarity and better precision.</p>
